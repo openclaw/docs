@@ -5,148 +5,146 @@ read_when:
 summary: OpenClaw के साथ StepFun मॉडल का उपयोग करें
 title: StepFun
 x-i18n:
-    generated_at: "2026-06-29T00:03:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:19:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
+    source_hash: c65e6d395f4ea890efc0e4847ec21dc1c2796fa240d20ca3e6d40eea480ed9f4
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-StepFun प्रदाता Plugin दो प्रदाता ids का समर्थन करता है:
+StepFun एक बाहरी आधिकारिक Plugin (`@openclaw/stepfun-provider`) के रूप में उपलब्ध है, जिसमें दो प्रदाता आईडी हैं:
 
-- मानक endpoint के लिए `stepfun`
-- Step Plan endpoint के लिए `stepfun-plan`
+- `stepfun` मानक एंडपॉइंट के लिए
+- `stepfun-plan` Step Plan एंडपॉइंट के लिए
 
 <Warning>
-Standard और Step Plan **अलग-अलग प्रदाता** हैं, जिनके endpoints और model ref prefixes अलग हैं (`stepfun/...` बनाम `stepfun-plan/...`)। `.com` endpoints के साथ China key और `.ai` endpoints के साथ global key का उपयोग करें।
+मानक और Step Plan अलग-अलग एंडपॉइंट तथा मॉडल रेफ़रेंस प्रीफ़िक्स (`stepfun/...` बनाम `stepfun-plan/...`) वाले **अलग प्रदाता** हैं। `.com` एंडपॉइंट के साथ चीन की कुंजी और `.ai` एंडपॉइंट के साथ वैश्विक कुंजी का उपयोग करें।
 </Warning>
 
 ## Plugin इंस्टॉल करें
-
-आधिकारिक Plugin इंस्टॉल करें, फिर Gateway पुनः प्रारंभ करें:
 
 ```bash
 openclaw plugins install @openclaw/stepfun-provider
 openclaw gateway restart
 ```
 
-## क्षेत्र और endpoint का अवलोकन
+## क्षेत्र और एंडपॉइंट का अवलोकन
 
-| Endpoint  | China (`.com`)                         | Global (`.ai`)                        |
+| एंडपॉइंट  | चीन (`.com`)                         | वैश्विक (`.ai`)                        |
 | --------- | -------------------------------------- | ------------------------------------- |
-| Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
+| मानक  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
-Auth env var: `STEPFUN_API_KEY`
+प्रमाणीकरण परिवेश चर: `STEPFUN_API_KEY`
 
-## अंतर्निहित catalog
+## अंतर्निहित कैटलॉग
 
-Standard (`stepfun`):
+मानक (`stepfun`):
 
-| Model ref                | Context | Max output | Notes               |
-| ------------------------ | ------- | ---------- | ------------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536     | डिफ़ॉल्ट मानक model |
+| मॉडल रेफ़रेंस                | कॉन्टेक्स्ट | अधिकतम आउटपुट | टिप्पणियाँ                          |
+| ------------------------ | ------- | ---------- | ------------------------------ |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536     | डिफ़ॉल्ट मानक मॉडल         |
+| `stepfun/step-3.7-flash` | 262,144 | 262,144    | मल्टीमॉडल इमेज इनपुट समर्थन |
 
 Step Plan (`stepfun-plan`):
 
-| Model ref                          | Context | Max output | Notes                         |
-| ---------------------------------- | ------- | ---------- | ----------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | डिफ़ॉल्ट Step Plan model      |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | अतिरिक्त Step Plan model      |
+| मॉडल रेफ़रेंस                          | कॉन्टेक्स्ट | अधिकतम आउटपुट | टिप्पणियाँ                          |
+| ---------------------------------- | ------- | ---------- | ------------------------------ |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | डिफ़ॉल्ट Step Plan मॉडल        |
+| `stepfun-plan/step-3.7-flash`      | 262,144 | 262,144    | मल्टीमॉडल इमेज इनपुट समर्थन |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | अतिरिक्त Step Plan मॉडल     |
 
-## शुरू करना
-
-अपना प्रदाता surface चुनें और setup steps का पालन करें।
+## आरंभ करना
 
 <Tabs>
-  <Tab title="Standard">
-    **इसके लिए सर्वोत्तम:** मानक StepFun endpoint के माध्यम से सामान्य-उद्देश्य उपयोग।
+  <Tab title="मानक">
+    मानक StepFun एंडपॉइंट के माध्यम से सामान्य प्रयोजन के उपयोग के लिए सर्वोत्तम।
 
     <Steps>
-      <Step title="Choose your endpoint region">
-        | Auth choice                      | Endpoint                         | Region        |
-        | -------------------------------- | -------------------------------- | ------------- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | International |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | China         |
+      <Step title="अपना एंडपॉइंट क्षेत्र चुनें">
+        | प्रमाणीकरण विकल्प                    | एंडपॉइंट                     | क्षेत्र        |
+        | -------------------------------- | ----------------------------- | -------------- |
+        | `stepfun-standard-api-key-intl` | `https://api.stepfun.ai/v1`  | अंतरराष्ट्रीय |
+        | `stepfun-standard-api-key-cn`   | `https://api.stepfun.com/v1` | चीन          |
       </Step>
-      <Step title="Run onboarding">
+      <Step title="ऑनबोर्डिंग चलाएँ">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        या China endpoint के लिए:
+        चीन एंडपॉइंट:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
         ```
       </Step>
-      <Step title="Non-interactive alternative">
+      <Step title="गैर-इंटरैक्टिव विकल्प">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="सत्यापित करें कि मॉडल उपलब्ध हैं">
         ```bash
         openclaw models list --provider stepfun
         ```
       </Step>
     </Steps>
 
-    ### Model refs
-
-    - डिफ़ॉल्ट model: `stepfun/step-3.5-flash`
+    डिफ़ॉल्ट मॉडल: `stepfun/step-3.5-flash`
+    वैकल्पिक मॉडल: `stepfun/step-3.7-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **इसके लिए सर्वोत्तम:** Step Plan reasoning endpoint।
+    Step Plan रीजनिंग एंडपॉइंट के लिए सर्वोत्तम।
 
     <Steps>
-      <Step title="Choose your endpoint region">
-        | Auth choice                  | Endpoint                                | Region        |
-        | ---------------------------- | --------------------------------------- | ------------- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | International |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | China         |
+      <Step title="अपना एंडपॉइंट क्षेत्र चुनें">
+        | प्रमाणीकरण विकल्प                 | एंडपॉइंट                                | क्षेत्र        |
+        | ------------------------------ | ------------------------------------------ | -------------- |
+        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`  | अंतरराष्ट्रीय |
+        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1` | चीन          |
       </Step>
-      <Step title="Run onboarding">
+      <Step title="ऑनबोर्डिंग चलाएँ">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        या China endpoint के लिए:
+        चीन एंडपॉइंट:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
         ```
       </Step>
-      <Step title="Non-interactive alternative">
+      <Step title="गैर-इंटरैक्टिव विकल्प">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="सत्यापित करें कि मॉडल उपलब्ध हैं">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
       </Step>
     </Steps>
 
-    ### Model refs
-
-    - डिफ़ॉल्ट model: `stepfun-plan/step-3.5-flash`
-    - वैकल्पिक model: `stepfun-plan/step-3.5-flash-2603`
+    डिफ़ॉल्ट मॉडल: `stepfun-plan/step-3.5-flash`
+    वैकल्पिक मॉडल: `stepfun-plan/step-3.7-flash`, `stepfun-plan/step-3.5-flash-2603`
 
   </Tab>
 </Tabs>
 
-## उन्नत configuration
+एकल प्रमाणीकरण प्रवाह `stepfun` और `stepfun-plan` दोनों के लिए क्षेत्र से मेल खाने वाली प्रोफ़ाइल लिखता है, इसलिए एक बार ऑनबोर्डिंग चलाने के बाद दोनों सतहें साथ में खोजी जाती हैं।
+
+## उन्नत कॉन्फ़िगरेशन
 
 <AccordionGroup>
-  <Accordion title="Full config: Standard provider">
+  <Accordion title="पूर्ण कॉन्फ़िगरेशन: मानक प्रदाता">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -159,6 +157,36 @@ Step Plan (`stepfun-plan`):
             api: "openai-completions",
             apiKey: "${STEPFUN_API_KEY}",
             models: [
+              {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0.2, output: 1.15, cacheRead: 0.04, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
               {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
@@ -176,7 +204,7 @@ Step Plan (`stepfun-plan`):
     ```
   </Accordion>
 
-  <Accordion title="Full config: Step Plan provider">
+  <Accordion title="पूर्ण कॉन्फ़िगरेशन: Step Plan प्रदाता">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -189,6 +217,36 @@ Step Plan (`stepfun-plan`):
             api: "openai-completions",
             apiKey: "${STEPFUN_API_KEY}",
             models: [
+              {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
               {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
@@ -215,32 +273,28 @@ Step Plan (`stepfun-plan`):
     ```
   </Accordion>
 
-  <Accordion title="Notes">
-    - प्रदाता एक आधिकारिक external package है; setup से पहले इसे इंस्टॉल करें।
+  <Accordion title="टिप्पणियाँ">
+    - `step-3.7-flash` OpenClaw के माध्यम से टेक्स्ट और इमेज इनपुट स्वीकार करता है। StepFun का API वीडियो का भी समर्थन करता है, जो अभी OpenClaw में मॉडल इनपुट मोडैलिटी नहीं है।
+    - Step 3.7, `low`, `medium`, और `high` रीजनिंग प्रयास का समर्थन करता है। चूँकि मॉडल में गैर-रीजनिंग मोड नहीं है, इसलिए `/think off` को `low` पर मैप किया जाता है।
     - `step-3.5-flash-2603` वर्तमान में केवल `stepfun-plan` पर उपलब्ध है।
-    - एक single auth flow `stepfun` और `stepfun-plan` दोनों के लिए region-matched profiles लिखता है, इसलिए दोनों surfaces को साथ में discover किया जा सकता है।
-    - models का निरीक्षण करने या switch करने के लिए `openclaw models list` और `openclaw models set <provider/model>` का उपयोग करें।
+    - मॉडल का निरीक्षण करने या उन्हें बदलने के लिए `openclaw models list` और `openclaw models set <provider/model>` का उपयोग करें।
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-व्यापक प्रदाता अवलोकन के लिए, [Model प्रदाता](/hi/concepts/model-providers) देखें।
-</Note>
-
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/hi/concepts/model-providers" icon="layers">
-    सभी प्रदाताओं, model refs, और failover behavior का अवलोकन।
+  <Card title="मॉडल प्रदाता" href="/hi/concepts/model-providers" icon="layers">
+    सभी प्रदाताओं, मॉडल रेफ़रेंस और फ़ेलओवर व्यवहार का अवलोकन।
   </Card>
-  <Card title="Configuration reference" href="/hi/gateway/configuration-reference" icon="gear">
-    प्रदाताओं, models, और plugins के लिए पूरा config schema।
+  <Card title="कॉन्फ़िगरेशन संदर्भ" href="/hi/gateway/configuration-reference" icon="gear">
+    प्रदाताओं, मॉडलों और plugins के लिए पूर्ण कॉन्फ़िगरेशन स्कीमा।
   </Card>
-  <Card title="Model selection" href="/hi/concepts/models" icon="brain">
-    models कैसे चुनें और configure करें।
+  <Card title="मॉडल CLI" href="/hi/concepts/models" icon="brain">
+    मॉडल चुनने और कॉन्फ़िगर करने का तरीका।
   </Card>
-  <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
-    StepFun API key management और documentation।
+  <Card title="StepFun प्लेटफ़ॉर्म" href="https://platform.stepfun.com" icon="globe">
+    StepFun API कुंजी प्रबंधन और दस्तावेज़।
   </Card>
 </CardGroup>

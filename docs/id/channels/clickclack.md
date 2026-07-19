@@ -5,37 +5,50 @@ read_when:
 summary: Penyiapan kanal token bot ClickClack dan sintaks target
 title: ClickClack
 x-i18n:
-    generated_at: "2026-07-16T17:44:40Z"
+    generated_at: "2026-07-19T04:43:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 2c422664ecdc9e41eb1810ca61654b886f1c51357fb9f48054d30c20a86ea8bc
+    source_hash: a8bc8acba1bf02acfb515ff486a04fc709e0be77caaf5d5e9e11e71a812bf73b
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
 ClickClack menghubungkan OpenClaw ke ruang kerja ClickClack yang dihosting sendiri melalui token bot ClickClack kelas utama.
 
-Gunakan ini jika Anda ingin agen OpenClaw tampil sebagai pengguna bot ClickClack. ClickClack mendukung bot layanan independen dan bot milik pengguna; bot milik pengguna mempertahankan `owner_user_id` dan hanya menerima cakupan token yang Anda berikan.
+Gunakan ini jika Anda ingin agen OpenClaw muncul sebagai pengguna bot ClickClack. ClickClack mendukung bot layanan independen dan bot milik pengguna; bot milik pengguna mempertahankan `owner_user_id` dan hanya menerima cakupan token yang Anda berikan.
 
 ## Penyiapan cepat
 
 Di ClickClack, buka **Workspace settings → Integrations → OpenClaw**, buat
-bot, lalu salin tokennya. Kemudian konfigurasikan channel:
+bot menggunakan **Setup code (recommended)**, lalu salin perintah yang dihasilkan:
 
 ```bash
-openclaw channels add clickclack --base-url https://clickclack.example.com --token ccb_... --workspace default
+openclaw channels add clickclack --code 'https://clickclack.example.com/#XXXX-XXXX-XXXX'
 ```
 
-`workspace` menerima id ruang kerja (`wsp_...`), slug, atau nama tampilan.
-`channels add` memverifikasi server, token, dan ruang kerja setelah menyimpan, lalu
-melaporkan apakah Gateway yang sedang berjalan telah mengambil akun baru tersebut. Jika OpenClaw
-sudah berjalan, ClickClack terhubung secara otomatis dan tidak diperlukan perintah
-kedua. Jika belum, mulai dengan:
+Kode penyiapan hanya dapat digunakan sekali dan kedaluwarsa setelah 10 menit. OpenClaw mengklaimnya,
+menerima token bot yang baru dibuat dan pengaturan ruang kerja, menyimpan akun,
+memverifikasi koneksi, dan melaporkan apakah Gateway yang sedang berjalan telah mengambilnya.
+Kode penyiapan itu sendiri tidak disimpan dalam konfigurasi OpenClaw.
+
+Klaim kode penyiapan menggunakan HTTPS untuk server publik. HTTP biasa juga didukung untuk
+instalasi lokal pada loopback atau jaringan privat, termasuk `localhost`,
+alamat IP privat, dan nama host internal yang hanya diresolusikan ke alamat
+privat.
+
+Jika OpenClaw sudah berjalan, ClickClack terhubung secara otomatis dan tidak diperlukan
+perintah kedua. Jika belum, jalankan dengan:
 
 ```bash
 openclaw gateway
+```
+
+Anda juga dapat memberikan kode secara terpisah dari URL server:
+
+```bash
+openclaw channels add clickclack --code XXXX-XXXX-XXXX --base-url https://clickclack.example.com
 ```
 
 Untuk penyiapan terpandu, jalankan:
@@ -46,7 +59,19 @@ openclaw onboard
 
 Pilih ClickClack, lalu masukkan URL server, token bot, dan ruang kerja saat
 diminta. Penyiapan terpandu memeriksa server, token, dan ruang kerja setelah menyimpan;
-pemeriksaan yang gagal tidak membuang konfigurasi.
+pemeriksaan yang gagal tidak menghapus konfigurasi.
+
+### Alternatif: token manual
+
+Pilih **Manual token** di ClickClack saat mengonfigurasi klien non-OpenClaw atau
+ketika Anda secara eksplisit perlu mengelola token sendiri:
+
+```bash
+openclaw channels add clickclack --base-url https://clickclack.example.com --token ccb_... --workspace default
+```
+
+`workspace` menerima id ruang kerja (`wsp_...`), slug, atau nama tampilan.
+`--code` tidak dapat digabungkan dengan `--token`, `--token-file`, atau `--use-env`.
 
 ### Alternatif: token berbasis variabel lingkungan
 
@@ -59,8 +84,8 @@ openclaw channels add clickclack --base-url https://clickclack.example.com --wor
 openclaw gateway
 ```
 
-Akun bernama harus menggunakan token yang dikonfigurasi atau berkas token; variabel
-lingkungan bersama sengaja dibatasi untuk akun default.
+Akun bernama harus menggunakan token atau berkas token yang dikonfigurasi; variabel
+lingkungan bersama sengaja dibatasi hanya untuk akun default.
 
 ### Referensi JSON5
 
@@ -80,40 +105,40 @@ Bentuk konfigurasi yang setara adalah:
 }
 ```
 
-Sebuah akun dianggap telah dikonfigurasi hanya jika `baseUrl`, sumber token, dan
+Sebuah akun dianggap terkonfigurasi hanya jika `baseUrl`, sumber token, dan
 `workspace` semuanya ditetapkan. Sumber token dapat berupa `token`, `tokenFile`, atau
 `CLICKCLACK_BOT_TOKEN` untuk akun default. `workspace` menerima id ruang kerja
-(`wsp_...`), slug, atau nama; Gateway menguraikannya menjadi id saat dimulai.
+(`wsp_...`), slug, atau nama; Gateway meresolusikannya menjadi id saat dimulai.
 
 ### Kunci konfigurasi akun
 
-| Kunci                     | Default             | Catatan                                                                                   |
+| Kunci                   | Default             | Catatan                                                                                 |
 | ----------------------- | ------------------- | --------------------------------------------------------------------------------------- |
-| `baseUrl`               | tidak ada (wajib)     | URL server ClickClack.                                                                  |
-| `token`                 | tidak ada                | Token bot sebagai string biasa atau referensi rahasia (`source: "env" \| "file" \| "exec"`).        |
-| `tokenFile`             | tidak ada                | Jalur ke berkas token bot; diprioritaskan daripada `token`.                                |
-| `workspace`             | tidak ada (wajib)     | Id, slug, atau nama ruang kerja.                                                            |
+| `baseUrl`               | tidak ada (wajib)   | URL server ClickClack.                                                                  |
+| `token`                 | tidak ada           | Token bot sebagai string biasa atau referensi rahasia (`source: "env" \| "file" \| "exec"`).             |
+| `tokenFile`             | tidak ada           | Jalur ke berkas token bot; lebih diprioritaskan daripada `token`.             |
+| `workspace`             | tidak ada (wajib)   | Id, slug, atau nama ruang kerja.                                                         |
 | `replyMode`             | `"agent"`           | `"agent"` menjalankan seluruh pipeline agen; `"model"` mengirim penyelesaian model langsung yang singkat. |
-| `defaultTo`             | `"channel:general"` | Target yang digunakan ketika jalur keluar tidak memberikan target.                                      |
-| `allowFrom`             | `["*"]`             | Daftar izin id pengguna untuk DM dan pesan channel masuk.                                 |
-| `botUserId`             | terdeteksi otomatis       | Diuraikan dari identitas token bot saat dimulai.                                        |
-| `agentId`               | default rute       | Sematkan pesan masuk akun ini ke satu agen.                                       |
-| `toolsAllow`            | tidak ada                | Daftar izin alat untuk balasan agen dari akun ini.                                     |
-| `model`, `systemPrompt` | tidak ada                | Digunakan oleh penyelesaian `replyMode: "model"`.                                               |
-| `commandMenu`           | `true`              | Publikasikan perintah native ke pelengkapan otomatis komposer ClickClack.                            |
-| `reconnectMs`           | `1500`              | Penundaan koneksi ulang waktu nyata (100 hingga 60000).                                                |
+| `defaultTo`             | `"channel:general"` | Target yang digunakan saat jalur keluar tidak memberikan target.                        |
+| `allowFrom`             | `["*"]`             | Daftar pengguna yang diizinkan berdasarkan id untuk DM dan pesan kanal masuk.           |
+| `botUserId`             | terdeteksi otomatis | Diresolusikan dari identitas token bot saat dimulai.                                     |
+| `agentId`               | default rute        | Sematkan pesan masuk akun ini ke satu agen.                                              |
+| `toolsAllow`            | tidak ada           | Daftar alat yang diizinkan untuk balasan agen dari akun ini.                             |
+| `model`, `systemPrompt` | tidak ada           | Digunakan oleh penyelesaian `replyMode: "model"`.                                         |
+| `commandMenu`           | `true`              | Publikasikan perintah native ke pelengkapan otomatis penyusun ClickClack.                |
+| `reconnectMs`           | `1500`              | Jeda penyambungan kembali waktu nyata (100 hingga 60000).                                |
 
-Jika `plugins.allow` adalah daftar pembatas yang tidak kosong, memilih
-ClickClack secara eksplisit dalam penyiapan channel atau menjalankan `openclaw plugins enable clickclack`
-akan menambahkan `clickclack` ke daftar tersebut. Instalasi saat onboarding menggunakan
-perilaku pemilihan eksplisit yang sama. Jalur-jalur ini tidak menimpa `plugins.deny` atau
-pengaturan global `plugins.enabled: false`. Penggunaan langsung
-`openclaw plugins install @openclaw/clickclack` mengikuti kebijakan instalasi
-Plugin normal dan juga mencatat ClickClack dalam daftar izin yang sudah ada.
+Jika `plugins.allow` adalah daftar restriktif yang tidak kosong, memilih
+ClickClack secara eksplisit dalam penyiapan kanal atau menjalankan `openclaw plugins enable clickclack`
+akan menambahkan `clickclack` ke daftar tersebut. Instalasi orientasi awal menggunakan perilaku
+pemilihan eksplisit yang sama. Jalur-jalur ini tidak mengganti `plugins.deny` atau
+pengaturan global `plugins.enabled: false`. Menjalankan
+`openclaw plugins install @openclaw/clickclack` secara langsung mengikuti kebijakan
+instalasi plugin normal dan juga mencatat ClickClack dalam daftar izin yang ada.
 
 ## Beberapa bot
 
-Setiap akun membuka koneksi waktu nyata ClickClack-nya sendiri dan menggunakan token botnya sendiri.
+Setiap akun membuka koneksi waktu nyata ClickClack sendiri dan menggunakan token botnya sendiri.
 
 ```json5
 {
@@ -143,11 +168,11 @@ Setiap akun membuka koneksi waktu nyata ClickClack-nya sendiri dan menggunakan t
 
 ## Mode balasan
 
-- `replyMode: "agent"` (default) meneruskan pesan masuk melalui pipeline agen normal, termasuk pencatatan sesi dan kebijakan alat.
-- `replyMode: "model"` melewati pipeline agen dan menggunakan `llm.complete` milik runtime Plugin untuk balasan bot langsung, yang secara opsional dibentuk oleh `model` dan `systemPrompt`. Penyedia dan model yang dipilih memiliki anggaran penyelesaian.
+- `replyMode: "agent"` (default) meneruskan pesan masuk melalui pipeline agen normal, termasuk perekaman sesi dan kebijakan alat.
+- `replyMode: "model"` melewati pipeline agen dan menggunakan `llm.complete` dari runtime plugin untuk balasan bot langsung, yang secara opsional dibentuk oleh `model` dan `systemPrompt`. Penyedia dan model yang dipilih menentukan anggaran penyelesaian.
 
-Mode model menjalankan penyelesaian terhadap id agen bot yang telah diuraikan, yang memerlukan
-bit kepercayaan `plugins.entries.clickclack.llm.allowAgentIdOverride: true` eksplisit:
+Mode model menjalankan penyelesaian terhadap id agen bot yang diresolusikan, yang memerlukan
+bit kepercayaan `plugins.entries.clickclack.llm.allowAgentIdOverride: true` secara eksplisit:
 
 ```json5
 {
@@ -163,13 +188,13 @@ bit kepercayaan `plugins.entries.clickclack.llm.allowAgentIdOverride: true` eksp
 }
 ```
 
-Biarkan bit kepercayaan nonaktif jika Anda hanya menggunakan mode balasan `agent` default;
-bit ini tidak diperlukan di sana.
+Biarkan bit kepercayaan dinonaktifkan jika Anda hanya menggunakan mode balasan default `agent`;
+bit tersebut tidak diperlukan dalam mode itu.
 
 ## Menu perintah
 
 Saat Gateway dimulai, setiap akun yang dikonfigurasi memublikasikan perintah native
-OpenClaw ke ClickClack. Perintah tersebut muncul dalam pelengkapan otomatis komposer dengan label
+OpenClaw ke ClickClack. Perintah tersebut muncul dalam pelengkapan otomatis penyusun dengan label
 handle bot. Kumpulan yang dipublikasikan diganti seluruhnya setiap kali dimulai,
 termasuk menghapus menu usang ketika katalog perintah native kosong.
 
@@ -192,40 +217,40 @@ untuk menonaktifkannya:
 Token memerlukan `commands:write`. Bundel ClickClack `bot:write` dan
 `bot:admin` saat ini menyertakan cakupan tersebut, dan cakupan itu juga dapat diberikan
 secara individual. Token yang dibuat sebelum menu perintah diperkenalkan mungkin perlu
-ditambahkan cakupan tersebut atau diganti dengan token baru.
+ditambahkan cakupannya atau diganti dengan token baru.
 
-Sinkronisasi dilakukan dengan upaya terbaik dan berjalan sekali setiap kali Gateway dimulai. Cakupan yang tidak ada atau kegagalan
+Sinkronisasi bersifat upaya terbaik dan berjalan sekali setiap kali Gateway dimulai. Cakupan yang tidak tersedia atau kegagalan
 jaringan mencatat peringatan; server ClickClack lama tanpa endpoint tersebut mencatatnya pada
-tingkat debug. Tidak satu pun kegagalan ini menghalangi dimulainya koneksi waktu nyata. Menu tetap
+tingkat debug. Tidak satu pun kegagalan ini menghalangi proses waktu nyata dimulai. Menu tetap
 tersedia saat agen luring dan dihapus ketika bot meninggalkan
 ruang kerja.
 
-Rilis ini hanya memublikasikan spesifikasi perintah native. Alias dan
-katalog perintah Skills, Plugin, atau khusus tidak ditambahkan ke menu. Jika suatu
-nama juga didaftarkan sebagai perintah garis miring HTTP, ClickClack akan meneruskan
+Rilis ini hanya memublikasikan spesifikasi perintah native. Alias serta
+katalog perintah Skills, Plugin, atau kustom tidak ditambahkan ke menu. Jika suatu
+nama juga terdaftar sebagai perintah garis miring HTTP, ClickClack meneruskan
 pendaftaran tersebut terlebih dahulu; perintah menu lainnya tetap melalui pengiriman
 pesan normal.
 
 Gunakan mode `agent` untuk bukti korelasi lintas layanan. Untuk id pesan
-ClickClack otoritatif dalam bentuk kanonis `msg_<ulid>`, channel menurunkan
-id proses OpenClaw deterministik `clickclack:<message-id>`. Setiap panggilan model kemudian
-terlihat dalam diagnostik sebagai `clickclack:<message-id>:model:<n>`; ketika giliran tersebut
+ClickClack otoritatif dalam bentuk kanonis `msg_<ulid>`, kanal memperoleh
+id proses OpenClaw deterministik `clickclack:<message-id>`. Setiap panggilan model
+kemudian terlihat dalam diagnostik sebagai `clickclack:<message-id>:model:<n>`; ketika giliran tersebut
 menggunakan ClawRouter, id panggilan model yang sama dikirim sebagai `X-Request-ID`.
 Mode `model` melewati diagnostik proses/sesi agen normal sehingga
 tidak cocok untuk jalur bukti ini.
 
-Ketika peristiwa waktu nyata berisi `payload.correlation_id` yang telah divalidasi,
-channel membawanya sebagai `X-Correlation-ID` pada pengambilan pesan otoritatif dan
+Ketika peristiwa waktu nyata berisi `payload.correlation_id` yang tervalidasi,
+kanal membawanya sebagai `X-Correlation-ID` pada pengambilan pesan otoritatif dan
 permintaan balasan ClickClack yang dihasilkan. Nilai menggunakan kumpulan aman
-128 karakter ClickClack (`A-Z`, `a-z`, `0-9`, `.`, `_`, `:`, dan `-`); nilai yang tidak valid
-dihilangkan. Penggabungan ini hanya berisi pengidentifikasi, tidak pernah berisi isi pesan,
+128 karakter milik ClickClack (`A-Z`, `a-z`, `0-9`, `.`, `_`, `:`, dan `-`); nilai yang tidak valid
+dihilangkan. Penggabungan ini hanya berisi pengidentifikasi, tidak pernah berisi badan pesan,
 prompt, penyelesaian, kredensial, atau keluaran alat.
 
-## Pengiriman media tahan lama
+## Pengiriman media yang tahan lama
 
 Balasan agen yang berisi media menggunakan pengiriman tahan lama yang diwajibkan. OpenClaw menetapkan
 nonce pesan dan unggahan per bagian yang stabil sebelum penulisan pertama ke ClickClack, sehingga
-percobaan ulang menggunakan kembali unggahan dan pesan yang sama alih-alih menghabiskan kuota penyimpanan
+percobaan ulang menggunakan kembali unggahan dan pesan yang sama, alih-alih menghabiskan kuota penyimpanan
 atau memublikasikan duplikat. Jika unggahan sudah ada setelah dimulai ulang,
 OpenClaw tidak membaca ulang jalur lokal asli atau URL media jarak jauh.
 
@@ -235,16 +260,16 @@ Kontrak pemulihan ini memerlukan server ClickClack yang mendukung:
   `X-ClickClack-Upload-Nonce: supported` pada hasil yang ditemukan dan tidak ditemukan.
 - `GET /api/messages/by-nonce` dengan
   `X-ClickClack-Message-Nonce: supported` pada hasil yang ditemukan dan tidak ditemukan.
-- Pembuatan pesan idempoten dan pengaitan lampiran untuk nonce dan unggahan
-  bercakupan pemilik yang sama.
+- Pembuatan pesan idempoten dan pengaitan lampiran untuk nonce
+  dan unggahan bercakupan pemilik yang sama.
 
 404 generik dari server lama tidak dianggap sebagai bukti bahwa pengiriman tidak ada.
-OpenClaw membiarkan pengiriman belum terselesaikan alih-alih mengambil risiko duplikasi; perbarui
+OpenClaw membiarkan pengiriman belum terselesaikan daripada mengambil risiko membuat duplikat; perbarui
 ClickClack sebelum mengaktifkan balasan agen yang menghasilkan media.
 
 ## Baris aktivitas agen
 
-Secara default, channel ClickClack tidak menampilkan apa pun saat giliran agen berjalan; hanya balasan akhir yang dikirim. Tetapkan `agentActivity: true` pada akun untuk memublikasikan baris pesan `agent_commentary` dan `agent_tool` yang tahan lama selama giliran sedang berlangsung:
+Secara default, kanal ClickClack tidak menampilkan apa pun saat giliran agen berjalan; hanya balasan akhir yang muncul. Tetapkan `agentActivity: true` pada akun untuk memublikasikan baris pesan `agent_commentary` dan `agent_tool` yang tahan lama saat giliran sedang berlangsung:
 
 ```json5
 {
@@ -261,26 +286,26 @@ Secara default, channel ClickClack tidak menampilkan apa pun saat giliran agen b
 
 Persyaratan dan perilaku:
 
-- **Nonaktif secara default.** Penyiapan standar dan server ClickClack lama tidak terpengaruh.
-- **Memerlukan cakupan token `agent_activity:write`.** Cakupan ini terpisah dari `bot:write` dan tidak diwariskan olehnya; buat token bot dengan `--scopes bot:write,agent_activity:write` (atau berikan cakupan tersebut kepada token yang sudah ada) sebelum mengaktifkan opsi ini.
-- **Degradasi dengan upaya terbaik.** Jika token tidak memiliki `agent_activity:write` atau server menolak penulisan aktivitas, kegagalan dicatat dan balasan akhir tetap dikirim secara normal; tidak ada baris aktivitas yang muncul.
+- **Dinonaktifkan secara default.** Penyiapan standar dan server ClickClack lama tidak terpengaruh.
+- **Memerlukan cakupan token `agent_activity:write`.** Cakupan ini terpisah dari `bot:write` dan tidak diwarisi olehnya; buat token bot dengan `--scopes bot:write,agent_activity:write` (atau berikan cakupan tersebut kepada token yang sudah ada) sebelum mengaktifkan opsi ini.
+- **Degradasi upaya terbaik.** Jika token tidak memiliki `agent_activity:write` atau server menolak penulisan aktivitas, kegagalan dicatat dan balasan akhir tetap dikirim secara normal; tidak ada baris aktivitas yang muncul.
 - Baris dikelompokkan per giliran (`turn_id`), digabungkan sehingga satu langkah logis menjadi satu baris, dan baris alat menggunakan format progres yang sama seperti Discord/Slack/Telegram (nama alat beserta detail perintah).
-- **Metadata atribusi.** Kiriman yang dibuat agen (baris aktivitas dan balasan akhir) membawa kolom `author_model` dan `author_thinking` yang diuraikan dari model aktual yang digunakan untuk giliran tersebut (termasuk setelah fallback). Server yang tidak mendefinisikan kolom-kolom ini mengabaikan kolom JSON yang tidak dikenal; server yang menyimpannya dapat menjawab "model mana yang menyampaikan baris ini, pada tingkat pemikiran mana" untuk setiap pesan.
+- **Metadata atribusi.** Postingan yang dibuat agen (baris aktivitas dan balasan akhir) membawa bidang `author_model` dan `author_thinking` yang ditentukan berdasarkan model aktual yang digunakan untuk giliran tersebut (termasuk setelah fallback). Server yang tidak mendefinisikan kolom ini mengabaikan bidang JSON yang tidak dikenal; server yang menyimpannya dapat menjawab "model mana yang mengucapkan baris ini, pada tingkat pemikiran apa" untuk setiap pesan.
 
 ## Target
 
 - `channel:<name-or-id>` mengirim ke kanal ruang kerja. Target tanpa awalan secara default menggunakan `channel:`.
 - `dm:<user_id>` membuat atau menggunakan kembali percakapan langsung dengan pengguna tersebut.
-- `thread:<message_id>` membalas dalam utas yang berakar pada pesan tersebut.
+- `thread:<message_id>` membalas di utas yang berakar pada pesan tersebut.
 
-Target keluar eksplisit juga dapat memuat prefiks penyedia `clickclack:` atau `cc:`.
+Target keluar eksplisit juga dapat memuat awalan penyedia `clickclack:` atau `cc:`.
 
 Media keluar menggunakan API unggahan ClickClack, lalu melampirkan unggahan persisten
-ke pesan kanal, balasan utas, atau DM yang dibuat. File lokal dan URL media jarak jauh
+ke pesan kanal, balasan utas, atau DM yang dibuat. Berkas lokal dan URL media jarak jauh
 yang didukung mengikuti kebijakan akses media normal OpenClaw, dengan batas 64 MiB
-per file. Pengiriman persisten yang diantrekan menggunakan nonce terpisah dengan cakupan pemilik untuk setiap
+per berkas. Pengiriman persisten yang diantrekan menggunakan nonce terpisah dalam cakupan pemilik untuk setiap
 unggahan dan bagian pesan, lalu mencoba kembali pengaitan lampiran dengan objek yang sama.
-Lihat [Pengiriman media persisten](#durable-media-delivery) untuk mengetahui kontrak server
+Lihat [Pengiriman media persisten](#durable-media-delivery) untuk kontrak server
 dan perilaku pemulihan.
 
 Contoh:
@@ -299,14 +324,14 @@ Cakupan token ClickClack diberlakukan oleh API ClickClack.
 - `bot:write`: `bot:read` ditambah pesan kanal, balasan utas, DM, unggahan, dan penerbitan menu perintah.
 - `bot:admin`: `bot:write` ditambah pembuatan kanal.
 - `commands:write`: menerbitkan menu perintah bot. Disertakan dalam bundel `bot:write` dan `bot:admin` saat ini serta dapat diberikan secara terpisah.
-- `agent_activity:write`: baris aktivitas agen persisten (`agent_commentary` / `agent_tool`). Tidak diwarisi oleh `bot:write` atau `bot:admin`; hanya diperlukan jika `agentActivity: true` ditetapkan.
+- `agent_activity:write`: baris aktivitas agen persisten (`agent_commentary` / `agent_tool`). Tidak diwarisi oleh `bot:write` atau `bot:admin`; hanya diperlukan ketika `agentActivity: true` ditetapkan.
 
 OpenClaw hanya memerlukan `bot:write` saat ini untuk percakapan agen normal dan sinkronisasi menu perintah. Tambahkan `agent_activity:write` saat mengaktifkan [baris aktivitas agen](#agent-activity-rows).
 
-## Pemecahan masalah
+## Pemecahan Masalah
 
 - `ClickClack is not configured for account "<id>"`: tetapkan `baseUrl`, `token` (misalnya melalui `CLICKCLACK_BOT_TOKEN`), dan `workspace` untuk akun tersebut.
 - `ClickClack workspace not found: <value>`: tetapkan `workspace` ke id, slug, atau nama ruang kerja yang dikembalikan oleh ClickClack.
 - Tidak ada balasan masuk: pastikan token memiliki akses baca waktu nyata dan perhatikan bahwa bot mengabaikan pesannya sendiri serta pesan dari bot lain.
-- Pengiriman ke kanal gagal: pastikan bot merupakan anggota ruang kerja dan memiliki `bot:write`.
+- Pengiriman ke kanal gagal: pastikan bot adalah anggota ruang kerja dan memiliki `bot:write`.
 - Tidak ada menu perintah: pastikan `commandMenu` bukan `false`, server ClickClack mendukung `PUT /api/bots/self/commands`, dan token memiliki `commands:write`.

@@ -1,131 +1,118 @@
 ---
 read_when:
     - OpenClaw को अपडेट करना
-    - अपडेट के बाद कुछ टूट जाता है
-summary: OpenClaw को सुरक्षित रूप से अपडेट करना (वैश्विक इंस्टॉल या स्रोत), साथ में रोलबैक रणनीति
+    - अपडेट के बाद कुछ काम करना बंद कर देता है
+summary: OpenClaw को सुरक्षित रूप से अपडेट करना (ग्लोबल इंस्टॉल या सोर्स), साथ ही रोलबैक रणनीति
 title: अपडेट किया जा रहा है
 x-i18n:
-    generated_at: "2026-06-28T23:23:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:13:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a96c5b9b12040fe9bb8b1623c88a9c305d58dc6fcee7003f500e897ded9e7b4a
+    source_hash: baf849d27fd1132833832734ff5b1648b7401d53925a624176832bca614d1160
     source_path: install/updating.md
     workflow: 16
 ---
 
-OpenClaw को अप टू डेट रखें।
+OpenClaw को अद्यतित रखें।
+
+Docker, Podman और Kubernetes इमेज प्रतिस्थापनों के लिए,
+[कंटेनर इमेज अपग्रेड करना](/hi/install/docker#upgrading-container-images) देखें। Gateway तत्पर होने से पहले स्टार्टअप-सुरक्षित अपग्रेड कार्य चलाता है और यदि माउंट की गई स्थिति को मैन्युअल सुधार की आवश्यकता हो, तो बंद हो जाता है।
 
 ## अनुशंसित: `openclaw update`
 
-अपडेट करने का सबसे तेज़ तरीका। यह आपके इंस्टॉल प्रकार (npm या git) का पता लगाता है, नवीनतम संस्करण लाता है, `openclaw doctor` चलाता है, और gateway को फिर से शुरू करता है।
+यह आपके इंस्टॉल प्रकार (npm, pnpm, Bun या git) का पता लगाता है, नवीनतम संस्करण प्राप्त करता है, `openclaw doctor` चलाता है और Gateway को पुनः आरंभ करता है।
 
 ```bash
 openclaw update
 ```
 
-चैनल बदलने या किसी विशिष्ट संस्करण को लक्षित करने के लिए:
+चैनल बदलें या किसी विशिष्ट संस्करण को लक्षित करें:
 
 ```bash
 openclaw update --channel beta
+openclaw update --channel extended-stable
 openclaw update --channel dev
-openclaw update --dry-run   # लागू किए बिना पूर्वावलोकन करें
+openclaw update --dry-run   # लागू किए बिना पूर्वावलोकन
 ```
 
-`openclaw update` `--verbose` स्वीकार नहीं करता। अपडेट निदान के लिए, नियोजित कार्रवाइयों का पूर्वावलोकन करने हेतु
+`openclaw update` में `--verbose` फ़्लैग नहीं है (इंस्टॉलर में है)। निदान के लिए नियोजित कार्रवाइयों का पूर्वावलोकन करने हेतु
 `--dry-run`, संरचित परिणामों के लिए `--json`, या
-चैनल और उपलब्धता स्थिति की जांच करने हेतु `openclaw update status --json` का उपयोग करें। 
-इंस्टॉलर का अपना `--verbose` फ़्लैग है, लेकिन वह फ़्लैग
-`openclaw update` का हिस्सा नहीं है।
+चैनल और उपलब्धता की स्थिति जाँचने के लिए `openclaw update status --json` का उपयोग करें।
 
-`--channel beta` beta को प्राथमिकता देता है, लेकिन जब beta टैग अनुपस्थित हो या नवीनतम stable रिलीज़ से पुराना हो, तो runtime stable/latest पर वापस आ जाता है। यदि आप एक बार के पैकेज अपडेट के लिए raw npm beta dist-tag चाहते हैं, तो `--tag beta` का उपयोग करें।
+`--channel beta` बीटा npm dist-tag को प्राथमिकता देता है, लेकिन जब बीटा टैग अनुपलब्ध हो या उसका संस्करण नवीनतम स्थिर रिलीज़ से पुराना हो, तो stable/latest पर वापस जाता है।
+इसके बजाय कच्चे npm बीटा dist-tag पर पिन किए गए एकबारगी पैकेज अपडेट के लिए `--tag beta` का उपयोग करें।
 
-स्थायी रूप से बदलते GitHub `main` checkout के लिए `--channel dev` का उपयोग करें। पैकेज
-अपडेट के लिए, `--tag main` एक रन के लिए `github:openclaw/openclaw#main` पर मैप होता है, और
-GitHub/git source specs को staged
-npm install से पहले अस्थायी tarball में पैक किया जाता है।
+`--channel extended-stable` केवल पैकेज के लिए है और इंस्टॉलेशन केवल अग्रभूमि में ही रहता है। OpenClaw सार्वजनिक npm `extended-stable` चयनकर्ता को पढ़ता है, चुने गए सटीक पैकेज का सत्यापन करता है और उसी सटीक संस्करण को इंस्टॉल करता है। अनुपलब्ध या असंगत रजिस्ट्री डेटा पर प्रक्रिया सुरक्षित रूप से विफल हो जाती है; यह कभी भी `latest` पर वापस नहीं जाती।
+यदि चुना गया संस्करण इंस्टॉल किए गए संस्करण से पुराना है, तो सामान्य डाउनग्रेड पुष्टि अब भी लागू होती है। सफल कोर अपडेट के बाद CLI चैनल को स्थायी करता है; प्रत्यक्ष `npm install -g openclaw@extended-stable`
+`update.channel` को अपडेट नहीं करता।
+कोर बदलने के बाद, bare/default या
+`latest` अभिप्राय वाले पात्र आधिकारिक npm plugins उसी सटीक कोर संस्करण पर अभिसरित होते हैं। सटीक पिन और स्पष्ट गैर-`latest` टैग, तृतीय-पक्ष plugins और गैर-npm स्रोत अपरिवर्तित रहते हैं।
+OpenClaw के वर्तमान संस्करणों द्वारा बनाए गए कैटलॉग इंस्टॉल उस डिफ़ॉल्ट अभिप्राय को बनाए रखते हैं। केवल सटीक संस्करण वाले पुराने रिकॉर्ड पिन रहते हैं, क्योंकि OpenClaw किसी पुराने स्वचालित पिन को उपयोगकर्ता के पिन से सुरक्षित रूप से अलग नहीं कर सकता; उस plugin को फिर से सटीक-कोर ट्रैकिंग में शामिल करने के लिए extended-stable चैनल पर
+`openclaw plugins update @openclaw/name` एक बार चलाएँ।
 
-प्रबंधित plugins के लिए, beta-channel fallback एक चेतावनी है: core अपडेट
-फिर भी सफल हो सकता है जबकि कोई plugin अपनी दर्ज की गई default/latest रिलीज़ का उपयोग करता है क्योंकि कोई
-plugin beta उपलब्ध नहीं है।
+`--channel dev` निरंतर आगे बढ़ने वाला GitHub `main` चेकआउट प्रदान करता है। एकबारगी पैकेज अपडेट के लिए, `--tag main` को `github:openclaw/openclaw#main` पैकेज विनिर्देश से मैप किया जाता है और लक्षित पैकेज मैनेजर (npm/pnpm/bun) के माध्यम से सीधे इंस्टॉल किया जाता है।
 
-चैनल semantics के लिए [Development channels](/hi/install/development-channels) देखें।
+प्रबंधित plugins के लिए, अनुपलब्ध बीटा रिलीज़ चेतावनी है, विफलता नहीं: कोर अपडेट तब भी सफल हो सकता है, जबकि कोई plugin अपनी दर्ज की गई default/latest रिलीज़ पर वापस चला जाता है।
+
+चैनल के अर्थों के लिए [रिलीज़ चैनल](/hi/install/development-channels) देखें।
 
 ## npm और git इंस्टॉल के बीच स्विच करें
 
-जब आप इंस्टॉल प्रकार बदलना चाहते हैं, तो channels का उपयोग करें। updater आपके
-state, config, credentials, और workspace को `~/.openclaw` में रखता है; यह केवल यह बदलता है
-कि CLI और gateway कौन सा OpenClaw code install उपयोग करते हैं।
+इंस्टॉल प्रकार बदलने के लिए चैनलों का उपयोग करें। अपडेटर आपकी स्थिति, कॉन्फ़िगरेशन,
+क्रेडेंशियल और कार्यस्थान को `~/.openclaw` में बनाए रखता है; यह केवल उस OpenClaw कोड इंस्टॉल को बदलता है जिसका उपयोग CLI और Gateway करते हैं।
 
 ```bash
-# npm package install -> editable git checkout
+# npm पैकेज इंस्टॉल -> संपादन योग्य git चेकआउट
 openclaw update --channel dev
 
-# git checkout -> npm package install
+# git चेकआउट -> npm पैकेज इंस्टॉल
 openclaw update --channel stable
 ```
 
-सटीक install-mode switch का पूर्वावलोकन करने के लिए पहले `--dry-run` के साथ चलाएं:
+पहले इंस्टॉल-मोड परिवर्तन का पूर्वावलोकन करें:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` channel git checkout सुनिश्चित करता है, उसे build करता है, और उस checkout से global CLI
-इंस्टॉल करता है। `stable` और `beta` channels package installs का उपयोग करते हैं। यदि
-gateway पहले से इंस्टॉल है, तो `openclaw update` service metadata को refresh करता है
-और उसे restart करता है, जब तक कि आप `--no-restart` पास न करें।
+`dev` git चेकआउट सुनिश्चित करता है, उसे बिल्ड करता है और उसी चेकआउट से वैश्विक CLI इंस्टॉल करता है। `stable`, `extended-stable` और `beta` चैनल पैकेज इंस्टॉल का उपयोग करते हैं। git चेकआउट पर Extended-stable को बिना कोई परिवर्तन या रूपांतरण किए अस्वीकार कर दिया जाता है। यदि Gateway पहले से इंस्टॉल है, तो `openclaw update` सेवा मेटाडेटा को रीफ़्रेश करता है और उसे पुनः आरंभ करता है, जब तक कि आप `--no-restart` न दें।
 
-managed Gateway service के साथ package installs के लिए, `openclaw update` उस service द्वारा उपयोग किए गए
-package root को लक्षित करता है। यदि shell `openclaw` command
-किसी अलग install से आती है, तो updater दोनों roots और managed service
-Node path प्रिंट करता है। package update उस package manager का उपयोग करता है जो service
-root का owner है और package बदलने से पहले managed service Node को target release engine
-के विरुद्ध जांचता है।
+प्रबंधित Gateway सेवा वाले पैकेज इंस्टॉल के लिए, `openclaw update` उस सेवा द्वारा उपयोग किए जाने वाले पैकेज रूट को लक्षित करता है। यदि शेल का `openclaw` कमांड किसी अलग इंस्टॉल से आता है, तो अपडेटर दोनों रूट और प्रबंधित सेवा का Node पथ दिखाता है तथा पैकेज बदलने से पहले उस Node संस्करण को लक्षित रिलीज़ की `engines.node` आवश्यकता के विरुद्ध जाँचता है।
 
-## विकल्प: installer फिर से चलाएं
+## विकल्प: इंस्टॉलर को फिर से चलाएँ
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-onboarding छोड़ने के लिए `--no-onboard` जोड़ें। installer के माध्यम से किसी विशिष्ट install type को force करने के लिए,
-`--install-method git --no-onboard` या
-`--install-method npm --no-onboard` पास करें।
+ऑनबोर्डिंग छोड़ने के लिए `--no-onboard` जोड़ें। किसी विशिष्ट इंस्टॉल प्रकार को बाध्य करने के लिए
+`--install-method git --no-onboard` या `--install-method npm --no-onboard` दें।
 
-यदि `openclaw update` npm package install चरण के बाद विफल हो जाता है, तो
-installer फिर से चलाएं। installer पुराने updater को call नहीं करता; यह global
-package install सीधे चलाता है और आंशिक रूप से updated npm install को recover कर सकता है।
+यदि npm पैकेज इंस्टॉल चरण के बाद `openclaw update` विफल हो जाए, तो इसके बजाय इंस्टॉलर को फिर से चलाएँ। यह अपडेटर को कॉल नहीं करता; यह सीधे वैश्विक पैकेज इंस्टॉल चलाता है और आंशिक रूप से अपडेट किए गए npm इंस्टॉल को पुनर्प्राप्त कर सकता है।
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
 ```
 
-recovery को किसी विशिष्ट version या dist-tag पर pin करने के लिए, `--version` जोड़ें:
+पुनर्प्राप्ति को किसी विशिष्ट संस्करण या dist-tag पर पिन करने के लिए `--version` का उपयोग करें:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
 ```
 
-## विकल्प: manual npm, pnpm, या bun
+## विकल्प: मैन्युअल npm, pnpm या bun
 
 ```bash
 npm i -g openclaw@latest
 ```
 
-supervised installs के लिए `openclaw update` को प्राथमिकता दें क्योंकि यह running Gateway service के साथ
-package swap को coordinate कर सकता है। यदि आप supervised install पर manually update करते हैं, तो
-package manager शुरू होने से पहले managed Gateway को stop करें।
-Package managers files को in place replace करते हैं, और running Gateway अन्यथा package tree के अस्थायी रूप से half-swapped होने पर
-core या plugin files load करने का प्रयास कर सकता है।
-package manager समाप्त होने के बाद Gateway को restart करें ताकि service नया install उठा ले।
+पर्यवेक्षित इंस्टॉल के लिए `openclaw update` को प्राथमिकता दें: यह पैकेज परिवर्तन को चल रही Gateway सेवा के साथ समन्वित कर सकता है। यदि आप पर्यवेक्षित इंस्टॉल को मैन्युअल रूप से अपडेट करते हैं, तो पहले प्रबंधित Gateway रोकें। पैकेज मैनेजर फ़ाइलों को उसी स्थान पर बदलते हैं और अन्यथा चल रहा Gateway परिवर्तन के बीच कोर या plugin फ़ाइलें लोड करने का प्रयास कर सकता है। पैकेज मैनेजर का कार्य पूरा होने के बाद Gateway को पुनः आरंभ करें, ताकि वह नया इंस्टॉल अपना सके।
 
-root-owned Linux system-global install के लिए, यदि `openclaw update`
-`EACCES` के साथ विफल होता है और आप system npm से recover करते हैं, तो manual package replacement के दौरान
-Gateway को stopped रखें। उसी `openclaw` profile flags या environment का उपयोग करें
-जो आप आमतौर पर उस Gateway के लिए उपयोग करते हैं। अपने host पर root-owned global prefix का owner system npm
-`/usr/bin/npm` की जगह उपयोग करें:
+रूट-स्वामित्व वाले Linux सिस्टम-वैश्विक इंस्टॉल के लिए, यदि `openclaw update`
+`EACCES` के साथ विफल हो जाए, तो मैन्युअल प्रतिस्थापन के दौरान Gateway को रोके रखते हुए सिस्टम npm से पुनर्प्राप्त करें। वही प्रोफ़ाइल फ़्लैग/परिवेश उपयोग करें जिन्हें आप सामान्यतः उस Gateway के लिए उपयोग करते हैं। `/usr/bin/npm` को उस सिस्टम npm से बदलें जो आपके होस्ट पर रूट-स्वामित्व वाले वैश्विक प्रीफ़िक्स का स्वामी है:
 
 ```bash
 openclaw gateway stop
@@ -134,7 +121,7 @@ openclaw gateway install --force
 openclaw gateway restart
 ```
 
-फिर service verify करें:
+फिर सत्यापित करें:
 
 ```bash
 openclaw --version
@@ -144,52 +131,47 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-जब `openclaw update` global npm install manage करता है, तो यह पहले target को
-temporary npm prefix में install करता है, packaged `dist` inventory verify करता है, फिर
-clean package tree को real global prefix में swap करता है। इससे npm
-पुराने package की stale files पर नया package overlay करने से बचता है। यदि install command विफल होती है,
-तो OpenClaw `--omit=optional` के साथ एक बार retry करता है। यह retry उन hosts में मदद करता है जहां native
-optional dependencies compile नहीं हो पातीं, जबकि fallback भी विफल होने पर original failure visible रखता है।
+जब `openclaw update` किसी वैश्विक npm इंस्टॉल का प्रबंधन करता है, तो वह पहले लक्ष्य को अस्थायी npm प्रीफ़िक्स में इंस्टॉल करता है। उम्मीदवार पैकेज `preinstall` के दौरान होस्ट के Node संस्करण को सत्यापित करता है; उसके बाद ही OpenClaw पैकेज किए गए `dist` भंडार को सत्यापित करके साफ़ पैकेज ट्री को वास्तविक वैश्विक प्रीफ़िक्स में बदलता है। पैक किया हुआ पूर्णता गार्ड अपेक्षित भंडार से बाहर रखा जाता है और केवल `preinstall` सफल होने के बाद हटाया जाता है, इसलिए छोड़ी गई लाइफ़साइकल स्क्रिप्ट भी परिवर्तन से पहले विफल होती हैं। npm 12 और नए संस्करणों पर, अपडेटर केवल उम्मीदवार OpenClaw लाइफ़साइकल को अनुमति देता है; सकर्मक निर्भरता स्क्रिप्ट अवरुद्ध रहती हैं। इससे npm किसी पुराने पैकेज की बासी फ़ाइलों पर नया पैकेज चढ़ाने से बचता है। यदि इंस्टॉल कमांड विफल हो जाए, तो OpenClaw `--omit=optional` के साथ एक बार पुनः प्रयास करता है, जो उन होस्ट पर सहायक है जहाँ नेटिव वैकल्पिक निर्भरताएँ कम्पाइल नहीं हो सकतीं।
 
-OpenClaw-managed npm update और plugin-update commands child npm process के लिए npm
-`min-release-age` quarantine भी clear करते हैं। npm उस
-policy को derived `before` cutoff के रूप में report कर सकता है; दोनों सामान्य supply-chain
-quarantine policies के लिए उपयोगी हैं, लेकिन explicit OpenClaw update का अर्थ है "चयनित
-OpenClaw release अभी install करें।"
+OpenClaw द्वारा प्रबंधित npm अपडेट और plugin-अपडेट कमांड, चाइल्ड npm प्रक्रिया के लिए npm की `min-release-age` आपूर्ति-श्रृंखला क्वारंटीन (या पुरानी `before` कॉन्फ़िगरेशन कुंजी) को भी साफ़ करते हैं। वह नीति सामान्य सुरक्षा के लिए है, लेकिन स्पष्ट OpenClaw अपडेट का अर्थ है “चुनी गई रिलीज़ अभी इंस्टॉल करें।”
 
 ```bash
 pnpm add -g openclaw@latest
 ```
 
+यदि pnpm 11 ने OpenClaw 2026.7.1 इंस्टॉल किया था, तो उस मैन्युअल कमांड को एक बार चलाएँ। वह रिलीज़ pnpm 11 के पृथक वैश्विक-पैकेज लेआउट से पहले की है, इसलिए उसका अपडेटर किसी अन्य npm इंस्टॉलेशन को चल रहा CLI समझ सकता है। बाद की रिलीज़ pnpm स्वामित्व बनाए रखती हैं और अपडेट के दौरान प्रतिस्थापन पैकेज रूट का अनुसरण करती हैं। वे स्वामी मैनेजर द्वारा रिपोर्ट की गई वैश्विक bin डायरेक्टरी का भी उपयोग करती हैं और परिवर्तन से पहले रुक जाती हैं, जब उपलब्ध pnpm कमांड किसी अन्य वैश्विक रूट या प्रमुख संस्करण की रिपोर्ट करता है, अथवा जब आह्वान करने वाला पैकेज अनाथ हो या वहाँ एकमात्र सक्रिय OpenClaw इंस्टॉल न हो।
+
+यदि OpenClaw किसी अन्य पैकेज के साथ pnpm 11 वैश्विक इंस्टॉल समूह साझा करता है, तो स्वचालित अपडेटर समूह को बदलने से पहले रुक जाता है। मूल अल्पविराम-पृथक समूह को मैन्युअल रूप से अपडेट करें, ताकि उसके सहोदर पैकेज और बिल्ड नीति अक्षुण्ण रहें।
+
 ```bash
 bun add -g openclaw@latest
 ```
 
-### Advanced npm install topics
+### उन्नत npm इंस्टॉल विषय
 
 <AccordionGroup>
-  <Accordion title="Read-only package tree">
-    OpenClaw packaged global installs को runtime पर read-only मानता है, भले ही global package directory current user द्वारा writable हो। Plugin package installs user config directory के अंतर्गत OpenClaw-owned npm/git roots में रहते हैं, और Gateway startup OpenClaw package tree को mutate नहीं करता।
+  <Accordion title="केवल-पठन पैकेज ट्री">
+    OpenClaw रनटाइम पर पैकेज किए गए वैश्विक इंस्टॉल को केवल-पठन मानता है, भले ही वैश्विक पैकेज डायरेक्टरी में वर्तमान उपयोगकर्ता को लिखने की अनुमति हो। Plugin पैकेज इंस्टॉल उपयोगकर्ता कॉन्फ़िगरेशन डायरेक्टरी के अंतर्गत OpenClaw-स्वामित्व वाले npm/git रूट में रहते हैं और Gateway स्टार्टअप OpenClaw पैकेज ट्री में परिवर्तन नहीं करता।
 
-    कुछ Linux npm setups global packages को root-owned directories जैसे `/usr/lib/node_modules/openclaw` के अंतर्गत install करते हैं। OpenClaw उस layout का समर्थन करता है क्योंकि plugin install/update commands उस global package directory के बाहर write करते हैं।
+    कुछ Linux npm सेटअप वैश्विक पैकेजों को `/usr/lib/node_modules/openclaw` जैसी रूट-स्वामित्व वाली डायरेक्टरियों के अंतर्गत इंस्टॉल करते हैं। OpenClaw इस लेआउट का समर्थन करता है, क्योंकि plugin इंस्टॉल/अपडेट कमांड उस वैश्विक पैकेज डायरेक्टरी के बाहर लिखते हैं।
 
   </Accordion>
-  <Accordion title="Hardened systemd units">
-    OpenClaw को उसके config/state roots तक write access दें ताकि explicit plugin installs, plugin updates, और doctor cleanup अपने changes persist कर सकें:
+  <Accordion title="सुदृढ़ systemd इकाइयाँ">
+    OpenClaw को उसके कॉन्फ़िगरेशन/स्थिति रूट में लिखने की अनुमति दें, ताकि स्पष्ट plugin इंस्टॉल, plugin अपडेट और doctor सफ़ाई अपने परिवर्तन स्थायी कर सकें:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
     ```
 
   </Accordion>
-  <Accordion title="Disk-space preflight">
-    package updates और explicit plugin installs से पहले, OpenClaw target volume के लिए best-effort disk-space check आज़माता है। Low space checked path के साथ warning देता है, लेकिन update को block नहीं करता क्योंकि filesystem quotas, snapshots, और network volumes check के बाद बदल सकते हैं। actual package-manager install और post-install verification authoritative रहते हैं।
+  <Accordion title="डिस्क स्थान की पूर्व-जाँच">
+    पैकेज अपडेट और स्पष्ट plugin इंस्टॉल से पहले, OpenClaw लक्षित वॉल्यूम के लिए सर्वोत्तम-प्रयास डिस्क-स्थान जाँच करने का प्रयास करता है। कम स्थान होने पर जाँचे गए पथ के साथ चेतावनी मिलती है, लेकिन अपडेट अवरुद्ध नहीं होता, क्योंकि फ़ाइल-सिस्टम कोटा, स्नैपशॉट और नेटवर्क वॉल्यूम जाँच के बाद बदल सकते हैं। वास्तविक पैकेज-मैनेजर इंस्टॉल और इंस्टॉल-पश्चात सत्यापन ही निर्णायक रहते हैं।
   </Accordion>
 </AccordionGroup>
 
-## Auto-updater
+## स्वचालित अपडेटर
 
-auto-updater default रूप से off है। इसे `~/.openclaw/openclaw.json` में enable करें:
+डिफ़ॉल्ट रूप से बंद है। इसे `~/.openclaw/openclaw.json` में सक्षम करें:
 
 ```json5
 {
@@ -205,43 +187,57 @@ auto-updater default रूप से off है। इसे `~/.openclaw/openc
 }
 ```
 
-| Channel  | Behavior                                                                                                      |
-| -------- | ------------------------------------------------------------------------------------------------------------- |
-| `stable` | `stableDelayHours` प्रतीक्षा करता है, फिर `stableJitterHours` में deterministic jitter के साथ apply करता है (spread rollout)। |
-| `beta`   | हर `betaCheckIntervalHours` पर check करता है (default: hourly) और तुरंत apply करता है।                              |
-| `dev`    | कोई automatic apply नहीं। `openclaw update` manually उपयोग करें।                                                           |
+| चैनल           | व्यवहार                                                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | `stableDelayHours` (डिफ़ॉल्ट: 6) तक प्रतीक्षा करता है, फिर विस्तृत रोलआउट के लिए `stableJitterHours` (डिफ़ॉल्ट: 12) में नियतात्मक जिटर के साथ लागू करता है। |
+| `extended-stable` | स्टार्टअप पर और `checkOnStart` सक्षम होने पर प्रत्येक 24 घंटे में केवल-पठन अपडेट संकेत की जाँच करता है। कभी भी स्वचालित रूप से लागू नहीं करता।                |
+| `beta`            | प्रत्येक `betaCheckIntervalHours` (डिफ़ॉल्ट: 1) पर जाँच करता है और तुरंत लागू करता है।                                                                  |
+| `dev`             | कोई स्वचालित अनुप्रयोग नहीं। `openclaw update` का मैन्युअल रूप से उपयोग करें।                                                                                          |
 
-gateway startup पर update hint भी log करता है (`update.checkOnStart: false` से disable करें)।
-downgrade या incident recovery के लिए, Gateway environment में `OPENCLAW_NO_AUTO_UPDATE=1` set करें ताकि `update.auto.enabled` configured होने पर भी automatic applies block हों। Startup update hints तब भी चल सकते हैं जब तक `update.checkOnStart` भी disabled न हो।
+Gateway स्टार्टअप पर अपडेट संकेत भी लॉग करता है (`update.checkOnStart: false` से अक्षम करें)। संग्रहीत extended-stable चयन इस केवल-पठन संकेत पथ और मौजूदा 24-घंटे के संकेत अंतराल का उपयोग करते हैं, लेकिन कभी भी स्वचालित इंस्टॉलेशन, हस्तांतरण, पुनः आरंभ, stable विलंब/जिटर या beta पोलिंग प्रारंभ नहीं करते।
+डाउनग्रेड या घटना-पुनर्प्राप्ति के लिए, स्वचालित अनुप्रयोगों को अवरुद्ध करने हेतु Gateway परिवेश में `OPENCLAW_NO_AUTO_UPDATE=1` सेट करें, भले ही `update.auto.enabled` कॉन्फ़िगर किया गया हो। स्टार्टअप अपडेट संकेत तब भी चल सकते हैं, जब तक कि `update.checkOnStart` भी अक्षम न हो।
 
-live Gateway control-plane handler के माध्यम से अनुरोधित Package-manager updates
-running Gateway process के अंदर package tree को replace नहीं करते। managed
-service installs पर, Gateway detached handoff शुरू करता है, exit करता है, और
-normal `openclaw update --yes --json` CLI path को service stop करने, package replace करने,
-service metadata refresh करने, restart करने, Gateway version और
-reachability verify करने, और संभव होने पर installed-but-unloaded macOS LaunchAgent recover करने देता है।
-यदि Gateway वह handoff safely नहीं कर सकता, तो `update.run` package manager in-process चलाने के बजाय
-safe shell command report करता है।
+लाइव Gateway नियंत्रण-प्लेन (`update.run`) के माध्यम से अनुरोधित पैकेज-मैनेजर अपडेट, चल रही Gateway प्रक्रिया के भीतर पैकेज ट्री को नहीं बदलते। प्रबंधित सेवा इंस्टॉल पर, Gateway एक अलग हस्तांतरण शुरू करता है, बंद हो जाता है और सामान्य `openclaw update --yes --json` CLI पथ को सेवा रोकने, पैकेज बदलने, सेवा मेटाडेटा रीफ़्रेश करने, पुनः आरंभ करने, Gateway संस्करण और पहुँचयोग्यता सत्यापित करने तथा संभव होने पर इंस्टॉल किए गए लेकिन लोड न हुए macOS LaunchAgent को पुनर्प्राप्त करने देता है। यदि Gateway उस हस्तांतरण को सुरक्षित रूप से नहीं कर सकता, तो `update.run` पैकेज मैनेजर को प्रक्रिया के भीतर चलाने के बजाय एक सुरक्षित शेल कमांड रिपोर्ट करता है।
+
+Control UI साइडबार अपडेट कार्ड **Gateway अपडेट करें** दिखाता है, जब वह सीधे
+यह `update.run` प्रवाह शुरू करेगा। इसमें ब्राउज़र-होस्टेड Control UI, रिमोट
+Gateway और मैन्युअल रूप से प्रबंधित स्थानीय Gateway शामिल हैं।
+
+हस्ताक्षरित macOS ऐप में, स्थानीय ऐप-स्वामित्व वाला Gateway उस कार्ड को
+**Mac ऐप + Gateway अपडेट करें** में बदल देता है। Sparkle पहले ऐप को अपडेट करता है; दोबारा लॉन्च होने के बाद,
+ऐप `openclaw update --tag <app-version> --json` चलाता है, अपने Gateway को पुनः आरंभ करता है,
+और सेटअप-जैसी प्रगति विंडो में स्वास्थ्य सत्यापित करता है। यह विंडो केवल तभी दिखाई देती है
+जब उस प्रबंधित Gateway को अपडेट, मरम्मत या इंस्टॉलेशन की आवश्यकता हो; केवल-ऐप अपडेट
+सीधे ऐप में दोबारा लॉन्च होते हैं। विफलता के विवरण Retry, [अपडेट मार्गदर्शिका](/hi/install/updating), और
+[Discord](https://discord.gg/clawd) कार्रवाइयों के साथ दिखाई देते रहते हैं। ऐप किसी रिमोट या बाहरी रूप से
+प्रबंधित Gateway के लिए इस समन्वित पथ का कभी उपयोग नहीं करता, किसी नए
+Gateway को कभी डाउनग्रेड नहीं करता, और `extended-stable` चैनल पिन को कभी ओवरराइड नहीं करता।
+
+अपडेट सफल होने पर, ऐप वास्तविक उपयोगकर्ता/चैनल इंटरैक्शन वाले सबसे हालिया
+शीर्ष-स्तरीय प्रत्यक्ष सत्र के लिए एक बार का स्वागत इवेंट कतारबद्ध करता है। Cron रन,
+Heartbeat और केवल-पृष्ठभूमि सत्र अपडेट उस चयन को नहीं बदलते। रिमोट
+मोड में, ऐप केवल अपने स्थानीय Mac Node रनटाइम को अपडेट करता है और इवेंट
+केवल तभी भेजता है जब कनेक्टेड रिमोट Gateway कम-से-कम ऐप जितना नया हो।
 
 ## अपडेट करने के बाद
 
 <Steps>
 
-### doctor चलाएं
+### डॉक्टर चलाएँ
 
 ```bash
 openclaw doctor
 ```
 
-config migrate करता है, DM policies audit करता है, और gateway health check करता है। विवरण: [Doctor](/hi/gateway/doctor)
+कॉन्फ़िग माइग्रेट करता है, DM नीतियों का ऑडिट करता है और Gateway का स्वास्थ्य जाँचता है। विवरण: [डॉक्टर](/hi/gateway/doctor)
 
-### gateway restart करें
+### Gateway पुनः आरंभ करें
 
 ```bash
 openclaw gateway restart
 ```
 
-### Verify करें
+### सत्यापित करें
 
 ```bash
 openclaw health
@@ -249,40 +245,140 @@ openclaw health
 
 </Steps>
 
-## Rollback
+## रोलबैक
 
-### version pin करें (npm)
+रोलबैक की दो परतें हैं:
+
+1. वर्तमान स्थिति बनाए रखते हुए पुराना OpenClaw कोड फिर से इंस्टॉल करें।
+2. अपडेट-पूर्व स्थिति केवल तभी पुनर्स्थापित करें जब पुराना कोड माइग्रेट किए गए
+   कॉन्फ़िग या डेटाबेस का उपयोग न कर सके।
+
+पहले केवल-कोड रोलबैक करें। स्थिति पुनर्स्थापित करने से बैकअप के बाद किए गए
+परिवर्तन हट जाते हैं।
+
+### अपडेट करने से पहले: सत्यापित बैकअप बनाएँ
+
+`openclaw update` अपडेट-पूर्व कॉन्फ़िग की स्वचालित प्रति सुरक्षित रखता है, लेकिन यह
+पूर्ण स्थिति पुनर्प्राप्ति बिंदु नहीं बनाता। किसी महत्वपूर्ण अपडेट से पहले, इसे
+स्पष्ट रूप से बनाएँ:
 
 ```bash
-npm i -g openclaw@<version>
-openclaw doctor
+mkdir -p ~/Backups/openclaw
+openclaw backup create --output ~/Backups/openclaw --verify
+```
+
+आर्काइव मैनिफ़ेस्ट OpenClaw संस्करण और बैकअप में शामिल स्रोत पथों को दर्ज
+करता है। आर्काइव में क्रेडेंशियल, प्रमाणीकरण प्रोफ़ाइल और चैनल स्थिति हो सकती है,
+इसलिए इसे केवल-स्वामी अनुमतियों और लाइव स्थिति डायरेक्टरी जैसी सुरक्षा के साथ
+संग्रहीत करें। शामिल और जानबूझकर छोड़ी गई फ़ाइलों के लिए [बैकअप](/hi/cli/backup) देखें।
+
+पोर्टेबल आर्काइव से छोड़ी गई अस्थिर कलाकृतियों को शामिल करने वाले बाइट-दर-बाइट
+पुनर्प्राप्ति बिंदु के लिए, Gateway रोकें और अपने प्लेटफ़ॉर्म द्वारा प्रदान किए गए
+फ़ाइलसिस्टम, वॉल्यूम या VM स्नैपशॉट का उपयोग करें।
+
+### पैकेज इंस्टॉलेशन को रोल बैक करें
+
+प्रकाशित संस्करणों की सूची देखें, फिर ज्ञात-सही संस्करण का पूर्वावलोकन करके उसे इंस्टॉल करें:
+
+```bash
+npm view openclaw versions --json
+openclaw update --tag <known-good-version> --dry-run
+openclaw update --tag <known-good-version>
+```
+
+प्रत्यक्ष पैकेज-मैनेजर इंस्टॉलेशन के बजाय `openclaw update --tag` को प्राथमिकता दी जाती है। यह
+डाउनग्रेड का पता लगाता है, पुष्टि माँगता है, इंस्टॉल किए गए लक्ष्य के विरुद्ध प्रबंधित Plugin
+अभिसरण और संगतता जाँच चलाता है, सेवा मेटाडेटा रीफ़्रेश करता है, Gateway को
+पुनः आरंभ करता है और चल रहे संस्करण को सत्यापित करता है। यदि संग्रहीत
+चैनल `extended-stable` है, तो
+`--channel stable --tag <known-good-version>` का उपयोग करें, क्योंकि एकबारगी सटीक टैग को
+`extended-stable` चयनकर्ता के साथ संयोजित नहीं किया जा सकता।
+
+पैकेज अपडेट सक्रियण से पहले उम्मीदवार को स्टेज और सत्यापित करते हैं। यदि
+फ़ाइलसिस्टम स्वैप या कमांड-शिम प्रतिस्थापन विफल होता है, तो OpenClaw पुराने
+पैकेज को स्वचालित रूप से पुनर्स्थापित करता है। सफल स्वैप के बाद, Gateway की बाद की स्वास्थ्य
+विफलता पैकेज को फिर से स्वचालित रूप से बदलने के बजाय पिछले संस्करण और मैन्युअल
+रोलबैक निर्देशों की रिपोर्ट करती है।
+
+यदि CLI अपडेट पथ उपलब्ध नहीं है, तो उसी पैकेज मैनेजर और इंस्टॉलेशन
+स्कोप का उपयोग करें जिसके स्वामित्व में वर्तमान Gateway है:
+
+```bash
+openclaw gateway stop
+npm i -g openclaw@<known-good-version>
+openclaw gateway install --force
 openclaw gateway restart
 ```
 
-<Tip>
-`npm view openclaw version` current published version दिखाता है।
-</Tip>
+जब उस मैनेजर के स्वामित्व में इंस्टॉलेशन हो, तो `npm` को `pnpm` या `bun` से बदलें। घटना
+पुनर्प्राप्ति के दौरान, Gateway परिवेश में `OPENCLAW_NO_AUTO_UPDATE=1` सेट करके सक्षम ऑटो-अपडेटर को तुरंत
+नया रिलीज़ लागू करने से रोकें।
 
-### commit pin करें (source)
+### स्रोत चेकआउट को रोल बैक करें
+
+स्वच्छ चेकआउट का उपयोग करें और ज्ञात-सही टैग या कमिट चुनें:
 
 ```bash
-git fetch origin
-git checkout "$(git rev-list -n 1 --before=\"2026-01-01\" origin/main)"
+git fetch --all --tags
+git checkout --detach <known-good-tag-or-commit>
 pnpm install && pnpm build
 openclaw gateway restart
 ```
 
-latest पर लौटने के लिए: `git checkout main && git pull`।
+नवीनतम पर लौटने के लिए: `git checkout main && git pull`।
 
-## यदि आप अटके हुए हैं
+git अपडेट शुरू होने के बाद निर्भरता इंस्टॉलेशन, बिल्ड, UI बिल्ड या डॉक्टर विफल होने पर
+अपडेटर स्वचालित रूप से git चेकआउट को उसकी पिछली ब्रांच और
+SHA पर लौटा देता है। जब आप जानबूझकर कोई पुराना कमिट चुनते हैं, तब भी मैन्युअल
+चेकआउट आवश्यक होता है।
 
-- `openclaw doctor` फिर से चलाएं और output ध्यान से पढ़ें।
-- source checkouts पर `openclaw update --channel dev` के लिए, updater आवश्यकता होने पर `pnpm` को auto-bootstrap करता है। यदि आपको pnpm/corepack bootstrap error दिखे, तो `pnpm` manually install करें (या `corepack` फिर से enable करें) और update rerun करें।
-- जांचें: [Troubleshooting](/hi/gateway/troubleshooting)
+### सत्र SQLite माइग्रेशन के पार डाउनग्रेड करना
+
+पुराना फ़ाइल-समर्थित OpenClaw रिलीज़ शुरू करने से पहले, संग्रहीत लेगेसी ट्रांसक्रिप्ट
+कलाकृतियों को पुनर्स्थापित करने के लिए वर्तमान CLI का उपयोग करें:
+
+```bash
+openclaw gateway stop
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
+```
+
+यह SQLite डेटा नहीं हटाता। SQLite माइग्रेशन के बाद बनाए गए सत्र
+केवल SQLite में मौजूद हैं और पुराने रनटाइम में दिखाई नहीं देंगे। देखें
+[सत्र SQLite माइग्रेशन के बाद डाउनग्रेड करना](/hi/cli/doctor#downgrading-after-session-sqlite-migration)।
+
+### स्थिति केवल आवश्यक होने पर पुनर्स्थापित करें
+
+यदि पुराना कोड नया कॉन्फ़िग या डेटाबेस स्कीमा नहीं पढ़ सकता, तो
+Gateway रोकें और सत्यापित अपडेट-पूर्व फ़ाइलसिस्टम, वॉल्यूम या VM स्नैपशॉट पुनर्स्थापित करें।
+पुनर्स्थापित करने से पहले वर्तमान स्थिति को अलग से सुरक्षित रखें, क्योंकि इससे
+स्नैपशॉट के बाद किए गए परिवर्तन हट जाते हैं।
+
+व्यापक `openclaw backup create` आर्काइव निर्माण और सत्यापन का समर्थन करते हैं, लेकिन
+उसी स्थान पर संपूर्ण-आर्काइव सक्रियण का नहीं। व्यापक आर्काइव को स्टेजिंग
+डायरेक्टरी में एक्सट्रैक्ट करें और ऑफ़लाइन पुनर्स्थापना के लिए उसकी `manifest.json`
+स्रोत-से-आर्काइव मैपिंग का उपयोग करें। इसी तरह, `openclaw backup sqlite restore` किसी नए लक्ष्य पर सत्यापित
+डेटाबेस लिखता है; उस लक्ष्य को सक्रिय करना एक स्पष्ट ऑफ़लाइन ऑपरेटर
+चरण बना रहता है।
+
+### रोलबैक सत्यापित करें
+
+```bash
+openclaw --version
+openclaw health
+openclaw plugins list --json
+openclaw gateway status --deep --json
+openclaw doctor --lint --json
+```
+
+## यदि आप अटक गए हैं
+
+- `openclaw doctor` फिर से चलाएँ और आउटपुट ध्यान से पढ़ें।
+- स्रोत चेकआउट पर `openclaw update --channel dev` के लिए, आवश्यकता होने पर अपडेटर `pnpm` को स्वतः बूटस्ट्रैप करता है। यदि आपको pnpm/corepack बूटस्ट्रैप त्रुटि दिखाई देती है, तो `pnpm` को मैन्युअल रूप से इंस्टॉल करें (या `corepack` को फिर से सक्षम करें) और अपडेट दोबारा चलाएँ।
+- जाँचें: [समस्या निवारण](/hi/gateway/troubleshooting)
 - Discord में पूछें: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## संबंधित
 
-- [Install overview](/hi/install): सभी installation methods।
-- [Doctor](/hi/gateway/doctor): updates के बाद health checks।
-- [Migrating](/hi/install/migrating): major version migration guides।
+- [इंस्टॉलेशन अवलोकन](/hi/install): सभी इंस्टॉलेशन विधियाँ।
+- [डॉक्टर](/hi/gateway/doctor): अपडेट के बाद स्वास्थ्य जाँच।
+- [माइग्रेशन](/hi/install/migrating): प्रमुख संस्करण माइग्रेशन मार्गदर्शिकाएँ।

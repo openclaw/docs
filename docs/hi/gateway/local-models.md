@@ -1,48 +1,48 @@
 ---
 read_when:
-    - आप अपने GPU बॉक्स से मॉडल उपलब्ध कराना चाहते हैं
-    - आप LM Studio या OpenAI-संगत प्रॉक्सी को कॉन्फ़िगर कर रहे हैं
-    - आपको सबसे सुरक्षित स्थानीय मॉडल मार्गदर्शन चाहिए
-summary: स्थानीय LLMs पर OpenClaw चलाएँ (LM Studio, vLLM, LiteLLM, कस्टम OpenAI एंडपॉइंट्स)
+    - आप अपने स्वयं के GPU बॉक्स से मॉडल सर्व करना चाहते हैं
+    - आप LM Studio या OpenAI-संगत प्रॉक्सी को कनेक्ट कर रहे हैं
+    - आपको सबसे सुरक्षित स्थानीय मॉडल संबंधी मार्गदर्शन चाहिए
+summary: स्थानीय LLMs (LM Studio, vLLM, LiteLLM, कस्टम OpenAI एंडपॉइंट्स) पर OpenClaw चलाएँ
 title: स्थानीय मॉडल
 x-i18n:
-    generated_at: "2026-06-28T23:10:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:25:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 671c92d78fa29c778fd34b6df027cc8f9e7ad507c9d446700d97cd789becd041
+    source_hash: 386d46af219a368e2ae5089a72cda4bc735c7d6a5f66aec3c314f71b63a860ec
     source_path: gateway/local-models.md
     workflow: 16
 ---
 
-स्थानीय मॉडल संभव हैं। वे हार्डवेयर, संदर्भ आकार, और prompt-injection बचाव की अपेक्षा भी बढ़ाते हैं — छोटे या आक्रामक रूप से quantized कार्ड संदर्भ को truncate करते हैं और सुरक्षा में रिसाव करते हैं। यह पेज उच्च-स्तरीय स्थानीय stacks और custom OpenAI-compatible स्थानीय servers के लिए opinionated guide है। सबसे कम friction वाली onboarding के लिए, [LM Studio](/hi/providers/lmstudio) या [Ollama](/hi/providers/ollama) और `openclaw onboard` से शुरू करें।
+स्थानीय मॉडल काम करते हैं, लेकिन वे हार्डवेयर, कॉन्टेक्स्ट आकार और प्रॉम्प्ट-इंजेक्शन सुरक्षा की अपेक्षाएँ बढ़ा देते हैं: छोटे या अत्यधिक क्वांटाइज़ किए गए मॉडल कॉन्टेक्स्ट को छोटा कर देते हैं और प्रोवाइडर-पक्षीय सुरक्षा फ़िल्टर छोड़ देते हैं। यह पेज उच्च-स्तरीय स्थानीय स्टैक और कस्टम OpenAI-संगत सर्वर के बारे में बताता है। सबसे आसान रास्ते के लिए, [LM Studio](/hi/providers/lmstudio) या [Ollama](/hi/providers/ollama) से शुरू करें और `openclaw onboard`।
 
-उन स्थानीय servers के लिए जिन्हें केवल तब शुरू होना चाहिए जब किसी चयनित मॉडल को उनकी आवश्यकता हो, देखें
-[स्थानीय मॉडल सेवाएं](/hi/gateway/local-model-services).
+उन स्थानीय सर्वर के लिए, जिन्हें केवल तभी शुरू होना चाहिए जब किसी चुने गए मॉडल को उनकी आवश्यकता हो, [स्थानीय मॉडल सेवाएँ](/hi/gateway/local-model-services) देखें।
 
-## हार्डवेयर floor
+## न्यूनतम हार्डवेयर
 
-ऊंचा लक्ष्य रखें: आरामदायक agent loop के लिए **≥2 maxed-out Mac Studios या equivalent GPU rig (~$30k+)**। एक single **24 GB** GPU केवल हल्के prompts के लिए उच्च latency पर काम करता है। हमेशा **सबसे बड़ा / full-size variant जिसे आप host कर सकते हैं** चलाएं; छोटे या heavily quantized checkpoints prompt-injection जोखिम बढ़ाते हैं (देखें [सुरक्षा](/hi/gateway/security))।
+सहज एजेंट लूप के लिए **2+ पूर्णतः अधिकतम कॉन्फ़िगरेशन वाले Mac Studios या समकक्ष GPU रिग (~$30k+)** का लक्ष्य रखें। एक **24 GB** GPU अधिक विलंबता पर केवल हल्के प्रॉम्प्ट संभालता है। हमेशा **सबसे बड़ा / पूर्ण-आकार वाला वैरिएंट चलाएँ जिसे आप होस्ट कर सकते हैं** - छोटे या अत्यधिक क्वांटाइज़ किए गए चेकपॉइंट प्रॉम्प्ट-इंजेक्शन का जोखिम बढ़ाते हैं ([सुरक्षा](/hi/gateway/security) देखें)।
 
-## backend चुनें
+## बैकएंड चुनें
 
-| Backend                                              | कब उपयोग करें                                                                    |
+| बैकएंड                                              | इसका उपयोग कब करें                                                                    |
 | ---------------------------------------------------- | --------------------------------------------------------------------------- |
-| [ds4](/hi/providers/ds4)                                | macOS Metal पर OpenAI-compatible tool calls के साथ स्थानीय DeepSeek V4 Flash    |
-| [LM Studio](/hi/providers/lmstudio)                     | पहली बार स्थानीय setup, GUI loader, native Responses API                    |
-| LiteLLM / OAI-proxy / custom OpenAI-compatible proxy | आप किसी अन्य model API को front करते हैं और चाहते हैं कि OpenClaw उसे OpenAI की तरह treat करे         |
-| MLX / vLLM / SGLang                                  | OpenAI-compatible HTTP endpoint के साथ high-throughput self-hosted serving |
-| [Ollama](/hi/providers/ollama)                          | CLI workflow, model library, hands-off systemd service                      |
+| [ds4](/hi/providers/ds4)                                | OpenAI-संगत टूल कॉल के साथ macOS Metal पर स्थानीय DeepSeek V4 Flash    |
+| [LM Studio](/hi/providers/lmstudio)                     | पहली बार स्थानीय सेटअप, GUI लोडर, नेटिव Responses API                    |
+| LiteLLM / OAI-proxy / कस्टम OpenAI-संगत प्रॉक्सी | जब आप किसी अन्य मॉडल API को फ़्रंट करते हैं और चाहते हैं कि OpenClaw उसे OpenAI माने         |
+| MLX / vLLM / SGLang                                  | OpenAI-संगत HTTP एंडपॉइंट के साथ उच्च-थ्रूपुट सेल्फ़-होस्टेड सर्विंग |
+| [Ollama](/hi/providers/ollama)                          | CLI वर्कफ़्लो, मॉडल लाइब्रेरी, बिना हस्तक्षेप वाली systemd सेवा                      |
 
-जब backend इसका support करे (LM Studio करता है), Responses API (`api: "openai-responses"`) का उपयोग करें। अन्यथा Chat Completions (`api: "openai-completions"`) पर बने रहें।
+जब बैकएंड इसका समर्थन करता हो, तब `api: "openai-responses"` का उपयोग करें (LM Studio करता है)। अन्यथा `api: "openai-completions"` का उपयोग करें। यदि `baseUrl` वाले किसी कस्टम प्रोवाइडर पर `api` छोड़ दिया जाता है, तो OpenClaw का डिफ़ॉल्ट `openai-completions` होता है।
 
 <Warning>
-**WSL2 + Ollama + NVIDIA/CUDA users:** आधिकारिक Ollama Linux installer `Restart=always` के साथ systemd service enable करता है। WSL2 GPU setups पर, autostart boot के दौरान last model को reload कर सकता है और host memory को pin कर सकता है। यदि आपकी WSL2 VM Ollama enable करने के बाद बार-बार restart होती है, तो देखें [WSL2 crash loop](/hi/providers/ollama#wsl2-crash-loop-repeated-reboots).
+**WSL2 + Ollama + NVIDIA/CUDA:** आधिकारिक Ollama Linux इंस्टॉलर `Restart=always` वाली systemd सेवा सक्षम करता है। WSL2 GPU सेटअप पर, ऑटोस्टार्ट बूट के दौरान अंतिम मॉडल को दोबारा लोड कर सकता है और होस्ट मेमोरी को पिन कर सकता है, जिससे VM बार-बार रीस्टार्ट होता है। [WSL2 क्रैश लूप](/hi/providers/ollama#troubleshooting) देखें।
 </Warning>
 
-## अनुशंसित: LM Studio + बड़ा स्थानीय मॉडल (Responses API)
+## LM Studio + बड़ा स्थानीय मॉडल (Responses API)
 
-वर्तमान में सबसे अच्छा स्थानीय stack। LM Studio में बड़ा मॉडल load करें (उदाहरण के लिए, full-size Qwen, DeepSeek, या Llama build), local server enable करें (default `http://127.0.0.1:1234`), और reasoning को final text से अलग रखने के लिए Responses API का उपयोग करें।
+यह वर्तमान में सबसे अच्छा स्थानीय स्टैक है। LM Studio में एक बड़ा मॉडल (पूर्ण-आकार वाला Qwen, DeepSeek या Llama बिल्ड) लोड करें, स्थानीय सर्वर सक्षम करें (डिफ़ॉल्ट `http://127.0.0.1:1234`), और रीजनिंग को अंतिम टेक्स्ट से अलग रखने के लिए Responses API का उपयोग करें।
 
 ```json5
 {
@@ -79,18 +79,17 @@ x-i18n:
 }
 ```
 
-**Setup checklist**
+सेटअप चेकलिस्ट:
 
-- LM Studio install करें: [https://lmstudio.ai](https://lmstudio.ai)
-- LM Studio में, **उपलब्ध सबसे बड़ा model build** download करें ("small"/heavily quantized variants से बचें), server start करें, confirm करें कि `http://127.0.0.1:1234/v1/models` उसे list करता है।
-- `my-local-model` को LM Studio में दिखाए गए actual model ID से बदलें।
-- model को loaded रखें; cold-load startup latency जोड़ता है।
-- यदि आपका LM Studio build अलग है तो `contextWindow`/`maxTokens` adjust करें।
-- WhatsApp के लिए, Responses API पर टिके रहें ताकि केवल final text भेजा जाए।
+- LM Studio इंस्टॉल करें: [https://lmstudio.ai](https://lmstudio.ai)
+- **सबसे बड़ा उपलब्ध मॉडल बिल्ड** डाउनलोड करें ("small"/अत्यधिक क्वांटाइज़ किए गए वैरिएंट से बचें), सर्वर शुरू करें और पुष्टि करें कि `http://127.0.0.1:1234/v1/models` इसे सूचीबद्ध करता है।
+- `my-local-model` को LM Studio में दिखने वाली वास्तविक मॉडल ID से बदलें।
+- मॉडल को लोड रखा रहने दें; कोल्ड-लोड स्टार्टअप विलंबता बढ़ाता है।
+- यदि आपका LM Studio बिल्ड अलग है, तो `contextWindow`/`maxTokens` समायोजित करें।
+- WhatsApp के लिए, Responses API का ही उपयोग करें ताकि केवल अंतिम टेक्स्ट भेजा जाए।
+- `models.mode: "merge"` बनाए रखें ताकि होस्ट किए गए मॉडल फ़ॉलबैक के रूप में उपलब्ध रहें।
 
-स्थानीय चलाते समय भी hosted models configured रखें; `models.mode: "merge"` का उपयोग करें ताकि fallbacks उपलब्ध रहें।
-
-### Hybrid config: hosted primary, local fallback
+### हाइब्रिड कॉन्फ़िगरेशन: होस्टेड प्राथमिक, स्थानीय फ़ॉलबैक
 
 ```json5
 {
@@ -131,22 +130,15 @@ x-i18n:
 }
 ```
 
-### Local-first with hosted safety net
+होस्टेड सुरक्षा विकल्प वाले स्थानीय-प्रथम सेटअप के लिए, `primary`/`fallbacks` का क्रम बदलें और वही `providers` ब्लॉक तथा `models.mode: "merge"` बनाए रखें।
 
-primary और fallback order को swap करें; वही providers block और `models.mode: "merge"` रखें ताकि local box down होने पर आप Sonnet या Opus पर fall back कर सकें।
+### क्षेत्रीय होस्टिंग / डेटा रूटिंग
 
-### Regional hosting / data routing
+होस्ट किए गए MiniMax/Kimi/GLM वैरिएंट क्षेत्र-निर्धारित एंडपॉइंट (उदाहरण के लिए, US में होस्ट किए गए) के साथ OpenRouter पर भी उपलब्ध हैं। Anthropic/OpenAI फ़ॉलबैक के लिए `models.mode: "merge"` बनाए रखते हुए, ट्रैफ़िक को अपने चुने हुए न्यायक्षेत्र में रखने के लिए क्षेत्रीय वैरिएंट चुनें। केवल स्थानीय सेटअप अब भी गोपनीयता का सबसे मजबूत रास्ता है; जब आपको प्रोवाइडर सुविधाओं की आवश्यकता हो, लेकिन डेटा प्रवाह पर नियंत्रण भी चाहिए, तब होस्टेड क्षेत्रीय रूटिंग मध्य मार्ग है।
 
-- Hosted MiniMax/Kimi/GLM variants OpenRouter पर region-pinned endpoints (जैसे, US-hosted) के साथ भी मौजूद हैं। Anthropic/OpenAI fallbacks के लिए `models.mode: "merge"` का उपयोग करते हुए traffic को अपने चुने हुए jurisdiction में रखने के लिए वहां regional variant चुनें।
-- Local-only सबसे मजबूत privacy path रहता है; hosted regional routing वह middle ground है जब आपको provider features चाहिए लेकिन data flow पर control भी चाहिए।
+## अन्य OpenAI-संगत स्थानीय प्रॉक्सी
 
-## अन्य OpenAI-compatible स्थानीय proxies
-
-MLX (`mlx_lm.server`), vLLM, SGLang, LiteLLM, OAI-proxy, या custom
-gateways काम करते हैं यदि वे OpenAI-style `/v1/chat/completions`
-endpoint expose करते हैं। जब तक backend स्पष्ट रूप से
-`/v1/responses` support document न करे, Chat Completions adapter का उपयोग करें। ऊपर दिए provider block को अपने
-endpoint और model ID से बदलें:
+MLX (`mlx_lm.server`), vLLM, SGLang, LiteLLM, OAI-proxy या कोई भी कस्टम Gateway तब काम करता है, जब वह OpenAI-शैली का `/v1/chat/completions` एंडपॉइंट उपलब्ध कराता हो। जब तक बैकएंड स्पष्ट रूप से `/v1/responses` समर्थन का दस्तावेज़ न दे, `openai-completions` का उपयोग करें।
 
 ```json5
 {
@@ -180,67 +172,34 @@ endpoint और model ID से बदलें:
 }
 ```
 
-यदि `baseUrl` वाले custom provider पर `api` omitted है, तो OpenClaw default रूप से
-`openai-completions` पर जाता है। Custom/local provider entries guarded model requests के लिए अपने exact configured
-`baseUrl` origin पर trust करती हैं, जिसमें loopback, LAN, tailnet,
-और private DNS hosts शामिल हैं। अन्य private origins के requests को अभी भी
-`request.allowPrivateNetwork: true` चाहिए; metadata/link-local origins explicit opt-in के बिना blocked रहते हैं। exact-origin trust से opt out करने के लिए इसे `false` set करें।
+कस्टम/स्थानीय प्रोवाइडर प्रविष्टियाँ सुरक्षित मॉडल अनुरोधों के लिए अपने सटीक कॉन्फ़िगर किए गए `baseUrl` ओरिजिन पर भरोसा करती हैं, जिसमें लूपबैक, LAN, टेलनेट और निजी DNS होस्ट शामिल हैं। मेटाडेटा/लिंक-लोकल ओरिजिन हमेशा अवरुद्ध रहते हैं। अन्य निजी ओरिजिन के अनुरोधों को अब भी `models.providers.<id>.request.allowPrivateNetwork: true` की आवश्यकता होती है; सटीक-ओरिजिन भरोसे से बाहर निकलने के लिए ट्रस्ट फ़्लैग को `false` पर सेट करें।
 
-`models.providers.<id>.models[].id` value provider-local है। वहां
-provider prefix include न करें। उदाहरण के लिए, `mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` के साथ शुरू किए गए MLX server को यह
-catalog id और model ref उपयोग करना चाहिए:
+`models.providers.<id>.models[].id` प्रोवाइडर-स्थानीय है - प्रोवाइडर प्रीफ़िक्स शामिल न करें। `mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` के साथ शुरू किए गए MLX सर्वर के लिए:
 
 - `models.providers.mlx.models[].id: "mlx-community/Qwen3-30B-A3B-6bit"`
 - `agents.defaults.model.primary: "mlx/mlx-community/Qwen3-30B-A3B-6bit"`
 
-स्थानीय या proxied vision models पर `input: ["text", "image"]` set करें ताकि image
-attachments agent turns में inject हों। Interactive custom-provider
-onboarding common vision model IDs infer करता है और केवल unknown names के लिए पूछता है।
-Non-interactive onboarding वही inference उपयोग करता है; unknown vision IDs के लिए `--custom-image-input`
-या जब known-looking model आपके endpoint के पीछे text-only हो तो `--custom-text-input` उपयोग करें।
+स्थानीय या प्रॉक्सी किए गए विज़न मॉडल पर `input: ["text", "image"]` सेट करें, ताकि इमेज अटैचमेंट एजेंट टर्न में डाले जाएँ। इंटरैक्टिव कस्टम-प्रोवाइडर ऑनबोर्डिंग सामान्य विज़न मॉडल ID का अनुमान लगाती है और केवल अज्ञात नामों के बारे में पूछती है; नॉन-इंटरैक्टिव ऑनबोर्डिंग वही अनुमान इस्तेमाल करती है, जिसे ओवरराइड करने के लिए `--custom-image-input` / `--custom-text-input` उपलब्ध हैं।
 
-`models.mode: "merge"` रखें ताकि hosted models fallbacks के रूप में उपलब्ध रहें।
-slow local या remote model servers के लिए `agents.defaults.timeoutSeconds` बढ़ाने से पहले
-`models.providers.<id>.timeoutSeconds` उपयोग करें। provider timeout
-केवल model HTTP requests पर apply होता है, जिसमें connect, headers, body streaming,
-और total guarded-fetch abort शामिल हैं। यदि agent या run timeout कम है, तो
-वह ceiling भी बढ़ाएं क्योंकि provider timeouts पूरे agent run को extend नहीं कर सकते।
+`agents.defaults.timeoutSeconds` बढ़ाने से पहले धीमे स्थानीय/रिमोट मॉडल सर्वर के लिए `models.providers.<id>.timeoutSeconds` का उपयोग करें। प्रोवाइडर टाइमआउट केवल मॉडल HTTP अनुरोधों के लिए कनेक्शन, हेडर, बॉडी स्ट्रीमिंग और सुरक्षित फ़ेच के कुल अबॉर्ट को कवर करता है - यदि एजेंट/रन टाइमआउट कम है, तो उसे भी बढ़ाएँ, क्योंकि प्रोवाइडर टाइमआउट पूरे रन को लंबा नहीं कर सकता।
 
 <Note>
-custom OpenAI-compatible providers के लिए, `apiKey: "ollama-local"` जैसे non-secret local marker को persist करना स्वीकार्य है जब `baseUrl` loopback, private LAN, `.local`, या bare hostname पर resolve होता है। OpenClaw इसे missing key report करने के बजाय valid local credential मानता है। public hostname accept करने वाले किसी भी provider के लिए real value उपयोग करें।
+कस्टम OpenAI-संगत प्रोवाइडर के लिए, `apiKey: "ollama-local"` जैसा गैर-गोपनीय स्थानीय मार्कर तब स्वीकार किया जाता है, जब `baseUrl` लूपबैक, निजी LAN, `.local` या किसी साधारण होस्टनाम पर रिज़ॉल्व होता है - OpenClaw इसे अनुपस्थित कुंजी की रिपोर्ट करने के बजाय एक मान्य स्थानीय क्रेडेंशियल मानता है। सार्वजनिक होस्टनाम स्वीकार करने वाले किसी भी प्रोवाइडर के लिए वास्तविक मान का उपयोग करें।
 </Note>
 
-local/proxied `/v1` backends के लिए behavior note:
+स्थानीय/प्रॉक्सी किए गए `/v1` बैकएंड के व्यवहार संबंधी नोट:
 
-- OpenClaw इन्हें proxy-style OpenAI-compatible routes मानता है, native
-  OpenAI endpoints नहीं
-- native OpenAI-only request shaping यहां apply नहीं होती: कोई
-  `service_tier` नहीं, कोई Responses `store` नहीं, कोई OpenAI reasoning-compat payload
-  shaping नहीं, और कोई prompt-cache hints नहीं
-- hidden OpenClaw attribution headers (`originator`, `version`, `User-Agent`)
-  इन custom proxy URLs पर inject नहीं किए जाते
+- OpenClaw इन्हें नेटिव OpenAI एंडपॉइंट नहीं, बल्कि प्रॉक्सी-शैली के OpenAI-संगत रूट मानता है।
+- केवल नेटिव OpenAI वाला अनुरोध स्वरूपण लागू नहीं होता: कोई `service_tier` नहीं, कोई Responses `store` नहीं, कोई OpenAI रीजनिंग-संगत पेलोड स्वरूपण नहीं, कोई प्रॉम्प्ट-कैश संकेत नहीं।
+- छिपे हुए OpenClaw एट्रिब्यूशन हेडर (`originator`, `version`, `User-Agent`) कस्टम प्रॉक्सी URL पर इंजेक्ट नहीं किए जाते।
 
-stricter OpenAI-compatible backends के लिए compatibility notes:
+अधिक सख्त OpenAI-संगत बैकएंड के लिए संगतता ओवरराइड:
 
-- कुछ servers Chat Completions पर केवल string `messages[].content` accept करते हैं,
-  structured content-part arrays नहीं। उन endpoints के लिए
-  `models.providers.<provider>.models[].compat.requiresStringContent: true` set करें।
-- कुछ local models standalone bracketed tool requests text के रूप में emit करते हैं, जैसे
-  `[tool_name]` के बाद JSON और `[END_TOOL_REQUEST]`। OpenClaw
-  उन्हें real tool calls में केवल तब promote करता है जब name turn के लिए registered
-  tool से exactly match करता है; otherwise block को unsupported text माना जाता है और
-  user-visible replies से hidden रखा जाता है।
-- यदि कोई model JSON, XML, या ReAct-style text emit करता है जो tool call जैसा दिखता है
-  लेकिन provider ने structured invocation emit नहीं किया, तो OpenClaw उसे
-  text के रूप में छोड़ता है और run id, provider/model, detected pattern, और
-  उपलब्ध होने पर tool name के साथ warning log करता है। इसे provider/model tool-call
-  incompatibility मानें, completed tool run नहीं।
-- यदि tools run होने के बजाय assistant text के रूप में दिखाई देते हैं, उदाहरण के लिए raw JSON,
-  XML, ReAct syntax, या provider response में empty `tool_calls` array,
-  तो पहले verify करें कि server tool-call-capable chat template/parser उपयोग कर रहा है। उन
-  OpenAI-compatible Chat Completions backends के लिए जिनका parser केवल tool
-  use forced होने पर काम करता है, text
-  parsing पर rely करने के बजाय per-model request override set करें:
+- **केवल-स्ट्रिंग कॉन्टेंट**: कुछ सर्वर संरचित कॉन्टेंट-पार्ट ऐरे के बजाय केवल स्ट्रिंग `messages[].content` स्वीकार करते हैं। `models.providers.<provider>.models[].compat.requiresStringContent: true` सेट करें।
+- **सख्त मैसेज कुंजियाँ**: यदि सर्वर `role`/`content` से अधिक वाली मैसेज प्रविष्टियाँ अस्वीकार करता है, तो `compat.strictMessageKeys: true` सेट करें।
+- **ब्रैकेट वाला टूल टेक्स्ट**: कुछ स्थानीय मॉडल स्वतंत्र ब्रैकेट वाले टूल अनुरोध टेक्स्ट के रूप में निकालते हैं, जैसे `[tool_name]`, उसके बाद JSON और `[END_TOOL_REQUEST]`। OpenClaw इन्हें वास्तविक टूल कॉल में केवल तभी बदलता है, जब नाम टर्न के लिए पंजीकृत टूल से सटीक मेल खाता हो; अन्यथा यह छिपा हुआ, असमर्थित टेक्स्ट बना रहता है।
+- **असंरचित टूल-कॉल जैसा दिखने वाला टेक्स्ट**: यदि कोई मॉडल JSON/XML/ReAct-शैली का ऐसा टेक्स्ट निकालता है जो टूल कॉल जैसा दिखता है, लेकिन संरचित इनवोकेशन नहीं था, तो OpenClaw उसे टेक्स्ट ही रहने देता है और रन ID, प्रोवाइडर/मॉडल, पहचाने गए पैटर्न तथा उपलब्ध होने पर टूल नाम के साथ चेतावनी लॉग करता है। यह प्रोवाइडर/मॉडल असंगतता है, पूर्ण हुआ टूल रन नहीं।
+- **टूल उपयोग को अनिवार्य करना**: यदि टूल असिस्टेंट टेक्स्ट के रूप में दिखाई देते हैं (कच्चा JSON/XML/ReAct या खाली `tool_calls` ऐरे), तो पहले पुष्टि करें कि सर्वर का चैट टेम्पलेट/पार्सर टूल कॉल का समर्थन करता है। यदि पार्सर केवल टूल उपयोग अनिवार्य होने पर काम करता है, तो प्रति मॉडल `tool_choice: "auto"` के डिफ़ॉल्ट प्रॉक्सी मान को ओवरराइड करें:
 
   ```json5
   {
@@ -260,17 +219,13 @@ stricter OpenAI-compatible backends के लिए compatibility notes:
   }
   ```
 
-  इसका उपयोग केवल उन models/sessions के लिए करें जहां हर normal turn को tool call करना चाहिए।
-  यह OpenClaw के default proxy value `tool_choice: "auto"` को override करता है।
-  `local/my-local-model` को `openclaw models list` द्वारा दिखाए गए exact provider/model ref से बदलें।
+  इसका उपयोग केवल वहाँ करें जहाँ हर सामान्य टर्न को टूल कॉल करना चाहिए। `local/my-local-model` को `openclaw models list` के सटीक रेफ़रेंस से बदलें या इसे CLI से सेट करें:
 
   ```bash
   openclaw config set agents.defaults.models '{"local/my-local-model":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
   ```
 
-- यदि custom OpenAI-compatible model built-in profile से आगे OpenAI reasoning efforts accept करता है,
-  तो उन्हें model compat block पर declare करें। यहां `"xhigh"` जोड़ने से `/think xhigh`, session pickers, Gateway validation, और `llm-task`
-  validation उस configured provider/model ref के लिए level expose करते हैं:
+- **अतिरिक्त रीजनिंग प्रयास**: यदि कोई कस्टम OpenAI-संगत मॉडल अंतर्निर्मित प्रोफ़ाइल से आगे के OpenAI रीजनिंग प्रयास स्वीकार करता है, तो उन्हें मॉडल के संगतता ब्लॉक में घोषित करें। `"xhigh"` जोड़ने पर यह उस मॉडल रेफ़रेंस के लिए `/think xhigh`, सेशन चयनकर्ताओं, Gateway सत्यापन और `llm-task` सत्यापन में उपलब्ध हो जाता है:
 
   ```json5
   {
@@ -303,55 +258,39 @@ stricter OpenAI-compatible backends के लिए compatibility notes:
 
 ## छोटे या अधिक सख्त बैकएंड
 
-यदि मॉडल ठीक से लोड होता है लेकिन पूरे एजेंट टर्न ठीक से व्यवहार नहीं करते, तो ऊपर से नीचे तक काम करें — पहले ट्रांसपोर्ट की पुष्टि करें, फिर सतह को सीमित करें।
+यदि मॉडल ठीक से लोड हो जाता है, लेकिन पूर्ण एजेंट टर्न गलत व्यवहार करते हैं, तो ऊपर से नीचे की ओर काम करें: पहले ट्रांसपोर्ट की पुष्टि करें, फिर दायरा सीमित करें।
 
-1. **पुष्टि करें कि स्थानीय मॉडल स्वयं जवाब देता है।** कोई टूल नहीं, कोई एजेंट संदर्भ नहीं:
+1. **पुष्टि करें कि स्थानीय मॉडल प्रतिक्रिया देता है** - कोई टूल नहीं, कोई एजेंट संदर्भ नहीं:
 
    ```bash
    openclaw infer model run --local --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-2. **Gateway रूटिंग की पुष्टि करें।** केवल दिया गया प्रॉम्प्ट भेजता है — ट्रांसक्रिप्ट, AGENTS बूटस्ट्रैप, कॉन्टेक्स्ट-इंजन असेंबली, टूल, और बंडल किए गए MCP सर्वर छोड़ देता है, लेकिन फिर भी Gateway रूटिंग, प्रमाणीकरण, और प्रदाता चयन का अभ्यास करता है:
+2. **Gateway रूटिंग की पुष्टि करें** - यह केवल प्रॉम्प्ट भेजता है और ट्रांसक्रिप्ट, AGENTS बूटस्ट्रैप, कॉन्टेक्स्ट-इंजन असेंबली, टूल और बंडल किए गए MCP सर्वर छोड़ देता है, लेकिन फिर भी Gateway रूटिंग, प्रमाणीकरण और प्रोवाइडर चयन का परीक्षण करता है:
 
    ```bash
    openclaw infer model run --gateway --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-3. **लीन मोड आज़माएँ।** यदि दोनों जाँचें पास होती हैं लेकिन वास्तविक एजेंट टर्न विकृत टूल कॉल या बहुत बड़े प्रॉम्प्ट के साथ विफल होते हैं, तो `agents.defaults.experimental.localModelLean: true` सक्षम करें। यह तीन सबसे भारी डिफ़ॉल्ट टूल (`browser`, `cron`, `message`) हटा देता है और बड़े टूल कैटलॉग को संरचित टूल खोज नियंत्रणों के पीछे डिफ़ॉल्ट कर देता है, उन रन को छोड़कर जिनमें सीधे `message` डिलीवरी सिमैंटिक्स रखना आवश्यक है। पूरी व्याख्या, इसे कब उपयोग करना है, और यह चालू है इसकी पुष्टि कैसे करें, इसके लिए [प्रायोगिक सुविधाएँ → स्थानीय मॉडल लीन मोड](/hi/concepts/experimental-features#local-model-lean-mode) देखें।
+3. यदि दोनों जाँच सफल हों, लेकिन वास्तविक एजेंट टर्न विकृत टूल कॉल या बहुत बड़े प्रॉम्प्ट के कारण विफल हों, तो **लीन मोड आज़माएँ**: `agents.defaults.experimental.localModelLean: true` सेट करें। जब तक स्पष्ट रूप से आवश्यक न हों, यह भारी ब्राउज़र, cron, संदेश, मीडिया-जनरेशन, वॉइस और PDF टूल हटा देता है तथा `exec` को सीधे दृश्यमान रखते हुए बड़े टूल कैटलॉग को डिफ़ॉल्ट रूप से संरचित टूल खोज नियंत्रणों के पीछे रखता है। विवरण और यह पुष्टि करने की विधि कि यह चालू है, जानने के लिए [प्रायोगिक सुविधाएँ -> स्थानीय मॉडल लीन मोड](/hi/concepts/experimental-features#local-model-lean-mode) देखें।
 
-4. **अंतिम उपाय के रूप में टूल पूरी तरह अक्षम करें।** यदि लीन मोड पर्याप्त नहीं है, तो उस मॉडल प्रविष्टि के लिए `models.providers.<provider>.models[].compat.supportsTools: false` सेट करें। एजेंट तब उस मॉडल पर टूल कॉल के बिना काम करेगा।
+4. अंतिम उपाय के रूप में उस मॉडल के लिए `models.providers.<provider>.models[].compat.supportsTools: false` सेट करके **टूल पूरी तरह अक्षम करें** - इसके बाद एजेंट टूल कॉल के बिना चलता है।
 
-5. **इसके आगे, बाधा अपस्ट्रीम है।** यदि लीन मोड और `supportsTools: false` के बाद भी बैकएंड केवल बड़े OpenClaw रन पर विफल होता है, तो शेष समस्या आमतौर पर अपस्ट्रीम मॉडल या सर्वर क्षमता होती है — कॉन्टेक्स्ट विंडो, GPU मेमोरी, kv-cache एविक्शन, या बैकएंड बग। उस बिंदु पर यह OpenClaw की ट्रांसपोर्ट परत नहीं है।
+5. **इसके बाद बाधा अपस्ट्रीम में है।** यदि लीन मोड और `supportsTools: false` के बाद भी बैकएंड केवल बड़े OpenClaw रन पर विफल होता है, तो शेष समस्या आम तौर पर मॉडल या सर्वर में ही होती है - कॉन्टेक्स्ट विंडो, GPU मेमोरी, kv-cache निष्कासन या बैकएंड बग - न कि OpenClaw की ट्रांसपोर्ट परत में।
 
 ## समस्या निवारण
 
-- Gateway प्रॉक्सी तक पहुँच सकता है? `curl http://127.0.0.1:1234/v1/models`।
-- LM Studio मॉडल अनलोड हो गया है? फिर से लोड करें; कोल्ड स्टार्ट "हैंग" होने का आम कारण है।
-- स्थानीय सर्वर `terminated`, `ECONNRESET` कहता है, या टर्न के बीच में स्ट्रीम बंद कर देता है?
-  OpenClaw डायग्नोस्टिक्स में कम-कार्डिनैलिटी `model.call.error.failureKind` के साथ
-  OpenClaw प्रक्रिया RSS/हीप स्नैपशॉट रिकॉर्ड करता है। LM Studio/Ollama
-  मेमोरी दबाव के लिए, उस टाइमस्टैम्प को सर्वर लॉग या macOS क्रैश /
-  jetsam लॉग से मिलाएँ ताकि पुष्टि हो सके कि मॉडल सर्वर मारा गया था या नहीं।
-- OpenClaw कॉन्टेक्स्ट-विंडो प्रीफ्लाइट थ्रेशहोल्ड पहचानी गई मॉडल विंडो से निकालता है, या जब `agents.defaults.contextTokens` प्रभावी विंडो को कम करता है, तब अनकैप्ड मॉडल विंडो से। यह 20% से नीचे **8k** फ़्लोर के साथ चेतावनी देता है। हार्ड ब्लॉक **4k** फ़्लोर के साथ 10% थ्रेशहोल्ड का उपयोग करते हैं, और उन्हें प्रभावी कॉन्टेक्स्ट विंडो तक कैप किया जाता है ताकि बहुत बड़ा मॉडल मेटाडेटा अन्यथा मान्य उपयोगकर्ता कैप को अस्वीकार न कर सके। यदि आप उस प्रीफ्लाइट से टकराते हैं, तो सर्वर/मॉडल कॉन्टेक्स्ट सीमा बढ़ाएँ या बड़ा मॉडल चुनें।
-- कॉन्टेक्स्ट त्रुटियाँ? `contextWindow` कम करें या अपनी सर्वर सीमा बढ़ाएँ।
-- OpenAI-संगत सर्वर `messages[].content ... expected a string` लौटाता है?
-  उस मॉडल प्रविष्टि पर `compat.requiresStringContent: true` जोड़ें।
-- OpenAI-संगत सर्वर `validation.keys` लौटाता है या कहता है कि संदेश प्रविष्टियाँ केवल `role` और `content` की अनुमति देती हैं?
-  उस मॉडल प्रविष्टि पर `compat.strictMessageKeys: true` जोड़ें।
-- सीधे छोटे `/v1/chat/completions` कॉल काम करते हैं, लेकिन `openclaw infer model run --local`
-  Gemma या किसी अन्य स्थानीय मॉडल पर विफल होता है? पहले प्रदाता URL, मॉडल रेफ, प्रमाणीकरण
-  मार्कर, और सर्वर लॉग जाँचें; स्थानीय `model run` में एजेंट टूल शामिल नहीं होते।
-  यदि स्थानीय `model run` सफल होता है लेकिन बड़े एजेंट टर्न विफल होते हैं, तो एजेंट
-  टूल सतह को `localModelLean` या `compat.supportsTools: false` से घटाएँ।
-- टूल कॉल कच्चे JSON/XML/ReAct टेक्स्ट के रूप में दिखाई देते हैं, या प्रदाता
-  खाली `tool_calls` ऐरे लौटाता है? ऐसा प्रॉक्सी न जोड़ें जो सहायक
-  टेक्स्ट को अंधाधुंध टूल निष्पादन में बदल दे। पहले सर्वर चैट टेम्पलेट/पार्सर ठीक करें। यदि
-  मॉडल केवल तब काम करता है जब टूल उपयोग मजबूर किया जाता है, तो ऊपर प्रति-मॉडल
-  `params.extra_body.tool_choice: "required"` ओवरराइड जोड़ें और उस मॉडल
-  प्रविष्टि का उपयोग केवल उन सत्रों के लिए करें जहाँ हर टर्न पर टूल कॉल अपेक्षित है।
-- सुरक्षा: स्थानीय मॉडल प्रदाता-पक्ष फ़िल्टर छोड़ते हैं; प्रॉम्प्ट इंजेक्शन के प्रभाव क्षेत्र को सीमित करने के लिए एजेंट को सीमित रखें और Compaction चालू रखें।
+- **Gateway प्रॉक्सी तक नहीं पहुँच पा रहा है?** `curl http://127.0.0.1:1234/v1/models`।
+- **LM Studio मॉडल अनलोड हो गया है?** उसे फिर से लोड करें; कोल्ड स्टार्ट "अटकने" का एक सामान्य कारण है।
+- **स्थानीय सर्वर `terminated`, `ECONNRESET` बताता है या टर्न के बीच में स्ट्रीम बंद कर देता है?** OpenClaw निदान में निम्न-कार्डिनैलिटी `model.call.error.failureKind` के साथ OpenClaw प्रक्रिया का RSS/हीप स्नैपशॉट दर्ज करता है। LM Studio/Ollama के मेमोरी दबाव के मामले में, यह पुष्टि करने के लिए कि मॉडल सर्वर समाप्त कर दिया गया था या नहीं, उस टाइमस्टैम्प का सर्वर लॉग या macOS क्रैश/jetsam लॉग से मिलान करें।
+- **कॉन्टेक्स्ट त्रुटियाँ?** OpenClaw पहचानी गई मॉडल विंडो (या `agents.defaults.contextTokens` द्वारा घटाई गई कैप्ड विंडो) से कॉन्टेक्स्ट-विंडो प्रीफ्लाइट थ्रेशोल्ड प्राप्त करता है; यह 20% से कम पर **8k** न्यूनतम सीमा के साथ चेतावनी देता है और 10% से कम पर **4k** न्यूनतम सीमा के साथ पूर्णतः अवरुद्ध करता है (इसे प्रभावी कॉन्टेक्स्ट विंडो तक सीमित किया जाता है, ताकि बहुत बड़ा मॉडल मेटाडेटा किसी मान्य उपयोगकर्ता सीमा को अस्वीकार न कर सके)। `contextWindow` घटाएँ या सर्वर/मॉडल की कॉन्टेक्स्ट सीमा बढ़ाएँ।
+- **`messages[].content ... expected a string`?** उस मॉडल प्रविष्टि में `compat.requiresStringContent: true` जोड़ें।
+- **`validation.keys`, या "संदेश प्रविष्टियाँ केवल `role` और `content` की अनुमति देती हैं"?** उस मॉडल प्रविष्टि में `compat.strictMessageKeys: true` जोड़ें।
+- **प्रत्यक्ष `/v1/chat/completions` कॉल काम करती हैं, लेकिन Gemma या किसी अन्य स्थानीय मॉडल पर `openclaw infer model run --local` विफल होता है?** पहले प्रोवाइडर URL, मॉडल रेफ़रेंस, प्रमाणीकरण मार्कर और सर्वर लॉग जाँचें - `model run` एजेंट टूल को पूरी तरह छोड़ देता है। यदि `model run` सफल होता है, लेकिन बड़े एजेंट टर्न विफल होते हैं, तो `localModelLean` या `compat.supportsTools: false` से टूल की उपलब्धता घटाएँ।
+- **टूल कॉल अपरिष्कृत JSON/XML/ReAct टेक्स्ट के रूप में दिखाई देती हैं या प्रोवाइडर एक खाली `tool_calls` ऐरे लौटाता है?** ऐसा प्रॉक्सी न जोड़ें जो बिना विवेक के असिस्टेंट टेक्स्ट को टूल निष्पादन में बदल दे - पहले सर्वर का चैट टेम्पलेट/पार्सर ठीक करें। यदि मॉडल केवल तब काम करता है जब टूल का उपयोग अनिवार्य किया जाता है, तो ऊपर दिया गया `params.extra_body.tool_choice: "required"` ओवरराइड जोड़ें और उस मॉडल प्रविष्टि का उपयोग केवल उन सत्रों के लिए करें जहाँ प्रत्येक टर्न में टूल कॉल अपेक्षित हो।
+- **सुरक्षा**: स्थानीय मॉडल प्रोवाइडर-पक्ष के फ़िल्टर छोड़ देते हैं। प्रॉम्प्ट-इंजेक्शन के प्रभाव-क्षेत्र को सीमित करने के लिए एजेंटों का दायरा संकीर्ण रखें और Compaction चालू रखें।
 
 ## संबंधित
 
 - [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/configuration-reference)
-- [मॉडल फेलओवर](/hi/concepts/model-failover)
+- [मॉडल फ़ेलओवर](/hi/concepts/model-failover)

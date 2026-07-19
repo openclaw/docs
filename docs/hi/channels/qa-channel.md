@@ -1,34 +1,35 @@
 ---
 read_when:
-    - आप सिंथेटिक QA ट्रांसपोर्ट को स्थानीय या CI परीक्षण रन में जोड़ रहे हैं
-    - आपको बंडल किए गए qa-channel कॉन्फ़िगरेशन सतह की आवश्यकता है
-    - आप एंड-टू-एंड QA ऑटोमेशन को क्रमिक रूप से सुधार रहे हैं
+    - आप सिंथेटिक QA ट्रांसपोर्ट को स्थानीय या CI परीक्षण रन से जोड़ रहे हैं
+    - आपको बंडल किए गए qa-channel की कॉन्फ़िगरेशन सतह चाहिए
+    - आप एंड-टू-एंड QA ऑटोमेशन को लगातार बेहतर बना रहे हैं
 summary: नियतात्मक OpenClaw QA परिदृश्यों के लिए कृत्रिम Slack-श्रेणी चैनल Plugin
 title: QA चैनल
 x-i18n:
-    generated_at: "2026-06-28T22:39:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:04:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
+    source_hash: a43c35e197116a6bd44b238010eb508aed23dea99ab872d10e6fc853b5f4d4a7
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` स्वचालित OpenClaw QA के लिए bundled synthetic message transport है। यह production channel नहीं है - यह वास्तविक transports द्वारा उपयोग की जाने वाली उसी channel Plugin सीमा का अभ्यास कराने के लिए मौजूद है, जबकि state को deterministic और पूरी तरह inspectable रखता है।
+`qa-channel` स्वचालित OpenClaw QA के लिए एक रेपो-स्थानीय सिंथेटिक संदेश ट्रांसपोर्ट है (`extensions/qa-channel`, निजी पैकेज, पैकेज किए गए इंस्टॉल से बाहर रखा गया)। यह कोई प्रोडक्शन चैनल नहीं है - इसका उद्देश्य वास्तविक ट्रांसपोर्ट द्वारा उपयोग की जाने वाली उसी चैनल Plugin सीमा का अभ्यास करना है, जबकि स्थिति को निर्धारक और पूरी तरह निरीक्षण-योग्य रखा जाता है।
 
 ## यह क्या करता है
 
-- Slack-वर्ग target grammar:
+- Slack-श्रेणी का लक्ष्य व्याकरण:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- साझा `channel:` और `group:` conversations agents को group/channel room turns के रूप में दिखाई जाती हैं, इसलिए वे Discord, Slack, Telegram और समान transports द्वारा उपयोग की जाने वाली उसी visible-reply और message-tool routing policy का अभ्यास कराती हैं।
-- inbound message injection, outbound transcript capture, thread creation, reactions, edits, deletes, और search/read actions के लिए HTTP-backed synthetic bus।
-- Host-side self-check runner जो `.artifacts/qa-e2e/` में Markdown report लिखता है।
+- साझा `channel:` और `group:` वार्तालाप एजेंटों को समूह/चैनल रूम टर्न के रूप में दिखाए जाते हैं, ताकि वे Discord, Slack, Telegram और समान ट्रांसपोर्ट द्वारा उपयोग की जाने वाली उसी दृश्यमान-उत्तर और संदेश-टूल रूटिंग नीति का अभ्यास करें।
+- इनबाउंड संदेश इंजेक्शन, आउटबाउंड ट्रांसक्रिप्ट कैप्चर, थ्रेड निर्माण, प्रतिक्रियाओं, संपादनों, हटाने और खोजने/पढ़ने की कार्रवाइयों के लिए HTTP-समर्थित सिंथेटिक बस।
+- होस्ट-साइड स्व-जाँच रनर, जो `.artifacts/qa-e2e/` में Markdown रिपोर्ट लिखता है।
 
-## Config
+## कॉन्फ़िगरेशन
 
 ```json
 {
@@ -44,59 +45,61 @@ x-i18n:
 }
 ```
 
-Account keys:
+खाता कुंजियाँ:
 
-- `enabled` - इस account के लिए master toggle।
-- `name` - वैकल्पिक display label।
-- `baseUrl` - synthetic bus URL।
-- `botUserId` - target grammar में उपयोग की जाने वाली Matrix-style bot user id।
-- `botDisplayName` - outbound messages के लिए display name।
-- `pollTimeoutMs` - long-poll wait window। 100 और 30000 के बीच integer।
-- `allowFrom` - sender allowlist (user ids या `"*"`). Direct messages और
-  allowlisted group policy दोनों इन synthetic sender ids का उपयोग करते हैं।
-- `groupPolicy` - shared-room policy: `"open"` (default), `"allowlist"`, या
+- `enabled` - इस खाते के लिए मुख्य टॉगल।
+- `name` - वैकल्पिक प्रदर्शन लेबल।
+- `baseUrl` - सिंथेटिक बस URL। इसे सेट करते ही खाते को कॉन्फ़िगर किया हुआ माना जाता है।
+- `botUserId` - लक्ष्य व्याकरण में उपयोग की जाने वाली सिंथेटिक बॉट उपयोगकर्ता आईडी (डिफ़ॉल्ट: `openclaw`)।
+- `botDisplayName` - आउटबाउंड संदेशों का प्रदर्शन नाम (डिफ़ॉल्ट: `OpenClaw QA`)।
+- `pollTimeoutMs` - लॉन्ग-पोल प्रतीक्षा विंडो। 100 और 30000 के बीच पूर्णांक (डिफ़ॉल्ट: 1000)।
+- `allowFrom` - प्रेषक अनुमति-सूची (उपयोगकर्ता आईडी या `"*"`; डिफ़ॉल्ट: `["*"]`)। DMs में
+  नीति हमेशा `open` होती है; अनुमति-सूची वाली समूह नीति भी इन्हीं सिंथेटिक
+  प्रेषक आईडी का उपयोग करती है।
+- `groupPolicy` - साझा-रूम नीति: `"open"` (डिफ़ॉल्ट), `"allowlist"`, या
   `"disabled"`।
-- `groupAllowFrom` - वैकल्पिक shared-room sender allowlist। `"allowlist"` के अंतर्गत
-  omit होने पर, QA Channel `allowFrom` पर fallback करता है।
-- `groups.<room>.requireMention` - किसी specific group/channel room में reply करने से पहले bot mention आवश्यक करें। `groups."*"` default set करता है।
-- `defaultTo` - जब कोई target supplied न हो तो fallback target।
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - per-action tool gating।
+- `groupAllowFrom` - वैकल्पिक साझा-रूम प्रेषक अनुमति-सूची। `"allowlist"` के अंतर्गत इसे
+  छोड़ने पर, QA Channel वापस `allowFrom` का उपयोग करता है।
+- `groups.<room>.requireMention` - किसी विशिष्ट समूह/चैनल रूम में उत्तर देने से पहले बॉट उल्लेख
+  आवश्यक बनाता है (डिफ़ॉल्ट: false)। `groups."*"` डिफ़ॉल्ट सेट करता है;
+  प्रति-रूम `tools` / `toolsBySender` टूल नीति ओवरराइड सेट करते हैं।
+- `defaultTo` - कोई लक्ष्य न दिए जाने पर फ़ॉलबैक लक्ष्य।
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - प्रति-कार्रवाई टूल गेटिंग।
 
-Top level पर multi-account keys:
+शीर्ष स्तर पर बहु-खाता कुंजियाँ:
 
-- `accounts` - account id द्वारा keyed named per-account overrides का record।
-- `defaultAccount` - multiple accounts configured होने पर preferred account id।
+- `accounts` - खाता आईडी द्वारा कुंजीबद्ध नामित प्रति-खाता ओवरराइड का रिकॉर्ड।
+- `defaultAccount` - एक से अधिक खाते कॉन्फ़िगर होने पर पसंदीदा खाता आईडी।
 
-## Runners
+## रनर
 
-Host-side self-check (`.artifacts/qa-e2e/` के अंतर्गत Markdown report लिखता है):
+होस्ट-साइड स्व-जाँच (`.artifacts/qa-e2e/` के अंतर्गत Markdown रिपोर्ट लिखती है):
 
 ```bash
 pnpm qa:e2e
 ```
 
-यह `qa-lab` के माध्यम से route करता है, in-repo QA bus शुरू करता है, bundled `qa-channel` runtime slice boot करता है, और deterministic self-check चलाता है।
+यह `qa-lab` के माध्यम से रूट करता है, इन-रेपो QA बस शुरू करता है, `qa-channel` रनटाइम स्लाइस को बूट करता है और एक निर्धारक स्व-जाँच चलाता है।
 
-Full repo-backed scenario suite:
+पूर्ण रेपो-समर्थित परिदृश्य सुइट:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-QA Gateway lane के विरुद्ध scenarios parallel में चलाता है। Scenarios, profiles, और provider modes के लिए [QA overview](/hi/concepts/qa-e2e-automation) देखें।
+QA Gateway लेन के विरुद्ध परिदृश्यों को समानांतर रूप से चलाता है। परिदृश्यों, प्रोफ़ाइलों और प्रदाता मोड के लिए [QA अवलोकन](/hi/concepts/qa-e2e-automation) देखें।
 
-Docker-backed QA site (एक stack में Gateway + QA Lab debugger UI):
+Docker-समर्थित QA साइट (एक ही स्टैक में Gateway + QA Lab डीबगर UI):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-QA site build करता है, Docker-backed Gateway + QA Lab stack शुरू करता है, और QA Lab URL print करता है। वहां से आप scenarios चुन सकते हैं, model lane चुन सकते हैं, individual runs launch कर सकते हैं, और results live देख सकते हैं। QA Lab debugger shipped Control UI bundle से अलग है।
+QA साइट बनाता है, Docker-समर्थित Gateway + QA Lab स्टैक शुरू करता है और QA Lab URL प्रिंट करता है। वहाँ से आप परिदृश्य चुन सकते हैं, मॉडल लेन चुन सकते हैं, अलग-अलग रन लॉन्च कर सकते हैं और परिणाम लाइव देख सकते हैं। QA Lab डीबगर, वितरित Control UI बंडल से अलग है।
 
-## Related
+## संबंधित
 
-- [QA overview](/hi/concepts/qa-e2e-automation) - overall stack, transport adapters, scenario authoring
-- [Matrix QA](/hi/concepts/qa-matrix) - example live-transport runner जो real channel drive करता है
-- [Pairing](/hi/channels/pairing)
-- [Groups](/hi/channels/groups)
-- [Channels overview](/hi/channels)
+- [QA अवलोकन](/hi/concepts/qa-e2e-automation) - समग्र स्टैक, ट्रांसपोर्ट अडैप्टर, Matrix प्रोफ़ाइल और परिदृश्य लेखन
+- [पेयरिंग](/hi/channels/pairing)
+- [समूह](/hi/channels/groups)
+- [चैनल अवलोकन](/hi/channels)

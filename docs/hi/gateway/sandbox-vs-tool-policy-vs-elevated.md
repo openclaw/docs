@@ -1,27 +1,28 @@
 ---
 read_when: You hit 'sandbox jail' or see a tool/elevated refusal and want the exact config key to change.
 status: active
-summary: 'कोई टूल क्यों अवरुद्ध है: सैंडबॉक्स रनटाइम, टूल अनुमति/अस्वीकृति नीति, और उन्नत exec गेट'
-title: Sandbox बनाम टूल नीति बनाम उच्चाधिकार प्राप्त
+summary: 'कोई टूल क्यों अवरुद्ध है: सैंडबॉक्स रनटाइम, टूल अनुमति/निषेध नीति और उन्नत निष्पादन गेट्स'
+title: सैंडबॉक्स बनाम टूल नीति बनाम उन्नत अनुमतियाँ
 x-i18n:
-    generated_at: "2026-06-28T23:12:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:53:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f4156cc494a6aff4fb9c44cbca8fdfde10a3343dde624c485833dd7508e4c4d6
+    source_hash: 572157b184c48f0ac7f97d3151726f8975b16306261c7209c39c2fdd344efef9
     source_path: gateway/sandbox-vs-tool-policy-vs-elevated.md
     workflow: 16
 ---
 
-OpenClaw में तीन संबंधित (लेकिन अलग) नियंत्रण हैं:
+OpenClaw में तीन संबंधित लेकिन अलग-अलग नियंत्रण हैं:
 
-1. **सैंडबॉक्स** (`agents.defaults.sandbox.*` / `agents.list[].sandbox.*`) तय करता है कि **टूल कहां चलते हैं** (सैंडबॉक्स बैकएंड बनाम होस्ट)।
-2. **टूल नीति** (`tools.*`, `tools.sandbox.tools.*`, `agents.list[].tools.*`) तय करती है कि **कौन से टूल उपलब्ध/अनुमत हैं**।
-3. **एलिवेटेड** (`tools.elevated.*`, `agents.list[].tools.elevated.*`) सैंडबॉक्स में होने पर सैंडबॉक्स के बाहर चलाने के लिए एक **केवल-exec निकास मार्ग** है (डिफ़ॉल्ट रूप से `gateway`, या जब exec लक्ष्य `node` पर कॉन्फ़िगर हो तो `node`)।
+1. **सैंडबॉक्स** (`agents.defaults.sandbox.*` / `agents.list[].sandbox.*`) तय करता है कि **टूल कहाँ चलते हैं** (सैंडबॉक्स बैकएंड या होस्ट)।
+2. **टूल नीति** (`tools.*`, `tools.sandbox.tools.*`, `agents.list[].tools.*`) तय करती है कि **कौन-से टूल उपलब्ध/अनुमत हैं**।
+3. **एलिवेटेड** (`tools.elevated.*`, `agents.list[].tools.elevated.*`) सैंडबॉक्स में होने पर उसके बाहर चलाने के लिए **केवल exec हेतु निकास मार्ग** है (डिफ़ॉल्ट रूप से `gateway`, या जब exec लक्ष्य को `node` के रूप में कॉन्फ़िगर किया गया हो तब `node`)।
 
 ## त्वरित डीबग
 
-यह देखने के लिए inspector का उपयोग करें कि OpenClaw _वास्तव में_ क्या कर रहा है:
+यह देखने के लिए इंस्पेक्टर का उपयोग करें कि OpenClaw _वास्तव में_ क्या कर रहा है:
 
 ```bash
 openclaw sandbox explain
@@ -30,56 +31,60 @@ openclaw sandbox explain --agent work
 openclaw sandbox explain --json
 ```
 
-यह प्रिंट करता है:
+यह निम्न जानकारी दिखाता है:
 
 - प्रभावी सैंडबॉक्स मोड/स्कोप/वर्कस्पेस एक्सेस
-- क्या सेशन वर्तमान में सैंडबॉक्स किया गया है (मुख्य बनाम गैर-मुख्य)
-- प्रभावी सैंडबॉक्स टूल allow/deny (और क्या यह एजेंट/वैश्विक/डिफ़ॉल्ट से आया)
-- एलिवेटेड गेट और fix-it key paths
+- क्या सत्र वर्तमान में सैंडबॉक्स में है (मुख्य बनाम गैर-मुख्य)
+- प्रभावी सैंडबॉक्स टूल अनुमति/अस्वीकृति (और यह एजेंट/ग्लोबल/डिफ़ॉल्ट में से कहाँ से आई)
+- एलिवेटेड गेट और सुधार हेतु कुंजी पथ
 
-## सैंडबॉक्स: टूल कहां चलते हैं
+## सैंडबॉक्स: टूल कहाँ चलते हैं
 
-सैंडबॉक्सिंग `agents.defaults.sandbox.mode` से नियंत्रित होती है:
+सैंडबॉक्सिंग को `agents.defaults.sandbox.mode` नियंत्रित करता है:
 
 - `"off"`: सब कुछ होस्ट पर चलता है।
-- `"non-main"`: केवल गैर-मुख्य सेशन सैंडबॉक्स किए जाते हैं (समूहों/चैनलों के लिए आम "आश्चर्य")।
-- `"all"`: सब कुछ सैंडबॉक्स किया जाता है।
+- `"non-main"`: केवल गैर-मुख्य सत्र सैंडबॉक्स में चलते हैं (समूहों/चैनलों के लिए सामान्य "अप्रत्याशित स्थिति")।
+- `"all"`: सब कुछ सैंडबॉक्स में चलता है।
+
+`agents.defaults.sandbox.workspaceAccess` नियंत्रित करता है कि सैंडबॉक्स क्या देख सकता है: `"none"`, `"ro"`, या `"rw"`।
 
 पूर्ण मैट्रिक्स (स्कोप, वर्कस्पेस माउंट, इमेज) के लिए [सैंडबॉक्सिंग](/hi/gateway/sandboxing) देखें।
 
-### Bind mounts (सुरक्षा त्वरित जांच)
+### बाइंड माउंट (त्वरित सुरक्षा जाँच)
 
-- `docker.binds` सैंडबॉक्स फाइलसिस्टम को _भेदता_ है: आप जो भी माउंट करते हैं, वह कंटेनर के अंदर आपके सेट किए गए मोड (`:ro` या `:rw`) के साथ दिखाई देता है।
-- यदि आप मोड छोड़ देते हैं तो डिफ़ॉल्ट read-write होता है; स्रोत/सीक्रेट के लिए `:ro` को प्राथमिकता दें।
-- `scope: "shared"` प्रति-एजेंट binds को अनदेखा करता है (केवल वैश्विक binds लागू होते हैं)।
-- OpenClaw bind स्रोतों को दो बार वैलिडेट करता है: पहले normalized स्रोत पथ पर, फिर deepest existing ancestor के माध्यम से resolve करने के बाद फिर से। Symlink-parent escapes blocked-path या allowed-root जांचों को bypass नहीं करते।
-- गैर-मौजूद leaf paths अब भी सुरक्षित रूप से जांचे जाते हैं। यदि `/workspace/alias-out/new-file` symlinked parent के माध्यम से किसी blocked path या कॉन्फ़िगर किए गए allowed roots के बाहर resolve होता है, तो bind अस्वीकार कर दिया जाता है।
-- `/var/run/docker.sock` को bind करना प्रभावी रूप से सैंडबॉक्स को होस्ट नियंत्रण दे देता है; ऐसा केवल जानबूझकर करें।
-- वर्कस्पेस एक्सेस (`workspaceAccess: "ro"`/`"rw"`) bind modes से स्वतंत्र है।
+- `docker.binds` सैंडबॉक्स फ़ाइल सिस्टम को _भेदता_ है: आप जो भी माउंट करते हैं, वह आपके निर्धारित मोड (`:ro` या `:rw`) के साथ कंटेनर के अंदर दिखाई देता है।
+- यदि आप मोड छोड़ देते हैं, तो डिफ़ॉल्ट रीड-राइट होता है; स्रोत/सीक्रेट के लिए `:ro` को प्राथमिकता दें।
+- `scope: "shared"` प्रति-एजेंट बाइंड को अनदेखा करता है (केवल ग्लोबल बाइंड लागू होते हैं)।
+- OpenClaw बाइंड स्रोतों को दो बार सत्यापित करता है: पहले सामान्यीकृत स्रोत पथ पर, फिर सबसे गहरे मौजूदा पूर्वज के माध्यम से समाधान करने के बाद। सिमलिंक-पैरेंट निकास अवरुद्ध-पथ या अनुमत-रूट जाँचों को बायपास नहीं कर सकते।
+- अस्तित्वहीन अंतिम पथों की भी सुरक्षित रूप से जाँच की जाती है। यदि `/workspace/alias-out/new-file` किसी सिमलिंक पैरेंट के माध्यम से किसी अवरुद्ध पथ या कॉन्फ़िगर किए गए अनुमत रूट से बाहर समाधान होता है, तो बाइंड अस्वीकार कर दिया जाता है।
+- `/var/run/docker.sock` को बाइंड करना प्रभावी रूप से होस्ट का नियंत्रण सैंडबॉक्स को सौंप देता है; ऐसा केवल जानबूझकर करें।
+- वर्कस्पेस एक्सेस (`workspaceAccess`) बाइंड मोड से स्वतंत्र है।
 
-## टूल नीति: कौन से टूल मौजूद/कॉल किए जा सकते हैं
+कई होस्ट फ़ोल्डर, एक्सेस मोड और बाहरी-स्रोत सुरक्षा ऑप्ट-इन वाले प्रति-एजेंट कॉन्फ़िगरेशन के लिए [एक एजेंट हेतु एकाधिक फ़ोल्डर](/hi/gateway/sandboxing#multiple-folders-for-one-agent) देखें।
 
-दो लेयर मायने रखती हैं:
+## टूल नीति: कौन-से टूल मौजूद हैं/कॉल किए जा सकते हैं
 
-- **टूल प्रोफ़ाइल**: `tools.profile` और `agents.list[].tools.profile` (बेस allowlist)
+दो परतें महत्वपूर्ण हैं:
+
+- **टूल प्रोफ़ाइल**: `tools.profile` और `agents.list[].tools.profile` (आधार अनुमति-सूची)
 - **प्रदाता टूल प्रोफ़ाइल**: `tools.byProvider[provider].profile` और `agents.list[].tools.byProvider[provider].profile`
-- **वैश्विक/प्रति-एजेंट टूल नीति**: `tools.allow`/`tools.deny` और `agents.list[].tools.allow`/`agents.list[].tools.deny`
+- **ग्लोबल/प्रति-एजेंट टूल नीति**: `tools.allow`/`tools.deny` और `agents.list[].tools.allow`/`agents.list[].tools.deny`
 - **प्रदाता टूल नीति**: `tools.byProvider[provider].allow/deny` और `agents.list[].tools.byProvider[provider].allow/deny`
-- **सैंडबॉक्स टूल नीति** (केवल सैंडबॉक्स होने पर लागू): `tools.sandbox.tools.allow`/`tools.sandbox.tools.deny` और `agents.list[].tools.sandbox.tools.*`
+- **सैंडबॉक्स टूल नीति** (केवल सैंडबॉक्स में लागू होती है): `tools.sandbox.tools.allow`/`tools.sandbox.tools.deny` और `agents.list[].tools.sandbox.tools.*`
 
 सामान्य नियम:
 
-- `deny` हमेशा जीतता है।
-- यदि `allow` खाली नहीं है, तो बाकी सब blocked माना जाता है।
-- टूल नीति hard stop है: `/exec` denied `exec` टूल को override नहीं कर सकता।
-- टूल नीति नाम के आधार पर टूल उपलब्धता फ़िल्टर करती है; यह `exec` के अंदर side effects का निरीक्षण नहीं करती। यदि `exec` allowed है, तो `write`, `edit`, या `apply_patch` को deny करने से shell commands read-only नहीं बनतीं।
-- `/exec` केवल अधिकृत senders के लिए सेशन defaults बदलता है; यह टूल एक्सेस grant नहीं करता।
-  प्रदाता टूल keys या तो `provider` (जैसे `google-antigravity`) या `provider/model` (जैसे `openai/gpt-5.4`) स्वीकार करती हैं।
-- Gateway logs में `agents/tool-policy` audit entries शामिल होती हैं जब कोई टूल नीति चरण टूल हटाता है या कोई सैंडबॉक्स टूल नीति कॉल block करती है। rule label, config key, और प्रभावित टूल नाम देखने के लिए `openclaw logs` का उपयोग करें।
+- `deny` हमेशा प्रभावी होता है।
+- यदि `allow` खाली नहीं है, तो बाकी सब कुछ अवरुद्ध माना जाता है।
+- टूल नीति अंतिम रोक है: `/exec` अस्वीकृत `exec` टूल को ओवरराइड नहीं कर सकता।
+- टूल नीति टूल की उपलब्धता को नाम के अनुसार फ़िल्टर करती है; यह `exec` के अंदर होने वाले प्रभावों की जाँच नहीं करती। यदि `exec` अनुमत है, तो `write`, `edit`, या `apply_patch` को अस्वीकार करने से शेल कमांड केवल-पढ़ने योग्य नहीं हो जाते।
+- `/exec` केवल अधिकृत प्रेषकों के लिए सत्र डिफ़ॉल्ट बदलता है; यह टूल एक्सेस प्रदान नहीं करता।
+- प्रदाता टूल कुंजियाँ `provider` (उदाहरणतः `google-antigravity`) या `provider/model` (उदाहरणतः `openai/gpt-5.4`) स्वीकार करती हैं।
+- जब कोई टूल नीति चरण टूल हटाता है या सैंडबॉक्स टूल नीति किसी कॉल को अवरुद्ध करती है, तब Gateway लॉग में `agents/tool-policy` ऑडिट प्रविष्टियाँ शामिल होती हैं। नियम लेबल, कॉन्फ़िग कुंजी और प्रभावित टूल नाम देखने के लिए `openclaw logs` का उपयोग करें।
 
-### टूल समूह (शॉर्टहैंड)
+### टूल समूह (संक्षिप्त रूप)
 
-टूल नीतियां (वैश्विक, एजेंट, सैंडबॉक्स) `group:*` entries का समर्थन करती हैं जो कई टूल में expand होती हैं:
+टूल नीतियाँ (ग्लोबल, एजेंट, सैंडबॉक्स) उन `group:*` प्रविष्टियों का समर्थन करती हैं जो कई टूल में विस्तृत होती हैं:
 
 ```json5
 {
@@ -95,61 +100,64 @@ openclaw sandbox explain --json
 
 उपलब्ध समूह:
 
-- `group:runtime`: `exec`, `process`, `code_execution` (`bash` को `exec` के alias के रूप में स्वीकार किया जाता है)
-- `group:fs`: `read`, `write`, `edit`, `apply_patch`
-  read-only एजेंटों के लिए, mutating filesystem tools के साथ-साथ `group:runtime` को भी deny करें, जब तक कि सैंडबॉक्स फाइलसिस्टम नीति या अलग होस्ट सीमा read-only constraint लागू न करे।
-- `group:sessions`: `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status`
-- `group:memory`: `memory_search`, `memory_get`
-- `group:web`: `web_search`, `x_search`, `web_fetch`
-- `group:ui`: `browser`, `canvas`
-- `group:automation`: `heartbeat_respond`, `cron`, `gateway`
-- `group:messaging`: `message`
-- `group:nodes`: `nodes`
-- `group:agents`: `agents_list`, `update_plan`
-- `group:media`: `image`, `image_generate`, `music_generate`, `video_generate`, `tts`
-- `group:openclaw`: सभी built-in OpenClaw टूल (provider plugins को छोड़कर)
-- `group:plugins`: सभी loaded plugin-owned टूल, जिनमें `bundle-mcp` के माध्यम से expose किए गए configured MCP servers शामिल हैं
+| समूह              | टूल                                                                                                                                                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` को `exec` के उपनाम के रूप में स्वीकार किया जाता है)                                                                                                                                                                        |
+| `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                                                                                                                                                 |
+| `group:sessions`   | `sessions`, `sessions_list`, `sessions_history`, `sessions_search`, `conversations_list`, `conversations_send`, `conversations_turn`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status`, `spawn_task`, `dismiss_task` |
+| `group:memory`     | `memory_search`, `memory_get`                                                                                                                                                                                                                          |
+| `group:web`        | `web_search`, `x_search`, `web_fetch`                                                                                                                                                                                                                  |
+| `group:ui`         | `browser`, `screen`, `terminal`, `canvas`, `show_widget`                                                                                                                                                                                               |
+| `group:automation` | `heartbeat_respond`, `cron`, `gateway`                                                                                                                                                                                                                 |
+| `group:messaging`  | `message`                                                                                                                                                                                                                                              |
+| `group:nodes`      | `nodes`, `computer`                                                                                                                                                                                                                                    |
+| `group:agents`     | `agents_list`, `get_goal`, `create_goal`, `update_goal`, `update_plan`, `ask_user`, `skill_workshop`                                                                                                                                                   |
+| `group:media`      | `image`, `image_generate`, `music_generate`, `video_generate`, `tts`                                                                                                                                                                                   |
+| `group:openclaw`   | अधिकांश अंतर्निहित OpenClaw टूल (`read`/`write`/`edit`/`apply_patch`/`exec`/`process` फ़ाइल सिस्टम और रनटाइम प्रिमिटिव, `canvas`, तथा प्रदाता plugins को छोड़कर)                                                                                             |
+| `group:plugins`    | `bundle-mcp` के माध्यम से उजागर किए गए कॉन्फ़िगर MCP सर्वरों सहित, लोड किए गए plugin-स्वामित्व वाले सभी टूल                                                                                                                                                           |
 
-सैंडबॉक्स किए गए MCP servers के लिए, सैंडबॉक्स टूल नीति दूसरा allow gate है। यदि `mcp.servers` configured है लेकिन सैंडबॉक्स किए गए turns में केवल built-in टूल दिखते हैं, तो `tools.sandbox.tools.alsoAllow` में `bundle-mcp`, `group:plugins`, या server-prefixed MCP tool name/glob जैसे `outlook__send_mail` या `outlook__*` जोड़ें, फिर gateway को restart/reload करें और tool list दोबारा capture करें। Server globs provider-safe MCP server prefix का उपयोग करते हैं: गैर-`[A-Za-z0-9_-]` characters `-` बन जाते हैं, जो नाम letter से शुरू नहीं होते उन्हें `mcp-` prefix मिलता है, और लंबे या duplicate prefixes truncate या suffix किए जा सकते हैं।
+केवल-पढ़ने योग्य एजेंटों के लिए, परिवर्तनकारी फ़ाइल सिस्टम टूल के साथ-साथ `group:runtime` को भी अस्वीकार करें, जब तक कि सैंडबॉक्स फ़ाइल सिस्टम नीति या कोई अलग होस्ट सीमा केवल-पढ़ने योग्य प्रतिबंध लागू न करती हो।
 
-`openclaw doctor` वर्तमान में `mcp.servers` में OpenClaw-managed servers के लिए इस shape की जांच करता है। bundled plugin manifests या Claude `.mcp.json` से loaded MCP servers वही sandbox gate उपयोग करते हैं, लेकिन यह diagnostic अभी उन sources को enumerate नहीं करता; यदि उनके टूल sandboxed turns में गायब हो जाते हैं, तो वही allowlist entries उपयोग करें।
+सैंडबॉक्स में चलने वाले MCP सर्वरों के लिए, सैंडबॉक्स टूल नीति दूसरा अनुमति गेट है। यदि `mcp.servers` कॉन्फ़िगर किया गया है, लेकिन सैंडबॉक्स वाले टर्न में केवल अंतर्निहित टूल दिखाई देते हैं, तो `bundle-mcp`, `group:plugins`, या सर्वर-उपसर्ग वाला MCP टूल नाम/ग्लोब, जैसे `outlook__send_mail` या `outlook__*`, को `tools.sandbox.tools.alsoAllow` में जोड़ें; फिर gateway को पुनः आरंभ/रीलोड करें और टूल सूची फिर से कैप्चर करें। सर्वर ग्लोब प्रदाता-सुरक्षित MCP सर्वर उपसर्ग का उपयोग करते हैं: गैर-`[A-Za-z0-9_-]` वर्ण `-` बन जाते हैं, जो नाम किसी अक्षर से शुरू नहीं होते उन्हें `mcp-` उपसर्ग मिलता है, और लंबे या डुप्लिकेट उपसर्गों को छोटा किया जा सकता है या उनमें प्रत्यय जोड़ा जा सकता है।
 
-## एलिवेटेड: केवल-exec "होस्ट पर चलाएं"
+`openclaw doctor` वर्तमान में `mcp.servers` में OpenClaw-प्रबंधित सर्वरों के लिए इस संरचना की जाँच करता है। बंडल किए गए plugin मेनिफ़ेस्ट या Claude `.mcp.json` से लोड किए गए MCP सर्वर समान सैंडबॉक्स गेट का उपयोग करते हैं, लेकिन यह डायग्नोस्टिक अभी उन स्रोतों को सूचीबद्ध नहीं करता; यदि सैंडबॉक्स वाले टर्न में उनके टूल गायब हो जाएँ, तो समान अनुमति-सूची प्रविष्टियों का उपयोग करें।
 
-एलिवेटेड अतिरिक्त टूल grant **नहीं** करता; यह केवल `exec` को प्रभावित करता है।
+## एलिवेटेड: केवल exec हेतु "होस्ट पर चलाएँ"
 
-- यदि आप सैंडबॉक्स में हैं, तो `/elevated on` (या `elevated: true` के साथ `exec`) सैंडबॉक्स के बाहर चलता है (approvals फिर भी लागू हो सकते हैं)।
-- सेशन के लिए exec approvals छोड़ने के लिए `/elevated full` का उपयोग करें।
-- यदि आप पहले से direct चल रहे हैं, तो elevated प्रभावी रूप से no-op है (फिर भी gated)।
-- एलिवेटेड **skill-scoped नहीं** है और टूल allow/deny को override **नहीं** करता।
-- एलिवेटेड `host=auto` से arbitrary cross-host overrides grant नहीं करता; यह सामान्य exec target rules का पालन करता है और केवल `node` को तब preserve करता है जब configured/session target पहले से `node` हो।
-- `/exec` elevated से अलग है। यह केवल authorized senders के लिए per-session exec defaults adjust करता है।
+एलिवेटेड अतिरिक्त टूल **प्रदान नहीं करता**; यह केवल `exec` को प्रभावित करता है।
 
-Gates:
+- यदि आप सैंडबॉक्स में हैं, तो `/elevated on` (या `elevated: true` के साथ `exec`) सैंडबॉक्स के बाहर चलता है (स्वीकृतियाँ फिर भी लागू हो सकती हैं)।
+- सत्र के लिए exec स्वीकृतियाँ छोड़ने हेतु `/elevated full` का उपयोग करें।
+- यदि आप पहले से सीधे चला रहे हैं, तो एलिवेटेड प्रभावी रूप से निष्प्रभावी है (फिर भी गेट लागू होते हैं)।
+- एलिवेटेड **स्किल-स्कोप्ड नहीं** है और टूल अनुमति/अस्वीकृति को **ओवरराइड नहीं करता**।
+- एलिवेटेड `host=auto` से मनमाने क्रॉस-होस्ट ओवरराइड प्रदान नहीं करता; यह सामान्य exec लक्ष्य नियमों का पालन करता है और `node` को केवल तभी बनाए रखता है जब कॉन्फ़िगर किया गया/सत्र लक्ष्य पहले से `node` हो।
+- `/exec` एलिवेटेड से अलग है। यह केवल अधिकृत प्रेषकों के लिए प्रति-सत्र exec डिफ़ॉल्ट समायोजित करता है।
 
-- Enablement: `tools.elevated.enabled` (और वैकल्पिक रूप से `agents.list[].tools.elevated.enabled`)
-- Sender allowlists: `tools.elevated.allowFrom.<provider>` (और वैकल्पिक रूप से `agents.list[].tools.elevated.allowFrom.<provider>`)
+गेट:
+
+- सक्षमता: `tools.elevated.enabled` (और वैकल्पिक रूप से `agents.list[].tools.elevated.enabled`)
+- प्रेषक अनुमति-सूचियाँ: `tools.elevated.allowFrom.<provider>` (और वैकल्पिक रूप से `agents.list[].tools.elevated.allowFrom.<provider>`)
 
 [एलिवेटेड मोड](/hi/tools/elevated) देखें।
 
-## आम "सैंडबॉक्स जेल" सुधार
+## सामान्य "सैंडबॉक्स जेल" सुधार
 
-### "Tool X blocked by sandbox tool policy"
+### "सैंडबॉक्स टूल नीति द्वारा टूल X अवरुद्ध"
 
-Fix-it keys (एक चुनें):
+सुधार हेतु कुंजियाँ (कोई एक चुनें):
 
-- सैंडबॉक्स disable करें: `agents.defaults.sandbox.mode=off` (या प्रति-एजेंट `agents.list[].sandbox.mode=off`)
-- सैंडबॉक्स के अंदर टूल allow करें:
-  - इसे `tools.sandbox.tools.deny` (या प्रति-एजेंट `agents.list[].tools.sandbox.tools.deny`) से हटाएं
-  - या इसे `tools.sandbox.tools.allow` (या प्रति-एजेंट allow) में जोड़ें
-- `agents/tool-policy` entry के लिए `openclaw logs` जांचें। यह sandbox mode और यह record करता है कि allow या deny rule ने टूल block किया।
+- सैंडबॉक्स अक्षम करें: `agents.defaults.sandbox.mode=off` (या प्रति-एजेंट `agents.list[].sandbox.mode=off`)
+- सैंडबॉक्स के भीतर टूल को अनुमति दें:
+  - इसे `tools.sandbox.tools.deny` से हटाएँ (या प्रति-एजेंट `agents.list[].tools.sandbox.tools.deny`)
+  - या इसे `tools.sandbox.tools.allow` में जोड़ें (या प्रति-एजेंट अनुमति)
+- `agents/tool-policy` प्रविष्टि के लिए `openclaw logs` जाँचें। यह सैंडबॉक्स मोड और यह दर्ज करता है कि अनुमति या अस्वीकृति नियम ने टूल को अवरुद्ध किया था या नहीं।
 
-### "I thought this was main, why is it sandboxed?"
+### "मुझे लगा था कि यह मुख्य है, फिर यह सैंडबॉक्स में क्यों है?"
 
-`"non-main"` mode में, group/channel keys _main_ नहीं होतीं। main session key (जो `sandbox explain` द्वारा दिखाई जाती है) का उपयोग करें या mode को `"off"` पर switch करें।
+`"non-main"` मोड में, समूह/चैनल कुंजियाँ _मुख्य_ नहीं होतीं। मुख्य सत्र कुंजी (`sandbox explain` द्वारा दिखाई गई) का उपयोग करें या मोड को `"off"` पर स्विच करें।
 
 ## संबंधित
 
-- [सैंडबॉक्सिंग](/hi/gateway/sandboxing) -- पूर्ण sandbox reference (modes, scopes, backends, images)
-- [Multi-Agent Sandbox और टूल](/hi/tools/multi-agent-sandbox-tools) -- प्रति-एजेंट overrides और precedence
-- [एलिवेटेड मोड](/hi/tools/elevated)
+- [सैंडबॉक्सिंग](/hi/gateway/sandboxing) -- सैंडबॉक्स का संपूर्ण संदर्भ (मोड, दायरे, बैकएंड, इमेज)
+- [मल्टी-एजेंट सैंडबॉक्स और टूल](/hi/tools/multi-agent-sandbox-tools) -- प्रति-एजेंट ओवरराइड और प्राथमिकता
+- [उन्नत मोड](/hi/tools/elevated)

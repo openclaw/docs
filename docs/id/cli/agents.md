@@ -4,11 +4,12 @@ read_when:
 summary: Referensi CLI untuk `openclaw agents` (daftar/tambah/hapus/pengikatan/ikat/lepas ikatan/atur identitas)
 title: Agen
 x-i18n:
-    generated_at: "2026-07-12T14:02:59Z"
+    generated_at: "2026-07-19T04:50:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 89b6c59a9ce0fd0514343cc3fa66ae5e6d963cdfa5c6f58ffe6b9a6b5e943f09
+    source_hash: c8863b502b018e760a55e5efbac8f7221848fa511b97250c23cd4681c9d71e38
     source_path: cli/agents.md
     workflow: 16
 ---
@@ -49,10 +50,10 @@ Opsi: `--json`, `--bindings` (sertakan aturan perutean lengkap, bukan hanya juml
 
 Opsi: `--workspace <dir>`, `--model <id>`, `--agent-dir <dir>`, `--bind <channel[:accountId]>` (dapat diulang), `--non-interactive`, `--json`.
 
-- Meneruskan tanda tambah eksplisit apa pun akan mengalihkan perintah ke jalur noninteraktif.
+- Meneruskan flag penambahan eksplisit apa pun akan mengalihkan perintah ke jalur noninteraktif.
 - Mode noninteraktif memerlukan nama agen dan `--workspace`.
 - `main` dicadangkan dan tidak dapat digunakan sebagai ID agen baru.
-- Mode interaktif menginisialisasi autentikasi dengan hanya menyalin kredensial statis portabel (profil `api_key` dan `token` statis), kecuali kredensial menolak penyalinan dengan `copyToAgents: false`; profil token penyegaran OAuth tidak disalin kecuali penyedia mengizinkannya dengan `copyToAgents: true`. Tanpa salinan, OAuth tetap tersedia hanya melalui pewarisan baca-langsung dari penyimpanan agen `main` yang sebenarnya. Jika agen default yang dikonfigurasi bukan `main`, masuklah secara terpisah untuk profil OAuth pada agen baru.
+- Mode interaktif menginisialisasi autentikasi dengan hanya menyalin kredensial statis portabel (`api_key` dan profil `token` statis), kecuali kredensial memilih untuk tidak disalin melalui `copyToAgents: false`; profil token penyegaran OAuth tidak disalin kecuali penyedia memilih untuk ikut serta melalui `copyToAgents: true`. Tanpa penyalinan, OAuth tetap tersedia hanya melalui pewarisan baca-langsung dari penyimpanan agen `main` yang sebenarnya. Jika agen default yang dikonfigurasi bukan `main`, masuklah secara terpisah untuk profil OAuth pada agen baru.
 
 ### `agents bindings`
 
@@ -60,15 +61,15 @@ Opsi: `--agent <id>`, `--json`.
 
 ### `agents bind`
 
-Opsi: `--agent <id>` (default-nya agen default saat ini), `--bind <channel[:accountId]>` (dapat diulang), `--json`.
+Opsi: `--agent <id>` (default-nya adalah agen default saat ini), `--bind <channel[:accountId]>` (dapat diulang), `--json`.
 
 ### `agents unbind`
 
-Opsi: `--agent <id>` (default-nya agen default saat ini), `--bind <channel[:accountId]>` (dapat diulang), `--all`, `--json`. Menerima `--all` atau satu atau beberapa nilai `--bind`, tidak keduanya.
+Opsi: `--agent <id>` (default-nya adalah agen default saat ini), `--bind <channel[:accountId]>` (dapat diulang), `--all`, `--json`. Menerima `--all` atau satu atau beberapa nilai `--bind`, tetapi tidak keduanya.
 
 ### `agents set-identity`
 
-Opsi: `--agent <id>`, `--workspace <dir>`, `--identity-file <path>`, `--from-identity`, `--name <name>`, `--theme <theme>`, `--emoji <emoji>`, `--avatar <value>`, `--json`. Lihat [Atur identitas](#set-identity) di bawah.
+Opsi: `--agent <id>`, `--workspace <dir>`, `--identity-file <path>`, `--from-identity`, `--name <name>`, `--theme <theme>`, `--emoji <emoji>`, `--avatar <value>`, `--json`. Lihat [Tetapkan identitas](#set-identity) di bawah.
 
 ### `agents delete <id>`
 
@@ -76,15 +77,15 @@ Opsi: `--force`, `--json`.
 
 - `main` tidak dapat dihapus.
 - Tanpa `--force`, konfirmasi interaktif diperlukan (gagal dalam sesi non-TTY; jalankan kembali dengan `--force`).
-- Ruang kerja, status agen, dan direktori transkrip sesi dipindahkan ke Sampah, bukan dihapus permanen.
-- Saat Gateway dapat dijangkau, penghapusan dirutekan melalui Gateway agar pembersihan konfigurasi dan penyimpanan sesi menggunakan penulis yang sama dengan lalu lintas waktu proses. Jika Gateway tidak dapat dijangkau, CLI beralih ke jalur lokal luring.
-- Jika ruang kerja agen lain menggunakan jalur yang sama, berada di dalam ruang kerja ini, atau mencakup ruang kerja ini, ruang kerja akan dipertahankan, dan `--json` melaporkan `workspaceRetained`, `workspaceRetainedReason`, dan `workspaceSharedWith`.
+- Direktori ruang kerja, status agen, dan transkrip sesi dipindahkan ke Sampah, bukan dihapus secara permanen. Jika Sampah tidak tersedia, penghapusan konfigurasi agen tetap berhasil dan melaporkan jalur yang memerlukan pembersihan manual.
+- Saat Gateway dapat dijangkau, penghapusan dirutekan melalui Gateway agar pembersihan konfigurasi dan penyimpanan sesi menggunakan penulis yang sama dengan lalu lintas runtime. Jika Gateway tidak dapat dijangkau, CLI beralih ke jalur lokal luring.
+- Jika ruang kerja agen lain memiliki jalur yang sama, berada di dalam ruang kerja ini, atau memuat ruang kerja ini, ruang kerja tersebut dipertahankan, dan `--json` melaporkan `workspaceRetained`, `workspaceRetainedReason`, dan `workspaceSharedWith`.
 
 ## Pengikatan perutean
 
-Gunakan pengikatan perutean untuk menyematkan lalu lintas kanal masuk ke agen tertentu.
+Gunakan pengikatan perutean untuk menetapkan lalu lintas kanal masuk ke agen tertentu.
 
-Jika Anda juga menginginkan Skills yang terlihat berbeda untuk setiap agen, konfigurasikan `agents.defaults.skills` dan `agents.list[].skills` dalam `openclaw.json`. Lihat [Konfigurasi Skills](/id/tools/skills-config) dan [Referensi konfigurasi](/id/gateway/config-agents#agentsdefaultsskills).
+Jika Anda juga menginginkan skill yang terlihat berbeda untuk setiap agen, konfigurasikan `agents.defaults.skills` dan `agents.list[].skills` di `openclaw.json`. Lihat [Konfigurasi Skills](/id/tools/skills-config) dan [Referensi konfigurasi](/id/gateway/config-agents#agentsdefaultsskills).
 
 Cantumkan pengikatan:
 
@@ -106,23 +107,23 @@ Anda juga dapat menambahkan pengikatan saat membuat agen:
 openclaw agents add work --workspace ~/.openclaw/workspace-work --bind telegram:* --bind discord:*
 ```
 
-Jika Anda menghilangkan `accountId` (`--bind <channel>`), OpenClaw menentukannya dari kait penyiapan plugin, pengikatan akun paksa, atau jumlah akun kanal yang dikonfigurasi.
+Jika Anda menghilangkan `accountId` (`--bind <channel>`), OpenClaw menentukannya dari hook penyiapan plugin, pengikatan akun yang dipaksakan, atau jumlah akun kanal yang dikonfigurasi.
 
 Jika Anda menghilangkan `--agent` untuk `bind` atau `unbind`, OpenClaw menargetkan agen default saat ini.
 
 ### Format `--bind`
 
-| Format                       | Arti                                                                                                                         |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `--bind <channel>:*`         | Cocokkan semua akun pada kanal.                                                                                               |
-| `--bind <channel>:<account>` | Cocokkan satu akun.                                                                                                           |
-| `--bind <channel>`           | Cocokkan hanya akun default, kecuali CLI dapat menentukan cakupan akun khusus plugin dengan aman.                            |
+| Format                       | Arti                                                                                               |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| `--bind <channel>:*`         | Cocokkan semua akun pada kanal.                                                                    |
+| `--bind <channel>:<account>` | Cocokkan satu akun.                                                                                 |
+| `--bind <channel>`           | Cocokkan hanya akun default, kecuali CLI dapat menentukan cakupan akun khusus plugin dengan aman.   |
 
 ### Perilaku cakupan pengikatan
 
 - Pengikatan tersimpan tanpa `accountId` hanya cocok dengan akun default kanal.
-- `accountId: "*"` adalah pengaturan cadangan seluruh kanal (semua akun) dan kurang spesifik dibandingkan pengikatan akun eksplisit.
-- Jika agen yang sama sudah memiliki pengikatan kanal yang cocok tanpa `accountId`, lalu Anda kemudian mengikat dengan `accountId` eksplisit atau yang telah ditentukan, OpenClaw meningkatkan pengikatan yang ada tersebut secara langsung alih-alih menambahkan duplikat.
+- `accountId: "*"` adalah fallback untuk seluruh kanal (semua akun) dan kurang spesifik dibandingkan pengikatan akun eksplisit.
+- Jika agen yang sama sudah memiliki pengikatan kanal yang cocok tanpa `accountId`, lalu Anda mengikatnya dengan `accountId` eksplisit atau yang telah ditentukan, OpenClaw meningkatkan pengikatan yang ada tersebut secara langsung alih-alih menambahkan duplikat.
 
 Contoh:
 
@@ -133,10 +134,10 @@ openclaw agents bind --agent work --bind telegram:*
 # cocokkan akun tertentu
 openclaw agents bind --agent work --bind telegram:ops
 
-# pengikatan awal hanya untuk kanal
+# pengikatan awal khusus kanal
 openclaw agents bind --agent work --bind telegram
 
-# kemudian tingkatkan menjadi pengikatan dengan cakupan akun
+# kemudian tingkatkan ke pengikatan bercakupan akun
 openclaw agents bind --agent work --bind telegram:alerts
 ```
 
@@ -151,18 +152,18 @@ openclaw agents unbind --agent work --all
 
 ## Berkas identitas
 
-Setiap ruang kerja agen dapat menyertakan `IDENTITY.md` di akar ruang kerja:
+Setiap ruang kerja agen dapat menyertakan `IDENTITY.md` di root ruang kerja:
 
 - Contoh jalur: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` membaca dari akar ruang kerja (atau `--identity-file` yang ditentukan secara eksplisit).
+- `set-identity --from-identity` membaca dari root ruang kerja (atau `--identity-file` eksplisit).
 
-Jalur avatar ditentukan relatif terhadap akar ruang kerja dan tidak dapat keluar darinya, bahkan melalui tautan simbolis.
+Jalur avatar ditentukan relatif terhadap root ruang kerja dan tidak dapat keluar darinya, bahkan melalui symlink.
 
-## Atur identitas
+## Tetapkan identitas
 
-`set-identity` menulis bidang ke dalam `agents.list[].identity`: `name`, `theme`, `emoji`, `avatar` (jalur relatif ruang kerja, URL http(s), atau URI data).
+`set-identity` menulis bidang ke dalam `agents.list[].identity`: `name`, `theme`, `emoji`, `avatar` (jalur relatif terhadap ruang kerja, URL http(s), atau URI data).
 
-- `--agent` atau `--workspace` memilih agen target. Jika `--workspace` cocok dengan lebih dari satu agen, perintah akan gagal dan meminta Anda meneruskan `--agent`.
+- `--agent` atau `--workspace` memilih agen target. Jika `--workspace` cocok dengan lebih dari satu agen, perintah gagal dan meminta Anda meneruskan `--agent`.
 - Berkas gambar avatar lokal yang jalurnya relatif terhadap ruang kerja dibatasi hingga 2 MB. URL HTTP(S) dan URI `data:` tidak diperiksa terhadap batas ukuran berkas lokal.
 - Jika tidak ada bidang identitas eksplisit yang diberikan, perintah membaca data identitas dari `IDENTITY.md`.
 

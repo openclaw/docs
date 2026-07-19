@@ -1,56 +1,54 @@
 ---
 read_when:
-    - आप आउटबाउंड चैनलों के लिए Markdown फ़ॉर्मैटिंग या चंकिंग बदल रहे हैं
-    - आप नया चैनल formatter या style mapping जोड़ रहे हैं
-    - आप सभी चैनलों में फ़ॉर्मैटिंग रिग्रेशन डीबग कर रहे हैं
+    - आप आउटबाउंड चैनलों के लिए Markdown फ़ॉर्मेटिंग या चंकिंग बदल रहे हैं
+    - आप एक नया चैनल फ़ॉर्मैटर या शैली मैपिंग जोड़ रहे हैं
+    - आप सभी चैनलों में फ़ॉर्मैटिंग संबंधी रिग्रेशन डीबग कर रहे हैं
 summary: आउटबाउंड चैनलों के लिए Markdown फ़ॉर्मैटिंग पाइपलाइन
-title: Markdown स्वरूपण
+title: Markdown प्रारूपण
 x-i18n:
-    generated_at: "2026-06-28T22:58:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:32:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
+    source_hash: f9a35fd9a6386068e1e3bec73ec6e692f49239b468f42dd737f919b1c6a88e41
     source_path: concepts/markdown-formatting.md
     workflow: 16
 ---
 
-OpenClaw आउटबाउंड Markdown को चैनल-विशिष्ट आउटपुट रेंडर करने से पहले एक साझा मध्यवर्ती
-प्रतिनिधित्व (IR) में बदलकर फॉर्मैट करता है। IR स्रोत टेक्स्ट को अक्षुण्ण रखता है
-और साथ में शैली/लिंक स्पैन रखता है, ताकि chunking और rendering चैनलों में
-सुसंगत रह सकें।
+OpenClaw आउटबाउंड Markdown को चैनल-विशिष्ट आउटपुट रेंडर करने से पहले एक साझा मध्यवर्ती निरूपण
+(IR) में बदलता है। IR सादा टेक्स्ट और शैली/लिंक स्पैन बनाए रखता है, इसलिए एक ही पार्स चरण प्रत्येक चैनल को
+इनपुट देता है और चंकिंग कभी भी स्पैन के बीच में फ़ॉर्मैटिंग को विभाजित नहीं करती।
 
-## लक्ष्य
+## पाइपलाइन
 
-- **संगति:** एक parse चरण, कई renderers।
-- **सुरक्षित chunking:** rendering से पहले टेक्स्ट को विभाजित करें ताकि inline formatting कभी
-  chunks के बीच न टूटे।
-- **चैनल अनुकूलता:** उसी IR को Markdown दोबारा parse किए बिना Slack mrkdwn, Telegram HTML, और Signal
-  style ranges में मैप करें।
+1. **Markdown को IR में पार्स करें** (`markdownToIR`) - सादा टेक्स्ट और शैली स्पैन
+   (बोल्ड, इटैलिक, स्ट्राइकथ्रू, कोड, कोड ब्लॉक, स्पॉइलर, ब्लॉककोट,
+   शीर्षक 1-6) तथा लिंक स्पैन। ऑफ़सेट UTF-16 कोड इकाइयाँ हैं, ताकि Signal की शैली
+   रेंज सीधे उसके API के अनुरूप हों। तालिकाएँ केवल तभी पार्स होती हैं, जब चैनल
+   किसी तालिका मोड को चुनता है।
+2. **IR को चंक में बाँटें** (`chunkMarkdownIR` / `renderMarkdownIRChunksWithinLimit`)
+   - विभाजन रेंडरिंग से पहले IR टेक्स्ट पर होता है, इसलिए इनलाइन शैलियाँ और
+     लिंक किसी सीमा के आर-पार टूटने के बजाय प्रत्येक चंक के अनुसार काटे जाते हैं।
+3. **प्रत्येक चैनल के लिए रेंडर करें** (`renderMarkdownWithMarkers`) - शैली-मार्कर मैप
+   स्पैन को चैनल के मूल मार्कअप में बदलता है।
 
-## Pipeline
+| चैनल                                                          | रेंडरर                                                                             | टिप्पणियाँ                                                                                    |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Slack                                                            | mrkdwn टोकन (`*bold*`, `_italic_`, `` `code` ``, कोड फ़ेंस)                      | लिंक `<url\|label>` बन जाते हैं; दोहरा लिंक बनने से बचने के लिए पार्सिंग के दौरान ऑटोलिंक अक्षम रहता है      |
+| Telegram                                                         | HTML टैग (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`, `<tg-spoiler>`) | `richMessages` चालू होने पर रिच-मैसेज तालिकाओं और शीर्षकों (`<h1>`-`<h6>`) का भी समर्थन करता है |
+| Signal                                                           | सादा टेक्स्ट + `text-style` रेंज                                                     | जब लेबल URL से अलग होता है, तो लिंक `label (url)` के रूप में रेंडर होते हैं                        |
+| Discord, WhatsApp, iMessage, Microsoft Teams और अन्य चैनल | सादा टेक्स्ट                                                                           | कोई IR-आधारित शैलीकरण नहीं; Markdown तालिका रूपांतरण फिर भी `convertMarkdownTables` के माध्यम से चलता है    |
 
-1. **Markdown parse करें -> IR**
-   - IR plain text और style spans (bold/italic/strike/code/spoiler) तथा link spans है।
-   - Offsets UTF-16 code units हैं ताकि Signal style ranges उसके API के साथ संरेखित रहें।
-   - Tables केवल तब parse की जाती हैं जब कोई चैनल table conversion चुनता है।
-2. **IR chunk करें (format-first)**
-   - Chunking rendering से पहले IR text पर होती है।
-   - Inline formatting chunks के बीच split नहीं होती; spans हर chunk के अनुसार slice किए जाते हैं।
-3. **प्रति चैनल render करें**
-   - **Slack:** mrkdwn tokens (bold/italic/strike/code), links `<url|label>` के रूप में।
-   - **Telegram:** HTML tags (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`)।
-   - **Signal:** plain text + `text-style` ranges; label अलग होने पर links `label (url)` बन जाते हैं।
+## IR का उदाहरण
 
-## IR उदाहरण
-
-Input Markdown:
+इनपुट Markdown:
 
 ```markdown
-Hello **world** - see [docs](https://docs.openclaw.ai).
+नमस्ते **दुनिया** - [दस्तावेज़](https://docs.openclaw.ai) देखें।
 ```
 
-IR (schematic):
+IR (रूपरेखात्मक):
 
 ```json
 {
@@ -60,23 +58,22 @@ IR (schematic):
 }
 ```
 
-## यह कहाँ उपयोग होता है
+## तालिका प्रबंधन
 
-- Slack, Telegram, और Signal आउटबाउंड adapters IR से render करते हैं।
-- अन्य चैनल (WhatsApp, iMessage, Microsoft Teams, Discord) अभी भी plain text या
-  अपने formatting rules का उपयोग करते हैं, और enabled होने पर chunking से पहले
-  Markdown table conversion लागू होता है।
+`markdown.tables` नियंत्रित करता है कि कोई चैनल Markdown तालिकाओं को कैसे बदलता है,
+प्रत्येक चैनल और वैकल्पिक रूप से प्रत्येक अकाउंट के अनुसार:
 
-## Table handling
+| मोड      | व्यवहार                                                                             |
+| --------- | ------------------------------------------------------------------------------------ |
+| `code`    | कोड ब्लॉक के भीतर संरेखित ASCII तालिका के रूप में रेंडर करें (फ़ॉलबैक डिफ़ॉल्ट)              |
+| `bullets` | प्रत्येक पंक्ति को `label: value` बुलेट बिंदुओं में बदलें                                   |
+| `block`   | जहाँ ट्रांसपोर्ट उनका समर्थन करता है, वहाँ मूल तालिकाएँ रखें; अन्यथा `code` पर फ़ॉलबैक करें |
+| `off`     | तालिका पार्सिंग अक्षम करें; अपरिष्कृत तालिका टेक्स्ट बिना बदलाव के आगे भेजा जाता है                       |
 
-Markdown tables सभी chat clients में समान रूप से समर्थित नहीं हैं। प्रति चैनल (और प्रति account)
-conversion नियंत्रित करने के लिए `markdown.tables` का उपयोग करें।
-
-- `code`: tables को code blocks के रूप में render करें (अधिकांश चैनलों के लिए default)।
-- `bullets`: हर row को bullet points में बदलें (Matrix, Signal, और WhatsApp के लिए default)।
-- `off`: table parsing और conversion बंद करें; raw table text वैसा ही गुजरता है।
-
-Config keys:
+प्रत्येक चैनल के Plugin डिफ़ॉल्ट: Signal, WhatsApp और Matrix का डिफ़ॉल्ट
+`bullets` है; Mattermost का डिफ़ॉल्ट `off` है; Telegram का डिफ़ॉल्ट `block` है (जो
+`code` में बदलता है, जब तक कि अकाउंट में `richMessages` सक्षम न हो)। स्पष्ट Plugin डिफ़ॉल्ट के बिना
+कोई भी चैनल `code` पर फ़ॉलबैक करता है।
 
 ```yaml
 channels:
@@ -89,58 +86,62 @@ channels:
           tables: off
 ```
 
-## Chunking rules
+## चंकिंग के नियम
 
-- Chunk limits channel adapters/config से आते हैं और IR text पर लागू होते हैं।
-- Code fences को trailing newline के साथ single block के रूप में संरक्षित रखा जाता है ताकि चैनल
-  उन्हें सही ढंग से render करें।
-- List prefixes और blockquote prefixes IR text का हिस्सा हैं, इसलिए chunking
-  mid-prefix split नहीं करती।
-- Inline styles (bold/italic/strike/inline-code/spoiler) chunks के बीच कभी split नहीं होतीं;
-  renderer हर chunk के अंदर styles दोबारा खोलता है।
+- चंक सीमाएँ चैनल अडैप्टर/कॉन्फ़िगरेशन से आती हैं और रेंडर किए गए आउटपुट पर नहीं,
+  बल्कि IR टेक्स्ट पर लागू होती हैं।
+- फ़ेंस किए गए कोड ब्लॉक को अंतिम न्यूलाइन सहित एक ब्लॉक के रूप में रखा जाता है, ताकि
+  चैनल समापन फ़ेंस को सही ढंग से रेंडर करें।
+- सूची और ब्लॉककोट उपसर्ग IR टेक्स्ट का हिस्सा हैं, इसलिए चंकिंग कभी भी
+  उपसर्ग के बीच में विभाजन नहीं करती।
+- इनलाइन शैलियाँ कभी भी चंक के बीच विभाजित नहीं होतीं; रेंडरर अगले चंक की
+  शुरुआत में खुली शैली को दोबारा खोलता है।
 
-अगर आपको चैनलों में chunking behavior पर और जानकारी चाहिए, तो
-[Streaming + chunking](/hi/concepts/streaming) देखें।
+सभी चैनलों में चंक सीमा और डिलीवरी व्यवहार के लिए [स्ट्रीमिंग और चंकिंग](/concepts/streaming)
+देखें।
 
-## Link policy
+## लिंक नीति
 
-- **Slack:** `[label](url)` -> `<url|label>`; bare URLs bare ही रहते हैं। Double-linking से बचने के लिए parse के दौरान Autolink
-  disabled रहता है।
-- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML parse mode)।
-- **Signal:** `[label](url)` -> `label (url)` जब तक label URL से match न करे।
+- **Slack:** `[label](url)` -> `<url|label>`; बिना आवरण वाले URL वैसे ही रहते हैं।
+- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML पार्स मोड)।
+- **Signal:** `[label](url)` -> `label (url)`, जब तक कि लेबल पहले से ही
+  URL से मेल न खाता हो।
 
-## Spoilers
+## स्पॉइलर
 
-Spoiler markers (`||spoiler||`) केवल Signal के लिए parse किए जाते हैं, जहाँ वे
-SPOILER style ranges में map होते हैं। अन्य चैनल उन्हें plain text मानते हैं।
+स्पॉइलर मार्कर (`||spoiler||`) Signal के लिए पार्स किए जाते हैं (`SPOILER`
+शैली रेंज में मैप किए जाते हैं) और Telegram के लिए (`<tg-spoiler>` में मैप किए जाते हैं)। अन्य चैनल
+`||...||` को सादे टेक्स्ट के रूप में मानते हैं।
 
-## Channel formatter कैसे जोड़ें या update करें
+## चैनल फ़ॉर्मैटर जोड़ना या अपडेट करना
 
-1. **एक बार parse करें:** channel-appropriate
-   options (autolink, heading style, blockquote prefix) के साथ साझा `markdownToIR(...)` helper का उपयोग करें।
-2. **Render करें:** `renderMarkdownWithMarkers(...)` और
-   style marker map (या Signal style ranges) के साथ renderer implement करें।
-3. **Chunk करें:** rendering से पहले `chunkMarkdownIR(...)` call करें; हर chunk को render करें।
-4. **Adapter wire करें:** नए chunker
-   और renderer का उपयोग करने के लिए channel outbound adapter update करें।
-5. **Test करें:** अगर चैनल chunking का उपयोग करता है तो format tests और outbound delivery test add या update करें।
+1. `markdownToIR(...)` के साथ **एक बार पार्स करें**, और चैनल के अनुकूल
+   विकल्प (`autolink`, `headingStyle`, `blockquotePrefix`, `tableMode`) पास करें।
+2. `renderMarkdownWithMarkers(...)` और शैली-मार्कर मैप के साथ **रेंडर करें** (या
+   Signal जैसे ट्रांसपोर्ट के लिए कस्टम शैली-रेंज लॉजिक का उपयोग करें)।
+3. प्रत्येक चंक को रेंडर करने से पहले `chunkMarkdownIR(...)` या
+   `renderMarkdownIRChunksWithinLimit(...)` के साथ **चंक में बाँटें**।
+4. आउटबाउंड भेजने के पथ से नए चंकर और रेंडरर को कॉल करने के लिए
+   **अडैप्टर को जोड़ें**।
+5. यदि चैनल चंक करता है, तो फ़ॉर्मैट परीक्षणों और आउटबाउंड डिलीवरी परीक्षण के साथ
+   **परीक्षण करें**।
 
-## Common gotchas
+## सामान्य समस्याएँ
 
-- Slack angle-bracket tokens (`<@U123>`, `<#C123>`, `<https://...>`) को
-  संरक्षित रखना चाहिए; raw HTML को सुरक्षित रूप से escape करें।
-- Telegram HTML में broken markup से बचने के लिए tags के बाहर text escape करना आवश्यक है।
-- Signal style ranges UTF-16 offsets पर निर्भर करती हैं; code point offsets का उपयोग न करें।
-- Fenced code blocks के लिए trailing newlines संरक्षित रखें ताकि closing markers
-  अपनी ही line पर रहें।
+- Slack के कोण-कोष्ठक टोकन (`<@U123>`, `<#C123>`, `<https://...>`) एस्केपिंग के बाद भी
+  सुरक्षित रहने चाहिए; अपरिष्कृत HTML को फिर भी सुरक्षित रूप से एस्केप करना आवश्यक है।
+- टूटे हुए मार्कअप से बचने के लिए Telegram HTML में टैग के बाहर के टेक्स्ट को एस्केप करना आवश्यक है।
+- Signal की शैली रेंज UTF-16 ऑफ़सेट का उपयोग करती हैं, कोड-पॉइंट ऑफ़सेट का नहीं।
+- फ़ेंस किए गए कोड ब्लॉक में अंतिम न्यूलाइन बनाए रखें, ताकि समापन मार्कर
+  अपनी अलग पंक्ति पर आए।
 
-## Related
+## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Streaming and chunking" href="/hi/concepts/streaming" icon="bars-staggered">
-    आउटबाउंड streaming behavior, chunk boundaries, और channel-specific delivery।
+  <Card title="स्ट्रीमिंग और चंकिंग" href="/hi/concepts/streaming" icon="bars-staggered">
+    आउटबाउंड स्ट्रीमिंग व्यवहार, चंक सीमाएँ और चैनल-विशिष्ट डिलीवरी।
   </Card>
-  <Card title="System prompt" href="/hi/concepts/system-prompt" icon="message-lines">
-    Conversation से पहले model क्या देखता है, जिसमें injected workspace files शामिल हैं।
+  <Card title="सिस्टम प्रॉम्प्ट" href="/hi/concepts/system-prompt" icon="message-lines">
+    बातचीत से पहले मॉडल क्या देखता है, जिसमें इंजेक्ट की गई वर्कस्पेस फ़ाइलें भी शामिल हैं।
   </Card>
 </CardGroup>

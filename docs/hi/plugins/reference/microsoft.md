@@ -1,14 +1,15 @@
 ---
 read_when:
-    - आप microsoft Plugin स्थापित, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: टेक्स्ट-टू-स्पीच प्रदाता समर्थन जोड़ता है।
+    - आप microsoft Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: टेक्स्ट-टू-स्पीच प्रदाता के लिए समर्थन जोड़ता है।
 title: Microsoft Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:46:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:18:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd8cfbff1861d7e9d9dfee2c3ecba9dc3fcf21f5a9c2ea3d7866c2d9b456fd68
+    source_hash: 7657d1ada51f5df3d205bddde44a8fe5116a4d30d2f572e4c2f5c824d021a74c
     source_path: plugins/reference/microsoft.md
     workflow: 16
 ---
@@ -22,6 +23,6 @@ x-i18n:
 - पैकेज: `@openclaw/microsoft-speech`
 - इंस्टॉल मार्ग: OpenClaw में शामिल
 
-## सर्फ़ेस
+## सतह
 
-अनुबंध: speechProviders
+अनुबंध: `speechProviders`

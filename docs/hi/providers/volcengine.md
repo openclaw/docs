@@ -6,17 +6,17 @@ read_when:
 summary: Volcano Engine सेटअप (Doubao मॉडल, कोडिंग एंडपॉइंट और Seed Speech TTS)
 title: Volcengine (Doubao)
 x-i18n:
-    generated_at: "2026-07-16T17:02:58Z"
+    generated_at: "2026-07-19T09:34:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: e853a1c8847704caedf0ec83c38332569f72105c5e34ad973daf614a2e80550b
+    source_hash: 0ac0e86b5b94b0c0f08e76878d16e9c5562e0d3f9923697713bef20ebba5bab2
     source_path: providers/volcengine.md
     workflow: 16
 ---
 
-Volcengine प्रदाता Volcano Engine पर होस्ट किए गए Doubao मॉडल और तृतीय-पक्ष मॉडल तक पहुँच प्रदान करता है, जिसमें सामान्य और कोडिंग कार्यभार के लिए अलग-अलग एंडपॉइंट होते हैं। यही बंडल किया गया plugin Volcengine Speech को TTS प्रदाता के रूप में भी पंजीकृत करता है।
+Volcengine प्रदाता Doubao मॉडल और Volcano Engine पर होस्ट किए गए तृतीय-पक्ष मॉडल तक पहुँच प्रदान करता है, जिसमें सामान्य और कोडिंग कार्यभार के लिए अलग-अलग एंडपॉइंट होते हैं। यही बंडल किया गया plugin Volcengine Speech को TTS प्रदाता के रूप में भी पंजीकृत करता है।
 
 | विवरण     | मान                                                      |
 | ---------- | ---------------------------------------------------------- |
@@ -71,13 +71,13 @@ openclaw onboard --non-interactive \
 
 ## प्रदाता और एंडपॉइंट
 
-| प्रदाता          | एंडपॉइंट                                  | उपयोग का विषय       |
+| प्रदाता          | एंडपॉइंट                                  | उपयोग का मामला       |
 | ----------------- | ----------------------------------------- | -------------- |
 | `volcengine`      | `ark.cn-beijing.volces.com/api/v3`        | सामान्य मॉडल |
 | `volcengine-plan` | `ark.cn-beijing.volces.com/api/coding/v3` | कोडिंग मॉडल  |
 
 <Note>
-दोनों प्रदाता एक ही API कुंजी से कॉन्फ़िगर किए जाते हैं। सेटअप दोनों को स्वचालित रूप से पंजीकृत करता है, और कोडिंग प्रदाता का मॉडल चयनकर्ता सामान्य प्रदाता के प्रमाणीकरण का भी पुनः उपयोग करता है (`volcengine-plan`, `volcengine` का प्रमाणीकरण उपनाम है)।
+दोनों प्रदाता एक ही API कुंजी से कॉन्फ़िगर किए जाते हैं। सेटअप दोनों को स्वचालित रूप से पंजीकृत करता है और कोडिंग प्रदाता का मॉडल चयनकर्ता सामान्य प्रदाता के प्रमाणीकरण का भी पुनः उपयोग करता है (`volcengine-plan`, `volcengine` का प्रमाणीकरण उपनाम है)।
 </Note>
 
 ## अंतर्निहित कैटलॉग
@@ -97,18 +97,14 @@ openclaw onboard --non-interactive \
     | ------------------------------------------------- | ------------------------ | ----- | ------- |
     | `volcengine-plan/ark-code-latest`                 | Ark Coding Plan          | टेक्स्ट  | 256,000 |
     | `volcengine-plan/doubao-seed-code`                | Doubao Seed Code         | टेक्स्ट  | 256,000 |
-    | `volcengine-plan/doubao-seed-code-preview-251028` | Doubao Seed Code Preview | टेक्स्ट  | 256,000 |
-    | `volcengine-plan/glm-4.7`                         | GLM 4.7 Coding           | टेक्स्ट  | 200,000 |
-    | `volcengine-plan/kimi-k2-thinking`                | Kimi K2 Thinking         | टेक्स्ट  | 256,000 |
-    | `volcengine-plan/kimi-k2.5`                       | Kimi K2.5 Coding         | टेक्स्ट  | 256,000 |
   </Tab>
 </Tabs>
 
-दोनों कैटलॉग स्थिर हैं (कोई `/models` डिस्कवरी कॉल नहीं) और OpenAI-संगत स्ट्रीम किए गए उपयोग लेखांकन का समर्थन करते हैं। दोनों प्रदाताओं के टूल स्कीमा `minLength`, `maxLength`, `minItems`, `maxItems`, `minContains`, और `maxContains` कीवर्ड को स्वचालित रूप से हटा देते हैं, क्योंकि Volcengine टूल-कॉल API उन्हें अस्वीकार करता है।
+दोनों कैटलॉग स्थिर हैं (कोई `/models` खोज कॉल नहीं) और OpenAI-संगत स्ट्रीम किए गए उपयोग लेखांकन का समर्थन करते हैं। दोनों प्रदाताओं के टूल स्कीमा स्वचालित रूप से `minLength`, `maxLength`, `minItems`, `maxItems`, `minContains`, और `maxContains` कीवर्ड हटा देते हैं, क्योंकि Volcengine टूल-कॉल API उन्हें अस्वीकार करता है।
 
 ## टेक्स्ट-टू-स्पीच
 
-Volcengine TTS, BytePlus Seed Speech HTTP API (`voice.ap-southeast-1.bytepluses.com`) का उपयोग करता है और इसे OpenAI-संगत Doubao मॉडल API कुंजी से अलग कॉन्फ़िगर किया जाता है। BytePlus कंसोल में Seed Speech > Settings > API Keys खोलें, API कुंजी कॉपी करें, फिर सेट करें:
+Volcengine TTS, BytePlus Seed Speech HTTP API (`voice.ap-southeast-1.bytepluses.com`) का उपयोग करता है और इसे OpenAI-संगत Doubao मॉडल API कुंजी से अलग कॉन्फ़िगर किया जाता है। BytePlus कंसोल में Seed Speech > Settings > API Keys खोलें, API कुंजी कॉपी करें, फिर यह सेट करें:
 
 ```bash
 export VOLCENGINE_TTS_API_KEY="byteplus_seed_speech_api_key"
@@ -135,17 +131,17 @@ export VOLCENGINE_TTS_RESOURCE_ID="seed-tts-1.0"
 }
 ```
 
-`messages.tts.providers.volcengine` के अंतर्गत उपलब्ध फ़ील्ड: `apiKey`, `voice`, `speedRatio` (0.2-3.0), `emotion`, `cluster`, `resourceId`, `appKey`, और `baseUrl`। वॉइस-सेटिंग ओवरराइड की अनुमति होने पर `!emotion=<value>` इनलाइन वॉइस डायरेक्टिव के रूप में भी काम करता है।
+`messages.tts.providers.volcengine` के अंतर्गत उपलब्ध फ़ील्ड: `apiKey`, `voice`, `speedRatio` (0.2-3.0), `emotion`, `cluster`, `resourceId`, `appKey`, और `baseUrl`। जब वॉइस-सेटिंग ओवरराइड की अनुमति होती है, तब `!emotion=<value>` इनलाइन वॉइस निर्देश के रूप में भी काम करता है।
 
-वॉइस-नोट लक्ष्यों के लिए OpenClaw प्रदाता-मूल `ogg_opus` का अनुरोध करता है। सामान्य ऑडियो अटैचमेंट के लिए यह `mp3` का अनुरोध करता है। प्रदाता उपनाम `bytedance` और `doubao` भी इसी स्पीच प्रदाता पर रिज़ॉल्व होते हैं।
+वॉइस-नोट लक्ष्यों के लिए OpenClaw प्रदाता-नेटिव `ogg_opus` का अनुरोध करता है। सामान्य ऑडियो अटैचमेंट के लिए यह `mp3` का अनुरोध करता है। प्रदाता उपनाम `bytedance` और `doubao` भी इसी स्पीच प्रदाता पर रिज़ॉल्व होते हैं।
 
-डिफ़ॉल्ट संसाधन ID `seed-tts-1.0` है, जिसे BytePlus डिफ़ॉल्ट रूप से नई बनाई गई Seed Speech API कुंजियों को प्रदान करता है। यदि आपके प्रोजेक्ट में TTS 2.0 पात्रता है, तो `VOLCENGINE_TTS_RESOURCE_ID=seed-tts-2.0` सेट करें।
+डिफ़ॉल्ट संसाधन आईडी `seed-tts-1.0` है, जो वह एंटाइटलमेंट है जिसे BytePlus नई बनाई गई Seed Speech API कुंजियों को डिफ़ॉल्ट रूप से देता है। यदि आपके प्रोजेक्ट के पास TTS 2.0 एंटाइटलमेंट है, तो `VOLCENGINE_TTS_RESOURCE_ID=seed-tts-2.0` सेट करें।
 
 <Warning>
-`VOLCANO_ENGINE_API_KEY`, ModelArk/Doubao मॉडल एंडपॉइंट के लिए है और Seed Speech API कुंजी नहीं है। TTS के लिए BytePlus Speech Console की Seed Speech API कुंजी या पुरानी Speech Console AppID/टोकन जोड़ी आवश्यक है।
+`VOLCANO_ENGINE_API_KEY`, ModelArk/Doubao मॉडल एंडपॉइंट के लिए है और Seed Speech API कुंजी नहीं है। TTS को BytePlus Speech Console की Seed Speech API कुंजी या लीगेसी Speech Console AppID/टोकन जोड़ी की आवश्यकता होती है।
 </Warning>
 
-पुराने Speech Console अनुप्रयोगों के लिए लेगेसी AppID/टोकन प्रमाणीकरण अभी भी समर्थित है:
+पुराने Speech Console एप्लिकेशन के लिए लीगेसी AppID/टोकन प्रमाणीकरण का समर्थन जारी है:
 
 ```bash
 export VOLCENGINE_TTS_APPID="speech_app_id"
@@ -153,21 +149,21 @@ export VOLCENGINE_TTS_TOKEN="speech_access_token"
 export VOLCENGINE_TTS_CLUSTER="volcano_tts"
 ```
 
-अन्य वैकल्पिक TTS एनवायरनमेंट वेरिएबल: सेट होने पर `VOLCENGINE_TTS_VOICE`, `VOLCENGINE_TTS_APP_KEY`, और `VOLCENGINE_TTS_BASE_URL` संबंधित `messages.tts.providers.volcengine` कॉन्फ़िग फ़ील्ड को ओवरराइड करते हैं।
+अन्य वैकल्पिक TTS एनवायरनमेंट वेरिएबल: सेट होने पर `VOLCENGINE_TTS_VOICE`, `VOLCENGINE_TTS_APP_KEY`, और `VOLCENGINE_TTS_BASE_URL` संबंधित `messages.tts.providers.volcengine` कॉन्फ़िगरेशन फ़ील्ड को ओवरराइड करते हैं।
 
 ## उन्नत कॉन्फ़िगरेशन
 
 <AccordionGroup>
   <Accordion title="ऑनबोर्डिंग के बाद डिफ़ॉल्ट मॉडल">
-    `openclaw onboard --auth-choice volcengine-api-key` सामान्य `volcengine` कैटलॉग को भी पंजीकृत करते हुए `volcengine-plan/ark-code-latest` को डिफ़ॉल्ट मॉडल के रूप में सेट करता है।
+    `openclaw onboard --auth-choice volcengine-api-key`, सामान्य `volcengine` कैटलॉग को पंजीकृत करने के साथ-साथ `volcengine-plan/ark-code-latest` को डिफ़ॉल्ट मॉडल के रूप में सेट करता है।
   </Accordion>
 
   <Accordion title="मॉडल चयनकर्ता का फ़ॉलबैक व्यवहार">
-    ऑनबोर्डिंग/कॉन्फ़िगरेशन के दौरान मॉडल चयन में Volcengine प्रमाणीकरण विकल्प `volcengine/*` और `volcengine-plan/*` दोनों पंक्तियों को प्राथमिकता देता है। यदि वे मॉडल अभी लोड नहीं हुए हैं, तो OpenClaw खाली प्रदाता-स्कोप्ड चयनकर्ता दिखाने के बजाय बिना फ़िल्टर वाले कैटलॉग पर फ़ॉलबैक करता है।
+    ऑनबोर्डिंग/कॉन्फ़िगरेशन के दौरान मॉडल चयन में, Volcengine प्रमाणीकरण विकल्प `volcengine/*` और `volcengine-plan/*` दोनों पंक्तियों को प्राथमिकता देता है। यदि वे मॉडल अभी तक लोड नहीं हुए हैं, तो OpenClaw खाली प्रदाता-स्कोप वाला चयनकर्ता दिखाने के बजाय बिना फ़िल्टर किए गए कैटलॉग पर फ़ॉलबैक करता है।
   </Accordion>
 
   <Accordion title="डेमन प्रक्रियाओं के लिए एनवायरनमेंट वेरिएबल">
-    यदि Gateway डेमन (launchd/systemd) के रूप में चलता है, तो सुनिश्चित करें कि `VOLCANO_ENGINE_API_KEY`, `VOLCENGINE_TTS_API_KEY`, `BYTEPLUS_SEED_SPEECH_API_KEY`, `VOLCENGINE_TTS_APPID`, और `VOLCENGINE_TTS_TOKEN` जैसे मॉडल और TTS एनवायरनमेंट वेरिएबल उस प्रक्रिया को उपलब्ध हों (उदाहरण के लिए, `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से)।
+    यदि Gateway डेमन (launchd/systemd) के रूप में चलता है, तो सुनिश्चित करें कि `VOLCANO_ENGINE_API_KEY`, `VOLCENGINE_TTS_API_KEY`, `BYTEPLUS_SEED_SPEECH_API_KEY`, `VOLCENGINE_TTS_APPID`, और `VOLCENGINE_TTS_TOKEN` जैसे मॉडल और TTS एनवायरनमेंट वेरिएबल उस प्रक्रिया के लिए उपलब्ध हों (उदाहरण के लिए, `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से)।
   </Accordion>
 </AccordionGroup>
 
@@ -179,10 +175,10 @@ OpenClaw को बैकग्राउंड सेवा के रूप म
 
 <CardGroup cols={2}>
   <Card title="मॉडल चयन" href="/hi/concepts/model-providers" icon="layers">
-    प्रदाताओं, मॉडल संदर्भों और फ़ेलओवर व्यवहार का चयन।
+    प्रदाताओं, मॉडल संदर्भों और फ़ेलओवर व्यवहार का चयन करना।
   </Card>
   <Card title="कॉन्फ़िगरेशन" href="/hi/gateway/configuration" icon="gear">
-    एजेंट, मॉडल और प्रदाताओं के लिए पूर्ण कॉन्फ़िग संदर्भ।
+    एजेंटों, मॉडलों और प्रदाताओं के लिए पूर्ण कॉन्फ़िगरेशन संदर्भ।
   </Card>
   <Card title="समस्या निवारण" href="/hi/help/troubleshooting" icon="wrench">
     सामान्य समस्याएँ और डीबगिंग चरण।

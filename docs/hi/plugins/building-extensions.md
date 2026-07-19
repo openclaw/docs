@@ -1,19 +1,20 @@
 ---
 read_when:
-    - building-extensions का लेगेसी लिंक
-summary: वर्तमान Building Plugins गाइड पर रीडायरेक्ट करता है
+    - building-extensions की विरासती लिंक
+summary: वर्तमान Plugin निर्माण गाइड पर रीडायरेक्ट करता है
 title: Plugin बनाना (रीडायरेक्ट)
 x-i18n:
-    generated_at: "2026-06-28T23:31:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:23:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
     source_path: plugins/building-extensions.md
     workflow: 16
 ---
 
-यह पृष्ठ [Plugin बनाना](/hi/plugins/building-plugins) पर स्थानांतरित हो गया है।
+यह पृष्ठ स्थानांतरित हो गया है। [Plugin बनाना](/hi/plugins/building-plugins) देखें।
 
 ## संबंधित
 

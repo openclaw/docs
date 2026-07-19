@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Quieres una inferencia centrada en la privacidad en OpenClaw
+    - Quiere una inferencia centrada en la privacidad en OpenClaw
     - Quieres orientación para configurar Venice AI
 summary: Usa modelos de Venice AI centrados en la privacidad en OpenClaw
 title: Venice AI
 x-i18n:
-    generated_at: "2026-07-11T23:31:07Z"
+    generated_at: "2026-07-19T02:08:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f274922274def2f87fb0e074554f6457b97852dcb509578262a2e2e58425265e
+    source_hash: 13c32b783394eb3092ff94a532b69e34c00624127b0e76e4e2812751d39073a1
     source_path: providers/venice.md
     workflow: 16
 ---
 
 [Venice AI](https://venice.ai) proporciona inferencia centrada en la privacidad: los modelos abiertos se ejecutan
-sin registros, además de ofrecer acceso mediante proxy anonimizado a Claude, GPT, Gemini y Grok.
+sin registro, además de ofrecer acceso mediante proxy anonimizado a Claude, GPT, Gemini y Grok.
 Todos los endpoints son compatibles con OpenAI (`/v1`).
 
 ## Modos de privacidad
@@ -23,40 +24,40 @@ Todos los endpoints son compatibles con OpenAI (`/v1`).
 | Modo           | Comportamiento                                                         | Modelos                                                        |
 | -------------- | ---------------------------------------------------------------- | ------------------------------------------------------------- |
 | **Privado**    | Los prompts y las respuestas nunca se almacenan ni se registran. Son efímeros.         | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, etc. |
-| **Anonimizado** | Se procesan mediante un proxy de Venice que elimina los metadatos antes de reenviarlos. | Claude, GPT, Gemini, Grok                                     |
+| **Anonimizado** | Se envían mediante un proxy a través de Venice, eliminando los metadatos antes del reenvío. | Claude, GPT, Gemini, Grok                                     |
 
 <Warning>
-Los modelos anonimizados no son completamente privados. Venice elimina los metadatos antes de reenviar la solicitud, pero el proveedor subyacente (OpenAI, Anthropic, Google, xAI) sigue procesándola. Usa modelos privados cuando se requiera privacidad total.
+Los modelos anonimizados no son totalmente privados. Venice elimina los metadatos antes de reenviar la solicitud, pero el proveedor subyacente (OpenAI, Anthropic, Google, xAI) sigue procesándola. Utilice modelos privados cuando se requiera privacidad total.
 </Warning>
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Instalar el Plugin">
+  <Step title="Instalar el plugin">
     ```bash
     openclaw plugins install @openclaw/venice-provider
     ```
   </Step>
-  <Step title="Obtener tu clave de API">
-    1. Regístrate en [venice.ai](https://venice.ai)
-    2. Ve a **Settings > API Keys > Create new key**
-    3. Copia tu clave de API (formato: `vapi_xxxxxxxxxxxx`)
+  <Step title="Obtener la clave de API">
+    1. Regístrese en [venice.ai](https://venice.ai)
+    2. Vaya a **Settings > API Keys > Create new key**
+    3. Copie la clave de API (formato: `vapi_xxxxxxxxxxxx`)
   </Step>
   <Step title="Configurar OpenClaw">
     <Tabs>
-      <Tab title="Interactiva (recomendada)">
+      <Tab title="Interactivo (recomendado)">
         ```bash
         openclaw onboard --auth-choice venice-api-key
         ```
 
-        Solicita la clave de API (o reutiliza una `VENICE_API_KEY` existente), enumera los modelos disponibles de Venice y establece tu modelo predeterminado.
+        Solicita la clave de API (o reutiliza un `VENICE_API_KEY` existente), muestra los modelos de Venice disponibles y establece el modelo predeterminado.
       </Tab>
       <Tab title="Variable de entorno">
         ```bash
         export VENICE_API_KEY="vapi_xxxxxxxxxxxx"
         ```
       </Tab>
-      <Tab title="No interactiva">
+      <Tab title="No interactivo">
         ```bash
         openclaw onboard --non-interactive \
           --auth-choice venice-api-key \
@@ -83,41 +84,36 @@ openclaw models set venice/kimi-k2-5
 openclaw models list --all --provider venice
 ```
 
-También puedes ejecutar `openclaw configure` y elegir **Proveedor de modelo/autenticación > Venice AI**.
+También puede ejecutar `openclaw configure` y elegir **Proveedor del modelo/autenticación > Venice AI**.
 
 <Tip>
-| Caso de uso                 | Modelo                             | Motivo                                       |
-| ------------------------- | ---------------------------------- | ------------------------------------------ |
-| Chat general (predeterminado)    | `kimi-k2-5`                        | Razonamiento privado potente, además de visión       |
-| Mejor calidad general      | `claude-opus-4-6`                  | La opción anonimizada más potente de Venice         |
-| Privacidad y programación          | `qwen3-coder-480b-a35b-instruct`   | Modelo privado de programación con un contexto amplio    |
-| Rápido y económico              | `qwen3-4b`                         | Modelo de razonamiento ligero                |
-| Tareas privadas complejas     | `deepseek-v3.2`                    | Razonamiento potente; llamadas a herramientas deshabilitadas    |
-| Sin censura                | `venice-uncensored`                | Sin restricciones de contenido                    |
+| Caso de uso              | Modelo                                        | Motivo                                    |
+| --------------------- | -------------------------------------------- | -------------------------------------- |
+| Chat general (predeterminado) | `kimi-k2-5`                                  | Razonamiento privado potente y visión   |
+| Mejor calidad general   | `claude-opus-4-6`                            | Opción anonimizada más potente de Venice     |
+| Privacidad + programación       | `qwen3-coder-480b-a35b-instruct-turbo`       | Modelo privado de programación con contexto amplio |
+| Rápido + económico           | `llama-3.2-3b`                               | Modelo privado compacto                  |
+| Tareas privadas complejas  | `deepseek-v3.2`                              | Razonamiento potente; llamadas a herramientas deshabilitadas |
+| Sin censura             | `venice-uncensored-1-2`                      | Modelo actual sin censura de Venice        |
 </Tip>
 
-## Catálogo integrado (38 modelos)
+## Catálogo integrado (30 modelos)
 
 <AccordionGroup>
-  <Accordion title="Modelos privados (26) — completamente privados, sin registros">
+  <Accordion title="Modelos privados (20) — totalmente privados, sin registro">
     | ID del modelo                               | Nombre                                 | Contexto | Notas                      |
     | -------------------------------------- | ------------------------------------- | ------- | --------------------------- |
     | `kimi-k2-5`                            | Kimi K2.5                             | 256k    | Predeterminado, razonamiento, visión  |
-    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k    | Razonamiento                   |
     | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k    | General                     |
     | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k    | General                     |
     | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k    | General, herramientas deshabilitadas     |
     | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k    | Razonamiento                   |
     | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k    | General                     |
-    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k    | Programación                      |
     | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k    | Programación                      |
     | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k    | Razonamiento, visión           |
     | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k    | General                     |
     | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (Visión)                | 256k    | Visión                      |
-    | `qwen3-4b`                             | Venice Small (Qwen3 4B)               | 32k     | Rápido, razonamiento              |
     | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k    | Razonamiento, herramientas deshabilitadas    |
-    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral)   | 32k     | Sin censura, herramientas deshabilitadas   |
-    | `mistral-31-24b`                       | Venice Medium (Mistral)               | 128k    | Visión                       |
     | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k    | Visión                       |
     | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k    | General                      |
     | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k    | General                      |
@@ -126,11 +122,10 @@ También puedes ejecutar `openclaw configure` y elegir **Proveedor de modelo/aut
     | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k    | Razonamiento                    |
     | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k    | Razonamiento                    |
     | `zai-org-glm-5`                        | GLM 5                                 | 198k    | Razonamiento                    |
-    | `minimax-m21`                          | MiniMax M2.1                          | 198k    | Razonamiento                    |
     | `minimax-m25`                          | MiniMax M2.5                          | 198k    | Razonamiento                    |
   </Accordion>
 
-  <Accordion title="Modelos anonimizados (12) — mediante el proxy de Venice">
+  <Accordion title="Modelos anonimizados (10) — mediante el proxy de Venice">
     | ID del modelo                        | Nombre                           | Contexto | Notas                      |
     | -------------------------------- | -------------------------------- | ------- | ---------------------------- |
     | `claude-opus-4-6`               | Claude Opus 4.6 (mediante Venice)    | 1M      | Razonamiento, visión            |
@@ -142,64 +137,65 @@ También puedes ejecutar `openclaw configure` y elegir **Proveedor de modelo/aut
     | `openai-gpt-4o-2024-11-20`      | GPT-4o (mediante Venice)             | 128k    | Visión                        |
     | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini (mediante Venice)        | 128k    | Visión                        |
     | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro (mediante Venice)     | 1M      | Razonamiento, visión             |
-    | `gemini-3-pro-preview`          | Gemini 3 Pro (mediante Venice)       | 198k    | Razonamiento, visión             |
     | `gemini-3-flash-preview`        | Gemini 3 Flash (mediante Venice)     | 256k    | Razonamiento, visión             |
-    | `grok-41-fast`                  | Grok 4.1 Fast (mediante Venice)      | 1M      | Razonamiento, visión             |
   </Accordion>
 </AccordionGroup>
 
-Los modelos de Venice basados en Grok (`grok-41-fast` y similares) reciben el mismo parche de compatibilidad
-del esquema de herramientas que el proveedor nativo de xAI, ya que comparten el mismo formato de llamadas
-a herramientas del proveedor subyacente.
+Los modelos de Venice respaldados por Grok (`grok-4-3` y similares) reciben el mismo parche de
+compatibilidad de esquema de herramientas que el proveedor nativo de xAI, ya que comparten el mismo formato ascendente
+de llamadas a herramientas.
 
-## Descubrimiento de modelos
+## Detección de modelos
 
-El catálogo integrado anterior es una lista inicial respaldada por un manifiesto. Durante la ejecución, OpenClaw
-lo actualiza desde la API `/models` de Venice y recurre a la lista inicial si
-no se puede acceder a la API. El endpoint `/models` es público (no se necesita autenticación para
+El catálogo incluido anterior es una lista inicial respaldada por un manifiesto. En tiempo de ejecución, OpenClaw
+la actualiza desde la API `/models` de Venice y recurre a la lista inicial si
+la API no está disponible. El endpoint `/models` es público (no se requiere autenticación para
 consultar la lista), pero la inferencia requiere una clave de API válida.
+
+Venice puede seguir aceptando ID de modelos retirados como alias gestionados por el proveedor. El
+catálogo de OpenClaw anuncia únicamente los ID canónicos de modelos devueltos por `/models`.
 
 ## Comportamiento de reproducción de DeepSeek V4
 
 Si Venice expone modelos DeepSeek V4 como `deepseek-v4-pro` o
-`deepseek-v4-flash`, OpenClaw rellena el campo de reproducción obligatorio
-`reasoning_content` en los mensajes del asistente cuando Venice lo omite, y elimina `thinking`/
+`deepseek-v4-flash`, OpenClaw rellena el campo de reproducción obligatorio `reasoning_content`
+en los mensajes del asistente cuando Venice lo omite y elimina `thinking`/
 `reasoning`/`reasoning_effort` de la carga útil de la solicitud (Venice rechaza
-el control `thinking` nativo de DeepSeek en estos modelos). Esta corrección de reproducción es
-independiente de los controles de pensamiento propios del proveedor nativo de DeepSeek.
+el control nativo `thinking` de DeepSeek en estos modelos). Esta corrección de reproducción es
+independiente de los controles de razonamiento propios del proveedor nativo de DeepSeek.
 
-## Compatibilidad con transmisión y herramientas
+## Compatibilidad con streaming y herramientas
 
 | Función          | Compatibilidad                                           |
 | ---------------- | ------------------------------------------------- |
-| Transmisión        | Todos los modelos                                        |
-| Llamadas a funciones | La mayoría de los modelos; deshabilitadas en modelos específicos cuando se indica anteriormente |
-| Visión/imágenes    | Modelos marcados anteriormente como "Visión"                      |
+| Streaming        | Todos los modelos                                        |
+| Llamadas a funciones | La mayoría de los modelos; deshabilitadas por modelo donde se indica anteriormente |
+| Visión/imágenes    | Modelos marcados como "Visión" anteriormente                      |
 | Modo JSON        | Mediante `response_format`                             |
 
 ## Precios
 
 Venice utiliza un sistema basado en créditos. Los modelos anonimizados cuestan aproximadamente lo mismo que
-los precios directos de la API, más una pequeña tarifa de Venice. Consulta
+los precios directos de la API más una pequeña comisión de Venice. Consulte
 [venice.ai/pricing](https://venice.ai/pricing) para conocer las tarifas actuales.
 
 ## Ejemplos de uso
 
 ```bash
 # Modelo privado predeterminado
-openclaw agent --model venice/kimi-k2-5 --message "Comprobación rápida de estado"
+openclaw agent --model venice/kimi-k2-5 --message "Comprobación rápida del estado"
 
 # Claude Opus mediante Venice (anonimizado)
 openclaw agent --model venice/claude-opus-4-6 --message "Resume esta tarea"
 
 # Modelo sin censura
-openclaw agent --model venice/venice-uncensored --message "Redacta opciones"
+openclaw agent --model venice/venice-uncensored-1-2 --message "Redacta opciones"
 
 # Modelo de visión con imagen
 openclaw agent --model venice/qwen3-vl-235b-a22b --message "Revisa la imagen adjunta"
 
 # Modelo de programación
-openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactoriza esta función"
+openclaw agent --model venice/qwen3-coder-480b-a35b-instruct-turbo --message "Refactoriza esta función"
 ```
 
 ## Solución de problemas
@@ -211,17 +207,17 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
     openclaw models list | grep venice
     ```
 
-    Confirma que la clave comienza por `vapi_`.
+    Confirme que la clave comienza por `vapi_`.
 
   </Accordion>
 
-  <Accordion title="Modelo no disponible">
-    Ejecuta `openclaw models list --all --provider venice` para ver los modelos
-    disponibles actualmente; el catálogo cambia a medida que Venice añade o retira modelos.
+  <Accordion title="El modelo no está disponible">
+    Ejecute `openclaw models list --all --provider venice` para ver los modelos disponibles
+    actualmente; el catálogo cambia a medida que Venice añade o retira modelos.
   </Accordion>
 
   <Accordion title="Problemas de conexión">
-    La API de Venice se encuentra en `https://api.venice.ai/api/v1`. Confirma que tu red permite conexiones HTTPS con ese host.
+    La API de Venice se encuentra en `https://api.venice.ai/api/v1`. Confirme que la red permite conexiones HTTPS a ese host.
   </Accordion>
 </AccordionGroup>
 
@@ -263,14 +259,14 @@ Más ayuda: [Solución de problemas](/es/help/troubleshooting) y [Preguntas frec
   </Accordion>
 </AccordionGroup>
 
-## Contenido relacionado
+## Relacionado
 
 <CardGroup cols={2}>
   <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
     Elección de proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
-    Página principal de Venice AI y registro de cuenta.
+    Página de inicio de Venice AI y registro de cuenta.
   </Card>
   <Card title="Documentación de la API" href="https://docs.venice.ai" icon="book">
     Referencia de la API de Venice y documentación para desarrolladores.

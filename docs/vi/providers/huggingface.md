@@ -1,37 +1,38 @@
 ---
 read_when:
     - Bạn muốn sử dụng Hugging Face Inference với OpenClaw
-    - Bạn cần biến môi trường chứa token HF hoặc tùy chọn xác thực CLI
+    - Bạn cần biến môi trường chứa token HF hoặc chọn xác thực qua CLI
 summary: Thiết lập Hugging Face Inference (xác thực + lựa chọn mô hình)
 title: Hugging Face (suy luận)
 x-i18n:
-    generated_at: "2026-07-12T08:20:35Z"
+    generated_at: "2026-07-19T05:58:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4e0d98c844c053484559254a0bdf4258c3d39954ac5804cdb0d081a651b89df
+    source_hash: 92c400b78c5ad2cc724ad4029560dccc5bc2006fdeae400fc6b58998e727e17c
     source_path: providers/huggingface.md
     workflow: 16
 ---
 
-[Các Nhà cung cấp Suy luận của Hugging Face](https://huggingface.co/docs/inference-providers) cung cấp một bộ định tuyến hoàn tất trò chuyện tương thích với OpenAI cho nhiều mô hình được lưu trữ (DeepSeek, Llama và nhiều mô hình khác) chỉ với một mã thông báo. OpenClaw chỉ giao tiếp với **điểm cuối hoàn tất trò chuyện**; đối với chuyển văn bản thành hình ảnh, embedding hoặc giọng nói, hãy sử dụng trực tiếp [các ứng dụng khách suy luận HF](https://huggingface.co/docs/api-inference/quicktour).
+[Các nhà cung cấp suy luận của Hugging Face](https://huggingface.co/docs/inference-providers) cung cấp một bộ định tuyến hoàn thành hội thoại tương thích với OpenAI cho nhiều mô hình được lưu trữ (DeepSeek, Llama và nhiều mô hình khác) dưới một token duy nhất. OpenClaw chỉ giao tiếp với **điểm cuối hoàn thành hội thoại**; đối với chuyển văn bản thành hình ảnh, embedding hoặc giọng nói, hãy sử dụng trực tiếp [các ứng dụng khách suy luận HF](https://huggingface.co/docs/api-inference/quicktour).
 
-| Thuộc tính               | Giá trị                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| ID nhà cung cấp          | `huggingface`                                                                                                                        |
-| Plugin                   | đi kèm (được bật theo mặc định, không cần bước cài đặt)                                                                              |
-| Biến môi trường xác thực | `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN` (mã thông báo có phạm vi chi tiết)                                                           |
-| API                      | tương thích với OpenAI (`https://router.huggingface.co/v1`)                                                                          |
-| Thanh toán               | Một mã thông báo HF; [mức giá](https://huggingface.co/docs/inference-providers/pricing) tuân theo mức phí của nhà cung cấp và có gói miễn phí |
+| Thuộc tính        | Giá trị                                                                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| ID nhà cung cấp   | `huggingface`                                                                                                                    |
+| Plugin            | đi kèm (được bật theo mặc định, không cần bước cài đặt)                                                                                |
+| Biến môi trường xác thực | `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN` (token chi tiết)                                                                    |
+| API               | Tương thích với OpenAI (`https://router.huggingface.co/v1`)                                                                                            |
+| Thanh toán         | Một token HF duy nhất; [mức giá](https://huggingface.co/docs/inference-providers/pricing) tuân theo mức phí của nhà cung cấp và có gói miễn phí |
 
 ## Bắt đầu
 
 <Steps>
-  <Step title="Tạo mã thông báo có phạm vi chi tiết">
-    Truy cập [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) và tạo một mã thông báo mới có phạm vi chi tiết.
+  <Step title="Tạo token chi tiết">
+    Truy cập [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) và tạo một token chi tiết mới.
 
     <Warning>
-    Mã thông báo phải được bật quyền **Make calls to Inference Providers**, nếu không các yêu cầu API sẽ bị từ chối.
+    Token phải được bật quyền **Make calls to Inference Providers**, nếu không các yêu cầu API sẽ bị từ chối.
     </Warning>
 
   </Step>
@@ -44,7 +45,7 @@ x-i18n:
 
   </Step>
   <Step title="Chọn mô hình mặc định">
-    Trong danh sách thả xuống **Mô hình Hugging Face mặc định**, hãy chọn một mô hình. Danh sách được tải từ Inference API khi mã thông báo của bạn hợp lệ; nếu không, OpenClaw sẽ hiển thị danh mục tích hợp bên dưới. Lựa chọn của bạn được lưu vào `agents.defaults.model.primary`:
+    Trong danh sách thả xuống **Default Hugging Face model**, hãy chọn một mô hình. Danh sách được tải từ Inference API khi token hợp lệ; nếu không, OpenClaw sẽ hiển thị danh mục tích hợp bên dưới. Lựa chọn của bạn được lưu dưới dạng `agents.defaults.model.primary`:
 
     ```json5
     {
@@ -57,7 +58,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="Xác minh mô hình khả dụng">
+  <Step title="Xác minh mô hình có sẵn">
     ```bash
     openclaw models list --provider huggingface
     ```
@@ -77,35 +78,34 @@ openclaw onboard --non-interactive \
 
 ## ID mô hình
 
-Tham chiếu mô hình có dạng `huggingface/<org>/<model>` (ID theo kiểu Hub). Danh mục tích hợp của OpenClaw:
+Tham chiếu mô hình có dạng `huggingface/<org>/<model>` (ID kiểu Hub). Danh mục tích hợp của OpenClaw:
 
-| Mô hình                      | Tham chiếu (thêm tiền tố `huggingface/`)    |
-| ---------------------------- | ------------------------------------------- |
-| DeepSeek R1                  | `deepseek-ai/DeepSeek-R1`                   |
-| DeepSeek V3.1                | `deepseek-ai/DeepSeek-V3.1`                 |
-| GPT-OSS 120B                 | `openai/gpt-oss-120b`                       |
-| Llama 3.3 70B Instruct Turbo | `meta-llama/Llama-3.3-70B-Instruct-Turbo`   |
+| Mô hình       | Tham chiếu (thêm tiền tố `huggingface/`) |
+| ------------- | --------------------------------------------- |
+| DeepSeek R1   | `deepseek-ai/DeepSeek-R1`                            |
+| DeepSeek V3.1 | `deepseek-ai/DeepSeek-V3.1`                            |
+| GPT-OSS 120B  | `openai/gpt-oss-120b`                            |
 
 <Tip>
-Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô hình khác thông qua **GET** `https://router.huggingface.co/v1/models` trong quá trình thiết lập ban đầu và khi Gateway khởi động, vì vậy danh mục của bạn có thể chứa nhiều hơn đáng kể so với bốn mô hình trên. Bạn có thể thêm `:fastest` hoặc `:cheapest` vào bất kỳ ID mô hình nào; bộ định tuyến của HF sẽ định tuyến đến nhà cung cấp suy luận phù hợp. Đặt thứ tự nhà cung cấp mặc định trong [cài đặt Nhà cung cấp Suy luận](https://hf.co/settings/inference-providers).
+Khi token hợp lệ, OpenClaw cũng phát hiện mọi mô hình khác từ **GET** `https://router.huggingface.co/v1/models` trong quá trình thiết lập ban đầu và khi Gateway khởi động, vì vậy danh mục của bạn có thể bao gồm nhiều hơn đáng kể so với ba mô hình trên. Bạn có thể thêm `:fastest` hoặc `:cheapest` vào bất kỳ ID mô hình nào; bộ định tuyến của HF sẽ định tuyến đến nhà cung cấp suy luận tương ứng. Đặt thứ tự nhà cung cấp mặc định trong [cài đặt Nhà cung cấp suy luận](https://hf.co/settings/inference-providers).
 </Tip>
 
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Khám phá mô hình và danh sách thả xuống khi thiết lập ban đầu">
-    OpenClaw khám phá các mô hình bằng:
+  <Accordion title="Phát hiện mô hình và danh sách thả xuống khi thiết lập ban đầu">
+    OpenClaw phát hiện các mô hình bằng:
 
     ```bash
     GET https://router.huggingface.co/v1/models
     Authorization: Bearer $HUGGINGFACE_HUB_TOKEN   # hoặc $HF_TOKEN
     ```
 
-    Phản hồi có kiểu OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
+    Phản hồi theo kiểu OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
 
-    Khi đã cấu hình khóa (qua quy trình thiết lập ban đầu, `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN`), danh sách thả xuống **Mô hình Hugging Face mặc định** trong quá trình thiết lập tương tác sẽ được điền từ điểm cuối này. Khi Gateway khởi động, lệnh gọi tương tự được thực hiện lại để làm mới danh mục. Các mô hình được khám phá sẽ được hợp nhất với danh mục tích hợp ở trên (được dùng cho siêu dữ liệu như cửa sổ ngữ cảnh và chi phí khi ID trùng khớp). Nếu yêu cầu thất bại, không trả về dữ liệu hoặc chưa đặt khóa, OpenClaw chỉ quay về sử dụng danh mục tích hợp.
+    Khi đã cấu hình khóa (qua quy trình thiết lập ban đầu, `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN`), danh sách thả xuống **Default Hugging Face model** trong quá trình thiết lập tương tác sẽ được điền từ điểm cuối này. Khi Gateway khởi động, lệnh gọi tương tự được thực hiện lại để làm mới danh mục. Các mô hình được phát hiện sẽ được hợp nhất với danh mục tích hợp ở trên (dùng cho siêu dữ liệu như cửa sổ ngữ cảnh và chi phí khi ID trùng khớp). Nếu yêu cầu thất bại, không trả về dữ liệu hoặc chưa đặt khóa, OpenClaw chỉ sử dụng danh mục tích hợp.
 
-    Tắt tính năng khám phá mà không xóa nhà cung cấp:
+    Tắt tính năng phát hiện mà không xóa nhà cung cấp:
 
     ```bash
     openclaw config set plugins.entries.huggingface.config.discovery.enabled false
@@ -114,7 +114,7 @@ Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô 
   </Accordion>
 
   <Accordion title="Tên mô hình, bí danh và hậu tố chính sách">
-    - **Tên từ API:** các mô hình được khám phá sử dụng `name`, `title` hoặc `display_name` từ API khi có; nếu không, OpenClaw sẽ tạo tên từ ID mô hình (ví dụ: `deepseek-ai/DeepSeek-R1` trở thành "DeepSeek R1").
+    - **Tên từ API:** các mô hình được phát hiện sử dụng `name`, `title` hoặc `display_name` của API khi có; nếu không, OpenClaw suy ra tên từ ID mô hình (ví dụ: `deepseek-ai/DeepSeek-R1` trở thành "DeepSeek R1").
     - **Ghi đè tên hiển thị:** đặt nhãn tùy chỉnh cho từng mô hình trong cấu hình:
 
     ```json5
@@ -130,13 +130,13 @@ Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô 
     }
     ```
 
-    - **Hậu tố chính sách:** `:fastest` và `:cheapest` là quy ước của bộ định tuyến HF, không phải nội dung được OpenClaw ghi lại: hậu tố được gửi nguyên văn như một phần của ID mô hình và bộ định tuyến của HF chọn nhà cung cấp suy luận phù hợp. Thêm từng biến thể thành một mục riêng trong `models.providers.huggingface.models` (hoặc trong `model.primary`) nếu bạn muốn mỗi hậu tố có một bí danh riêng.
-    - **Hợp nhất cấu hình:** các mục hiện có trong `models.providers.huggingface.models` (ví dụ: trong `models.json`) được giữ lại khi hợp nhất cấu hình, vì vậy mọi `name`, `alias` hoặc tùy chọn mô hình tùy chỉnh mà bạn đặt tại đó sẽ tồn tại qua các lần khởi động lại.
+    - **Hậu tố chính sách:** `:fastest` và `:cheapest` là quy ước của bộ định tuyến HF, không phải nội dung mà OpenClaw viết lại: hậu tố được gửi nguyên văn như một phần của ID mô hình và bộ định tuyến của HF chọn nhà cung cấp suy luận tương ứng. Thêm từng biến thể dưới dạng một mục riêng trong `models.providers.huggingface.models` (hoặc trong `model.primary`) nếu bạn muốn có bí danh riêng cho từng hậu tố.
+    - **Hợp nhất cấu hình:** các mục hiện có trong `models.providers.huggingface.models` (ví dụ: trong `models.json`) được giữ lại khi hợp nhất cấu hình, vì vậy mọi `name`, `alias` tùy chỉnh hoặc tùy chọn mô hình bạn đặt ở đó vẫn tồn tại sau khi khởi động lại.
 
   </Accordion>
 
-  <Accordion title="Thiết lập môi trường và tiến trình nền">
-    Nếu Gateway chạy dưới dạng tiến trình nền (launchd/systemd), hãy bảo đảm `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN` khả dụng cho tiến trình đó (ví dụ: trong `~/.openclaw/.env` hoặc thông qua `env.shellEnv`).
+  <Accordion title="Thiết lập môi trường và daemon">
+    Nếu Gateway chạy dưới dạng daemon (launchd/systemd), hãy đảm bảo `HUGGINGFACE_HUB_TOKEN` hoặc `HF_TOKEN` khả dụng cho tiến trình đó (ví dụ: trong `~/.openclaw/.env` hoặc thông qua `env.shellEnv`).
 
     <Note>
     OpenClaw chấp nhận cả `HUGGINGFACE_HUB_TOKEN` và `HF_TOKEN`. Nếu cả hai đều được đặt, `HUGGINGFACE_HUB_TOKEN` được ưu tiên.
@@ -144,7 +144,7 @@ Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô 
 
   </Accordion>
 
-  <Accordion title="Cấu hình: DeepSeek R1 với mô hình dự phòng">
+  <Accordion title="Cấu hình: DeepSeek R1 với phương án dự phòng">
     ```json5
     {
       agents: {
@@ -180,21 +180,17 @@ Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô 
     ```
   </Accordion>
 
-  <Accordion title="Cấu hình: DeepSeek + Llama + GPT-OSS với bí danh">
+  <Accordion title="Cấu hình: DeepSeek + GPT-OSS với bí danh">
     ```json5
     {
       agents: {
         defaults: {
           model: {
             primary: "huggingface/deepseek-ai/DeepSeek-V3.1",
-            fallbacks: [
-              "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo",
-              "huggingface/openai/gpt-oss-120b",
-            ],
+            fallbacks: ["huggingface/openai/gpt-oss-120b"],
           },
           models: {
             "huggingface/deepseek-ai/DeepSeek-V3.1": { alias: "DeepSeek V3.1" },
-            "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo": { alias: "Llama 3.3 70B Turbo" },
             "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
@@ -213,8 +209,8 @@ Khi mã thông báo của bạn hợp lệ, OpenClaw cũng khám phá mọi mô 
   <Card title="Lựa chọn mô hình" href="/vi/concepts/models" icon="brain">
     Cách chọn và cấu hình mô hình.
   </Card>
-  <Card title="Tài liệu về Nhà cung cấp Suy luận" href="https://huggingface.co/docs/inference-providers" icon="book">
-    Tài liệu chính thức về Nhà cung cấp Suy luận của Hugging Face.
+  <Card title="Tài liệu Nhà cung cấp suy luận" href="https://huggingface.co/docs/inference-providers" icon="book">
+    Tài liệu chính thức về Nhà cung cấp suy luận của Hugging Face.
   </Card>
   <Card title="Cấu hình" href="/vi/gateway/configuration" icon="gear">
     Tài liệu tham chiếu cấu hình đầy đủ.

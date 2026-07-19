@@ -1,47 +1,48 @@
 ---
 read_when:
     - Oracle Cloud पर OpenClaw सेट अप करना
-    - OpenClaw के लिए मुफ़्त VPS होस्टिंग की तलाश
+    - OpenClaw के लिए मुफ़्त VPS होस्टिंग की तलाश करना
     - छोटे सर्वर पर 24/7 OpenClaw चाहिए
 summary: Oracle Cloud के Always Free ARM टियर पर OpenClaw होस्ट करें
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-06-28T23:23:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:32:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
+    source_hash: 5e1eb95b6bc8ad73e1492a03d8ebe32d89c80e58347614e6ae12d2d3d926d577
     source_path: install/oracle.md
     workflow: 16
 ---
 
-Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage तक) पर बिना लागत के एक स्थायी OpenClaw Gateway चलाएँ।
+Oracle Cloud के **Always Free** ARM टियर (अधिकतम 4 OCPU, 24 GB RAM, 200 GB स्टोरेज) पर बिना किसी लागत के एक स्थायी OpenClaw Gateway चलाएँ।
 
 ## पूर्वापेक्षाएँ
 
-- Oracle Cloud खाता ([साइन अप](https://www.oracle.com/cloud/free/)) -- अगर समस्याएँ आएँ, तो [समुदाय साइनअप गाइड](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) देखें
+- Oracle Cloud खाता ([साइन अप](https://www.oracle.com/cloud/free/)) -- समस्याएँ आने पर [समुदाय साइन-अप मार्गदर्शिका](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) देखें
 - Tailscale खाता ([tailscale.com](https://tailscale.com) पर निःशुल्क)
-- एक SSH key pair
+- एक SSH कुंजी युग्म
 - लगभग 30 मिनट
 
 ## सेटअप
 
 <Steps>
-  <Step title="OCI instance बनाएँ">
+  <Step title="OCI इंस्टेंस बनाएँ">
     1. [Oracle Cloud Console](https://cloud.oracle.com/) में लॉग इन करें।
     2. **Compute > Instances > Create Instance** पर जाएँ।
     3. कॉन्फ़िगर करें:
        - **Name:** `openclaw`
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPUs:** 2 (या 4 तक)
-       - **Memory:** 12 GB (या 24 GB तक)
-       - **Boot volume:** 50 GB (200 GB तक निःशुल्क)
-       - **SSH key:** अपनी public key जोड़ें
-    4. **Create** पर क्लिक करें और public IP address नोट करें।
+       - **OCPUs:** 2 (या अधिकतम 4)
+       - **Memory:** 12 GB (या अधिकतम 24 GB)
+       - **Boot volume:** 50 GB (अधिकतम 200 GB निःशुल्क)
+       - **SSH key:** अपनी सार्वजनिक कुंजी जोड़ें
+    4. **Create** पर क्लिक करें और सार्वजनिक IP पता नोट कर लें।
 
     <Tip>
-    अगर instance बनाते समय "Out of capacity" त्रुटि आए, तो कोई दूसरा availability domain आज़माएँ या बाद में फिर कोशिश करें। Free tier क्षमता सीमित है।
+    यदि "Out of capacity" के कारण इंस्टेंस बनाना विफल हो जाता है, तो कोई अन्य उपलब्धता डोमेन आज़माएँ या बाद में फिर प्रयास करें। निःशुल्क टियर की क्षमता सीमित है।
     </Tip>
 
   </Step>
@@ -54,18 +55,18 @@ Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage 
     sudo apt install -y build-essential
     ```
 
-    कुछ dependencies के ARM compilation के लिए `build-essential` आवश्यक है।
+    कुछ निर्भरताओं के ARM संकलन के लिए `build-essential` आवश्यक है।
 
   </Step>
 
-  <Step title="यूज़र और hostname कॉन्फ़िगर करें">
+  <Step title="उपयोगकर्ता और होस्टनाम कॉन्फ़िगर करें">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    linger सक्षम करने से logout के बाद भी user services चलती रहती हैं।
+    लिंगर सक्षम करने से लॉग आउट करने के बाद भी उपयोगकर्ता सेवाएँ चलती रहती हैं।
 
   </Step>
 
@@ -75,7 +76,7 @@ Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage 
     sudo tailscale up --ssh --hostname=openclaw
     ```
 
-    अब से Tailscale के ज़रिए कनेक्ट करें: `ssh ubuntu@openclaw`।
+    अब से Tailscale के माध्यम से कनेक्ट करें: `ssh ubuntu@openclaw`।
 
   </Step>
 
@@ -85,12 +86,12 @@ Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage 
     source ~/.bashrc
     ```
 
-    जब "How do you want to hatch your bot?" पूछा जाए, तो **Do this later** चुनें।
+    "How do you want to hatch your bot?" पूछे जाने पर **Do this later** चुनें।
 
   </Step>
 
   <Step title="Gateway कॉन्फ़िगर करें">
-    सुरक्षित remote access के लिए Tailscale Serve के साथ token auth का उपयोग करें।
+    सुरक्षित रिमोट एक्सेस के लिए Tailscale Serve के साथ टोकन प्रमाणीकरण का उपयोग करें।
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -102,19 +103,19 @@ Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage 
     systemctl --user restart openclaw-gateway.service
     ```
 
-    यहाँ `gateway.trustedProxies=["127.0.0.1"]` केवल local Tailscale Serve proxy के forwarded-IP/local-client handling के लिए है। यह `gateway.auth.mode: "trusted-proxy"` **नहीं** है। इस सेटअप में diff viewer routes fail-closed behavior बनाए रखते हैं: forwarded proxy headers के बिना raw `127.0.0.1` viewer requests `Diff not found` लौटा सकती हैं। attachments के लिए `mode=file` / `mode=both` का उपयोग करें, या अगर आपको shareable viewer links चाहिए तो जानबूझकर remote viewers सक्षम करें और `plugins.entries.diffs.config.viewerBaseUrl` सेट करें (या proxy `baseUrl` पास करें)।
+    यहाँ `gateway.trustedProxies=["127.0.0.1"]` केवल स्थानीय Tailscale Serve प्रॉक्सी के फ़ॉरवर्ड किए गए IP/स्थानीय क्लाइंट प्रबंधन के लिए है। यह `gateway.auth.mode: "trusted-proxy"` **नहीं** है। इस सेटअप में डिफ़ व्यूअर रूट फ़ेल-क्लोज़्ड व्यवहार बनाए रखते हैं: फ़ॉरवर्ड किए गए प्रॉक्सी हेडर के बिना कच्चे `127.0.0.1` व्यूअर अनुरोध `Diff not found` लौटाते हैं। अटैचमेंट के लिए `mode=file` / `mode=both` का उपयोग करें, या यदि आपको साझा किए जा सकने वाले व्यूअर लिंक चाहिए, तो जानबूझकर रिमोट व्यूअर सक्षम करें और `plugins.entries.diffs.config.viewerBaseUrl` सेट करें (या प्रॉक्सी `baseUrl` पास करें)।
 
   </Step>
 
-  <Step title="VCN security लॉक डाउन करें">
-    network edge पर Tailscale को छोड़कर सभी traffic block करें:
+  <Step title="VCN सुरक्षा को सीमित करें">
+    नेटवर्क किनारे पर Tailscale को छोड़कर समस्त ट्रैफ़िक अवरुद्ध करें:
 
     1. OCI Console में **Networking > Virtual Cloud Networks** पर जाएँ।
     2. अपने VCN पर क्लिक करें, फिर **Security Lists > Default Security List** पर जाएँ।
-    3. `0.0.0.0/0 UDP 41641` (Tailscale) को छोड़कर सभी ingress rules **हटाएँ**।
-    4. default egress rules रखें (सभी outbound अनुमति दें)।
+    3. `0.0.0.0/0 UDP 41641` (Tailscale) को छोड़कर सभी प्रवेश नियम **Remove** करें।
+    4. डिफ़ॉल्ट निर्गमन नियम बनाए रखें (सभी आउटबाउंड ट्रैफ़िक की अनुमति दें)।
 
-    यह network edge पर port 22 पर SSH, HTTP, HTTPS, और बाकी सब कुछ block करता है। इस बिंदु से आप केवल Tailscale के ज़रिए कनेक्ट कर सकते हैं।
+    यह नेटवर्क किनारे पर पोर्ट 22 का SSH, HTTP, HTTPS और अन्य सभी चीज़ें अवरुद्ध करता है। इसके बाद आप केवल Tailscale के माध्यम से कनेक्ट कर सकते हैं।
 
   </Step>
 
@@ -126,76 +127,76 @@ Oracle Cloud के **Always Free** ARM tier (4 OCPU, 24 GB RAM, 200 GB storage 
     curl http://localhost:18789
     ```
 
-    अपने tailnet पर किसी भी device से Control UI access करें:
+    अपने टेलनेट पर मौजूद किसी भी डिवाइस से नियंत्रण UI एक्सेस करें:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    `<tailnet-name>` को अपने tailnet name से बदलें (`tailscale status` में दिखता है)।
+    `<tailnet-name>` को अपने टेलनेट नाम से बदलें (यह `tailscale status` में दिखाई देता है)।
 
   </Step>
 </Steps>
 
-## security posture सत्यापित करें
+## सुरक्षा स्थिति सत्यापित करें
 
-VCN लॉक डाउन होने (केवल UDP 41641 खुला) और Gateway के loopback से bound होने पर public traffic network edge पर block हो जाता है और admin access केवल tailnet तक सीमित रहता है। इससे कई पारंपरिक VPS hardening steps की आवश्यकता समाप्त हो जाती है:
+VCN को सीमित करने (केवल UDP 41641 खुला रखने) और Gateway को लूपबैक से बाँधने पर सार्वजनिक ट्रैफ़िक नेटवर्क किनारे पर अवरुद्ध हो जाता है और व्यवस्थापकीय एक्सेस केवल टेलनेट तक सीमित रहता है। इससे VPS को सुरक्षित बनाने के कई पारंपरिक चरणों की आवश्यकता समाप्त हो जाती है:
 
-| पारंपरिक step     | आवश्यक?      | क्यों                                                                     |
-| ------------------ | ----------- | ------------------------------------------------------------------------- |
-| UFW firewall       | नहीं         | VCN traffic को instance तक पहुँचने से पहले block कर देता है।              |
-| fail2ban           | नहीं         | Port 22 VCN पर block है; कोई brute-force surface नहीं।                    |
-| sshd hardening     | नहीं         | Tailscale SSH sshd का उपयोग नहीं करता।                                    |
-| root login अक्षम करें | नहीं     | Tailscale system users से नहीं, tailnet identity से authenticate करता है। |
-| SSH key-only auth  | नहीं         | वही — tailnet identity system SSH keys की जगह लेती है।                   |
-| IPv6 hardening     | आमतौर पर नहीं | VCN/subnet settings पर निर्भर करता है; सत्यापित करें कि वास्तव में क्या assigned/exposed है। |
+| पारंपरिक चरण             | आवश्यक है?     | कारण                                                                       |
+| ------------------------ | -------------- | -------------------------------------------------------------------------- |
+| UFW फ़ायरवॉल             | नहीं           | VCN ट्रैफ़िक को इंस्टेंस तक पहुँचने से पहले अवरुद्ध कर देता है।             |
+| fail2ban                 | नहीं           | पोर्ट 22 VCN पर अवरुद्ध है; ब्रूट-फ़ोर्स के लिए कोई सतह नहीं है।            |
+| sshd को सुरक्षित बनाना   | नहीं           | Tailscale SSH, sshd का उपयोग नहीं करता।                                    |
+| रूट लॉगिन अक्षम करना     | नहीं           | Tailscale सिस्टम उपयोगकर्ताओं के बजाय टेलनेट पहचान से प्रमाणीकरण करता है।   |
+| केवल SSH कुंजी प्रमाणीकरण | नहीं           | वही कारण -- टेलनेट पहचान सिस्टम SSH कुंजियों का स्थान लेती है।             |
+| IPv6 को सुरक्षित बनाना   | सामान्यतः नहीं | VCN/सबनेट सेटिंग पर निर्भर करता है; सत्यापित करें कि वास्तव में क्या असाइन/उजागर किया गया है। |
 
 फिर भी अनुशंसित:
 
-- credential file permissions सीमित करने के लिए `chmod 700 ~/.openclaw`।
-- OpenClaw-specific posture check के लिए `openclaw security audit`।
-- OS patches के लिए नियमित `sudo apt update && sudo apt upgrade`।
-- [Tailscale admin console](https://login.tailscale.com/admin) में devices की समय-समय पर समीक्षा करें।
+- क्रेडेंशियल फ़ाइल की अनुमतियाँ सीमित करने के लिए `chmod 700 ~/.openclaw`।
+- OpenClaw-विशिष्ट सुरक्षा स्थिति जाँच के लिए `openclaw security audit`।
+- OS पैच के लिए नियमित रूप से `sudo apt update && sudo apt upgrade`।
+- [Tailscale एडमिन कंसोल](https://login.tailscale.com/admin) में डिवाइसों की समय-समय पर समीक्षा करें।
 
-त्वरित verification commands:
+त्वरित सत्यापन कमांड:
 
 ```bash
-# Confirm no public ports are listening
+# पुष्टि करें कि कोई सार्वजनिक पोर्ट सुन नहीं रहा है
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# Verify Tailscale SSH is active
-tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
+# सत्यापित करें कि Tailscale SSH सक्रिय है
+tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH सक्रिय है"
 
-# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+# वैकल्पिक: Tailscale SSH के काम करने की पुष्टि होने के बाद sshd को पूरी तरह अक्षम करें
 sudo systemctl disable --now ssh
 ```
 
-## ARM नोट्स
+## ARM संबंधी टिप्पणियाँ
 
-Always Free tier ARM (`aarch64`) है। अधिकांश OpenClaw features ठीक काम करते हैं; थोड़ी संख्या में native binaries को ARM builds चाहिए:
+Always Free टियर ARM (`aarch64`) है। OpenClaw की अधिकांश सुविधाएँ ठीक से काम करती हैं; कुछ नेटिव बाइनरी को ARM बिल्ड की आवश्यकता होती है:
 
-- Node.js, Telegram, WhatsApp (Baileys): pure JavaScript, कोई समस्या नहीं।
-- native code वाले अधिकांश npm packages: pre-built `linux-arm64` artifacts उपलब्ध।
-- वैकल्पिक CLI helpers (जैसे Skills द्वारा shipped Go/Rust binaries): install करने से पहले `aarch64` / `linux-arm64` release देखें।
+- Node.js, Telegram, WhatsApp (Baileys): पूर्णतः JavaScript, कोई समस्या नहीं।
+- नेटिव कोड वाले अधिकांश npm पैकेज: पूर्व-निर्मित `linux-arm64` आर्टिफ़ैक्ट उपलब्ध हैं।
+- वैकल्पिक CLI सहायक (उदाहरण के लिए, Skills द्वारा प्रदान की गई Go/Rust बाइनरी): इंस्टॉल करने से पहले `aarch64` / `linux-arm64` रिलीज़ की जाँच करें।
 
-`uname -m` से architecture सत्यापित करें (इसे `aarch64` print करना चाहिए)। जिन binaries का ARM build नहीं है, उन्हें source से install करें या छोड़ दें।
+`uname -m` से आर्किटेक्चर सत्यापित करें (इसे `aarch64` प्रिंट करना चाहिए)। जिन बाइनरी का ARM बिल्ड उपलब्ध नहीं है, उन्हें स्रोत से इंस्टॉल करें या छोड़ दें।
 
-## Persistence और backups
+## स्थायित्व और बैकअप
 
-OpenClaw state यहाँ रहता है:
+OpenClaw की स्थिति यहाँ रहती है:
 
-- `~/.openclaw/` — `openclaw.json`, per-agent `auth-profiles.json`, channel/provider state, और session data।
-- `~/.openclaw/workspace/` — agent workspace (SOUL.md, memory, artifacts)।
+- `~/.openclaw/` -- `openclaw.json`, प्रति-एजेंट `auth-profiles.json`, चैनल/प्रदाता स्थिति और सत्र डेटा।
+- `~/.openclaw/workspace/` -- एजेंट कार्यस्थान (SOUL.md, मेमोरी, आर्टिफ़ैक्ट)।
 
-ये reboots के बाद भी बने रहते हैं। portable snapshot लेने के लिए:
+ये रीबूट के बाद भी बने रहते हैं। पोर्टेबल स्नैपशॉट लेने के लिए:
 
 ```bash
 openclaw backup create
 ```
 
-## Fallback: SSH tunnel
+## फ़ॉलबैक: SSH टनल
 
-अगर Tailscale Serve काम नहीं कर रहा है, तो अपनी local machine से SSH tunnel का उपयोग करें:
+यदि Tailscale Serve काम नहीं कर रहा है, तो अपनी स्थानीय मशीन से SSH टनल का उपयोग करें:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -203,24 +204,24 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 फिर `http://localhost:18789` खोलें।
 
-## Troubleshooting
+## समस्या निवारण
 
-**Instance creation fails ("Out of capacity")** -- Free tier ARM instances लोकप्रिय हैं। कोई दूसरा availability domain आज़माएँ या off-peak hours में फिर कोशिश करें।
+**इंस्टेंस बनाना विफल होता है ("Out of capacity")** -- निःशुल्क टियर के ARM इंस्टेंस लोकप्रिय हैं। कोई अन्य उपलब्धता डोमेन आज़माएँ या कम व्यस्त समय में फिर प्रयास करें।
 
-**Tailscale connect नहीं होगा** -- फिर से authenticate करने के लिए `sudo tailscale up --ssh --hostname=openclaw --reset` चलाएँ।
+**Tailscale कनेक्ट नहीं होता** -- पुनः प्रमाणीकरण के लिए `sudo tailscale up --ssh --hostname=openclaw --reset` चलाएँ।
 
-**Gateway start नहीं होगा** -- `openclaw doctor --non-interactive` चलाएँ और `journalctl --user -u openclaw-gateway.service -n 50` से logs देखें।
+**Gateway प्रारंभ नहीं होता** -- `openclaw doctor --non-interactive` चलाएँ और `journalctl --user -u openclaw-gateway.service -n 50` से लॉग जाँचें।
 
-**ARM binary issues** -- अधिकांश npm packages ARM64 पर काम करते हैं। native binaries के लिए `linux-arm64` या `aarch64` releases खोजें। `uname -m` से architecture सत्यापित करें।
+**ARM बाइनरी संबंधी समस्याएँ** -- अधिकांश npm पैकेज ARM64 पर काम करते हैं। नेटिव बाइनरी के लिए `linux-arm64` या `aarch64` रिलीज़ खोजें। `uname -m` से आर्किटेक्चर सत्यापित करें।
 
-## अगले steps
+## अगले चरण
 
-- [चैनल](/hi/channels) -- Telegram, WhatsApp, Discord, और अन्य connect करें
-- [Gateway configuration](/hi/gateway/configuration) -- सभी config options
-- [Updating](/hi/install/updating) -- OpenClaw को up to date रखें
+- [चैनल](/hi/channels) -- Telegram, WhatsApp, Discord और अन्य सेवाएँ कनेक्ट करें
+- [Gateway कॉन्फ़िगरेशन](/hi/gateway/configuration) -- सभी कॉन्फ़िगरेशन विकल्प
+- [अपडेट करना](/hi/install/updating) -- OpenClaw को अद्यतित रखें
 
 ## संबंधित
 
-- [Install overview](/hi/install)
+- [इंस्टॉल अवलोकन](/hi/install)
 - [GCP](/hi/install/gcp)
-- [VPS hosting](/hi/vps)
+- [VPS होस्टिंग](/hi/vps)

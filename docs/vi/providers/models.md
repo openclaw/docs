@@ -1,20 +1,21 @@
 ---
 read_when:
     - Bạn muốn chọn một nhà cung cấp mô hình
-    - Bạn muốn các ví dụ thiết lập nhanh cho xác thực LLM và lựa chọn mô hình
+    - Bạn muốn các ví dụ thiết lập nhanh cho xác thực LLM + lựa chọn mô hình
 summary: Các nhà cung cấp mô hình (LLM) được OpenClaw hỗ trợ
-title: Hướng dẫn bắt đầu nhanh với nhà cung cấp mô hình
+title: Hướng dẫn bắt đầu nhanh về nhà cung cấp mô hình
 x-i18n:
-    generated_at: "2026-07-12T08:16:36Z"
+    generated_at: "2026-07-19T05:58:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
+    source_hash: 3988d6985cbe203a6a3357d59160190990b1b53245ea25f1538dbc6f567afec1
     source_path: providers/models.md
     workflow: 16
 ---
 
-Chọn một nhà cung cấp, xác thực, sau đó đặt mô hình mặc định theo dạng `provider/model`.
+Chọn một nhà cung cấp, xác thực, rồi đặt mô hình mặc định thành `provider/model`.
 
 ## Bắt đầu nhanh (hai bước)
 
@@ -27,11 +28,12 @@ Chọn một nhà cung cấp, xác thực, sau đó đặt mô hình mặc đị
 }
 ```
 
-## Các nhà cung cấp được hỗ trợ (danh sách khởi đầu)
+## Các nhà cung cấp được hỗ trợ (bộ khởi đầu)
 
 - [Alibaba Model Studio](/vi/providers/alibaba)
 - [Amazon Bedrock](/vi/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/vi/providers/anthropic)
+- [Baseten (Inkling + API mô hình)](/providers/baseten)
 - [BytePlus (Quốc tế)](/vi/concepts/model-providers#byteplus-international)
 - [Chutes](/vi/providers/chutes)
 - [Cloudflare AI Gateway](/vi/providers/cloudflare-ai-gateway)
@@ -57,18 +59,18 @@ Chọn một nhà cung cấp, xác thực, sau đó đặt mô hình mặc đị
 - [xAI](/vi/providers/xai)
 - [Z.AI (GLM)](/vi/providers/zai)
 
-Để xem danh mục nhà cung cấp đầy đủ và cấu hình nâng cao, hãy xem
-[Danh mục nhà cung cấp](/vi/providers/index) và [Nhà cung cấp mô hình](/vi/concepts/model-providers).
+Để xem danh mục đầy đủ các nhà cung cấp và cấu hình nâng cao, hãy xem
+[Thư mục nhà cung cấp](/vi/providers/index) và [Nhà cung cấp mô hình](/vi/concepts/model-providers).
 
 ## Các biến thể nhà cung cấp bổ sung
 
-- `anthropic-vertex` - cài đặt `@openclaw/anthropic-vertex-provider` để hỗ trợ ngầm định Anthropic trên Google Vertex khi có thông tin xác thực Vertex; không có lựa chọn xác thực riêng trong quy trình thiết lập ban đầu
+- `anthropic-vertex` - cài đặt `@openclaw/anthropic-vertex-provider` để hỗ trợ ngầm định Anthropic trên Google Vertex khi có thông tin xác thực Vertex; không có lựa chọn xác thực nhập môn riêng
 - `copilot-proxy` - cầu nối VS Code Copilot Proxy cục bộ; sử dụng `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - quy trình OAuth Gemini CLI không chính thức; yêu cầu cài đặt `gemini` cục bộ (`brew install gemini-cli` hoặc `npm install -g @google/gemini-cli`); mô hình mặc định `google-gemini-cli/gemini-3-flash-preview`; sử dụng `openclaw onboard --auth-choice google-gemini-cli` hoặc `openclaw models auth login --provider google-gemini-cli --set-default`
+- `google-gemini-cli` - luồng OAuth Gemini CLI không chính thức; yêu cầu cài đặt `gemini` cục bộ (`brew install gemini-cli` hoặc `npm install -g @google/gemini-cli`); mô hình mặc định `google-gemini-cli/gemini-3-flash-preview`; sử dụng `openclaw onboard --auth-choice google-gemini-cli` hoặc `openclaw models auth login --provider google-gemini-cli --set-default`
 
 ## Liên quan
 
-- [Danh mục nhà cung cấp](/vi/providers/index)
+- [Thư mục nhà cung cấp](/vi/providers/index)
 - [Lựa chọn mô hình](/vi/concepts/model-providers)
 - [Chuyển đổi dự phòng mô hình](/vi/concepts/model-failover)
 - [CLI mô hình](/vi/cli/models)

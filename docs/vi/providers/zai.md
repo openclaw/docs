@@ -5,26 +5,26 @@ read_when:
 summary: Sử dụng Z.AI (các mô hình GLM) với OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-07-16T15:09:09Z"
+    generated_at: "2026-07-19T06:00:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7f7adf0e2f436f9081891013c0092ce4717bf302b2a4a2e997d9561d7d40211a
+    source_hash: 0ca3e7ef743e908550f4d96ba6f78167e38cabd15b14044683b02493ebbf3025
     source_path: providers/zai.md
     workflow: 16
 ---
 
-Z.AI là nền tảng API dành cho các mô hình **GLM**. Nền tảng này cung cấp API REST cho GLM và
+Z.AI là nền tảng API dành cho các mô hình **GLM**. Nền tảng này cung cấp các API REST cho GLM và
 sử dụng khóa API để xác thực. Hãy tạo khóa API trong bảng điều khiển Z.AI.
-OpenClaw sử dụng nhà cung cấp `zai` cùng với khóa API Z.AI.
+OpenClaw sử dụng nhà cung cấp `zai` với khóa API Z.AI.
 
-| Thuộc tính | Giá trị                                        |
-| -------- | -------------------------------------------- |
+| Thuộc tính | Giá trị                                      |
+| ---------- | -------------------------------------------- |
 | Nhà cung cấp | `zai`                                        |
-| Gói  | `@openclaw/zai-provider`                     |
-| Xác thực     | `ZAI_API_KEY` (bí danh cũ: `Z_AI_API_KEY`) |
-| API      | Z.AI Chat Completions (xác thực Bearer)          |
+| Gói        | `@openclaw/zai-provider`                     |
+| Xác thực   | `ZAI_API_KEY` (bí danh cũ: `Z_AI_API_KEY`) |
+| API        | Z.AI Chat Completions (xác thực Bearer)      |
 
 ## Các mô hình GLM
 
@@ -41,7 +41,7 @@ openclaw plugins install @openclaw/zai-provider
 
 <Tabs>
   <Tab title="Tự động phát hiện điểm cuối">
-    **Phù hợp nhất với:** hầu hết người dùng. OpenClaw dùng khóa API của bạn để thăm dò các điểm cuối Z.AI được hỗ trợ và tự động áp dụng URL cơ sở chính xác.
+    **Phù hợp nhất cho:** hầu hết người dùng. OpenClaw thăm dò các điểm cuối Z.AI được hỗ trợ bằng khóa API của bạn và tự động áp dụng URL cơ sở chính xác.
 
     <Steps>
       <Step title="Chạy quy trình thiết lập ban đầu">
@@ -49,7 +49,7 @@ openclaw plugins install @openclaw/zai-provider
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Xác minh mô hình có trong danh sách">
+      <Step title="Xác minh mô hình xuất hiện trong danh sách">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -59,12 +59,12 @@ openclaw plugins install @openclaw/zai-provider
   </Tab>
 
   <Tab title="Chỉ định rõ điểm cuối theo khu vực">
-    **Phù hợp nhất với:** người dùng muốn buộc sử dụng một bề mặt API Coding Plan hoặc API chung cụ thể.
+    **Phù hợp nhất cho:** người dùng muốn buộc sử dụng một Coding Plan hoặc bề mặt API chung cụ thể.
 
     <Steps>
-      <Step title="Chọn tùy chọn thiết lập ban đầu phù hợp">
+      <Step title="Chọn đúng tùy chọn thiết lập ban đầu">
         ```bash
-        # Coding Plan Toàn cầu (khuyên dùng cho người dùng Coding Plan)
+        # Coding Plan Toàn cầu (khuyến nghị cho người dùng Coding Plan)
         openclaw onboard --auth-choice zai-coding-global
 
         # Coding Plan CN (khu vực Trung Quốc)
@@ -77,7 +77,7 @@ openclaw plugins install @openclaw/zai-provider
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Xác minh mô hình có trong danh sách">
+      <Step title="Xác minh mô hình xuất hiện trong danh sách">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -89,39 +89,44 @@ openclaw plugins install @openclaw/zai-provider
 
 ### Điểm cuối
 
-| Tùy chọn thiết lập ban đầu   | URL cơ sở                                      | Mô hình mặc định |
-| ------------------- | --------------------------------------------- | ------------- |
+| Tùy chọn thiết lập ban đầu | URL cơ sở                                    | Mô hình mặc định |
+| -------------------------- | -------------------------------------------- | ---------------- |
 | `zai-global`        | `https://api.z.ai/api/paas/v4`                | `glm-5.1`     |
 | `zai-cn`            | `https://open.bigmodel.cn/api/paas/v4`        | `glm-5.1`     |
 | `zai-coding-global` | `https://api.z.ai/api/coding/paas/v4`         | `glm-5.2`     |
 | `zai-coding-cn`     | `https://open.bigmodel.cn/api/coding/paas/v4` | `glm-5.2`     |
 
-`zai-api-key` tự động phát hiện một trong bốn điểm cuối này bằng cách dùng khóa của bạn để thăm dò
-API hoàn thành hội thoại của từng điểm cuối, kiểm tra các điểm cuối chung (`zai-global`,
+Z.AI cũng công bố URL cơ sở Coding Plan tương thích với Anthropic
+`https://api.z.ai/api/anthropic`. Các tùy chọn Z.AI của OpenClaw sử dụng
+các điểm cuối OpenAI Chat Completions được ghi lại ở trên; URL Anthropic dành cho các máy khách
+giao tiếp trực tiếp bằng Anthropic Messages.
+
+`zai-api-key` tự động phát hiện một trong bốn điểm cuối này bằng cách thăm dò khóa của bạn với API
+chat-completions của từng điểm cuối, kiểm tra các điểm cuối chung (`zai-global`,
 sau đó `zai-cn`) trước các điểm cuối Coding Plan (`zai-coding-global`, sau đó
 `zai-coding-cn`), rồi dừng tại điểm cuối đầu tiên chấp nhận yêu cầu.
-Hãy dùng một `--auth-choice` rõ ràng để buộc sử dụng điểm cuối Coding Plan nếu khóa của bạn
-hoạt động trên cả hai.
+Hãy sử dụng `--auth-choice` rõ ràng để buộc dùng một điểm cuối Coding Plan nếu khóa của bạn
+hoạt động trên cả hai loại.
 
 ## Giới hạn tốc độ và tình trạng quá tải
 
-Z.AI mô tả Coding Plan và các công cụ tác tử đa dụng là những dịch vụ
-được quản lý theo năng lực. Theo tài liệu của Z.AI:
+Z.AI mô tả Coding Plan và các công cụ tác nhân đa dụng là những dịch vụ
+được quản lý theo năng lực. Theo tài liệu của chính Z.AI:
 
-- [Các công cụ tác tử đa dụng](https://docs.z.ai/devpack/tool/others),
-  bao gồm OpenClaw, được cung cấp trên cơ sở nỗ lực tối đa. Khi tải suy luận
+- [Các công cụ tác nhân đa dụng](https://docs.z.ai/devpack/tool/others),
+  bao gồm OpenClaw, được phục vụ theo khả năng tốt nhất. Trong thời gian tải suy luận
   cao, thường vào khoảng 2-6 giờ chiều theo giờ Singapore, một số yêu cầu có thể gặp
   giới hạn tốc độ tạm thời.
-- [Giới hạn tốc độ và đồng thời của Coding Plan](https://docs.z.ai/devpack/usage-policy)
-  phụ thuộc vào cấp gói và có thể được điều chỉnh linh hoạt dựa trên mức độ sẵn có của tài nguyên.
-  Giờ thấp điểm có thể có mức đồng thời cao hơn.
+- [Giới hạn tốc độ và số yêu cầu đồng thời của Coding Plan](https://docs.z.ai/devpack/usage-policy)
+  phụ thuộc vào cấp gói và có thể được điều chỉnh linh hoạt dựa trên tài nguyên
+  sẵn có. Ngoài giờ cao điểm có thể cho phép số yêu cầu đồng thời cao hơn.
 - [Mã lỗi API `1302`](https://docs.z.ai/api-reference/api-code) có nghĩa là "Đã đạt
-  giới hạn tốc độ cho các yêu cầu". Mã lỗi API `1305` có nghĩa là "Dịch vụ có thể đang
+  giới hạn tốc độ yêu cầu". Mã lỗi API `1305` có nghĩa là "Dịch vụ có thể đang
   tạm thời quá tải, vui lòng thử lại sau".
 
-Nếu gặp phản hồi `429` hoặc `1305` tạm thời trong thời gian cao điểm, hãy chờ và
-thử lại yêu cầu. Nếu lỗi lặp lại ngoài thời gian cao điểm hoặc chỉ
-xảy ra với một điểm cuối, mô hình hay dạng yêu cầu, trước tiên hãy kiểm tra điểm cuối
+Nếu bạn thấy phản hồi `429` hoặc `1305` tạm thời trong thời gian bận, hãy chờ rồi
+thử lại yêu cầu. Nếu lỗi lặp lại ngoài giờ cao điểm hoặc chỉ
+xảy ra với một điểm cuối, mô hình hay cấu trúc yêu cầu, trước tiên hãy kiểm tra điểm cuối
 và mô hình đã cấu hình:
 
 ```bash
@@ -129,18 +134,18 @@ openclaw models list --all --provider zai
 openclaw config get models.providers.zai.baseUrl
 ```
 
-Khóa Coding Plan nên sử dụng một điểm cuối Coding Plan như
-`https://api.z.ai/api/coding/paas/v4`; khóa API chung nên sử dụng một điểm cuối API chung
-như `https://api.z.ai/api/paas/v4`. Lỗi kéo dài với cùng
-khóa và điểm cuối có thể cho thấy yêu cầu bị nhà cung cấp từ chối hoặc gói bị giới hạn,
-không phải tình trạng điều tiết thông thường do tải cao điểm.
+Khóa Coding Plan phải sử dụng điểm cuối Coding Plan như
+`https://api.z.ai/api/coding/paas/v4`; khóa API chung phải sử dụng điểm cuối API chung
+như `https://api.z.ai/api/paas/v4`. Lỗi kéo dài với cùng một khóa và điểm cuối
+có thể cho thấy nhà cung cấp từ chối hoặc gói có giới hạn,
+không phải điều tiết tải cao điểm thông thường.
 
 ## Ví dụ cấu hình
 
 <Tip>
-`zai-api-key` cho phép OpenClaw phát hiện điểm cuối Z.AI phù hợp từ khóa và
-tự động áp dụng URL cơ sở chính xác. Hãy dùng các tùy chọn khu vực được chỉ định rõ khi
-bạn muốn buộc sử dụng một bề mặt API Coding Plan hoặc API chung cụ thể.
+`zai-api-key` cho phép OpenClaw phát hiện điểm cuối Z.AI khớp với khóa và
+tự động áp dụng URL cơ sở chính xác. Hãy dùng các tùy chọn khu vực rõ ràng khi
+bạn muốn buộc sử dụng một Coding Plan hoặc bề mặt API chung cụ thể.
 </Tip>
 
 ```json5
@@ -160,19 +165,19 @@ bạn muốn buộc sử dụng một bề mặt API Coding Plan hoặc API chun
 
 ## Danh mục tích hợp sẵn
 
-Plugin nhà cung cấp `zai` cung cấp danh mục của mình trong tệp kê khai Plugin, vì vậy thao tác liệt kê
-chỉ đọc có thể hiển thị các hàng GLM đã biết mà không cần tải môi trường thực thi của nhà cung cấp:
+Plugin nhà cung cấp `zai` cung cấp danh mục của mình trong bản kê khai Plugin, vì vậy thao tác
+liệt kê chỉ đọc có thể hiển thị các hàng GLM đã biết mà không cần tải môi trường thời gian chạy của nhà cung cấp:
 
 ```bash
 openclaw models list --all --provider zai
 ```
 
-Danh mục dựa trên tệp kê khai hiện bao gồm:
+Danh mục dựa trên bản kê khai hiện bao gồm:
 
-| Tham chiếu mô hình            | Ghi chú                           |
+| Tham chiếu mô hình   | Ghi chú                         |
 | -------------------- | ------------------------------- |
 | `zai/glm-5.2`        | Mặc định của Coding Plan; ngữ cảnh 1M |
-| `zai/glm-5.1`        | Mặc định của API chung             |
+| `zai/glm-5.1`        | Mặc định của API chung          |
 | `zai/glm-5`          |                                 |
 | `zai/glm-5-turbo`    |                                 |
 | `zai/glm-5v-turbo`   |                                 |
@@ -186,16 +191,21 @@ Danh mục dựa trên tệp kê khai hiện bao gồm:
 | `zai/glm-4.5-flash`  |                                 |
 | `zai/glm-4.5v`       |                                 |
 
+Siêu dữ liệu chi phí token của danh mục tuân theo
+[giá trả theo mức sử dụng](https://docs.z.ai/guides/overview/pricing) hiện tại của Z.AI. Các gói đăng ký Coding Plan
+sử dụng hạn ngạch gói thay vì tính phí theo token; hãy xem
+[trang đăng ký](https://z.ai/subscribe) trực tiếp để biết giá và khả năng cung cấp của gói.
+
 <Tip>
 Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`).
 </Tip>
 
 <Note>
 Thiết lập Coding Plan mặc định là `zai/glm-5.2`; thiết lập API chung giữ nguyên
-`zai/glm-5.1`. Trên các điểm cuối Coding Plan, tính năng tự động phát hiện chuyển sang
-`glm-5.1` rồi `glm-4.7` khi khóa/gói không cung cấp GLM-5.2. Phiên bản
-và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw models list --all --provider zai`
-để xem danh mục mà phiên bản đã cài đặt của bạn nhận biết.
+`zai/glm-5.1`. Trên các điểm cuối Coding Plan, tính năng tự động phát hiện sẽ chuyển sang
+`glm-5.1` rồi `glm-4.7` khi khóa/gói không cung cấp GLM-5.2. Các phiên bản
+và khả năng cung cấp GLM có thể thay đổi; hãy chạy `openclaw models list --all --provider zai`
+để xem danh mục mà phiên bản bạn đã cài đặt nhận biết.
 </Note>
 
 ## Mức độ suy luận
@@ -203,14 +213,14 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
 <Tabs>
   <Tab title="GLM-5.2">
     Toàn bộ phạm vi: `off`, `low`, `high`, `max` (mặc định `off`). OpenClaw ánh xạ
-    `low` và `high` tới mức nỗ lực suy luận `high` của Z.AI, còn `max` tới mức
-    nỗ lực `max` của Z.AI, thông qua `reasoning_effort` trong tải trọng yêu cầu.
+    `low` và `high` sang mức nỗ lực suy luận `high` của Z.AI, còn `max` sang
+    mức nỗ lực `max` của Z.AI, thông qua `reasoning_effort` trong tải trọng yêu cầu.
   </Tab>
   <Tab title="Các mô hình GLM khác">
-    Chỉ có nút chuyển nhị phân: `off` và `low` (hiển thị là `on` trong trình chọn), mặc định
-    là `off`. Đặt mức suy luận thành `off` sẽ gửi `thinking: { type: "disabled" }`;
-    mọi mức khác đều giữ nguyên tải trọng yêu cầu (hành vi suy luận mặc định của
-    chính Z.AI sẽ được áp dụng).
+    Chỉ có nút chuyển đổi nhị phân: `off` và `low` (được hiển thị là `on` trong trình chọn), mặc định
+    `off`. Đặt mức suy luận thành `off` sẽ gửi `thinking: { type: "disabled" }`;
+    mọi mức khác đều không thay đổi tải trọng yêu cầu (hành vi
+    suy luận mặc định của chính Z.AI được áp dụng).
   </Tab>
 </Tabs>
 
@@ -220,14 +230,14 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Phân giải chuyển tiếp các mô hình GLM-5 chưa xác định">
-    Các mã `glm-5*` chưa xác định vẫn được phân giải chuyển tiếp trên đường dẫn của nhà cung cấp bằng cách
+  <Accordion title="Phân giải chuyển tiếp các mô hình GLM-5 chưa biết">
+    Các mã `glm-5*` chưa biết vẫn được phân giải chuyển tiếp trên đường dẫn nhà cung cấp bằng cách
     tổng hợp siêu dữ liệu do nhà cung cấp sở hữu từ mẫu `glm-4.7` khi mã
-    khớp với dạng hiện tại của họ GLM-5.
+    khớp với cấu trúc họ GLM-5 hiện tại.
   </Accordion>
 
   <Accordion title="Truyền phát lệnh gọi công cụ">
-    `tool_stream` được bật theo mặc định cho tính năng truyền phát lệnh gọi công cụ của Z.AI. Để tắt:
+    `tool_stream` được bật theo mặc định cho tính năng truyền phát lệnh gọi công cụ của Z.AI. Để tắt tính năng này:
 
     ```json5
     {
@@ -245,10 +255,10 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
 
   </Accordion>
 
-  <Accordion title="Bảo toàn quá trình suy luận">
-    Tính năng bảo toàn quá trình suy luận yêu cầu chủ động bật vì Z.AI yêu cầu phát lại toàn bộ
-    `reasoning_content` trong lịch sử, làm tăng số token lời nhắc. Bật tính năng này
-    cho từng mô hình:
+  <Accordion title="Duy trì quá trình suy luận">
+    Việc duy trì quá trình suy luận là tùy chọn vì Z.AI yêu cầu phát lại toàn bộ
+    `reasoning_content` trước đó, làm tăng số token lời nhắc. Bật tính năng này
+    theo từng mô hình:
 
     ```json5
     {
@@ -264,9 +274,9 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
     }
     ```
 
-    Khi được bật và tính năng suy luận đang hoạt động, OpenClaw gửi
+    Khi được bật và chế độ suy luận đang hoạt động, OpenClaw sẽ gửi
     `thinking: { type: "enabled", clear_thinking: false }` và phát lại
-    `reasoning_content` trước đó cho cùng bản ghi hội thoại tương thích với OpenAI. Khóa tham số dạng snake_case
+    `reasoning_content` trước đó cho cùng một bản ghi hội thoại tương thích với OpenAI. Khóa tham số dạng snake_case
     `preserve_thinking` hoạt động như một bí danh.
 
     Người dùng nâng cao vẫn có thể ghi đè tải trọng chính xác của nhà cung cấp bằng
@@ -274,22 +284,22 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
 
   </Accordion>
 
-  <Accordion title="Nhận hiểu hình ảnh">
-    Plugin Z.AI đăng ký tính năng nhận hiểu hình ảnh.
+  <Accordion title="Hiểu hình ảnh">
+    Plugin Z.AI đăng ký khả năng hiểu hình ảnh.
 
-    | Thuộc tính      | Giá trị       |
+    | Thuộc tính    | Giá trị     |
     | ------------- | ----------- |
-    | Mô hình         | `glm-4.6v`  |
+    | Mô hình       | `glm-4.6v`  |
 
-    Tính năng nhận hiểu hình ảnh được tự động phân giải từ thông tin xác thực Z.AI đã cấu hình — không
-    cần cấu hình bổ sung.
+    Khả năng hiểu hình ảnh được tự động phân giải từ thông tin xác thực Z.AI đã cấu hình —
+    không cần cấu hình bổ sung.
 
   </Accordion>
 
   <Accordion title="Chi tiết xác thực">
     - Z.AI sử dụng xác thực Bearer với khóa API của bạn.
-    - Tùy chọn thiết lập ban đầu `zai-api-key` tự động phát hiện điểm cuối Z.AI phù hợp bằng cách dùng khóa của bạn để thăm dò các điểm cuối được hỗ trợ.
-    - Hãy dùng các tùy chọn khu vực được chỉ định rõ (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) khi bạn muốn buộc sử dụng một bề mặt API cụ thể.
+    - Tùy chọn thiết lập ban đầu `zai-api-key` tự động phát hiện điểm cuối Z.AI phù hợp bằng cách thăm dò các điểm cuối được hỗ trợ với khóa của bạn.
+    - Hãy sử dụng các tùy chọn khu vực rõ ràng (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) khi bạn muốn buộc sử dụng một bề mặt API cụ thể.
     - Biến môi trường cũ `Z_AI_API_KEY` vẫn được chấp nhận; OpenClaw sao chép biến này sang `ZAI_API_KEY` khi khởi động nếu `ZAI_API_KEY` chưa được đặt.
 
   </Accordion>
@@ -301,7 +311,7 @@ và tính khả dụng của GLM có thể thay đổi; hãy chạy `openclaw mo
   <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
     Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
-  <Card title="Tài liệu tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
-    Lược đồ cấu hình OpenClaw đầy đủ, bao gồm các cài đặt nhà cung cấp và mô hình.
+  <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
+    Lược đồ cấu hình OpenClaw đầy đủ, bao gồm các thiết lập nhà cung cấp và mô hình.
   </Card>
 </CardGroup>

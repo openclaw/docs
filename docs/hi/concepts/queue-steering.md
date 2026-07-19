@@ -1,97 +1,71 @@
 ---
 read_when:
-    - यह समझाना कि जब कोई एजेंट टूल्स का उपयोग कर रहा हो, तब steer कैसे व्यवहार करता है
-    - सक्रिय-रन कतार व्यवहार या रनटाइम स्टीयरिंग इंटीग्रेशन बदलना
-    - स्टीयरिंग की तुलना फ़ॉलोअप, कलेक्ट, और इंटरप्ट क्यू मोड से करना
-summary: सक्रिय-रन स्टीयरिंग रनटाइम सीमाओं पर संदेशों को कैसे कतारबद्ध करती है
-title: Steering कतार
+    - यह समझाना कि एजेंट द्वारा टूल का उपयोग करते समय स्टीयर कैसे व्यवहार करता है
+    - सक्रिय-रन कतार के व्यवहार या रनटाइम स्टीयरिंग एकीकरण को बदलना
+    - स्टीयरिंग की तुलना फ़ॉलोअप, कलेक्ट और इंटरप्ट क्यू मोड से करना
+summary: सक्रिय रन स्टीयरिंग रनटाइम सीमाओं पर संदेशों को कैसे कतारबद्ध करती है
+title: स्टीयरिंग कतार
 x-i18n:
-    generated_at: "2026-06-28T23:02:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:19:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b38d036d2a44af431653746e2d5918af0a8af471450f440479cf0a1acc86c9cd
+    source_hash: a73311661b40d65d254b3e6af0406965fcde9eb76d2628c1958920453aad1cbc
     source_path: concepts/queue-steering.md
     workflow: 16
 ---
 
-जब कोई सामान्य प्रॉम्प्ट तब आता है जब कोई सेशन रन पहले से स्ट्रीम हो रहा हो, तो OpenClaw
-डिफ़ॉल्ट रूप से उस प्रॉम्प्ट को सक्रिय रनटाइम में भेजने की कोशिश करता है जब queue mode
-`steer` हो। इस डिफ़ॉल्ट व्यवहार के लिए किसी config entry और किसी queue directive की
-ज़रूरत नहीं होती। OpenClaw और native Codex app-server harness डिलीवरी
-विवरण अलग-अलग तरीके से लागू करते हैं।
+जब कोई सामान्य प्रॉम्प्ट उस समय आता है जब किसी सेशन का रन पहले से स्ट्रीम हो रहा हो और क्यू मोड `steer` हो (डिफ़ॉल्ट, किसी कॉन्फ़िगरेशन की आवश्यकता नहीं), तो OpenClaw उस प्रॉम्प्ट को सक्रिय रनटाइम में भेजने का प्रयास करता है। OpenClaw और नेटिव Codex ऐप-सर्वर हार्नेस डिलीवरी के विवरण अलग-अलग तरीके से लागू करते हैं।
+
+यह पृष्ठ `steer` मोड में सामान्य इनबाउंड संदेशों के लिए क्यू-मोड स्टीयरिंग को शामिल करता है। `followup` या `collect` मोड में, सामान्य संदेश इस पथ को छोड़ देते हैं और सक्रिय रन पूरा होने तक प्रतीक्षा करते हैं। स्पष्ट `/steer <message>` कमांड के लिए, [स्टीयर](/hi/tools/steer) देखें।
 
 ## रनटाइम सीमा
 
-Steering पहले से चल रही tool call को बाधित नहीं करता। OpenClaw
-model boundaries पर queued steering messages की जांच करता है:
+स्टीयरिंग पहले से चल रही किसी टूल कॉल को बाधित नहीं करती। OpenClaw मॉडल सीमाओं पर क्यू में रखे गए स्टीयरिंग संदेशों की जाँच करता है:
 
-1. assistant tool calls मांगता है।
-2. OpenClaw मौजूदा assistant message के tool-call batch को निष्पादित करता है।
-3. OpenClaw turn end event emit करता है।
-4. OpenClaw queued steering messages को drain करता है।
-5. OpenClaw अगले LLM call से पहले उन messages को user messages के रूप में append करता है।
+1. सहायक टूल कॉल का अनुरोध करता है।
+2. OpenClaw वर्तमान सहायक संदेश के टूल-कॉल बैच को निष्पादित करता है।
+3. OpenClaw टर्न समाप्ति इवेंट उत्सर्जित करता है।
+4. OpenClaw क्यू में रखे गए स्टीयरिंग संदेश निकालता है।
+5. OpenClaw अगली LLM कॉल से पहले उन संदेशों को उपयोगकर्ता संदेशों के रूप में जोड़ता है।
 
-यह tool results को उस assistant message के साथ जोड़े रखता है जिसने उन्हें अनुरोध किया था,
-फिर अगली model call को नवीनतम user input देखने देता है।
+इससे टूल के परिणाम उनका अनुरोध करने वाले सहायक संदेश के साथ जुड़े रहते हैं, और फिर अगली मॉडल कॉल नवीनतम उपयोगकर्ता इनपुट देख पाती है।
 
-native Codex app-server harness, OpenClaw runtime की internal steering queue के बजाय
-`turn/steer` expose करता है। OpenClaw configured quiet window के लिए queued prompts को
-batch करता है, फिर arrival order में collected सभी user input के साथ एक single
-`turn/steer` request भेजता है।
+नेटिव Codex ऐप-सर्वर हार्नेस, OpenClaw रनटाइम की आंतरिक स्टीयरिंग क्यू के बजाय `turn/steer` उपलब्ध कराता है। OpenClaw कॉन्फ़िगर की गई शांत अवधि के दौरान क्यू में रखे गए प्रॉम्प्ट का बैच बनाता है, फिर आगमन क्रम में एकत्र किए गए सभी उपयोगकर्ता इनपुट के साथ एक `turn/steer` अनुरोध भेजता है।
 
-Codex review और manual compaction turns same-turn steering को reject करते हैं। जब कोई
-runtime `steer` mode में steering accept नहीं कर सकता, तो OpenClaw prompt शुरू करने से पहले
-active run के finish होने का इंतज़ार करता है।
-
-यह पेज normal inbound messages के लिए queue-mode steering समझाता है जब mode
-`steer` हो। अगर mode `followup` या `collect` है, तो normal messages इस steering path में enter
-नहीं करते; वे active run finish होने तक इंतज़ार करते हैं। explicit
-`/steer <message>` command के लिए, [Steer](/hi/tools/steer) देखें।
+Codex समीक्षा और मैन्युअल Compaction टर्न उसी टर्न में स्टीयरिंग अस्वीकार करते हैं। जब कोई रनटाइम `steer` मोड में स्टीयरिंग स्वीकार नहीं कर सकता, तो OpenClaw प्रॉम्प्ट शुरू करने से पहले सक्रिय रन के पूरा होने की प्रतीक्षा करता है।
 
 ## मोड
 
-| मोड        | Active-run behavior                                    | बाद का behavior                                                                      |
+| मोड        | सक्रिय रन का व्यवहार                                    | बाद का व्यवहार                                                                      |
 | ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `steer`     | संभव होने पर prompt को active runtime में steer करता है। | steering unavailable होने पर active run finish होने का इंतज़ार करता है।                      |
-| `followup`  | steer नहीं करता।                                        | active run ends होने के बाद queued messages को बाद में run करता है।                               |
-| `collect`   | steer नहीं करता।                                        | debounce window के बाद compatible queued messages को one later turn में coalesce करता है। |
-| `interrupt` | active run को steer करने के बजाय abort करता है।          | abort करने के बाद newest message शुरू करता है।                                           |
+| `steer`     | संभव होने पर प्रॉम्प्ट को सक्रिय रनटाइम में स्टीयर करता है। | यदि स्टीयरिंग उपलब्ध न हो, तो सक्रिय रन पूरा होने की प्रतीक्षा करता है।                      |
+| `followup`  | स्टीयर नहीं करता।                                        | सक्रिय रन समाप्त होने के बाद क्यू में रखे गए संदेशों को चलाता है।                               |
+| `collect`   | स्टीयर नहीं करता।                                        | डिबाउंस अवधि के बाद संगत क्यूबद्ध संदेशों को बाद के एक टर्न में समेकित करता है। |
+| `interrupt` | सक्रिय रन को स्टीयर करने के बजाय निरस्त करता है।          | निरस्त करने के बाद नवीनतम संदेश शुरू करता है।                                           |
 
 ## बर्स्ट उदाहरण
 
-अगर agent के tool call execute करते समय चार users messages भेजते हैं:
+यदि एजेंट के किसी टूल कॉल को निष्पादित करते समय चार उपयोगकर्ता संदेश भेजते हैं:
 
-- default behavior के साथ, active runtime को उसके अगले model decision से पहले
-  arrival order में सभी चार messages मिलते हैं। OpenClaw उन्हें next model
-  boundary पर drain करता है; Codex उन्हें one batched `turn/steer` के रूप में receive करता है।
-- `/queue collect` के साथ, OpenClaw steer नहीं करता। यह active run
-  ends होने तक इंतज़ार करता है, फिर debounce window के बाद compatible queued messages के साथ
-  followup turn बनाता है।
-- `/queue interrupt` के साथ, OpenClaw active run को abort करता है और steering के बजाय
-  newest message शुरू करता है।
+- डिफ़ॉल्ट व्यवहार में, सक्रिय रनटाइम अपने अगले मॉडल निर्णय से पहले आगमन क्रम में सभी चार संदेश प्राप्त करता है। OpenClaw उन्हें अगली मॉडल सीमा पर निकालता है; Codex उन्हें एक बैच किए गए `turn/steer` के रूप में प्राप्त करता है।
+- `/queue collect` के साथ, OpenClaw स्टीयर नहीं करता। यह सक्रिय रन समाप्त होने तक प्रतीक्षा करता है, फिर डिबाउंस अवधि के बाद संगत क्यूबद्ध संदेशों के साथ एक अनुवर्ती टर्न बनाता है।
+- `/queue interrupt` के साथ, OpenClaw सक्रिय रन को निरस्त करता है और स्टीयर करने के बजाय नवीनतम संदेश शुरू करता है।
 
 ## दायरा
 
-Steering हमेशा current active session run को target करता है। यह कोई नया
-session नहीं बनाता, active run की tool policy नहीं बदलता, और messages को sender के आधार पर split नहीं करता। 
-multi-user channels में, inbound prompts में पहले से sender और route context शामिल होता है, इसलिए
-अगली model call देख सकती है कि हर message किसने भेजा।
+स्टीयरिंग हमेशा वर्तमान सक्रिय सेशन रन को लक्षित करती है। यह नया सेशन नहीं बनाती, सक्रिय रन की टूल नीति नहीं बदलती, और संदेशों को प्रेषक के आधार पर विभाजित नहीं करती। बहु-उपयोगकर्ता चैनलों में इनबाउंड प्रॉम्प्ट में पहले से ही प्रेषक और रूट का संदर्भ शामिल होता है, इसलिए अगली मॉडल कॉल देख सकती है कि प्रत्येक संदेश किसने भेजा है।
 
-जब आप चाहते हैं कि messages डिफ़ॉल्ट रूप से active run को steer करने के बजाय queue हों,
-तो `followup` या `collect` use करें। जब newest prompt को active run
-replace करना चाहिए, तो `interrupt` use करें।
+जब आप चाहते हैं कि संदेश सक्रिय रन को स्टीयर करने के बजाय डिफ़ॉल्ट रूप से क्यू में जाएँ, तो `followup` या `collect` का उपयोग करें। जब नवीनतम प्रॉम्प्ट को सक्रिय रन का स्थान लेना चाहिए, तो `interrupt` का उपयोग करें।
 
-## Debounce
+## डिबाउंस
 
-`messages.queue.debounceMs` queued `followup` और `collect` delivery पर लागू होता है।
-native Codex harness के साथ `steer` mode में, यह batched `turn/steer` भेजने से पहले quiet window भी set करता है।
-OpenClaw के लिए, active steering खुद debounce timer use नहीं करता क्योंकि OpenClaw messages को naturally
-next model boundary तक batch करता है।
+`messages.queue.debounceMs` क्यू में रखी गई `followup` और `collect` डिलीवरी पर लागू होता है। नेटिव Codex हार्नेस के साथ `steer` मोड में, यह बैच किए गए `turn/steer` भेजने से पहले की शांत अवधि भी निर्धारित करता है। OpenClaw के लिए, सक्रिय स्टीयरिंग स्वयं डिबाउंस टाइमर का उपयोग नहीं करती, क्योंकि OpenClaw स्वाभाविक रूप से अगली मॉडल सीमा तक संदेशों का बैच बनाता है।
 
 ## संबंधित
 
-- [Command queue](/hi/concepts/queue)
-- [Steer](/hi/tools/steer)
-- [Messages](/hi/concepts/messages)
-- [Agent loop](/hi/concepts/agent-loop)
+- [कमांड क्यू](/hi/concepts/queue)
+- [स्टीयर](/hi/tools/steer)
+- [संदेश](/hi/concepts/messages)
+- [एजेंट लूप](/hi/concepts/agent-loop)

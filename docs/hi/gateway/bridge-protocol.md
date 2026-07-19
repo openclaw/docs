@@ -1,88 +1,88 @@
 ---
 read_when:
-    - Node क्लाइंट बनाना या डीबग करना (iOS/Android/macOS Node मोड)
-    - पेयरिंग या ब्रिज प्रमाणीकरण विफलताओं की जांच करना
-    - Gateway द्वारा उजागर की गई Node सतह का ऑडिट करना
+    - पुराने Node क्लाइंट कोड या संग्रहित पेयरिंग लॉग की जाँच करना
+    - लेगेसी Node सरफ़ेस द्वारा पहले उजागर की जाने वाली चीज़ों का ऑडिट करना
 summary: 'ऐतिहासिक ब्रिज प्रोटोकॉल (लेगेसी नोड्स): TCP JSONL, पेयरिंग, स्कोप्ड RPC'
 title: ब्रिज प्रोटोकॉल
 x-i18n:
-    generated_at: "2026-06-28T23:05:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:22:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 485d18f94b731018c6e0df493068b0b6aceff9afba6bebf1350db63c04cee98c
+    source_hash: 6e8b69c59f2170439f0e7b139bf5bbdb429d7c9d8dde7b36cd64aab63939c95d
     source_path: gateway/bridge-protocol.md
     workflow: 16
 ---
 
 <Warning>
-TCP ब्रिज **हटा दिया गया है**। मौजूदा OpenClaw बिल्ड ब्रिज listener शिप नहीं करते और `bridge.*` config keys अब schema में नहीं हैं। यह पेज केवल ऐतिहासिक संदर्भ के लिए रखा गया है। सभी node/operator clients के लिए [Gateway Protocol](/hi/gateway/protocol) का उपयोग करें।
+TCP ब्रिज **हटा दिया गया है**। वर्तमान OpenClaw बिल्ड में ब्रिज लिसनर शामिल नहीं है, और `bridge.*` कॉन्फ़िगरेशन कुंजियाँ अब स्कीमा में नहीं हैं। यह पृष्ठ केवल ऐतिहासिक संदर्भ के लिए है। सभी Node/ऑपरेटर क्लाइंट के लिए [Gateway प्रोटोकॉल](/hi/gateway/protocol) का उपयोग करें।
 </Warning>
 
 ## यह क्यों मौजूद था
 
-- **सुरक्षा सीमा**: ब्रिज पूरे gateway API surface के बजाय एक छोटी allowlist उजागर करता है।
-- **Pairing + नोड पहचान**: नोड admission gateway के स्वामित्व में होता है और per-node token से जुड़ा होता है।
-- **Discovery UX**: नोड LAN पर Bonjour के जरिए gateway खोज सकते हैं, या सीधे tailnet पर connect कर सकते हैं।
-- **Loopback WS**: पूरा WS control plane SSH के जरिए tunnel किए जाने तक local रहता है।
+- **सुरक्षा सीमा**: संपूर्ण Gateway API सतह के बजाय एक छोटी अनुमति-सूची उपलब्ध कराता था।
+- **पेयरिंग + Node पहचान**: Node प्रवेश का स्वामित्व Gateway के पास था और वह प्रति-Node टोकन से जुड़ा था।
+- **डिस्कवरी UX**: Node LAN पर Bonjour के माध्यम से Gateway खोज सकते थे या किसी टेलनेट पर सीधे कनेक्ट कर सकते थे।
+- **लूपबैक WS**: SSH के माध्यम से टनल किए जाने तक संपूर्ण WS नियंत्रण तल स्थानीय रहता था।
 
-## Transport
+## ट्रांसपोर्ट
 
-- TCP, प्रति लाइन एक JSON object (JSONL)।
-- वैकल्पिक TLS (जब `bridge.tls.enabled` true हो)।
-- ऐतिहासिक default listener port `18790` था (मौजूदा बिल्ड TCP ब्रिज शुरू नहीं करते)।
+- TCP, प्रति पंक्ति एक JSON ऑब्जेक्ट (JSONL)।
+- वैकल्पिक TLS (`bridge.tls.enabled: true`)।
+- डिफ़ॉल्ट लिसनर पोर्ट `18790` था।
 
-जब TLS enabled होता है, discovery TXT records में non-secret hint के रूप में `bridgeTls=1` और `bridgeTlsSha256` शामिल होते हैं। ध्यान दें कि Bonjour/mDNS TXT records unauthenticated होते हैं; clients को विज्ञापित fingerprint को explicit user intent या अन्य out-of-band verification के बिना authoritative pin नहीं मानना चाहिए।
+TLS सक्षम होने पर, डिस्कवरी TXT रिकॉर्ड में `bridgeTls=1` के साथ गैर-गोपनीय संकेत के रूप में `bridgeTlsSha256` शामिल होता था। Bonjour/mDNS TXT रिकॉर्ड अप्रमाणित होते हैं; अन्य आउट-ऑफ़-बैंड सत्यापन के बिना क्लाइंट विज्ञापित फ़िंगरप्रिंट को आधिकारिक पिन नहीं मान सकते थे।
 
-## Handshake + pairing
+## हैंडशेक और पेयरिंग
 
-1. Client node metadata + token (यदि पहले से paired है) के साथ `hello` भेजता है।
-2. यदि paired नहीं है, तो gateway `error` (`NOT_PAIRED`/`UNAUTHORIZED`) लौटाता है।
-3. Client `pair-request` भेजता है।
-4. Gateway approval की प्रतीक्षा करता है, फिर `pair-ok` और `hello-ok` भेजता है।
+1. क्लाइंट Node मेटाडेटा और टोकन (यदि पहले से पेयर किया गया हो) के साथ `hello` भेजता है।
+2. पेयर न होने पर, Gateway `error` (`NOT_PAIRED` / `UNAUTHORIZED`) से उत्तर देता है।
+3. क्लाइंट `pair-request` भेजता है।
+4. Gateway अनुमोदन की प्रतीक्षा करता है, फिर `pair-ok` और `hello-ok` भेजता है।
 
-ऐतिहासिक रूप से, `hello-ok` `serverName` लौटाता था; hosted Plugin surfaces अब `pluginSurfaceUrls` के जरिए advertised होते हैं। Canvas/A2UI `pluginSurfaceUrls.canvas` का उपयोग करता है; deprecated `canvasHostUrl` alias refactored protocol का हिस्सा नहीं है।
+`hello-ok` पहले `serverName` लौटाता था; होस्ट की गई Plugin सतहें अब वर्तमान Gateway प्रोटोकॉल पर `pluginSurfaceUrls` के माध्यम से विज्ञापित की जाती हैं (Canvas/A2UI में `pluginSurfaceUrls.canvas` का उपयोग होता है)।
 
-## Frames
+## फ़्रेम
 
-Client → Gateway:
+क्लाइंट से Gateway:
 
-- `req` / `res`: scoped gateway RPC (chat, sessions, config, health, voicewake, skills.bins)
-- `event`: node signals (voice transcript, agent request, chat subscribe, exec lifecycle)
+- `req` / `res`: सीमित-दायरे वाली Gateway RPC (चैट, सत्र, कॉन्फ़िगरेशन, स्वास्थ्य, वॉइसवेक, skills.bins)।
+- `event`: Node संकेत (वॉइस ट्रांसक्रिप्ट, एजेंट अनुरोध, चैट सदस्यता, निष्पादन जीवनचक्र)।
 
-Gateway → Client:
+Gateway से क्लाइंट:
 
-- `invoke` / `invoke-res`: node commands (`canvas.*`, `camera.*`, `screen.record`,
-  `location.get`, `sms.send`)
-- `event`: subscribed sessions के लिए chat updates
-- `ping` / `pong`: keepalive
+- `invoke` / `invoke-res`: Node कमांड (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`)।
+- `event`: सदस्यता लिए गए सत्रों के लिए चैट अपडेट।
+- `ping` / `pong`: कनेक्शन सक्रिय रखने के संकेत।
 
-Legacy allowlist enforcement `src/gateway/server-bridge.ts` में था (हटा दिया गया)।
+अनुमति-सूची प्रवर्तन `src/gateway/server-bridge.ts` में मौजूद था (हटा दिया गया)।
 
-## Exec lifecycle events
+## निष्पादन जीवनचक्र इवेंट
 
-Nodes पूरी हो चुकी `system.run` activity दिखाने के लिए `exec.finished` events emit कर सकते हैं। इन्हें gateway में system events में map किया जाता है। (Legacy nodes अब भी `exec.started` emit कर सकते हैं।)
-Nodes denied `system.run` attempts के लिए `exec.denied` emit कर सकते हैं; gateway event को terminal denial के रूप में स्वीकार करता है और system event enqueue नहीं करता या agent work को wake नहीं करता।
+Node पूर्ण हुई `system.run` गतिविधि प्रदर्शित करने के लिए `exec.finished` उत्सर्जित करते थे, जिसे Gateway द्वारा सिस्टम इवेंट में मैप किया जाता था (पुराने Node `exec.started` भी उत्सर्जित कर सकते थे)। `exec.denied` किसी अस्वीकृत `system.run` प्रयास को सिस्टम इवेंट कतारबद्ध किए या एजेंट कार्य को सक्रिय किए बिना अंतिम अस्वीकृति के रूप में चिह्नित करता था।
 
-Payload fields (जब तक उल्लेख न हो, सभी optional):
+पेलोड फ़ील्ड (जब तक उल्लेख न किया गया हो, सभी वैकल्पिक):
 
-- `sessionKey` (required): event correlation के लिए और, `exec.finished` के लिए, system event delivery के लिए agent session।
-- `runId`: grouping के लिए unique exec id।
-- `command`: raw या formatted command string।
-- `exitCode`, `timedOut`, `success`, `output`: completion details (केवल finished)।
-- `reason`: denial reason (केवल denied)।
+| फ़ील्ड                            | टिप्पणियाँ                                                                                          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `sessionKey`                     | आवश्यक। इवेंट सहसंबंध के लिए एजेंट सत्र और, `exec.finished` के लिए, सिस्टम इवेंट डिलीवरी। |
+| `runId`                          | समूहबद्ध करने के लिए अद्वितीय निष्पादन आईडी।                                                                   |
+| `command`                        | अपरिष्कृत या स्वरूपित कमांड स्ट्रिंग।                                                               |
+| `exitCode`, `timedOut`, `output` | पूर्णता विवरण (केवल समाप्त होने पर)।                                                            |
+| `reason`                         | अस्वीकृति का कारण (केवल अस्वीकार होने पर)।                                                                   |
 
-## Historical tailnet usage
+## ऐतिहासिक टेलनेट उपयोग
 
-- ब्रिज को tailnet IP से bind करें: `~/.openclaw/openclaw.json` में `bridge.bind: "tailnet"` (केवल ऐतिहासिक; `bridge.*` अब valid नहीं है)।
-- Clients MagicDNS name या tailnet IP के जरिए connect करते हैं।
-- Bonjour networks के पार नहीं जाता; आवश्यकता होने पर manual host/port या wide-area DNS-SD का उपयोग करें।
+- ब्रिज को किसी टेलनेट IP से बाइंड करें: `~/.openclaw/openclaw.json` में `bridge.bind: "tailnet"` (केवल ऐतिहासिक; `bridge.*` अब मान्य कॉन्फ़िगरेशन नहीं है)।
+- क्लाइंट MagicDNS नाम या टेलनेट IP के माध्यम से कनेक्ट होते थे।
+- Bonjour नेटवर्क सीमाएँ पार नहीं करता; अन्यथा वाइड-एरिया DNS-SD या मैन्युअल होस्ट/पोर्ट आवश्यक था।
 
-## Versioning
+## संस्करण प्रबंधन
 
-ब्रिज **implicit v1** था (कोई min/max negotiation नहीं)। यह section केवल ऐतिहासिक संदर्भ है; मौजूदा node/operator clients WebSocket [Gateway Protocol](/hi/gateway/protocol) का उपयोग करते हैं।
+ब्रिज निहित रूप से v1 था और उसमें न्यूनतम/अधिकतम समन्वय नहीं था। वर्तमान Node/ऑपरेटर क्लाइंट WebSocket [Gateway प्रोटोकॉल](/hi/gateway/protocol) का उपयोग करते हैं, जो प्रोटोकॉल संस्करण सीमा पर समन्वय करता है।
 
 ## संबंधित
 
-- [Gateway protocol](/hi/gateway/protocol)
-- [Nodes](/hi/nodes)
+- [Gateway प्रोटोकॉल](/hi/gateway/protocol)
+- [Node](/hi/nodes)

@@ -1,16 +1,17 @@
 ---
 read_when:
     - Phân giải lại các tham chiếu bí mật trong thời gian chạy
-    - Kiểm tra các phần văn bản thuần còn sót lại và các tham chiếu chưa được xử lý
+    - Kiểm tra phần văn bản thuần còn sót lại và các tham chiếu chưa được phân giải
     - Cấu hình SecretRefs và áp dụng các thay đổi xóa một chiều
 summary: Tài liệu tham khảo CLI cho `openclaw secrets` (tải lại, kiểm tra, cấu hình, áp dụng)
 title: Bí mật
 x-i18n:
-    generated_at: "2026-07-12T07:46:20Z"
+    generated_at: "2026-07-19T05:40:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d1ac0d0f6e29ae52d9dd03e3333665062ccd961ed22a2b06ca7fa7fde128e177
+    source_hash: 61f6f81e358ca2e6a97ac9498186b32f7a74d16052d226c398dad0030d47211e
     source_path: cli/secrets.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 
 Quản lý SecretRef và duy trì trạng thái ổn định của bản chụp runtime đang hoạt động.
 
-| Lệnh        | Vai trò                                                                                                                                                                                                                       |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `reload`    | RPC của Gateway (`secrets.reload`): phân giải lại các tham chiếu và chỉ hoán đổi bản chụp runtime khi thành công hoàn toàn (không ghi cấu hình)                                                                                |
-| `audit`     | Quét chỉ đọc các kho cấu hình/xác thực/mô hình đã tạo và phần dư cũ để tìm văn bản thuần, tham chiếu chưa phân giải và sai lệch thứ tự ưu tiên (bỏ qua tham chiếu exec trừ khi có `--allow-exec`)                               |
-| `configure` | Trình lập kế hoạch tương tác để thiết lập nhà cung cấp, ánh xạ đích và kiểm tra trước (yêu cầu TTY)                                                                                                                            |
-| `apply`     | Thực thi kế hoạch đã lưu (`--dry-run` chỉ xác thực và mặc định bỏ qua kiểm tra exec; chế độ ghi từ chối kế hoạch chứa exec trừ khi có `--allow-exec`), sau đó xóa sạch phần dư văn bản thuần tại các đích được chỉ định |
+| Lệnh        | Vai trò                                                                                                                                                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reload`    | RPC Gateway (`secrets.reload`): phân giải lại các tham chiếu và phát hành nguyên tử bản chụp runtime có nhận biết chủ sở hữu (không ghi cấu hình); lỗi của chủ sở hữu đủ điều kiện có thể được phát hành dưới dạng cảnh báo lạnh hoặc cũ |
+| `audit`     | Quét chỉ đọc các kho cấu hình/xác thực/mô hình được tạo và phần dư cũ để tìm văn bản thuần, tham chiếu chưa phân giải và sai lệch thứ tự ưu tiên (bỏ qua tham chiếu exec trừ khi `--allow-exec`)                                  |
+| `configure` | Trình lập kế hoạch tương tác để thiết lập nhà cung cấp, ánh xạ đích và kiểm tra trước (yêu cầu TTY)                                                                                                                          |
+| `apply`     | Thực thi kế hoạch đã lưu (`--dry-run` chỉ xác thực và mặc định bỏ qua kiểm tra exec; chế độ ghi từ chối kế hoạch chứa exec trừ khi `--allow-exec`), sau đó xóa sạch phần dư văn bản thuần được nhắm mục tiêu              |
 
 Quy trình vận hành được khuyến nghị:
 
@@ -37,12 +38,12 @@ openclaw secrets audit --check
 openclaw secrets reload
 ```
 
-Nếu kế hoạch của bạn bao gồm SecretRef/nhà cung cấp `exec`, hãy truyền `--allow-exec` cho cả lệnh `apply` chạy thử và lệnh ghi.
+Nếu kế hoạch chứa SecretRef/nhà cung cấp `exec`, hãy truyền `--allow-exec` cho cả lệnh `apply` chạy thử và ghi.
 
-Mã thoát dành cho CI/cổng kiểm tra:
+Mã thoát cho CI/cổng kiểm tra:
 
-- `audit --check` trả về `1` khi phát hiện vấn đề.
-- Tham chiếu chưa phân giải trả về `2` (bất kể có `--check` hay không).
+- `audit --check` trả về `1` khi có phát hiện.
+- Tham chiếu chưa phân giải trả về `2` (bất kể `--check`).
 
 Liên quan: [Quản lý bí mật](/vi/gateway/secrets) · [Bề mặt thông tin xác thực SecretRef](/vi/reference/secretref-credential-surface) · [Bảo mật](/vi/gateway/security)
 
@@ -54,7 +55,7 @@ openclaw secrets reload --json
 openclaw secrets reload --url ws://127.0.0.1:18789 --token <token>
 ```
 
-Sử dụng phương thức RPC `secrets.reload` của Gateway. Nếu phân giải thất bại, Gateway giữ lại bản chụp hợp lệ gần nhất và trả về lỗi (không kích hoạt một phần). Phản hồi JSON bao gồm `warningCount`.
+Sử dụng phương thức RPC Gateway `secrets.reload`. Các chủ sở hữu ổn định được làm mới độc lập. Chủ sở hữu bị lỗi đủ điều kiện chỉ trở thành cũ khi danh tính tham chiếu, định nghĩa nhà cung cấp và toàn bộ hợp đồng chủ sở hữu không chứa bí mật của chúng không thay đổi; lỗi mới hoặc đã thay đổi trở thành lạnh. Quá trình kích hoạt suy giảm này thành công và báo cáo `warningCount`. Lỗi nghiêm ngặt hoặc chưa được ánh xạ trả về lỗi và giữ nguyên bản chụp đang hoạt động trước đó.
 
 Tùy chọn: `--url <url>`, `--token <token>`, `--timeout <ms>`, `--json`.
 
@@ -62,13 +63,15 @@ Tùy chọn: `--url <url>`, `--token <token>`, `--timeout <ms>`, `--json`.
 
 Quét trạng thái OpenClaw để tìm:
 
-- bí mật được lưu dưới dạng văn bản thuần
+- lưu trữ bí mật dưới dạng văn bản thuần
 - tham chiếu chưa phân giải
-- sai lệch thứ tự ưu tiên (thông tin xác thực trong `auth-profiles.json` che khuất các tham chiếu trong `openclaw.json`)
-- phần dư trong `agents/*/agent/models.json` đã tạo (giá trị `apiKey` của nhà cung cấp và các tiêu đề nhạy cảm của nhà cung cấp)
-- phần dư cũ (mục trong kho xác thực cũ, lời nhắc OAuth)
+- sai lệch thứ tự ưu tiên (thông tin xác thực `auth-profiles.json` che khuất tham chiếu `openclaw.json`)
+- phần dư `agents/*/agent/models.json` được tạo (giá trị `apiKey` của nhà cung cấp và tiêu đề nhạy cảm của nhà cung cấp)
+- phần dư cũ (mục nhập kho xác thực cũ, lời nhắc OAuth)
 
-Việc phát hiện tiêu đề nhạy cảm của nhà cung cấp dựa trên phương pháp suy đoán theo tên: hệ thống đánh dấu các tiêu đề có tên khớp với những thành phần xác thực/thông tin xác thực phổ biến (`authorization`, `x-api-key`, `token`, `secret`, `password`, `credential`).
+Quá trình quét `.env` bao gồm thư mục trạng thái có hiệu lực và thư mục chứa cấu hình đang hoạt động. Khi cả hai đường dẫn chỉ đến cùng một tệp, tệp đó chỉ được quét một lần.
+
+Việc phát hiện tiêu đề nhạy cảm của nhà cung cấp dựa trên phương pháp phỏng đoán theo tên: đánh dấu các tiêu đề có tên khớp với những đoạn thường gặp liên quan đến xác thực/thông tin xác thực (`authorization`, `x-api-key`, `token`, `secret`, `password`, `credential`).
 
 ```bash
 openclaw secrets audit
@@ -84,7 +87,7 @@ Cấu trúc báo cáo:
 - `summary`: `plaintextCount`, `unresolvedRefCount`, `shadowedRefCount`, `legacyResidueCount`
 - mã phát hiện: `PLAINTEXT_FOUND`, `REF_UNRESOLVED`, `REF_SHADOWED`, `LEGACY_RESIDUE`
 
-## Cấu hình (trợ giúp tương tác)
+## Cấu hình (trình trợ giúp tương tác)
 
 Tạo các thay đổi cho nhà cung cấp và SecretRef theo cách tương tác, chạy kiểm tra trước và tùy chọn áp dụng:
 
@@ -98,13 +101,13 @@ openclaw secrets configure --agent ops
 openclaw secrets configure --json
 ```
 
-Quy trình: trước tiên thiết lập nhà cung cấp (thêm/sửa/xóa bí danh `secrets.providers`), sau đó ánh xạ thông tin xác thực (chọn trường, gán tham chiếu `{source, provider, id}`), rồi kiểm tra trước và tùy chọn áp dụng.
+Luồng: trước tiên thiết lập nhà cung cấp (thêm/sửa/xóa bí danh `secrets.providers`), sau đó ánh xạ thông tin xác thực (chọn trường, gán tham chiếu `{source, provider, id}`), rồi kiểm tra trước và tùy chọn áp dụng.
 
 Cờ:
 
 - `--providers-only`: chỉ cấu hình `secrets.providers`, bỏ qua ánh xạ thông tin xác thực
-- `--skip-provider-setup`: bỏ qua thiết lập nhà cung cấp, ánh xạ thông tin xác thực đến các nhà cung cấp hiện có
-- `--agent <id>`: giới hạn việc phát hiện đích và ghi `auth-profiles.json` vào kho của một tác nhân
+- `--skip-provider-setup`: bỏ qua thiết lập nhà cung cấp, ánh xạ thông tin xác thực tới các nhà cung cấp hiện có
+- `--agent <id>`: giới hạn việc khám phá và ghi đích `auth-profiles.json` trong một kho tác tử
 - `--allow-exec`: cho phép kiểm tra SecretRef exec trong quá trình kiểm tra trước/áp dụng (có thể thực thi lệnh của nhà cung cấp)
 
 Không thể kết hợp `--providers-only` và `--skip-provider-setup`.
@@ -112,17 +115,18 @@ Không thể kết hợp `--providers-only` và `--skip-provider-setup`.
 Lưu ý:
 
 - Yêu cầu TTY tương tác.
-- Nhắm đến các trường chứa bí mật trong `openclaw.json` cùng với `auth-profiles.json` cho phạm vi tác nhân đã chọn; bề mặt được hỗ trợ chính thức: [Bề mặt thông tin xác thực SecretRef](/vi/reference/secretref-credential-surface).
-- Hỗ trợ tạo trực tiếp ánh xạ `auth-profiles.json` mới trong quy trình chọn.
+- Nhắm tới các trường chứa bí mật trong `openclaw.json` cùng với `auth-profiles.json` cho phạm vi tác tử đã chọn; bề mặt được hỗ trợ chính thức: [Bề mặt thông tin xác thực SecretRef](/vi/reference/secretref-credential-surface).
+- Hỗ trợ tạo ánh xạ `auth-profiles.json` mới trực tiếp trong luồng chọn.
 - Chạy phân giải kiểm tra trước trước khi áp dụng.
-- Các kế hoạch được tạo mặc định bật các tùy chọn xóa sạch (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson`). Việc áp dụng là một chiều đối với các giá trị văn bản thuần đã bị xóa sạch.
-- Khi không có `--apply`, CLI vẫn hỏi `Apply this plan now?` sau khi kiểm tra trước.
-- Khi có `--apply` (và không có `--yes`), CLI yêu cầu thêm một xác nhận về quá trình di chuyển không thể đảo ngược.
-- `--json` in kế hoạch cùng báo cáo kiểm tra trước, nhưng vẫn yêu cầu TTY tương tác.
+- Theo mặc định, các kế hoạch được tạo sẽ bật các tùy chọn xóa sạch (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson`). Việc áp dụng là một chiều đối với các giá trị văn bản thuần đã bị xóa sạch.
+- `--plan-out` từ chối tạo kế hoạch có dạng tuần tự hóa UTF-8 vượt quá 16 MiB (16,777,216 byte), khớp với giới hạn đầu vào `apply --from`.
+- Nếu không có `--apply`, CLI vẫn nhắc `Apply this plan now?` sau khi kiểm tra trước.
+- Với `--apply` (và không có `--yes`), CLI yêu cầu thêm một xác nhận về quá trình di chuyển không thể đảo ngược.
+- `--json` in kế hoạch + báo cáo kiểm tra trước, nhưng vẫn yêu cầu TTY tương tác.
 
-### An toàn cho nhà cung cấp exec
+### An toàn của nhà cung cấp exec
 
-Các bản cài đặt Homebrew thường cung cấp tệp nhị phân qua liên kết tượng trưng trong `/opt/homebrew/bin/*`. Chỉ đặt `allowSymlinkCommand: true` khi cần cho các đường dẫn trình quản lý gói đáng tin cậy, kết hợp với `trustedDirs` (ví dụ `["/opt/homebrew"]`). Trên Windows, nếu không thể xác minh ACL cho đường dẫn của nhà cung cấp, OpenClaw sẽ từ chối theo mặc định; chỉ với các đường dẫn đáng tin cậy, hãy đặt `allowInsecurePath: true` cho nhà cung cấp đó để bỏ qua kiểm tra bảo mật đường dẫn.
+Các bản cài đặt Homebrew thường cung cấp tệp nhị phân qua liên kết tượng trưng trong `/opt/homebrew/bin/*`. Chỉ đặt `allowSymlinkCommand: true` khi cần cho các đường dẫn trình quản lý gói đáng tin cậy, kết hợp với `trustedDirs` (ví dụ `["/opt/homebrew"]`). Trên Windows, nếu không thể xác minh ACL cho đường dẫn nhà cung cấp, OpenClaw sẽ từ chối theo nguyên tắc an toàn; chỉ với các đường dẫn đáng tin cậy, hãy đặt `allowInsecurePath: true` trên nhà cung cấp đó để bỏ qua kiểm tra bảo mật đường dẫn.
 
 ## Áp dụng kế hoạch đã lưu
 
@@ -134,20 +138,22 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --json
 ```
 
-`--dry-run` xác thực bước kiểm tra trước mà không ghi tệp; các kiểm tra SecretRef exec mặc định bị bỏ qua khi chạy thử. Chế độ ghi từ chối kế hoạch chứa SecretRef/nhà cung cấp exec trừ khi có `--allow-exec`. Dùng `--allow-exec` để chủ động cho phép kiểm tra/thực thi nhà cung cấp exec trong cả hai chế độ.
+`--dry-run` xác thực kiểm tra trước mà không ghi tệp; kiểm tra SecretRef exec mặc định bị bỏ qua khi chạy thử. Chế độ ghi từ chối các kế hoạch chứa SecretRef/nhà cung cấp exec trừ khi `--allow-exec`. Sử dụng `--allow-exec` để chủ động cho phép kiểm tra/thực thi nhà cung cấp exec trong cả hai chế độ.
+
+`--from` phải trỏ đến một tệp thông thường không lớn hơn 16 MiB (16,777,216 byte). Giới hạn byte áp dụng cho toàn bộ tệp được tuần tự hóa, bao gồm cả khoảng trắng.
 
 Những nội dung `apply` có thể cập nhật:
 
-- `openclaw.json` (đích SecretRef + cập nhật hoặc xóa nhà cung cấp)
-- `auth-profiles.json` (xóa sạch đích nhà cung cấp)
-- phần dư trong `auth.json` cũ
-- các khóa bí mật đã biết trong `~/.openclaw/.env` có giá trị đã được di chuyển
+- `openclaw.json` (đích SecretRef + chèn mới/cập nhật/xóa nhà cung cấp)
+- `auth-profiles.json` (xóa sạch đích của nhà cung cấp)
+- phần dư `auth.json` cũ
+- các tệp `.env` trong thư mục trạng thái có hiệu lực và thư mục cấu hình đang hoạt động, đối với các khóa bí mật đã biết có giá trị đã được di chuyển
 
-Chi tiết hợp đồng kế hoạch (đường dẫn đích được phép, quy tắc xác thực, ngữ nghĩa khi thất bại): [Hợp đồng kế hoạch áp dụng bí mật](/vi/gateway/secrets-plan-contract).
+Chi tiết hợp đồng kế hoạch (đường dẫn đích được phép, quy tắc xác thực, ngữ nghĩa lỗi): [Hợp đồng kế hoạch áp dụng bí mật](/vi/gateway/secrets-plan-contract).
 
-### Vì sao không có bản sao lưu để hoàn tác
+### Tại sao không có bản sao lưu hoàn tác
 
-`secrets apply` chủ ý không ghi bản sao lưu hoàn tác chứa các giá trị văn bản thuần cũ. Mức độ an toàn đến từ bước kiểm tra trước nghiêm ngặt kết hợp với quá trình áp dụng gần như nguyên tử, cùng nỗ lực khôi phục trong bộ nhớ khi xảy ra lỗi.
+`secrets apply` chủ ý không ghi các bản sao lưu hoàn tác chứa giá trị văn bản thuần cũ. Độ an toàn đến từ quá trình kiểm tra trước nghiêm ngặt kết hợp với áp dụng gần như nguyên tử, cùng khả năng khôi phục trong bộ nhớ theo nỗ lực tốt nhất khi xảy ra lỗi.
 
 ## Ví dụ
 
@@ -157,10 +163,10 @@ openclaw secrets configure
 openclaw secrets audit --check
 ```
 
-Nếu `audit --check` vẫn báo cáo các phát hiện văn bản thuần, hãy cập nhật những đường dẫn đích còn lại được báo cáo rồi chạy lại kiểm tra.
+Nếu `audit --check` vẫn báo cáo các phát hiện văn bản thuần, hãy cập nhật những đường dẫn đích còn lại được báo cáo và chạy lại kiểm tra.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
 - [Quản lý bí mật](/vi/gateway/secrets)
-- [SecretRef của Vault](/plugins/vault)
+- [SecretRef của Vault](/vi/plugins/vault)

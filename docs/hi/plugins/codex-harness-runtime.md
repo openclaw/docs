@@ -1,273 +1,342 @@
 ---
 read_when:
-    - आपको Codex harness रनटाइम समर्थन अनुबंध चाहिए
-    - आप नेटिव Codex टूल, हुक, Compaction, या फ़ीडबैक अपलोड डीबग कर रहे हैं
-    - आप OpenClaw और Codex harness टर्न्स में Plugin व्यवहार बदल रहे हैं
-summary: Codex हार्नेस के लिए रनटाइम सीमाएँ, हुक, टूल, अनुमतियाँ और डायग्नोस्टिक्स
+    - आपको Codex हार्नेस रनटाइम समर्थन अनुबंध की आवश्यकता है
+    - आप नेटिव Codex टूल्स, हुक्स, Compaction या फ़ीडबैक अपलोड को डीबग कर रहे हैं
+    - आप OpenClaw और Codex हार्नेस टर्न्स में Plugin के व्यवहार को बदल रहे हैं
+summary: Codex हार्नेस के लिए रनटाइम सीमाएँ, हुक, टूल, अनुमतियाँ और निदान
 title: Codex हार्नेस रनटाइम
 x-i18n:
-    generated_at: "2026-07-04T20:33:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:23:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c681de59a53b85402e95b1d3f2aa853e78989185ad05cf1f0497814be5959232
+    source_hash: 516d70dee056657a06206c7ca4215f3776ccd2b027a136b5cc8fea3b11c1cd0b
     source_path: plugins/codex-harness-runtime.md
     workflow: 16
 ---
 
-यह पृष्ठ Codex हार्नेस टर्न के लिए रनटाइम अनुबंध का दस्तावेज़ीकरण करता है। सेटअप और
-रूटिंग के लिए, [Codex हार्नेस](/hi/plugins/codex-harness) से शुरू करें। कॉन्फ़िग फ़ील्ड के लिए,
+Codex हार्नेस टर्न के लिए रनटाइम अनुबंध। सेटअप और रूटिंग के लिए,
+[Codex हार्नेस](/hi/plugins/codex-harness) देखें। कॉन्फ़िग फ़ील्ड के लिए,
 [Codex हार्नेस संदर्भ](/hi/plugins/codex-harness-reference) देखें।
 
 ## अवलोकन
 
-Codex मोड केवल नीचे अलग मॉडल कॉल वाला OpenClaw नहीं है। Codex नेटिव
-मॉडल लूप का अधिक हिस्सा अपने पास रखता है, और OpenClaw अपनी plugin, टूल, सेशन, और
-डायग्नोस्टिक सतहों को उस सीमा के आसपास अनुकूलित करता है।
+Codex नेटिव मॉडल लूप, नेटिव थ्रेड पुनरारंभ, नेटिव टूल
+निरंतरता और नेटिव Compaction का स्वामी है। OpenClaw चैनल रूटिंग, सेशन
+फ़ाइलों, दृश्यमान संदेश डिलीवरी, OpenClaw डायनेमिक टूल, अनुमोदनों, मीडिया
+डिलीवरी और उस सीमा के आसपास एक ट्रांसक्रिप्ट मिरर का स्वामी है।
 
-OpenClaw अब भी चैनल रूटिंग, सेशन फ़ाइलें, दिखाई देने वाली मैसेज डिलीवरी,
-OpenClaw डायनेमिक टूल्स, अनुमोदन, मीडिया डिलीवरी, और ट्रांसक्रिप्ट मिरर का मालिक है।
-Codex कैनोनिकल नेटिव थ्रेड, नेटिव मॉडल लूप, नेटिव टूल
-कंटिन्यूएशन, और नेटिव Compaction का मालिक है।
+प्रॉम्प्ट रूटिंग केवल प्रोवाइडर स्ट्रिंग का नहीं, बल्कि चुने गए रनटाइम का अनुसरण करती है। किसी
+नेटिव Codex टर्न को Codex ऐप-सर्वर डेवलपर निर्देश मिलते हैं; एक स्पष्ट
+OpenClaw संगतता रूट सामान्य OpenClaw सिस्टम प्रॉम्प्ट बनाए रखता है, तब भी
+जब वह Codex-शैली के OpenAI प्रमाणीकरण या ट्रांसपोर्ट का उपयोग करता है।
 
-प्रॉम्प्ट रूटिंग चुने गए रनटाइम का अनुसरण करती है, केवल provider स्ट्रिंग का नहीं। एक
-नेटिव Codex टर्न को Codex app-server डेवलपर निर्देश मिलते हैं, जबकि एक
-स्पष्ट OpenClaw संगतता रूट सामान्य OpenClaw सिस्टम प्रॉम्प्ट बनाए रखता है, भले ही
-वह Codex-फ्लेवर वाले OpenAI auth या transport का उपयोग करे।
+OpenClaw, Codex की अंतर्निहित पर्सनैलिटी अक्षम (`personality: "none"`) रखते हुए
+नेटिव Codex थ्रेड शुरू और पुनरारंभ करता है, ताकि वर्कस्पेस पर्सनैलिटी फ़ाइलें
+और OpenClaw एजेंट पहचान आधिकारिक बनी रहें। अन्यथा नेटिव Codex, Codex-स्वामित्व वाले
+बेस/मॉडल निर्देश और प्रोजेक्ट-दस्तावेज़ लोडिंग बनाए रखता है। हल्के
+OpenClaw रन (उदाहरण के लिए cron) अब भी प्रोजेक्ट-दस्तावेज़ लोडिंग को रोकते हैं।
 
-नेटिव Codex सक्रिय Codex थ्रेड कॉन्फ़िग के अनुसार Codex-स्वामित्व वाले बेस/मॉडल निर्देश और project-doc व्यवहार बनाए रखता है। OpenClaw नेटिव
-Codex थ्रेड्स को Codex की बिल्ट-इन पर्सनैलिटी अक्षम करके शुरू और फिर से शुरू करता है ताकि workspace
-personality फ़ाइलें और OpenClaw agent पहचान प्रामाणिक रहें। हल्के
-OpenClaw रन अब भी अपने मौजूदा project-doc suppression को सुरक्षित रखते हैं। OpenClaw
-डेवलपर निर्देश OpenClaw रनटाइम चिंताओं को कवर करते हैं, जैसे source-channel
-delivery, OpenClaw डायनेमिक टूल्स, ACP delegation, adapter context, और
-सक्रिय agent workspace profile फ़ाइलें। OpenClaw skill catalogs और tool-routed
-`MEMORY.md` pointers को नेटिव Codex के लिए turn-scoped collaboration developer
-instructions के रूप में प्रोजेक्ट किया जाता है। सक्रिय `BOOTSTRAP.md` सामग्री और पूर्ण
-`MEMORY.md` fallback injection अब भी turn input reference context का उपयोग करते हैं।
+OpenClaw डेवलपर निर्देश OpenClaw रनटाइम से संबंधित विषयों को कवर करते हैं: स्रोत-चैनल
+डिलीवरी, OpenClaw डायनेमिक टूल, ACP डेलिगेशन, अडैप्टर संदर्भ और
+सक्रिय एजेंट वर्कस्पेस प्रोफ़ाइल फ़ाइलें। Skill कैटलॉग और टूल-रूटेड
+`MEMORY.md` पॉइंटर, टर्न-स्कोप्ड सहयोग डेवलपर निर्देशों के रूप में
+प्रक्षेपित किए जाते हैं। जब मेमोरी टूल उपलब्ध नहीं होते, तब सक्रिय `BOOTSTRAP.md` सामग्री
+और पूर्ण `MEMORY.md` इसके बजाय सादे टर्न इनपुट संदर्भ पर फ़ॉलबैक करते हैं।
+
+अधिकांश OpenClaw डायनेमिक टूल खोजयोग्य `openclaw` नेमस्पेस का उपयोग करते हैं। जिन टूल को
+`catalogMode: "direct-only"` चिह्नित किया गया है, वे `openclaw_direct` का उपयोग करते हैं, जिसे Codex
+नेस्टेड Code Mode निष्पादन के लिए उजागर करने के बजाय सीधे मॉडल को
+`DirectModelOnly` के रूप में दृश्यमान रखता है।
 
 ## थ्रेड बाइंडिंग और मॉडल परिवर्तन
 
-जब कोई OpenClaw सेशन किसी मौजूदा Codex थ्रेड से जुड़ा होता है, तो अगला टर्न
-वर्तमान में चुने गए OpenAI मॉडल, approval policy, sandbox, और service
-tier को फिर से app-server को भेजता है। `openai/gpt-5.5` से
-`openai/gpt-5.2` पर स्विच करने से थ्रेड बाइंडिंग बनी रहती है, लेकिन Codex से
+जब कोई OpenClaw सेशन किसी मौजूदा Codex थ्रेड से जुड़ा होता है, तो अगला
+टर्न वर्तमान में चुना गया मॉडल, अनुमोदन नीति, सैंडबॉक्स,
+अनुमोदन समीक्षक और सेवा स्तर ऐप-सर्वर को फिर से भेजता है। `openai/gpt-5.5`
+से `openai/gpt-5.2` पर स्विच करने से थ्रेड बाइंडिंग बनी रहती है, लेकिन Codex से
 नए चुने गए मॉडल के साथ जारी रखने को कहा जाता है।
 
-## दिखाई देने वाले उत्तर और Heartbeat
+पर्यवेक्षित बाइंडिंग इसका अपवाद हैं। OpenClaw मॉडल पिकर लॉक रहता है,
+और पुनरारंभ मॉडल तथा प्रोवाइडर ओवरराइड छोड़ देते हैं, ताकि Codex आधिकारिक
+थ्रेड के संग्रहीत मॉडल और प्रोवाइडर को पुनर्स्थापित करे। एक अलग नेटिव Codex नियंत्रण
+उस संग्रहीत युग्म को बदल सकता है, और शुरुआती स्नैपशॉट Codex की सामान्य
+मॉडल-अंतर चेतावनी उत्पन्न कर सकता है; बाहरी OpenClaw मॉडल और फ़ॉलबैक श्रृंखला
+कभी भी इनमें से किसी का स्थान नहीं लेती।
 
-जब कोई direct/source chat टर्न Codex हार्नेस से चलता है, तो दिखाई देने वाले उत्तर
-आंतरिक WebChat सतहों के लिए डिफ़ॉल्ट रूप से automatic final assistant delivery पर सेट होते हैं।
-यह Codex को Pi हार्नेस प्रॉम्प्ट अनुबंध के साथ संरेखित रखता है: agents सामान्य रूप से उत्तर देते हैं,
-और OpenClaw अंतिम टेक्स्ट को source conversation में पोस्ट करता है। जब direct/source chat को
-जानबूझकर final assistant text को निजी रखना हो, जब तक agent
-`message(action="send")` कॉल न करे, तब `messages.visibleReplies: "message_tool"` सेट करें।
+## पर्यवेक्षण और सुरक्षित निरंतरता
 
-Codex Heartbeat टर्न को डिफ़ॉल्ट रूप से searchable OpenClaw
-tool catalog में `heartbeat_respond` भी मिलता है, ताकि agent रिकॉर्ड कर सके कि wake को
-शांत रहना चाहिए या अंतिम टेक्स्ट में उस control flow को एन्कोड किए बिना notify करना चाहिए।
+Codex पर्यवेक्षण उसी `codex` Plugin की वैकल्पिक क्षमता है। यह
+एक अलग कनेक्शन के माध्यम से नेटिव थ्रेड खोजता है और केवल गैर-आर्काइव
+सेशन को Gateway कैटलॉग में प्रक्षेपित करता है। स्पष्ट `appServer` कनेक्शन
+सेटिंग के बिना, वह कनेक्शन प्रबंधित यूज़र-होम stdio का उपयोग करता है, जबकि सामान्य
+हार्नेस एजेंट-स्कोप्ड रहता है। सूचीकरण और मेटाडेटा रीड निष्क्रिय होते हैं: वे
+किसी थ्रेड को पुनरारंभ नहीं करते, OpenClaw को उसके लाइव इवेंट की सदस्यता नहीं दिलाते और न ही उसके
+अनुमोदनों का उत्तर देते हैं।
 
-Heartbeat-विशिष्ट initiative guidance को Heartbeat टर्न पर ही Codex collaboration-mode
-developer instruction के रूप में भेजा जाता है। सामान्य chat टर्न अपने सामान्य
-runtime prompt में Heartbeat philosophy ले जाने के बजाय Codex Default mode को restore करते हैं।
-जब एक non-empty `HEARTBEAT.md` मौजूद होती है, तो Heartbeat
-collaboration-mode instructions उसकी सामग्री inline करने के बजाय Codex को उस फ़ाइल की ओर इंगित करते हैं।
+Gateway कंप्यूटर पर संग्रहीत या निष्क्रिय सेशन के लिए, **शाखा के रूप में जारी रखें**
+एक सामान्य, मॉडल-लॉक्ड Chat बनाता है और स्रोत के अंतिम टर्मिनल संग्रहीत टर्न तक
+सीमित यूज़र और असिस्टेंट इतिहास को मिरर करता है। पहला सामान्य
+Chat टर्न वास्तविक अनुमोदन हैंडलर स्थापित करता है और स्नैपशॉट को मॉडल या
+प्रोवाइडर ओवरराइड के बिना पिन करने के लिए एक अस्थायी नेटिव फ़ोर्क का उपयोग करता है। Codex App Server
+अपने वर्तमान नेटिव कॉन्फ़िगरेशन का उपयोग करता है और चुना गया युग्म लौटाता है; यदि वह मॉडल
+स्रोत के अंतिम दर्ज मॉडल से अलग है, तो वह अपनी सामान्य चेतावनी जारी करता है।
+उसी पर्यवेक्षण कनेक्शन पर, OpenClaw आधिकारिक
+`appServer`-स्रोत Codex हार्नेस थ्रेड को उसके cwd और रनटाइम नीति के अंतर्गत
+उस शुरुआती प्रारंभ के लिए ठीक लौटाए गए मॉडल और प्रोवाइडर के साथ शुरू करता है, सीमित
+दृश्यमान इतिहास इंजेक्ट करता है और अस्थायी फ़ोर्क को आर्काइव करता है। स्रोत को कभी
+पुनरारंभ नहीं किया जाता। आधिकारिक थ्रेड के पास पूर्ण OpenClaw हार्नेस टूल सतह होती है;
+स्रोत से रीजनिंग, टूल कॉल और टूल परिणाम इसमें क्लोन नहीं किए जाते।
+निजी कनेक्शन स्कोप लंबित और प्रतिबद्ध बाइंडिंग स्थितियों में बना रहता है, इसलिए
+हर बाद का टर्न नेटिव प्रमाणीकरण और प्रोवाइडर कॉन्फ़िगरेशन के साथ उसी कनेक्शन पर रहता है।
+अक्षम पर्यवेक्षण या बाइंडिंग/कनेक्शन विचलन सामान्य एजेंट-होम हार्नेस पर
+स्विच करने के बजाय सुरक्षित रूप से विफल होता है।
+
+मूल CLI, VS Code, Atlas या ChatGPT स्रोत दोनों
+कैटलॉग के लिए पात्र रहता है। आधिकारिक शाखा एक नेटिव Codex थ्रेड है, लेकिन उसका स्रोत प्रकार
+`appServer` है; नेटिव क्लाइंट उस स्रोत प्रकार को फ़िल्टर कर सकते हैं, इसलिए Codex Desktop में
+उसका दिखाई देना सुनिश्चित नहीं है।
+
+सक्रिय स्रोत नई शाखा शुरू नहीं कर सकते या आर्काइव नहीं किए जा सकते; मौजूदा पर्यवेक्षित
+Chat फिर भी खोला जा सकता है। `notLoaded` का अर्थ गतिविधि अज्ञात है, निष्क्रिय नहीं;
+OpenClaw स्थानीय `idle` या `notLoaded` पंक्ति को केवल स्पष्ट
+अन्य-रनर-न-होने की पुष्टि और ताज़ा प्रोसेस-स्थानीय स्थिति रीड के बाद आर्काइव करने देता है। Codex
+एक App Server प्रोसेस के भीतर थ्रेड परिवर्तन क्रमबद्ध करता है, लेकिन
+कोई विशिष्ट क्रॉस-प्रोसेस रनर या अनुमोदन-स्वामी लीज़ प्रदान नहीं करता, इसलिए वह रीड
+यह सिद्ध नहीं कर सकता कि कोई अन्य प्रोसेस थ्रेड का उपयोग नहीं कर रहा। OpenClaw ठीक
+लक्ष्य या Codex की पेजिनेटेड वंशज क्वेरी द्वारा लौटाए गए किसी भी गैर-आर्काइव उत्पन्न वंशज के
+ज्ञात सक्रिय बाइंडिंग स्वामी को ब्लॉक करता है। गणना त्रुटियाँ, चक्र और
+सुरक्षा-सीमा समाप्ति सुरक्षित रूप से विफल होते हैं। नेटिव आर्काइव अब भी किसी अन्य प्रोसेस में
+नए टर्न से रेस कर सकता है, इसलिए पुष्टि अज्ञात क्लाइंट और स्थिति रीड तथा
+आर्काइव के बीच के अंतराल को कवर करती है। पर्यवेक्षित मॉडल-लॉक्ड Chat को तब तक हटाया नहीं जा सकता,
+जब तक वह नेटिव बाइंडिंग की सुरक्षा करता है।
+
+पेयर किए गए Node कैटलॉग शुरुआती रिलीज़ में केवल मेटाडेटा तक सीमित रहते हैं। वर्तमान
+Node इनवोक सीमा अनुरोध/प्रतिक्रिया आधारित है और वास्तविक Codex हार्नेस
+बाइंडिंग के लिए आवश्यक दीर्घकालिक टर्न इवेंट, अनुमोदन अनुरोध या स्ट्रीमिंग आउटपुट
+नहीं ले जा सकती। इसलिए पंक्ति निष्क्रिय होने पर भी रिमोट **जारी रखें** और **आर्काइव**
+अनुपलब्ध रहते हैं।
+
+ऑपरेटर सेटअप और दृश्यमान Control UI व्यवहार के लिए
+[Codex पर्यवेक्षण](/plugins/codex-supervision) देखें।
+
+## दृश्यमान उत्तर और Heartbeat
+
+Codex हार्नेस से होकर जाने वाले प्रत्यक्ष/स्रोत चैट टर्न, आंतरिक WebChat सतहों के लिए डिफ़ॉल्ट रूप से
+स्वचालित अंतिम असिस्टेंट डिलीवरी का उपयोग करते हैं, जो Pi हार्नेस
+अनुबंध से मेल खाता है: एजेंट सामान्य रूप से उत्तर देता है और OpenClaw अंतिम टेक्स्ट को
+स्रोत वार्तालाप में पोस्ट करता है। अंतिम असिस्टेंट टेक्स्ट को निजी रखने के लिए
+`messages.visibleReplies: "message_tool"` सेट करें, जब तक कि एजेंट `message(action="send")` को कॉल न करे।
+
+Codex Heartbeat टर्न को डिफ़ॉल्ट रूप से खोजयोग्य OpenClaw टूल
+कैटलॉग में `heartbeat_respond` मिलता है, ताकि एजेंट दर्ज कर सके कि वेक शांत रहना चाहिए
+या सूचना देनी चाहिए। Heartbeat पहल मार्गदर्शन, Heartbeat टर्न तक सीमित Codex सहयोग-मोड
+डेवलपर निर्देश के रूप में भेजा जाता है; सामान्य चैट टर्न
+Codex Default मोड में रहते हैं। जब `HEARTBEAT.md` रिक्त नहीं होता, तब Heartbeat
+निर्देश उसकी सामग्री को इनलाइन करने के बजाय Codex को फ़ाइल की ओर निर्देशित करते हैं।
 
 ## हुक सीमाएँ
 
-Codex हार्नेस में तीन हुक स्तर हैं:
-
-| स्तर                                  | मालिक                    | उद्देश्य                                                            |
+| परत                                  | स्वामी                    | उद्देश्य                                                            |
 | ------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
-| OpenClaw plugin हुक                   | OpenClaw                 | OpenClaw और Codex हार्नेस में product/plugin संगतता।               |
-| Codex app-server extension middleware | OpenClaw bundled plugins | OpenClaw डायनेमिक टूल्स के आसपास per-turn adapter व्यवहार।         |
-| Codex नेटिव हुक                       | Codex                    | Codex कॉन्फ़िग से low-level Codex lifecycle और नेटिव टूल नीति।      |
+| OpenClaw Plugin हुक                  | OpenClaw                 | OpenClaw और Codex हार्नेस में उत्पाद/Plugin संगतता।                 |
+| Codex ऐप-सर्वर एक्सटेंशन मिडलवेयर   | OpenClaw बंडल किए गए Plugin | OpenClaw डायनेमिक टूल के आसपास प्रति-टर्न अडैप्टर व्यवहार।          |
+| Codex नेटिव हुक                      | Codex                    | Codex कॉन्फ़िग से निम्न-स्तरीय Codex जीवनचक्र और नेटिव टूल नीति।   |
 
-OpenClaw plugin व्यवहार को रूट करने के लिए OpenClaw project या global Codex `hooks.json` फ़ाइलों का उपयोग नहीं करता।
-समर्थित नेटिव टूल और permission bridge के लिए,
-OpenClaw `PreToolUse`, `PostToolUse`,
-`PermissionRequest`, और `Stop` के लिए per-thread Codex config inject करता है।
+OpenClaw, Plugin व्यवहार को रूट करने के लिए प्रोजेक्ट या ग्लोबल Codex
+`hooks.json` फ़ाइलों का उपयोग नहीं करता। नेटिव टूल और अनुमति ब्रिज के लिए, OpenClaw
+`PreToolUse`, `PostToolUse`, `PermissionRequest`
+और `Stop` के लिए प्रति-थ्रेड Codex कॉन्फ़िग इंजेक्ट करता है।
 
-जब Codex app-server approvals सक्षम होते हैं, यानी `approvalPolicy`
-`"never"` नहीं होता, तो डिफ़ॉल्ट injected native hook config `PermissionRequest` को छोड़ देता है ताकि
-Codex का app-server reviewer और OpenClaw का approval bridge review के बाद वास्तविक
-escalations संभालें। Operators compatibility relay की आवश्यकता होने पर
-`nativeHookRelay.events` में स्पष्ट रूप से `permission_request` जोड़ सकते हैं।
+जब Codex ऐप-सर्वर अनुमोदन सक्षम होते हैं (`approvalPolicy`,
+`"never"` नहीं होता), तब डिफ़ॉल्ट रूप से इंजेक्ट किया गया नेटिव हुक कॉन्फ़िग
+`PermissionRequest` को छोड़ देता है, ताकि Codex का ऐप-सर्वर समीक्षक और OpenClaw का
+अनुमोदन ब्रिज समीक्षा के बाद वास्तविक एस्केलेशन संभालें। फिर भी संगतता रिले को बाध्य करने के लिए
+`permission_request` को `nativeHookRelay.events` में जोड़ें। अन्य Codex
+हुक, जैसे `SessionStart` और `UserPromptSubmit`, Codex-स्तरीय
+नियंत्रण बने रहते हैं; उन्हें v1 अनुबंध में OpenClaw Plugin हुक के रूप में उजागर नहीं किया गया है।
 
-अन्य Codex हुक, जैसे `SessionStart` और `UserPromptSubmit`, Codex-level controls बने रहते हैं।
-वे v1 अनुबंध में OpenClaw plugin hooks के रूप में उजागर नहीं किए गए हैं।
+OpenClaw डायनेमिक टूल के लिए, Codex द्वारा कॉल माँगे जाने के बाद OpenClaw टूल को
+निष्पादित करता है, इसलिए Plugin और मिडलवेयर व्यवहार हार्नेस अडैप्टर में चलता है।
+Codex-नेटिव टूल के लिए, Codex आधिकारिक टूल रिकॉर्ड का स्वामी है; OpenClaw
+चुने गए इवेंट को मिरर कर सकता है, लेकिन नेटिव थ्रेड को तब तक पुनर्लिखित नहीं कर सकता, जब तक Codex
+उसे ऐप-सर्वर या नेटिव हुक कॉलबैक के माध्यम से उजागर न करे।
 
-OpenClaw डायनेमिक टूल्स के लिए, Codex द्वारा कॉल मांगने के बाद OpenClaw टूल निष्पादित करता है,
-इसलिए OpenClaw harness adapter में अपने स्वामित्व वाले plugin और middleware व्यवहार को चलाता है।
-Codex-native टूल्स के लिए, Codex canonical tool record का मालिक है।
-OpenClaw चुने हुए events को mirror कर सकता है, लेकिन जब तक Codex उस operation को app-server या native hook
-callbacks के माध्यम से expose न करे, वह नेटिव Codex थ्रेड को rewrite नहीं कर सकता।
+Codex ऐप-सर्वर रिपोर्ट-मोड `PreToolUse` इवेंट, Plugin अनुमोदन को
+मेल खाते ऐप-सर्वर अनुमोदन तक स्थगित करते हैं। यदि कोई OpenClaw `before_tool_call` हुक
+`requireApproval` लौटाता है, जबकि नेटिव पेलोड `openclaw_approval_mode:
+"report"` सेट करता है, तो नेटिव हुक रिले Plugin अनुमोदन आवश्यकता दर्ज करता है और
+कोई नेटिव निर्णय नहीं लौटाता। जब Codex बाद में उसी टूल उपयोग के लिए ऐप-सर्वर अनुमोदन
+अनुरोध भेजता है, तो OpenClaw Plugin अनुमोदन प्रॉम्प्ट खोलता है और
+निर्णय को वापस Codex पर मैप करता है। Codex `PermissionRequest` इवेंट एक
+अलग अनुमोदन पथ हैं और उस ब्रिज के लिए कॉन्फ़िगर किए जाने पर अब भी OpenClaw अनुमोदनों
+के माध्यम से रूट हो सकते हैं।
 
-Codex app-server report-mode `PreToolUse` events plugin approval requests को
-matching app-server approval तक defer करते हैं। यदि कोई OpenClaw `before_tool_call` hook
-`requireApproval` लौटाता है जबकि native payload report approval mode सेट करता है
-(`openclaw_approval_mode` `"report"` है), तो native hook relay
-plugin approval requirement रिकॉर्ड करता है और कोई native decision नहीं लौटाता। जब Codex उसी
-tool use के लिए app-server approval request भेजता है, OpenClaw plugin
-approval prompt खोलता है और decision को वापस Codex में map करता है। Codex `PermissionRequest`
-events एक अलग approval path हैं और runtime उस bridge के लिए configured होने पर भी OpenClaw
-approvals के माध्यम से route कर सकते हैं।
+Codex ऐप-सर्वर आइटम सूचनाएँ उन नेटिव टूल पूर्णताओं के लिए असिंक्रोनस
+`after_tool_call` अवलोकन भी प्रदान करती हैं, जिन्हें नेटिव
+`PostToolUse` रिले पहले से कवर नहीं करता। ये केवल टेलीमेट्री/संगतता के लिए हैं; ये
+नेटिव टूल कॉल को ब्लॉक, विलंबित या परिवर्तित नहीं कर सकते।
 
-Codex app-server item notifications उन native tool completions के लिए async `after_tool_call`
-observations भी प्रदान करते हैं जो पहले से native `PostToolUse` relay से covered नहीं हैं।
-ये observations केवल telemetry और plugin compatibility के लिए हैं; वे native tool call को
-block, delay, या mutate नहीं कर सकते।
+Compaction और LLM जीवनचक्र प्रक्षेपण Codex ऐप-सर्वर
+सूचनाओं और OpenClaw अडैप्टर स्थिति से आते हैं, नेटिव Codex हुक कमांड से नहीं।
+`before_compaction`, `after_compaction`, `llm_input` और `llm_output`,
+अडैप्टर-स्तरीय अवलोकन हैं, Codex के आंतरिक
+अनुरोध या Compaction पेलोड के बाइट-दर-बाइट कैप्चर नहीं।
 
-Compaction और LLM lifecycle projections Codex app-server
-notifications और OpenClaw adapter state से आते हैं, native Codex hook commands से नहीं।
-OpenClaw के `before_compaction`, `after_compaction`, `llm_input`, और
-`llm_output` events adapter-level observations हैं, Codex के internal request या compaction payloads के
-byte-for-byte captures नहीं।
-
-Codex native `hook/started` और `hook/completed` app-server notifications को
-trajectory और debugging के लिए `codex_app_server.hook` agent events के रूप में
-project किया जाता है। वे OpenClaw plugin hooks invoke नहीं करते।
+Codex नेटिव `hook/started` और `hook/completed` ऐप-सर्वर सूचनाएँ,
+ट्रैजेक्टरी और डीबगिंग के लिए `codex_app_server.hook` एजेंट इवेंट के रूप में
+प्रक्षेपित की जाती हैं। वे OpenClaw Plugin हुक का आह्वान नहीं करतीं।
 
 ## V1 समर्थन अनुबंध
 
-Codex runtime v1 में समर्थित:
+Codex रनटाइम v1 में समर्थित:
 
-| क्षेत्र                                       | समर्थन                                                                          | कारण                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| सतह                                       | समर्थन                                                                          | कारण                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | --------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Codex के माध्यम से OpenAI मॉडल लूप               | समर्थित                                                                        | Codex app-server OpenAI टर्न, नेटिव थ्रेड resume, और नेटिव टूल continuation का स्वामी है।                                                                                                                                                                                                                                                                                                                                                                                          |
-| OpenClaw चैनल रूटिंग और डिलीवरी         | समर्थित                                                                        | Telegram, Discord, Slack, WhatsApp, iMessage, और अन्य चैनल मॉडल रनटाइम के बाहर रहते हैं।                                                                                                                                                                                                                                                                                                                                                                                    |
+| Codex के माध्यम से OpenAI मॉडल लूप               | समर्थित                                                                        | Codex app-server OpenAI टर्न, नेटिव थ्रेड पुनः आरंभ और नेटिव टूल निरंतरता का स्वामी है।                                                                                                                                                                                                                                                                                                                                                                                          |
+| OpenClaw चैनल रूटिंग और डिलीवरी         | समर्थित                                                                        | Telegram, Discord, Slack, WhatsApp, iMessage और अन्य चैनल मॉडल रनटाइम से बाहर रहते हैं।                                                                                                                                                                                                                                                                                                                                                                                    |
 | OpenClaw डायनेमिक टूल                        | समर्थित                                                                        | Codex OpenClaw से इन टूल को निष्पादित करने के लिए कहता है, इसलिए OpenClaw निष्पादन पथ में बना रहता है।                                                                                                                                                                                                                                                                                                                                                                                                |
-| प्रॉम्प्ट और कॉन्टेक्स्ट Plugin                    | समर्थित                                                                        | OpenClaw, OpenClaw-विशिष्ट प्रॉम्प्ट/कॉन्टेक्स्ट को Codex टर्न में प्रोजेक्ट करता है, जबकि Codex-स्वामित्व वाले base, model, और कॉन्फ़िगर किए गए project-doc प्रॉम्प्ट नेटिव Codex लेन में रहते हैं। OpenClaw नेटिव थ्रेड के लिए Codex की बिल्ट-इन personality को अक्षम करता है ताकि agent workspace personality फ़ाइलें प्रामाणिक बनी रहें। नेटिव Codex developer instructions केवल `codex_app_server` तक स्पष्ट रूप से scoped command guidance स्वीकार करती हैं; legacy global command hints non-Codex prompt surfaces के लिए बने रहते हैं। |
-| कॉन्टेक्स्ट इंजन जीवनचक्र                      | समर्थित                                                                        | Assemble, ingest, और after-turn maintenance Codex टर्न के इर्द-गिर्द चलते हैं। कॉन्टेक्स्ट इंजन नेटिव Codex Compaction को प्रतिस्थापित नहीं करते।                                                                                                                                                                                                                                                                                                                                                        |
-| डायनेमिक टूल हुक                            | समर्थित                                                                        | `before_tool_call`, `after_tool_call`, और tool-result middleware OpenClaw-स्वामित्व वाले डायनेमिक टूल के इर्द-गिर्द चलते हैं।                                                                                                                                                                                                                                                                                                                                                                          |
-| जीवनचक्र हुक                               | एडेप्टर observations के रूप में समर्थित                                                | `llm_input`, `llm_output`, `agent_end`, `before_compaction`, और `after_compaction` ईमानदार Codex-mode payloads के साथ fire होते हैं।                                                                                                                                                                                                                                                                                                                                                           |
-| अंतिम-उत्तर संशोधन गेट                    | नेटिव hook relay के माध्यम से समर्थित                                              | Codex `Stop` को `before_agent_finalize` तक relay किया जाता है; `revise` finalization से पहले Codex से एक और मॉडल पास मांगता है।                                                                                                                                                                                                                                                                                                                                                                |
-| नेटिव shell, patch, और MCP block या observe | नेटिव hook relay के माध्यम से समर्थित                                              | Codex `PreToolUse` और `PostToolUse` committed native tool surfaces के लिए relay किए जाते हैं, जिनमें Codex app-server `0.125.0` या नए पर MCP payloads शामिल हैं। Blocking समर्थित है; argument rewriting नहीं।                                                                                                                                                                                                                                                                               |
-| नेटिव permission policy                      | Codex app-server approvals और compatibility native hook relay के माध्यम से समर्थित | Codex app-server approval requests Codex review के बाद OpenClaw के माध्यम से route होते हैं। `PermissionRequest` native hook relay नेटिव approval modes के लिए opt-in है क्योंकि Codex इसे guardian review से पहले emit करता है।                                                                                                                                                                                                                                                                          |
-| App-server trajectory capture                 | समर्थित                                                                        | OpenClaw app-server को भेजे गए request और प्राप्त app-server notifications को record करता है।                                                                                                                                                                                                                                                                                                                                                                                    |
+| प्रॉम्प्ट और कॉन्टेक्स्ट Plugin                    | समर्थित                                                                        | OpenClaw, OpenClaw-विशिष्ट प्रॉम्प्ट/कॉन्टेक्स्ट को Codex टर्न में प्रोजेक्ट करता है, जबकि Codex के स्वामित्व वाले बेस, मॉडल और कॉन्फ़िगर किए गए प्रोजेक्ट-दस्तावेज़ प्रॉम्प्ट को नेटिव Codex लेन में रहने देता है। OpenClaw नेटिव थ्रेड के लिए Codex के अंतर्निहित व्यक्तित्व को अक्षम करता है, ताकि एजेंट वर्कस्पेस व्यक्तित्व फ़ाइलें प्रामाणिक बनी रहें। नेटिव Codex डेवलपर निर्देश केवल `codex_app_server` के लिए स्पष्ट रूप से सीमित कमांड मार्गदर्शन स्वीकार करते हैं; विरासती ग्लोबल कमांड संकेत गैर-Codex प्रॉम्प्ट सतहों के लिए बने रहते हैं। |
+| कॉन्टेक्स्ट इंजन जीवनचक्र                      | समर्थित                                                                        | असेंबल, इंजेस्ट और टर्न-पश्चात रखरखाव Codex टर्न के आसपास चलते हैं। कॉन्टेक्स्ट इंजन नेटिव Codex Compaction को प्रतिस्थापित नहीं करते।                                                                                                                                                                                                                                                                                                                                                        |
+| डायनेमिक टूल हुक                            | समर्थित                                                                        | `before_tool_call`, `after_tool_call` और टूल-परिणाम मिडलवेयर OpenClaw के स्वामित्व वाले डायनेमिक टूल के आसपास चलते हैं।                                                                                                                                                                                                                                                                                                                                                                          |
+| जीवनचक्र हुक                               | अडैप्टर अवलोकनों के रूप में समर्थित                                                | `llm_input`, `llm_output`, `agent_end`, `before_compaction` और `after_compaction` सटीक Codex-मोड पेलोड के साथ सक्रिय होते हैं।                                                                                                                                                                                                                                                                                                                                                           |
+| अंतिम-उत्तर संशोधन गेट                    | नेटिव हुक रिले के माध्यम से समर्थित                                              | Codex `Stop` को `before_agent_finalize` पर रिले किया जाता है; `revise` अंतिम रूप देने से पहले Codex से एक और मॉडल पास का अनुरोध करता है।                                                                                                                                                                                                                                                                                                                                                                |
+| नेटिव शेल, पैच और MCP को ब्लॉक करना या देखना | नेटिव हुक रिले के माध्यम से समर्थित                                              | Codex `PreToolUse` और `PostToolUse` को कमिट की गई नेटिव टूल सतहों के लिए रिले किया जाता है, जिसमें Codex app-server `0.142.0` या नए संस्करण पर MCP पेलोड शामिल हैं। ब्लॉक करना समर्थित है; आर्ग्युमेंट पुनर्लेखन समर्थित नहीं है।                                                                                                                                                                                                                                                                               |
+| नेटिव अनुमति नीति                      | Codex app-server अनुमोदनों और संगतता नेटिव हुक रिले के माध्यम से समर्थित | Codex app-server अनुमोदन अनुरोध Codex समीक्षा के बाद OpenClaw के माध्यम से रूट होते हैं। `PermissionRequest` नेटिव हुक रिले नेटिव अनुमोदन मोड के लिए ऑप्ट-इन है, क्योंकि Codex इसे गार्जियन समीक्षा से पहले उत्सर्जित करता है।                                                                                                                                                                                                                                                                          |
+| App-server ट्रैजेक्टरी कैप्चर                 | समर्थित                                                                        | OpenClaw app-server को भेजे गए अनुरोध और उससे प्राप्त सूचनाओं को रिकॉर्ड करता है।                                                                                                                                                                                                                                                                                                                                                                                    |
 
-Codex runtime v1 में समर्थित नहीं:
+Codex रनटाइम v1 में समर्थित नहीं:
 
-| क्षेत्र                                             | V1 सीमा                                                                                                                                     | भावी मार्ग                                                                               |
+| सतह                                             | V1 सीमा                                                                                                                                     | भावी मार्ग                                                                               |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| नेटिव टूल argument mutation                       | Codex native pre-tool hooks block कर सकते हैं, लेकिन OpenClaw Codex-native tool arguments को rewrite नहीं करता।                                               | replacement tool input के लिए Codex hook/schema support की आवश्यकता है।                            |
-| Editable Codex-native transcript history            | Codex canonical native thread history का स्वामी है। OpenClaw mirror का स्वामी है और future context project कर सकता है, लेकिन unsupported internals को mutate नहीं करना चाहिए। | अगर native thread surgery की जरूरत हो तो explicit Codex app-server APIs जोड़ें।                    |
-| Codex-native tool records के लिए `tool_result_persist` | वह hook OpenClaw-स्वामित्व वाली transcript writes को transform करता है, Codex-native tool records को नहीं।                                                           | transformed records mirror किए जा सकते हैं, लेकिन canonical rewrite के लिए Codex support चाहिए।              |
-| Rich native compaction metadata                     | OpenClaw native Compaction request कर सकता है, लेकिन stable kept/dropped list, token delta, completion summary, या summary payload प्राप्त नहीं करता।   | अधिक समृद्ध Codex Compaction events चाहिए।                                                     |
-| Compaction intervention                             | OpenClaw Plugin या context engines को native Codex Compaction को veto, rewrite, या replace करने नहीं देता।                                             | अगर Plugin को native Compaction को veto या rewrite करना हो तो Codex pre/post Compaction hooks जोड़ें। |
-| Byte-for-byte model API request capture             | OpenClaw app-server requests और notifications capture कर सकता है, लेकिन Codex core final OpenAI API request internally बनाता है।                      | Codex model-request tracing event या debug API चाहिए।                                   |
+| नेटिव टूल आर्ग्युमेंट में परिवर्तन                       | Codex नेटिव प्री-टूल हुक ब्लॉक कर सकते हैं, लेकिन OpenClaw Codex-नेटिव टूल आर्ग्युमेंट का पुनर्लेखन नहीं करता।                                               | प्रतिस्थापन टूल इनपुट के लिए Codex हुक/स्कीमा समर्थन आवश्यक है।                            |
+| संपादन योग्य Codex-नेटिव ट्रांसक्रिप्ट इतिहास            | Codex प्रामाणिक नेटिव थ्रेड इतिहास का स्वामी है। OpenClaw एक मिरर का स्वामी है और भावी कॉन्टेक्स्ट प्रोजेक्ट कर सकता है, लेकिन उसे असमर्थित आंतरिक भागों में परिवर्तन नहीं करना चाहिए। | यदि नेटिव थ्रेड सर्जरी आवश्यक हो, तो स्पष्ट Codex app-server API जोड़ें।                    |
+| Codex-नेटिव टूल रिकॉर्ड के लिए `tool_result_persist` | वह हुक OpenClaw के स्वामित्व वाले ट्रांसक्रिप्ट लेखन को रूपांतरित करता है, Codex-नेटिव टूल रिकॉर्ड को नहीं।                                                           | रूपांतरित रिकॉर्ड मिरर किए जा सकते हैं, लेकिन प्रामाणिक पुनर्लेखन के लिए Codex समर्थन आवश्यक है।              |
+| समृद्ध नेटिव Compaction मेटाडेटा                     | OpenClaw नेटिव Compaction का अनुरोध कर सकता है, लेकिन उसे स्थिर रखी गई/हटाई गई सूची, टोकन अंतर, पूर्णता सारांश या सारांश पेलोड प्राप्त नहीं होता।   | अधिक समृद्ध Codex Compaction इवेंट आवश्यक हैं।                                                     |
+| Compaction में हस्तक्षेप                             | OpenClaw Plugin या कॉन्टेक्स्ट इंजन को नेटिव Codex Compaction पर वीटो लगाने, उसका पुनर्लेखन करने या उसे प्रतिस्थापित करने नहीं देता।                                             | यदि Plugin को नेटिव Compaction पर वीटो लगाने या उसका पुनर्लेखन करने की आवश्यकता हो, तो Codex प्री/पोस्ट Compaction हुक जोड़ें। |
+| बाइट-दर-बाइट मॉडल API अनुरोध कैप्चर             | OpenClaw app-server अनुरोधों और सूचनाओं को कैप्चर कर सकता है, लेकिन Codex कोर अंतिम OpenAI API अनुरोध आंतरिक रूप से बनाता है।                      | Codex मॉडल-अनुरोध ट्रेसिंग इवेंट या डीबग API आवश्यक है।                                   |
 
-## नेटिव permissions और MCP elicitations
+## नेटिव अनुमतियाँ और MCP एलिसिटेशन
 
-`PermissionRequest` के लिए, OpenClaw केवल स्पष्ट allow या deny decisions लौटाता है
-जब policy फैसला करती है। no-decision result allow नहीं है। Codex इसे no
-hook decision मानता है और अपने guardian या user approval path पर आगे बढ़ता है।
+`PermissionRequest` के लिए, OpenClaw केवल तभी स्पष्ट अनुमति या अस्वीकृति
+निर्णय लौटाता है, जब नीति निर्णय करती है। निर्णय न होना अनुमति नहीं है: Codex
+इसे हुक निर्णय न होने के रूप में मानता है और अपने गार्जियन या उपयोगकर्ता
+अनुमोदन पथ पर आगे बढ़ता है।
 
-Codex app-server approval modes default रूप से इस native hook को omit करते हैं। यह behavior
-तब लागू होता है जब `permission_request` को `nativeHookRelay.events` में
-explicitly शामिल किया गया हो या कोई compatibility runtime इसे install करे।
+Codex app-server अनुमोदन मोड डिफ़ॉल्ट रूप से इस नेटिव हुक को छोड़ देते हैं। यह
+तब तक लागू होता है, जब तक `permission_request` को स्पष्ट रूप से
+`nativeHookRelay.events` में शामिल नहीं किया जाता या कोई संगतता रनटाइम इसे इंस्टॉल नहीं करता।
 
-जब कोई operator Codex native permission request के लिए `allow-always` चुनता है,
-OpenClaw उस exact provider/session/tool input/cwd fingerprint को
-bounded session window के लिए याद रखता है। remembered decision जानबूझकर exact-match
-only है: बदला हुआ command, arguments, tool payload, या cwd एक fresh
-approval बनाता है।
+जब कोई ऑपरेटर Codex नेटिव अनुमति अनुरोध के लिए `allow-always` चुनता है,
+तो OpenClaw एक सीमित सत्र अवधि के लिए उस सटीक प्रोवाइडर/सत्र/टूल इनपुट/cwd
+फ़िंगरप्रिंट को याद रखता है। याद रखा गया निर्णय जानबूझकर केवल सटीक-मिलान वाला
+होता है: बदला हुआ कमांड, आर्ग्युमेंट, टूल पेलोड या cwd नया अनुमोदन बनाता है।
 
-Codex MCP tool approval elicitations को OpenClaw के Plugin
-approval flow के माध्यम से route किया जाता है जब Codex `_meta.codex_approval_kind` को
-`"mcp_tool_call"` के रूप में mark करता है। Codex `request_user_input` prompts को
-originating chat में वापस भेजा जाता है, और अगला queued follow-up message उस native
-server request का उत्तर देता है, बजाय इसके कि उसे extra context के रूप में steer किया जाए। अन्य MCP elicitation
-requests fail closed होते हैं।
+जब Codex `_meta.codex_approval_kind` को `"mcp_tool_call"` के रूप में चिह्नित करता है,
+तो Codex MCP टूल अनुमोदन एलिसिटेशन OpenClaw के Plugin अनुमोदन प्रवाह के माध्यम
+से रूट होते हैं। Codex `request_user_input` मूल सत्र के लिए एक प्रोवाइडर-न्यूट्रल
+Gateway प्रश्न पंजीकृत करता है। Control UI Gateway प्रश्न कार्ड रेंडर करता है,
+और जब चैनल उनका समर्थन करता है, तब एकल गैर-गोपनीय विकल्प टाइप किए गए चैनल
+बटन का उपयोग करता है। बटन टैप, Control UI उत्तर और अगला कतारबद्ध सादा-पाठ
+उत्तर, OpenClaw द्वारा app-server उत्तर लौटाने से पहले उसी Gateway रिकॉर्ड को
+समाधान करते हैं। Codex स्वचालित-समाधान और प्रयास निरस्तीकरण प्रतीक्षा को सीमित
+करते हैं और रिकॉर्ड को रद्द करते हैं। गोपनीय प्रश्न पूरी तरह चेतावनी वाले
+पाठ-उत्तर पथ पर रहते हैं। अन्य MCP एलिसिटेशन अनुरोध बंद अवस्था में विफल होते हैं।
 
-इन prompts को carry करने वाले सामान्य Plugin approval flow के लिए, देखें
-[Plugin permission requests](/hi/plugins/plugin-permission-requests).
+इन प्रॉम्प्ट को वहन करने वाले सामान्य Plugin अनुमोदन प्रवाह के लिए,
+[Plugin अनुमति अनुरोध](/hi/plugins/plugin-permission-requests) देखें।
 
-## Queue steering
+## कतार संचालन
 
-Active-run queue steering Codex app-server `turn/steer` पर map होता है। Default
-`messages.queue.mode: "steer"` के साथ, OpenClaw configured quiet window के लिए steer-mode chat
-messages को batch करता है और उन्हें arrival order में एक `turn/steer`
-request के रूप में भेजता है।
+सक्रिय-रन कतार संचालन Codex app-server `turn/steer` पर मैप होता है। डिफ़ॉल्ट
+`messages.queue.mode: "steer"` के साथ, OpenClaw कॉन्फ़िगर की गई शांत अवधि के दौरान संचालन-मोड चैट
+संदेशों को बैच करता है और उन्हें आगमन क्रम में एक `turn/steer`
+अनुरोध के रूप में भेजता है।
 
-Codex समीक्षा और मैनुअल Compaction टर्न उसी-टर्न की दिशा-निर्देशन को अस्वीकार कर सकते हैं। ऐसे
-मामले में, OpenClaw प्रॉम्प्ट शुरू करने से पहले सक्रिय रन के समाप्त होने की प्रतीक्षा करता है।
-जब संदेशों को दिशा-निर्देशन के बजाय डिफ़ॉल्ट रूप से कतार में लगना चाहिए, तो
-`/queue followup` या `/queue collect` का उपयोग करें। [दिशा-निर्देशन कतार](/hi/concepts/queue-steering) देखें।
+Codex समीक्षा और मैन्युअल Compaction टर्न उसी टर्न के संचालन को अस्वीकार कर सकते हैं। ऐसी
+स्थिति में, OpenClaw प्रॉम्प्ट शुरू करने से पहले सक्रिय रन के समाप्त होने की प्रतीक्षा करता है।
+जब संदेशों को संचालन के बजाय डिफ़ॉल्ट रूप से कतारबद्ध करना हो, तो `/queue followup` या
+`/queue collect` का उपयोग करें। [संचालन कतार](/hi/concepts/queue-steering) देखें।
 
 ## Codex फ़ीडबैक अपलोड
 
-जब नेटिव Codex हार्नेस का उपयोग कर रहे किसी सेशन के लिए `/diagnostics [note]`
-स्वीकृत होता है, तो OpenClaw संबंधित Codex थ्रेड्स के लिए Codex app-server
-`feedback/upload` को भी कॉल करता है। अपलोड app-server से प्रत्येक सूचीबद्ध थ्रेड
-और उपलब्ध होने पर स्पॉन किए गए Codex सबथ्रेड्स के लिए लॉग शामिल करने का अनुरोध करता है।
+जब नेटिव Codex हार्नेस पर किसी सत्र के लिए `/diagnostics [note]` स्वीकृत होता है,
+तो OpenClaw प्रासंगिक Codex थ्रेड के लिए Codex app-server
+`feedback/upload` को भी कॉल करता है, जिसमें सूचीबद्ध प्रत्येक थ्रेड के लॉग और
+उपलब्ध होने पर बनाए गए Codex उपथ्रेड शामिल होते हैं।
 
-अपलोड Codex के सामान्य फ़ीडबैक पथ से OpenAI सर्वरों तक जाता है। यदि उस app-server में Codex
-फ़ीडबैक अक्षम है, तो कमांड app-server त्रुटि लौटाता है। पूर्ण हुई डायग्नॉस्टिक्स प्रतिक्रिया भेजे गए थ्रेड्स के लिए चैनल, OpenClaw सेशन आईडी,
-Codex थ्रेड आईडी, और स्थानीय `codex resume <thread-id>` कमांड सूचीबद्ध करती है।
+अपलोड Codex के सामान्य फ़ीडबैक पथ से OpenAI सर्वर तक जाता है। यदि उस
+app-server में Codex फ़ीडबैक अक्षम है, तो कमांड app-server त्रुटि लौटाता है।
+पूर्ण हुए निदान उत्तर में भेजे गए थ्रेड के चैनल, OpenClaw सत्र आईडी, Codex थ्रेड
+आईडी और स्थानीय `codex resume <thread-id>` कमांड सूचीबद्ध होते हैं।
 
-यदि आप स्वीकृति अस्वीकार करते हैं या अनदेखा करते हैं, तो OpenClaw वे Codex आईडी नहीं प्रिंट करता और
-Codex फ़ीडबैक नहीं भेजता। अपलोड स्थानीय Gateway डायग्नॉस्टिक्स एक्सपोर्ट को प्रतिस्थापित नहीं करता। स्वीकृति, गोपनीयता, स्थानीय बंडल, और समूह-चैट व्यवहार के लिए
-[डायग्नॉस्टिक्स एक्सपोर्ट](/hi/gateway/diagnostics) देखें।
+यदि आप स्वीकृति अस्वीकार करते हैं या उसे अनदेखा करते हैं, तो OpenClaw उन Codex आईडी
+को प्रिंट नहीं करता और Codex फ़ीडबैक नहीं भेजता। यह अपलोड स्थानीय Gateway निदान
+निर्यात को प्रतिस्थापित नहीं करता। स्वीकृति, गोपनीयता, स्थानीय बंडल और समूह-चैट व्यवहार
+के लिए [निदान निर्यात](/hi/gateway/diagnostics) देखें।
 
-`/codex diagnostics [note]` का उपयोग केवल तब करें जब आप पूर्ण Gateway डायग्नॉस्टिक्स बंडल के बिना
-वर्तमान में संलग्न थ्रेड के लिए विशेष रूप से Codex फ़ीडबैक अपलोड चाहते हों।
+केवल तभी `/codex diagnostics [note]` का उपयोग करें, जब आप पूर्ण Gateway निदान
+बंडल के बिना वर्तमान में संलग्न थ्रेड के लिए Codex फ़ीडबैक अपलोड चाहते हों।
 
 ## Compaction और ट्रांसक्रिप्ट मिरर
 
-जब चयनित मॉडल Codex हार्नेस का उपयोग करता है, तो नेटिव थ्रेड Compaction
-Codex app-server का होता है। OpenClaw Codex टर्न के लिए प्रीफ़्लाइट Compaction नहीं चलाता,
-Codex Compaction को context-engine Compaction से प्रतिस्थापित नहीं करता, और जब नेटिव Codex
-Compaction शुरू नहीं किया जा सकता, तो OpenClaw या सार्वजनिक OpenAI सारांश पर
-वापस नहीं जाता। OpenClaw चैनल इतिहास, खोज, `/new`, `/reset`, और भविष्य में मॉडल या हार्नेस स्विचिंग के लिए
-ट्रांसक्रिप्ट मिरर रखता है।
+जब चयनित मॉडल Codex हार्नेस का उपयोग करता है, तो नेटिव थ्रेड Compaction का
+स्वामित्व Codex app-server के पास होता है। OpenClaw Codex टर्न के लिए प्रीफ़्लाइट
+Compaction नहीं चलाता, Codex Compaction को कॉन्टेक्स्ट-इंजन Compaction से
+प्रतिस्थापित नहीं करता, और नेटिव Compaction शुरू न हो पाने पर OpenClaw या सार्वजनिक
+OpenAI सारांशीकरण पर फ़ॉलबैक नहीं करता। OpenClaw चैनल इतिहास, खोज,
+`/new`, `/reset`, और भविष्य में मॉडल या हार्नेस बदलने के लिए
+एक ट्रांसक्रिप्ट मिरर बनाए रखता है।
 
-स्पष्ट Compaction अनुरोध, जैसे `/compact` या Plugin-अनुरोधित मैनुअल
-compact ऑपरेशन, `thread/compact/start` के साथ नेटिव Codex Compaction शुरू करते हैं।
-OpenClaw अनुरोध और साझा-क्लाइंट लीज़ को तब तक खुला रखता है जब तक Codex मेल खाता
-`contextCompaction` पूर्णता आइटम उत्सर्जित नहीं करता, और फिर Compaction टर्न को
-पूर्ण के रूप में रिपोर्ट करता है। यदि वह टर्मिनल टर्न कॉन्फ़िगर किए गए Compaction टाइमआउट से अधिक हो जाता है,
-तो OpenClaw नेटिव टर्न इंटरप्ट का अनुरोध करता है। लीज़ और प्रति-थ्रेड Compaction
-फ़ेंस तब तक पकड़े रहते हैं जब तक Codex टर्मिनल स्थिति रिपोर्ट नहीं करता या इंटरप्ट RPC की पुष्टि नहीं करता।
-यदि Codex इंटरप्ट ग्रेस अवधि के भीतर पुष्टि नहीं करता, तो OpenClaw फ़ेंस रिलीज़ करने से पहले
-कनेक्शन को रिटायर कर देता है। रिमोट कनेक्शन मेल खाते थ्रेड बाइंडिंग को भी अलग कर देते हैं
-ताकि बाद का काम किसी अपुष्ट रिमोट टर्न से ओवरलैप न कर सके। रिटायर किए गए कनेक्शन पर अन्य टर्न विफल होते हैं
-और नए क्लाइंट पर फिर से प्रयास कर सकते हैं। क्लाइंट बंद होना, अनुरोध रद्द होना, या विफल Compaction टर्न
-विफल ऑपरेशन लौटाता है।
+स्पष्ट Compaction अनुरोध, जैसे `/compact` या Plugin द्वारा अनुरोधित मैन्युअल
+कॉम्पैक्ट कार्रवाई, `thread/compact/start` के साथ नेटिव Codex Compaction शुरू करते हैं।
+OpenClaw अनुरोध और साझा-क्लाइंट लीज़ को तब तक खुला रखता है, जब तक Codex मेल खाने वाला
+`contextCompaction` पूर्णता आइटम उत्सर्जित नहीं करता, और फिर Compaction टर्न को पूर्ण
+बताता है। यदि वह अंतिम टर्न कॉन्फ़िगर किए गए Compaction टाइमआउट से अधिक समय लेता है,
+तो OpenClaw नेटिव टर्न इंटरप्ट का अनुरोध करता है। लीज़ और प्रति-थ्रेड Compaction फ़ेंस
+तब तक रोके रहते हैं, जब तक Codex अंतिम स्थिति नहीं बताता या इंटरप्ट RPC की पुष्टि नहीं
+करता। यदि Codex इंटरप्ट की रियायत अवधि के भीतर पुष्टि नहीं करता, तो OpenClaw फ़ेंस
+रिलीज़ करने से पहले कनेक्शन को सेवानिवृत्त कर देता है। रिमोट कनेक्शन मेल खाने वाली थ्रेड
+बाइंडिंग को भी अलग कर देते हैं, ताकि बाद का कार्य किसी अपुष्ट रिमोट टर्न के साथ ओवरलैप
+न कर सके। सेवानिवृत्त कनेक्शन के अन्य टर्न विफल होते हैं और नए क्लाइंट पर पुनः प्रयास
+कर सकते हैं। क्लाइंट बंद होने, अनुरोध रद्द होने या Compaction टर्न विफल होने पर कार्रवाई
+विफल लौटती है। कॉन्टेक्स्ट-दबाव के कारण स्वचालित Compaction करना Codex का काम है;
+OpenClaw केवल मैन्युअल रूप से अनुरोधित ट्रिगर के लिए नेटिव Compaction शुरू करता है।
 
 जब कोई कॉन्टेक्स्ट इंजन Codex थ्रेड-बूटस्ट्रैप प्रोजेक्शन का अनुरोध करता है, तो OpenClaw
-टूल-कॉल नाम और आईडी, इनपुट शेप्स, और रिडैक्ट की गई टूल-परिणाम सामग्री को
-नए Codex थ्रेड में प्रोजेक्ट करता है। यह कच्चे टूल-कॉल आर्ग्युमेंट मानों को
-उस प्रोजेक्शन में कॉपी नहीं करता।
+टूल-कॉल नाम और आईडी, इनपुट आकार तथा संपादित टूल-परिणाम सामग्री को नए Codex थ्रेड में
+प्रोजेक्ट करता है। वह उस प्रोजेक्शन में टूल-कॉल आर्ग्युमेंट के मूल मान कॉपी नहीं करता।
 
-मिरर में उपयोगकर्ता प्रॉम्प्ट, अंतिम असिस्टेंट टेक्स्ट, और app-server द्वारा उत्सर्जित किए जाने पर हल्के Codex
-रीज़निंग या प्लान रिकॉर्ड शामिल होते हैं। OpenClaw नेटिव Compaction शुरू और टर्मिनल स्थिति रिकॉर्ड करता है,
-लेकिन यह मानव-पठनीय Compaction सारांश या इस बात की ऑडिट योग्य सूची उजागर नहीं करता
-कि Compaction के बाद Codex ने कौन-सी प्रविष्टियां रखीं।
+जब app-server उन्हें उत्सर्जित करता है, तो मिरर में उपयोगकर्ता प्रॉम्प्ट, अंतिम सहायक टेक्स्ट
+और हल्के Codex तर्क या योजना रिकॉर्ड शामिल होते हैं। OpenClaw नेटिव Compaction की
+शुरुआत और अंतिम स्थिति रिकॉर्ड करता है, लेकिन वह मानव-पठनीय Compaction सारांश या
+Compaction के बाद Codex द्वारा रखी गई प्रविष्टियों की ऑडिट-योग्य सूची उपलब्ध नहीं कराता।
 
-क्योंकि Codex कैनॉनिकल नेटिव थ्रेड का स्वामी है, `tool_result_persist` वर्तमान में
-Codex-नेटिव टूल परिणाम रिकॉर्ड को फिर से नहीं लिखता। यह केवल तब लागू होता है
-जब OpenClaw किसी OpenClaw-स्वामित्व वाले सेशन ट्रांसक्रिप्ट टूल परिणाम को लिख रहा हो।
+चूँकि Codex कैनोनिकल नेटिव थ्रेड का स्वामी है, इसलिए `tool_result_persist`
+Codex-नेटिव टूल परिणाम रिकॉर्ड को दोबारा नहीं लिखता। यह केवल तब लागू होता है, जब
+OpenClaw किसी OpenClaw-स्वामित्व वाले सत्र ट्रांसक्रिप्ट का टूल परिणाम लिखता है।
 
 ## मीडिया और डिलीवरी
 
-OpenClaw मीडिया डिलीवरी और मीडिया प्रदाता चयन का स्वामी बना रहता है। इमेज,
-वीडियो, संगीत, PDF, TTS, और मीडिया समझ मिलती-जुलती प्रदाता/मॉडल
-सेटिंग्स का उपयोग करते हैं, जैसे `agents.defaults.imageGenerationModel`, `videoGenerationModel`,
-`pdfModel`, और `messages.tts`.
+OpenClaw मीडिया डिलीवरी और मीडिया प्रदाता चयन का स्वामी बना रहता है। छवि,
+वीडियो, संगीत, PDF, TTS और मीडिया समझ के लिए `agents.defaults.imageGenerationModel`,
+`videoGenerationModel`, `pdfModel` और `messages.tts` जैसी मेल खाती
+प्रदाता/मॉडल सेटिंग का उपयोग होता है।
 
-टेक्स्ट, इमेज, वीडियो, संगीत, TTS, स्वीकृतियां, और मैसेजिंग-टूल आउटपुट सामान्य
-OpenClaw डिलीवरी पथ से जारी रहते हैं। मीडिया जनरेशन के लिए लेगेसी रनटाइम आवश्यक नहीं है।
-जब Codex `savedPath` के साथ नेटिव इमेज-जनरेशन आइटम उत्सर्जित करता है, तो OpenClaw
-उस सटीक फ़ाइल को सामान्य रिप्लाई-मीडिया पथ से आगे भेजता है, भले ही Codex
-टर्न में कोई असिस्टेंट टेक्स्ट न हो।
+टेक्स्ट, छवियाँ, वीडियो, संगीत, TTS, स्वीकृतियाँ और मैसेजिंग-टूल आउटपुट सामान्य
+OpenClaw डिलीवरी पथ से जारी रहते हैं; मीडिया जनरेशन के लिए लेगेसी रनटाइम की आवश्यकता
+नहीं होती। जब Codex `savedPath` वाला कोई नेटिव छवि-जनरेशन आइटम उत्सर्जित
+करता है, तो OpenClaw उसी सटीक फ़ाइल को सामान्य उत्तर-मीडिया पथ से अग्रेषित करता है,
+भले ही Codex टर्न में कोई सहायक टेक्स्ट न हो।
 
 ## संबंधित
 
 - [Codex हार्नेस](/hi/plugins/codex-harness)
 - [Codex हार्नेस संदर्भ](/hi/plugins/codex-harness-reference)
+- [Codex पर्यवेक्षण](/plugins/codex-supervision)
 - [नेटिव Codex plugins](/hi/plugins/codex-native-plugins)
-- [Plugin हुक्स](/hi/plugins/hooks)
+- [Plugin हुक](/hi/plugins/hooks)
 - [एजेंट हार्नेस plugins](/hi/plugins/sdk-agent-harness)
-- [डायग्नॉस्टिक्स एक्सपोर्ट](/hi/gateway/diagnostics)
-- [ट्रैजेक्टरी एक्सपोर्ट](/hi/tools/trajectory)
+- [निदान निर्यात](/hi/gateway/diagnostics)
+- [प्रक्षेपपथ निर्यात](/hi/tools/trajectory)

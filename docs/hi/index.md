@@ -1,14 +1,15 @@
 ---
 read_when:
     - नए उपयोगकर्ताओं को OpenClaw से परिचित कराना
-summary: OpenClaw AI एजेंटों के लिए एक मल्टी-चैनल gateway है, जो किसी भी OS पर चलता है।
+summary: OpenClaw AI एजेंटों के लिए एक मल्टी-चैनल Gateway है, जो किसी भी OS पर चलता है।
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-06-28T23:18:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:54:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fcaa54a0a6d7aa62193fd9f03428bbcbfdcb2c00a184bcd6f49e4e093fefc473
+    source_hash: fe97e7299be4855fd9af21838e0626b5a5c8aafe46d982859e9033f0efec2443
     source_path: index.md
     workflow: 16
 ---
@@ -30,74 +31,118 @@ x-i18n:
     />
 </p>
 
-> _"छिलका उतारो! छिलका उतारो!"_ — शायद एक अंतरिक्ष लॉब्स्टर
+> _"एक्सफ़ोलिएट! एक्सफ़ोलिएट!"_ — शायद कोई अंतरिक्षीय लॉब्स्टर
 
 <p align="center">
-  <strong>Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, और अन्य पर AI एजेंटों के लिए किसी भी OS का Gateway।</strong><br />
-  संदेश भेजें, अपनी जेब से एजेंट प्रतिक्रिया पाएं। बिल्ट-इन चैनलों, बंडल किए गए चैनल Plugin, WebChat, और मोबाइल Node पर एक Gateway चलाएं।
+  <strong>Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo और अन्य पर AI एजेंटों के लिए किसी भी OS का Gateway।</strong><br />
+  संदेश भेजें और अपनी जेब में ही एजेंट से उत्तर पाएँ। चैनल plugins, WebChat और मोबाइल nodes के लिए एक Gateway चलाएँ।
 </p>
 
 <Columns>
   <Card title="शुरू करें" href="/hi/start/getting-started" icon="rocket">
     OpenClaw इंस्टॉल करें और कुछ ही मिनटों में Gateway शुरू करें।
   </Card>
-  <Card title="Onboarding चलाएं" href="/hi/start/wizard" icon="list-checks">
-    `openclaw onboard` और पेयरिंग फ़्लो के साथ निर्देशित सेटअप।
+  <Card title="ऑनबोर्डिंग चलाएँ" href="/hi/start/wizard" icon="list-checks">
+    `openclaw onboard` और पेयरिंग प्रवाहों के साथ निर्देशित सेटअप।
   </Card>
-  <Card title="Control UI खोलें" href="/hi/web/control-ui" icon="layout-dashboard">
-    चैट, कॉन्फ़िग, और सत्रों के लिए ब्राउज़र डैशबोर्ड लॉन्च करें।
+  <Card title="चैनल कनेक्ट करें" href="/hi/channels" icon="message-circle">
+    कहीं से भी चैट करने के लिए Discord, Signal, Telegram, WhatsApp और अन्य सेवाओं को लिंक करें।
+  </Card>
+  <Card title="कंट्रोल UI खोलें" href="/hi/web/control-ui" icon="layout-dashboard">
+    चैट, कॉन्फ़िगरेशन और सत्रों के लिए ब्राउज़र डैशबोर्ड लॉन्च करें।
+  </Card>
+</Columns>
+
+## दस्तावेज़ ब्राउज़ करें
+
+मोबाइल ब्राउज़र पूर्ण डेस्कटॉप टैब बार के बिना अनुभाग मेन्यू दिखा सकते हैं। पेज के मुख्य भाग से उन्हीं शीर्ष-स्तरीय दस्तावेज़ क्षेत्रों तक पहुँचने के लिए
+इन हब लिंक का उपयोग करें।
+
+<Columns>
+  <Card title="शुरू करें" href="/hi" icon="rocket">
+    अवलोकन, प्रदर्शन, शुरुआती चरण और सेटअप गाइड।
+  </Card>
+  <Card title="इंस्टॉल करें" href="/hi/install" icon="download">
+    इंस्टॉलेशन पथ, अपडेट, कंटेनर, होस्टिंग और उन्नत सेटअप।
+  </Card>
+  <Card title="चैनल" href="/hi/channels" icon="messages-square">
+    मैसेजिंग चैनल, पेयरिंग, रूटिंग, एक्सेस समूह और चैनल QA।
+  </Card>
+  <Card title="एजेंट" href="/hi/concepts/architecture" icon="bot">
+    आर्किटेक्चर, सत्र, संदर्भ, मेमोरी और मल्टी-एजेंट रूटिंग।
+  </Card>
+  <Card title="क्षमताएँ" href="/hi/tools" icon="wand-sparkles">
+    टूल, Skills, Cron, webhooks और ऑटोमेशन क्षमताएँ।
+  </Card>
+  <Card title="ClawHub" href="/clawhub" icon="store">
+    Plugin मार्केटप्लेस, प्रकाशन, चयन और विश्वसनीयता संबंधी मार्गदर्शन।
+  </Card>
+  <Card title="मॉडल" href="/hi/providers" icon="brain">
+    प्रदाता, मॉडल कॉन्फ़िगरेशन, फ़ेलओवर और स्थानीय मॉडल सेवाएँ।
+  </Card>
+  <Card title="प्लेटफ़ॉर्म" href="/hi/platforms" icon="monitor-smartphone">
+    macOS, Windows, iOS, Android, nodes और वेब इंटरफ़ेस।
+  </Card>
+  <Card title="Gateway और संचालन" href="/hi/gateway" icon="server">
+    Gateway कॉन्फ़िगरेशन, सुरक्षा, निदान और संचालन।
+  </Card>
+  <Card title="संदर्भ" href="/hi/cli" icon="terminal">
+    CLI संदर्भ, स्कीमा, RPC, रिलीज़ नोट्स और टेम्पलेट।
+  </Card>
+  <Card title="सहायता" href="/hi/help" icon="life-buoy">
+    समस्या निवारण, अक्सर पूछे जाने वाले प्रश्न, परीक्षण, निदान और परिवेश जाँच।
   </Card>
 </Columns>
 
 ## OpenClaw क्या है?
 
-OpenClaw एक **स्व-होस्टेड gateway** है जो आपके पसंदीदा चैट ऐप्स और चैनल इंटरफेस — बिल्ट-इन चैनलों तथा Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, और अन्य जैसे बंडल किए गए या बाहरी चैनल Plugin — को AI कोडिंग एजेंटों से जोड़ता है। आप अपनी मशीन (या सर्वर) पर एक ही Gateway प्रक्रिया चलाते हैं, और यह आपके मैसेजिंग ऐप्स और हमेशा उपलब्ध AI सहायक के बीच पुल बन जाता है।
+OpenClaw एक **स्वयं होस्ट किया गया Gateway** है, जो चैनल plugins के माध्यम से आपके पसंदीदा चैट ऐप्स — Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo और अन्य — को AI कोडिंग एजेंटों से जोड़ता है। आप अपनी मशीन (या सर्वर) पर एक Gateway प्रक्रिया चलाते हैं, जो आपके मैसेजिंग ऐप्स और हमेशा उपलब्ध AI सहायक के बीच सेतु बन जाती है।
 
-**यह किसके लिए है?** उन डेवलपरों और पावर उपयोगकर्ताओं के लिए जो ऐसा निजी AI सहायक चाहते हैं जिसे वे कहीं से भी संदेश भेज सकें — अपने डेटा पर नियंत्रण छोड़े बिना या किसी होस्टेड सेवा पर निर्भर हुए बिना।
+**यह किसके लिए है?** उन डेवलपर और उन्नत उपयोगकर्ताओं के लिए, जो एक व्यक्तिगत AI सहायक को कहीं से भी संदेश भेजना चाहते हैं — अपने डेटा पर नियंत्रण छोड़े बिना या किसी होस्ट की गई सेवा पर निर्भर हुए बिना।
 
 **इसे अलग क्या बनाता है?**
 
-- **स्व-होस्टेड**: आपके हार्डवेयर पर, आपके नियमों से चलता है
-- **मल्टी-चैनल**: एक Gateway बिल्ट-इन चैनलों और बंडल किए गए या बाहरी चैनल Plugin को एक साथ सेवा देता है
-- **एजेंट-नेटिव**: टूल उपयोग, सत्र, मेमोरी, और मल्टी-एजेंट रूटिंग वाले कोडिंग एजेंटों के लिए बनाया गया
-- **ओपन सोर्स**: MIT लाइसेंस वाला, समुदाय-चालित
+- **स्वयं होस्ट किया गया**: आपके हार्डवेयर पर, आपके नियमों के अनुसार चलता है
+- **मल्टी-चैनल**: एक Gateway प्रत्येक कॉन्फ़िगर किए गए चैनल Plugin को एक साथ सेवा देता है
+- **एजेंट-केंद्रित**: टूल उपयोग, सत्र, मेमोरी और मल्टी-एजेंट रूटिंग वाले कोडिंग एजेंटों के लिए निर्मित
+- **ओपन सोर्स**: MIT लाइसेंस प्राप्त और समुदाय-संचालित
 
-**आपको क्या चाहिए?** Node 24 (अनुशंसित), या संगतता के लिए Node 22 LTS (`22.19+`), आपके चुने गए प्रोवाइडर की API कुंजी, और 5 मिनट। सर्वोत्तम गुणवत्ता और सुरक्षा के लिए, उपलब्ध सबसे मजबूत नवीनतम-पीढ़ी का मॉडल उपयोग करें।
+**आपको क्या चाहिए?** Node 24.15+ (अनुशंसित), संगतता के लिए Node 22 LTS (`22.22.3+`), या Node 25.9+, आपके चुने हुए प्रदाता की API कुंजी और 5 मिनट। सर्वोत्तम गुणवत्ता और सुरक्षा के लिए उपलब्ध नवीनतम पीढ़ी के सबसे सक्षम मॉडल का उपयोग करें।
 
 ## यह कैसे काम करता है
 
 ```mermaid
 flowchart LR
-  A["Chat apps + plugins"] --> B["Gateway"]
-  B --> C["OpenClaw agent"]
+  A["चैट ऐप्स + plugins"] --> B["Gateway"]
+  B --> C["OpenClaw एजेंट"]
   B --> D["CLI"]
-  B --> E["Web Control UI"]
-  B --> F["macOS app"]
-  B --> G["iOS and Android nodes"]
+  B --> E["वेब कंट्रोल UI"]
+  B --> F["macOS ऐप"]
+  B --> G["iOS और Android nodes"]
 ```
 
-Gateway सत्रों, रूटिंग, और चैनल कनेक्शनों के लिए सत्य का एकमात्र स्रोत है।
+सत्रों, रूटिंग और चैनल कनेक्शन के लिए Gateway सत्य का एकमात्र स्रोत है।
 
-## मुख्य क्षमताएं
+## प्रमुख क्षमताएँ
 
 <Columns>
-  <Card title="मल्टी-चैनल gateway" icon="network" href="/hi/channels">
-    एक ही Gateway प्रक्रिया के साथ Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, और अन्य।
+  <Card title="मल्टी-चैनल Gateway" icon="network" href="/hi/channels">
+    एक ही Gateway प्रक्रिया के साथ Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat और अन्य सेवाएँ।
   </Card>
   <Card title="Plugin चैनल" icon="plug" href="/hi/tools/plugin">
-    बंडल किए गए Plugin सामान्य मौजूदा रिलीज़ में Matrix, Nostr, Twitch, Zalo, और अन्य जोड़ते हैं।
+    चैनल plugins Matrix, Nostr, Twitch, Zalo और अन्य सेवाएँ जोड़ते हैं; आधिकारिक plugins आवश्यकता होने पर इंस्टॉल होते हैं।
   </Card>
   <Card title="मल्टी-एजेंट रूटिंग" icon="route" href="/hi/concepts/multi-agent">
-    प्रति एजेंट, वर्कस्पेस, या प्रेषक अलग-थलग सत्र।
+    प्रत्येक एजेंट, वर्कस्पेस या प्रेषक के लिए पृथक सत्र।
   </Card>
   <Card title="मीडिया समर्थन" icon="image" href="/hi/nodes/images">
-    इमेज, ऑडियो, और दस्तावेज़ भेजें और प्राप्त करें।
+    चित्र, ऑडियो और दस्तावेज़ भेजें और प्राप्त करें।
   </Card>
-  <Card title="Web Control UI" icon="monitor" href="/hi/web/control-ui">
-    चैट, कॉन्फ़िग, सत्रों, और Node के लिए ब्राउज़र डैशबोर्ड।
+  <Card title="वेब कंट्रोल UI" icon="monitor" href="/hi/web/control-ui">
+    चैट, कॉन्फ़िगरेशन, सत्रों और nodes के लिए ब्राउज़र डैशबोर्ड।
   </Card>
-  <Card title="मोबाइल Node" icon="smartphone" href="/hi/nodes">
-    Canvas, कैमरा, और वॉइस-सक्षम वर्कफ़्लो के लिए iOS और Android Node पेयर करें।
+  <Card title="मोबाइल nodes" icon="smartphone" href="/hi/nodes">
+    Canvas, कैमरा और आवाज़-सक्षम कार्यप्रवाहों के लिए iOS और Android nodes पेयर करें।
   </Card>
 </Columns>
 
@@ -109,13 +154,13 @@ Gateway सत्रों, रूटिंग, और चैनल कनेक
     npm install -g openclaw@latest
     ```
   </Step>
-  <Step title="Onboard करें और सेवा इंस्टॉल करें">
+  <Step title="ऑनबोर्डिंग करें और सेवा इंस्टॉल करें">
     ```bash
     openclaw onboard --install-daemon
     ```
   </Step>
   <Step title="चैट करें">
-    अपने ब्राउज़र में Control UI खोलें और संदेश भेजें:
+    अपने ब्राउज़र में कंट्रोल UI खोलें और संदेश भेजें:
 
     ```bash
     openclaw dashboard
@@ -126,14 +171,14 @@ Gateway सत्रों, रूटिंग, और चैनल कनेक
   </Step>
 </Steps>
 
-पूरा इंस्टॉल और dev सेटअप चाहिए? [शुरू करना](/hi/start/getting-started) देखें।
+पूर्ण इंस्टॉलेशन और डेवलपमेंट सेटअप चाहिए? [शुरुआत करना](/hi/start/getting-started) देखें।
 
 ## डैशबोर्ड
 
-Gateway शुरू होने के बाद ब्राउज़र Control UI खोलें।
+Gateway शुरू होने के बाद ब्राउज़र कंट्रोल UI खोलें।
 
 - स्थानीय डिफ़ॉल्ट: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
-- रिमोट एक्सेस: [वेब सतहें](/hi/web) और [Tailscale](/hi/gateway/tailscale)
+- रिमोट एक्सेस: [वेब इंटरफ़ेस](/hi/web) और [Tailscale](/hi/gateway/tailscale)
 
 <p align="center">
   <img src="/whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
@@ -141,10 +186,10 @@ Gateway शुरू होने के बाद ब्राउज़र Cont
 
 ## कॉन्फ़िगरेशन (वैकल्पिक)
 
-कॉन्फ़िग `~/.openclaw/openclaw.json` पर रहता है।
+कॉन्फ़िगरेशन `~/.openclaw/openclaw.json` पर स्थित है।
 
-- यदि आप **कुछ नहीं करते**, OpenClaw प्रति-प्रेषक सत्रों के साथ बंडल किए गए OpenClaw एजेंट रनटाइम का उपयोग करता है।
-- यदि आप इसे लॉक डाउन करना चाहते हैं, तो `channels.whatsapp.allowFrom` और (ग्रुप के लिए) मेंशन नियमों से शुरू करें।
+- यदि आप **कुछ नहीं करते**, तो OpenClaw बंडल किए गए OpenClaw एजेंट रनटाइम का उपयोग करता है; सीधे संदेश एजेंट का मुख्य सत्र साझा करते हैं और प्रत्येक समूह चैट का अपना सत्र होता है।
+- यदि आप इसे प्रतिबंधित करना चाहते हैं, तो `channels.whatsapp.allowFrom` और (समूहों के लिए) उल्लेख नियमों से शुरुआत करें।
 
 उदाहरण:
 
@@ -160,45 +205,45 @@ Gateway शुरू होने के बाद ब्राउज़र Cont
 }
 ```
 
-## यहां से शुरू करें
+## यहाँ से शुरू करें
 
 <Columns>
-  <Card title="डॉक्स हब" href="/hi/start/hubs" icon="book-open">
-    उपयोग मामले के अनुसार व्यवस्थित सभी डॉक्स और गाइड।
+  <Card title="दस्तावेज़ हब" href="/hi/start/hubs" icon="book-open">
+    उपयोग के अनुसार व्यवस्थित सभी दस्तावेज़ और गाइड।
   </Card>
   <Card title="कॉन्फ़िगरेशन" href="/hi/gateway/configuration" icon="settings">
-    मुख्य Gateway सेटिंग्स, टोकन, और प्रोवाइडर कॉन्फ़िग।
+    मुख्य Gateway सेटिंग्स, टोकन और प्रदाता कॉन्फ़िगरेशन।
   </Card>
   <Card title="रिमोट एक्सेस" href="/hi/gateway/remote" icon="globe">
     SSH और tailnet एक्सेस पैटर्न।
   </Card>
   <Card title="चैनल" href="/hi/channels/telegram" icon="message-square">
-    Feishu, Microsoft Teams, WhatsApp, Telegram, Discord, और अन्य के लिए चैनल-विशिष्ट सेटअप।
+    Discord, Feishu, Microsoft Teams, Telegram, WhatsApp और अन्य के लिए चैनल-विशिष्ट सेटअप।
   </Card>
-  <Card title="Node" href="/hi/nodes" icon="smartphone">
-    पेयरिंग, Canvas, कैमरा, और डिवाइस कार्रवाइयों के साथ iOS और Android Node।
+  <Card title="Nodes" href="/hi/nodes" icon="smartphone">
+    पेयरिंग, Canvas, कैमरा और डिवाइस कार्रवाइयों वाले iOS और Android nodes।
   </Card>
   <Card title="सहायता" href="/hi/help" icon="life-buoy">
-    सामान्य सुधार और ट्रबलशूटिंग प्रवेश बिंदु।
+    सामान्य सुधारों और समस्या निवारण का प्रवेश बिंदु।
   </Card>
 </Columns>
 
 ## और जानें
 
 <Columns>
-  <Card title="पूरी फीचर सूची" href="/hi/concepts/features" icon="list">
-    पूरी चैनल, रूटिंग, और मीडिया क्षमताएं।
+  <Card title="सुविधाओं की पूरी सूची" href="/hi/concepts/features" icon="list">
+    संपूर्ण चैनल, रूटिंग और मीडिया क्षमताएँ।
   </Card>
   <Card title="मल्टी-एजेंट रूटिंग" href="/hi/concepts/multi-agent" icon="route">
-    वर्कस्पेस आइसोलेशन और प्रति-एजेंट सत्र।
+    वर्कस्पेस पृथक्करण और प्रत्येक एजेंट के लिए अलग सत्र।
   </Card>
   <Card title="सुरक्षा" href="/hi/gateway/security" icon="shield">
-    टोकन, allowlist, और सुरक्षा नियंत्रण।
+    टोकन, अनुमत-सूचियाँ और सुरक्षा नियंत्रण।
   </Card>
-  <Card title="ट्रबलशूटिंग" href="/hi/gateway/troubleshooting" icon="wrench">
-    Gateway डायग्नोस्टिक्स और सामान्य त्रुटियां।
+  <Card title="समस्या निवारण" href="/hi/gateway/troubleshooting" icon="wrench">
+    Gateway निदान और सामान्य त्रुटियाँ।
   </Card>
   <Card title="परिचय और श्रेय" href="/hi/reference/credits" icon="info">
-    प्रोजेक्ट की उत्पत्ति, योगदानकर्ता, और लाइसेंस।
+    परियोजना की उत्पत्ति, योगदानकर्ता और लाइसेंस।
   </Card>
 </Columns>

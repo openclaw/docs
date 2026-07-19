@@ -1,142 +1,127 @@
 ---
 read_when:
-    - आप चाहते हैं कि मेमोरी प्रमोशन स्वचालित रूप से चले
-    - आप समझना चाहते हैं कि प्रत्येक Dreaming चरण क्या करता है
-    - आप MEMORY.md को प्रदूषित किए बिना समेकन को ट्यून करना चाहते हैं
+    - आप चाहते हैं कि मेमोरी प्रमोशन अपने-आप चले
+    - आप समझना चाहते हैं कि Dreaming का प्रत्येक चरण क्या करता है
+    - आप MEMORY.md को अव्यवस्थित किए बिना समेकन को अनुकूलित करना चाहते हैं
 sidebarTitle: Dreaming
-summary: हल्के, गहरे और REM चरणों के साथ पृष्ठभूमि मेमोरी समेकन और एक Dream Diary
+summary: हल्के, गहन और REM चरणों के साथ पृष्ठभूमि मेमोरी समेकन तथा एक Dream Diary
 title: Dreaming
 x-i18n:
-    generated_at: "2026-06-30T14:04:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:31:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1b636df63cdc5b60758f9600af695b3b6453122a03b0cc6fdc69d3c9259d1e61
+    source_hash: 501ab42cfdfa0216c308896aa8c1719b06b49d64a62afdb004e097102a376eac
     source_path: concepts/dreaming.md
     workflow: 16
 ---
 
-Dreaming `memory-core` में पृष्ठभूमि मेमोरी समेकन प्रणाली है। यह OpenClaw को मजबूत अल्पकालिक संकेतों को टिकाऊ मेमोरी में ले जाने में मदद करता है, जबकि प्रक्रिया को व्याख्यायोग्य और समीक्षा योग्य बनाए रखता है।
+Dreaming, `memory-core` में पृष्ठभूमि मेमोरी समेकन प्रणाली है। यह प्रक्रिया को व्याख्या योग्य और समीक्षा योग्य बनाए रखते हुए प्रबल अल्पकालिक संकेतों को टिकाऊ मेमोरी में स्थानांतरित करती है।
 
 <Note>
-Dreaming **ऑप्ट-इन** है और डिफ़ॉल्ट रूप से अक्षम रहता है।
+Dreaming **वैकल्पिक** है और डिफ़ॉल्ट रूप से अक्षम है।
 </Note>
 
 ## Dreaming क्या लिखता है
 
-Dreaming दो तरह के आउटपुट रखता है:
+- `memory/.dreams/` में **मशीन स्थिति** (रिकॉल स्टोर, चरण संकेत, अंतर्ग्रहण चेकपॉइंट, लॉक)।
+- `DREAMS.md` (या किसी मौजूदा `dreams.md`) में **मानव-पठनीय आउटपुट** और `memory/dreaming/<phase>/YYYY-MM-DD.md` के अंतर्गत वैकल्पिक चरण रिपोर्ट फ़ाइलें।
 
-- `memory/.dreams/` में **मशीन स्थिति** (रिकॉल स्टोर, चरण संकेत, इनजेशन चेकपॉइंट, लॉक)।
-- `DREAMS.md` (या मौजूदा `dreams.md`) में **मानव-पठनीय आउटपुट** और `memory/dreaming/<phase>/YYYY-MM-DD.md` के अंतर्गत वैकल्पिक चरण रिपोर्ट फ़ाइलें।
-
-दीर्घकालिक प्रमोशन अब भी केवल `MEMORY.md` में लिखता है।
+दीर्घकालिक पदोन्नति अब भी केवल `MEMORY.md` में लिखती है।
 
 ## चरण मॉडल
 
-Dreaming तीन सहयोगी चरणों का उपयोग करता है:
+Dreaming प्रत्येक स्वीप में तीन सहयोगी चरण इस क्रम में चलाता है: light -> REM -> deep। ये आंतरिक कार्यान्वयन चरण हैं, उपयोगकर्ता द्वारा अलग से कॉन्फ़िगर किए गए मोड नहीं।
 
-| चरण | उद्देश्य                                   | टिकाऊ लेखन     |
-| ----- | ----------------------------------------- | ----------------- |
-| हल्का | हाल की अल्पकालिक सामग्री को छांटना और स्टेज करना | नहीं                |
-| गहरा  | टिकाऊ उम्मीदवारों को स्कोर और प्रमोट करना      | हां (`MEMORY.md`) |
-| REM   | थीम और दोहराए जाने वाले विचारों पर चिंतन करना     | नहीं                |
-
-ये चरण आंतरिक कार्यान्वयन विवरण हैं, अलग उपयोगकर्ता-कॉन्फ़िगर किए गए "मोड" नहीं।
+| चरण  | उद्देश्य                                      | टिकाऊ लेखन                   |
+| ----- | --------------------------------------------- | ---------------------------- |
+| Light | हाल की अल्पकालिक सामग्री को क्रमबद्ध और तैयार करना | नहीं                         |
+| REM   | विषयों और बार-बार आने वाले विचारों पर चिंतन करना | नहीं                         |
+| Deep  | टिकाऊ उम्मीदवारों को स्कोर देकर पदोन्नत करना     | हाँ (`MEMORY.md`)     |
 
 <AccordionGroup>
-  <Accordion title="हल्का चरण">
-    हल्का चरण हाल के दैनिक मेमोरी संकेतों और रिकॉल ट्रेस को इनजेस्ट करता है, उनका डीडुप करता है, और उम्मीदवार पंक्तियों को स्टेज करता है।
-
-    - उपलब्ध होने पर अल्पकालिक रिकॉल स्थिति, हाल की दैनिक मेमोरी फ़ाइलों, और रिडैक्ट किए गए सेशन ट्रांसक्रिप्ट से पढ़ता है।
-    - जब स्टोरेज में इनलाइन आउटपुट शामिल हो, तो एक प्रबंधित `## Light Sleep` ब्लॉक लिखता है।
-    - बाद की गहरी रैंकिंग के लिए सुदृढ़ीकरण संकेत रिकॉर्ड करता है।
+  <Accordion title="Light चरण">
+    - उपलब्ध होने पर हाल की अल्पकालिक रिकॉल स्थिति, दैनिक मेमोरी फ़ाइलों और संशोधित सत्र प्रतिलिपियों को पढ़ता है।
+    - संकेतों से डुप्लिकेट हटाता है और उम्मीदवार पंक्तियाँ तैयार करता है।
+    - जब स्टोरेज में इनलाइन आउटपुट शामिल हो, तब एक प्रबंधित `## Light Sleep` ब्लॉक लिखता है।
+    - बाद की deep रैंकिंग के लिए सुदृढीकरण संकेत रिकॉर्ड करता है।
     - `MEMORY.md` में कभी नहीं लिखता।
-
-  </Accordion>
-  <Accordion title="गहरा चरण">
-    गहरा चरण तय करता है कि दीर्घकालिक मेमोरी क्या बनेगा।
-
-    - भारित स्कोरिंग और थ्रेशोल्ड गेट का उपयोग करके उम्मीदवारों को रैंक करता है।
-    - पास होने के लिए `minScore`, `minRecallCount`, और `minUniqueQueries` की आवश्यकता होती है।
-    - लिखने से पहले लाइव दैनिक फ़ाइलों से स्निपेट फिर से हाइड्रेट करता है, इसलिए पुराने/हटाए गए स्निपेट छोड़ दिए जाते हैं।
-    - प्रमोट की गई प्रविष्टियां `MEMORY.md` में जोड़ता है।
-    - `DREAMS.md` में `## Deep Sleep` सारांश लिखता है और वैकल्पिक रूप से `memory/dreaming/deep/YYYY-MM-DD.md` लिखता है।
 
   </Accordion>
   <Accordion title="REM चरण">
-    REM चरण पैटर्न और चिंतनशील संकेत निकालता है।
-
-    - हाल के अल्पकालिक ट्रेस से थीम और चिंतन सारांश बनाता है।
-    - जब स्टोरेज में इनलाइन आउटपुट शामिल हो, तो एक प्रबंधित `## REM Sleep` ब्लॉक लिखता है।
-    - गहरी रैंकिंग द्वारा उपयोग किए जाने वाले REM सुदृढ़ीकरण संकेत रिकॉर्ड करता है।
+    - हाल के अल्पकालिक ट्रेस से विषय और चिंतन सारांश बनाता है।
+    - जब स्टोरेज में इनलाइन आउटपुट शामिल हो, तब एक प्रबंधित `## REM Sleep` ब्लॉक लिखता है।
+    - deep रैंकिंग द्वारा उपयोग किए जाने वाले REM सुदृढीकरण संकेत रिकॉर्ड करता है।
     - `MEMORY.md` में कभी नहीं लिखता।
 
   </Accordion>
-</AccordionGroup>
-
-## सेशन ट्रांसक्रिप्ट इनजेशन
-
-Dreaming रिडैक्ट किए गए सेशन ट्रांसक्रिप्ट को Dreaming कॉर्पस में इनजेस्ट कर सकता है। जब ट्रांसक्रिप्ट उपलब्ध होते हैं, तो उन्हें दैनिक मेमोरी संकेतों और रिकॉल ट्रेस के साथ हल्के चरण में भेजा जाता है। व्यक्तिगत और संवेदनशील सामग्री इनजेशन से पहले रिडैक्ट की जाती है।
-
-## स्वप्न डायरी
-
-Dreaming `DREAMS.md` में एक कथात्मक **स्वप्न डायरी** भी रखता है। प्रत्येक चरण में पर्याप्त सामग्री होने के बाद, `memory-core` एक best-effort पृष्ठभूमि subagent टर्न चलाता है और एक छोटी डायरी प्रविष्टि जोड़ता है। जब तक `dreaming.model` कॉन्फ़िगर न हो, यह डिफ़ॉल्ट रनटाइम मॉडल का उपयोग करता है। यदि कॉन्फ़िगर किया गया मॉडल उपलब्ध नहीं है, तो स्वप्न डायरी सेशन के डिफ़ॉल्ट मॉडल के साथ एक बार फिर प्रयास करती है।
-
-<Note>
-यह डायरी Dreams UI में मानव पढ़ने के लिए है, प्रमोशन स्रोत नहीं। Dreaming-जनित डायरी/रिपोर्ट आर्टिफैक्ट अल्पकालिक प्रमोशन से बाहर रखे जाते हैं। केवल grounded मेमोरी स्निपेट `MEMORY.md` में प्रमोट होने के योग्य हैं।
-</Note>
-
-समीक्षा और रिकवरी कार्य के लिए एक grounded ऐतिहासिक backfill lane भी है:
-
-<AccordionGroup>
-  <Accordion title="Backfill कमांड">
-    - `memory rem-harness --path ... --grounded` ऐतिहासिक `YYYY-MM-DD.md` नोट से grounded डायरी आउटपुट का पूर्वावलोकन करता है।
-    - `memory rem-backfill --path ...` `DREAMS.md` में reversible grounded डायरी प्रविष्टियां लिखता है।
-    - `memory rem-backfill --path ... --stage-short-term` grounded टिकाऊ उम्मीदवारों को उसी अल्पकालिक evidence store में स्टेज करता है जिसे सामान्य गहरा चरण पहले से उपयोग करता है।
-    - `memory rem-backfill --rollback` और `--rollback-short-term` साधारण डायरी प्रविष्टियों या लाइव अल्पकालिक रिकॉल को छुए बिना उन स्टेज किए गए backfill आर्टिफैक्ट को हटाते हैं।
+  <Accordion title="Deep चरण">
+    - भारित स्कोरिंग और थ्रेशोल्ड गेट के साथ उम्मीदवारों को रैंक करता है (`minScore`, `minRecallCount`, `minUniqueQueries` सभी को पास होना आवश्यक है)।
+    - लिखने से पहले लाइव दैनिक फ़ाइलों से स्निपेट पुनर्जलीकृत करता है, ताकि पुराने/हटाए गए स्निपेट छोड़ दिए जाएँ।
+    - पदोन्नत प्रविष्टियाँ `MEMORY.md` में जोड़ता है।
+    - `DREAMS.md` में एक `## Deep Sleep` सारांश और वैकल्पिक रूप से `memory/dreaming/deep/YYYY-MM-DD.md` लिखता है।
 
   </Accordion>
 </AccordionGroup>
 
-Control UI वही डायरी backfill/reset प्रवाह दिखाता है ताकि आप यह तय करने से पहले कि grounded उम्मीदवार प्रमोशन के योग्य हैं या नहीं, Dreams दृश्य में परिणामों की जांच कर सकें। Scene एक अलग grounded lane भी दिखाता है ताकि आप देख सकें कि कौन-सी स्टेज की गई अल्पकालिक प्रविष्टियां ऐतिहासिक replay से आईं, कौन-से promoted items grounded-led थे, और साधारण लाइव अल्पकालिक स्थिति को छुए बिना केवल grounded-only स्टेज की गई प्रविष्टियां साफ़ कर सकें।
+## सत्र प्रतिलिपि अंतर्ग्रहण
 
-## गहरे रैंकिंग संकेत
+Dreaming संशोधित सत्र प्रतिलिपियों को Dreaming कॉर्पस में अंतर्ग्रहित कर सकता है। उपलब्ध होने पर प्रतिलिपियाँ दैनिक मेमोरी संकेतों और रिकॉल ट्रेस के साथ light चरण को सामग्री देती हैं। व्यक्तिगत और संवेदनशील सामग्री को अंतर्ग्रहण से पहले संशोधित किया जाता है।
 
-गहरी रैंकिंग छह भारित आधार संकेतों और चरण सुदृढ़ीकरण का उपयोग करती है:
+## Dream Diary
 
-| संकेत              | भार | विवरण                                       |
-| ------------------- | ------ | ------------------------------------------------- |
-| आवृत्ति           | 0.24   | प्रविष्टि ने कितने अल्पकालिक संकेत जमा किए |
-| प्रासंगिकता           | 0.30   | प्रविष्टि के लिए औसत retrieval गुणवत्ता           |
-| क्वेरी विविधता     | 0.15   | अलग-अलग क्वेरी/दिन संदर्भ जिन्होंने इसे सामने लाया      |
-| हालियापन             | 0.15   | समय-क्षयित freshness स्कोर                      |
-| समेकन       | 0.10   | बहु-दिवसीय recurrence मजबूती                     |
-| वैचारिक समृद्धि | 0.06   | स्निपेट/पथ से concept-tag घनत्व             |
+Dreaming, `DREAMS.md` में एक वर्णनात्मक **Dream Diary** रखता है। प्रत्येक चरण में पर्याप्त सामग्री होने के बाद, `memory-core` सर्वोत्तम-प्रयास वाला पृष्ठभूमि सबएजेंट टर्न चलाता है और एक छोटी डायरी प्रविष्टि जोड़ता है; इसमें डिफ़ॉल्ट रनटाइम मॉडल का उपयोग होता है, जब तक कि `dreaming.model` कॉन्फ़िगर न हो। यदि कॉन्फ़िगर किया गया मॉडल उपलब्ध नहीं है, तो डायरी रन सत्र के डिफ़ॉल्ट मॉडल के साथ एक बार पुनः प्रयास करता है; विश्वास या अनुमत-सूची विफलताओं पर पुनः प्रयास नहीं होता और किसी सामान्य डायरी प्रविष्टि पर चुपचाप लौटने के बजाय वे लॉग में दिखाई देती रहती हैं।
 
-हल्के और REM चरण के hits `memory/.dreams/phase-signals.json` से एक छोटा recency-decayed boost जोड़ते हैं।
+<Note>
+डायरी Dreams UI में मानव-पठन के लिए है, पदोन्नति स्रोत नहीं। डायरी/रिपोर्ट आर्टिफ़ैक्ट अल्पकालिक पदोन्नति से बाहर रखे जाते हैं; केवल आधारयुक्त मेमोरी स्निपेट ही `MEMORY.md` में पदोन्नति के पात्र हैं।
+</Note>
 
-Shadow-trial परिणामों को किसी भी टिकाऊ लेखन से पहले समीक्षा संकेत के रूप में उस आधार स्कोर के ऊपर लेयर किया जा सकता है। सहायक trial उम्मीदवार को एक छोटा सीमित boost देता है, neutral trial उसे deferred रखता है, और harmful trial उसे उस scoring pass के लिए rejected के रूप में चिह्नित करता है। यह संकेत अब भी केवल report-only है: यह उम्मीदवार क्रम या समीक्षा metadata बदल सकता है, लेकिन यह `MEMORY.md` में नहीं लिखता या उम्मीदवार को स्वयं promote नहीं करता।
+समीक्षा और पुनर्प्राप्ति कार्य के लिए एक आधारयुक्त ऐतिहासिक बैकफ़िल लेन भी है:
 
-## QA shadow trial रिपोर्ट कवरेज
+<AccordionGroup>
+  <Accordion title="बैकफ़िल कमांड">
+    - `memory rem-harness --path ... --grounded` ऐतिहासिक `YYYY-MM-DD.md` नोट्स से आधारयुक्त डायरी आउटपुट का पूर्वावलोकन करता है।
+    - `memory rem-backfill --path ...`, `DREAMS.md` में वापस लिए जा सकने वाले आधारयुक्त डायरी प्रविष्टियाँ लिखता है।
+    - `memory rem-backfill --path ... --stage-short-term` आधारयुक्त टिकाऊ उम्मीदवारों को उसी अल्पकालिक साक्ष्य स्टोर में तैयार करता है जिसका उपयोग सामान्य deep चरण करता है।
+    - `memory rem-backfill --rollback` और `--rollback-short-term` सामान्य डायरी प्रविष्टियों या लाइव अल्पकालिक रिकॉल को प्रभावित किए बिना उन तैयार बैकफ़िल आर्टिफ़ैक्ट को हटाते हैं।
 
-QA Lab में यह पता लगाने के लिए report-only scenario शामिल है कि भविष्य का Dreaming shadow trial प्रमोशन से पहले किसी candidate memory की समीक्षा कैसे कर सकता है। scenario किसी agent से baseline answer की तुलना ऐसे answer से करने को कहता है जो candidate memory का उपयोग कर सकता है, फिर verdict, reason, और risk flags के साथ local report लिखने को कहता है।
+  </Accordion>
+</AccordionGroup>
 
-यह कवरेज जानबूझकर QA तक सीमित है। यह सत्यापित करता है कि report artifact `MEMORY.md` से अलग रहता है और agent यह दावा नहीं करता कि candidate promote हुआ था। यह production shadow-trial behavior नहीं जोड़ता या deep-phase promotion engine नहीं बदलता।
+Control UI एजेंट के Memory टैब (Agents पृष्ठ) पर वही डायरी बैकफ़िल/रीसेट प्रवाह उपलब्ध कराता है, ताकि यह तय करने से पहले कि आधारयुक्त उम्मीदवार पदोन्नति के योग्य हैं या नहीं, आप ड्रीम दृश्य में परिणामों का निरीक्षण कर सकें। एक अलग आधारयुक्त Scene लेन दिखाती है कि कौन-सी तैयार अल्पकालिक प्रविष्टियाँ ऐतिहासिक रीप्ले से आईं, किन पदोन्नत आइटम का नेतृत्व आधारयुक्त सामग्री ने किया, और लाइव अल्पकालिक स्थिति को प्रभावित किए बिना केवल आधारयुक्त तैयार प्रविष्टियों को साफ़ करने देती है।
 
-`memory-core` shadow-trial runner उन code paths के लिए वही report-only contract रखता है जिन्हें stable artifact चाहिए। यह candidate, trial prompt, baseline outcome, candidate outcome, verdict, reason, risk flags, और evidence references स्वीकार करता है, फिर `promotion action: report-only` के साथ report लिखता है। helpful verdicts `promote` recommendation में map होते हैं, neutral verdicts `defer` में map होते हैं, और harmful verdicts `reject` में map होते हैं; इनमें से कोई भी recommendation `MEMORY.md` में नहीं लिखती या deep-phase promotion लागू नहीं करती।
+## Deep रैंकिंग संकेत
+
+Deep रैंकिंग छह भारित आधार संकेतों और चरण सुदृढीकरण का उपयोग करती है:
+
+| संकेत                  | भार   | विवरण                                             |
+| ---------------------- | ----- | ------------------------------------------------- |
+| प्रासंगिकता            | 0.30  | प्रविष्टि की औसत पुनर्प्राप्ति गुणवत्ता           |
+| आवृत्ति                | 0.24  | प्रविष्टि द्वारा संचित अल्पकालिक संकेतों की संख्या |
+| क्वेरी विविधता         | 0.15  | वे अलग-अलग क्वेरी/दिन संदर्भ जिनमें यह सामने आई   |
+| नवीनता                 | 0.15  | समय-क्षयित ताज़गी स्कोर                           |
+| समेकन                  | 0.10  | बहु-दिवसीय पुनरावृत्ति की प्रबलता                 |
+| वैचारिक समृद्धि        | 0.06  | स्निपेट/पथ से कॉन्सेप्ट-टैग घनत्व                 |
+
+Light और REM चरण की हिट, `memory/.dreams/phase-signals.json` से एक छोटा नवीनता-क्षयित बूस्ट जोड़ती हैं।
+
+किसी भी टिकाऊ लेखन से पहले समीक्षा संकेत के रूप में शैडो-ट्रायल परिणाम आधार स्कोर के ऊपर जोड़े जा सकते हैं: सहायक ट्रायल उम्मीदवार को एक छोटा सीमित बूस्ट देता है, तटस्थ ट्रायल उसे स्थगित रखता है, और हानिकारक ट्रायल उस स्कोरिंग पास के लिए उसे अस्वीकृत चिह्नित करता है। यह संकेत केवल रिपोर्ट के लिए है - यह उम्मीदवारों का क्रम या समीक्षा मेटाडेटा बदल सकता है, लेकिन स्वयं कभी `MEMORY.md` में नहीं लिखता या किसी उम्मीदवार को पदोन्नत नहीं करता।
+
+### QA शैडो ट्रायल रिपोर्ट कवरेज
+
+QA Lab में यह पता लगाने के लिए केवल-रिपोर्ट परिदृश्य शामिल है कि भविष्य का Dreaming शैडो ट्रायल पदोन्नति से पहले किसी उम्मीदवार मेमोरी की समीक्षा कैसे कर सकता है: एक एजेंट आधाररेखा उत्तर की तुलना ऐसे उत्तर से करता है जो उम्मीदवार मेमोरी का उपयोग कर सकता है, फिर निर्णय, कारण और जोखिम फ़्लैग के साथ एक स्थानीय रिपोर्ट लिखता है। यह कवरेज QA तक सीमित है - यह सत्यापित करता है कि रिपोर्ट आर्टिफ़ैक्ट `MEMORY.md` से अलग रहता है और एजेंट कभी यह दावा नहीं करता कि उम्मीदवार पदोन्नत हुआ। यह प्रोडक्शन शैडो-ट्रायल व्यवहार नहीं जोड़ता या deep-चरण पदोन्नति इंजन नहीं बदलता।
+
+`memory-core` शैडो-ट्रायल रनर उन कोड पथों के लिए वही केवल-रिपोर्ट अनुबंध बनाए रखता है जिन्हें स्थिर आर्टिफ़ैक्ट की आवश्यकता होती है। यह उम्मीदवार, ट्रायल प्रॉम्प्ट, आधाररेखा परिणाम, उम्मीदवार परिणाम, निर्णय, कारण, जोखिम फ़्लैग और साक्ष्य संदर्भ स्वीकार करता है, फिर `promotion action: report-only` के साथ एक रिपोर्ट लिखता है। सहायक निर्णय `promote` अनुशंसा से, तटस्थ निर्णय `defer` से और हानिकारक निर्णय `reject` से मैप होते हैं - इनमें से कोई भी `MEMORY.md` में नहीं लिखता या deep-चरण पदोन्नति लागू नहीं करता।
 
 ## शेड्यूलिंग
 
-सक्षम होने पर, `memory-core` पूरे Dreaming sweep के लिए एक cron job को auto-manage करता है। प्रत्येक sweep चरणों को क्रम में चलाता है: हल्का → REM → गहरा।
+सक्षम होने पर, `memory-core` पूर्ण Dreaming स्वीप के लिए एक Cron कार्य स्वतः प्रबंधित करता है। प्राथमिक रनटाइम वर्कस्पेस और किसी भी कॉन्फ़िगर किए गए एजेंट वर्कस्पेस में इसके डुप्लिकेट हटा दिए जाते हैं, ताकि सबएजेंट वर्कस्पेस फ़ैन-आउट मुख्य एजेंट के `DREAMS.md` और मेमोरी स्थिति को बाहर न कर दे।
 
-sweep में primary runtime workspace और कोई भी configured agent workspaces शामिल होते हैं, जिन्हें path के आधार पर dedupe किया जाता है, ताकि subagent workspace fan-out मुख्य agent के `DREAMS.md` और memory state को exclude न करे।
-
-डिफ़ॉल्ट cadence behavior:
-
-| सेटिंग              | डिफ़ॉल्ट       |
-| -------------------- | ------------- |
-| `dreaming.frequency` | `0 3 * * *`   |
-| `dreaming.model`     | डिफ़ॉल्ट मॉडल |
+| सेटिंग                | डिफ़ॉल्ट          |
+| --------------------- | ----------------- |
+| `dreaming.frequency`    | `0 3 * * *` |
+| `dreaming.model`    | डिफ़ॉल्ट मॉडल      |
 
 ## त्वरित शुरुआत
 
@@ -158,7 +143,7 @@ sweep में primary runtime workspace और कोई भी configured age
     }
     ```
   </Tab>
-  <Tab title="कस्टम sweep cadence">
+  <Tab title="कस्टम स्वीप आवृत्ति">
     ```json
     {
       "plugins": {
@@ -179,21 +164,21 @@ sweep में primary runtime workspace और कोई भी configured age
   </Tab>
 </Tabs>
 
-## Slash command
+## स्लैश कमांड
 
-```
+```text
 /dreaming status
 /dreaming on
 /dreaming off
 /dreaming help
 ```
 
-`/dreaming on` और `/dreaming off` gateway-wide configuration बदलते हैं। Channel callers को owners होना चाहिए, और Gateway clients के पास `operator.admin` होना चाहिए। `/dreaming status` और `/dreaming help` read-only रहते हैं।
+`/dreaming on` और `/dreaming off` के लिए चैनल कॉलर का स्वामी होना या Gateway क्लाइंट के लिए `operator.admin` आवश्यक है। `/dreaming status` और `/dreaming help` केवल-पठन हैं।
 
-## CLI workflow
+## CLI कार्यप्रवाह
 
 <Tabs>
-  <Tab title="Promotion preview / apply">
+  <Tab title="पदोन्नति पूर्वावलोकन / लागू करें">
     ```bash
     openclaw memory promote
     openclaw memory promote --apply
@@ -201,11 +186,11 @@ sweep में primary runtime workspace और कोई भी configured age
     openclaw memory status --deep
     ```
 
-    Manual `memory promote` डिफ़ॉल्ट रूप से deep-phase thresholds का उपयोग करता है, जब तक CLI flags से override न किया गया हो।
+    मैन्युअल `memory promote` डिफ़ॉल्ट रूप से deep-चरण थ्रेशोल्ड का उपयोग करता है, जब तक कि उन्हें CLI फ़्लैग से ओवरराइड न किया जाए।
 
   </Tab>
-  <Tab title="Promotion समझाएं">
-    समझाएं कि कोई विशिष्ट candidate promote क्यों होगा या नहीं होगा:
+  <Tab title="पदोन्नति की व्याख्या करें">
+    समझाएँ कि कोई विशिष्ट उम्मीदवार पदोन्नत क्यों होगा या क्यों नहीं होगा:
 
     ```bash
     openclaw memory promote-explain "router vlan"
@@ -213,8 +198,8 @@ sweep में primary runtime workspace और कोई भी configured age
     ```
 
   </Tab>
-  <Tab title="REM harness preview">
-    कुछ भी लिखे बिना REM reflections, candidate truths, और deep promotion output का preview करें:
+  <Tab title="REM हार्नेस पूर्वावलोकन">
+    कुछ भी लिखे बिना REM चिंतन, उम्मीदवार सत्य और deep पदोन्नति आउटपुट का पूर्वावलोकन करें:
 
     ```bash
     openclaw memory rem-harness
@@ -224,49 +209,45 @@ sweep में primary runtime workspace और कोई भी configured age
   </Tab>
 </Tabs>
 
-## मुख्य डिफ़ॉल्ट
+## प्रमुख डिफ़ॉल्ट
 
-सभी settings `plugins.entries.memory-core.config.dreaming` के अंतर्गत रहती हैं।
+सभी सेटिंग `plugins.entries.memory-core.config.dreaming` के अंतर्गत होती हैं।
 
 <ParamField path="enabled" type="boolean" default="false">
-  Dreaming sweep को सक्षम या अक्षम करें।
+  Dreaming स्वीप को सक्षम या अक्षम करें।
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  पूरे Dreaming sweep के लिए Cron cadence।
+  पूर्ण Dreaming स्वीप की Cron आवृत्ति।
 </ParamField>
 <ParamField path="model" type="string">
-  वैकल्पिक स्वप्न डायरी subagent model override। subagent `allowedModels` allowlist भी सेट करते समय canonical `provider/model` value का उपयोग करें।
+  वैकल्पिक Dream Diary सबएजेंट मॉडल ओवरराइड। सबएजेंट `allowedModels` अनुमत-सूची भी सेट करते समय एक कैनोनिकल `provider/model` मान का उपयोग करें।
 </ParamField>
 <ParamField path="phases.deep.maxPromotedSnippetTokens" type="number" default="160">
-  `MEMORY.md` में promote किए गए प्रत्येक short-term recall snippet से रखा जाने वाला maximum estimated token count। Ranking provenance visible रहती है।
+  `MEMORY.md` में पदोन्नत प्रत्येक अल्पकालिक रिकॉल स्निपेट से रखी जाने वाली अधिकतम अनुमानित टोकन संख्या। रैंकिंग की उत्पत्ति दिखाई देती रहती है।
 </ParamField>
 
 <Warning>
-`dreaming.model` के लिए `plugins.entries.memory-core.subagent.allowModelOverride: true` आवश्यक है। इसे सीमित करने के लिए, `plugins.entries.memory-core.subagent.allowedModels` भी सेट करें। Trust या allowlist failures silently fallback होने के बजाय visible रहते हैं; retry केवल model-unavailable errors को cover करता है।
+`dreaming.model` के लिए `plugins.entries.memory-core.subagent.allowModelOverride: true` आवश्यक है। इसे प्रतिबंधित करने के लिए `plugins.entries.memory-core.subagent.allowedModels` भी सेट करें। स्वचालित पुनः प्रयास केवल मॉडल-अनुपलब्ध त्रुटियों को कवर करता है; विश्वास या अनुमत-सूची विफलताएँ चुपचाप फ़ॉलबैक होने के बजाय लॉग में दिखाई देती रहती हैं।
 </Warning>
 
 <Note>
-अधिकांश phase policy, thresholds, और storage behavior internal implementation details हैं। पूरी key list के लिए [Memory configuration reference](/hi/reference/memory-config#dreaming) देखें।
+अधिकांश चरण नीति, थ्रेशोल्ड और स्टोरेज व्यवहार आंतरिक कार्यान्वयन विवरण हैं। पूरी कुंजी सूची के लिए [मेमोरी कॉन्फ़िगरेशन संदर्भ](/hi/reference/memory-config#dreaming) देखें।
 </Note>
 
 ## Dreams UI
 
-सक्षम होने पर, Gateway **Dreams** tab दिखाता है:
+सक्षम होने पर, Gateway का **Dreams** टैब यह दिखाता है:
 
-- वर्तमान Dreaming enabled state
-- phase-level status और managed-sweep presence
-- short-term, grounded, signal, और promoted-today counts
-- अगले scheduled run का timing
-- staged historical replay entries के लिए अलग grounded Scene lane
-- `doctor.memory.dreamDiary` द्वारा backed expandable स्वप्न डायरी reader
-
-## Dreaming कभी नहीं चलता: status blocked दिखाता है
-
-यदि `openclaw memory status` `Dreaming status: blocked` report करता है, तो managed cron मौजूद है लेकिन default agent heartbeat fire नहीं हो रहा है। जांचें कि default agent के लिए heartbeat enabled है और उसका target `none` नहीं है, फिर अगले heartbeat interval के बाद `openclaw memory status --deep` फिर चलाएं।
+- Dreaming की वर्तमान सक्षम स्थिति
+- चरण-स्तरीय स्थिति और प्रबंधित-स्वीप की उपस्थिति
+- अल्पकालिक, आधारयुक्त, संकेत और आज-पदोन्नत गणनाएँ
+- अगले निर्धारित रन का समय
+- तैयार ऐतिहासिक रीप्ले प्रविष्टियों के लिए एक अलग आधारयुक्त Scene लेन
+- `doctor.memory.dreamDiary` द्वारा समर्थित एक विस्तार योग्य Dream Diary रीडर
 
 ## संबंधित
 
-- [Memory](/hi/concepts/memory)
-- [Memory CLI](/hi/cli/memory)
-- [Memory configuration reference](/hi/reference/memory-config)
-- [Memory search](/hi/concepts/memory-search)
+- [मेमोरी](/hi/concepts/memory)
+- [मेमोरी CLI](/hi/cli/memory)
+- [मेमोरी कॉन्फ़िगरेशन संदर्भ](/hi/reference/memory-config)
+- [मेमोरी खोज](/hi/concepts/memory-search)

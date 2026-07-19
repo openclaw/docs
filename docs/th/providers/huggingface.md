@@ -1,50 +1,51 @@
 ---
 read_when:
-    - คุณต้องการใช้ Hugging Face Inference ร่วมกับ OpenClaw
+    - คุณต้องการใช้ Hugging Face Inference กับ OpenClaw
     - คุณต้องมีตัวแปรสภาพแวดล้อมสำหรับโทเค็น HF หรือเลือกการยืนยันตัวตนผ่าน CLI
 summary: การตั้งค่า Hugging Face Inference (การยืนยันตัวตน + การเลือกโมเดล)
 title: Hugging Face (การอนุมาน)
 x-i18n:
-    generated_at: "2026-07-12T16:39:05Z"
+    generated_at: "2026-07-19T07:28:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4e0d98c844c053484559254a0bdf4258c3d39954ac5804cdb0d081a651b89df
+    source_hash: 92c400b78c5ad2cc724ad4029560dccc5bc2006fdeae400fc6b58998e727e17c
     source_path: providers/huggingface.md
     workflow: 16
 ---
 
-[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers) มีเราเตอร์สำหรับการเติมข้อความแชตที่เข้ากันได้กับ OpenAI อยู่ด้านหน้าโมเดลที่โฮสต์ไว้จำนวนมาก (DeepSeek, Llama และอื่น ๆ) โดยใช้โทเค็นเดียว OpenClaw สื่อสารกับ **ปลายทางการเติมข้อความแชตเท่านั้น** สำหรับการแปลงข้อความเป็นรูปภาพ เอ็มเบดดิง หรือเสียงพูด ให้ใช้ [ไคลเอนต์การอนุมานของ HF](https://huggingface.co/docs/api-inference/quicktour) โดยตรง
+[ผู้ให้บริการอนุมานของ Hugging Face](https://huggingface.co/docs/inference-providers) มีเราเตอร์การเติมข้อความแชตที่เข้ากันได้กับ OpenAI อยู่ด้านหน้าโมเดลที่โฮสต์ไว้จำนวนมาก (DeepSeek, Llama และอื่นๆ) โดยใช้โทเค็นเดียว OpenClaw สื่อสารกับ **เอนด์พอยต์การเติมข้อความแชตเท่านั้น** สำหรับการสร้างรูปภาพจากข้อความ เอ็มเบดดิง หรือเสียงพูด ให้ใช้ [ไคลเอนต์การอนุมานของ HF](https://huggingface.co/docs/api-inference/quicktour) โดยตรง
 
 | คุณสมบัติ     | ค่า                                                                                                                       |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | รหัสผู้ให้บริการ  | `huggingface`                                                                                                               |
 | Plugin       | รวมมาให้แล้ว (เปิดใช้งานโดยค่าเริ่มต้น ไม่ต้องติดตั้ง)                                                                               |
-| ตัวแปรสภาพแวดล้อมสำหรับการยืนยันตัวตน | `HUGGINGFACE_HUB_TOKEN` หรือ `HF_TOKEN` (โทเค็นแบบกำหนดสิทธิ์ละเอียด)                                                                  |
+| ตัวแปรสภาพแวดล้อมสำหรับการยืนยันตัวตน | `HUGGINGFACE_HUB_TOKEN` หรือ `HF_TOKEN` (โทเค็นแบบละเอียด)                                                                  |
 | API          | เข้ากันได้กับ OpenAI (`https://router.huggingface.co/v1`)                                                                      |
-| การเรียกเก็บเงิน      | ใช้โทเค็น HF เดียว โดย[ราคา](https://huggingface.co/docs/inference-providers/pricing) เป็นไปตามอัตราของผู้ให้บริการและมีระดับใช้งานฟรี |
+| การเรียกเก็บเงิน      | โทเค็น HF เดียว; [ราคา](https://huggingface.co/docs/inference-providers/pricing) เป็นไปตามอัตราของผู้ให้บริการและมีระดับใช้งานฟรี |
 
 ## เริ่มต้นใช้งาน
 
 <Steps>
-  <Step title="Create a fine-grained token">
-    ไปที่ [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) แล้วสร้างโทเค็นแบบกำหนดสิทธิ์ละเอียดใหม่
+  <Step title="สร้างโทเค็นแบบละเอียด">
+    ไปที่ [การตั้งค่าโทเค็นของ Hugging Face](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) แล้วสร้างโทเค็นแบบละเอียดใหม่
 
     <Warning>
     ต้องเปิดใช้สิทธิ์ **Make calls to Inference Providers** สำหรับโทเค็น มิฉะนั้นคำขอ API จะถูกปฏิเสธ
     </Warning>
 
   </Step>
-  <Step title="Run onboarding">
-    เลือก **Hugging Face** ในรายการแบบเลื่อนลงของผู้ให้บริการ แล้วป้อนคีย์ API เมื่อระบบแจ้ง:
+  <Step title="เรียกใช้การเริ่มต้นตั้งค่า">
+    เลือก **Hugging Face** ในเมนูแบบเลื่อนลงของผู้ให้บริการ แล้วป้อนคีย์ API เมื่อระบบแจ้ง:
 
     ```bash
     openclaw onboard --auth-choice huggingface-api-key
     ```
 
   </Step>
-  <Step title="Select a default model">
-    เลือกโมเดลจากรายการแบบเลื่อนลง **Default Hugging Face model** รายการนี้จะโหลดจาก Inference API เมื่อโทเค็นของคุณถูกต้อง มิฉะนั้น OpenClaw จะแสดงแค็ตตาล็อกในตัวด้านล่าง ตัวเลือกของคุณจะถูกบันทึกเป็น `agents.defaults.model.primary`:
+  <Step title="เลือกโมเดลเริ่มต้น">
+    ในเมนูแบบเลื่อนลง **Default Hugging Face model** ให้เลือกโมเดล รายการจะโหลดจาก Inference API เมื่อโทเค็นถูกต้อง มิฉะนั้น OpenClaw จะแสดงแค็ตตาล็อกในตัวด้านล่าง ระบบบันทึกตัวเลือกเป็น `agents.defaults.model.primary`:
 
     ```json5
     {
@@ -57,7 +58,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="ตรวจสอบว่าโมเดลพร้อมใช้งาน">
     ```bash
     openclaw models list --provider huggingface
     ```
@@ -77,35 +78,34 @@ openclaw onboard --non-interactive \
 
 ## รหัสโมเดล
 
-การอ้างอิงโมเดลใช้รูปแบบ `huggingface/<org>/<model>` (รหัสรูปแบบ Hub) แค็ตตาล็อกในตัวของ OpenClaw:
+การอ้างอิงโมเดลใช้รูปแบบ `huggingface/<org>/<model>` (รหัสแบบ Hub) แค็ตตาล็อกในตัวของ OpenClaw:
 
-| โมเดล                        | การอ้างอิง (เติมคำนำหน้าด้วย `huggingface/`)          |
-| ---------------------------- | ----------------------------------------- |
-| DeepSeek R1                  | `deepseek-ai/DeepSeek-R1`                 |
-| DeepSeek V3.1                | `deepseek-ai/DeepSeek-V3.1`               |
-| GPT-OSS 120B                 | `openai/gpt-oss-120b`                     |
-| Llama 3.3 70B Instruct Turbo | `meta-llama/Llama-3.3-70B-Instruct-Turbo` |
+| โมเดล         | การอ้างอิง (เติมคำนำหน้าด้วย `huggingface/`) |
+| ------------- | -------------------------------- |
+| DeepSeek R1   | `deepseek-ai/DeepSeek-R1`        |
+| DeepSeek V3.1 | `deepseek-ai/DeepSeek-V3.1`      |
+| GPT-OSS 120B  | `openai/gpt-oss-120b`            |
 
 <Tip>
-เมื่อโทเค็นของคุณถูกต้อง OpenClaw จะค้นพบโมเดลอื่น ๆ จาก **GET** `https://router.huggingface.co/v1/models` ระหว่างการเริ่มต้นใช้งานและเมื่อ Gateway เริ่มทำงานด้วย ดังนั้นแค็ตตาล็อกของคุณจึงอาจมีโมเดลมากกว่าสี่รายการข้างต้นอย่างมาก คุณสามารถเติม `:fastest` หรือ `:cheapest` ต่อท้ายรหัสโมเดลใดก็ได้ แล้วเราเตอร์ของ HF จะกำหนดเส้นทางไปยังผู้ให้บริการอนุมานที่ตรงกัน ตั้งค่าลำดับผู้ให้บริการเริ่มต้นของคุณใน [Inference Provider settings](https://hf.co/settings/inference-providers)
+เมื่อโทเค็นถูกต้อง OpenClaw ยังค้นพบโมเดลอื่นๆ จาก **GET** `https://router.huggingface.co/v1/models` ระหว่างการเริ่มต้นตั้งค่าและเมื่อ Gateway เริ่มทำงาน ดังนั้นแค็ตตาล็อกอาจมีโมเดลมากกว่าสามรายการข้างต้นอย่างมาก สามารถเติม `:fastest` หรือ `:cheapest` ต่อท้ายรหัสโมเดลใดก็ได้ โดยเราเตอร์ของ HF จะกำหนดเส้นทางไปยังผู้ให้บริการอนุมานที่ตรงกัน ตั้งค่าลำดับผู้ให้บริการเริ่มต้นใน [การตั้งค่าผู้ให้บริการอนุมาน](https://hf.co/settings/inference-providers)
 </Tip>
 
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
-  <Accordion title="Model discovery and onboarding dropdown">
+  <Accordion title="การค้นพบโมเดลและเมนูแบบเลื่อนลงในการเริ่มต้นตั้งค่า">
     OpenClaw ค้นพบโมเดลด้วย:
 
     ```bash
     GET https://router.huggingface.co/v1/models
-    Authorization: Bearer $HUGGINGFACE_HUB_TOKEN   # or $HF_TOKEN
+    Authorization: Bearer $HUGGINGFACE_HUB_TOKEN   # หรือ $HF_TOKEN
     ```
 
-    การตอบกลับอยู่ในรูปแบบของ OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`
+    การตอบกลับเป็นรูปแบบ OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`
 
-    เมื่อมีการกำหนดค่าคีย์แล้ว (จากการเริ่มต้นใช้งาน, `HUGGINGFACE_HUB_TOKEN` หรือ `HF_TOKEN`) รายการแบบเลื่อนลง **Default Hugging Face model** ระหว่างการตั้งค่าแบบโต้ตอบจะรับข้อมูลจากปลายทางนี้ เมื่อ Gateway เริ่มทำงาน ระบบจะเรียกปลายทางเดิมซ้ำเพื่อรีเฟรชแค็ตตาล็อก โมเดลที่ค้นพบจะถูกรวมกับแค็ตตาล็อกในตัวด้านบน (ซึ่งใช้สำหรับข้อมูลเมตา เช่น ขนาดหน้าต่างบริบทและค่าใช้จ่าย เมื่อรหัสตรงกัน) หากคำขอล้มเหลว ไม่ส่งคืนข้อมูล หรือไม่ได้ตั้งค่าคีย์ OpenClaw จะย้อนกลับไปใช้เฉพาะแค็ตตาล็อกในตัว
+    เมื่อกำหนดค่าคีย์แล้ว (จากการเริ่มต้นตั้งค่า, `HUGGINGFACE_HUB_TOKEN` หรือ `HF_TOKEN`) เมนูแบบเลื่อนลง **Default Hugging Face model** ระหว่างการตั้งค่าแบบโต้ตอบจะรับข้อมูลจากเอนด์พอยต์นี้ เมื่อ Gateway เริ่มทำงาน จะเรียกเอนด์พอยต์เดิมอีกครั้งเพื่อรีเฟรชแค็ตตาล็อก โมเดลที่ค้นพบจะถูกรวมกับแค็ตตาล็อกในตัวด้านบน (ใช้สำหรับข้อมูลเมตา เช่น ขนาดหน้าต่างบริบทและค่าใช้จ่ายเมื่อรหัสตรงกัน) หากคำขอล้มเหลว ไม่ส่งคืนข้อมูล หรือไม่ได้ตั้งค่าคีย์ OpenClaw จะใช้เฉพาะแค็ตตาล็อกในตัวเป็นทางเลือกสำรอง
 
-    ปิดการค้นพบโดยไม่ต้องนำผู้ให้บริการออก:
+    ปิดใช้งานการค้นพบโดยไม่ต้องนำผู้ให้บริการออก:
 
     ```bash
     openclaw config set plugins.entries.huggingface.config.discovery.enabled false
@@ -113,9 +113,9 @@ openclaw onboard --non-interactive \
 
   </Accordion>
 
-  <Accordion title="Model names, aliases, and policy suffixes">
-    - **ชื่อจาก API:** โมเดลที่ค้นพบจะใช้ `name`, `title` หรือ `display_name` จาก API เมื่อมีค่า มิฉะนั้น OpenClaw จะสร้างชื่อจากรหัสโมเดล (เช่น `deepseek-ai/DeepSeek-R1` จะกลายเป็น "DeepSeek R1")
-    - **แทนที่ชื่อที่แสดง:** ตั้งป้ายกำกับแบบกำหนดเองสำหรับแต่ละโมเดลในการกำหนดค่า:
+  <Accordion title="ชื่อโมเดล นามแฝง และคำต่อท้ายตามนโยบาย">
+    - **ชื่อจาก API:** โมเดลที่ค้นพบจะใช้ `name`, `title` หรือ `display_name` ของ API หากมี มิฉะนั้น OpenClaw จะสร้างชื่อจากรหัสโมเดล (เช่น `deepseek-ai/DeepSeek-R1` จะกลายเป็น "DeepSeek R1")
+    - **แทนที่ชื่อที่แสดง:** ตั้งป้ายกำกับที่กำหนดเองสำหรับแต่ละโมเดลในการกำหนดค่า:
 
     ```json5
     {
@@ -130,21 +130,21 @@ openclaw onboard --non-interactive \
     }
     ```
 
-    - **คำต่อท้ายนโยบาย:** `:fastest` และ `:cheapest` เป็นรูปแบบที่เราเตอร์ของ HF กำหนด ไม่ใช่สิ่งที่ OpenClaw เขียนใหม่ โดยคำต่อท้ายจะถูกส่งตามเดิมเป็นส่วนหนึ่งของรหัสโมเดล และเราเตอร์ของ HF จะเลือกผู้ให้บริการอนุมานที่ตรงกัน เพิ่มแต่ละรูปแบบเป็นรายการแยกของตนเองภายใต้ `models.providers.huggingface.models` (หรือใน `model.primary`) หากคุณต้องการนามแฝงที่แตกต่างกันสำหรับแต่ละคำต่อท้าย
-    - **การผสานการกำหนดค่า:** รายการที่มีอยู่ใน `models.providers.huggingface.models` (เช่น ใน `models.json`) จะถูกเก็บไว้เมื่อผสานการกำหนดค่า ดังนั้น `name`, `alias` หรือตัวเลือกโมเดลแบบกำหนดเองที่คุณตั้งไว้จะยังคงอยู่หลังการเริ่มระบบใหม่
+    - **คำต่อท้ายตามนโยบาย:** `:fastest` และ `:cheapest` เป็นรูปแบบของเราเตอร์ HF ไม่ใช่สิ่งที่ OpenClaw เขียนใหม่ โดยระบบจะส่งคำต่อท้ายตามตัวอักษรทุกประการเป็นส่วนหนึ่งของรหัสโมเดล และเราเตอร์ของ HF จะเลือกผู้ให้บริการอนุมานที่ตรงกัน เพิ่มแต่ละรูปแบบเป็นรายการแยกภายใต้ `models.providers.huggingface.models` (หรือใน `model.primary`) หากต้องการนามแฝงที่แตกต่างกันสำหรับแต่ละคำต่อท้าย
+    - **การผสานการกำหนดค่า:** รายการที่มีอยู่ใน `models.providers.huggingface.models` (เช่น ใน `models.json`) จะถูกเก็บไว้เมื่อผสานการกำหนดค่า ดังนั้น `name`, `alias` หรือตัวเลือกโมเดลที่กำหนดเองไว้ในนั้นจะคงอยู่หลังการเริ่มทำงานใหม่
 
   </Accordion>
 
-  <Accordion title="Environment and daemon setup">
+  <Accordion title="การตั้งค่าสภาพแวดล้อมและดีมอน">
     หาก Gateway ทำงานเป็นดีมอน (launchd/systemd) โปรดตรวจสอบว่าโปรเซสนั้นเข้าถึง `HUGGINGFACE_HUB_TOKEN` หรือ `HF_TOKEN` ได้ (เช่น ใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv`)
 
     <Note>
-    OpenClaw รองรับทั้ง `HUGGINGFACE_HUB_TOKEN` และ `HF_TOKEN` หากตั้งค่าทั้งสองตัว `HUGGINGFACE_HUB_TOKEN` จะมีลำดับความสำคัญสูงกว่า
+    OpenClaw รองรับทั้ง `HUGGINGFACE_HUB_TOKEN` และ `HF_TOKEN` หากตั้งค่าทั้งสองรายการ `HUGGINGFACE_HUB_TOKEN` จะมีลำดับความสำคัญสูงกว่า
     </Note>
 
   </Accordion>
 
-  <Accordion title="Config: DeepSeek R1 with fallback">
+  <Accordion title="การกำหนดค่า: DeepSeek R1 พร้อมโมเดลสำรอง">
     ```json5
     {
       agents: {
@@ -163,7 +163,7 @@ openclaw onboard --non-interactive \
     ```
   </Accordion>
 
-  <Accordion title="Config: DeepSeek with cheapest and fastest variants">
+  <Accordion title="การกำหนดค่า: DeepSeek พร้อมรูปแบบที่ถูกที่สุดและเร็วที่สุด">
     ```json5
     {
       agents: {
@@ -180,21 +180,17 @@ openclaw onboard --non-interactive \
     ```
   </Accordion>
 
-  <Accordion title="Config: DeepSeek + Llama + GPT-OSS with aliases">
+  <Accordion title="การกำหนดค่า: DeepSeek + GPT-OSS พร้อมนามแฝง">
     ```json5
     {
       agents: {
         defaults: {
           model: {
             primary: "huggingface/deepseek-ai/DeepSeek-V3.1",
-            fallbacks: [
-              "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo",
-              "huggingface/openai/gpt-oss-120b",
-            ],
+            fallbacks: ["huggingface/openai/gpt-oss-120b"],
           },
           models: {
             "huggingface/deepseek-ai/DeepSeek-V3.1": { alias: "DeepSeek V3.1" },
-            "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo": { alias: "Llama 3.3 70B Turbo" },
             "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
@@ -207,16 +203,16 @@ openclaw onboard --non-interactive \
 ## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/th/concepts/model-providers" icon="layers">
-    ภาพรวมของผู้ให้บริการทั้งหมด การอ้างอิงโมเดล และลักษณะการทำงานเมื่อสลับไปใช้ตัวสำรอง
+  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
+    ภาพรวมของผู้ให้บริการทั้งหมด การอ้างอิงโมเดล และลักษณะการทำงานของการสลับเมื่อระบบล้มเหลว
   </Card>
-  <Card title="Model selection" href="/th/concepts/models" icon="brain">
+  <Card title="การเลือกโมเดล" href="/th/concepts/models" icon="brain">
     วิธีเลือกและกำหนดค่าโมเดล
   </Card>
-  <Card title="Inference Providers docs" href="https://huggingface.co/docs/inference-providers" icon="book">
-    เอกสารอย่างเป็นทางการของ Hugging Face Inference Providers
+  <Card title="เอกสารผู้ให้บริการอนุมาน" href="https://huggingface.co/docs/inference-providers" icon="book">
+    เอกสารทางการของผู้ให้บริการอนุมาน Hugging Face
   </Card>
-  <Card title="Configuration" href="/th/gateway/configuration" icon="gear">
+  <Card title="การกำหนดค่า" href="/th/gateway/configuration" icon="gear">
     เอกสารอ้างอิงการกำหนดค่าฉบับเต็ม
   </Card>
 </CardGroup>

@@ -1,45 +1,41 @@
 ---
 read_when:
-    - ऐसी होस्ट टूलिंग बनाना जो Gateway WebSocket RPC क्लाइंट का उपयोग नहीं कर सकती
-    - निजी विश्वसनीय ingress के पीछे Gateway एडमिन ऑटोमेशन को उजागर करना
-    - Gateway विधियों तक HTTP पहुंच के सुरक्षा मॉडल का ऑडिट करना
-summary: बंडल किए गए, opt-in admin-http-rpc Plugin के माध्यम से चुनी गई Gateway कंट्रोल-प्लेन विधियों को उपलब्ध कराएँ
-title: व्यवस्थापक HTTP RPC Plugin
+    - ऐसे होस्ट टूलिंग का निर्माण जो Gateway WebSocket RPC क्लाइंट का उपयोग नहीं कर सकती
+    - निजी विश्वसनीय इनग्रेस के पीछे Gateway एडमिन ऑटोमेशन को उपलब्ध कराना
+    - Gateway विधियों तक HTTP पहुँच के सुरक्षा मॉडल का ऑडिट करना
+summary: बंडल किए गए, ऑप्ट-इन admin-http-rpc Plugin के माध्यम से चुनिंदा Gateway कंट्रोल-प्लेन विधियाँ उपलब्ध कराएँ
+title: एडमिन HTTP RPC Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:31:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:36:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Bundled `admin-http-rpc` Plugin भरोसेमंद host automation के लिए चुनी हुई Gateway control-plane methods को HTTP पर expose करता है, जो सामान्य Gateway WebSocket RPC client का उपयोग नहीं कर सकता।
+बंडल किया गया `admin-http-rpc` Plugin, HTTP पर Gateway कंट्रोल-प्लेन विधियों का अनुमति-सूचीबद्ध सेट उपलब्ध कराता है। यह ऐसे विश्वसनीय होस्ट ऑटोमेशन के लिए है जो Gateway WebSocket कनेक्शन खुला नहीं रख सकता।
 
-यह Plugin OpenClaw के साथ शामिल है, लेकिन default रूप से बंद रहता है। Disabled होने पर route registered नहीं होता। Enabled होने पर, यह जोड़ता है:
+यह OpenClaw के साथ आता है, लेकिन डिफ़ॉल्ट रूप से अक्षम रहता है; अक्षम होने पर रूट पंजीकृत नहीं होता। सक्षम होने पर, यह Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`) वाले ही लिसनर पर `POST /api/v1/admin/rpc` जोड़ता है।
 
-- `POST /api/v1/admin/rpc`
-- Gateway जैसा ही listener: `http://<gateway-host>:<port>/api/v1/admin/rpc`
+इसे केवल निजी होस्ट टूलिंग, टेलनेट ऑटोमेशन या किसी विश्वसनीय आंतरिक इनग्रेस के लिए सक्षम करें। इस रूट को कभी भी सीधे सार्वजनिक इंटरनेट के सामने उजागर न करें।
 
-इसे केवल private host tooling, tailnet automation, या trusted internal ingress के लिए enable करें। इस route को सीधे public internet पर expose न करें.
+## इसे सक्षम करने से पहले
 
-## इसे enable करने से पहले
+Admin HTTP RPC पूर्ण ऑपरेटर कंट्रोल-प्लेन सतह है: Gateway HTTP प्रमाणीकरण पास करने वाला कोई भी कॉलर नीचे दी गई अनुमति-सूचीबद्ध विधियों को लागू कर सकता है। इसे केवल तभी सक्षम करें जब ये सभी शर्तें पूरी हों:
 
-Admin HTTP RPC एक पूरा operator control-plane surface है। Gateway HTTP auth पास करने वाला कोई भी caller इस page पर allowlisted methods invoke कर सकता है।
+- कॉलर को Gateway संचालित करने के लिए विश्वसनीय माना जाता है।
+- कॉलर WebSocket RPC क्लाइंट का उपयोग नहीं कर सकता।
+- रूट केवल लूपबैक, टेलनेट या निजी प्रमाणीकृत इनग्रेस पर पहुँच योग्य है।
+- आपने अनुमत विधियों की समीक्षा कर ली है और वे आपके द्वारा चलाए जाने वाले ऑटोमेशन से मेल खाती हैं।
 
-इसे तब उपयोग करें जब ये सभी सही हों:
+ऐसे OpenClaw क्लाइंट और इंटरैक्टिव टूल के लिए, जो Gateway WebSocket कनेक्शन खुला रख सकते हैं, इसके बजाय WebSocket RPC का उपयोग करें।
 
-- caller Gateway operate करने के लिए trusted है।
-- caller WebSocket RPC client का उपयोग नहीं कर सकता।
-- route केवल loopback, tailnet, या private authenticated ingress पर reachable है।
-- आपने allowed methods review कर ली हैं और वे आपकी planned automation से मेल खाती हैं।
+## सक्षम करें
 
-OpenClaw clients और interactive tools के लिए WebSocket RPC path उपयोग करें जो Gateway WebSocket connection खुला रख सकते हैं।
-
-## Enable करें
-
-Bundled Plugin enable करें:
+बंडल किया गया Plugin सक्षम करें:
 
 <Tabs>
   <Tab title="CLI">
@@ -48,7 +44,7 @@ Bundled Plugin enable करें:
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="कॉन्फ़िगरेशन">
     ```json5
     {
       plugins: {
@@ -61,18 +57,18 @@ Bundled Plugin enable करें:
   </Tab>
 </Tabs>
 
-Route Plugin startup के दौरान registered होता है। Plugin config बदलने के बाद Gateway restart करें।
+रूट Plugin शुरू होने के दौरान पंजीकृत होता है, इसलिए Plugin कॉन्फ़िगरेशन बदलने के बाद Gateway पुनः आरंभ करें।
 
-जब आपको HTTP surface की जरूरत न रहे, तो इसे disable करें:
+जब HTTP सतह की आवश्यकता न रहे, तो इसे अक्षम कर दें:
 
 ```bash
 openclaw plugins disable admin-http-rpc
 openclaw gateway restart
 ```
 
-## Route verify करें
+## रूट सत्यापित करें
 
-सबसे छोटी safe request के रूप में `health` उपयोग करें:
+सबसे छोटे सुरक्षित अनुरोध के रूप में `health` का उपयोग करें:
 
 ```bash
 curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
@@ -81,7 +77,7 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
   -d '{"method":"health","params":{}}'
 ```
 
-Successful response में `ok: true` होता है:
+सफल प्रतिक्रिया में `ok: true` होता है:
 
 ```json
 {
@@ -93,35 +89,32 @@ Successful response में `ok: true` होता है:
 }
 ```
 
-जब Plugin disabled होता है, route `404` return करता है क्योंकि वह registered नहीं होता।
+Plugin अक्षम होने पर रूट `404` लौटाता है, क्योंकि वह पंजीकृत नहीं होता।
 
-## Authentication
+## प्रमाणीकरण
 
-Plugin route Gateway HTTP auth उपयोग करता है।
+Plugin रूट Gateway HTTP प्रमाणीकरण का उपयोग करता है।
 
-सामान्य authentication paths:
+सामान्य प्रमाणीकरण पथ:
 
-- shared-secret auth (`gateway.auth.mode="token"` या `"password"`): `Authorization: Bearer <token-or-password>`
-- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`): configured identity-aware proxy के through route करें और उसे required identity headers inject करने दें
-- private-ingress open auth (`gateway.auth.mode="none"`): कोई auth header required नहीं
+- साझा-सीक्रेट प्रमाणीकरण (`gateway.auth.mode="token"` या `"password"`): `Authorization: Bearer <token-or-password>`
+- विश्वसनीय पहचान-युक्त HTTP प्रमाणीकरण (`gateway.auth.mode="trusted-proxy"`): कॉन्फ़िगर किए गए पहचान-सजग प्रॉक्सी के माध्यम से रूट करें और उसे आवश्यक पहचान हेडर इंजेक्ट करने दें
+- निजी-इनग्रेस खुला प्रमाणीकरण (`gateway.auth.mode="none"`): किसी प्रमाणीकरण हेडर की आवश्यकता नहीं
 
-## Security model
+## सुरक्षा मॉडल
 
-इस Plugin को एक full Gateway operator surface मानें।
+इस Plugin को पूर्ण Gateway ऑपरेटर सतह मानें।
 
-- Plugin enable करना जानबूझकर `/api/v1/admin/rpc` पर allowlisted admin RPC methods की access देता है।
-- Plugin reserved `contracts.gatewayMethodDispatch: ["authenticated-request"]` manifest contract declare करता है, ताकि इसका Gateway-authenticated HTTP route process में control-plane methods dispatch कर सके।
-- Shared-secret bearer auth gateway operator secret के possession को prove करता है।
-- `token` और `password` auth के लिए, narrower `x-openclaw-scopes` headers ignore किए जाते हैं और normal full operator defaults restore किए जाते हैं।
-- Trusted identity-bearing HTTP modes मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं।
-- `gateway.auth.mode="none"` का मतलब है कि Plugin enabled होने पर यह route unauthenticated है। इसे केवल ऐसे private ingress के पीछे उपयोग करें जिस पर आप पूरी तरह trust करते हैं।
-- Plugin route auth पास होने के बाद requests WebSocket RPC जैसे ही Gateway method handlers और scope checks के through dispatch होती हैं।
-- इस route को loopback, tailnet, या private trusted ingress पर रखें। इसे सीधे public internet पर expose न करें।
-- Plugin manifest contracts sandbox नहीं हैं। वे reserved SDK helpers के accidental use को रोकते हैं; trusted plugins फिर भी Gateway process में चलते हैं।
+- Plugin को सक्षम करने से जानबूझकर `/api/v1/admin/rpc` पर अनुमति-सूचीबद्ध एडमिन RPC विधियों की पहुँच उपलब्ध होती है।
+- Plugin आरक्षित `contracts.gatewayMethodDispatch: ["authenticated-request"]` मेनिफ़ेस्ट अनुबंध घोषित करता है, जिसके कारण इसका Gateway-प्रमाणीकृत HTTP रूट उसी प्रोसेस में कंट्रोल-प्लेन विधियाँ डिस्पैच कर पाता है। यह सैंडबॉक्स नहीं है: अनुबंध आरक्षित SDK सहायकों के आकस्मिक उपयोग को रोकता है, लेकिन विश्वसनीय Plugin फिर भी Gateway प्रोसेस में चलते हैं।
+- साझा-सीक्रेट बियरर प्रमाणीकरण (`token`/`password` मोड) Gateway ऑपरेटर सीक्रेट के स्वामित्व को प्रमाणित करता है; उस पथ पर अधिक सीमित `x-openclaw-scopes` हेडर अनदेखे किए जाते हैं और सामान्य पूर्ण ऑपरेटर डिफ़ॉल्ट बहाल कर दिए जाते हैं।
+- विश्वसनीय पहचान-युक्त HTTP प्रमाणीकरण (`trusted-proxy` मोड), मौजूद होने पर `x-openclaw-scopes` का सम्मान करता है।
+- `gateway.auth.mode="none"` का अर्थ है कि Plugin सक्षम होने पर यह रूट अप्रमाणीकृत है। इसका उपयोग केवल ऐसे निजी इनग्रेस के पीछे करें जिस पर आपको पूर्ण विश्वास हो।
+- Plugin रूट का प्रमाणीकरण पास होने के बाद, अनुरोध WebSocket RPC वाले ही Gateway विधि हैंडलर और स्कोप जाँच के माध्यम से डिस्पैच होते हैं।
+- तैयार किए गए निलंबन लीज़ के दौरान भी रूट पहुँच योग्य रहता है। सीमित अनुरोध सत्यापन और स्थानीय `commands.list` डिस्कवरी प्रतिक्रिया उपलब्ध रहते हैं। Gateway में डिस्पैच की गई विधियों में से केवल `gateway.suspend.prepare`, `gateway.suspend.status` और `gateway.suspend.resume` ही प्रवेश बंद होने के दौरान चल सकती हैं; अनुमति-सूचीबद्ध अन्य विधियाँ सामान्य पुनः प्रयास योग्य Gateway `UNAVAILABLE` प्रतिक्रिया लौटाती हैं।
+- इस रूट को लूपबैक, टेलनेट या निजी विश्वसनीय इनग्रेस पर रखें। इसे सीधे सार्वजनिक इंटरनेट के सामने उजागर न करें। कॉलर के बीच विश्वास-सीमाएँ होने पर अलग-अलग Gateway का उपयोग करें।
 
-जब callers trust boundaries cross करते हैं, अलग gateways उपयोग करें।
-
-## Request
+## अनुरोध
 
 ```http
 POST /api/v1/admin/rpc
@@ -137,17 +130,17 @@ Content-Type: application/json
 }
 ```
 
-Fields:
+फ़ील्ड:
 
-- `id` (string, optional): response में copy किया जाता है। Omitted होने पर UUID generated होता है।
-- `method` (string, required): allowed Gateway method name।
-- `params` (any, optional): method-specific params।
+- `id` (स्ट्रिंग, वैकल्पिक): प्रतिक्रिया में कॉपी किया जाता है। इसे छोड़ने पर UUID जनरेट किया जाता है।
+- `method` (स्ट्रिंग, आवश्यक): अनुमत Gateway विधि का नाम।
+- `params` (कोई भी, वैकल्पिक): विधि-विशिष्ट पैरामीटर।
 
-Default max request body size 1 MB है।
+अनुरोध बॉडी का डिफ़ॉल्ट अधिकतम आकार 1 MB है।
 
-## Response
+## प्रतिक्रिया
 
-Success responses Gateway RPC shape उपयोग करते हैं:
+सफल प्रतिक्रियाएँ Gateway RPC स्वरूप का उपयोग करती हैं:
 
 ```json
 {
@@ -157,7 +150,7 @@ Success responses Gateway RPC shape उपयोग करते हैं:
 }
 ```
 
-Gateway method errors यह उपयोग करते हैं:
+Gateway विधि त्रुटियाँ इस स्वरूप का उपयोग करती हैं:
 
 ```json
 {
@@ -170,55 +163,72 @@ Gateway method errors यह उपयोग करते हैं:
 }
 ```
 
-HTTP status संभव होने पर Gateway error का अनुसरण करता है। उदाहरण के लिए, `INVALID_REQUEST` `400` return करता है, और `UNAVAILABLE` `503` return करता है।
+HTTP स्थिति त्रुटि कोड के अनुसार होती है:
 
-## Allowed methods
+| त्रुटि कोड                 | HTTP स्थिति |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| कोई अन्य कोड             | 500         |
 
-- discovery: `commands.list`
-  इस Plugin द्वारा allowed HTTP RPC method names return करता है।
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
-- config: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
-- channels: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
-- web: `web.login.start`, `web.login.wait`
-- models: `models.list`, `models.authStatus`
-- agents: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
-- approvals: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
-- cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
-- devices: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- nodes: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
-- tasks: `tasks.list`, `tasks.get`, `tasks.cancel`
-- diagnostics: `doctor.memory.status`, `update.status`
+## अनुमत विधियाँ
 
-अन्य Gateway methods तब तक blocked हैं जब तक उन्हें जानबूझकर add नहीं किया जाता।
+- डिस्कवरी: `commands.list`
+  इस Plugin द्वारा अनुमत HTTP RPC विधियों के नाम लौटाता है।
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
+- कॉन्फ़िगरेशन: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
+- चैनल: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
+- वेब: `web.login.start`, `web.login.wait`
+- मॉडल: `models.list`, `models.authStatus`
+- एजेंट: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
+- स्वीकृतियाँ: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
+- Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
+- डिवाइस: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
+- Node: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- कार्य: `tasks.list`, `tasks.get`, `tasks.cancel`
+- निदान: `doctor.memory.status`, `update.status`
 
-## WebSocket comparison
+अन्य Gateway विधियाँ तब तक अवरुद्ध रहती हैं, जब तक उन्हें जानबूझकर नहीं जोड़ा जाता।
 
-सामान्य Gateway WebSocket RPC path OpenClaw clients के लिए preferred control-plane API बना रहता है। Admin HTTP RPC केवल उस host tooling के लिए उपयोग करें जिसे request/response HTTP surface चाहिए।
+## WebSocket तुलना
 
-Trusted device identity के बिना shared-token WebSocket clients connect के दौरान admin scopes self-declare नहीं कर सकते। Admin HTTP RPC जानबूझकर मौजूदा trusted HTTP operator model का अनुसरण करता है: जब Plugin enabled होता है, shared-secret bearer auth को इस admin surface के लिए full operator access माना जाता है।
+सामान्य Gateway WebSocket RPC पथ, OpenClaw क्लाइंट के लिए पसंदीदा कंट्रोल-प्लेन API बना रहता है। Admin HTTP RPC का उपयोग केवल ऐसी होस्ट टूलिंग के लिए करें जिसे अनुरोध/प्रतिक्रिया वाली HTTP सतह चाहिए।
 
-## Troubleshooting
+विश्वसनीय डिवाइस पहचान के बिना साझा-टोकन WebSocket क्लाइंट कनेक्ट करते समय एडमिन स्कोप स्वयं घोषित नहीं कर सकते। Admin HTTP RPC जानबूझकर मौजूदा विश्वसनीय HTTP ऑपरेटर मॉडल का अनुसरण करता है: Plugin सक्षम होने पर, इस एडमिन सतह के लिए साझा-सीक्रेट बियरर प्रमाणीकरण को पूर्ण ऑपरेटर पहुँच माना जाता है।
+
+## समस्या निवारण
 
 `404 Not Found`
 
-: Plugin disabled है, Gateway इसे enable करने के बाद restart नहीं हुआ है, या request किसी अलग Gateway process पर जा रही है।
+: Plugin अक्षम है, उसे सक्षम करने के बाद से Gateway पुनः आरंभ नहीं हुआ है या अनुरोध किसी दूसरे Gateway प्रोसेस पर जा रहा है।
 
 `401 Unauthorized`
 
-: request Gateway HTTP auth satisfy नहीं कर पाई। bearer token या trusted-proxy identity headers check करें।
+: अनुरोध ने Gateway HTTP प्रमाणीकरण पूरा नहीं किया। बियरर टोकन या विश्वसनीय-प्रॉक्सी पहचान हेडर जाँचें।
+
+`405 Method Not Allowed`
+
+: अनुरोध में `POST` के अलावा किसी अन्य चीज़ का उपयोग किया गया था।
+
+`413 Payload Too Large`
+
+: अनुरोध बॉडी 1 MB की सीमा से अधिक थी।
 
 `400 INVALID_REQUEST`
 
-: request body valid JSON नहीं है, `method` field missing है, या method Plugin allowlist में नहीं है।
+: अनुरोध बॉडी मान्य JSON नहीं है, `method` फ़ील्ड अनुपस्थित है, विधि Plugin की अनुमति-सूची में नहीं है या निलंबन रिज़्यूम ID सक्रिय लीज़ से मेल नहीं खाती।
 
 `503 UNAVAILABLE`
 
-: Gateway method handler unavailable है। Gateway logs check करें और Gateway startup पूरा होने के बाद retry करें।
+: Gateway विधि शुरू हो रही है, दर-सीमित है, निलंबित है या किसी प्रतिस्पर्धी निलंबन/रिज़्यूम कार्रवाई की प्रतीक्षा कर रही है। मौजूद होने पर `error.details` का निरीक्षण करें और पुनः प्रयास करने से पहले `error.retryAfterMs` का पालन करें।
 
-## Related
+## संबंधित
 
-- [Operator scopes](/hi/gateway/operator-scopes)
-- [Gateway security](/hi/gateway/security)
-- [Remote access](/hi/gateway/remote)
-- [Plugin manifest](/hi/plugins/manifest#contracts)
-- [SDK subpaths](/hi/plugins/sdk-subpaths)
+- [ऑपरेटर स्कोप](/hi/gateway/operator-scopes)
+- [Gateway सुरक्षा](/hi/gateway/security)
+- [दूरस्थ पहुँच](/hi/gateway/remote)
+- [Plugin मेनिफ़ेस्ट](/hi/plugins/manifest#contracts-reference)
+- [SDK उपपथ](/hi/plugins/sdk-subpaths)

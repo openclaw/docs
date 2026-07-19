@@ -5,11 +5,12 @@ read_when:
 summary: Penyedia model (LLM) yang didukung oleh OpenClaw
 title: Direktori penyedia
 x-i18n:
-    generated_at: "2026-07-12T14:35:47Z"
+    generated_at: "2026-07-19T05:08:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
+    source_hash: e98910f016e461dedcd06e40a2933631bbd6ac09ceebd340bab82f14805e06a6
     source_path: providers/index.md
     workflow: 16
 ---
@@ -17,7 +18,7 @@ x-i18n:
 OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, lakukan autentikasi, lalu tetapkan
 model default sebagai `provider/model`.
 
-Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Saluran](/id/channels).
+Mencari dokumentasi saluran percakapan (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Saluran](/id/channels).
 
 ## Mulai cepat
 
@@ -35,13 +36,14 @@ Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost 
 - [Alibaba Model Studio](/id/providers/alibaba)
 - [Amazon Bedrock](/id/providers/bedrock)
 - [Amazon Bedrock Mantle](/id/providers/bedrock-mantle)
-- [Anthropic (API + CLI Claude)](/id/providers/anthropic)
+- [Anthropic (API + Claude CLI)](/id/providers/anthropic)
 - [Arcee AI (model Trinity)](/id/providers/arcee)
 - [Azure Speech](/id/providers/azure-speech)
+- [Baseten (Inkling + API Model)](/id/providers/baseten)
 - [BytePlus (Internasional)](/id/concepts/model-providers#byteplus-international)
 - [Cerebras](/id/providers/cerebras)
 - [Chutes](/id/providers/chutes)
-- [ClawRouter (perutean multi-penyedia terkelola)](/id/providers/clawrouter)
+- [ClawRouter (perutean multipenyedia terkelola)](/id/providers/clawrouter)
 - [Cloudflare AI Gateway](/id/providers/cloudflare-ai-gateway)
 - [Cohere](/id/providers/cohere)
 - [ComfyUI](/id/providers/comfy)
@@ -49,7 +51,7 @@ Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost 
 - [ds4 (DeepSeek V4 lokal)](/id/providers/ds4)
 - [ElevenLabs](/id/providers/elevenlabs)
 - [fal](/id/providers/fal)
-- [Featherless AI](/providers/featherless)
+- [Featherless AI](/id/providers/featherless)
 - [Fireworks](/id/providers/fireworks)
 - [GitHub Copilot](/id/providers/github-copilot)
 - [GMI Cloud](/id/providers/gmi)
@@ -59,7 +61,7 @@ Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost 
 - [Hugging Face (Inferensi)](/id/providers/huggingface)
 - [inferrs (model lokal)](/id/providers/inferrs)
 - [Kilocode](/id/providers/kilocode)
-- [LiteLLM (Gateway terpadu)](/id/providers/litellm)
+- [LiteLLM (gateway terpadu)](/id/providers/litellm)
 - [LM Studio (model lokal)](/id/providers/lmstudio)
 - [LongCat](/id/providers/longcat)
 - [MiniMax](/id/providers/minimax)
@@ -76,7 +78,6 @@ Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost 
 - [Perplexity (pencarian web)](/id/providers/perplexity-provider)
 - [Qianfan](/id/providers/qianfan)
 - [Qwen Cloud](/id/providers/qwen)
-- [Qwen OAuth / Portal](/id/providers/qwen-oauth)
 - [Runway](/id/providers/runway)
 - [SenseAudio](/id/providers/senseaudio)
 - [SGLang (model lokal)](/id/providers/sglang)
@@ -95,10 +96,10 @@ Mencari dokumentasi saluran obrolan (WhatsApp/Telegram/Discord/Slack/Mattermost 
 
 ## Halaman ikhtisar bersama
 
-- [Varian penyedia tambahan](/id/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy, dan OAuth CLI Gemini
-- [Pembuatan Gambar](/id/tools/image-generation) - Alat bersama `image_generate`, pemilihan penyedia, dan pengalihan saat gagal
-- [Pembuatan Musik](/id/tools/music-generation) - Alat bersama `music_generate`, pemilihan penyedia, dan pengalihan saat gagal
-- [Pembuatan Video](/id/tools/video-generation) - Alat bersama `video_generate`, pemilihan penyedia, dan pengalihan saat gagal
+- [Varian penyedia tambahan](/id/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy, dan OAuth Gemini CLI
+- [Pembuatan Gambar](/id/tools/image-generation) - Alat `image_generate` bersama, pemilihan penyedia, dan failover
+- [Pembuatan Musik](/id/tools/music-generation) - Alat `music_generate` bersama, pemilihan penyedia, dan failover
+- [Pembuatan Video](/id/tools/video-generation) - Alat `video_generate` bersama, pemilihan penyedia, dan failover
 
 ## Penyedia transkripsi
 

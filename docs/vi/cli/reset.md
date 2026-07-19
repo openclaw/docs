@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Bạn muốn xóa sạch trạng thái cục bộ nhưng vẫn giữ nguyên CLI đã cài đặt
+    - Bạn muốn xóa sạch trạng thái cục bộ nhưng vẫn giữ CLI đã cài đặt
     - Bạn muốn chạy thử để xem những gì sẽ bị xóa
-summary: Tài liệu tham khảo CLI cho `openclaw reset` (đặt lại trạng thái/cấu hình cục bộ)
+summary: Tài liệu tham chiếu CLI cho `openclaw reset` (đặt lại trạng thái/cấu hình cục bộ)
 title: Đặt lại
 x-i18n:
-    generated_at: "2026-07-12T07:51:43Z"
+    generated_at: "2026-07-19T05:42:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_hash: 54f1d320ee368dae4a4bfb32dea73d19eb35f9f30edd12d9c2580ab7e6a26fa6
     source_path: cli/reset.md
     workflow: 16
 ---
@@ -30,25 +31,26 @@ openclaw reset --scope full --yes --non-interactive
 
 - `--scope <scope>`: `config`, `config+creds+sessions` hoặc `full`
 - `--yes`: bỏ qua lời nhắc xác nhận
-- `--non-interactive`: vô hiệu hóa lời nhắc; yêu cầu `--scope` và `--yes`
+- `--non-interactive`: tắt lời nhắc; yêu cầu `--scope` và `--yes`
 - `--dry-run`: in các thao tác mà không xóa tệp
 
 ## Phạm vi
 
-| Phạm vi                | Nội dung bị xóa                                                                                                               | Dừng Gateway trước |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `config`               | chỉ tệp cấu hình                                                                                                              | không              |
-| `config+creds+sessions` | tệp cấu hình, thư mục OAuth/thông tin xác thực, các thư mục phiên của từng tác tử                                             | có                 |
-| `full`                 | thư mục trạng thái (bao gồm cấu hình/thông tin xác thực nếu nằm bên trong) cùng các thư mục không gian làm việc và chứng thực không gian làm việc | có                 |
+| Phạm vi                 | Nội dung bị xóa                                                             | Dừng Gateway trước |
+| ----------------------- | --------------------------------------------------------------------------- | ------------------ |
+| `config`                | chỉ tệp cấu hình                                                             | không              |
+| `config+creds+sessions` | tệp cấu hình, thư mục OAuth/thông tin xác thực, các thư mục phiên theo từng tác nhân | có                 |
+| `full`                  | thư mục trạng thái (bao gồm cơ sở dữ liệu SQLite dùng chung) cùng các thư mục không gian làm việc | có                 |
 
 `config+creds+sessions` và `full` dừng dịch vụ Gateway được quản lý đang chạy trước khi xóa trạng thái.
 
 ## Ghi chú
 
 - Trước tiên, hãy chạy `openclaw backup create` để tạo ảnh chụp nhanh có thể khôi phục trước khi xóa trạng thái cục bộ.
-- Khi không có `--scope`, `openclaw reset` sẽ tương tác hỏi phạm vi cần xóa.
+- Trạng thái thiết lập không gian làm việc và các chứng thực là các hàng trong cơ sở dữ liệu SQLite dùng chung, vì vậy `full` xóa chúng cùng thư mục trạng thái; hiện không có tệp chứng thực phụ trợ nào cần xóa riêng.
+- Nếu không có `--scope`, `openclaw reset` sẽ nhắc tương tác để chọn phạm vi cần xóa.
 - `--non-interactive` chỉ hợp lệ khi cả `--scope` và `--yes` đều được đặt.
-- Khi hoàn tất, `config+creds+sessions` và `full` in `Next: openclaw onboard --install-daemon`.
+- `config+creds+sessions` và `full` in `Next: openclaw onboard --install-daemon` khi hoàn tất.
 
 ## Liên quan
 

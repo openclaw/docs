@@ -1,45 +1,40 @@
 ---
 read_when:
     - Zalo सुविधाओं या Webhook पर काम करना
-summary: Zalo बॉट समर्थन स्थिति, क्षमताएँ, और कॉन्फ़िगरेशन
+summary: Zalo बॉट समर्थन की स्थिति, क्षमताएँ और कॉन्फ़िगरेशन
 title: Zalo
 x-i18n:
-    generated_at: "2026-06-28T22:41:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:12:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6226af1217e1e8b03b485df99f6375872b487f7040c091f2bb2d85e18dec75d0
+    source_hash: f3e0bfe6003d3b2f38411fcc5a4e82266733b042693c7853d0b3c8a3864273c5
     source_path: channels/zalo.md
     workflow: 16
 ---
 
-स्थिति: प्रयोगात्मक। DMs समर्थित हैं। नीचे [क्षमताएँ](#capabilities) अनुभाग वर्तमान Marketplace-bot व्यवहार को दर्शाता है।
+स्थिति: प्रयोगात्मक। सीधे संदेश और समूह चैट, दोनों लागू किए गए हैं; नीचे दी गई [क्षमताएँ](#capabilities) तालिका Zalo Bot Creator / Marketplace बॉट पर सत्यापित व्यवहार दर्शाती है।
 
 ## बंडल किया गया Plugin
 
-Zalo वर्तमान OpenClaw रिलीज़ में बंडल किए गए Plugin के रूप में आता है, इसलिए सामान्य पैकेज किए गए
-बिल्ड को अलग इंस्टॉल की आवश्यकता नहीं होती।
+वर्तमान OpenClaw रिलीज़ में Zalo एक बंडल किए गए Plugin के रूप में उपलब्ध है, इसलिए पैकेज किए गए बिल्ड के लिए अलग से इंस्टॉल करने की आवश्यकता नहीं है।
 
-यदि आप किसी पुराने बिल्ड पर हैं या ऐसे कस्टम इंस्टॉल पर हैं जिसमें Zalo शामिल नहीं है, तो
-npm पैकेज सीधे इंस्टॉल करें:
+किसी पुराने बिल्ड या Zalo को शामिल न करने वाले कस्टम इंस्टॉलेशन पर, npm पैकेज को सीधे इंस्टॉल करें:
 
-- CLI के माध्यम से इंस्टॉल करें: `openclaw plugins install @openclaw/zalo`
-- पिन किया गया संस्करण: `openclaw plugins install @openclaw/zalo@2026.5.2`
-- या किसी स्रोत checkout से: `openclaw plugins install ./path/to/local/zalo-plugin`
-- विवरण: [Plugin](/hi/tools/plugin)
+- इंस्टॉल करें: `openclaw plugins install @openclaw/zalo`
+- पिन किया गया संस्करण: `openclaw plugins install @openclaw/zalo@2026.6.11`
+- स्थानीय चेकआउट से: `openclaw plugins install ./path/to/local/zalo-plugin`
+- विवरण: [Plugins](/hi/tools/plugin)
 
-## त्वरित सेटअप (शुरुआती)
+## त्वरित सेटअप
 
-1. सुनिश्चित करें कि Zalo Plugin उपलब्ध है।
-   - वर्तमान पैकेज किए गए OpenClaw रिलीज़ में यह पहले से बंडल होता है।
-   - पुराने/कस्टम इंस्टॉल इसे ऊपर दिए गए कमांड से मैन्युअल रूप से जोड़ सकते हैं।
-2. token सेट करें:
-   - Env: `ZALO_BOT_TOKEN=...`
-   - या config: `channels.zalo.accounts.default.botToken: "..."`.
-3. gateway पुनः प्रारंभ करें (या सेटअप पूरा करें)।
-4. DM पहुंच डिफ़ॉल्ट रूप से pairing है; पहले संपर्क पर pairing code approve करें।
+1. [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) पर बॉट टोकन बनाएँ (साइन इन करें, बॉट बनाएँ, सेटिंग्स कॉन्फ़िगर करें)। टोकन `numeric_id:secret` है; Marketplace बॉट के लिए उपयोग योग्य रनटाइम टोकन बॉट के स्वागत संदेश में दिखाई दे सकता है।
+2. टोकन को या तो env `ZALO_BOT_TOKEN=...` (केवल डिफ़ॉल्ट खाता) के रूप में या कॉन्फ़िगरेशन में सेट करें।
+3. Gateway को पुनः आरंभ करें।
+4. पहले DM संपर्क पर पेयरिंग कोड को स्वीकृत करें (डिफ़ॉल्ट DM नीति पेयरिंग है)।
 
-न्यूनतम config:
+न्यूनतम कॉन्फ़िगरेशन:
 
 ```json5
 {
@@ -56,206 +51,139 @@ npm पैकेज सीधे इंस्टॉल करें:
   },
 }
 ```
+
+एकाधिक खाते: `channels.zalo.accounts.<id>` के अंतर्गत और प्रविष्टियाँ जोड़ें, जिनमें प्रत्येक का अपना `botToken`/`name` हो। `channels.zalo.botToken` (समतल, कोई `accounts` नहीं) एक पुराना एकल-खाता संक्षिप्त रूप है; नए कॉन्फ़िगरेशन के लिए `accounts.<id>.*` को प्राथमिकता दें।
 
 ## यह क्या है
 
-Zalo वियतनाम-केंद्रित messaging app है; इसका Bot API Gateway को 1:1 बातचीत के लिए bot चलाने देता है।
-यह support या notifications के लिए उपयुक्त है, जहां आप Zalo पर deterministic routing वापस चाहते हैं।
+Zalo वियतनाम-केंद्रित मैसेजिंग ऐप है। इसका Bot API Gateway को 1:1 वार्तालापों और समूह चैट, दोनों के लिए बॉट चलाने देता है, जिसमें संदेश नियतात्मक रूप से वापस Zalo पर रूट होते हैं (मॉडल कभी भी चैनल नहीं चुनता)।
 
-यह पृष्ठ **Zalo Bot Creator / Marketplace bots** के लिए वर्तमान OpenClaw व्यवहार दर्शाता है।
-**Zalo Official Account (OA) bots** Zalo का अलग product surface है और अलग तरह से व्यवहार कर सकता है।
+यह पृष्ठ **Zalo Bot Creator / Marketplace बॉट** के बारे में है। **Zalo Official Account (OA) बॉट** एक अलग उत्पाद सतह हैं और उनका व्यवहार अलग हो सकता है; यह पृष्ठ उन्हें शामिल नहीं करता।
 
-- Gateway के स्वामित्व वाला Zalo Bot API channel।
-- Deterministic routing: replies वापस Zalo पर जाते हैं; model कभी channels नहीं चुनता।
-- DMs agent के मुख्य session को साझा करते हैं।
-- नीचे [क्षमताएँ](#capabilities) अनुभाग वर्तमान Marketplace-bot support दिखाता है।
+## यह कैसे काम करता है
 
-## सेटअप (तेज़ रास्ता)
+- आने वाले संदेशों को मीडिया प्लेसहोल्डर सहित साझा चैनल एनवेलप में सामान्यीकृत किया जाता है।
+- उत्तर हमेशा उसी Zalo चैट पर वापस रूट होते हैं; उद्धरण-उत्तर का उपयोग नहीं किया जाता (`replyToMode` स्थायी रूप से बंद है)।
+- डिफ़ॉल्ट रूप से लॉन्ग-पोलिंग (`getUpdates`); Webhook मोड `channels.zalo.webhookUrl` के माध्यम से उपलब्ध है।
+- समूहों में बॉट को ट्रिगर करने के लिए @उल्लेख आवश्यक है; इसे प्रत्येक चैनल के लिए अलग से कॉन्फ़िगर नहीं किया जा सकता।
 
-### 1) bot token बनाएं (Zalo Bot Platform)
+## सीमाएँ
 
-1. [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) पर जाएं और sign in करें।
-2. नया bot बनाएं और उसकी settings configure करें।
-3. पूरा bot token copy करें (आम तौर पर `numeric_id:secret`)। Marketplace bots के लिए, usable runtime token creation के बाद bot के welcome message में दिखाई दे सकता है।
+| सीमा                          | मान                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| आउटबाउंड टेक्स्ट खंड का आकार | 2000 वर्ण (Zalo API सीमा)                                                |
+| मीडिया आकार (इनबाउंड/आउटबाउंड) | `channels.zalo.mediaMaxMb`, डिफ़ॉल्ट `5` MB                               |
+| Webhook अनुरोध बॉडी           | 1 MB, 30s रीड टाइमआउट                                                   |
+| Webhook दर सीमा               | प्रति पथ+क्लाइंट IP 120 अनुरोध / 60s, फिर HTTP 429                      |
+| Webhook रीप्ले टूम्बस्टोन     | 30 दिन, प्रति खाते अधिकतम 20,000 पूर्ण इवेंट (संदेश आईडी द्वारा कुंजीबद्ध) |
 
-### 2) token configure करें (env या config)
+## पहुँच नियंत्रण
 
-उदाहरण:
+### सीधे संदेश
 
-```json5
-{
-  channels: {
-    zalo: {
-      enabled: true,
-      accounts: {
-        default: {
-          botToken: "12345689:abc-xyz",
-          dmPolicy: "pairing",
-        },
-      },
-    },
-  },
-}
-```
-
-यदि आप बाद में ऐसे Zalo bot surface पर जाते हैं जहां groups उपलब्ध हैं, तो आप `groupPolicy` और `groupAllowFrom` जैसी group-specific config स्पष्ट रूप से जोड़ सकते हैं। वर्तमान Marketplace-bot व्यवहार के लिए, [क्षमताएँ](#capabilities) देखें।
-
-Env विकल्प: `ZALO_BOT_TOKEN=...` (केवल default account के लिए काम करता है)।
-
-Multi-account support: per-account tokens और वैकल्पिक `name` के साथ `channels.zalo.accounts` का उपयोग करें।
-
-3. gateway पुनः प्रारंभ करें। token resolve होने पर Zalo शुरू होता है (env या config)।
-4. DM पहुंच default रूप से pairing होती है। bot से पहली बार संपर्क होने पर code approve करें।
-
-## यह कैसे काम करता है (व्यवहार)
-
-- Inbound messages media placeholders के साथ shared channel envelope में normalized होते हैं।
-- Replies हमेशा उसी Zalo chat पर वापस route होते हैं।
-- Default रूप से long-polling; webhook mode `channels.zalo.webhookUrl` के साथ उपलब्ध है।
-
-## सीमाएं
-
-- Outbound text को 2000 characters में chunk किया जाता है (Zalo API limit)।
-- Media downloads/uploads `channels.zalo.mediaMaxMb` से capped हैं (default 5)।
-- 2000 char limit के कारण streaming कम उपयोगी होने से default रूप से blocked है।
-
-## पहुंच नियंत्रण (DMs)
-
-### DM पहुंच
-
-- Default: `channels.zalo.dmPolicy = "pairing"`। Unknown senders को pairing code मिलता है; approve होने तक messages ignore किए जाते हैं (codes 1 घंटे बाद expire होते हैं)।
-- इसके माध्यम से approve करें:
+- `channels.zalo.dmPolicy`: `pairing` (डिफ़ॉल्ट) | `allowlist` | `open` | `disabled`.
+- पेयरिंग: अज्ञात प्रेषकों को पेयरिंग कोड मिलता है; स्वीकृति मिलने तक संदेशों को अनदेखा किया जाता है। कोड 1 घंटे बाद समाप्त हो जाते हैं।
   - `openclaw pairing list zalo`
   - `openclaw pairing approve zalo <CODE>`
-- Pairing default token exchange है। विवरण: [Pairing](/hi/channels/pairing)
-- `channels.zalo.allowFrom` numeric user IDs स्वीकार करता है (username lookup उपलब्ध नहीं है)।
+  - विवरण: [पेयरिंग](/hi/channels/pairing)
+- `channels.zalo.allowFrom` संख्यात्मक Zalo उपयोगकर्ता आईडी स्वीकार करता है (उपयोगकर्ता नाम लुकअप नहीं)। `open` के लिए `"*"` आवश्यक है।
 
-## पहुंच नियंत्रण (Groups)
+### समूह
 
-**Zalo Bot Creator / Marketplace bots** के लिए, group support व्यवहार में उपलब्ध नहीं था क्योंकि bot को group में जोड़ा ही नहीं जा सकता था।
+समूह चैट Plugin (`chatTypes: ["direct", "group"]`) द्वारा समर्थित हैं और उल्लेख तथा समूह नीति द्वारा नियंत्रित हैं:
 
-इसका मतलब है कि नीचे दी गई group-related config keys schema में मौजूद हैं, लेकिन Marketplace bots के लिए usable नहीं थीं:
+- `channels.zalo.groupPolicy`: `open` | `allowlist` | `disabled`.
+- `channels.zalo.groupAllowFrom` यह सीमित करता है कि समूहों में कौन-सी प्रेषक आईडी बॉट को ट्रिगर कर सकती हैं; सेट न होने पर यह `allowFrom` पर वापस जाता है।
+- डिफ़ॉल्ट निर्धारण: जब `channels.zalo` कॉन्फ़िगर किया गया हो, तो सेट न किया गया `groupPolicy`, `open` के रूप में निर्धारित होता है। जब `channels.zalo` पूरी तरह अनुपस्थित हो, तो रनटाइम विफलता की स्थिति में बंद रहते हुए `allowlist` का उपयोग करता है।
+- रिपोर्ट की गई वास्तविक परिस्थिति की चेतावनी: कुछ Marketplace-बॉट सेटअप में बॉट को किसी समूह में जोड़ा ही नहीं जा सका। यदि ऐसा हो, तो अपने बॉट की Zalo Bot Platform सेटिंग्स से सत्यापित करें; यह प्लेटफ़ॉर्म-पक्ष का प्रतिबंध है, OpenClaw नीति नहीं।
 
-- `channels.zalo.groupPolicy` group inbound handling नियंत्रित करता है: `open | allowlist | disabled`.
-- `channels.zalo.groupAllowFrom` यह restrict करता है कि groups में कौन से sender IDs bot को trigger कर सकते हैं।
-- यदि `groupAllowFrom` unset है, तो Zalo sender checks के लिए `allowFrom` पर fallback करता है।
-- Runtime note: यदि `channels.zalo` पूरी तरह missing है, तो runtime safety के लिए अभी भी `groupPolicy="allowlist"` पर fallback करता है।
+## लॉन्ग-पोलिंग बनाम Webhook
 
-group policy values (जब आपके bot surface पर group access उपलब्ध हो) हैं:
+- डिफ़ॉल्ट: लॉन्ग-पोलिंग (सार्वजनिक URL आवश्यक नहीं)।
+- Webhook मोड: `channels.zalo.webhookUrl` और `channels.zalo.webhookSecret` सेट करें।
+  - Webhook URL को HTTPS का उपयोग करना आवश्यक है।
+  - Webhook सीक्रेट 8-256 वर्ण का होना आवश्यक है।
+  - Zalo इवेंट को `X-Bot-Api-Secret-Token` हेडर के साथ भेजता है, जिसकी जाँच नियत-समय तुलना से की जाती है।
+  - Gateway HTTP, Webhook अनुरोधों को `channels.zalo.webhookPath` पर संभालता है (डिफ़ॉल्ट रूप से Webhook URL का पथ)।
+  - अनुरोधों में `Content-Type: application/json` (या `+json` मीडिया प्रकार) का उपयोग आवश्यक है।
+  - HTTP 200 केवल रॉ इवेंट के स्थायी रूप से संग्रहीत होने के बाद लौटाया जाता है; संग्रहण विफलताओं पर HTTP 500 लौटाया जाता है।
+  - Zalo API दस्तावेज़ों के अनुसार getUpdates पोलिंग और Webhook परस्पर अनन्य हैं।
 
-- `groupPolicy: "disabled"` — सभी group messages को block करता है।
-- `groupPolicy: "open"` — किसी भी group member को allow करता है (mention-gated)।
-- `groupPolicy: "allowlist"` — fail-closed default; केवल allowed senders स्वीकार किए जाते हैं।
+## समर्थित संदेश प्रकार
 
-यदि आप किसी अलग Zalo bot product surface का उपयोग कर रहे हैं और working group behavior verify कर चुके हैं, तो यह मानने के बजाय कि वह Marketplace-bot flow से मेल खाता है, उसे अलग से document करें।
-
-## Long-polling बनाम webhook
-
-- Default: long-polling (public URL आवश्यक नहीं)।
-- Webhook mode: `channels.zalo.webhookUrl` और `channels.zalo.webhookSecret` सेट करें।
-  - webhook secret 8-256 characters का होना चाहिए।
-  - Webhook URL को HTTPS का उपयोग करना चाहिए।
-  - Zalo verification के लिए `X-Bot-Api-Secret-Token` header के साथ events भेजता है।
-  - Gateway HTTP `channels.zalo.webhookPath` पर webhook requests handle करता है (default webhook URL path पर होता है)।
-  - Requests को `Content-Type: application/json` (या `+json` media types) का उपयोग करना चाहिए।
-  - Duplicate events (`event_name + message_id`) short replay window के लिए ignore किए जाते हैं।
-  - Burst traffic path/source के अनुसार rate-limited है और HTTP 429 return कर सकता है।
-
-**नोट:** getUpdates (polling) और webhook Zalo API docs के अनुसार per-bot mutually exclusive हैं।
-
-## समर्थित message types
-
-त्वरित support snapshot के लिए, [क्षमताएँ](#capabilities) देखें। नीचे दिए गए notes वहां detail जोड़ते हैं जहां behavior को अतिरिक्त context चाहिए।
-
-- **Text messages**: 2000 character chunking के साथ पूरा support।
-- **Text में plain URLs**: सामान्य text input की तरह व्यवहार करते हैं।
-- **Link previews / rich link cards**: [क्षमताएँ](#capabilities) में Marketplace-bot status देखें; वे reliably reply trigger नहीं करते थे।
-- **Image messages**: [क्षमताएँ](#capabilities) में Marketplace-bot status देखें; inbound image handling unreliable था (final reply के बिना typing indicator)।
-- **Stickers**: [क्षमताएँ](#capabilities) में Marketplace-bot status देखें।
-- **Voice notes / audio files / video / generic file attachments**: [क्षमताएँ](#capabilities) में Marketplace-bot status देखें।
-- **Unsupported types**: Logged (उदाहरण के लिए, protected users से messages)।
+- टेक्स्ट: पूर्ण समर्थन, 2000 वर्णों के खंडों में विभाजित।
+- मीडिया: इनबाउंड/आउटबाउंड, `mediaMaxMb` द्वारा सीमित।
+- प्रतिक्रियाएँ, थ्रेड, पोल, नेटिव कमांड: Plugin द्वारा समर्थित नहीं हैं।
+- स्ट्रीमिंग: Plugin ब्लॉक-स्ट्रीमिंग क्षमता घोषित करता है, लेकिन Zalo में समर्पित आउटबाउंड कतार/मर्ज-टेक्स्ट ट्यूनिंग विकल्प नहीं हैं (कुछ अन्य क्षेत्रीय चैनलों के विपरीत); यदि यह आपके उपयोग के मामले के लिए महत्वपूर्ण है, तो अपने परिवेश में वर्तमान व्यवहार सत्यापित करें।
 
 ## क्षमताएँ
 
-यह table OpenClaw में वर्तमान **Zalo Bot Creator / Marketplace bot** behavior का सारांश देता है।
+| सुविधा                   | स्थिति                            |
+| ------------------------ | --------------------------------- |
+| सीधे संदेश               | समर्थित                           |
+| समूह                     | समर्थित (उल्लेख द्वारा नियंत्रित) |
+| मीडिया (इनबाउंड/आउटबाउंड) | समर्थित, `mediaMaxMb` द्वारा सीमित |
+| प्रतिक्रियाएँ            | समर्थित नहीं                      |
+| थ्रेड                    | समर्थित नहीं                      |
+| पोल                      | समर्थित नहीं                      |
+| नेटिव कमांड              | समर्थित नहीं                      |
+| उत्तर-प्रति / उद्धरण     | उपयोग नहीं किया जाता (स्थायी रूप से बंद) |
 
-| Feature                     | Status                                  |
-| --------------------------- | --------------------------------------- |
-| Direct messages             | ✅ समर्थित                              |
-| Groups                      | ❌ Marketplace bots के लिए उपलब्ध नहीं  |
-| Media (inbound images)      | ⚠️ सीमित / अपने environment में verify करें |
-| Media (outbound images)     | ⚠️ Marketplace bots के लिए फिर से test नहीं किया गया |
-| Plain URLs in text          | ✅ समर्थित                              |
-| Link previews               | ⚠️ Marketplace bots के लिए unreliable   |
-| Reactions                   | ❌ समर्थित नहीं                         |
-| Stickers                    | ⚠️ Marketplace bots के लिए कोई agent reply नहीं |
-| Voice notes / audio / video | ⚠️ Marketplace bots के लिए कोई agent reply नहीं |
-| File attachments            | ⚠️ Marketplace bots के लिए कोई agent reply नहीं |
-| Threads                     | ❌ समर्थित नहीं                         |
-| Polls                       | ❌ समर्थित नहीं                         |
-| Native commands             | ❌ समर्थित नहीं                         |
-| Streaming                   | ⚠️ Blocked (2000 char limit)            |
+## डिलीवरी लक्ष्य (CLI/Cron)
 
-## Delivery targets (CLI/cron)
+लक्ष्य के रूप में चैट आईडी का उपयोग करें:
 
-- target के रूप में chat id का उपयोग करें।
-- उदाहरण: `openclaw message send --channel zalo --target 123456789 --message "hi"`.
+```bash
+openclaw message send --channel zalo --target 123456789 --message "hi"
+```
 
-## Troubleshooting
+## समस्या निवारण
 
-**Bot respond नहीं करता:**
+**बॉट उत्तर नहीं देता:**
 
-- जांचें कि token valid है: `openclaw channels status --probe`
-- verify करें कि sender approved है (pairing या allowFrom)
-- gateway logs देखें: `openclaw logs --follow`
+- टोकन जाँचें: `openclaw channels status --probe`
+- सत्यापित करें कि प्रेषक स्वीकृत है (पेयरिंग या `allowFrom`)
+- Gateway लॉग जाँचें: `openclaw logs --follow`
 
-**Webhook events receive नहीं कर रहा:**
+**Webhook को इवेंट प्राप्त नहीं हो रहे:**
 
-- सुनिश्चित करें कि webhook URL HTTPS का उपयोग करता है
-- verify करें कि secret token 8-256 characters का है
-- पुष्टि करें कि gateway HTTP endpoint configured path पर reachable है
-- जांचें कि getUpdates polling चल नहीं रहा है (वे mutually exclusive हैं)
+- पुष्टि करें कि Webhook URL HTTPS का उपयोग करता है
+- पुष्टि करें कि सीक्रेट 8-256 वर्ण का है
+- पुष्टि करें कि Gateway HTTP एंडपॉइंट कॉन्फ़िगर किए गए पथ पर पहुँच योग्य है
+- पुष्टि करें कि getUpdates पोलिंग भी नहीं चल रही है (वे परस्पर अनन्य हैं)
+- अनुरोधों की अचानक बढ़ोतरी HTTP 429 लौटा सकती है (प्रति पथ+IP 120 अनुरोध / 60s); कुछ समय प्रतीक्षा करें और पुनः प्रयास करें
 
-## Configuration reference (Zalo)
+## कॉन्फ़िगरेशन संदर्भ
 
-पूरा configuration: [Configuration](/hi/gateway/configuration)
+पूर्ण कॉन्फ़िगरेशन: [कॉन्फ़िगरेशन](/hi/gateway/configuration)
 
-Flat top-level keys (`channels.zalo.botToken`, `channels.zalo.dmPolicy`, और समान) legacy single-account shorthand हैं। नई configs के लिए `channels.zalo.accounts.<id>.*` को प्राथमिकता दें। दोनों forms अभी भी यहां documented हैं क्योंकि वे schema में मौजूद हैं।
+| सेटिंग                                      | विवरण                                            | डिफ़ॉल्ट              |
+| -------------------------------------------- | ------------------------------------------------- | --------------------- |
+| `channels.zalo.enabled`                      | चैनल स्टार्टअप सक्षम/अक्षम करें                  | `true`                |
+| `channels.zalo.accounts.<id>.botToken`       | Zalo Bot Platform से बॉट टोकन                    | -                     |
+| `channels.zalo.accounts.<id>.tokenFile`      | फ़ाइल से टोकन पढ़ें (सिमलिंक अस्वीकृत)           | -                     |
+| `channels.zalo.accounts.<id>.name`           | प्रदर्शन नाम                                     | -                     |
+| `channels.zalo.accounts.<id>.enabled`        | इस खाते को सक्षम/अक्षम करें                      | `true`                |
+| `channels.zalo.accounts.<id>.dmPolicy`       | प्रति-खाता DM नीति                               | `pairing`             |
+| `channels.zalo.accounts.<id>.allowFrom`      | DM अनुमति-सूची (उपयोगकर्ता आईडी)                | -                     |
+| `channels.zalo.accounts.<id>.groupPolicy`    | प्रति-खाता समूह नीति                             | [समूह](#groups) देखें |
+| `channels.zalo.accounts.<id>.groupAllowFrom` | समूह प्रेषक अनुमति-सूची; `allowFrom` पर वापस जाती है | -                     |
+| `channels.zalo.accounts.<id>.mediaMaxMb`     | इनबाउंड/आउटबाउंड मीडिया सीमा (MB)                | `5`                   |
+| `channels.zalo.accounts.<id>.webhookUrl`     | Webhook मोड सक्षम करें (HTTPS आवश्यक)             | -                     |
+| `channels.zalo.accounts.<id>.webhookSecret`  | Webhook सीक्रेट (8-256 वर्ण)                     | -                     |
+| `channels.zalo.accounts.<id>.webhookPath`    | Gateway HTTP सर्वर पर Webhook पथ                 | Webhook URL पथ        |
+| `channels.zalo.accounts.<id>.proxy`          | API अनुरोधों के लिए प्रॉक्सी URL                 | -                     |
+| `channels.zalo.accounts.<id>.responsePrefix` | आउटबाउंड प्रतिक्रिया उपसर्ग ओवरराइड              | -                     |
+| `channels.zalo.defaultAccount`               | एकाधिक कॉन्फ़िगर होने पर डिफ़ॉल्ट खाता           | `default`             |
 
-Provider options:
+`channels.zalo.botToken`, `channels.zalo.dmPolicy`, और अन्य समतल शीर्ष-स्तरीय कुंजियाँ ऊपर दिए गए फ़ील्ड का पुराना एकल-खाता संक्षिप्त रूप हैं; दोनों रूप समर्थित हैं।
 
-- `channels.zalo.enabled`: channel startup enable/disable करें।
-- `channels.zalo.botToken`: Zalo Bot Platform से bot token।
-- `channels.zalo.tokenFile`: regular file path से token read करें। Symlinks rejected हैं।
-- `channels.zalo.dmPolicy`: `pairing | allowlist | open | disabled` (default: pairing)।
-- `channels.zalo.allowFrom`: DM allowlist (user IDs)। `open` के लिए `"*"` आवश्यक है। wizard numeric IDs मांगेगा।
-- `channels.zalo.groupPolicy`: `open | allowlist | disabled` (default: allowlist)। config में मौजूद; वर्तमान Marketplace-bot behavior के लिए [क्षमताएँ](#capabilities) और [पहुंच नियंत्रण (Groups)](#access-control-groups) देखें।
-- `channels.zalo.groupAllowFrom`: group sender allowlist (user IDs)। unset होने पर `allowFrom` पर fallback करता है।
-- `channels.zalo.mediaMaxMb`: inbound/outbound media cap (MB, default 5)।
-- `channels.zalo.webhookUrl`: webhook mode enable करें (HTTPS आवश्यक)।
-- `channels.zalo.webhookSecret`: webhook secret (8-256 chars)।
-- `channels.zalo.webhookPath`: gateway HTTP server पर webhook path।
-- `channels.zalo.proxy`: API requests के लिए proxy URL।
-
-Multi-account options:
-
-- `channels.zalo.accounts.<id>.botToken`: per-account token।
-- `channels.zalo.accounts.<id>.tokenFile`: per-account regular token file। Symlinks rejected हैं।
-- `channels.zalo.accounts.<id>.name`: display name।
-- `channels.zalo.accounts.<id>.enabled`: account enable/disable करें।
-- `channels.zalo.accounts.<id>.dmPolicy`: per-account DM policy।
-- `channels.zalo.accounts.<id>.allowFrom`: per-account allowlist।
-- `channels.zalo.accounts.<id>.groupPolicy`: per-account group policy। config में मौजूद; वर्तमान Marketplace-bot behavior के लिए [क्षमताएँ](#capabilities) और [पहुंच नियंत्रण (Groups)](#access-control-groups) देखें।
-- `channels.zalo.accounts.<id>.groupAllowFrom`: per-account group sender allowlist।
-- `channels.zalo.accounts.<id>.webhookUrl`: per-account webhook URL।
-- `channels.zalo.accounts.<id>.webhookSecret`: per-account webhook secret।
-- `channels.zalo.accounts.<id>.webhookPath`: per-account webhook path।
-- `channels.zalo.accounts.<id>.proxy`: per-account proxy URL।
+Env विकल्प: `ZALO_BOT_TOKEN=...` केवल डिफ़ॉल्ट खाते के टोकन का निर्धारण करता है।
 
 ## संबंधित
 
-- [Channels Overview](/hi/channels) — सभी समर्थित channels
-- [Pairing](/hi/channels/pairing) — DM authentication और pairing flow
-- [Groups](/hi/channels/groups) — group chat behavior और mention gating
-- [Channel Routing](/hi/channels/channel-routing) — messages के लिए session routing
-- [Security](/hi/gateway/security) — access model और hardening
+- [चैनल अवलोकन](/hi/channels) - सभी समर्थित चैनल
+- [पेयरिंग](/hi/channels/pairing) - DM प्रमाणीकरण और पेयरिंग प्रवाह
+- [समूह](/hi/channels/groups) - समूह चैट व्यवहार और उल्लेख नियंत्रण
+- [चैनल रूटिंग](/hi/channels/channel-routing) - संदेशों के लिए सत्र रूटिंग
+- [सुरक्षा](/hi/gateway/security) - पहुँच मॉडल और सुदृढ़ीकरण

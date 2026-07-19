@@ -1,25 +1,32 @@
 ---
 read_when:
     - Membuat atau meninjau rencana `openclaw secrets apply`
-    - Men-debug kesalahan `Invalid plan target path`
+    - Men-debug error `Invalid plan target path`
     - Memahami perilaku validasi jenis target dan jalur
 summary: 'Kontrak untuk rencana `secrets apply`: validasi target, pencocokan jalur, dan cakupan target `auth-profiles.json`'
 title: Kontrak rencana penerapan rahasia
 x-i18n:
-    generated_at: "2026-07-12T14:13:41Z"
+    generated_at: "2026-07-19T05:08:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
+    source_hash: 71ee8afd958646930af4db3bbad08e033ff79da48890a989d72b361abcbda3bb
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-Halaman ini mendefinisikan kontrak ketat yang diberlakukan oleh `openclaw secrets apply`. Jika suatu target tidak sesuai dengan aturan ini, penerapan akan gagal sebelum mengubah file apa pun.
+Halaman ini menetapkan kontrak ketat yang diberlakukan oleh `openclaw secrets apply`. Jika target tidak sesuai dengan aturan ini, penerapan gagal sebelum mengubah file apa pun.
+
+## Persyaratan file rencana
+
+`openclaw secrets apply --from <plan.json>` menerima file biasa hingga 16 MiB (16,777,216 byte). Batas ini berlaku untuk keseluruhan file yang diserialkan, termasuk spasi kosong. Direktori, FIFO, file perangkat, dan file yang lebih besar dari batas tersebut ditolak sebelum penguraian JSON atau validasi target.
+
+`openclaw secrets configure --plan-out <plan.json>` memberlakukan batas yang sama pada keluaran berseri UTF-8 sebelum membuat file. Rencana yang ditulis secara manual dan generator rencana eksternal juga harus mempertahankan ukuran file berseri dalam batas ini.
 
 ## Struktur file rencana
 
-`openclaw secrets apply --from <plan.json>` mengharapkan sebuah larik `targets` yang berisi target rencana:
+`openclaw secrets apply --from <plan.json>` mengharapkan array `targets` yang berisi target rencana:
 
 ```json5
 {
@@ -46,14 +53,14 @@ Halaman ini mendefinisikan kontrak ketat yang diberlakukan oleh `openclaw secret
 
 `openclaw secrets configure` menghasilkan rencana dengan struktur ini. Anda juga dapat menulis atau mengeditnya secara manual.
 
-## Penyisipan atau pembaruan dan penghapusan penyedia
+## Upsert dan penghapusan penyedia
 
-Rencana juga dapat menyertakan dua bidang tingkat teratas opsional yang mengubah peta `secrets.providers` bersama dengan penulisan per target:
+Rencana juga dapat menyertakan dua bidang tingkat atas opsional yang mengubah peta `secrets.providers` bersama penulisan per target:
 
-- `providerUpserts` -- objek yang menggunakan alias penyedia sebagai kunci. Setiap nilai adalah definisi penyedia (struktur yang sama seperti yang diterima di bawah `secrets.providers.<alias>` dalam `openclaw.json`, misalnya penyedia `exec` atau `file`).
-- `providerDeletes` -- larik alias penyedia yang akan dihapus.
+- `providerUpserts` -- objek dengan alias penyedia sebagai kunci. Setiap nilai merupakan definisi penyedia (struktur yang sama dengan yang diterima pada `secrets.providers.<alias>` dalam `openclaw.json`, misalnya penyedia `exec` atau `file`).
+- `providerDeletes` -- array alias penyedia yang akan dihapus.
 
-`providerUpserts` dijalankan sebelum `targets`, sehingga `target.ref.provider` dapat merujuk pada alias penyedia yang diperkenalkan oleh rencana yang sama dalam `providerUpserts`. Tanpa urutan ini, rencana yang merujuk pada alias yang belum dikonfigurasi dalam `openclaw.json` akan gagal dengan pesan `provider "<alias>" is not configured`.
+`providerUpserts` dijalankan sebelum `targets`, sehingga `target.ref.provider` dapat merujuk pada alias penyedia yang diperkenalkan oleh rencana yang sama dalam `providerUpserts`. Tanpa urutan ini, rencana yang merujuk pada alias yang belum dikonfigurasi dalam `openclaw.json` akan gagal dengan `provider "<alias>" is not configured`.
 
 ```json5
 {
@@ -79,7 +86,7 @@ Rencana juga dapat menyertakan dua bidang tingkat teratas opsional yang mengubah
 }
 ```
 
-Penyedia exec yang diperkenalkan melalui `providerUpserts` tetap tunduk pada aturan persetujuan exec dalam [Perilaku persetujuan penyedia exec](#exec-provider-consent-behavior): rencana yang berisi penyedia exec memerlukan `--allow-exec` dalam mode penulisan.
+Penyedia exec yang diperkenalkan melalui `providerUpserts` tetap tunduk pada aturan persetujuan exec dalam [Perilaku persetujuan penyedia exec](#exec-provider-consent-behavior): rencana yang berisi penyedia exec memerlukan `--allow-exec` dalam mode tulis.
 
 ## Cakupan target yang didukung
 
@@ -87,7 +94,7 @@ Target rencana diterima untuk jalur kredensial yang didukung dalam [Permukaan Kr
 
 ## Perilaku jenis target
 
-`target.type` harus merupakan jenis target yang dikenali, dan `target.path` yang telah dinormalisasi harus cocok dengan struktur jalur terdaftar untuk jenis tersebut.
+`target.type` harus merupakan jenis target yang dikenali, dan `target.path` yang dinormalisasi harus sesuai dengan struktur jalur yang terdaftar untuk jenis tersebut.
 
 Beberapa jenis target menerima alias kompatibilitas sebagai `target.type` untuk rencana yang sudah ada, selain nama jenis kanonisnya:
 
@@ -103,33 +110,33 @@ Setiap target divalidasi dengan semua ketentuan berikut:
 
 - `type` harus merupakan jenis target yang dikenali.
 - `path` harus berupa jalur bertitik yang tidak kosong.
-- `pathSegments` dapat dihilangkan. Jika disediakan, hasil normalisasinya harus sama persis dengan jalur dalam `path`.
-- Segmen terlarang akan ditolak: `__proto__`, `prototype`, `constructor`.
-- Jalur yang telah dinormalisasi harus cocok dengan struktur jalur terdaftar untuk jenis target tersebut.
-- Jika `providerId` atau `accountId` ditetapkan, nilainya harus cocok dengan ID yang dikodekan dalam jalur.
+- `pathSegments` boleh dihilangkan. Jika disediakan, hasil normalisasinya harus sama persis dengan jalur `path`.
+- Segmen terlarang ditolak: `__proto__`, `prototype`, `constructor`.
+- Jalur yang dinormalisasi harus sesuai dengan struktur jalur yang terdaftar untuk jenis target tersebut.
+- Jika `providerId` atau `accountId` ditetapkan, nilainya harus sesuai dengan ID yang dikodekan dalam jalur.
 - Target `auth-profiles.json` memerlukan `agentId`.
 - Saat membuat pemetaan `auth-profiles.json` baru, sertakan `authProfileProvider`.
 
 ## Perilaku kegagalan
 
-Jika target gagal divalidasi, penerapan akan berhenti dengan galat seperti:
+Jika target gagal divalidasi, penerapan berhenti dengan galat seperti:
 
 ```text
-Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
+Jalur target rencana tidak valid untuk models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Tidak ada penulisan yang disimpan untuk rencana yang tidak valid: resolusi target dan validasi jalur dijalankan sebelum file apa pun disentuh. Secara terpisah, setelah rencana yang valid mulai menulis, penerapan terlebih dahulu membuat snapshot setiap file yang disentuh dan memulihkan snapshot tersebut jika penulisan berikutnya dalam proses yang sama gagal, sehingga penulisan parsial tidak pernah membuat status konfigurasi, profil autentikasi, atau lingkungan menjadi tidak sinkron.
+Tidak ada penulisan yang diterapkan untuk rencana yang tidak valid: resolusi target dan validasi jalur dijalankan sebelum file apa pun disentuh. Secara terpisah, setelah rencana yang valid mulai menulis, penerapan terlebih dahulu membuat snapshot setiap file yang disentuh dan memulihkan snapshot tersebut jika penulisan berikutnya dalam proses yang sama gagal, sehingga penulisan sebagian tidak pernah membuat konfigurasi, profil autentikasi, atau status env tidak sinkron.
 
 ## Perilaku persetujuan penyedia exec
 
-- `--dry-run` secara bawaan melewati pemeriksaan SecretRef exec.
-- Rencana yang berisi SecretRef/penyedia exec ditolak dalam mode penulisan kecuali `--allow-exec` ditetapkan.
-- Saat memvalidasi/menerapkan rencana yang berisi exec, berikan `--allow-exec` dalam perintah uji coba maupun penulisan.
+- `--dry-run` melewati pemeriksaan SecretRef exec secara default.
+- Rencana yang berisi SecretRef/penyedia exec ditolak dalam mode tulis kecuali `--allow-exec` ditetapkan.
+- Saat memvalidasi/menerapkan rencana yang berisi exec, teruskan `--allow-exec` pada perintah uji coba maupun tulis.
 
-## Catatan cakupan waktu proses dan audit
+## Catatan cakupan runtime dan audit
 
-- Entri `auth-profiles.json` yang hanya berisi referensi (`keyRef`/`tokenRef`) disertakan dalam resolusi kredensial waktu proses dan cakupan audit.
-- `secrets apply` menulis target `openclaw.json` yang didukung, target `auth-profiles.json` yang didukung, serta tiga tahap pembersihan opsional yang masing-masing aktif secara bawaan: `scrubEnv` (menghapus nilai teks biasa yang telah dimigrasikan dari `.env`), `scrubAuthProfilesForProviderTargets` (membersihkan sisa teks biasa/referensi yang tidak digunakan dalam `auth-profiles.json` untuk penyedia yang baru saja dimigrasikan oleh suatu rencana), dan `scrubLegacyAuthJson` (menghapus entri `api_key` yang telah dimigrasikan dari penyimpanan `auth.json` lama). Tetapkan salah satu dari `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets`, atau `options.scrubLegacyAuthJson` ke `false` dalam rencana untuk melewati tahap tersebut.
+- Entri `auth-profiles.json` yang hanya berisi referensi (`keyRef`/`tokenRef`) disertakan dalam resolusi kredensial runtime dan cakupan audit.
+- `secrets apply` menulis target `openclaw.json` yang didukung, target `auth-profiles.json` yang didukung, dan tiga proses pembersihan opsional yang masing-masing aktif secara default: `scrubEnv` (menghapus nilai teks biasa yang telah dimigrasikan dari file `.env` dalam direktori status efektif dan konfigurasi aktif), `scrubAuthProfilesForProviderTargets` (membersihkan residu teks biasa/referensi yang tidak digunakan dalam `auth-profiles.json` untuk penyedia yang baru saja dimigrasikan oleh rencana), dan `scrubLegacyAuthJson` (menghapus entri `api_key` yang telah dimigrasikan dari penyimpanan `auth.json` lama). Tetapkan salah satu dari `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets`, `options.scrubLegacyAuthJson` ke `false` dalam rencana untuk melewati proses tersebut.
 
 ## Pemeriksaan operator
 
@@ -140,12 +147,12 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 # Kemudian terapkan secara nyata
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Untuk rencana yang berisi exec, setujui secara eksplisit dalam kedua mode
+# Untuk rencana yang berisi exec, ikut serta secara eksplisit dalam kedua mode
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Jika penerapan gagal dengan pesan jalur target yang tidak valid, buat ulang rencana dengan `openclaw secrets configure` atau perbaiki jalur target agar sesuai dengan struktur yang didukung di atas.
+Jika penerapan gagal dengan pesan jalur target tidak valid, buat ulang rencana dengan `openclaw secrets configure` atau perbaiki jalur target agar sesuai dengan struktur yang didukung di atas.
 
 ## Dokumentasi terkait
 

@@ -3,126 +3,205 @@ read_when:
     - Mengimplementasikan hook runtime penyedia, siklus hidup kanal, atau paket bundel
     - Men-debug urutan pemuatan plugin atau status registri
     - Menambahkan kapabilitas plugin baru atau plugin mesin konteks
-summary: 'Internal arsitektur Plugin: alur pemuatan, registri, hook runtime, rute HTTP, dan tabel referensi'
+summary: 'Internal arsitektur Plugin: pipeline pemuatan, registri, hook runtime, rute HTTP, dan tabel referensi'
 title: Internal arsitektur Plugin
 x-i18n:
-    generated_at: "2026-07-12T14:22:29Z"
+    generated_at: "2026-07-19T05:17:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2fe5b7f34c638da40b43c24da9425ecdeb9ce7381e233b3ebdd5cc95276ba04f
+    source_hash: 38041d0b6bfab4beebdc724561921dfc08ef2d0aa6d1c949c751098ab98c7d14
     source_path: plugins/architecture-internals.md
     workflow: 16
 ---
 
-Untuk model kapabilitas publik, bentuk plugin, serta kontrak kepemilikan/eksekusi, lihat [Arsitektur plugin](/id/plugins/architecture). Halaman ini membahas mekanisme internal: pipeline pemuatan, registri, hook runtime, rute HTTP Gateway, jalur impor, dan tabel skema.
+Untuk model kapabilitas publik, bentuk plugin, serta kontrak kepemilikan/eksekusi,
+lihat [Arsitektur plugin](/id/plugins/architecture). Halaman ini membahas
+mekanisme internal: pipeline pemuatan, registri, hook runtime, rute HTTP Gateway,
+jalur impor, dan tabel skema.
 
 ## Pipeline pemuatan
 
-Saat dimulai, OpenClaw kurang lebih melakukan hal berikut:
+Saat dimulai, OpenClaw secara garis besar melakukan hal berikut:
 
 1. menemukan root plugin kandidat
 2. membaca manifes bundel native atau kompatibel dan metadata paket
 3. menolak kandidat yang tidak aman
-4. menormalkan konfigurasi plugin (`plugins.enabled`, `allow`, `deny`, `entries`, `slots`, `load.paths`)
+4. menormalisasi konfigurasi plugin (`plugins.enabled`, `allow`, `deny`, `entries`,
+   `slots`, `load.paths`)
 5. menentukan pengaktifan setiap kandidat
-6. memuat modul native yang diaktifkan: modul bawaan yang telah dibangun menggunakan pemuat native; kode sumber TypeScript lokal pihak ketiga menggunakan Jiti sebagai mekanisme darurat
+6. memuat modul native yang diaktifkan: modul bundel yang telah dibangun menggunakan pemuat native;
+   kode sumber lokal TypeScript pihak ketiga menggunakan fallback Jiti darurat
 7. memanggil hook native `register(api)` dan mengumpulkan pendaftaran ke dalam registri plugin
 8. mengekspos registri ke perintah/permukaan runtime
 
 <Note>
-`activate` adalah alias lama untuk `register` — pemuat menggunakan yang tersedia (`def.register ?? def.activate`) dan memanggilnya pada titik yang sama. Semua plugin bawaan menggunakan `register`; utamakan `register` untuk plugin baru.
+`activate` adalah alias lama untuk `register` — pemuat menangani mana pun yang tersedia (`def.register ?? def.activate`) dan memanggilnya pada titik yang sama. Semua plugin bundel menggunakan `register`; utamakan `register` untuk plugin baru.
 </Note>
 
-Gerbang keamanan dijalankan **sebelum** eksekusi runtime. Penemuan memblokir kandidat ketika:
+Gerbang keamanan dijalankan **sebelum** eksekusi runtime. Penemuan memblokir
+kandidat ketika:
 
-- entri yang telah diresolusinya keluar dari root plugin
+- entri yang telah diselesaikan keluar dari root plugin
 - jalurnya (atau direktori root-nya) dapat ditulis oleh semua pengguna
-- untuk plugin nonbawaan, kepemilikan jalur tidak cocok dengan uid saat ini (atau root)
+- untuk plugin nonbundel, kepemilikan jalur tidak cocok dengan uid saat ini (atau root)
 
-Direktori bawaan yang dapat ditulis oleh semua pengguna terlebih dahulu mendapatkan upaya perbaikan `chmod` langsung di tempat (instalasi npm/global dapat mengirimkan direktori paket dengan mode `0777`) sebelum gerbang memeriksa ulang; pemeriksaan kepemilikan sepenuhnya dilewati untuk asal bawaan.
+Direktori bundel yang dapat ditulis oleh semua pengguna terlebih dahulu menjalani percobaan perbaikan `chmod`
+di tempat (instalasi npm/global dapat mengirimkan direktori paket pada `0777`) sebelum gerbang
+memeriksa ulang; pemeriksaan kepemilikan sepenuhnya dilewati untuk asal bundel.
 
-Kandidat yang diblokir tetap menyertakan id plugin dalam diagnostik yang dihasilkan jika diketahui (termasuk id yang diresolusi dari manifes di dalam direktori yang ditolak karena alasan lain), sehingga konfigurasi yang merujuk id tersebut melihat plugin yang diblokir dan terkait dengan peringatan keamanan jalur, bukan galat "plugin tidak dikenal" yang tidak berkaitan.
+Kandidat yang diblokir tetap menyertakan id plugin dalam diagnostik yang dihasilkan ketika
+id tersebut diketahui (termasuk id yang diselesaikan dari manifes di dalam direktori
+yang ditolak karena alasan lain), sehingga konfigurasi yang merujuk id tersebut melihat plugin
+yang diblokir dan dikaitkan dengan peringatan keamanan jalur, bukan galat "plugin tidak dikenal"
+yang tidak terkait.
 
 ### Perilaku yang mengutamakan manifes
 
 Manifes adalah sumber kebenaran bidang kontrol. OpenClaw menggunakannya untuk:
 
 - mengidentifikasi plugin
-- menemukan kanal/Skills/skema konfigurasi atau kapabilitas bundel yang dideklarasikan
+- menemukan channel/Skills/skema konfigurasi atau kapabilitas bundel yang dideklarasikan
 - memvalidasi `plugins.entries.<id>.config`
-- melengkapi label/placeholder UI Kontrol
+- melengkapi label/placeholder Control UI
 - menampilkan metadata instalasi/katalog
 - mempertahankan deskriptor aktivasi dan penyiapan yang ringan tanpa memuat runtime plugin
 
-Untuk plugin native, modul runtime adalah bagian bidang data. Modul ini mendaftarkan perilaku aktual seperti hook, alat, perintah, atau alur penyedia.
+Untuk plugin native, modul runtime adalah bagian bidang data. Modul ini mendaftarkan
+perilaku aktual seperti hook, alat, perintah, atau alur penyedia.
 
-Blok manifes opsional `activation` dan `setup` tetap berada di bidang kontrol. Blok tersebut hanyalah deskriptor metadata untuk perencanaan aktivasi dan penemuan penyiapan; blok tersebut tidak menggantikan pendaftaran runtime, `register(...)`, atau `setupEntry`. Konsumen aktivasi langsung menggunakan petunjuk perintah, kanal, dan penyedia dari manifes untuk mempersempit pemuatan plugin sebelum materialisasi registri yang lebih luas:
+Blok manifes opsional `activation` dan `setup` tetap berada di bidang kontrol.
+Keduanya merupakan deskriptor khusus metadata untuk perencanaan aktivasi dan penemuan penyiapan;
+keduanya tidak menggantikan pendaftaran runtime, `register(...)`, atau `setupEntry`.
+Konsumen aktivasi langsung menggunakan petunjuk perintah, channel, dan penyedia dari manifes untuk
+mempersempit pemuatan plugin sebelum materialisasi registri yang lebih luas:
 
 - pemuatan CLI dipersempit ke plugin yang memiliki perintah utama yang diminta
-- resolusi penyiapan kanal/plugin dipersempit ke plugin yang memiliki id kanal yang diminta
-- resolusi penyiapan/runtime penyedia eksplisit dipersempit ke plugin yang memiliki id penyedia yang diminta
-- perencanaan awal Gateway menggunakan `activation.onStartup` untuk impor awal eksplisit; plugin tanpa metadata awal hanya dimuat melalui pemicu aktivasi yang lebih sempit
+- resolusi penyiapan channel/plugin dipersempit ke plugin yang memiliki
+  id channel yang diminta
+- resolusi penyiapan/runtime penyedia eksplisit dipersempit ke plugin yang memiliki
+  id penyedia yang diminta
+- perencanaan saat Gateway dimulai menggunakan `activation.onStartup` untuk impor
+  saat dimulai yang eksplisit; plugin tanpa metadata saat dimulai hanya dimuat melalui
+  pemicu aktivasi yang lebih sempit
 
-Perencana aktivasi mengekspos API khusus id untuk pemanggil yang sudah ada serta API rencana untuk diagnostik. Entri rencana melaporkan alasan plugin dipilih, dengan memisahkan petunjuk eksplisit `activation.*` dari fallback kepemilikan manifes:
+Perencana aktivasi menyediakan API khusus id bagi pemanggil yang ada dan
+API rencana untuk diagnostik. Entri rencana melaporkan alasan plugin dipilih,
+dengan memisahkan petunjuk eksplisit `activation.*` dari fallback kepemilikan manifes:
 
-| Alasan (dari petunjuk `activation.*`) | Alasan (dari kepemilikan manifes)                                                           |
-| ------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `activation-agent-harness-hint`       | —                                                                                           |
-| `activation-capability-hint`          | —                                                                                           |
-| `activation-channel-hint`             | `manifest-channel-owner` (`channels`)                                                       |
-| `activation-command-hint`             | `manifest-command-alias` (`commandAliases`)                                                 |
-| `activation-provider-hint`            | `manifest-provider-owner` (`providers`), `manifest-setup-provider-owner` (`setup.providers`) |
-| `activation-route-hint`               | —                                                                                           |
-| — (pemicu hook tidak memiliki varian petunjuk) | `manifest-hook-owner` (`hooks`), `manifest-tool-contract` (`contracts.tools`)         |
+| Alasan (dari petunjuk `activation.*`)   | Alasan (dari kepemilikan manifes)                                                             |
+| ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `activation-agent-harness-hint`      | —                                                                                            |
+| `activation-capability-hint`         | —                                                                                            |
+| `activation-channel-hint`            | `manifest-channel-owner` (`channels`)                                                        |
+| `activation-command-hint`            | `manifest-command-alias` (`commandAliases`)                                                  |
+| `activation-provider-hint`           | `manifest-provider-owner` (`providers`), `manifest-setup-provider-owner` (`setup.providers`) |
+| `activation-route-hint`              | —                                                                                            |
+| — (pemicu hook tidak memiliki varian petunjuk) | `manifest-hook-owner` (`hooks`), `manifest-tool-contract` (`contracts.tools`)                |
 
-Pemisahan alasan tersebut adalah batas kompatibilitas: metadata plugin yang sudah ada tetap berfungsi, sementara kode baru dapat mendeteksi petunjuk yang luas atau perilaku fallback tanpa mengubah semantik pemuatan runtime.
+Pemisahan alasan tersebut merupakan batas kompatibilitas: metadata plugin yang ada
+tetap berfungsi, sedangkan kode baru dapat mendeteksi petunjuk luas atau perilaku fallback
+tanpa mengubah semantik pemuatan runtime.
 
-Prapemuatan runtime pada waktu permintaan yang meminta cakupan luas `all` tetap memperoleh kumpulan id plugin efektif yang eksplisit dari konfigurasi, perencanaan awal, kanal yang dikonfigurasi, slot, dan aturan pengaktifan otomatis (`resolveEffectivePluginIds` dalam `src/plugins/effective-plugin-ids.ts`). Jika kumpulan yang diperoleh tersebut kosong, OpenClaw mempertahankan cakupan kosong, bukan memperluasnya ke setiap plugin yang dapat ditemukan.
+Prapemuatan runtime pada waktu permintaan yang meminta cakupan luas `all` tetap menurunkan
+sekumpulan id plugin efektif yang eksplisit dari konfigurasi, perencanaan saat dimulai, channel
+yang dikonfigurasi, slot, dan aturan pengaktifan otomatis
+(`resolveEffectivePluginIds` dalam `src/plugins/effective-plugin-ids.ts`). Jika
+kumpulan yang diturunkan tersebut kosong, OpenClaw mempertahankan cakupan tetap kosong alih-alih memperluasnya ke
+setiap plugin yang dapat ditemukan.
 
-Penemuan penyiapan mengutamakan id milik deskriptor seperti `setup.providers` dan `setup.cliBackends` untuk mempersempit plugin kandidat sebelum melakukan fallback ke `setup-api` bagi plugin yang masih memerlukan hook runtime saat penyiapan. Daftar penyiapan penyedia menggunakan `providerAuthChoices` dari manifes, pilihan penyiapan yang diperoleh dari deskriptor, dan metadata katalog instalasi tanpa memuat runtime penyedia. `setup.requiresRuntime: false` yang eksplisit menjadi batas khusus deskriptor; `requiresRuntime` yang dihilangkan mempertahankan fallback `setup-api` lama demi kompatibilitas. Jika lebih dari satu plugin yang ditemukan mengklaim id penyedia penyiapan atau backend CLI ternormalisasi yang sama, pencarian penyiapan menolak pemilik yang ambigu, bukan mengandalkan urutan penemuan. Ketika runtime penyiapan benar-benar dieksekusi, diagnostik registri melaporkan penyimpangan antara `setup.providers` / `setup.cliBackends` dan penyedia atau backend CLI yang benar-benar didaftarkan oleh `setup-api`, tanpa memblokir plugin lama.
+Penemuan penyiapan mengutamakan id milik deskriptor seperti `setup.providers` dan
+`setup.cliBackends` untuk mempersempit plugin kandidat sebelum beralih ke
+`setup-api` sebagai fallback bagi plugin yang masih memerlukan hook runtime saat penyiapan. Daftar
+penyiapan penyedia menggunakan `providerAuthChoices` dari manifes, pilihan penyiapan
+yang diturunkan dari deskriptor, dan metadata katalog instalasi tanpa memuat runtime penyedia. Nilai eksplisit
+`setup.requiresRuntime: false` merupakan batas khusus deskriptor; jika
+`requiresRuntime` dihilangkan, fallback API penyiapan lama tetap dipertahankan demi kompatibilitas. Jika
+lebih dari satu plugin yang ditemukan mengklaim penyedia penyiapan ternormalisasi atau
+id backend CLI yang sama, pencarian penyiapan menolak pemilik yang ambigu alih-alih mengandalkan
+urutan penemuan. Ketika runtime penyiapan dijalankan, diagnostik registri melaporkan
+penyimpangan antara `setup.providers` / `setup.cliBackends` dan penyedia atau backend CLI
+yang benar-benar didaftarkan oleh API penyiapan, tanpa memblokir plugin lama.
 
 ### Batas cache plugin
 
-OpenClaw tidak menyimpan cache hasil penemuan plugin atau data registri manifes langsung di balik jendela waktu dinding. Instalasi, pengeditan manifes, dan perubahan jalur pemuatan harus terlihat pada pembacaan metadata eksplisit atau pembangunan ulang snapshot berikutnya. Parser berkas manifes mempertahankan cache tanda tangan berkas terbatas yang dikunci berdasarkan jalur manifes yang dibuka beserta perangkat/inode, ukuran, dan mtime/ctime; cache tersebut hanya menghindari penguraian ulang byte yang tidak berubah dan tidak boleh menyimpan cache jawaban terkait penemuan, registri, pemilik, atau kebijakan.
+OpenClaw tidak menyimpan hasil penemuan plugin atau data registri manifes langsung
+dalam cache berdasarkan jendela waktu nyata. Instalasi, pengeditan manifes, dan perubahan jalur pemuatan
+harus terlihat pada pembacaan metadata eksplisit atau pembangunan ulang snapshot berikutnya.
+Pengurai berkas manifes menyimpan cache tanda tangan berkas terbatas yang dikunci berdasarkan
+jalur manifes yang dibuka beserta perangkat/inode, ukuran, dan mtime/ctime; cache tersebut hanya
+menghindari penguraian ulang byte yang tidak berubah dan tidak boleh menyimpan jawaban penemuan, registri,
+pemilik, atau kebijakan dalam cache.
 
-Jalur cepat metadata yang aman adalah kepemilikan objek eksplisit, bukan cache tersembunyi. Jalur penting saat Gateway dimulai harus meneruskan `PluginMetadataSnapshot` saat ini, `PluginLookUpTable` yang diperoleh, atau registri manifes eksplisit melalui rantai pemanggilan. Validasi konfigurasi, pengaktifan otomatis saat dimulai, bootstrap plugin, dan pemilihan penyedia dapat menggunakan kembali objek tersebut selama objek tersebut mewakili konfigurasi dan inventaris plugin saat ini. Pencarian penyiapan tetap merekonstruksi metadata manifes sesuai permintaan, kecuali jalur penyiapan tertentu menerima registri manifes eksplisit; pertahankan hal tersebut sebagai fallback jalur dingin, bukan menambahkan cache pencarian tersembunyi. Ketika masukan berubah, bangun ulang dan ganti snapshot, bukan memutasinya atau menyimpan salinan historis. Tampilan atas registri plugin aktif dan pembantu bootstrap kanal bawaan harus dihitung ulang dari registri/root saat ini. Peta berumur pendek dapat digunakan dalam satu pemanggilan untuk mendeduplikasi pekerjaan atau mencegah masuk ulang; peta tersebut tidak boleh menjadi cache metadata proses.
+Jalur cepat metadata yang aman adalah kepemilikan objek eksplisit, bukan cache tersembunyi.
+Jalur sibuk saat Gateway dimulai harus meneruskan `PluginMetadataSnapshot` saat ini,
+`PluginLookUpTable` yang diturunkan, atau registri manifes eksplisit melalui rantai
+pemanggilan. Validasi konfigurasi, pengaktifan otomatis saat dimulai, bootstrap plugin, dan pemilihan
+penyedia dapat menggunakan kembali objek tersebut selama objek itu merepresentasikan konfigurasi dan
+inventaris plugin saat ini. Pencarian penyiapan tetap merekonstruksi metadata manifes sesuai permintaan
+kecuali jalur penyiapan tertentu menerima registri manifes eksplisit; pertahankan
+hal tersebut sebagai fallback jalur dingin, bukan menambahkan cache pencarian tersembunyi. Ketika
+masukan berubah, bangun ulang dan ganti snapshot, bukan memutasinya atau
+menyimpan salinan historis. Tampilan atas registri plugin aktif dan helper
+bootstrap channel bundel harus dihitung ulang dari registri/root saat ini.
+Peta berumur pendek dapat digunakan dalam satu pemanggilan untuk mendeduplikasi pekerjaan atau
+mencegah masuk ulang; peta tersebut tidak boleh menjadi cache metadata proses.
 
-Untuk pemuatan plugin, lapisan cache persisten adalah pemuatan runtime. Lapisan ini dapat menggunakan kembali status pemuat ketika kode atau artefak yang terinstal benar-benar dimuat, seperti:
+Untuk pemuatan plugin, lapisan cache persisten adalah pemuatan runtime. Lapisan ini dapat menggunakan kembali
+status pemuat ketika kode atau artefak yang diinstal benar-benar dimuat, seperti:
 
 - `PluginLoaderCacheState` dan registri runtime aktif yang kompatibel
-- cache jiti/modul dan cache pemuat permukaan publik yang digunakan untuk menghindari impor berulang atas permukaan runtime yang sama
-- cache sistem berkas untuk artefak plugin yang terinstal
+- cache jiti/modul dan cache pemuat permukaan publik yang digunakan untuk menghindari impor
+  permukaan runtime yang sama secara berulang
+- cache sistem berkas untuk artefak plugin yang diinstal
 - peta per pemanggilan berumur pendek untuk normalisasi jalur atau resolusi duplikat
 
-Cache tersebut merupakan detail implementasi bidang data. Cache tersebut tidak boleh menjawab pertanyaan bidang kontrol seperti "plugin mana yang memiliki penyedia ini?" kecuali pemanggil secara sengaja meminta pemuatan runtime.
+Cache tersebut merupakan detail implementasi bidang data. Cache tidak boleh menjawab
+pertanyaan bidang kontrol seperti "plugin mana yang memiliki penyedia ini?" kecuali
+pemanggil secara sengaja meminta pemuatan runtime.
 
-Jangan menambahkan cache persisten atau berbasis waktu dinding untuk:
+Jangan tambahkan cache persisten atau berbasis waktu nyata untuk:
 
 - hasil penemuan
 - registri manifes langsung
-- registri manifes yang direkonstruksi dari indeks plugin terinstal
-- pencarian pemilik penyedia, penekanan model, kebijakan penyedia, atau metadata artefak publik
-- jawaban lain apa pun yang berasal dari manifes, ketika perubahan manifes, indeks terinstal, atau jalur pemuatan seharusnya terlihat pada pembacaan metadata berikutnya
+- registri manifes yang direkonstruksi dari indeks plugin yang diinstal
+- pencarian pemilik penyedia, penyembunyian model, kebijakan penyedia, atau metadata
+  artefak publik
+- jawaban turunan manifes lainnya yang mengharuskan perubahan manifes, indeks yang diinstal,
+  atau jalur pemuatan terlihat pada pembacaan metadata berikutnya
 
-Pemanggil yang membangun ulang metadata manifes dari indeks plugin terinstal yang dipersistenkan merekonstruksi registri tersebut sesuai permintaan. Indeks terinstal adalah status bidang sumber yang tahan lama; indeks tersebut bukan cache metadata dalam proses yang tersembunyi.
+Pemanggil yang membangun ulang metadata manifes dari indeks plugin terinstal yang dipersistenkan
+merekonstruksi registri tersebut sesuai permintaan. Indeks terinstal adalah status bidang sumber
+yang tahan lama; indeks tersebut bukan cache metadata dalam proses yang tersembunyi.
 
 ## Model registri
 
-Plugin yang dimuat tidak secara langsung memutasi global inti secara acak. Plugin mendaftar ke registri plugin pusat (`PluginRegistry` dalam `src/plugins/registry-types.ts`), yang melacak rekaman plugin (identitas, sumber, asal, status, diagnostik) beserta larik untuk setiap kapabilitas: alat, hook lama dan hook bertipe, kanal, penyedia, penangan RPC Gateway, rute HTTP, pendaftar CLI, layanan latar belakang, perintah milik plugin, dan puluhan keluarga penyedia bertipe lainnya (ucapan, embedding, pembuatan gambar/video/musik, pengambilan/pencarian web, harness agen, tindakan sesi, dan sebagainya).
+Plugin yang dimuat tidak secara langsung memutasi global inti secara acak. Plugin mendaftar ke
+registri plugin pusat (`PluginRegistry` dalam `src/plugins/registry-types.ts`),
+yang melacak rekaman plugin (identitas, sumber, asal, status, diagnostik)
+serta larik untuk setiap kapabilitas: alat, hook lama dan hook bertipe,
+channel, penyedia, handler RPC Gateway, rute HTTP, pendaftar CLI,
+layanan latar belakang, perintah milik plugin, dan banyak keluarga penyedia bertipe
+lainnya (ucapan, embedding, pembuatan gambar/video/musik, pengambilan/pencarian
+web, harness agen, tindakan sesi, dan sebagainya).
 
-Fitur inti kemudian membaca dari registri tersebut, bukan berkomunikasi langsung dengan modul plugin. Hal ini mempertahankan pemuatan satu arah:
+Fitur inti kemudian membaca dari registri tersebut alih-alih berkomunikasi langsung dengan modul
+plugin. Hal ini menjaga pemuatan tetap satu arah:
 
 - modul plugin -> pendaftaran registri
 - runtime inti -> konsumsi registri
 
-Pemisahan tersebut penting untuk kemudahan pemeliharaan. Artinya, sebagian besar permukaan inti hanya memerlukan satu titik integrasi: "baca registri", bukan "perlakukan setiap modul plugin sebagai kasus khusus".
+Pemisahan tersebut penting bagi kemudahan pemeliharaan. Artinya, sebagian besar permukaan inti hanya
+memerlukan satu titik integrasi: "baca registri", bukan "perlakukan setiap
+modul plugin sebagai kasus khusus".
 
 ## Callback pengikatan percakapan
 
 Plugin yang mengikat percakapan dapat bereaksi ketika persetujuan diselesaikan.
 
-Gunakan `api.onConversationBindingResolved(...)` untuk menerima callback setelah permintaan pengikatan disetujui atau ditolak:
+Gunakan `api.onConversationBindingResolved(...)` untuk menerima callback setelah permintaan pengikatan
+disetujui atau ditolak:
 
 ```ts
 export default {
@@ -130,99 +209,123 @@ export default {
   register(api) {
     api.onConversationBindingResolved(async (event) => {
       if (event.status === "approved") {
-        // A binding now exists for this plugin + conversation.
+        // Pengikatan kini tersedia untuk plugin + percakapan ini.
         console.log(event.binding?.conversationId);
         return;
       }
 
-      // The request was denied; clear any local pending state.
+      // Permintaan ditolak; hapus semua status tertunda lokal.
       console.log(event.request.conversation.conversationId);
     });
   },
 };
 ```
 
-Kolom payload callback:
+Bidang payload callback:
 
 - `status`: `"approved"` atau `"denied"`
 - `decision`: `"allow-once"`, `"allow-always"`, atau `"deny"`
-- `binding`: pengikatan yang telah diselesaikan untuk permintaan yang disetujui
-- `request`: ringkasan permintaan asli, petunjuk pelepasan, id pengirim, dan metadata percakapan
+- `binding`: pengikatan yang diselesaikan untuk permintaan yang disetujui
+- `request`: ringkasan permintaan asli, petunjuk pelepasan, id pengirim, dan
+  metadata percakapan
 
-Callback ini hanya berupa notifikasi. Callback ini tidak mengubah siapa yang diizinkan mengikat percakapan, dan dijalankan setelah penanganan persetujuan inti selesai.
+Callback ini hanya untuk notifikasi. Callback ini tidak mengubah siapa yang diizinkan untuk mengikat
+percakapan, dan dijalankan setelah penanganan persetujuan inti selesai.
 
 ## Hook runtime penyedia
 
 Plugin penyedia memiliki tiga lapisan:
 
-- **Metadata manifes** untuk pencarian praruntime yang ringan: `setup.providers[].envVars`, kompatibilitas lama yang tidak lagi dianjurkan `providerAuthEnvVars`, `providerAuthAliases`, `providerAuthChoices`, dan `channelEnvVars`.
-- **Hook waktu konfigurasi**: `catalog` (`discovery` lama) beserta `applyConfigDefaults`.
-- **Hook runtime**: lebih dari 40 hook opsional yang mencakup autentikasi, resolusi model, pembungkusan stream, tingkat penalaran, kebijakan pemutaran ulang, dan endpoint penggunaan. Lihat [Urutan dan penggunaan hook](#hook-order-and-usage).
+- **Metadata manifes** untuk pencarian murah sebelum runtime:
+  `setup.providers[].envVars`, kompatibilitas usang `providerAuthEnvVars`,
+  `providerAuthAliases`, `providerAuthChoices`, dan `channelEnvVars`.
+- **Hook saat konfigurasi**: `catalog` (versi lama `discovery`) ditambah
+  `applyConfigDefaults`.
+- **Hook runtime**: 40+ hook opsional yang mencakup autentikasi, resolusi model,
+  pembungkusan aliran, tingkat penalaran, kebijakan pemutaran ulang, dan endpoint penggunaan. Lihat
+  [Urutan dan penggunaan hook](#hook-order-and-usage).
 
-OpenClaw tetap memiliki loop agen generik, failover, penanganan transkrip, dan kebijakan alat. Hook ini merupakan permukaan ekstensi untuk perilaku khusus penyedia tanpa memerlukan transport inferensi kustom sepenuhnya.
+OpenClaw tetap menangani loop agen generik, failover, penanganan transkrip, dan
+kebijakan alat. Hook ini merupakan permukaan ekstensi untuk perilaku khusus
+penyedia tanpa memerlukan transport inferensi kustom sepenuhnya.
 
-Gunakan manifes `setup.providers[].envVars` ketika penyedia memiliki kredensial berbasis env yang harus dapat dilihat oleh jalur autentikasi/status/pemilih-model generik tanpa memuat runtime plugin. `providerAuthEnvVars` yang telah dihentikan masih dibaca oleh adaptor kompatibilitas selama periode penghentian, dan plugin yang tidak dibundel yang menggunakannya akan menerima diagnostik manifes. Gunakan manifes `providerAuthAliases` ketika satu id penyedia harus menggunakan kembali variabel env, profil autentikasi, autentikasi berbasis konfigurasi, dan pilihan orientasi kunci API milik id penyedia lain. Gunakan manifes `providerAuthChoices` ketika antarmuka CLI pilihan orientasi/autentikasi perlu mengetahui id pilihan penyedia, label grup, dan pengaturan autentikasi sederhana dengan satu flag tanpa memuat runtime penyedia. Pertahankan `envVars` runtime penyedia untuk petunjuk bagi operator seperti label orientasi atau variabel penyiapan id-klien/rahasia-klien OAuth.
+Gunakan `setup.providers[].envVars` manifes ketika penyedia memiliki kredensial berbasis
+variabel lingkungan yang harus dapat dilihat oleh jalur autentikasi/status/pemilih model generik tanpa
+memuat runtime plugin. `providerAuthEnvVars` yang usang masih dibaca oleh
+adaptor kompatibilitas selama periode penghentian, dan plugin yang tidak dibundel
+yang menggunakannya menerima diagnostik manifes. Gunakan `providerAuthAliases`
+manifes ketika satu ID penyedia harus menggunakan kembali variabel lingkungan, profil autentikasi,
+autentikasi berbasis konfigurasi, dan pilihan onboarding kunci API dari ID penyedia lain. Gunakan
+`providerAuthChoices` manifes ketika permukaan CLI onboarding/pilihan autentikasi harus mengetahui
+ID pilihan penyedia, label grup, dan pengaturan autentikasi satu flag sederhana tanpa
+memuat runtime penyedia. Pertahankan `envVars`
+runtime penyedia untuk petunjuk yang ditujukan kepada operator, seperti label onboarding atau variabel
+penyiapan client-id/client-secret OAuth.
 
-Gunakan manifes `channelEnvVars` ketika saluran memiliki autentikasi atau penyiapan berbasis env yang harus dapat dilihat oleh fallback env shell generik, pemeriksaan konfigurasi/status, atau perintah penyiapan tanpa memuat runtime saluran.
+Gunakan `channelEnvVars` manifes ketika saluran memiliki autentikasi atau penyiapan berbasis
+variabel lingkungan yang harus dapat dilihat oleh fallback variabel lingkungan shell generik, pemeriksaan konfigurasi/status,
+atau prompt penyiapan tanpa memuat runtime saluran.
 
 ### Urutan dan penggunaan hook
 
 Untuk plugin model/penyedia, OpenClaw memanggil hook kurang lebih dalam urutan berikut.
-Kolom "Kapan digunakan" adalah panduan pengambilan keputusan cepat.
-Kolom penyedia khusus kompatibilitas yang tidak lagi dipanggil oleh OpenClaw, seperti `ProviderPlugin.capabilities` dan `suppressBuiltInModel`, sengaja tidak dicantumkan di sini.
+Kolom "Kapan digunakan" merupakan panduan pengambilan keputusan cepat.
+Kolom penyedia khusus kompatibilitas yang tidak lagi dipanggil oleh OpenClaw, seperti
+`ProviderPlugin.capabilities` dan `suppressBuiltInModel`, sengaja tidak
+dicantumkan di sini.
 
-| Hook                              | Fungsinya                                                                                                                        | Kapan digunakan                                                                                                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `catalog`                         | Publikasikan konfigurasi penyedia ke `models.providers` selama pembuatan `models.json`                                            | Penyedia memiliki katalog atau nilai bawaan URL dasar                                                                                                                |
-| `applyConfigDefaults`             | Terapkan nilai bawaan konfigurasi global milik penyedia selama materialisasi konfigurasi                                         | Nilai bawaan bergantung pada mode autentikasi, lingkungan, atau semantik keluarga model penyedia                                                                     |
-| _(pencarian model bawaan)_        | OpenClaw mencoba jalur registri/katalog normal terlebih dahulu                                                                   | _(bukan hook Plugin)_                                                                                                                                                |
-| `normalizeModelId`                | Normalkan alias ID model lama atau pratinjau sebelum pencarian                                                                   | Penyedia menangani pembersihan alias sebelum resolusi model kanonis                                                                                                  |
-| `normalizeTransport`              | Normalkan `api` / `baseUrl` keluarga penyedia sebelum perakitan model generik                                                    | Penyedia menangani pembersihan transportasi untuk ID penyedia khusus dalam keluarga transportasi yang sama                                                           |
-| `normalizeConfig`                 | Normalkan `models.providers.<id>` sebelum resolusi waktu proses/penyedia                                                         | Penyedia memerlukan pembersihan konfigurasi yang seharusnya berada dalam Plugin; pembantu keluarga Google terbundel juga menjadi cadangan bagi entri konfigurasi Google yang didukung |
-| `applyNativeStreamingUsageCompat` | Terapkan penulisan ulang kompatibilitas penggunaan streaming native ke penyedia konfigurasi                                      | Penyedia memerlukan perbaikan metadata penggunaan streaming native yang ditentukan oleh titik akhir                                                                  |
-| `resolveConfigApiKey`             | Selesaikan autentikasi penanda lingkungan untuk penyedia konfigurasi sebelum pemuatan autentikasi waktu proses                   | Penyedia mengekspos hook resolusi kunci API penanda lingkungan masing-masing                                                                                         |
-| `resolveSyntheticAuth`            | Tampilkan autentikasi lokal/yang dihosting sendiri atau berbasis konfigurasi tanpa menyimpan teks biasa                          | Penyedia dapat beroperasi dengan penanda kredensial sintetis/lokal                                                                                                   |
-| `resolveExternalAuthProfiles`     | Lapisi profil autentikasi eksternal milik penyedia; `persistence` bawaan adalah `runtime-only` untuk kredensial milik CLI/aplikasi | Penyedia menggunakan kembali kredensial autentikasi eksternal tanpa menyimpan token penyegaran yang disalin; deklarasikan `contracts.externalAuthProviders` dalam manifes |
-| `shouldDeferSyntheticProfileAuth` | Turunkan prioritas placeholder profil sintetis tersimpan di bawah autentikasi berbasis lingkungan/konfigurasi                    | Penyedia menyimpan profil placeholder sintetis yang tidak seharusnya didahulukan                                                                                     |
-| `resolveDynamicModel`             | Sinkronkan mekanisme cadangan untuk ID model milik penyedia yang belum ada di registri lokal                                     | Penyedia menerima ID model hulu arbitrer                                                                                                                             |
-| `prepareDynamicModel`             | Lakukan pemanasan asinkron, lalu `resolveDynamicModel` dijalankan kembali                                                        | Penyedia memerlukan metadata jaringan sebelum menyelesaikan ID yang tidak dikenal                                                                                    |
-| `normalizeResolvedModel`          | Penulisan ulang akhir sebelum pengeksekusi tertanam menggunakan model yang telah diselesaikan                                    | Penyedia memerlukan penulisan ulang transportasi, tetapi tetap menggunakan transportasi inti                                                                         |
-| `normalizeToolSchemas`            | Normalkan skema alat sebelum dilihat oleh pengeksekusi tertanam                                                                  | Penyedia memerlukan pembersihan skema keluarga transportasi                                                                                                          |
-| `inspectToolSchemas`              | Tampilkan diagnostik skema milik penyedia setelah normalisasi                                                                    | Penyedia menginginkan peringatan kata kunci tanpa mengajarkan aturan khusus penyedia kepada inti                                                                      |
-| `resolveReasoningOutputMode`      | Pilih kontrak keluaran penalaran native atau bertag                                                                              | Penyedia memerlukan keluaran penalaran/akhir bertag sebagai pengganti bidang native                                                                                   |
-| `prepareExtraParams`              | Normalisasi parameter permintaan sebelum pembungkus opsi aliran generik                                                          | Penyedia memerlukan parameter permintaan bawaan atau pembersihan parameter per penyedia                                                                               |
-| `createStreamFn`                  | Ganti sepenuhnya jalur aliran normal dengan transportasi khusus                                                                  | Penyedia memerlukan protokol kabel khusus, bukan sekadar pembungkus                                                                                                  |
-| `wrapStreamFn`                    | Pembungkus aliran setelah pembungkus generik diterapkan                                                                          | Penyedia memerlukan pembungkus kompatibilitas header/badan/model permintaan tanpa transportasi khusus                                                                 |
-| `resolveTransportTurnState`       | Lampirkan header atau metadata transportasi native per giliran                                                                   | Penyedia ingin transportasi generik mengirim identitas giliran native penyedia                                                                                       |
-| `resolveWebSocketSessionPolicy`   | Lampirkan header WebSocket native atau kebijakan masa jeda sesi                                                                  | Penyedia ingin transportasi WS generik menyesuaikan header sesi atau kebijakan cadangan                                                                               |
-| `formatApiKey`                    | Pemformat profil autentikasi: profil tersimpan menjadi string `apiKey` waktu proses                                               | Penyedia menyimpan metadata autentikasi tambahan dan memerlukan bentuk token waktu proses khusus                                                                      |
-| `refreshOAuth`                    | Penggantian penyegaran OAuth untuk titik akhir penyegaran khusus atau kebijakan kegagalan penyegaran                             | Penyedia tidak sesuai dengan penyegar bersama OpenClaw                                                                                                               |
-| `buildAuthDoctorHint`             | Petunjuk perbaikan yang ditambahkan saat penyegaran OAuth gagal                                                                  | Penyedia memerlukan panduan perbaikan autentikasi milik penyedia setelah kegagalan penyegaran                                                                         |
-| `matchesContextOverflowError`     | Pencocok luapan jendela konteks milik penyedia                                                                                   | Penyedia memiliki kesalahan luapan mentah yang tidak akan terdeteksi oleh heuristik generik                                                                           |
-| `classifyFailoverReason`          | Klasifikasi alasan failover milik penyedia                                                                                       | Penyedia dapat memetakan kesalahan API/transportasi mentah ke pembatasan laju/beban berlebih/dan sebagainya                                                           |
-| `isCacheTtlEligible`              | Kebijakan cache prompt untuk penyedia proksi/backhaul                                                                            | Penyedia memerlukan pembatasan TTL cache khusus proksi                                                                                                               |
-| `buildMissingAuthMessage`         | Pengganti pesan pemulihan autentikasi yang hilang generik                                                                        | Penyedia memerlukan petunjuk pemulihan autentikasi yang hilang khusus penyedia                                                                                        |
-| `augmentModelCatalog`             | Baris katalog sintetis/akhir yang ditambahkan setelah penemuan (tidak digunakan lagi, lihat di bawah)                            | Penyedia memerlukan baris kompatibilitas maju sintetis di `models list` dan pemilih                                                                                   |
-| `resolveThinkingProfile`          | Kumpulan tingkat `/think` khusus model, label tampilan, dan nilai bawaan                                                         | Penyedia mengekspos jenjang berpikir khusus atau label biner untuk model yang dipilih                                                                                 |
-| `isBinaryThinking`                | Hook kompatibilitas pengalih penalaran aktif/nonaktif                                                                            | Penyedia hanya mengekspos penalaran biner aktif/nonaktif                                                                                                             |
-| `supportsXHighThinking`           | Hook kompatibilitas dukungan penalaran `xhigh`                                                                                   | Penyedia hanya menginginkan `xhigh` pada sebagian model                                                                                                              |
-| `resolveDefaultThinkingLevel`     | Hook kompatibilitas tingkat `/think` bawaan                                                                                      | Penyedia menangani kebijakan `/think` bawaan untuk suatu keluarga model                                                                                              |
-| `isModernModelRef`                | Pencocok model modern untuk filter profil langsung dan pemilihan uji asap                                                        | Penyedia menangani pencocokan model pilihan untuk penggunaan langsung/uji asap                                                                                       |
-| `prepareRuntimeAuth`              | Tukarkan kredensial yang dikonfigurasi menjadi token/kunci waktu proses aktual tepat sebelum inferensi                           | Penyedia memerlukan pertukaran token atau kredensial permintaan berumur pendek                                                                                        |
-| `resolveUsageAuth`                | Selesaikan kredensial penggunaan/penagihan untuk `/usage` dan permukaan status terkait                                           | Penyedia memerlukan penguraian token penggunaan/kuota khusus atau kredensial penggunaan yang berbeda                                                                  |
-| `fetchUsageSnapshot`              | Ambil dan normalkan cuplikan penggunaan/kuota khusus penyedia setelah autentikasi diselesaikan                                   | Penyedia memerlukan titik akhir penggunaan atau pengurai muatan khusus penyedia                                                                                       |
-| `createEmbeddingProvider`         | Bangun adaptor embedding milik penyedia untuk memori/pencarian                                                  | Perilaku embedding memori merupakan tanggung jawab Plugin penyedia                                                                             |
-| `buildReplayPolicy`               | Kembalikan kebijakan pemutaran ulang yang mengendalikan penanganan transkrip untuk penyedia                     | Penyedia memerlukan kebijakan transkrip khusus (misalnya, penghapusan blok pemikiran)                                                          |
-| `sanitizeReplayHistory`           | Tulis ulang riwayat pemutaran ulang setelah pembersihan transkrip generik                                       | Penyedia memerlukan penulisan ulang pemutaran ulang khusus penyedia di luar pembantu Compaction bersama                                        |
-| `validateReplayTurns`             | Validasi akhir atau pembentukan ulang giliran pemutaran ulang sebelum runner tersemat                           | Transportasi penyedia memerlukan validasi giliran yang lebih ketat setelah sanitasi generik                                                    |
-| `onModelSelected`                 | Jalankan efek samping pascapemilihan milik penyedia                                                             | Penyedia memerlukan telemetri atau status milik penyedia saat model menjadi aktif                                                              |
+| Hook                              | Fungsinya                                                                                                      | Kapan digunakan                                                                                                                               |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `catalog`                         | Publikasikan konfigurasi penyedia ke `models.providers` selama pembuatan `models.json`                         | Penyedia memiliki katalog atau nilai default URL dasar                                                                                        |
+| `applyConfigDefaults`             | Terapkan nilai default konfigurasi global milik penyedia selama materialisasi konfigurasi                      | Nilai default bergantung pada mode autentikasi, lingkungan, atau semantik keluarga model penyedia                                              |
+| _(pencarian model bawaan)_        | OpenClaw mencoba jalur registri/katalog normal terlebih dahulu                                                 | _(bukan hook plugin)_                                                                                                                          |
+| `normalizeModelId`                | Normalisasikan alias ID model lama atau pratinjau sebelum pencarian                                            | Penyedia menangani pembersihan alias sebelum resolusi model kanonis                                                                           |
+| `normalizeTransport`              | Normalisasikan `api` / `baseUrl` keluarga penyedia sebelum perakitan model generik                             | Penyedia menangani pembersihan transport untuk ID penyedia khusus dalam keluarga transport yang sama                                          |
+| `normalizeConfig`                 | Normalisasikan `models.providers.<id>` sebelum resolusi runtime/penyedia                                        | Penyedia memerlukan pembersihan konfigurasi yang seharusnya berada dalam plugin; pembantu keluarga Google yang dibundel juga mencadangkan entri konfigurasi Google yang didukung |
+| `applyNativeStreamingUsageCompat` | Terapkan penulisan ulang kompatibilitas penggunaan streaming native pada penyedia konfigurasi                  | Penyedia memerlukan perbaikan metadata penggunaan streaming native yang ditentukan oleh endpoint                                               |
+| `resolveConfigApiKey`             | Selesaikan autentikasi penanda lingkungan untuk penyedia konfigurasi sebelum pemuatan autentikasi runtime      | Penyedia mengekspos hook resolusi kunci API penanda lingkungannya sendiri                                                                      |
+| `resolveSyntheticAuth`            | Tampilkan autentikasi lokal/yang dihosting sendiri atau berbasis konfigurasi tanpa menyimpan teks biasa        | Penyedia dapat beroperasi dengan penanda kredensial sintetis/lokal                                                                             |
+| `resolveExternalAuthProfiles`     | Lapiskan profil autentikasi eksternal milik penyedia; `persistence` default adalah `runtime-only` untuk kredensial milik CLI/aplikasi | Penyedia menggunakan kembali kredensial autentikasi eksternal tanpa menyimpan salinan token penyegaran; deklarasikan `contracts.externalAuthProviders` dalam manifes |
+| `shouldDeferSyntheticProfileAuth` | Turunkan prioritas placeholder profil sintetis tersimpan di bawah autentikasi berbasis lingkungan/konfigurasi  | Penyedia menyimpan profil placeholder sintetis yang tidak boleh mengungguli prioritas lainnya                                                  |
+| `resolveDynamicModel`             | Fallback sinkron untuk ID model milik penyedia yang belum ada dalam registri lokal                             | Penyedia menerima ID model upstream arbitrer                                                                                                  |
+| `prepareDynamicModel`             | Pemanasan asinkron, lalu `resolveDynamicModel` dijalankan lagi                                                 | Penyedia memerlukan metadata jaringan sebelum menyelesaikan ID yang tidak dikenal                                                              |
+| `normalizeResolvedModel`          | Penulisan ulang akhir sebelum runner tertanam menggunakan model yang telah diselesaikan                        | Penyedia memerlukan penulisan ulang transport tetapi tetap menggunakan transport inti                                                         |
+| `normalizeToolSchemas`            | Normalisasikan skema alat sebelum runner tertanam melihatnya                                                   | Penyedia memerlukan pembersihan skema keluarga transport                                                                                       |
+| `inspectToolSchemas`              | Tampilkan diagnostik skema milik penyedia setelah normalisasi                                                  | Penyedia menginginkan peringatan kata kunci tanpa mengajarkan aturan khusus penyedia kepada inti                                               |
+| `resolveReasoningOutputMode`      | Pilih kontrak keluaran penalaran native atau bertag                                                            | Penyedia memerlukan keluaran penalaran/akhir bertag sebagai pengganti bidang native                                                            |
+| `prepareExtraParams`              | Normalisasi parameter permintaan sebelum pembungkus opsi stream generik                                        | Penyedia memerlukan parameter permintaan default atau pembersihan parameter per penyedia                                                       |
+| `createStreamFn`                  | Ganti sepenuhnya jalur stream normal dengan transport khusus                                                   | Penyedia memerlukan protokol kabel khusus, bukan sekadar pembungkus                                                                            |
+| `wrapStreamFn`                    | Pembungkus stream setelah pembungkus generik diterapkan                                                        | Penyedia memerlukan pembungkus kompatibilitas header/bodi/model permintaan tanpa transport khusus                                              |
+| `resolveTransportTurnState`       | Lampirkan header atau metadata transport native per giliran                                                    | Penyedia menginginkan transport generik mengirim identitas giliran native penyedia                                                             |
+| `resolveWebSocketSessionPolicy`   | Lampirkan header WebSocket native atau kebijakan masa jeda sesi                                                | Penyedia menginginkan transport WS generik menyetel header sesi atau kebijakan fallback                                                        |
+| `formatApiKey`                    | Pemformat profil autentikasi: profil tersimpan menjadi string `apiKey` runtime                                  | Penyedia menyimpan metadata autentikasi tambahan dan memerlukan bentuk token runtime khusus                                                    |
+| `refreshOAuth`                    | Penggantian penyegaran OAuth untuk endpoint penyegaran khusus atau kebijakan kegagalan penyegaran              | Penyedia tidak sesuai dengan penyegar bersama OpenClaw                                                                                         |
+| `buildAuthDoctorHint`             | Petunjuk perbaikan yang ditambahkan ketika penyegaran OAuth gagal                                              | Penyedia memerlukan panduan perbaikan autentikasi milik penyedia setelah kegagalan penyegaran                                                  |
+| `matchesContextOverflowError`     | Pencocok luapan jendela konteks milik penyedia                                                                 | Penyedia memiliki kesalahan luapan mentah yang tidak akan terdeteksi oleh heuristik generik                                                    |
+| `classifyFailoverReason`          | Klasifikasi alasan failover milik penyedia                                                                     | Penyedia dapat memetakan kesalahan API/transport mentah ke pembatasan laju/beban berlebih/dll.                                                 |
+| `isCacheTtlEligible`              | Kebijakan cache prompt untuk penyedia proksi/backhaul                                                          | Penyedia memerlukan pembatasan TTL cache khusus proksi                                                                                         |
+| `buildMissingAuthMessage`         | Pengganti pesan pemulihan autentikasi yang hilang secara generik                                               | Penyedia memerlukan petunjuk pemulihan autentikasi yang hilang khusus penyedia                                                                |
+| `augmentModelCatalog`             | Baris katalog sintetis/akhir yang ditambahkan setelah penemuan (tidak digunakan lagi, lihat di bawah)          | Penyedia memerlukan baris kompatibilitas maju sintetis dalam `models list` dan pemilih                                                         |
+| `resolveThinkingProfile`          | Kumpulan tingkat `/think` khusus model, label tampilan, dan nilai default                                      | Penyedia mengekspos jenjang pemikiran khusus atau label biner untuk model yang dipilih                                                         |
+| `isBinaryThinking`                | Hook kompatibilitas pengalih penalaran aktif/nonaktif                                                          | Penyedia hanya mengekspos pemikiran biner aktif/nonaktif                                                                                       |
+| `supportsXHighThinking`           | Hook kompatibilitas dukungan penalaran `xhigh`                                                                | Penyedia menginginkan `xhigh` hanya pada sebagian model                                                                                       |
+| `resolveDefaultThinkingLevel`     | Hook kompatibilitas tingkat `/think` default                                                                   | Penyedia memiliki kebijakan `/think` default untuk suatu keluarga model                                                                       |
+| `isModernModelRef`                | Pencocok model modern untuk filter profil langsung dan pemilihan smoke                                        | Penyedia menangani pencocokan model pilihan untuk pengujian langsung/smoke                                                                    |
+| `prepareRuntimeAuth`              | Tukarkan kredensial yang dikonfigurasi menjadi token/kunci runtime aktual tepat sebelum inferensi              | Penyedia memerlukan pertukaran token atau kredensial permintaan berumur pendek                                                                |
+| `resolveUsageAuth`                | Selesaikan kredensial penggunaan/penagihan untuk `/usage` dan permukaan status terkait                         | Penyedia memerlukan penguraian token penggunaan/kuota khusus atau kredensial penggunaan yang berbeda                                          |
+| `fetchUsageSnapshot`              | Ambil dan normalisasikan snapshot penggunaan/kuota khusus penyedia setelah autentikasi diselesaikan            | Penyedia memerlukan endpoint penggunaan khusus penyedia atau pengurai payload                                                                 |
+| `createEmbeddingProvider`         | Buat adaptor embedding milik penyedia untuk memori/pencarian                                                     | Perilaku embedding memori berada dalam Plugin penyedia                                                                                    |
+| `buildReplayPolicy`               | Kembalikan kebijakan pemutaran ulang yang mengontrol penanganan transkrip untuk penyedia                                        | Penyedia memerlukan kebijakan transkrip khusus (misalnya, penghapusan blok pemikiran)                                                               |
+| `sanitizeReplayHistory`           | Tulis ulang riwayat pemutaran ulang setelah pembersihan transkrip generik                                                        | Penyedia memerlukan penulisan ulang pemutaran ulang khusus penyedia di luar pembantu Compaction bersama                                                             |
+| `validateReplayTurns`             | Validasi atau bentuk ulang giliran pemutaran ulang terakhir sebelum runner tertanam                                           | Transportasi penyedia memerlukan validasi giliran yang lebih ketat setelah sanitasi generik                                                                    |
+| `onModelSelected`                 | Jalankan efek samping pascapemilihan milik penyedia                                                                 | Penyedia memerlukan telemetri atau status milik penyedia saat model menjadi aktif                                                                  |
 
-`normalizeModelId`, `normalizeTransport`, dan `normalizeConfig` terlebih dahulu memeriksa
-Plugin penyedia yang cocok, lalu beralih ke Plugin penyedia lain yang mendukung hook
+`normalizeModelId`, `normalizeTransport`, dan `normalizeConfig` pertama-tama memeriksa
+plugin penyedia yang cocok, lalu beralih ke plugin penyedia lain yang mendukung hook
 hingga salah satunya benar-benar mengubah id model atau transportasi/konfigurasi. Hal ini menjaga
-shim penyedia alias/kompatibilitas tetap berfungsi tanpa mengharuskan pemanggil mengetahui
-Plugin bawaan mana yang memiliki penulisan ulang tersebut. Jika tidak ada hook penyedia yang menulis ulang
-entri konfigurasi keluarga Google yang didukung, penormal konfigurasi Google bawaan tetap menerapkan
+shim penyedia alias/kompatibilitas tetap berfungsi tanpa mengharuskan pemanggil mengetahui plugin
+bawaan mana yang memiliki penulisan ulang tersebut. Jika tidak ada hook penyedia yang menulis ulang entri
+konfigurasi keluarga Google yang didukung, penormal konfigurasi Google bawaan tetap menerapkan
 pembersihan kompatibilitas tersebut.
 
 Jika penyedia memerlukan protokol wire yang sepenuhnya khusus atau eksekutor permintaan khusus,
@@ -231,15 +334,15 @@ yang tetap berjalan pada loop inferensi normal OpenClaw.
 
 `resolveUsageAuth` menentukan apakah OpenClaw harus memanggil `fetchUsageSnapshot` atau
 kembali ke resolusi kredensial generik untuk permukaan penggunaan/status. Kembalikan
-`{ token, accountId?, subscriptionType?, rateLimitTier? }` ketika penyedia
-memiliki kredensial penggunaan (metadata paket opsional diteruskan ke
+`{ token, accountId?, subscriptionType?, rateLimitTier? }` saat penyedia
+memiliki kredensial penggunaan (metadata paket opsional mengalir ke
 `fetchUsageSnapshot`), kembalikan
-`{ handled: true }` ketika autentikasi penggunaan milik penyedia telah menangani permintaan dan
-harus menekan fallback kunci API/OAuth generik, serta kembalikan `null` atau `undefined`
-ketika penyedia tidak menangani autentikasi penggunaan.
+`{ handled: true }` saat autentikasi penggunaan milik penyedia telah menangani permintaan dan
+harus menekan fallback kunci API/OAuth generik, dan kembalikan `null` atau `undefined`
+saat penyedia tidak menangani autentikasi penggunaan.
 
 Deklarasikan kredensial organisasi atau penagihan dalam manifes
-`providerUsageAuthEnvVars`. Hal ini memungkinkan permukaan penemuan generik dan pembersihan rahasia
+`providerUsageAuthEnvVars`. Ini memungkinkan permukaan penemuan generik dan pembersihan rahasia
 mengenalinya tanpa menjadikannya kandidat autentikasi inferensi.
 
 ### Contoh penyedia
@@ -299,25 +402,25 @@ api.registerProvider({
 ### Contoh bawaan
 
 Plugin penyedia bawaan menggabungkan hook di atas agar sesuai dengan kebutuhan katalog,
-autentikasi, penalaran, pemutaran ulang, dan penggunaan setiap vendor. Kumpulan hook otoritatif berada
-bersama setiap Plugin di bawah `extensions/`; halaman ini menggambarkan bentuknya alih-alih
+autentikasi, pemikiran, pemutaran ulang, dan penggunaan setiap vendor. Kumpulan hook otoritatif berada
+bersama setiap plugin di bawah `extensions/`; halaman ini mengilustrasikan bentuknya, bukan
 mencerminkan daftarnya.
 
 <AccordionGroup>
   <Accordion title="Penyedia katalog pass-through">
     OpenRouter, Kilocode, Z.AI, xAI mendaftarkan `catalog` beserta
-    `resolveDynamicModel` / `prepareDynamicModel` sehingga dapat menampilkan id model hulu
-    sebelum katalog statis OpenClaw.
+    `resolveDynamicModel` / `prepareDynamicModel` agar dapat menampilkan id model
+    hulu sebelum katalog statis OpenClaw.
   </Accordion>
-  <Accordion title="Penyedia titik akhir OAuth dan penggunaan">
+  <Accordion title="Penyedia endpoint OAuth dan penggunaan">
     GitHub Copilot, Gemini CLI, ChatGPT Codex, MiniMax, Xiaomi, z.ai memasangkan
     `prepareRuntimeAuth` atau `formatApiKey` dengan `resolveUsageAuth` +
-    `fetchUsageSnapshot` untuk menangani pertukaran token dan integrasi `/usage`.
+    `fetchUsageSnapshot` untuk memiliki pertukaran token dan integrasi `/usage`.
   </Accordion>
   <Accordion title="Keluarga pembersihan pemutaran ulang dan transkrip">
-    Keluarga bersama bernama (`google-gemini`, `passthrough-gemini`,
+    Keluarga bernama bersama (`google-gemini`, `passthrough-gemini`,
     `anthropic-by-model`, `hybrid-anthropic-openai`) memungkinkan penyedia mengaktifkan
-    kebijakan transkrip melalui `buildReplayPolicy` alih-alih setiap Plugin
+    kebijakan transkrip melalui `buildReplayPolicy`, alih-alih setiap plugin
     mengimplementasikan ulang pembersihan.
   </Accordion>
   <Accordion title="Penyedia khusus katalog">
@@ -327,7 +430,7 @@ mencerminkan daftarnya.
   </Accordion>
   <Accordion title="Pembantu stream khusus Anthropic">
     Header beta, `/fast` / `serviceTier`, dan `context1m` berada di dalam
-    batas publik `api.ts` / `contract-api.ts` milik Plugin Anthropic
+    seam publik `api.ts` / `contract-api.ts` milik plugin Anthropic
     (`wrapAnthropicProviderStream`, `resolveAnthropicBetas`,
     `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`), bukan di dalam
     SDK generik.
@@ -358,11 +461,11 @@ const voices = await api.runtime.tts.listVoices({
 Catatan:
 
 - `textToSpeech` mengembalikan payload keluaran TTS inti normal untuk permukaan file/catatan suara.
-- Menggunakan konfigurasi `messages.tts` inti dan pemilihan penyedia.
-- Mengembalikan buffer audio PCM + laju sampel. Plugin harus melakukan resampling/enkode untuk penyedia.
-- `listVoices` bersifat opsional untuk setiap penyedia. Gunakan untuk pemilih suara atau alur penyiapan milik vendor.
-- Inti meneruskan tenggat permintaan yang telah diresolusi ke hook `listVoices` penyedia; pengaturan batas waktu khusus penyedia dapat menggantikannya.
-- Daftar suara dapat menyertakan metadata yang lebih lengkap seperti lokal, gender, dan tag kepribadian untuk pemilih yang menyadari penyedia.
+- Menggunakan konfigurasi dan pemilihan penyedia `messages.tts` inti.
+- Mengembalikan buffer audio PCM + laju sampel. Plugin harus melakukan pengambilan sampel ulang/pengodean untuk penyedia.
+- `listVoices` bersifat opsional per penyedia. Gunakan untuk pemilih suara atau alur penyiapan milik vendor.
+- Inti meneruskan tenggat permintaan yang telah diresolusi ke hook `listVoices` penyedia; pengaturan batas waktu khusus penyedia dapat menimpanya.
+- Daftar suara dapat menyertakan metadata yang lebih kaya seperti lokal, gender, dan tag kepribadian untuk pemilih yang memahami penyedia.
 - OpenAI dan ElevenLabs mendukung telefoni saat ini. Microsoft tidak.
 
 Plugin juga dapat mendaftarkan penyedia ucapan melalui `api.registerSpeechProvider(...)`.
@@ -387,13 +490,13 @@ Catatan:
 
 - Pertahankan kebijakan TTS, fallback, dan pengiriman balasan di inti.
 - Gunakan penyedia ucapan untuk perilaku sintesis milik vendor.
-- Masukan `edge` Microsoft lama dinormalisasi menjadi id penyedia `microsoft`.
-- Model kepemilikan yang disarankan berorientasi pada perusahaan: satu Plugin vendor dapat memiliki
+- Input Microsoft lama `edge` dinormalisasi menjadi id penyedia `microsoft`.
+- Model kepemilikan yang diutamakan berorientasi pada perusahaan: satu plugin vendor dapat memiliki
   penyedia teks, ucapan, gambar, dan media mendatang saat OpenClaw menambahkan
-  kontrak kemampuan tersebut.
+  kontrak kapabilitas tersebut.
 
-Untuk pemahaman gambar/audio/video, Plugin mendaftarkan satu penyedia
-pemahaman media bertipe, bukan kumpulan pasangan kunci/nilai generik:
+Untuk pemahaman gambar/audio/video, plugin mendaftarkan satu penyedia
+pemahaman media bertipe, bukan kumpulan kunci/nilai generik:
 
 ```ts
 api.registerMediaUnderstandingProvider({
@@ -407,16 +510,16 @@ api.registerMediaUnderstandingProvider({
 
 Catatan:
 
-- Pertahankan orkestrasi, fallback, konfigurasi, dan pengkabelan saluran di inti.
-- Pertahankan perilaku vendor di Plugin penyedia.
-- Perluasan aditif harus tetap bertipe: metode opsional baru, kolom hasil
-  opsional baru, dan kemampuan opsional baru.
-- Pembuatan video telah mengikuti pola yang sama:
-  - inti memiliki kontrak kemampuan dan pembantu runtime
-  - Plugin vendor mendaftarkan `api.registerVideoGenerationProvider(...)`
-  - Plugin fitur/saluran menggunakan `api.runtime.videoGeneration.*`
+- Pertahankan orkestrasi, fallback, konfigurasi, dan pengabelan saluran di inti.
+- Pertahankan perilaku vendor di plugin penyedia.
+- Perluasan aditif harus tetap bertipe: metode opsional baru, bidang hasil
+  opsional baru, kapabilitas opsional baru.
+- Pembuatan video sudah mengikuti pola yang sama:
+  - inti memiliki kontrak kapabilitas dan pembantu runtime
+  - plugin vendor mendaftarkan `api.registerVideoGenerationProvider(...)`
+  - plugin fitur/saluran menggunakan `api.runtime.videoGeneration.*`
 
-Untuk pembantu runtime pemahaman media, Plugin dapat memanggil:
+Untuk pembantu runtime pemahaman media, plugin dapat memanggil:
 
 ```ts
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
@@ -455,7 +558,7 @@ const extraction = await api.runtime.mediaUnderstanding.extractStructuredWithMod
 });
 ```
 
-Untuk transkripsi audio, Plugin dapat menggunakan runtime pemahaman media
+Untuk transkripsi audio, plugin dapat menggunakan runtime pemahaman media
 atau alias STT yang lebih lama:
 
 ```ts
@@ -469,22 +572,23 @@ const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
 
 Catatan:
 
-- `api.runtime.mediaUnderstanding.*` adalah permukaan bersama yang disarankan untuk
+- `api.runtime.mediaUnderstanding.*` adalah permukaan bersama yang diutamakan untuk
   pemahaman gambar/audio/video.
-- `extractStructuredWithModel(...)` adalah batas yang ditujukan bagi Plugin untuk ekstraksi
-  berbatas milik penyedia yang mengutamakan gambar. Sertakan setidaknya satu masukan gambar;
-  masukan teks merupakan konteks tambahan. Plugin produk memiliki rute dan
-  skemanya, sedangkan OpenClaw memiliki batas penyedia/runtime.
+- `extractStructuredWithModel(...)` adalah seam yang menghadap plugin untuk ekstraksi
+  berbatas dan berorientasi gambar yang dimiliki penyedia. Sertakan setidaknya satu input gambar;
+  input teks merupakan konteks tambahan. Plugin produk memiliki rute dan
+  skemanya, sementara OpenClaw memiliki batas penyedia/runtime.
 - Menggunakan konfigurasi audio pemahaman media inti (`tools.media.audio`) dan urutan fallback penyedia.
-- Mengembalikan `{ text: undefined }` ketika tidak ada keluaran transkripsi yang dihasilkan (misalnya masukan dilewati/tidak didukung).
+- Mengembalikan `{ text: undefined }` saat tidak ada keluaran transkripsi yang dihasilkan (misalnya input dilewati/tidak didukung).
 - `api.runtime.stt.transcribeAudioFile(...)` tetap tersedia sebagai alias kompatibilitas.
 
-Plugin juga dapat menjalankan proses subagen latar belakang melalui `api.runtime.subagent`:
+Plugin juga dapat meluncurkan proses subagen latar belakang melalui `api.runtime.subagent`:
 
 ```ts
 const result = await api.runtime.subagent.run({
   sessionKey: "agent:main:subagent:search-helper",
   message: "Expand this query into focused follow-up searches.",
+  toolsAlsoAllow: ["my_plugin_progress"],
   provider: "openai",
   model: "gpt-4.1-mini",
   deliver: false,
@@ -493,15 +597,16 @@ const result = await api.runtime.subagent.run({
 
 Catatan:
 
-- `provider` dan `model` merupakan penggantian opsional per proses, bukan perubahan sesi persisten.
-- OpenClaw hanya mematuhi kolom penggantian tersebut untuk pemanggil tepercaya.
-- Untuk proses fallback milik Plugin, operator harus mengaktifkannya dengan `plugins.entries.<id>.subagent.allowModelOverride: true`.
-- Gunakan `plugins.entries.<id>.subagent.allowedModels` untuk membatasi Plugin tepercaya pada target kanonis `provider/model` tertentu, atau `"*"` untuk mengizinkan target apa pun secara eksplisit.
-- Proses subagen Plugin yang tidak tepercaya tetap berfungsi, tetapi permintaan penggantian ditolak, bukan secara diam-diam menggunakan fallback.
-- Sesi subagen yang dibuat Plugin diberi tag id Plugin pembuatnya. Fallback `api.runtime.subagent.deleteSession(...)` hanya dapat menghapus sesi yang dimiliki tersebut; penghapusan sesi arbitrer tetap memerlukan permintaan Gateway dengan cakupan admin.
+- `provider` dan `model` adalah penimpaan opsional per proses, bukan perubahan sesi persisten.
+- `toolsAlsoAllow` menerima nama alat yang tepat dan dimiliki secara unik, yang didaftarkan oleh plugin pemanggil. Nama inti dan ambigu ditolak. Ini bersifat aditif terhadap profil normal, tetapi daftar izin dan penolakan operator tetap otoritatif.
+- OpenClaw hanya menghormati bidang penimpaan tersebut untuk pemanggil tepercaya.
+- Untuk proses fallback milik plugin, operator harus ikut serta melalui `plugins.entries.<id>.subagent.allowModelOverride: true`.
+- Gunakan `plugins.entries.<id>.subagent.allowedModels` untuk membatasi plugin tepercaya pada target `provider/model` kanonis tertentu, atau `"*"` untuk secara eksplisit mengizinkan target apa pun.
+- Proses subagen plugin yang tidak tepercaya tetap berfungsi, tetapi permintaan penimpaan ditolak alih-alih secara diam-diam menggunakan fallback.
+- Sesi subagen yang dibuat plugin diberi tag dengan id plugin pembuatnya. Fallback `api.runtime.subagent.deleteSession(...)` hanya dapat menghapus sesi yang dimiliki tersebut; penghapusan sesi arbitrer tetap memerlukan permintaan Gateway dengan cakupan admin.
 
-Untuk pencarian web, Plugin dapat menggunakan pembantu runtime bersama alih-alih
-mengakses langsung pengkabelan alat agen:
+Untuk pencarian web, plugin dapat menggunakan pembantu runtime bersama alih-alih
+mengakses langsung pengabelan alat agen:
 
 ```ts
 const providers = api.runtime.webSearch.listProviders({
@@ -522,9 +627,9 @@ Plugin juga dapat mendaftarkan penyedia pencarian web melalui
 
 Catatan:
 
-- Pertahankan pemilihan penyedia, resolusi kredensial, dan semantik permintaan bersama di inti.
+- Pertahankan pemilihan penyedia, resolusi kredensial, dan semantik permintaan bersama di core.
 - Gunakan penyedia pencarian web untuk transportasi pencarian khusus vendor.
-- `api.runtime.webSearch.*` adalah permukaan bersama yang disarankan bagi Plugin fitur/saluran yang memerlukan perilaku pencarian tanpa bergantung pada pembungkus alat agen.
+- `api.runtime.webSearch.*` adalah permukaan bersama yang diutamakan untuk plugin fitur/channel yang memerlukan perilaku pencarian tanpa bergantung pada pembungkus alat agen.
 
 ### `api.runtime.imageGeneration`
 
@@ -539,12 +644,12 @@ const providers = api.runtime.imageGeneration.listProviders({
 });
 ```
 
-- `generate(...)`: menghasilkan gambar menggunakan rantai penyedia pembuatan gambar yang dikonfigurasi.
-- `listProviders(...)`: mencantumkan penyedia pembuatan gambar yang tersedia beserta kemampuannya.
+- `generate(...)`: hasilkan gambar menggunakan rantai penyedia pembuatan gambar yang dikonfigurasi.
+- `listProviders(...)`: cantumkan penyedia pembuatan gambar yang tersedia beserta kemampuannya.
 
 ## Rute HTTP Gateway
 
-Plugin dapat mengekspos titik akhir HTTP dengan `api.registerHttpRoute(...)`.
+Plugin dapat mengekspos endpoint HTTP dengan `api.registerHttpRoute(...)`.
 
 ```ts
 api.registerHttpRoute({
@@ -559,51 +664,53 @@ api.registerHttpRoute({
 });
 ```
 
-Kolom rute:
+Bidang rute:
 
-- `path`: jalur rute di bawah server HTTP Gateway.
-- `auth`: wajib, `"gateway"` atau `"plugin"`. Gunakan `"gateway"` untuk mewajibkan autentikasi Gateway normal, atau `"plugin"` untuk autentikasi/verifikasi Webhook yang dikelola Plugin.
-- `match`: opsional. `"exact"` (bawaan) atau `"prefix"`.
-- `handleUpgrade`: penangan opsional untuk permintaan peningkatan WebSocket pada rute yang sama.
-- `replaceExisting`: opsional. Memungkinkan Plugin yang sama mengganti pendaftaran rutenya sendiri yang sudah ada.
-- `handler`: kembalikan `true` ketika rute telah menangani permintaan.
+- `path`: jalur rute di bawah server HTTP gateway.
+- `auth`: wajib, `"gateway"` atau `"plugin"`. Gunakan `"gateway"` untuk mewajibkan autentikasi gateway normal, atau `"plugin"` untuk autentikasi/verifikasi webhook yang dikelola plugin.
+- `match`: opsional. `"exact"` (default) atau `"prefix"`.
+- `handleUpgrade`: handler opsional untuk permintaan peningkatan WebSocket pada rute yang sama.
+- `replaceExisting`: opsional. Memungkinkan plugin yang sama mengganti pendaftaran rutenya sendiri yang sudah ada.
+- `handler`: kembalikan `true` ketika rute menangani permintaan.
 
 Catatan:
 
-- `api.registerHttpHandler(...)` telah dihapus dan akan menyebabkan kesalahan pemuatan Plugin. Gunakan `api.registerHttpRoute(...)` sebagai gantinya.
-- Rute Plugin harus mendeklarasikan `auth` secara eksplisit.
-- Konflik `path + match` yang sama persis ditolak kecuali `replaceExisting: true`, dan satu Plugin tidak dapat mengganti rute milik Plugin lain.
-- Rute yang tumpang tindih dengan tingkat `auth` berbeda ditolak. Pertahankan rantai alih lanjut `exact`/`prefix` hanya pada tingkat autentikasi yang sama.
-- Rute `auth: "plugin"` **tidak** menerima cakupan runtime operator secara otomatis. Rute tersebut ditujukan untuk Webhook/verifikasi tanda tangan yang dikelola Plugin, bukan pemanggilan pembantu Gateway dengan hak istimewa.
-- Rute `auth: "gateway"` berjalan di dalam cakupan runtime permintaan Gateway. Permukaan bawaan (`gatewayRuntimeScopeSurface: "write-default"`) sengaja dibuat konservatif:
-  - autentikasi bearer dengan rahasia bersama (`gateway.auth.mode = "token"` / `"password"`) dan metode autentikasi apa pun selain proksi tepercaya mendapatkan satu cakupan `operator.write`, meskipun pemanggil mengirimkan `x-openclaw-scopes`
-  - pemanggil `trusted-proxy` tanpa header `x-openclaw-scopes` eksplisit juga mempertahankan permukaan lama yang hanya memiliki `operator.write`
-  - pemanggil `trusted-proxy` yang mengirimkan `x-openclaw-scopes` akan mendapatkan cakupan yang dideklarasikan
-  - rute dapat memilih `gatewayRuntimeScopeSurface: "trusted-operator"` agar selalu menghormati `x-openclaw-scopes` untuk mode autentikasi yang menyertakan identitas (dengan menggunakan kumpulan lengkap cakupan bawaan CLI ketika header tidak ada)
-- Aturan praktis: jangan menganggap rute Plugin dengan autentikasi Gateway sebagai permukaan admin implisit. Jika rute Anda memerlukan perilaku khusus admin, pilih permukaan cakupan `trusted-operator`, wajibkan mode autentikasi yang menyertakan identitas, dan dokumentasikan kontrak header `x-openclaw-scopes` secara eksplisit.
-- Setelah pencocokan rute dan autentikasi, penangan biasa mengikuti penerimaan pekerjaan root Gateway. Gateway yang sedang dipersiapkan atau dimulai ulang mengembalikan `503` sebelum memanggil penangan. Pengecualian terbatasnya adalah rute `auth: "gateway"` yang diberi hak oleh manifes dan juga memilih permukaan `trusted-operator` khusus rute; rute tersebut tetap dapat dijangkau agar pengiriman kontrol penangguhan tidak terputus, sementara rute saudara biasa dari Plugin yang sama tetap berada di belakang batas penerimaan. Kepemilikan `handleUpgrade` WebSocket menggunakan batas penerimaan atomik yang sama; setelah penangan menerima soket, masa pakai soket selanjutnya menjadi milik Plugin dan tidak dilacak oleh batas ini.
+- `api.registerHttpHandler(...)` telah dihapus dan akan menyebabkan kesalahan pemuatan plugin. Gunakan `api.registerHttpRoute(...)` sebagai gantinya.
+- Rute plugin harus mendeklarasikan `auth` secara eksplisit.
+- Konflik `path + match` yang sama persis ditolak kecuali `replaceExisting: true`, dan satu plugin tidak dapat mengganti rute milik plugin lain.
+- Rute yang tumpang tindih dengan tingkat `auth` berbeda ditolak. Pertahankan rantai fallthrough `exact`/`prefix` hanya pada tingkat autentikasi yang sama.
+- Rute `auth: "plugin"` **tidak** menerima cakupan runtime operator secara otomatis. Rute tersebut ditujukan untuk webhook/verifikasi tanda tangan yang dikelola plugin, bukan pemanggilan pembantu Gateway dengan hak istimewa.
+- Rute `auth: "gateway"` berjalan di dalam cakupan runtime permintaan Gateway. Permukaan default (`gatewayRuntimeScopeSurface: "write-default"`) sengaja dibuat konservatif:
+  - autentikasi bearer rahasia bersama (`gateway.auth.mode = "token"` / `"password"`) dan metode autentikasi apa pun yang bukan proksi tepercaya mendapatkan satu cakupan `operator.write`, meskipun pemanggil mengirim `x-openclaw-scopes`
+  - pemanggil `trusted-proxy` tanpa header `x-openclaw-scopes` eksplisit juga tetap menggunakan permukaan lama yang hanya `operator.write`
+  - pemanggil `trusted-proxy` yang mengirim `x-openclaw-scopes` mendapatkan cakupan yang dideklarasikan sebagai gantinya
+  - rute dapat memilih `gatewayRuntimeScopeSurface: "trusted-operator"` agar selalu mematuhi `x-openclaw-scopes` untuk mode autentikasi yang membawa identitas (kembali ke kumpulan cakupan default CLI lengkap jika header tidak ada)
+- Tab Control UI eksternal tersandbox yang didukung oleh rute `auth: "gateway"` menggunakan pemberian cookie bertanda tangan berumur pendek yang hanya dibuat melalui bootstrap terautentikasi; tab dengan autentikasi plugin tetap menggunakan jalur iframe langsungnya. Sebelum memasang, induk menjalankan pemeriksaan milik rute di dalam sandbox opak yang sama dan gagal secara tertutup ketika kebijakan privasi browser memblokir cookie. Pemberian tersebut terikat pada plugin pemilik, akar rute yang cocok, dan generasi autentikasi saat ini; nama cookie acak per proses mencegah Gateway tepercaya pada host yang sama saling menimpa, tetapi cookie tidak pernah mengisolasi port TCP. Oleh karena itu, nama host Gateway merupakan satu batas kredensial: jangan tempatkan bersama layanan yang tidak saling tepercaya pada nama host tersebut, termasuk pada port lain. Pengiriman rute menolak penggunaan ulang terhadap rute bertingkat yang dimiliki plugin lain. Karena turunan sandbox dianggap lintas situs untuk keperluan cookie, pemberian hanya menerima `GET` dan `HEAD` dengan `operator.read`; mutasi dan peningkatan WebSocket tetap berada pada permukaan yang diautentikasi Gateway secara eksplisit. Cookie sengaja tidak dapat menggunakan CHIPS: browser saat ini menyertakan bit leluhur lintas situs dalam kunci partisi, sehingga bingkai sandbox opak bertingkat akan kehilangan akses ke aset pada rute yang sama. Cookie memerlukan konteks aman dan izin browser untuk cookie lintas situs, sehingga tab eksternal dengan autentikasi gateway tidak tersedia pada origin LAN HTTP biasa atau ketika cookie pihak ketiga diblokir sepenuhnya; gunakan HTTPS/Tailscale Serve atau loopback yang dipercaya browser dengan kebijakan cookie yang kompatibel.
+- Pemberian tersebut mencegah pengungkapan token bearer Gateway dan penggunaan ulang rute/cakupan yang tidak disengaja; pemberian ini tidak menciptakan batas keamanan antara plugin native. Kode plugin native dan konten UI yang disajikannya tetap menjadi bagian dari batas plugin dalam proses tepercaya yang sama.
+- Aturan praktis: jangan menganggap rute plugin dengan autentikasi gateway sebagai permukaan admin implisit. Jika rute Anda memerlukan perilaku khusus admin, pilih permukaan cakupan `trusted-operator`, wajibkan mode autentikasi yang membawa identitas, dan dokumentasikan kontrak header `x-openclaw-scopes` secara eksplisit.
+- Setelah pencocokan rute dan autentikasi, handler biasa berpartisipasi dalam penerimaan pekerjaan akar Gateway. Gateway yang disiapkan atau sedang dimulai ulang mengembalikan `503` sebelum memanggil handler. Pengecualian terbatasnya adalah rute `auth: "gateway"` yang diberi hak melalui manifes dan juga memilih permukaan khusus rute `trusted-operator`; rute tersebut tetap dapat dijangkau agar pengiriman kontrol penangguhan tidak terputus, sedangkan rute biasa lain dari plugin yang sama tetap berada di balik batas penerimaan. Kepemilikan `handleUpgrade` WebSocket menggunakan batas penerimaan atomik yang sama; setelah handler menerima soket, masa pakai soket berikutnya dimiliki plugin dan tidak dilacak oleh batas ini.
 
 ## Jalur impor SDK Plugin
 
-Gunakan subjalur SDK yang sempit alih-alih barrel root `openclaw/plugin-sdk` monolitik
-saat membuat Plugin baru. Subjalur inti:
+Gunakan subjalur SDK yang spesifik alih-alih barrel root `openclaw/plugin-sdk` monolitik
+saat membuat plugin baru. Subjalur core:
 
-| Subjalur                            | Tujuan                                              |
-| ----------------------------------- | --------------------------------------------------- |
-| `openclaw/plugin-sdk/plugin-entry`  | Primitif pendaftaran Plugin                         |
-| `openclaw/plugin-sdk/channel-core`  | Pembantu entri/pembuatan kanal                      |
-| `openclaw/plugin-sdk/core`          | Pembantu bersama generik dan kontrak payung         |
-| `openclaw/plugin-sdk/config-schema` | Skema Zod `openclaw.json` root (`OpenClawSchema`)   |
+| Subjalur                            | Tujuan                                             |
+| ----------------------------------- | -------------------------------------------------- |
+| `openclaw/plugin-sdk/plugin-entry`  | Primitif pendaftaran plugin                        |
+| `openclaw/plugin-sdk/channel-core`  | Pembantu entri/build channel                       |
+| `openclaw/plugin-sdk/core`          | Pembantu bersama generik dan kontrak payung        |
+| `openclaw/plugin-sdk/config-schema` | Skema Zod `openclaw.json` root (`OpenClawSchema`) |
 
-Plugin kanal memilih dari keluarga seam yang sempit — `channel-setup`,
+Plugin channel memilih dari keluarga seam yang spesifik — `channel-setup`,
 `setup-runtime`, `setup-tools`, `channel-pairing`,
 `channel-contract`, `channel-feedback`, `channel-inbound`, `channel-outbound`,
 `command-auth`, `secret-input`, `webhook-ingress`,
-`channel-targets`, dan `channel-actions`. Perilaku persetujuan sebaiknya disatukan
-dalam satu kontrak `approvalCapability`, bukan dicampur di berbagai
-kolom Plugin yang tidak terkait. Lihat [Plugin kanal](/id/plugins/sdk-channel-plugins).
+`channel-targets`, dan `channel-actions`. Perilaku persetujuan sebaiknya dikonsolidasikan
+pada satu kontrak `approvalCapability`, bukan dicampurkan di berbagai
+bidang plugin yang tidak terkait. Lihat [Plugin channel](/id/plugins/sdk-channel-plugins).
 
-Pembantu runtime dan konfigurasi berada di subjalur `*-runtime` terfokus yang sesuai
+Pembantu runtime dan konfigurasi berada di bawah subjalur `*-runtime` terfokus yang sesuai
 (`approval-runtime`, `agent-runtime`, `lazy-runtime`, `directory-runtime`,
 `text-runtime`, `runtime-store`, `system-event-runtime`, `heartbeat-runtime`,
 `channel-activity-runtime`, dan sebagainya). Utamakan `config-contracts`,
@@ -612,66 +719,65 @@ alih-alih barrel kompatibilitas `config-runtime` yang luas.
 
 <Info>
 `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/channel-lifecycle`,
-fasad pembantu kanal kecil, `openclaw/plugin-sdk/outbound-runtime`,
+fasad pembantu channel kecil, `openclaw/plugin-sdk/outbound-runtime`,
 `openclaw/plugin-sdk/outbound-send-deps`, `openclaw/plugin-sdk/config-runtime`,
-dan `openclaw/plugin-sdk/infra-runtime` adalah shim kompatibilitas yang telah
-usang untuk Plugin lama. Kode baru sebaiknya mengimpor primitif generik yang
-lebih sempit sebagai gantinya.
+dan `openclaw/plugin-sdk/infra-runtime` adalah shim kompatibilitas yang tidak digunakan lagi untuk
+plugin lama. Kode baru sebaiknya mengimpor primitif generik yang lebih spesifik sebagai gantinya.
 </Info>
 
-Titik masuk internal repo (per root paket Plugin bawaan):
+Titik masuk internal repo (per root paket plugin bawaan):
 
-- `index.js` — entri Plugin bawaan
+- `index.js` — entri plugin bawaan
 - `api.js` — barrel pembantu/tipe
 - `runtime-api.js` — barrel khusus runtime
-- `setup-entry.js` — entri Plugin penyiapan
+- `setup-entry.js` — entri plugin penyiapan
 
 Plugin eksternal hanya boleh mengimpor subjalur `openclaw/plugin-sdk/*`. Jangan pernah
-mengimpor `src/*` milik paket Plugin lain dari inti atau dari Plugin lain.
+mengimpor `src/*` dari paket plugin lain melalui core atau plugin lain.
 Titik masuk yang dimuat melalui fasad mengutamakan snapshot konfigurasi runtime aktif jika
-tersedia, lalu beralih menggunakan berkas konfigurasi yang telah diurai di disk.
+tersedia, kemudian kembali ke berkas konfigurasi yang telah diresolusi pada disk.
 
-Subjalur khusus kapabilitas seperti `image-generation`, `media-understanding`,
-dan `speech` tersedia karena Plugin bawaan menggunakannya saat ini. Subjalur tersebut
-tidak otomatis menjadi kontrak eksternal jangka panjang yang dibekukan — periksa halaman
-referensi SDK terkait ketika mengandalkannya.
+Subjalur khusus kemampuan seperti `image-generation`, `media-understanding`,
+dan `speech` tersedia karena saat ini digunakan oleh plugin bawaan. Subjalur tersebut tidak
+secara otomatis menjadi kontrak eksternal jangka panjang yang dibekukan — periksa halaman referensi SDK
+yang relevan saat mengandalkannya.
 
 ## Skema alat pesan
 
-Plugin sebaiknya memiliki kontribusi skema `describeMessageTool(...)` khusus kanal
-untuk primitif nonpesan seperti reaksi, pembacaan, dan jajak pendapat.
+Plugin sebaiknya memiliki kontribusi skema `describeMessageTool(...)`
+khusus channel untuk primitif nonpesan seperti reaksi, pembacaan, dan jajak pendapat.
 Presentasi pengiriman bersama sebaiknya menggunakan kontrak generik `MessagePresentation`
-alih-alih kolom tombol, komponen, blok, atau kartu asli penyedia.
+alih-alih bidang tombol, komponen, blok, atau kartu native penyedia.
 Lihat [Presentasi Pesan](/id/plugins/message-presentation) untuk kontrak,
-aturan fallback, pemetaan penyedia, dan daftar periksa pembuat Plugin.
+aturan fallback, pemetaan penyedia, dan daftar periksa pembuat plugin.
 
-Plugin yang mampu mengirim mendeklarasikan apa yang dapat dirender melalui kapabilitas pesan:
+Plugin berkemampuan kirim mendeklarasikan hal yang dapat dirender melalui kemampuan pesan:
 
 - `presentation` untuk blok presentasi semantik (`text`, `context`,
   `divider`, `chart`, `table`, `buttons`, `select`)
 - `delivery-pin` untuk permintaan pengiriman yang disematkan
 
-Inti menentukan apakah presentasi dirender secara asli atau diturunkan menjadi teks.
-Jangan mengekspos jalan pintas UI asli penyedia dari alat pesan generik.
-Pembantu SDK yang telah usang untuk skema asli lama tetap diekspor bagi Plugin
-pihak ketiga yang sudah ada, tetapi Plugin baru tidak boleh menggunakannya.
+Core menentukan apakah presentasi dirender secara native atau diturunkan menjadi teks.
+Jangan mengekspos jalan keluar UI native penyedia dari alat pesan generik.
+Pembantu SDK yang tidak digunakan lagi untuk skema native lama tetap diekspor bagi plugin
+pihak ketiga yang sudah ada, tetapi plugin baru tidak boleh menggunakannya.
 
-## Resolusi target kanal
+## Resolusi target channel
 
-Plugin kanal sebaiknya memiliki semantik target khusus kanal. Pertahankan host
+Plugin channel sebaiknya memiliki semantik target khusus channel. Pertahankan host
 keluar bersama tetap generik dan gunakan permukaan adaptor perpesanan untuk aturan penyedia:
 
 - `messaging.inferTargetChatType({ to })` menentukan apakah target yang dinormalisasi
   harus diperlakukan sebagai `direct`, `group`, atau `channel` sebelum pencarian direktori.
-- `messaging.targetResolver.looksLikeId(raw, normalized)` memberi tahu inti apakah suatu
-  input harus langsung menuju resolusi menyerupai ID alih-alih pencarian direktori.
-- `messaging.targetResolver.reservedLiterals` mencantumkan kata polos yang merupakan
-  referensi kanal/sesi untuk penyedia tersebut. Resolusi mempertahankan entri direktori
-  yang dikonfigurasi sebelum menolak literal yang dicadangkan, lalu gagal secara tertutup
-  jika pencarian direktori tidak menemukan hasil.
-- `messaging.targetResolver.resolveTarget(...)` adalah fallback Plugin ketika
-  inti memerlukan resolusi akhir milik penyedia setelah normalisasi atau setelah
-  pencarian direktori tidak menemukan hasil.
+- `messaging.targetResolver.looksLikeId(raw, normalized)` memberi tahu core apakah
+  input harus langsung menuju resolusi mirip ID alih-alih pencarian direktori.
+- `messaging.targetResolver.reservedLiterals` mencantumkan kata-kata polos yang merupakan
+  referensi channel/sesi untuk penyedia tersebut. Resolusi mempertahankan entri
+  direktori yang dikonfigurasi sebelum menolak literal yang dicadangkan, lalu gagal secara tertutup ketika
+  tidak ditemukan di direktori.
+- `messaging.targetResolver.resolveTarget(...)` adalah fallback plugin ketika
+  core memerlukan resolusi akhir milik penyedia setelah normalisasi atau setelah
+  tidak ditemukan di direktori.
 - `messaging.resolveOutboundSessionRoute(...)` memiliki konstruksi rute sesi
   khusus penyedia setelah target diresolusi.
 
@@ -679,33 +785,34 @@ Pembagian yang disarankan:
 
 - Gunakan `inferTargetChatType` untuk keputusan kategori yang harus dilakukan sebelum
   mencari rekan/grup.
-- Gunakan `looksLikeId` untuk pemeriksaan "perlakukan ini sebagai ID target eksplisit/asli".
+- Gunakan `looksLikeId` untuk pemeriksaan "perlakukan ini sebagai ID target eksplisit/native".
 - Gunakan `resolveTarget` untuk fallback normalisasi khusus penyedia, bukan untuk
   pencarian direktori yang luas.
-- Simpan ID asli penyedia seperti ID obrolan, ID utas, JID, handle, dan ID ruang
-  di dalam nilai `target` atau parameter khusus penyedia, bukan di kolom SDK generik.
+- Pertahankan ID native penyedia seperti ID chat, ID utas, JID, handle, dan ID ruang
+  di dalam nilai `target` atau parameter khusus penyedia, bukan dalam bidang SDK
+  generik.
 
-## Direktori berbasis konfigurasi
+## Direktori yang didukung konfigurasi
 
-Plugin yang memperoleh entri direktori dari konfigurasi sebaiknya menyimpan logika tersebut di
-Plugin dan menggunakan kembali pembantu bersama dari
+Plugin yang memperoleh entri direktori dari konfigurasi sebaiknya mempertahankan logika tersebut di dalam
+plugin dan menggunakan kembali pembantu bersama dari
 `openclaw/plugin-sdk/directory-runtime`.
 
-Gunakan ini ketika kanal memerlukan rekan/grup berbasis konfigurasi seperti:
+Gunakan ini ketika channel memerlukan rekan/grup yang didukung konfigurasi seperti:
 
-- rekan pesan langsung yang ditentukan daftar izin
-- peta kanal/grup yang dikonfigurasi
-- fallback direktori statis dalam cakupan akun
+- peer DM berbasis daftar izin
+- peta saluran/grup yang dikonfigurasi
+- fallback direktori statis dengan cakupan akun
 
 Pembantu bersama di `directory-runtime` hanya menangani operasi generik:
 
 - pemfilteran kueri
 - penerapan batas
 - pembantu deduplikasi/normalisasi
-- pembuatan `ChannelDirectoryEntry[]`
+- membangun `ChannelDirectoryEntry[]`
 
-Pemeriksaan akun dan normalisasi ID khusus kanal harus tetap berada dalam
-implementasi Plugin.
+Pemeriksaan akun dan normalisasi id khusus saluran harus tetap berada dalam
+implementasi plugin.
 
 ## Katalog penyedia
 
@@ -718,71 +825,73 @@ Plugin penyedia dapat menentukan katalog model untuk inferensi dengan
 - `{ provider }` untuk satu entri penyedia
 - `{ providers }` untuk beberapa entri penyedia
 
-Gunakan `catalog` ketika Plugin memiliki ID model khusus penyedia, URL dasar
-bawaan, atau metadata model yang dibatasi autentikasi.
+Gunakan `catalog` ketika plugin memiliki id model khusus penyedia, nilai
+default URL dasar, atau metadata model yang dibatasi autentikasi.
 
-`catalog.order` mengontrol kapan katalog Plugin digabungkan relatif terhadap penyedia
-implisit bawaan OpenClaw:
+`catalog.order` mengontrol kapan katalog plugin digabungkan relatif terhadap
+penyedia implisit bawaan OpenClaw:
 
 - `simple`: penyedia berbasis kunci API biasa atau variabel lingkungan
 - `profile`: penyedia yang muncul ketika profil autentikasi tersedia
 - `paired`: penyedia yang menyintesis beberapa entri penyedia terkait
 - `late`: tahap terakhir, setelah penyedia implisit lainnya
 
-Penyedia yang diproses belakangan menang saat terjadi benturan kunci, sehingga Plugin dapat
-secara sengaja menimpa entri penyedia bawaan dengan ID penyedia yang sama.
+Penyedia yang diproses belakangan menang jika terjadi benturan kunci, sehingga
+plugin dapat dengan sengaja mengganti entri penyedia bawaan yang memiliki id
+penyedia sama.
 
-Plugin juga dapat memublikasikan baris model hanya-baca melalui
+Plugin juga dapat menerbitkan baris model hanya-baca melalui
 `api.registerModelCatalogProvider({ provider, kinds, staticCatalog, liveCatalog
 })`. Ini adalah jalur ke depan untuk permukaan daftar/bantuan/pemilih dan mendukung
 baris `text`, `voice`, `image_generation`, `video_generation`, dan `music_generation`.
-Plugin penyedia tetap memiliki pemanggilan endpoint langsung, pertukaran token, dan
-pemetaan respons vendor; inti memiliki bentuk baris umum, label sumber, dan
-pemformatan bantuan alat media. Pendaftaran penyedia pembuatan media menyintesis
-baris katalog statis secara otomatis dari `defaultModel`, `models`, dan
+Plugin penyedia tetap memiliki panggilan endpoint langsung, pertukaran token,
+dan pemetaan respons vendor; inti memiliki bentuk baris umum, label sumber, dan
+pemformatan bantuan alat media. Pendaftaran penyedia pembuatan media secara
+otomatis menyintesis baris katalog statis dari `defaultModel`, `models`, dan
 `capabilities`.
 
 Kompatibilitas:
 
-- `discovery` masih berfungsi sebagai alias lama, tetapi mengeluarkan peringatan keusangan
-- jika `catalog` dan `discovery` keduanya didaftarkan, OpenClaw menggunakan `catalog`
-  dan mengeluarkan peringatan
-- `augmentModelCatalog` telah usang; penyedia bawaan sebaiknya memublikasikan
+- `discovery` masih berfungsi sebagai alias lama, tetapi memunculkan peringatan penghentian
+- jika `catalog` dan `discovery` sama-sama didaftarkan, OpenClaw menggunakan `catalog`
+  dan memunculkan peringatan
+- `augmentModelCatalog` telah dihentikan; penyedia terpaket harus menerbitkan
   baris tambahan melalui `registerModelCatalogProvider`
 
-## Pemeriksaan kanal hanya-baca
+## Pemeriksaan saluran hanya-baca
 
-Jika Plugin Anda mendaftarkan kanal, utamakan penerapan
+Jika plugin Anda mendaftarkan saluran, sebaiknya implementasikan
 `plugin.config.inspectAccount(cfg, accountId)` bersama `resolveAccount(...)`.
 
 Alasannya:
 
 - `resolveAccount(...)` adalah jalur runtime. Jalur ini boleh mengasumsikan kredensial
-  telah diwujudkan sepenuhnya dan dapat langsung gagal ketika rahasia yang diperlukan tidak tersedia.
+  telah diwujudkan sepenuhnya dan dapat langsung gagal ketika rahasia wajib tidak tersedia.
 - Jalur perintah hanya-baca seperti `openclaw status`, `openclaw status --all`,
-  `openclaw channels status`, `openclaw channels resolve`, serta alur perbaikan
-  doctor/konfigurasi seharusnya tidak perlu mewujudkan kredensial runtime hanya untuk
+  `openclaw channels status`, `openclaw channels resolve`, serta alur
+  perbaikan doctor/konfigurasi tidak seharusnya perlu mewujudkan kredensial runtime hanya untuk
   mendeskripsikan konfigurasi.
 
 Perilaku `inspectAccount(...)` yang disarankan:
 
-- Hanya kembalikan status akun yang deskriptif.
+- Hanya kembalikan status akun deskriptif.
 - Pertahankan `enabled` dan `configured`.
-- Sertakan kolom sumber/status kredensial jika relevan, seperti:
+- Sertakan bidang sumber/status kredensial jika relevan, seperti:
   - `tokenSource`, `tokenStatus`
   - `botTokenSource`, `botTokenStatus`
   - `appTokenSource`, `appTokenStatus`
   - `signingSecretSource`, `signingSecretStatus`
 - Anda tidak perlu mengembalikan nilai token mentah hanya untuk melaporkan
-  ketersediaan baca-saja. Mengembalikan `tokenStatus: "available"` (beserta kolom
-  sumber yang sesuai) sudah cukup untuk perintah bergaya status.
+  ketersediaan hanya-baca. Mengembalikan `tokenStatus: "available"` (dan bidang sumber
+  yang sesuai) sudah cukup untuk perintah bergaya status.
 - Gunakan `configured_unavailable` ketika kredensial dikonfigurasi melalui SecretRef tetapi
-  tidak tersedia di jalur perintah saat ini.
+  tidak tersedia dalam jalur perintah saat ini.
 
-Hal ini memungkinkan perintah baca-saja melaporkan "dikonfigurasi tetapi tidak tersedia di jalur
-perintah ini" alih-alih mengalami crash atau keliru melaporkan akun sebagai belum dikonfigurasi.
+Hal ini memungkinkan perintah hanya-baca melaporkan "dikonfigurasi tetapi tidak
+tersedia dalam jalur perintah ini", alih-alih mengalami crash atau salah
+melaporkan akun sebagai tidak dikonfigurasi.
 
-## Paket bundel
+## Paket plugin
 
 Direktori plugin dapat menyertakan `package.json` dengan `openclaw.extensions`:
 
@@ -796,68 +905,69 @@ Direktori plugin dapat menyertakan `package.json` dengan `openclaw.extensions`:
 }
 ```
 
-Setiap entri menjadi sebuah plugin. Jika bundel mencantumkan beberapa ekstensi, id plugin
-menjadi `<manifestOrPackageName>/<fileBase>` (id manifes diprioritaskan jika
-tersedia; jika tidak, nama `package.json` tanpa cakupan digunakan).
+Setiap entri menjadi plugin. Jika paket mencantumkan beberapa ekstensi, id
+plugin menjadi `<manifestOrPackageName>/<fileBase>` (id manifes diutamakan jika
+tersedia; jika tidak, gunakan nama `package.json` tanpa cakupan).
 
-Jika plugin Anda mengimpor dependensi npm, instal dependensi tersebut di direktori itu agar
-`node_modules` tersedia (`npm install` / `pnpm install`).
+Jika plugin Anda mengimpor dependensi npm, instal dependensi tersebut di direktori
+itu agar `node_modules` tersedia (`npm install` / `pnpm install`).
 
-Pembatas keamanan: setiap entri `openclaw.extensions` harus tetap berada di dalam direktori plugin
-setelah resolusi symlink. Entri yang keluar dari direktori paket akan
-ditolak.
+Batas pengaman keamanan: setiap entri `openclaw.extensions` harus tetap berada di
+dalam direktori plugin setelah resolusi symlink. Entri yang keluar dari direktori
+paket akan ditolak.
 
 Catatan keamanan: `openclaw plugins install` menginstal dependensi plugin dengan
-`npm install --omit=dev --ignore-scripts` lokal proyek (tanpa skrip siklus hidup,
-tanpa dependensi pengembangan saat runtime), dengan mengabaikan pengaturan instalasi npm global yang diwariskan.
-Pastikan pohon dependensi plugin berupa "JS/TS murni" dan hindari paket yang memerlukan
+`npm install --omit=dev --ignore-scripts` yang bersifat lokal bagi proyek (tanpa skrip siklus hidup,
+tanpa dependensi pengembangan saat runtime), serta mengabaikan pengaturan instalasi npm global yang diwarisi.
+Jaga agar pohon dependensi plugin tetap "JS/TS murni" dan hindari paket yang memerlukan
 build `postinstall`.
 
-Opsional: `openclaw.setupEntry` dapat menunjuk ke modul ringan khusus penyiapan.
-Ketika OpenClaw membutuhkan permukaan penyiapan untuk plugin kanal yang dinonaktifkan, atau
-ketika plugin kanal diaktifkan tetapi masih belum dikonfigurasi, OpenClaw memuat `setupEntry`
-alih-alih entri plugin lengkap. Hal ini membuat proses awal dan penyiapan lebih ringan
-ketika entri utama plugin Anda juga menghubungkan alat, hook, atau kode lain yang hanya
+Opsional: `openclaw.setupEntry` dapat mengarah ke modul ringan khusus penyiapan.
+Ketika OpenClaw memerlukan permukaan penyiapan untuk plugin saluran yang dinonaktifkan,
+atau ketika plugin saluran diaktifkan tetapi belum dikonfigurasi, OpenClaw memuat `setupEntry`
+alih-alih entri plugin lengkap. Hal ini membuat startup dan penyiapan lebih ringan
+ketika entri plugin utama Anda juga merangkai alat, hook, atau kode lain yang hanya
 digunakan saat runtime.
 
 Opsional: `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`
-dapat mengikutsertakan plugin kanal dalam jalur `setupEntry` yang sama selama fase proses awal
-sebelum gateway mulai mendengarkan, meskipun kanal sudah dikonfigurasi.
+dapat mengikutsertakan plugin saluran ke jalur `setupEntry` yang sama selama fase
+startup prasimak Gateway, bahkan ketika saluran sudah dikonfigurasi.
 
-Gunakan ini hanya ketika `setupEntry` sepenuhnya mencakup permukaan proses awal yang harus tersedia
-sebelum gateway mulai mendengarkan. Dalam praktiknya, ini berarti entri penyiapan
-harus mendaftarkan setiap kemampuan milik kanal yang menjadi dependensi proses awal, seperti:
+Gunakan ini hanya ketika `setupEntry` sepenuhnya mencakup permukaan startup yang harus
+tersedia sebelum Gateway mulai menyimak. Dalam praktiknya, ini berarti entri penyiapan
+harus mendaftarkan setiap kapabilitas milik saluran yang menjadi dependensi startup, seperti:
 
-- pendaftaran kanal itu sendiri
-- setiap rute HTTP yang harus tersedia sebelum gateway mulai mendengarkan
-- setiap metode gateway, alat, atau layanan yang harus tersedia selama rentang waktu yang sama
+- pendaftaran saluran itu sendiri
+- setiap rute HTTP yang harus tersedia sebelum Gateway mulai menyimak
+- setiap metode, alat, atau layanan Gateway yang harus tersedia selama rentang waktu yang sama
 
-Jika entri lengkap Anda masih memiliki kemampuan proses awal apa pun yang diwajibkan, jangan aktifkan
+Jika entri lengkap Anda masih memiliki kapabilitas startup wajib apa pun, jangan aktifkan
 flag ini. Pertahankan perilaku default plugin dan biarkan OpenClaw memuat
-entri lengkap selama proses awal.
+entri lengkap selama startup.
 
-Kanal bawaan juga dapat menerbitkan helper permukaan kontrak khusus penyiapan yang dapat digunakan core
-sebelum runtime kanal lengkap dimuat. Permukaan promosi penyiapan saat ini adalah:
+Saluran terpaket juga dapat menerbitkan pembantu permukaan kontrak khusus penyiapan
+yang dapat diperiksa inti sebelum runtime saluran lengkap dimuat. Permukaan promosi
+penyiapan saat ini adalah:
 
 - `singleAccountKeysToMove`
 - `namedAccountPromotionKeys`
 - `resolveSingleAccountPromotionTarget(...)`
 
-Core menggunakan permukaan tersebut saat perlu mempromosikan konfigurasi kanal satu akun lama
-ke `channels.<id>.accounts.*` tanpa memuat entri plugin lengkap.
-Matrix adalah contoh bawaan saat ini: Matrix hanya memindahkan kunci autentikasi/bootstrap ke
-akun bernama yang dipromosikan ketika akun bernama sudah ada, dan dapat mempertahankan
-kunci akun default nonkanonis yang telah dikonfigurasi alih-alih selalu membuat
+Inti menggunakan permukaan tersebut ketika perlu mempromosikan konfigurasi saluran
+akun tunggal lama ke `channels.<id>.accounts.*` tanpa memuat entri plugin lengkap.
+Matrix adalah contoh terpaket saat ini: Matrix hanya memindahkan kunci autentikasi/bootstrap ke
+akun promosi bernama ketika akun bernama sudah tersedia, dan dapat mempertahankan
+kunci akun default nonkanonis yang dikonfigurasi, alih-alih selalu membuat
 `accounts.default`.
 
-Adaptor patch penyiapan tersebut menjaga penemuan permukaan kontrak bawaan tetap lambat. Waktu impor
-tetap ringan; permukaan promosi hanya dimuat saat pertama kali digunakan, bukan
-memasuki kembali proses awal kanal bawaan saat impor modul.
+Adaptor patch penyiapan tersebut menjaga penemuan permukaan kontrak terpaket tetap
+malas. Waktu impor tetap ringan; permukaan promosi hanya dimuat pada penggunaan
+pertama, alih-alih memasuki kembali startup saluran terpaket saat modul diimpor.
 
-Ketika permukaan proses awal tersebut menyertakan metode RPC gateway, pertahankan metode itu pada
-prefiks khusus plugin. Namespace admin core (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu diresolusikan
-ke `operator.admin`, meskipun plugin meminta cakupan yang lebih sempit.
+Ketika permukaan startup tersebut mencakup metode RPC Gateway, pertahankan metode itu
+dengan prefiks khusus plugin. Namespace admin inti (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu
+diresolusikan ke `operator.admin`, bahkan jika plugin meminta cakupan yang lebih sempit.
 
 Contoh:
 
@@ -874,10 +984,10 @@ Contoh:
 }
 ```
 
-### Metadata katalog kanal
+### Metadata katalog saluran
 
-Plugin kanal dapat memublikasikan metadata penyiapan/penemuan melalui `openclaw.channel` dan
-petunjuk instalasi melalui `openclaw.install`. Hal ini menjaga katalog core bebas data.
+Plugin saluran dapat mengiklankan metadata penyiapan/penemuan melalui `openclaw.channel` dan
+petunjuk instalasi melalui `openclaw.install`. Hal ini menjaga katalog inti tetap bebas data.
 
 Contoh:
 
@@ -889,10 +999,10 @@ Contoh:
     "channel": {
       "id": "nextcloud-talk",
       "label": "Nextcloud Talk",
-      "selectionLabel": "Nextcloud Talk (self-hosted)",
+      "selectionLabel": "Nextcloud Talk (dihosting sendiri)",
       "docsPath": "/channels/nextcloud-talk",
       "docsLabel": "nextcloud-talk",
-      "blurb": "Self-hosted chat via Nextcloud Talk webhook bots.",
+      "blurb": "Obrolan yang dihosting sendiri melalui bot webhook Nextcloud Talk.",
       "order": 65,
       "aliases": ["nc-talk", "nc"]
     },
@@ -905,59 +1015,61 @@ Contoh:
 }
 ```
 
-Kolom `openclaw.channel` yang berguna selain contoh minimal:
+Bidang `openclaw.channel` yang berguna di luar contoh minimal:
 
-- `detailLabel`: label sekunder untuk permukaan katalog/status yang lebih lengkap
+- `detailLabel`: label sekunder untuk permukaan katalog/status yang lebih kaya
 - `docsLabel`: mengganti teks tautan untuk tautan dokumentasi
-- `preferOver`: id plugin/kanal berprioritas lebih rendah yang harus dikalahkan entri katalog ini
+- `preferOver`: id plugin/saluran berprioritas lebih rendah yang harus dikalahkan oleh entri katalog ini
 - `selectionDocsPrefix`, `selectionDocsOmitLabel`, `selectionExtras`: kontrol teks permukaan pemilihan
-- `markdownCapable`: menandai kanal sebagai mendukung markdown untuk keputusan pemformatan keluar
-- `exposure.configured`: menyembunyikan kanal dari permukaan daftar kanal yang dikonfigurasi jika diatur ke `false`
-- `exposure.setup`: menyembunyikan kanal dari pemilih penyiapan/konfigurasi interaktif jika diatur ke `false`
-- `exposure.docs`: menandai kanal sebagai internal/privat untuk permukaan navigasi dokumentasi
+- `markdownCapable`: menandai saluran sebagai mendukung markdown untuk keputusan pemformatan keluar
+- `exposure.configured`: menyembunyikan saluran dari permukaan daftar saluran yang dikonfigurasi jika diatur ke `false`
+- `exposure.setup`: menyembunyikan saluran dari pemilih penyiapan/konfigurasi interaktif jika diatur ke `false`
+- `exposure.docs`: menandai saluran sebagai internal/privat untuk permukaan navigasi dokumentasi
 - `showConfigured` / `showInSetup`: alias lama masih diterima untuk kompatibilitas; utamakan `exposure`
-- `quickstartAllowFrom`: mengikutsertakan kanal dalam alur mulai cepat `allowFrom` standar
+- `quickstartAllowFrom`: mengikutsertakan saluran ke alur panduan memulai cepat standar `allowFrom`
 - `forceAccountBinding`: mewajibkan pengikatan akun secara eksplisit meskipun hanya ada satu akun
-- `preferSessionLookupForAnnounceTarget`: mengutamakan pencarian sesi saat menentukan target pengumuman
+- `preferSessionLookupForAnnounceTarget`: mengutamakan pencarian sesi saat menyelesaikan target pengumuman
 
-OpenClaw juga dapat menggabungkan **katalog kanal eksternal** (misalnya, ekspor
-registri MPM). Letakkan berkas JSON di salah satu lokasi berikut:
+OpenClaw juga dapat menggabungkan **katalog saluran eksternal** (misalnya, ekspor
+registri MPM). Letakkan file JSON di salah satu lokasi berikut:
 
 - `~/.openclaw/mpm/plugins.json`
 - `~/.openclaw/mpm/catalog.json`
 - `~/.openclaw/plugins/catalog.json`
 
 Atau arahkan `OPENCLAW_PLUGIN_CATALOG_PATHS` (atau `OPENCLAW_MPM_CATALOG_PATHS`) ke
-satu atau beberapa berkas JSON (dipisahkan koma/titik koma/`PATH`). Setiap berkas harus
+satu atau beberapa file JSON (dipisahkan koma/titik koma/`PATH`). Setiap file harus
 berisi `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`. Parser juga menerima `"packages"` atau `"plugins"` sebagai alias lama untuk kunci `"entries"`.
 
-Entri katalog kanal dan entri katalog instalasi penyedia yang dihasilkan mengekspos
-fakta sumber instalasi yang dinormalisasi di samping blok `openclaw.install` mentah. Fakta
-yang dinormalisasi mengidentifikasi apakah spesifikasi npm merupakan versi pasti atau pemilih
-mengambang, apakah metadata integritas yang diharapkan tersedia, dan apakah jalur
-sumber lokal juga tersedia. Ketika identitas katalog/paket diketahui,
-fakta yang dinormalisasi memperingatkan jika nama paket npm yang diurai menyimpang dari identitas tersebut.
-Fakta tersebut juga memperingatkan ketika `defaultChoice` tidak valid atau menunjuk ke sumber yang
-tidak tersedia, dan ketika metadata integritas npm tersedia tanpa sumber npm yang
-valid. Konsumen harus memperlakukan `installSource` sebagai kolom opsional tambahan agar
-entri buatan tangan dan shim katalog tidak perlu menyintesisnya.
-Hal ini memungkinkan orientasi awal dan diagnostik menjelaskan status lapisan sumber tanpa
+Entri katalog saluran dan entri katalog instalasi penyedia yang dihasilkan
+mengekspos fakta sumber instalasi yang dinormalisasi di samping blok mentah
+`openclaw.install`. Fakta yang dinormalisasi mengidentifikasi apakah spesifikasi npm
+merupakan versi pasti atau selektor mengambang, apakah metadata integritas yang
+diharapkan tersedia, dan apakah jalur sumber lokal juga tersedia. Jika identitas
+katalog/paket diketahui, fakta yang dinormalisasi akan memperingatkan jika nama
+paket npm yang diuraikan menyimpang dari identitas tersebut.
+Fakta tersebut juga memperingatkan ketika `defaultChoice` tidak valid atau menunjuk
+ke sumber yang tidak tersedia, serta ketika metadata integritas npm tersedia tanpa
+sumber npm yang valid. Konsumen harus memperlakukan `installSource` sebagai bidang
+opsional tambahan agar entri yang dibuat secara manual dan shim katalog tidak perlu
+menyintesisnya.
+Hal ini memungkinkan onboarding dan diagnostik menjelaskan status bidang sumber tanpa
 mengimpor runtime plugin.
 
-Entri npm eksternal resmi harus mengutamakan `npmSpec` yang pasti beserta
-`expectedIntegrity`. Nama paket polos dan dist-tag tetap berfungsi untuk
-kompatibilitas, tetapi memunculkan peringatan lapisan sumber agar katalog dapat beralih
-menuju instalasi tersemat yang diperiksa integritasnya tanpa merusak plugin yang sudah ada.
-Ketika orientasi awal menginstal dari jalur katalog lokal, proses tersebut mencatat entri indeks
-plugin terkelola dengan `source: "path"` dan `sourcePath` relatif terhadap workspace
-jika memungkinkan. Jalur pemuatan operasional absolut tetap berada di
-`plugins.load.paths`; catatan instalasi menghindari duplikasi jalur workstation lokal
-ke dalam konfigurasi berumur panjang. Hal ini membuat instalasi pengembangan lokal tetap terlihat oleh
-diagnostik lapisan sumber tanpa menambahkan permukaan pengungkapan jalur sistem berkas mentah
-kedua. Tabel SQLite `installed_plugin_index` yang dipersistenkan merupakan sumber
-kebenaran instalasi dan dapat disegarkan tanpa memuat modul runtime plugin.
-Peta `installRecords` bersifat persisten meskipun manifes plugin hilang atau
-tidak valid; payload `plugins` merupakan tampilan manifes yang dapat dibangun ulang.
+Entri npm eksternal resmi sebaiknya mengutamakan `npmSpec` yang persis beserta
+`expectedIntegrity`. Nama paket tanpa versi dan dist-tag tetap berfungsi untuk
+kompatibilitas, tetapi memunculkan peringatan bidang sumber agar katalog dapat beralih
+menuju instalasi yang disematkan dan diperiksa integritasnya tanpa merusak plugin yang ada.
+Saat onboarding menginstal dari jalur katalog lokal, proses tersebut mencatat entri indeks
+plugin terkelola dengan `source: "path"` dan `sourcePath` yang relatif terhadap
+ruang kerja jika memungkinkan. Jalur pemuatan operasional absolut tetap berada di
+`plugins.load.paths`; catatan instalasi menghindari duplikasi jalur stasiun kerja lokal
+ke dalam konfigurasi berumur panjang. Hal ini menjaga instalasi pengembangan lokal tetap
+terlihat oleh diagnostik bidang sumber tanpa menambahkan permukaan pengungkapan jalur
+sistem berkas mentah kedua. Tabel SQLite `installed_plugin_index` yang dipersistenkan merupakan
+sumber kebenaran instalasi dan dapat disegarkan tanpa memuat modul runtime plugin.
+Peta `installRecords` miliknya tetap persisten meskipun manifes plugin tidak ada atau
+tidak valid; payload `plugins` miliknya merupakan tampilan manifes yang dapat dibangun ulang.
 
 ## Plugin mesin konteks
 
@@ -967,7 +1079,7 @@ dan Compaction. Daftarkan dari plugin Anda dengan
 `plugins.slots.contextEngine`.
 
 Gunakan ini ketika plugin Anda perlu mengganti atau memperluas pipeline konteks
-default, bukan sekadar menambahkan pencarian memori atau hook.
+bawaan, bukan sekadar menambahkan pencarian memori atau hook.
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -1001,17 +1113,23 @@ export default function (api) {
 Factory `ctx` mengekspos nilai opsional `config`, `agentDir`, dan `workspaceDir`
 untuk inisialisasi pada waktu konstruksi.
 
+Host menyelesaikan persiapan prompt memori asinkron yang terdaftar sebelum memanggil
+`assemble()` milik mesin nonwarisan. `buildMemorySystemPromptAddition(...)` tetap
+sinkron dan membaca snapshot eksekusi yang tidak dapat diubah tersebut selama `assemble()` aktif.
+Teruskan konteks alat dan kutipan yang diberikan tanpa perubahan agar snapshot
+tidak dapat melintasi batas eksekusi.
+
 `assemble()` dapat mengembalikan `contextProjection` ketika harness aktif memiliki
-utas backend persisten. Hilangkan kolom tersebut untuk proyeksi per giliran lama. Kembalikan
+thread backend persisten. Hilangkan untuk proyeksi per giliran warisan. Kembalikan
 `{ mode: "thread_bootstrap", epoch }` ketika konteks yang dirakit harus
-disuntikkan satu kali ke dalam utas backend dan digunakan kembali hingga epoch berubah. Ubah
+disuntikkan satu kali ke dalam thread backend dan digunakan kembali hingga epoch berubah. Ubah
 epoch setelah konteks semantik mesin berubah, misalnya setelah proses
-Compaction yang dimiliki mesin. Host dapat mempertahankan metadata pemanggilan alat, bentuk
-input, dan hasil alat yang telah disunting dalam proyeksi bootstrap utas agar
-utas backend baru mempertahankan kesinambungan alat tanpa menyalin payload mentah
+Compaction yang dimiliki mesin. Host dapat mempertahankan metadata panggilan alat, bentuk
+input, dan hasil alat yang telah disunting dalam proyeksi bootstrap thread agar
+thread backend baru mempertahankan kesinambungan alat tanpa menyalin payload mentah
 yang mengandung rahasia.
 
-Jika mesin Anda **tidak** memiliki algoritme Compaction, tetap implementasikan `compact()`
+Jika mesin Anda **tidak** memiliki algoritma Compaction, pertahankan implementasi `compact()`
 dan delegasikan secara eksplisit:
 
 ```ts
@@ -1052,60 +1170,60 @@ export default function (api) {
 
 ## Menambahkan kapabilitas baru
 
-Ketika sebuah plugin membutuhkan perilaku yang tidak sesuai dengan API saat ini, jangan melewati sistem plugin dengan mengakses bagian internal secara langsung. Tambahkan kapabilitas yang belum tersedia tersebut.
+Ketika sebuah plugin memerlukan perilaku yang tidak sesuai dengan API saat ini, jangan melewati
+sistem plugin dengan akses langsung privat. Tambahkan kapabilitas yang belum tersedia.
 
 Urutan yang disarankan:
 
-1. **Tentukan kontrak inti.** Putuskan perilaku bersama yang harus dimiliki inti:
-   kebijakan, mekanisme cadangan, penggabungan konfigurasi, siklus hidup, semantik
-   yang ditujukan untuk kanal, dan bentuk pembantu runtime.
+1. **Tentukan kontrak inti.** Putuskan perilaku bersama apa yang harus dimiliki inti:
+   kebijakan, fallback, penggabungan konfigurasi, siklus hidup, semantik yang menghadap kanal, dan
+   bentuk helper runtime.
 2. **Tambahkan permukaan registrasi/runtime plugin bertipe.** Perluas
-   `OpenClawPluginApi` dan/atau `api.runtime` dengan permukaan kapabilitas
-   bertipe terkecil yang tetap berguna.
-3. **Hubungkan inti serta konsumen kanal/fitur.** Kanal dan plugin fitur
-   harus menggunakan kapabilitas baru melalui inti, bukan dengan mengimpor
-   implementasi vendor secara langsung.
+   `OpenClawPluginApi` dan/atau `api.runtime` dengan permukaan kapabilitas bertipe
+   terkecil yang berguna.
+3. **Hubungkan inti + konsumen kanal/fitur.** Kanal dan plugin fitur
+   harus menggunakan kapabilitas baru melalui inti, bukan dengan mengimpor implementasi
+   vendor secara langsung.
 4. **Daftarkan implementasi vendor.** Plugin vendor kemudian mendaftarkan
-   backend mereka pada kapabilitas tersebut.
-5. **Tambahkan cakupan kontrak.** Tambahkan pengujian agar bentuk kepemilikan
-   dan registrasi tetap eksplisit dari waktu ke waktu.
+   backend mereka terhadap kapabilitas tersebut.
+5. **Tambahkan cakupan kontrak.** Tambahkan pengujian agar bentuk kepemilikan dan registrasi
+   tetap eksplisit seiring waktu.
 
-Dengan cara ini, OpenClaw tetap memiliki pendirian yang jelas tanpa menjadi
-tertanam secara kaku pada cara pandang satu penyedia. Lihat
-[Pedoman Praktis Kapabilitas](/id/plugins/adding-capabilities) untuk daftar periksa
-berkas yang konkret dan contoh lengkap.
+Inilah cara OpenClaw mempertahankan pendirian yang tegas tanpa menjadi terkode keras pada
+cara pandang satu penyedia. Lihat [Buku Resep Kapabilitas](/id/plugins/adding-capabilities)
+untuk daftar periksa berkas konkret dan contoh lengkap.
 
 ### Daftar periksa kapabilitas
 
-Ketika Anda menambahkan kapabilitas baru, implementasinya biasanya harus
-menyentuh permukaan berikut secara bersamaan:
+Saat menambahkan kapabilitas baru, implementasi biasanya harus menyentuh permukaan
+berikut secara bersamaan:
 
 - tipe kontrak inti di `src/<capability>/types.ts`
-- pembantu runner/runtime inti di `src/<capability>/runtime.ts`
+- runner/helper runtime inti di `src/<capability>/runtime.ts`
 - permukaan registrasi API plugin di `src/plugins/types.ts`
-- penghubungan registri plugin di `src/plugins/registry.ts`
+- pengkabelan registri plugin di `src/plugins/registry.ts`
 - eksposur runtime plugin di `src/plugins/runtime/*` ketika plugin fitur/kanal
   perlu menggunakannya
-- pembantu pencatatan/pengujian di `src/test-utils/plugin-registration.ts`
-- pernyataan kepemilikan/kontrak di `src/plugins/contracts/registry.ts`
+- helper pengambilan/pengujian di `src/test-utils/plugin-registration.ts`
+- asersi kepemilikan/kontrak di `src/plugins/contracts/registry.ts`
 - dokumentasi operator/plugin di `docs/`
 
-Jika salah satu permukaan tersebut tidak ada, biasanya itu merupakan tanda
-bahwa kapabilitas tersebut belum terintegrasi sepenuhnya.
+Jika salah satu permukaan tersebut tidak ada, biasanya itu menandakan bahwa kapabilitas
+belum terintegrasi sepenuhnya.
 
 ### Templat kapabilitas
 
 Pola minimal:
 
 ```ts
-// core contract
+// kontrak inti
 export type VideoGenerationProviderPlugin = {
   id: string;
   label: string;
   generateVideo: (req: VideoGenerationRequest) => Promise<VideoGenerationResult>;
 };
 
-// plugin API
+// API plugin
 api.registerVideoGenerationProvider({
   id: "openai",
   label: "OpenAI",
@@ -1114,27 +1232,26 @@ api.registerVideoGenerationProvider({
   },
 });
 
-// shared runtime helper for feature/channel plugins
+// helper runtime bersama untuk plugin fitur/kanal
 const clip = await api.runtime.videoGeneration.generate({
-  prompt: "Show the robot walking through the lab.",
+  prompt: "Tampilkan robot berjalan melewati laboratorium.",
   cfg,
 });
 ```
 
 Pola pengujian kontrak (`src/plugins/contracts/registry.ts` mengekspos pencarian
 kepemilikan seperti `providerContractPluginIds`; pengujian memastikan daftar
-`contracts.videoGenerationProviders` milik sebuah plugin cocok dengan apa yang
-sebenarnya didaftarkannya):
+`contracts.videoGenerationProviders` sebuah plugin cocok dengan yang benar-benar didaftarkannya):
 
 ```ts
 expect(pluginManifest.contracts?.videoGenerationProviders).toEqual(["openai"]);
 ```
 
-Hal tersebut menjaga aturan tetap sederhana:
+Hal tersebut menjaga aturannya tetap sederhana:
 
-- inti memiliki kontrak kapabilitas dan orkestrasi
+- inti memiliki kontrak kapabilitas + orkestrasi
 - plugin vendor memiliki implementasi vendor
-- plugin fitur/kanal menggunakan pembantu runtime
+- plugin fitur/kanal menggunakan helper runtime
 - pengujian kontrak menjaga kepemilikan tetap eksplisit
 
 ## Terkait

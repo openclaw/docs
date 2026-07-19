@@ -1,77 +1,78 @@
 ---
 read_when:
-    - आपको प्रमुख दस्तावेज़ पृष्ठों तक त्वरित पहुँच चाहिए
-summary: OpenClaw दस्तावेज़ों के सबसे अधिक उपयोग किए जाने वाले चयनित लिंक।
+    - आप प्रमुख दस्तावेज़ पृष्ठों तक तुरंत पहुँचना चाहते हैं
+summary: सबसे अधिक उपयोग किए जाने वाले OpenClaw दस्तावेज़ों की चुनिंदा लिंक।
 title: दस्तावेज़ निर्देशिका
 x-i18n:
-    generated_at: "2026-06-29T00:13:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:52:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
+    source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-यह पृष्ठ एक चुना हुआ इंडेक्स है। यदि आप नए हैं, तो [शुरू करना](/hi/start/getting-started) से शुरू करें।
-दस्तावेज़ों के पूर्ण मानचित्र के लिए, [दस्तावेज़ हब](/hi/start/hubs) देखें।
+यह पृष्ठ एक चयनित अनुक्रमणिका है। यदि आप नए हैं, तो [आरंभ करना](/hi/start/getting-started) से शुरुआत करें।
+दस्तावेज़ों के संपूर्ण मानचित्र के लिए, [दस्तावेज़ केंद्र](/hi/start/hubs) देखें।
 </Note>
 
 ## यहाँ से शुरू करें
 
-- [दस्तावेज़ हब (सभी पृष्ठ लिंक किए गए)](/hi/start/hubs)
+- [दस्तावेज़ केंद्र (सभी पृष्ठ लिंक किए गए हैं)](/hi/start/hubs)
 - [सहायता](/hi/help)
 - [कॉन्फ़िगरेशन](/hi/gateway/configuration)
-- [कॉन्फ़िगरेशन उदाहरण](/hi/gateway/configuration-examples)
-- [Slash कमांड](/hi/tools/slash-commands)
+- [कॉन्फ़िगरेशन के उदाहरण](/hi/gateway/configuration-examples)
+- [स्लैश कमांड](/hi/tools/slash-commands)
 - [मल्टी-एजेंट रूटिंग](/hi/concepts/multi-agent)
-- [अपडेट करना और रोलबैक](/hi/install/updating)
-- [पेयरिंग (DM और नोड्स)](/hi/channels/pairing)
+- [अपडेट और रोलबैक](/hi/install/updating)
+- [पेयरिंग (DM और नोड)](/hi/channels/pairing)
 - [Nix मोड](/hi/install/nix)
 - [OpenClaw सहायक सेटअप](/hi/start/openclaw)
 - [Skills](/hi/tools/skills)
 - [Skills कॉन्फ़िगरेशन](/hi/tools/skills-config)
-- [कार्यक्षेत्र टेम्पलेट्स](/hi/reference/templates/AGENTS)
-- [RPC एडेप्टर](/hi/reference/rpc)
+- [वर्कस्पेस टेम्पलेट](/hi/reference/templates/AGENTS)
+- [RPC अडैप्टर](/hi/reference/rpc)
 - [Gateway रनबुक](/hi/gateway)
-- [नोड्स (iOS और Android)](/hi/nodes)
-- [वेब सतहें (Control UI)](/hi/web)
+- [नोड (iOS और Android)](/hi/nodes)
+- [वेब इंटरफ़ेस (कंट्रोल UI)](/hi/web)
 - [खोज और ट्रांसपोर्ट](/hi/gateway/discovery)
-- [दूरस्थ पहुँच](/hi/gateway/remote)
+- [रिमोट एक्सेस](/hi/gateway/remote)
 
-## प्रदाता और UX
+## चैनल और उपयोगकर्ता अनुभव
 
-- [WebChat](/hi/web/webchat)
-- [Control UI (ब्राउज़र)](/hi/web/control-ui)
-- [Telegram](/hi/channels/telegram)
+- [कंट्रोल UI (ब्राउज़र)](/hi/web/control-ui)
 - [Discord](/hi/channels/discord)
-- [Mattermost](/hi/channels/mattermost)
-- [QQ Bot](/hi/channels/qqbot)
-- [iMessage](/hi/channels/imessage)
 - [समूह](/hi/channels/groups)
-- [WhatsApp समूह संदेश](/hi/channels/group-messages)
-- [मीडिया छवियाँ](/hi/nodes/images)
+- [iMessage](/hi/channels/imessage)
+- [Mattermost](/hi/channels/mattermost)
 - [मीडिया ऑडियो](/hi/nodes/audio)
+- [मीडिया चित्र](/hi/nodes/images)
+- [QQ Bot](/hi/channels/qqbot)
+- [Telegram](/hi/channels/telegram)
+- [WebChat](/hi/web/webchat)
+- [WhatsApp समूह संदेश](/hi/channels/group-messages)
 
-## सहायक ऐप्स
+## सहायक ऐप
 
-- [macOS ऐप](/hi/platforms/macos)
-- [iOS ऐप](/hi/platforms/ios)
 - [Android ऐप](/hi/platforms/android)
-- [Windows Hub](/hi/platforms/windows)
+- [iOS ऐप](/hi/platforms/ios)
 - [Linux ऐप](/hi/platforms/linux)
+- [macOS ऐप](/hi/platforms/macos)
+- [Windows Hub](/hi/platforms/windows)
 
 ## संचालन और सुरक्षा
 
 - [सत्र](/hi/concepts/session)
-- [Cron जॉब्स](/hi/automation/cron-jobs)
-- [Webhooks](/hi/automation/cron-jobs#webhooks)
+- [Cron जॉब](/hi/automation/cron-jobs)
+- [Webhook](/hi/automation/cron-jobs#webhooks)
 - [Gmail हुक (Pub/Sub)](/hi/automation/cron-jobs#gmail-pubsub-integration)
 - [सुरक्षा](/hi/gateway/security)
 - [समस्या निवारण](/hi/gateway/troubleshooting)
 
 ## संबंधित
 
-- [शुरू करना](/hi/start/getting-started)
-- [दस्तावेज़ हब](/hi/start/hubs)
+- [आरंभ करना](/hi/start/getting-started)
+- [दस्तावेज़ केंद्र](/hi/start/hubs)

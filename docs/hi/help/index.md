@@ -1,47 +1,48 @@
 ---
 read_when:
-    - आप नए हैं और “क्या क्लिक/चलाना है” वाली मार्गदर्शिका चाहते हैं
-    - कुछ टूट गया है और आप समाधान तक पहुँचने का सबसे तेज़ रास्ता चाहते हैं
-summary: 'सहायता हब: सामान्य सुधार, इंस्टॉल की जांच, और कुछ टूटने पर कहां देखें'
+    - आप नए हैं और “मुझे क्या क्लिक/रन करना है” मार्गदर्शिका चाहते हैं
+    - कुछ गड़बड़ हो गई है और आप इसे ठीक करने का सबसे तेज़ तरीका चाहते हैं
+summary: 'सहायता केंद्र: सामान्य समाधान, इंस्टॉलेशन की पुष्टि, और कुछ खराब होने पर कहाँ देखें'
 title: सहायता
 x-i18n:
-    generated_at: "2026-06-28T23:16:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:54:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
+    source_hash: 3068eafc6157b73b1245d56c51b10091292a9f9d86849423cb70bd311f76c1bb
     source_path: help/index.md
     workflow: 16
 ---
 
-आम समस्याओं के लिए त्वरित "अटकाव दूर करें" पथ:
+लक्षण के अनुसार समस्या से सबसे तेज़ी से बाहर निकलने का मार्ग:
 
-- [समस्या-निवारण](/hi/help/troubleshooting) - लक्षण-प्रथम निर्णय वृक्ष
-- [डीबगिंग](/hi/help/debugging) - watch mode, raw streams, dev profile
-- [इंस्टॉल sanity](/hi/install/node#troubleshooting) - Node / npm / PATH जांचें
-- [Gateway समस्या-निवारण](/hi/gateway/troubleshooting) - Gateway-विशिष्ट समस्याएं
-- [Doctor](/hi/gateway/doctor) - स्वचालित मरम्मत + डायग्नोस्टिक बंडल
+- [समस्या निवारण](/hi/help/troubleshooting) - लक्षण-आधारित निर्णय-वृक्ष
+- [डीबगिंग](/hi/help/debugging) - वॉच मोड, अपरिष्कृत स्ट्रीम, डेवलपमेंट प्रोफ़ाइल
+- [इंस्टॉलेशन की शुद्धता जाँच](/hi/install/node#troubleshooting) - Node / npm / PATH की जाँच
+- [Gateway समस्या निवारण](/hi/gateway/troubleshooting) - Gateway-विशिष्ट समस्याएँ
+- [डॉक्टर](/hi/gateway/doctor) - `openclaw doctor`: स्वास्थ्य जाँच, कॉन्फ़िगरेशन माइग्रेशन, सुधार के चरण
 
-## FAQ
+## अक्सर पूछे जाने वाले प्रश्न
 
-- [FAQ](/hi/help/faq) - रोजमर्रा की अवधारणाएं और संचालन संबंधी प्रश्न
-- [पहले रन का FAQ](/hi/help/faq-first-run) - इंस्टॉल, onboard, auth, सब्सक्रिप्शन, शुरुआती विफलताएं
-- [मॉडल FAQ](/hi/help/faq-models) - मॉडल चयन, failover, auth profiles
+- [अक्सर पूछे जाने वाले प्रश्न](/hi/help/faq) - दैनिक उपयोग की अवधारणाएँ और संचालन संबंधी प्रश्न
+- [पहली बार चलाने से जुड़े अक्सर पूछे जाने वाले प्रश्न](/hi/help/faq-first-run) - इंस्टॉलेशन, ऑनबोर्डिंग, प्रमाणीकरण, सदस्यताएँ, शुरुआती विफलताएँ
+- [मॉडल से जुड़े अक्सर पूछे जाने वाले प्रश्न](/hi/help/faq-models) - मॉडल चयन, फ़ेलओवर, प्रमाणीकरण प्रोफ़ाइल
 
-## डायग्नोस्टिक्स
+## निदान
 
-- [Environment variables](/hi/help/environment) - OpenClaw env vars कहां से लोड करता है और precedence
-- [डायग्नोस्टिक flags](/hi/diagnostics/flags) - रनटाइम डायग्नोस्टिक्स और verbose modes
-- [Node + tsx crash](/hi/debug/node-issue) - विशिष्ट Node / tsx रनटाइम crash परिदृश्य
+- [परिवेश चर](/hi/help/environment) - OpenClaw परिवेश चर कहाँ से लोड करता है और उनकी प्राथमिकता
+- [निदान फ़्लैग](/hi/diagnostics/flags) - रनटाइम निदान और विस्तृत मोड
+- [Node + tsx क्रैश](/hi/debug/node-issue) - Node / tsx रनटाइम क्रैश के विशिष्ट परिदृश्य
 
-## Testing
+## परीक्षण
 
-- [Testing](/hi/help/testing) - test suites और Docker runners
-- [अपडेट और Plugin tests](/hi/help/testing-updates-plugins) - पैकेज अपडेट, माइग्रेशन, और Plugin install validation
-- [Live tests](/hi/help/testing-live) - नेटवर्क को छूने वाले provider और CLI smokes
+- [परीक्षण](/hi/help/testing) - परीक्षण सुइट और Docker रनर
+- [अपडेट और Plugin परीक्षण](/hi/help/testing-updates-plugins) - पैकेज अपडेट, माइग्रेशन और Plugin इंस्टॉलेशन का सत्यापन
+- [लाइव परीक्षण](/hi/help/testing-live) - नेटवर्क का उपयोग करने वाले प्रोवाइडर और CLI स्मोक परीक्षण
 
-## Community और meta
+## समुदाय और मेटा
 
-- [OpenClaw lore](/hi/start/lore) - कहानी
-- [Docs hubs](/hi/start/hubs) - यह दस्तावेज़ीकरण कैसे व्यवस्थित है
-- [Docs directory](/hi/start/docs-directory) - पूरा फ़ाइल मानचित्र
+- [OpenClaw की कहानी](/hi/start/lore) - इसकी कहानी
+- [दस्तावेज़ीकरण हब](/hi/start/hubs) - यह दस्तावेज़ीकरण कैसे व्यवस्थित है
+- [दस्तावेज़ीकरण निर्देशिका](/hi/start/docs-directory) - संपूर्ण फ़ाइल मानचित्र

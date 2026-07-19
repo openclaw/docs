@@ -4,30 +4,31 @@ read_when:
     - Bạn muốn tài liệu tham khảo về tất cả các phương thức đăng ký trên OpenClawPluginApi
     - Bạn đang tra cứu một mục xuất cụ thể của SDK
 sidebarTitle: Plugin SDK overview
-summary: Bản đồ import, tài liệu tham chiếu API đăng ký và kiến trúc SDK
+summary: Sơ đồ nhập, tài liệu tham chiếu API đăng ký và kiến trúc SDK
 title: Tổng quan về SDK Plugin
 x-i18n:
-    generated_at: "2026-07-12T08:17:58Z"
+    generated_at: "2026-07-19T05:53:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 046c6f6996d078f3847dc76b5cc917db614ce85fe66cc5e511793ae9026e1073
+    source_hash: 783bafd34098e5d77aab8e574b6518f5df91ba622c9736aef8addff4914f3a9f
     source_path: plugins/sdk-overview.md
     workflow: 16
 ---
 
-SDK Plugin là hợp đồng có kiểu giữa các plugin và lõi. Trang này là tài liệu
-tham chiếu về **nội dung cần nhập** và **nội dung bạn có thể đăng ký**.
+SDK plugin là hợp đồng có kiểu giữa các plugin và phần lõi. Trang này là
+tài liệu tham chiếu về **những gì cần nhập** và **những gì bạn có thể đăng ký**.
 
 <Note>
   Trang này dành cho tác giả plugin sử dụng `openclaw/plugin-sdk/*` bên trong
-  OpenClaw. Đối với ứng dụng bên ngoài, tập lệnh, bảng điều khiển, tác vụ CI và
-  tiện ích mở rộng IDE muốn chạy tác tử thông qua Gateway, hãy sử dụng
+  OpenClaw. Đối với các ứng dụng bên ngoài, tập lệnh, bảng điều khiển, tác vụ CI và tiện ích mở rộng IDE
+  muốn chạy agent thông qua Gateway, hãy sử dụng
   [Tích hợp Gateway cho ứng dụng bên ngoài](/vi/gateway/external-apps).
 </Note>
 
 <Tip>
-Bạn đang tìm hướng dẫn thực hành? Hãy bắt đầu với [Xây dựng plugin](/vi/plugins/building-plugins). Sử dụng [Plugin kênh](/vi/plugins/sdk-channel-plugins) cho các kênh, [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins) cho các nhà cung cấp mô hình, [Plugin phần phụ trợ CLI](/vi/plugins/cli-backend-plugins) cho phần phụ trợ CLI AI cục bộ, [Plugin bộ khung tác tử](/vi/plugins/sdk-agent-harness) cho trình thực thi tác tử gốc và [Hook Plugin](/vi/plugins/hooks) cho hook công cụ hoặc vòng đời.
+Nếu bạn đang tìm hướng dẫn thực hành, hãy bắt đầu với [Xây dựng plugin](/vi/plugins/building-plugins). Sử dụng [Plugin kênh](/vi/plugins/sdk-channel-plugins) cho các kênh, [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins) cho các nhà cung cấp mô hình, [Plugin backend CLI](/vi/plugins/cli-backend-plugins) cho các backend CLI AI cục bộ, [Plugin bộ khung agent](/vi/plugins/sdk-agent-harness) cho các trình thực thi agent gốc và [Hook plugin](/vi/plugins/hooks) cho các hook công cụ hoặc vòng đời.
 </Tip>
 
 ## Quy ước nhập
@@ -39,213 +40,369 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
-Mỗi đường dẫn con là một mô-đun nhỏ, độc lập. Cách này giúp khởi động nhanh và
-ngăn các vấn đề về phụ thuộc vòng. Đối với các trình trợ giúp điểm vào/bản dựng
-dành riêng cho kênh, ưu tiên `openclaw/plugin-sdk/channel-core`; dành
-`openclaw/plugin-sdk/core` cho bề mặt tổng quát rộng hơn và các trình trợ giúp
-dùng chung như `buildChannelConfigSchema`.
+Mỗi đường dẫn con là một mô-đun nhỏ, độc lập. Điều này giúp khởi động nhanh và
+ngăn ngừa vấn đề phụ thuộc vòng. Đối với các trình trợ giúp mục nhập/xây dựng dành riêng cho kênh,
+ưu tiên `openclaw/plugin-sdk/channel-core`; giữ `openclaw/plugin-sdk/core` cho
+bề mặt bao quát rộng hơn và các trình trợ giúp dùng chung như
+`buildChannelConfigSchema`.
 
 Đối với cấu hình kênh, hãy công bố JSON Schema do kênh sở hữu thông qua
-`openclaw.plugin.json#channelConfigs`. Đường dẫn con
-`plugin-sdk/channel-config-schema` dành cho các thành phần nguyên thủy của
-schema dùng chung và trình tạo tổng quát. Các plugin đi kèm OpenClaw sử dụng
-`plugin-sdk/bundled-channel-config-schema` cho các schema kênh đi kèm được giữ
-lại. Các bản xuất tương thích đã lỗi thời vẫn còn tại
-`plugin-sdk/channel-config-schema-legacy`; không đường dẫn con schema đi kèm
-nào là mẫu cho plugin mới.
+`openclaw.plugin.json#channelConfigs`. Đường dẫn con `plugin-sdk/channel-config-schema`
+dành cho các thành phần nguyên thủy của schema dùng chung và trình dựng chung. Các plugin
+đi kèm OpenClaw sử dụng `plugin-sdk/bundled-channel-config-schema` cho các schema
+kênh đi kèm được giữ lại. Các mục xuất tương thích đã lỗi thời vẫn còn trên
+`plugin-sdk/channel-config-schema-legacy`; không đường dẫn con schema đi kèm nào là
+mẫu cho plugin mới.
 
 <Warning>
-  Không nhập các điểm nối tiện ích mang thương hiệu nhà cung cấp hoặc kênh (ví
-  dụ `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`,
-  `.../whatsapp`). Các plugin đi kèm kết hợp những đường dẫn con SDK tổng quát
-  bên trong các barrel `api.ts` / `runtime-api.ts` của riêng chúng; người dùng
-  lõi nên sử dụng các barrel cục bộ của plugin đó hoặc bổ sung một hợp đồng SDK
-  tổng quát có phạm vi hẹp khi nhu cầu thực sự áp dụng cho nhiều kênh.
+  Không nhập các seam tiện ích mang thương hiệu nhà cung cấp hoặc kênh (ví dụ
+  `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
+  Các plugin đi kèm kết hợp các đường dẫn con SDK chung bên trong các barrel `api.ts` /
+  `runtime-api.ts` riêng của chúng; người dùng phần lõi nên sử dụng các barrel cục bộ
+  của plugin đó hoặc thêm một hợp đồng SDK chung có phạm vi hẹp khi nhu cầu thực sự
+  xuyên kênh.
 
-Một tập nhỏ các điểm nối trợ giúp cho plugin đi kèm vẫn xuất hiện trong bản đồ
-xuất được tạo khi chúng có hoạt động sử dụng được theo dõi từ chủ sở hữu. Chúng
-chỉ tồn tại để bảo trì plugin đi kèm và không phải là đường dẫn nhập được khuyến
-nghị cho plugin bên thứ ba mới.
+Một tập nhỏ các seam trình trợ giúp plugin đi kèm vẫn xuất hiện trong bản đồ xuất
+được tạo khi chúng có hoạt động sử dụng được theo dõi từ chủ sở hữu. Chúng chỉ tồn tại để
+bảo trì plugin đi kèm và không phải là đường dẫn nhập được khuyến nghị cho các plugin
+bên thứ ba mới.
 
 `openclaw/plugin-sdk/discord` và `openclaw/plugin-sdk/telegram-account` cũng
-được giữ lại dưới dạng facade tương thích đã lỗi thời cho hoạt động sử dụng được
-theo dõi từ chủ sở hữu. Không sao chép các đường dẫn nhập đó vào plugin mới;
-thay vào đó, hãy sử dụng các trình trợ giúp runtime được chèn và các đường dẫn
-con SDK kênh tổng quát.
+được giữ lại dưới dạng facade tương thích đã lỗi thời cho hoạt động sử dụng được theo dõi từ chủ sở hữu. Không
+sao chép các đường dẫn nhập đó vào plugin mới; thay vào đó, hãy sử dụng các trình trợ giúp runtime được chèn và
+các đường dẫn con SDK kênh chung.
 </Warning>
 
 ## Tham chiếu đường dẫn con
 
-SDK Plugin được cung cấp dưới dạng một tập hợp các đường dẫn con có phạm vi hẹp,
-được nhóm theo lĩnh vực (điểm vào plugin, kênh, nhà cung cấp, xác thực, runtime,
-khả năng, bộ nhớ và các trình trợ giúp dành riêng cho plugin đi kèm). Để xem
-toàn bộ danh mục — đã được nhóm và liên kết — hãy xem
-[Các đường dẫn con của SDK Plugin](/vi/plugins/sdk-subpaths).
+SDK plugin được cung cấp dưới dạng một tập hợp các đường dẫn con có phạm vi hẹp, được nhóm theo lĩnh vực (mục nhập
+plugin, kênh, nhà cung cấp, xác thực, runtime, khả năng, bộ nhớ và các
+trình trợ giúp plugin đi kèm dành riêng). Để xem danh mục đầy đủ — đã được nhóm và liên kết — hãy xem
+[Các đường dẫn con của SDK plugin](/vi/plugins/sdk-subpaths).
 
 Danh mục điểm vào của trình biên dịch nằm trong
-`scripts/lib/plugin-sdk-entrypoints.json`; các bản xuất gói được tạo từ tập con
-công khai sau khi loại trừ các đường dẫn con kiểm thử/nội bộ chỉ dành cho kho
-mã, được liệt kê trong
+`scripts/lib/plugin-sdk-entrypoints.json`; các mục xuất gói được tạo từ
+tập con công khai sau khi loại trừ các đường dẫn con kiểm thử/nội bộ cục bộ của kho mã được liệt kê trong
 `scripts/lib/plugin-sdk-private-local-only-subpaths.json`. Chạy
-`pnpm plugin-sdk:surface` để kiểm tra số lượng bản xuất công khai. Các đường dẫn
-con công khai đã lỗi thời, đủ cũ và không được mã sản xuất của tiện ích mở rộng
-đi kèm sử dụng, được theo dõi trong
-`scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; các barrel tái xuất
-rộng đã lỗi thời được theo dõi trong
+`pnpm plugin-sdk:surface` để kiểm tra số lượng mục xuất công khai. Các
+đường dẫn con công khai đã lỗi thời đủ lâu và không được mã sản xuất của tiện ích mở rộng đi kèm sử dụng được
+theo dõi trong `scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; các
+barrel tái xuất rộng đã lỗi thời được theo dõi trong
 `scripts/lib/plugin-sdk-deprecated-barrel-subpaths.json`.
 
 ## API đăng ký
 
-Hàm gọi lại `register(api)` nhận một đối tượng `OpenClawPluginApi` có các phương
-thức sau:
+Callback `register(api)` nhận một đối tượng `OpenClawPluginApi` với các
+phương thức sau:
 
 ### Đăng ký khả năng
 
-| Phương thức                                      | Nội dung đăng ký                                                                    |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `api.registerProvider(...)`                      | Suy luận văn bản (LLM)                                                              |
-| `api.registerWorkerProvider(...)`                | Phiên thuê vòng đời của trình thực thi đám mây                                      |
-| `api.registerModelCatalogProvider(...)`          | Các hàng danh mục mô hình để tạo văn bản và phương tiện                             |
-| `api.registerAgentHarness(...)`                  | Trình thực thi tác tử gốc [thử nghiệm](/vi/plugins/sdk-agent-harness) (Codex, Copilot) |
-| `api.registerCliBackend(...)`                    | Phần phụ trợ suy luận CLI cục bộ                                                    |
-| `api.registerChannel(...)`                       | Kênh nhắn tin                                                                        |
-| `api.registerEmbeddingProvider(...)`             | Nhà cung cấp nhúng véc-tơ có thể tái sử dụng                                        |
-| `api.registerSpeechProvider(...)`                | Tổng hợp văn bản thành giọng nói / STT                                              |
-| `api.registerRealtimeTranscriptionProvider(...)` | Phiên âm thời gian thực dạng luồng                                                   |
-| `api.registerRealtimeVoiceProvider(...)`         | Phiên thoại thời gian thực song công                                                |
-| `api.registerMediaUnderstandingProvider(...)`    | Phân tích hình ảnh/âm thanh/video                                                   |
-| `api.registerTranscriptSourceProvider(...)`      | Nguồn bản chép lời cuộc họp trực tiếp hoặc được nhập                                |
-| `api.registerImageGenerationProvider(...)`       | Tạo hình ảnh                                                                         |
-| `api.registerMusicGenerationProvider(...)`       | Tạo nhạc                                                                             |
-| `api.registerVideoGenerationProvider(...)`       | Tạo video                                                                            |
-| `api.registerWebFetchProvider(...)`              | Nhà cung cấp tìm nạp / thu thập dữ liệu web                                         |
-| `api.registerWebSearchProvider(...)`             | Tìm kiếm web                                                                         |
-| `api.registerCompactionProvider(...)`            | Phần phụ trợ Compaction bản chép lời có thể thay thế                                |
+| Phương thức                                       | Nội dung đăng ký                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `api.registerProvider(...)`                      | Suy luận văn bản (LLM)                                                             |
+| `api.registerWorkerProvider(...)`                | Lease vòng đời của worker đám mây                                                  |
+| `api.registerModelCatalogProvider(...)`          | Các hàng danh mục mô hình để tạo văn bản và phương tiện                            |
+| `api.registerAgentHarness(...)`                  | Trình thực thi agent gốc [Thử nghiệm](/vi/plugins/sdk-agent-harness) (Codex, Copilot) |
+| `api.registerCliBackend(...)`                    | Backend suy luận CLI cục bộ                                                        |
+| `api.registerChannel(...)`                       | Kênh nhắn tin                                                                      |
+| `api.registerEmbeddingProvider(...)`             | Nhà cung cấp embedding vectơ có thể tái sử dụng                                    |
+| `api.registerSpeechProvider(...)`                | Tổng hợp văn bản thành giọng nói / STT                                             |
+| `api.registerRealtimeTranscriptionProvider(...)` | Phiên âm thời gian thực dạng luồng                                                  |
+| `api.registerRealtimeVoiceProvider(...)`         | Phiên thoại thời gian thực song công                                               |
+| `api.registerMediaUnderstandingProvider(...)`    | Phân tích hình ảnh/âm thanh/video                                                  |
+| `api.registerTranscriptSourceProvider(...)`      | Nguồn bản ghi cuộc họp trực tiếp hoặc được nhập                                    |
+| `api.registerImageGenerationProvider(...)`       | Tạo hình ảnh                                                                       |
+| `api.registerMusicGenerationProvider(...)`       | Tạo nhạc                                                                           |
+| `api.registerVideoGenerationProvider(...)`       | Tạo video                                                                          |
+| `api.registerWebFetchProvider(...)`              | Nhà cung cấp tìm nạp / thu thập dữ liệu web                                        |
+| `api.registerWebSearchProvider(...)`             | Tìm kiếm web                                                                       |
+| `api.registerCompactionProvider(...)`            | Backend Compaction bản ghi có thể cắm                                              |
 
-Các nhà cung cấp trình thực thi cũng phải khai báo mã định danh của mình trong `contracts.workerProviders`.
-Lõi lưu bền vững ý định trước khi gọi `provision(profile, operationId)`. Nhà cung cấp xác thực thiết lập trước khi phân bổ bên ngoài và ném `WorkerProviderError` khi hồ sơ bị từ chối vĩnh viễn. `provision` phải tiếp nhận cùng một phiên thuê khi mã định danh thao tác lặp lại.
-Lõi lưu bền vững các thiết lập hồ sơ đã xác thực cùng với phiên thuê và cung cấp ảnh chụp đó cho `destroy({ leaseId, profile })`, vốn phải có tính lũy đẳng, và `inspect({ leaseId, profile })`, vốn trả về `active`, `destroyed` hoặc `unknown`. Điều này cho phép nhà cung cấp định tuyến các lệnh gọi vòng đời sau khi Gateway khởi động lại hoặc hồ sơ có tên bị xóa. Các điểm cuối SSH sử dụng `SecretRef` cho `keyRef`, không bao giờ dùng trực tiếp dữ liệu khóa, và bao gồm `hostKey` từ đầu ra cấp phát đáng tin cậy theo đúng định dạng `algorithm base64`, không có tên máy chủ hoặc chú thích. Lõi ghim `hostKey` và không bao giờ tin cậy khóa từ lần kết nối đầu tiên. Nhà cung cấp tạo `keyRef` động có thể triển khai `resolveSshIdentity({ leaseId, profile, keyRef })`; khi hiện diện, trình phân giải đó có thẩm quyền quyết định, còn các nhà cung cấp không có trình phân giải này sử dụng trình phân giải bí mật tổng quát đã cấu hình.
-Các nhà cung cấp có phiên thuê có thể gia hạn cũng có thể triển khai `renew(leaseId)`.
-`inspect` phải ném lỗi khi gặp thất bại tạm thời hoặc không xác định; chỉ trả về `unknown` khi sự vắng mặt đã được xác nhận có thẩm quyền. Lõi đánh dấu một bản ghi cục bộ đang hoạt động là mồ côi, hoặc coi sự vắng mặt là đã hoàn tất tháo dỡ sau một yêu cầu hủy đã được lưu bền vững.
+Các nhà cung cấp worker cũng phải khai báo id của mình trong `contracts.workerProviders`.
+Phần lõi duy trì ý định lâu dài trước `provision(profile, operationId)`. Các nhà cung cấp xác thực cài đặt trước khi phân bổ bên ngoài và ném `WorkerProviderError` khi hồ sơ bị từ chối vĩnh viễn. `provision` phải tiếp nhận cùng một lease khi id thao tác lặp lại.
+Phần lõi duy trì các cài đặt hồ sơ đã xác thực cùng với lease và cung cấp snapshot đó cho `destroy({ leaseId, profile })`, vốn phải có tính lũy đẳng, và `inspect({ leaseId, profile })`, vốn trả về `active`, `destroyed` hoặc `unknown`. Điều này cho phép nhà cung cấp định tuyến các lệnh gọi vòng đời sau khi Gateway khởi động lại hoặc hồ sơ có tên bị xóa. Các điểm cuối SSH sử dụng `SecretRef` cho `keyRef`, tuyệt đối không dùng vật liệu khóa nội tuyến, và bao gồm `hostKey` từ đầu ra cấp phát đáng tin cậy dưới dạng chính xác `algorithm base64`, không có tên máy chủ hoặc nhận xét. Phần lõi ghim `hostKey` và không bao giờ tin tưởng khóa từ kết nối đầu tiên. Nhà cung cấp tạo `keyRef` động có thể triển khai `resolveSshIdentity({ leaseId, profile, keyRef })`; khi có, trình phân giải đó là nguồn có thẩm quyền, còn nhà cung cấp không có nó sẽ sử dụng trình phân giải bí mật chung đã cấu hình.
+Các nhà cung cấp có lease có thể gia hạn cũng có thể triển khai `renew(leaseId)`.
+`inspect` phải ném lỗi khi gặp lỗi tạm thời hoặc không xác định; chỉ trả về `unknown` khi sự vắng mặt là chắc chắn. Phần lõi đánh dấu một bản ghi cục bộ đang hoạt động là mồ côi hoặc coi sự vắng mặt đó là việc hoàn tất tháo dỡ sau một yêu cầu hủy đã được duy trì.
 
-Các nhà cung cấp nhúng được đăng ký bằng `api.registerEmbeddingProvider(...)`
-cũng phải được liệt kê trong `contracts.embeddingProviders` ở tệp kê khai
-plugin. Đây là bề mặt nhúng tổng quát để tạo véc-tơ có thể tái sử dụng. Tìm kiếm
-bộ nhớ có thể sử dụng bề mặt nhà cung cấp tổng quát này. Điểm nối cũ hơn
+Các nhà cung cấp embedding được đăng ký bằng `api.registerEmbeddingProvider(...)` cũng phải
+được liệt kê trong `contracts.embeddingProviders` của manifest plugin. Đây
+là bề mặt embedding chung để tạo vectơ có thể tái sử dụng. Tìm kiếm bộ nhớ
+có thể sử dụng bề mặt nhà cung cấp chung này. Seam
 `api.registerMemoryEmbeddingProvider(...)` và
-`contracts.memoryEmbeddingProviders` là cơ chế tương thích đã lỗi thời trong
-khi các nhà cung cấp dành riêng cho bộ nhớ hiện có chuyển đổi.
+`contracts.memoryEmbeddingProviders` cũ là khả năng tương thích đã lỗi thời trong khi
+các nhà cung cấp dành riêng cho bộ nhớ hiện có chuyển đổi.
 
-Các nhà cung cấp dành riêng cho bộ nhớ vẫn cung cấp `batchEmbed(...)` ở runtime
-sẽ tiếp tục dùng hợp đồng xử lý theo lô trên từng tệp hiện có, trừ khi runtime
-của chúng đặt rõ ràng `sourceWideBatchEmbed: true`. Cơ chế chọn tham gia này cho
-phép máy chủ bộ nhớ gửi các đoạn từ nhiều tệp bộ nhớ đã thay đổi và nhiều nguồn
-đang bật trong một lệnh gọi `batchEmbed(...)`, trong phạm vi giới hạn lô của máy
-chủ. Các bộ điều hợp theo lô tải lên tệp yêu cầu JSONL phải chia tác vụ của nhà
-cung cấp trước khi đạt giới hạn kích thước tải lên cũng như giới hạn số lượng
-yêu cầu. Nhà cung cấp phải trả về một phần nhúng cho mỗi đoạn đầu vào theo cùng
-thứ tự với `batch.chunks`; bỏ cờ này khi nhà cung cấp yêu cầu các lô cục bộ theo
-tệp hoặc không thể duy trì thứ tự đầu vào trong một tác vụ rộng hơn trên toàn
-nguồn.
+Các nhà cung cấp dành riêng cho bộ nhớ vẫn cung cấp `batchEmbed(...)` runtime sẽ tiếp tục sử dụng
+hợp đồng xử lý theo lô trên từng tệp hiện có, trừ khi runtime của chúng đặt rõ ràng
+`sourceWideBatchEmbed: true`. Việc chọn tham gia này cho phép máy chủ bộ nhớ gửi các đoạn từ
+nhiều tệp bộ nhớ đã thay đổi và các nguồn được bật trong một lệnh gọi `batchEmbed(...)`,
+tối đa đến giới hạn lô của máy chủ. Các bộ điều hợp lô tải lên tệp yêu cầu JSONL cũng phải
+chia nhỏ tác vụ nhà cung cấp trước giới hạn kích thước tải lên cũng như giới hạn số lượng
+yêu cầu. Nhà cung cấp phải trả về một embedding cho mỗi đoạn đầu vào theo cùng thứ tự với
+`batch.chunks`; bỏ cờ này khi nhà cung cấp yêu cầu các lô cục bộ theo tệp hoặc
+không thể duy trì thứ tự đầu vào trong một tác vụ lớn hơn trên toàn nguồn.
 
 ### Công cụ và lệnh
 
-Sử dụng [`defineToolPlugin`](/vi/plugins/tool-plugins) cho các plugin đơn giản chỉ
-có công cụ với tên công cụ cố định. Sử dụng trực tiếp
-`api.registerTool(...)` cho plugin hỗn hợp hoặc đăng ký công cụ hoàn toàn động.
+Sử dụng [`defineToolPlugin`](/vi/plugins/tool-plugins) cho các plugin đơn giản chỉ có công cụ
+với tên công cụ cố định. Sử dụng trực tiếp `api.registerTool(...)` cho các plugin hỗn hợp
+hoặc việc đăng ký công cụ hoàn toàn động.
 
-| Phương thức                             | Nội dung đăng ký                                                                                                                                                     |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerTool(tool, opts?)`         | Công cụ tác tử (bắt buộc hoặc `{ optional: true }`)                                                                                                                   |
-| `api.registerCommand(def)`              | Lệnh tùy chỉnh (bỏ qua LLM)                                                                                                                                          |
-| `api.registerNodeHostCommand(command)` | Lệnh do `openclaw node run` xử lý; siêu dữ liệu `agentTool` tùy chọn có thể cung cấp lệnh này dưới dạng công cụ mà tác tử có thể thấy trong khi Node được kết nối |
+| Phương thức                            | Nội dung đăng ký                                                                                                                           |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerTool(tool, opts?)`        | Công cụ agent (bắt buộc hoặc `{ optional: true }`)                                                                                           |
+| `api.registerCommand(def)`             | Lệnh tùy chỉnh (bỏ qua LLM)                                                                                                               |
+| `api.registerNodeHostCommand(command)` | Lệnh do `openclaw node run` xử lý; siêu dữ liệu `agentTool` tùy chọn có thể cung cấp lệnh này dưới dạng công cụ hiển thị cho agent khi Node được kết nối |
 
-Các lệnh plugin có thể đặt `agentPromptGuidance` khi tác tử cần một gợi ý định
-tuyến ngắn do lệnh sở hữu. Chỉ giữ nội dung đó liên quan đến chính lệnh; không
-thêm chính sách dành riêng cho nhà cung cấp hoặc plugin vào các trình tạo lời
-nhắc của lõi.
+Các lệnh plugin có thể đặt `agentPromptGuidance` khi agent cần một gợi ý định tuyến ngắn
+do lệnh sở hữu. Giữ nội dung đó tập trung vào chính lệnh; không thêm
+chính sách dành riêng cho nhà cung cấp hoặc plugin vào các trình dựng prompt của phần lõi.
 
-Các mục hướng dẫn có thể là chuỗi kiểu cũ, áp dụng cho mọi bề mặt lời nhắc,
-hoặc các mục có cấu trúc:
+Các mục hướng dẫn có thể là chuỗi cũ, áp dụng cho mọi bề mặt prompt, hoặc
+các mục có cấu trúc:
 
 ```ts
 agentPromptGuidance: [
-  "Global command hint.",
-  { text: "Only show this in the main OpenClaw prompt.", surfaces: ["openclaw_main"] },
+  "Gợi ý lệnh chung.",
+  { text: "Chỉ hiển thị nội dung này trong prompt OpenClaw chính.", surfaces: ["openclaw_main"] },
 ];
 ```
 
 `surfaces` có cấu trúc có thể bao gồm `openclaw_main`, `codex_app_server`,
-`cli_backend`, `acp_backend` hoặc `subagent`. `pi_main` vẫn là bí danh đã lỗi
-thời của `openclaw_main`. Bỏ qua `surfaces` khi chủ ý áp dụng hướng dẫn cho mọi
-bề mặt. Không truyền mảng `surfaces` rỗng; mảng này bị từ chối để việc vô tình
-mất phạm vi không biến thành văn bản lời nhắc toàn cục.
+`cli_backend`, `acp_backend` hoặc `subagent`. `pi_main` vẫn là một bí danh
+đã lỗi thời cho `openclaw_main`. Bỏ `surfaces` đối với hướng dẫn cố ý áp dụng cho mọi bề mặt. Không
+truyền mảng `surfaces` rỗng; mảng này bị từ chối để việc vô tình mất phạm vi
+không trở thành văn bản prompt toàn cục.
 
-Chỉ dẫn dành cho nhà phát triển của máy chủ ứng dụng Codex gốc nghiêm ngặt hơn
-các bề mặt lời nhắc khác: chỉ hướng dẫn được giới hạn phạm vi rõ ràng cho
-`codex_app_server` mới được nâng lên làn ưu tiên cao hơn đó. Hướng dẫn chuỗi kiểu
-cũ và hướng dẫn có cấu trúc không giới hạn phạm vi vẫn khả dụng cho các bề mặt
-lời nhắc không phải Codex để duy trì khả năng tương thích.
+Hướng dẫn dành cho nhà phát triển của app-server Codex gốc nghiêm ngặt hơn các bề mặt
+prompt khác: chỉ hướng dẫn được xác định phạm vi rõ ràng cho `codex_app_server` mới được đưa vào
+luồng có mức ưu tiên cao hơn đó. Hướng dẫn dạng chuỗi cũ và hướng dẫn có cấu trúc không xác định phạm vi
+vẫn khả dụng cho các bề mặt prompt không phải Codex để đảm bảo khả năng tương thích.
 
-Các lệnh trên máy chủ Node chạy trên máy chủ Node đã kết nối, không chạy bên trong tiến trình Gateway. Nếu có `agentTool`, Node sẽ công bố một bộ mô tả sau khi kết nối Gateway thành công; Gateway chỉ cung cấp bộ mô tả đó cho các lượt chạy của tác tử trong khi Node ấy đang kết nối và chỉ khi `command` của bộ mô tả nằm trong phạm vi lệnh được phê duyệt của Node. Đặt `agentTool.defaultPlatforms` để đưa một lệnh không nguy hiểm vào danh sách cho phép lệnh Node mặc định; nếu không, phải có `gateway.nodes.allowCommands` rõ ràng hoặc một chính sách gọi Node. `agentTool.name` phải an toàn đối với nhà cung cấp: bắt đầu bằng một chữ cái, chỉ sử dụng chữ cái, chữ số, dấu gạch dưới hoặc dấu gạch nối và không vượt quá 64 ký tự. Các công cụ Node dựa trên MCP có thể đặt siêu dữ liệu `agentTool.mcp` để các bề mặt danh mục và tìm kiếm công cụ có thể hiển thị danh tính máy chủ/công cụ MCP từ xa, nhưng việc thực thi vẫn đi qua lệnh Node đã được quảng bá.
+Các lệnh máy chủ Node chạy trên máy chủ Node được kết nối, không phải bên trong tiến trình
+Gateway. Nếu có `agentTool`, Node sẽ công bố một bộ mô tả sau khi
+kết nối Gateway thành công; Gateway chỉ cung cấp bộ mô tả đó cho các lượt chạy agent khi
+Node đó đang được kết nối và chỉ khi `command` của bộ mô tả nằm trong
+bề mặt lệnh được phê duyệt của Node. Đặt `agentTool.defaultPlatforms` để đưa một
+lệnh không nguy hiểm vào danh sách cho phép lệnh Node mặc định; nếu không, yêu cầu
+`gateway.nodes.allowCommands` rõ ràng hoặc chính sách gọi Node. `agentTool.name`
+phải an toàn với nhà cung cấp: bắt đầu bằng một chữ cái, chỉ sử dụng chữ cái, chữ số,
+dấu gạch dưới hoặc dấu gạch nối và không vượt quá 64 ký tự. Các công cụ Node dựa trên MCP
+có thể đặt siêu dữ liệu `agentTool.mcp` để các bề mặt danh mục và tìm kiếm công cụ có thể hiển thị
+danh tính máy chủ/công cụ MCP từ xa, nhưng quá trình thực thi vẫn đi qua
+lệnh Node được quảng bá.
 
 ### Hạ tầng
 
-| Phương thức                                      | Nội dung đăng ký                                                  |
-| ----------------------------------------------- | ----------------------------------------------------------------- |
-| `api.registerHook(events, handler, opts?)`      | Hook sự kiện                                                      |
-| `api.registerHttpRoute(params)`                 | Điểm cuối HTTP của Gateway                                        |
-| `api.registerGatewayMethod(name, handler)`      | Phương thức RPC của Gateway                                       |
-| `api.registerGatewayDiscoveryService(service)`  | Bộ quảng bá khám phá Gateway cục bộ                               |
-| `api.registerCli(registrar, opts?)`             | Lệnh con CLI                                                      |
-| `api.registerNodeCliFeature(registrar, opts?)`  | CLI tính năng Node dưới `openclaw nodes`                           |
-| `api.registerService(service)`                  | Dịch vụ nền                                                       |
-| `api.registerInteractiveHandler(registration)`  | Trình xử lý tương tác                                             |
-| `api.registerAgentToolResultMiddleware(...)`    | Phần mềm trung gian kết quả công cụ trong thời gian chạy           |
-| `api.registerMemoryPromptSupplement(builder)`   | Phần prompt bổ sung liền kề bộ nhớ                                 |
-| `api.registerMemoryCorpusSupplement(adapter)`   | Kho ngữ liệu bổ sung để tìm kiếm/đọc bộ nhớ                        |
-| `api.registerHostedMediaResolver(resolver)`     | Bộ phân giải URL phương tiện được lưu trữ theo kiểu trình duyệt    |
-| `api.registerTextTransforms(transforms)`        | Các phép viết lại văn bản tương thích prompt/tin nhắn do Plugin sở hữu |
-| `api.registerConfigMigration(migrate)`          | Di chuyển cấu hình nhẹ chạy trước khi tải thời gian chạy của Plugin |
-| `api.registerMigrationProvider(provider)`       | Trình nhập cho `openclaw migrate`                                  |
-| `api.registerAutoEnableProbe(probe)`            | Bộ thăm dò cấu hình có thể tự động bật Plugin này                  |
-| `api.registerReload(registration)`              | Chính sách tiền tố cấu hình khởi động lại/tải nóng/không làm gì để xử lý tải lại |
-| `api.registerNodeHostCommand(command)`          | Trình xử lý lệnh được cung cấp cho các Node đã ghép nối             |
-| `api.registerNodeInvokePolicy(policy)`          | Chính sách danh sách cho phép/phê duyệt cho các lệnh do Node gọi   |
-| `api.registerSecurityAuditCollector(collector)` | Bộ thu thập phát hiện cho `openclaw security audit`                |
+| Phương thức                                      | Nội dung đăng ký                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------------------ |
+| `api.registerHook(events, handler, opts?)`      | Hook sự kiện                                                              |
+| `api.registerHttpRoute(params)`                 | Điểm cuối HTTP của Gateway                                                |
+| `api.registerGatewayMethod(name, handler)`      | Phương thức RPC của Gateway                                               |
+| `api.registerGatewayDiscoveryService(service)`  | Bộ quảng bá khám phá Gateway cục bộ                                       |
+| `api.registerCli(registrar, opts?)`             | Lệnh con CLI                                                              |
+| `api.registerNodeCliFeature(registrar, opts?)`  | CLI tính năng Node trong `openclaw nodes`                                |
+| `api.registerService(service)`                  | Dịch vụ nền                                                              |
+| `api.registerInteractiveHandler(registration)`  | Trình xử lý tương tác                                                     |
+| `api.registerAgentToolResultMiddleware(...)`    | Middleware kết quả công cụ trong thời gian chạy                           |
+| `api.registerMemoryPromptSupplement(builder)`   | Phần prompt bổ sung liên quan đến bộ nhớ                                  |
+| `api.registerMemoryPromptPreparation(prepare)`  | Khâu chuẩn bị bất đồng bộ cho phần prompt liên quan đến bộ nhớ            |
+| `api.registerMemoryCorpusSupplement(adapter)`   | Kho ngữ liệu tìm kiếm/đọc bộ nhớ bổ sung                                  |
+| `api.registerHostedMediaResolver(resolver)`     | Trình phân giải URL phương tiện được lưu trữ theo kiểu trình duyệt         |
+| `api.registerMcpServerConnectionResolver(...)`  | Phương thức truyền tải MCP theo từng bên yêu cầu (`url`/`headers`) cho một tên máy chủ tĩnh |
+| `api.registerTextTransforms(transforms)`        | Viết lại văn bản tương thích prompt/tin nhắn do Plugin sở hữu             |
+| `api.registerConfigMigration(migrate)`          | Di chuyển cấu hình nhẹ chạy trước khi thời gian chạy của Plugin được tải   |
+| `api.registerMigrationProvider(provider)`       | Trình nhập cho `openclaw migrate`                                         |
+| `api.registerAutoEnableProbe(probe)`            | Trình thăm dò cấu hình có thể tự động bật Plugin này                       |
+| `api.registerReload(registration)`              | Chính sách tiền tố cấu hình restart/hot/noop để xử lý tải lại              |
+| `api.registerNodeHostCommand(command)`          | Trình xử lý lệnh được cung cấp cho các Node đã ghép đôi                    |
+| `api.registerNodeInvokePolicy(policy)`          | Chính sách danh sách cho phép/phê duyệt đối với các lệnh do Node gọi       |
+| `api.registerSecurityAuditCollector(collector)` | Trình thu thập phát hiện cho `openclaw security audit`                            |
 
-Các trình dựng phần bổ sung prompt bộ nhớ nhận ngữ cảnh `agentId`, `agentSessionKey` và `sandboxed` tùy chọn. Các lệnh gọi `search` và `get` của phần bổ sung kho ngữ liệu bộ nhớ nhận ngữ cảnh `agentId` và `sandboxed` tùy chọn. Các Plugin có bộ lưu trữ do tác tử sở hữu phải phân giải bộ lưu trữ đó cho từng lệnh gọi thay vì ghi giữ một đường dẫn toàn cục trong quá trình đăng ký. Nếu cần mã tác tử nhưng bị thiếu trong một thao tác đa tác tử, hãy từ chối theo hướng an toàn thay vì chọn một tác tử tùy ý.
+#### Công việc Webhook sau khi xác nhận
 
-Các trình xử lý tương tác của Telegram có thể trả về `{ submitText }` để định tuyến văn bản qua đường dẫn tác tử đầu vào thông thường của Telegram sau khi trình xử lý thành công. OpenClaw giữ lại nút gọi lại khi chính sách đầu vào bỏ qua văn bản hoặc quá trình xử lý thất bại, để người dùng có thể thử lại sau khi điều kiện chặn thay đổi. Trường kết quả này dành riêng cho Telegram; các kênh khác giữ nguyên hợp đồng kết quả tương tác của riêng mình.
+Các tuyến Webhook xác nhận yêu cầu trước khi xử lý hoàn tất phải chuyển công
+việc tách rời đó sang một gốc tiếp nhận được theo dõi riêng:
 
-### Hook máy chủ cho các Plugin quy trình làm việc
+```typescript
+import { runDetachedWebhookWork } from "openclaw/plugin-sdk/webhook-request-guards";
 
-Hook máy chủ là các điểm nối SDK dành cho những Plugin cần tham gia vào vòng đời máy chủ thay vì chỉ thêm nhà cung cấp, kênh hoặc công cụ. Đây là các hợp đồng dùng chung; Chế độ Lập kế hoạch có thể sử dụng chúng, cũng như các quy trình phê duyệt, cổng chính sách không gian làm việc, trình giám sát nền, trình hướng dẫn thiết lập và các Plugin đồng hành giao diện người dùng.
+void runDetachedWebhookWork(() => processWebhookEvent(event)).catch((error) => {
+  runtime.error?.(`điều phối webhook thất bại: ${String(error)}`);
+});
+```
 
-| Phương thức                                                                          | Hợp đồng do phương thức sở hữu                                                                                                                                    |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.session.state.registerSessionExtension(...)`                                    | Trạng thái phiên tương thích JSON do Plugin sở hữu, được chiếu qua các phiên Gateway                                                                              |
-| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | Ngữ cảnh bền vững, chính xác một lần, được chèn vào lượt tác tử tiếp theo của một phiên                                                                           |
-| `api.registerTrustedToolPolicy(...)`                                                 | Chính sách công cụ tin cậy trước Plugin, được kiểm soát bởi bản kê khai, có thể chặn hoặc viết lại tham số công cụ                                                |
-| `api.registerToolMetadata(...)`                                                      | Siêu dữ liệu hiển thị danh mục công cụ mà không thay đổi phần triển khai công cụ                                                                                  |
-| `api.registerCommand(...)`                                                           | Các lệnh Plugin có phạm vi; kết quả lệnh có thể đặt `continueAgent: true` hoặc `suppressReply: true`; lệnh gốc Discord hỗ trợ `descriptionLocalizations`          |
-| `api.session.controls.registerControlUiDescriptor(...)`                              | Bộ mô tả đóng góp cho giao diện điều khiển dành cho các bề mặt phiên, công cụ, lượt chạy, cài đặt hoặc thẻ                                                       |
-| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | Lệnh gọi lại dọn dẹp tài nguyên thời gian chạy do Plugin sở hữu trên các đường dẫn đặt lại/xóa/tải lại                                                           |
-| `api.agent.events.registerAgentEventSubscription(...)`                               | Đăng ký sự kiện đã được làm sạch cho trạng thái quy trình làm việc và trình giám sát                                                                              |
-| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | Trạng thái tạm của Plugin theo từng lượt chạy, được xóa trong vòng đời kết thúc lượt chạy                                                                          |
-| `api.session.workflow.registerSessionSchedulerJob(...)`                              | Siêu dữ liệu dọn dẹp cho các công việc bộ lập lịch do Plugin sở hữu; không lập lịch công việc hoặc tạo bản ghi tác vụ                                             |
-| `api.session.workflow.sendSessionAttachment(...)`                                    | Chỉ dành cho gói tích hợp sẵn: phân phối tệp đính kèm qua máy chủ đến tuyến gửi trực tiếp đang hoạt động của phiên                                                |
-| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | Chỉ dành cho gói tích hợp sẵn: các lượt phiên được lập lịch dựa trên Cron cùng với việc dọn dẹp theo thẻ                                                         |
-| `api.session.controls.registerSessionAction(...)`                                    | Các hành động phiên có kiểu mà máy khách có thể gửi qua Gateway                                                                                                   |
+Gọi `runDetachedWebhookWork(...)` một cách đồng bộ trong khi yêu cầu HTTP vẫn đang
+được tiếp nhận. Trình trợ giúp lập tức dành riêng một gốc độc lập, sau đó bắt đầu
+callback trong vi tác vụ tiếp theo để trình xử lý yêu cầu có thể ghi nội dung
+xác nhận trước. Promise được trả về tiếp nhận kết quả callback; bên gọi vẫn
+chịu trách nhiệm xử lý trường hợp bị từ chối. Điều này giữ cho công việc trong
+hàng đợi sau khi xác nhận được chấp nhận và khiến quá trình tháo cạn khi khởi
+động lại hoặc tạm ngưng phải chờ công việc đó. Các trình xử lý chờ toàn bộ quá
+trình xử lý hoàn tất trước khi trả về không cần trình trợ giúp này.
 
-Một bộ mô tả `surface: "tab"` thêm một thẻ thanh bên vào giao diện điều khiển. Bộ mô tả thẻ của các Plugin đang hoạt động được quảng bá cho máy khách bảng điều khiển trong lời chào của Gateway (`controlUiTabs`), vì vậy thẻ chỉ xuất hiện khi Plugin được bật. Các Plugin tích hợp sẵn có thể cung cấp một chế độ xem bảng điều khiển hạng nhất cho thẻ của mình; các Plugin khác có thể đặt `path` thành một tuyến HTTP của Plugin (xem `api.registerHttpRoute(...)`) để bảng điều khiển hiển thị trong một khung được cô lập. `icon` là gợi ý tên biểu tượng bảng điều khiển, `group` chọn phần thanh bên (`control` hoặc `agent`), `order` sắp xếp giữa các thẻ Plugin và `requiredScopes` ẩn thẻ khỏi các kết nối không có những phạm vi người vận hành đó:
+#### Kết nối MCP theo phạm vi bên yêu cầu
+
+Giữ **danh tính** máy chủ MCP ở dạng tĩnh (tên, bộ lọc công cụ) trong `mcp.servers` hoặc
+manifest gói. Có thể đăng ký thêm một trình phân giải kết nối để mỗi bên yêu cầu
+tin nhắn đáng tin cậy nhận phương thức truyền tải riêng:
+
+```ts
+api.registerMcpServerConnectionResolver({
+  serverName: "user-email",
+  resolve: async (ctx) => {
+    // ctx.requesterSenderId được máy chủ tin cậy; tuyệt đối không tự tạo danh tính người gửi tại đây.
+    const token = await lookupUserToken(ctx.requesterSenderId);
+    if (!token) {
+      return null; // bỏ qua máy chủ này trong lượt chạy hiện tại
+    }
+    return {
+      url: "https://mcp.example.com/email",
+      headers: { Authorization: `Bearer ${token}` },
+    };
+  },
+});
+```
+
+Ghi chú hợp đồng:
+
+- Ngữ cảnh trình phân giải chỉ mang danh tính máy chủ đáng tin cậy (`requesterSenderId`,
+  cùng `agentAccountId` / `messageChannel` không bắt buộc). Các trường đáng tin cậy trong tương lai (ví
+  dụ: ngữ cảnh người dùng cron/tác tử con) có thể được thêm theo cách bổ sung.
+- Một Plugin sở hữu một tên máy chủ: `registerMcpServerConnectionResolver` trùng lặp
+  cho cùng `serverName` từ một Plugin khác sẽ bị từ chối kèm chẩn đoán
+  lỗi (đăng ký đầu tiên được ưu tiên), vì vậy quyền sở hữu kết nối không bao giờ
+  phụ thuộc vào thứ tự tải Plugin.
+- Tên công cụ được dẫn xuất từ toàn bộ tập máy chủ đã khai báo để việc phân giải
+  một phần không bao giờ thay đổi tên máy chủ an toàn giữa các bên yêu cầu hoặc
+  các lượt. Phần lõi không xác minh rằng các điểm cuối của những bên yêu cầu khác
+  nhau cung cấp lược đồ công cụ giống hệt nhau; trình phân giải phải trỏ mọi bên
+  yêu cầu đến cùng một dịch vụ logic, nếu không lược đồ công cụ (và độ ổn định
+  của bộ nhớ đệm prompt) sẽ khác nhau theo từng bên yêu cầu.
+- Các lượt chạy không có `requesterSenderId` đáng tin cậy (cron, tác tử con, Heartbeat, Gateway
+  công khai) không bao giờ khởi tạo máy chủ theo phạm vi bên yêu cầu. Không có
+  kết nối dự phòng dùng chung.
+- `resolve` bị giới hạn ở 10 giây cho mỗi máy chủ; hết thời gian chờ hoặc phát sinh
+  ngoại lệ sẽ bỏ qua máy chủ đó trong lượt chạy mà không làm MCP tĩnh thất bại.
+- Các kết nối đã phân giải được xác thực lại tối đa mỗi 5 phút cho mỗi bên yêu cầu:
+  việc luân chuyển xây dựng lại phương thức truyền tải với thông tin xác thực mới,
+  còn kết quả `null` sẽ thu hồi kết nối đó (thời gian chạy được lưu
+  trong bộ nhớ đệm sẽ bị hủy ngay cả giữa phiên). Vì vậy, thông tin xác thực đã
+  bị thu hồi hoặc luân chuyển có thể tiếp tục được sử dụng trong tối đa 5 phút.
+- `headers` đã phân giải không bao giờ được ghi nhật ký hoặc lưu bền vững; phần lõi chỉ giữ
+  một bản tóm lược có khóa tạm thời trong bộ nhớ (HMAC cục bộ theo tiến trình)
+  để phát hiện việc luân chuyển thông tin xác thực, đồng thời đăng ký các giá trị
+  thông tin xác thực trong header/URL đã phân giải với sổ đăng ký che dữ liệu
+  khi ghi nhật ký/thu thập gỡ lỗi.
+- Máy chủ theo phạm vi bên yêu cầu không tạo chế độ xem MCP App: chế độ xem tồn tại lâu hơn
+  lượt chạy đã xác thực bên yêu cầu, còn ranh giới chế độ xem của Gateway không
+  có danh tính bên yêu cầu, vì vậy bản xem trước ứng dụng vẫn đóng khi không
+  đáp ứng điều kiện đối với các máy chủ này. Kết quả công cụ không bị ảnh hưởng.
+- Máy chủ tĩnh không có trình phân giải tiếp tục sử dụng vòng đời theo phạm vi phiên hiện có.
+- **Quy tắc phân phối của harness:** máy chủ theo phạm vi bên yêu cầu không bao giờ đi vào
+  cấu hình máy khách MCP gốc của harness (luồng Codex `mcp_servers`, CLI `-c mcp_servers=…` hoặc bất kỳ
+  phép chiếu MCP dùng chung theo phiên nào khác). Thay vào đó, harness phân phối
+  chúng dưới dạng công cụ theo phạm vi lượt chạy:
+  - Trình chạy nhúng: thời gian chạy MCP của phiên + công cụ gói (tĩnh + theo phạm vi).
+  - Máy chủ ứng dụng Codex: các công cụ động thông qua
+    `materializeRequesterScopedMcpToolsForHarnessRun` (chỉ theo phạm vi; máy chủ tĩnh
+    vẫn sử dụng máy khách MCP gốc của Codex).
+- **Đặc tả** công cụ theo phạm vi ổn định trong phiên sau lần phân giải thành công đầu tiên
+  của phiên đó, vì vậy harness dùng chung luồng (Codex) không luân chuyển luồng
+  khi người gửi thay đổi. Trước khi bất kỳ bên yêu cầu nào được phân giải, không
+  có đặc tả theo phạm vi nào được quảng bá.
+- Các bên yêu cầu chưa xác thực trên harness dùng chung luồng vẫn nhìn thấy các công cụ
+  theo phạm vi được quảng bá; việc gọi một công cụ sẽ trả về lỗi công cụ chưa kết
+  nối rõ ràng cho bên yêu cầu đó. OpenClaw không bao giờ dùng thông tin xác thực
+  của bên yêu cầu khác làm phương án dự phòng.
+
+Các trình dựng phần bổ sung cho prompt bộ nhớ nhận ngữ cảnh `agentId`,
+`agentSessionKey` và `sandboxed` không bắt buộc. Các lệnh gọi phần bổ sung kho ngữ liệu bộ nhớ `search`
+và `get` nhận ngữ cảnh `agentId` và `sandboxed` không bắt buộc. Các Plugin có
+bộ lưu trữ do tác tử sở hữu nên phân giải bộ lưu trữ đó cho từng lệnh gọi thay
+vì ghi nhận một đường dẫn toàn cục trong lúc đăng ký. Nếu cần id tác tử nhưng
+id này bị thiếu trong một thao tác đa tác tử, hãy đóng khi không đáp ứng điều
+kiện thay vì chọn một tác tử tùy ý.
+
+Dùng `registerMemoryPromptPreparation(...)` khi văn bản prompt phụ thuộc vào trạng thái
+Plugin bất đồng bộ. Callback chạy một lần trước mỗi prompt tác tử đầy đủ và nhận
+cùng ngữ cảnh công cụ, tác tử, phiên và sandbox như các trình dựng prompt bộ nhớ
+đồng bộ. Xác thực phiên bản hiện tại của chủ sở hữu bộ lưu trữ trước khi tải trạng
+thái được lưu bền vững, sau đó chỉ trả về các dòng dành cho lượt chạy đó. OpenClaw
+đóng băng các dòng này và chuyển kết quả bất biến cho quá trình lắp ráp prompt
+đồng bộ. Giữ việc lưu bền vững, thay thế nguyên tử và xóa khi loại bỏ chủ sở hữu
+bên trong Plugin sở hữu; không thăm dò hoặc đọc tệp từ trình dựng prompt.
+
+Các trình xử lý tương tác của Telegram có thể trả về `{ submitText }` để định tuyến văn bản qua
+đường dẫn tác tử gửi đến thông thường của Telegram sau khi trình xử lý thành công. OpenClaw giữ
+nút callback khi chính sách gửi đến bỏ qua văn bản hoặc quá trình xử lý thất bại,
+để người dùng có thể thử lại sau khi điều kiện chặn thay đổi. Trường kết quả này
+chỉ dành riêng cho Telegram; các kênh khác duy trì hợp đồng kết quả tương tác riêng.
+
+### Hook máy chủ dành cho Plugin quy trình làm việc
+
+Hook máy chủ là các đường nối SDK dành cho Plugin cần tham gia vào vòng đời
+máy chủ thay vì chỉ thêm nhà cung cấp, kênh hoặc công cụ. Đây là các hợp đồng
+chung; Chế độ lập kế hoạch có thể sử dụng chúng, cũng như các quy trình phê duyệt,
+cổng chính sách không gian làm việc, trình giám sát nền, trình hướng dẫn thiết lập
+và Plugin đồng hành giao diện người dùng.
+
+| Phương thức                                                                          | Hợp đồng do phương thức sở hữu                                                                                                                           |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.session.state.registerSessionExtension(...)`                                    | Trạng thái phiên tương thích với JSON do Plugin sở hữu, được chiếu qua các phiên Gateway                                                                    |
+| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | Ngữ cảnh bền vững, chính xác một lần được chèn vào lượt tác nhân tiếp theo cho một phiên                                                                    |
+| `api.registerTrustedToolPolicy(...)`                                                 | Chính sách công cụ tin cậy trước Plugin, được kiểm soát bằng manifest, có thể chặn hoặc ghi lại các tham số công cụ                                         |
+| `api.registerToolMetadata(...)`                                                      | Siêu dữ liệu hiển thị danh mục công cụ mà không thay đổi phần triển khai công cụ                                                                            |
+| `api.registerCommand(...)`                                                           | Các lệnh Plugin có phạm vi; kết quả lệnh có thể đặt `continueAgent: true` hoặc `suppressReply: true`; các lệnh gốc của Discord hỗ trợ `descriptionLocalizations` |
+| `api.session.controls.registerControlUiDescriptor(...)`                              | Bộ mô tả đóng góp cho Control UI dành cho các bề mặt phiên, công cụ, lượt chạy, cài đặt hoặc thẻ                                                            |
+| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | Các hàm gọi lại dọn dẹp cho tài nguyên thời gian chạy do Plugin sở hữu trên các đường dẫn đặt lại/xóa/tải lại                                                |
+| `api.agent.events.registerAgentEventSubscription(...)`                               | Các đăng ký sự kiện đã được làm sạch cho trạng thái quy trình công việc và trình giám sát                                                                   |
+| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | Trạng thái tạm của Plugin theo từng lượt chạy, được xóa trong vòng đời lượt chạy đầu cuối                                                                   |
+| `api.session.workflow.registerSessionSchedulerJob(...)`                              | Siêu dữ liệu dọn dẹp cho các công việc bộ lập lịch do Plugin sở hữu; không lập lịch công việc hoặc tạo bản ghi tác vụ                                        |
+| `api.session.workflow.sendSessionAttachment(...)`                                    | Chỉ dành cho Plugin đi kèm: phân phối tệp đính kèm qua trung gian máy chủ đến tuyến phiên gửi trực tiếp đang hoạt động                                       |
+| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | Chỉ dành cho Plugin đi kèm: các lượt phiên được lập lịch dựa trên Cron cùng việc dọn dẹp theo thẻ                                                           |
+| `api.session.controls.registerSessionAction(...)`                                    | Các hành động phiên có kiểu mà ứng dụng khách có thể gửi qua Gateway                                                                                        |
+
+Bộ mô tả `surface: "tab"` thêm một thẻ thanh bên vào Control UI. Bộ mô tả thẻ
+của các Plugin đang hoạt động được quảng bá cho ứng dụng khách bảng điều khiển trong lời chào
+của Gateway (`controlUiTabs`), vì vậy thẻ chỉ xuất hiện khi Plugin được bật.
+Các Plugin đi kèm có thể cung cấp một chế độ xem bảng điều khiển hạng nhất cho thẻ của mình; các
+Plugin khác có thể đặt `path` thành một tuyến HTTP của Plugin (xem
+`api.registerHttpRoute(...)`) mà bảng điều khiển kết xuất trong một khung được cách ly.
+`icon` là gợi ý tên biểu tượng bảng điều khiển, `group` chọn phần thanh bên
+(`control` hoặc `agent`), `order` sắp xếp giữa các thẻ Plugin, và `requiredScopes`
+ẩn thẻ khỏi các kết nối không có những phạm vi người vận hành đó:
+
+Đối với một thẻ bên ngoài được Gateway bảo vệ, hãy đăng ký bộ mô tả `path` dưới một
+tuyến HTTP `auth: "gateway"` của cùng Plugin. Sau khi khởi tạo có xác thực, trình duyệt nhận được một
+quyền cấp HttpOnly ngắn hạn, có phạm vi giới hạn ở Plugin đó và gốc tuyến, để
+khung được cách ly có thể tải mà không cần sao chép bearer token của Gateway vào URL
+hoặc JavaScript. Trang cha đã xác thực gia hạn quyền cấp khi thẻ bên ngoài
+đang hoạt động và trước khi gắn thẻ sau khi điều hướng hoặc tiếp tục phiên trình duyệt. Trang này cũng
+thăm dò quyền cấp từ cùng sandbox không rõ nguồn gốc trước khi gắn thẻ, để các chế độ
+quyền riêng tư của trình duyệt chặn cookie sẽ đóng an toàn với bảng điều khiển không khả dụng.
+Quyền cấp cho khung chỉ chấp nhận `GET` và `HEAD` và luôn mang theo
+`operator.read`; `requiredScopes` kiểm soát khả năng hiển thị thẻ nhưng không bao giờ mở rộng
+quyền cấp cookie. Các thao tác thay đổi vẫn nằm trên các bề mặt trang cha được Gateway xác thực rõ ràng hoặc
+các bề mặt bearer. Các thẻ bên ngoài yêu cầu HTTPS/Tailscale Serve hoặc một
+nguồn loopback được trình duyệt tin cậy; HTTP thuần túy trên máy chủ LAN hiển thị
+lỗi ngữ cảnh bảo mật thay vì gắn một bảng điều khiển không thể xác thực.
+Việc chặn hoàn toàn cookie bên thứ ba cũng khiến các thẻ được Gateway bảo vệ không khả dụng.
+Cũng như mọi bề mặt Plugin gốc, khung vẫn nằm trong ranh giới tin cậy của
+Plugin đã cài đặt; OpenClaw không coi các Plugin đã cài đặt là những
+chủ thể bảo mật trình duyệt được cách ly lẫn nhau.
+Quyền cấp cookie sử dụng ranh giới tên máy chủ của trình duyệt, không phải ranh giới cổng. Không
+đồng lưu trữ các dịch vụ không tin cậy lẫn nhau trên tên máy chủ Gateway, kể cả trên các
+cổng khác.
+Các thẻ được hỗ trợ bởi cơ chế xác thực do Plugin quản lý giữ nguyên hành vi iframe trực tiếp và không
+yêu cầu hoặc cần quyền cấp Gateway này.
 
 ```typescript
 api.session.controls.registerControlUiDescriptor({
   surface: "tab",
   id: "logbook",
-  label: "Logbook",
-  description: "Your day as a timeline, built from screen snapshots.",
+  label: "Nhật ký",
+  description: "Ngày của bạn dưới dạng dòng thời gian, được tạo từ các ảnh chụp màn hình.",
   icon: "sun",
   group: "control",
   requiredScopes: ["operator.write"],
@@ -267,46 +424,67 @@ Sử dụng các không gian tên được nhóm cho mã Plugin mới:
 - `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`
 - `api.lifecycle.registerRuntimeLifecycle(...)`
 
-Các phương thức phẳng tương đương vẫn khả dụng dưới dạng bí danh tương thích đã ngừng khuyến nghị cho các Plugin hiện có. Không thêm mã Plugin mới gọi trực tiếp `api.registerSessionExtension`, `api.enqueueNextTurnInjection`, `api.registerControlUiDescriptor`, `api.registerRuntimeLifecycle`, `api.registerAgentEventSubscription`, `api.emitAgentEvent`, `api.setRunContext`, `api.getRunContext`, `api.clearRunContext`, `api.registerSessionSchedulerJob`, `api.registerSessionAction`, `api.sendSessionAttachment`, `api.scheduleSessionTurn` hoặc `api.unscheduleSessionTurnsByTag`.
+Các phương thức phẳng tương đương vẫn khả dụng dưới dạng bí danh tương thích
+đã ngừng khuyến nghị cho các Plugin hiện có. Không thêm mã Plugin mới gọi trực tiếp
+`api.registerSessionExtension`, `api.enqueueNextTurnInjection`,
+`api.registerControlUiDescriptor`, `api.registerRuntimeLifecycle`,
+`api.registerAgentEventSubscription`, `api.emitAgentEvent`,
+`api.setRunContext`, `api.getRunContext`, `api.clearRunContext`,
+`api.registerSessionSchedulerJob`, `api.registerSessionAction`,
+`api.sendSessionAttachment`, `api.scheduleSessionTurn` hoặc
+`api.unscheduleSessionTurnsByTag`.
 
-`scheduleSessionTurn(...)` là tiện ích theo phạm vi phiên dựa trên bộ lập lịch Cron của Gateway. Cron sở hữu thời điểm và tạo bản ghi tác vụ nền khi lượt chạy; Plugin SDK chỉ giới hạn phiên đích, cách đặt tên do Plugin sở hữu và việc dọn dẹp. Sử dụng `api.runtime.tasks.managedFlows` bên trong lượt đã lập lịch khi bản thân công việc cần trạng thái Luồng Tác vụ nhiều bước bền vững.
+`scheduleSessionTurn(...)` là một tiện ích có phạm vi phiên dựa trên bộ lập lịch
+Cron của Gateway. Cron sở hữu việc định thời và tạo bản ghi tác vụ nền khi
+lượt chạy diễn ra; Plugin SDK chỉ giới hạn phiên đích, cách đặt tên do Plugin sở hữu
+và việc dọn dẹp. Sử dụng `api.runtime.tasks.managedFlows` bên trong lượt
+được lập lịch khi bản thân công việc cần trạng thái Task Flow nhiều bước bền vững.
 
-Các hợp đồng chủ ý phân tách thẩm quyền:
+Các hợp đồng chủ ý phân chia quyền hạn:
 
-- Các Plugin bên ngoài có thể sở hữu phần mở rộng phiên, bộ mô tả giao diện người dùng, lệnh, siêu dữ liệu công cụ, phần chèn lượt tiếp theo và các hook thông thường.
-- Chính sách công cụ tin cậy chạy trước các hook `before_tool_call` thông thường và được máy chủ tin cậy. Các chính sách tích hợp sẵn chạy trước; chính sách của Plugin đã cài đặt yêu cầu được bật rõ ràng cùng với mã cục bộ của chúng trong `contracts.trustedToolPolicies`, rồi chạy tiếp theo thứ tự tải Plugin. Mã chính sách có phạm vi trong Plugin đăng ký.
-- Quyền sở hữu lệnh dành riêng chỉ thuộc về các gói tích hợp sẵn. Các Plugin bên ngoài nên sử dụng tên lệnh hoặc bí danh riêng.
-- `allowPromptInjection=false` vô hiệu hóa các hook sửa đổi prompt, bao gồm `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`, các trường prompt từ `before_agent_start` cũ và `enqueueNextTurnInjection`.
+- Các Plugin bên ngoài có thể sở hữu phần mở rộng phiên, bộ mô tả giao diện người dùng, lệnh, siêu dữ liệu
+  công cụ, nội dung chèn cho lượt tiếp theo và các hook thông thường.
+- Các chính sách công cụ tin cậy chạy trước các hook `before_tool_call` thông thường và được
+  máy chủ tin cậy. Các chính sách đi kèm chạy trước; các chính sách của Plugin đã cài đặt yêu cầu
+  bật rõ ràng cùng với các id cục bộ của chúng trong
+  `contracts.trustedToolPolicies`, rồi chạy tiếp theo thứ tự tải Plugin. Id chính sách
+  có phạm vi giới hạn ở Plugin đăng ký.
+- Quyền sở hữu lệnh dành riêng chỉ thuộc về Plugin đi kèm. Các Plugin bên ngoài nên sử dụng
+  tên lệnh hoặc bí danh riêng của mình.
+- `allowPromptInjection=false` vô hiệu hóa các hook thay đổi prompt, bao gồm
+  `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`,
+  các trường prompt từ `before_agent_start` cũ và
+  `enqueueNextTurnInjection`.
 
-Ví dụ về các đối tượng sử dụng không thuộc Chế độ Lập kế hoạch:
+Ví dụ về các thành phần sử dụng không thuộc Plan:
 
-| Nguyên mẫu Plugin                 | Hook được sử dụng                                                                                                                                    |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Quy trình phê duyệt               | Phần mở rộng phiên, tiếp tục lệnh, chèn vào lượt tiếp theo, bộ mô tả UI                                                                               |
-| Cổng chính sách ngân sách/không gian làm việc | Chính sách công cụ tin cậy, siêu dữ liệu công cụ, phép chiếu phiên                                                                                    |
-| Trình giám sát vòng đời nền        | Dọn dẹp vòng đời runtime, đăng ký sự kiện agent, quyền sở hữu/dọn dẹp bộ lập lịch phiên, đóng góp vào lời nhắc Heartbeat, bộ mô tả UI                  |
-| Trình hướng dẫn thiết lập hoặc làm quen | Phần mở rộng phiên, lệnh có phạm vi, bộ mô tả UI điều khiển                                                                                           |
+| Kiểu mẫu Plugin               | Các hook được sử dụng                                                                                                                  |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Quy trình phê duyệt           | Phần mở rộng phiên, tiếp tục lệnh, nội dung chèn cho lượt tiếp theo, bộ mô tả giao diện người dùng                                      |
+| Cổng chính sách ngân sách/không gian làm việc | Chính sách công cụ tin cậy, siêu dữ liệu công cụ, phép chiếu phiên                                                       |
+| Trình giám sát vòng đời nền   | Dọn dẹp vòng đời thời gian chạy, đăng ký sự kiện tác nhân, quyền sở hữu/dọn dẹp bộ lập lịch phiên, đóng góp prompt Heartbeat, bộ mô tả giao diện người dùng |
+| Trình hướng dẫn thiết lập hoặc làm quen | Phần mở rộng phiên, lệnh có phạm vi, bộ mô tả Control UI                                                                    |
 
 <Note>
   Các không gian tên quản trị lõi dành riêng (`config.*`, `exec.approvals.*`, `wizard.*`,
-  `update.*`) luôn giữ nguyên là `operator.admin`, ngay cả khi một Plugin cố gắng gán
+  `update.*`) luôn giữ nguyên `operator.admin`, ngay cả khi một Plugin cố gắng gán
   phạm vi phương thức Gateway hẹp hơn. Ưu tiên các tiền tố dành riêng cho Plugin đối với
-  những phương thức do Plugin sở hữu.
+  các phương thức do Plugin sở hữu.
 </Note>
 
-<Accordion title="Khi nào nên sử dụng phần mềm trung gian kết quả công cụ">
-  Các Plugin đi kèm và Plugin đã cài đặt được bật rõ ràng có hợp đồng
+<Accordion title="Khi nào nên sử dụng middleware kết quả công cụ">
+  Các Plugin đi kèm và các Plugin đã cài đặt được bật rõ ràng với hợp đồng
   manifest phù hợp có thể sử dụng `api.registerAgentToolResultMiddleware(...)` khi
-  cần viết lại kết quả công cụ sau khi thực thi và trước khi runtime
-  đưa kết quả đó trở lại mô hình. Đây là điểm nối tin cậy, trung lập với runtime
+  cần viết lại kết quả công cụ sau khi thực thi và trước khi thời gian chạy
+  đưa kết quả đó trở lại mô hình. Đây là điểm nối trung lập với thời gian chạy và được tin cậy
   dành cho các bộ rút gọn đầu ra bất đồng bộ như tokenjuice.
 
-Plugin phải khai báo `contracts.agentToolResultMiddleware` cho từng runtime được nhắm đến,
-ví dụ `["openclaw", "codex"]`. Plugin đã cài đặt nhưng không có hợp đồng đó,
-hoặc không được bật rõ ràng, không thể đăng ký phần mềm trung gian này; hãy giữ
+Các Plugin phải khai báo `contracts.agentToolResultMiddleware` cho từng
+thời gian chạy mục tiêu, ví dụ `["openclaw", "codex"]`. Các Plugin đã cài đặt không có
+hợp đồng đó hoặc không được bật rõ ràng thì không thể đăng ký middleware này; hãy giữ
 các hook Plugin OpenClaw thông thường cho công việc không cần định thời kết quả công cụ
 trước mô hình. Đường dẫn đăng ký factory phần mở rộng cũ chỉ dành cho
-trình chạy nhúng đã bị loại bỏ.
+trình chạy nhúng đã bị xóa.
 </Accordion>
 
 ### Đăng ký khám phá Gateway
@@ -332,27 +510,27 @@ api.registerGatewayDiscoveryService({
 ```
 
 Các Plugin khám phá Gateway không được coi các giá trị TXT được quảng bá là bí mật hoặc
-thông tin xác thực. Khám phá chỉ là gợi ý định tuyến; xác thực Gateway và ghim TLS vẫn
-chịu trách nhiệm về độ tin cậy.
+thông tin xác thực. Khám phá là một gợi ý định tuyến; xác thực Gateway và ghim TLS vẫn
+sở hữu quan hệ tin cậy.
 
 ### Siêu dữ liệu đăng ký CLI
 
 `api.registerCli(registrar, opts?)` chấp nhận hai loại siêu dữ liệu lệnh:
 
-- `commands`: tên lệnh rõ ràng do trình đăng ký sở hữu
-- `descriptors`: bộ mô tả lệnh tại thời điểm phân tích cú pháp dùng cho trợ giúp CLI,
-  định tuyến và đăng ký CLI Plugin theo kiểu tải lười
-- `parentPath`: đường dẫn lệnh cha tùy chọn cho các nhóm lệnh lồng nhau, chẳng hạn
+- `commands`: tên lệnh rõ ràng do bên đăng ký sở hữu
+- `descriptors`: bộ mô tả lệnh tại thời điểm phân tích cú pháp dùng cho phần trợ giúp CLI,
+  định tuyến và đăng ký CLI Plugin tải lười
+- `parentPath`: đường dẫn lệnh cha tùy chọn cho các nhóm lệnh lồng nhau, chẳng hạn như
   `["nodes"]`
 
-Đối với các tính năng Node được ghép cặp, hãy ưu tiên
-`api.registerNodeCliFeature(registrar, opts?)`. Đây là một lớp bọc nhỏ quanh
+Đối với các tính năng Node đã ghép cặp, hãy ưu tiên
+`api.registerNodeCliFeature(registrar, opts?)`. Đây là một trình bao bọc nhỏ quanh
 `api.registerCli(..., { parentPath: ["nodes"] })` và làm cho các lệnh như
-`openclaw nodes canvas` trở thành tính năng Node rõ ràng do Plugin sở hữu.
+`openclaw nodes canvas` trở thành các tính năng Node rõ ràng do Plugin sở hữu.
 
 Nếu muốn một lệnh Plugin tiếp tục được tải lười trong đường dẫn CLI gốc thông thường,
-hãy cung cấp `descriptors` bao phủ mọi gốc lệnh cấp cao nhất mà trình đăng ký đó
-công khai.
+hãy cung cấp `descriptors` bao phủ mọi gốc lệnh cấp cao nhất được bên
+đăng ký đó cung cấp.
 
 ```typescript
 api.registerCli(
@@ -364,7 +542,7 @@ api.registerCli(
     descriptors: [
       {
         name: "matrix",
-        description: "Manage Matrix accounts, verification, devices, and profile state",
+        description: "Quản lý tài khoản Matrix, quy trình xác minh, thiết bị và trạng thái hồ sơ",
         hasSubcommands: true,
       },
     ],
@@ -385,7 +563,7 @@ api.registerCli(
     descriptors: [
       {
         name: "canvas",
-        description: "Capture or render canvas content from a paired node",
+        description: "Chụp hoặc kết xuất nội dung canvas từ một Node đã ghép đôi",
         hasSubcommands: true,
       },
     ],
@@ -393,8 +571,8 @@ api.registerCli(
 );
 ```
 
-Chỉ sử dụng riêng `commands` khi bạn không cần đăng ký CLI gốc theo kiểu tải lười.
-Đường dẫn tương thích tải ngay đó vẫn được hỗ trợ, nhưng không cài đặt
+Chỉ dùng riêng `commands` khi không cần đăng ký CLI gốc theo kiểu tải lười.
+Đường dẫn tương thích tải sớm đó vẫn được hỗ trợ, nhưng không cài đặt
 các phần giữ chỗ dựa trên bộ mô tả để tải lười tại thời điểm phân tích cú pháp.
 
 ### Đăng ký backend CLI
@@ -406,157 +584,161 @@ backend CLI AI cục bộ như `claude-cli` hoặc `my-cli`.
 - `config` của backend sử dụng cùng cấu trúc với `agents.defaults.cliBackends.<id>`.
 - Cấu hình người dùng vẫn được ưu tiên. OpenClaw hợp nhất `agents.defaults.cliBackends.<id>` lên trên
   cấu hình mặc định của Plugin trước khi chạy CLI.
-- Sử dụng `normalizeConfig` khi backend cần viết lại để tương thích sau khi hợp nhất
-  (ví dụ: chuẩn hóa cấu trúc cờ cũ).
-- Sử dụng `resolveExecutionArgs` để viết lại argv theo phạm vi yêu cầu thuộc về
-  phương ngữ CLI, chẳng hạn ánh xạ các mức suy luận của OpenClaw sang cờ mức nỗ lực
-  gốc. Hook nhận `ctx.executionMode`; sử dụng `"side-question"` để thêm
-  các cờ cô lập gốc của backend cho các lệnh gọi `/btw` tạm thời. Nếu các cờ đó
-  vô hiệu hóa công cụ gốc một cách đáng tin cậy cho một CLI vốn luôn bật công cụ, hãy khai báo thêm
-  `sideQuestionToolMode: "disabled"`.
-- Các backend có thể vô hiệu hóa toàn bộ công cụ gốc cho một lần chạy cụ thể có thể khai báo
+- Dùng `normalizeConfig` khi backend cần viết lại để tương thích sau khi hợp nhất
+  (ví dụ: chuẩn hóa các cấu trúc cờ cũ).
+- Dùng `resolveExecutionArgs` cho các phép viết lại argv theo phạm vi yêu cầu thuộc về
+  phương ngữ CLI, chẳng hạn ánh xạ các mức suy luận của OpenClaw sang một cờ mức độ nỗ lực
+  gốc. Hook nhận `ctx.executionMode`; dùng `"side-question"` để thêm
+  các cờ cô lập gốc của backend cho các lệnh gọi `/btw` tạm thời. Nếu những cờ đó
+  vô hiệu hóa các công cụ gốc một cách đáng tin cậy đối với một CLI vốn luôn bật chúng, hãy khai báo
+  cả `sideQuestionToolMode: "disabled"`.
+- Dùng `prepareExecution` cho môi trường khởi chạy do backend sở hữu hoặc các cầu nối
+  xác thực/cấu hình tạm thời. `ctx.contextTokenBudget` của nó là giới hạn token hiệu dụng
+  được chọn cho lần chạy, nhờ đó các backend có Compaction gốc có thể căn chỉnh
+  ngưỡng riêng mà không cần các nhánh lõi dành riêng cho nhà cung cấp.
+- Các backend có thể vô hiệu hóa mọi công cụ gốc cho một lần chạy cụ thể có thể khai báo
   `nativeToolMode: "selectable"`. Các lệnh gọi bị hạn chế truyền một tuple
-  `ctx.toolAvailability.native` rỗng cùng với danh sách cho phép MCP được cô lập chính xác bởi máy chủ;
-  `resolveExecutionArgs` phải thực thi cả hai trên argv cuối cùng cho lần chạy mới hoặc tiếp tục.
-  OpenClaw sẽ từ chối an toàn nếu backend không thể thực hiện điều đó.
+  `ctx.toolAvailability.native` rỗng cùng một danh sách cho phép MCP được cô lập chính xác khỏi máy chủ;
+  `resolveExecutionArgs` phải thực thi cả hai trên argv mới cuối cùng hoặc argv tiếp tục.
+  OpenClaw từ chối thực thi theo nguyên tắc đóng nếu backend không thể làm vậy.
 
-Để xem hướng dẫn biên soạn toàn trình, hãy xem
+Để xem hướng dẫn xây dựng toàn trình, hãy xem
 [Plugin backend CLI](/vi/plugins/cli-backend-plugins).
 
 ### Vị trí độc quyền
 
-| Phương thức                                  | Nội dung đăng ký                                                                                                                                                                                                 |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`     | Công cụ ngữ cảnh (mỗi lần chỉ có một công cụ hoạt động). Các callback vòng đời nhận `runtimeSettings` khi máy chủ có thể cung cấp chẩn đoán mô hình/nhà cung cấp/chế độ; các công cụ nghiêm ngặt cũ được thử lại mà không có khóa đó. |
-| `api.registerMemoryCapability(capability)`   | Khả năng bộ nhớ hợp nhất                                                                                                                                                                                         |
-| `api.registerMemoryPromptSection(builder)`   | Trình tạo phần lời nhắc bộ nhớ                                                                                                                                                                                   |
-| `api.registerMemoryFlushPlan(resolver)`      | Trình phân giải kế hoạch xả bộ nhớ                                                                                                                                                                               |
-| `api.registerMemoryRuntime(runtime)`         | Bộ điều hợp runtime bộ nhớ                                                                                                                                                                                       |
+| Phương thức                                  | Nội dung đăng ký                                                                                                                                                                                   |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | Công cụ ngữ cảnh (mỗi lần chỉ có một công cụ hoạt động). Các callback vòng đời nhận `runtimeSettings` khi máy chủ có thể cung cấp thông tin chẩn đoán mô hình/nhà cung cấp/chế độ; các công cụ nghiêm ngặt cũ hơn được thử lại mà không có khóa đó. |
+| `api.registerMemoryCapability(capability)` | Khả năng bộ nhớ hợp nhất                                                                                                                                                                           |
+| `api.registerMemoryPromptSection(builder)` | Trình tạo phần lời nhắc bộ nhớ                                                                                                                                                                      |
+| `api.registerMemoryFlushPlan(resolver)`    | Trình phân giải kế hoạch xả bộ nhớ                                                                                                                                                                  |
+| `api.registerMemoryRuntime(runtime)`       | Bộ điều hợp runtime bộ nhớ                                                                                                                                                                         |
 
-### Bộ điều hợp embedding bộ nhớ không còn được khuyến nghị
+### Các bộ điều hợp nhúng bộ nhớ đã lỗi thời
 
-| Phương thức                                      | Nội dung đăng ký                                  |
-| ------------------------------------------------ | ------------------------------------------------- |
-| `api.registerMemoryEmbeddingProvider(adapter)`   | Bộ điều hợp embedding bộ nhớ cho Plugin đang hoạt động |
+| Phương thức                                    | Nội dung đăng ký                              |
+| ---------------------------------------------- | --------------------------------------------- |
+| `api.registerMemoryEmbeddingProvider(adapter)` | Bộ điều hợp nhúng bộ nhớ cho Plugin đang hoạt động |
 
 - `registerMemoryCapability` là API Plugin bộ nhớ độc quyền được ưu tiên.
-- `registerMemoryCapability` cũng có thể công khai `publicArtifacts.listArtifacts(...)`
-  để các Plugin đồng hành có thể sử dụng các tạo tác bộ nhớ đã xuất thông qua
+- `registerMemoryCapability` cũng có thể cung cấp `publicArtifacts.listArtifacts(...)`
+  để các Plugin đồng hành có thể sử dụng những tạo tác bộ nhớ đã xuất thông qua
   `openclaw/plugin-sdk/memory-host-core` thay vì truy cập vào bố cục riêng tư của một
   Plugin bộ nhớ cụ thể.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan` và
-  `registerMemoryRuntime` là các API Plugin bộ nhớ độc quyền tương thích với hệ thống cũ.
+  `registerMemoryRuntime` là các API Plugin bộ nhớ độc quyền tương thích với phiên bản cũ.
 - `MemoryFlushPlan.model` có thể ghim lượt xả vào một tham chiếu `provider/model`
   chính xác, chẳng hạn `ollama/qwen3:8b`, mà không kế thừa chuỗi dự phòng đang hoạt động.
-- `registerMemoryEmbeddingProvider` không còn được khuyến nghị. Các nhà cung cấp embedding mới
-  nên sử dụng `api.registerEmbeddingProvider(...)` và
+- `registerMemoryEmbeddingProvider` đã lỗi thời. Các nhà cung cấp nhúng mới
+  nên dùng `api.registerEmbeddingProvider(...)` và
   `contracts.embeddingProviders`.
-- Các nhà cung cấp dành riêng cho bộ nhớ hiện có tiếp tục hoạt động trong giai đoạn chuyển đổi,
-  nhưng quá trình kiểm tra Plugin báo cáo đây là nợ tương thích đối với
+- Các nhà cung cấp hiện có dành riêng cho bộ nhớ tiếp tục hoạt động trong khoảng thời gian
+  di chuyển, nhưng quy trình kiểm tra Plugin báo cáo đây là khoản nợ tương thích đối với
   các Plugin không đi kèm.
 
 ### Sự kiện và vòng đời
 
-| Phương thức                                   | Chức năng                         |
-| --------------------------------------------- | --------------------------------- |
-| `api.on(hookName, handler, opts?)`            | Hook vòng đời có kiểu             |
-| `api.onConversationBindingResolved(handler)`  | Callback liên kết cuộc trò chuyện |
+| Phương thức                                  | Chức năng                     |
+| -------------------------------------------- | ----------------------------- |
+| `api.on(hookName, handler, opts?)`           | Hook vòng đời có kiểu         |
+| `api.onConversationBindingResolved(handler)` | Callback liên kết cuộc hội thoại |
 
-Xem [Hook Plugin](/vi/plugins/hooks) để biết ví dụ, các tên hook phổ biến và ngữ nghĩa
-bảo vệ.
+Xem [Hook Plugin](/vi/plugins/hooks) để biết các ví dụ, tên hook phổ biến và ngữ nghĩa
+của cơ chế bảo vệ.
 
 ### Ngữ nghĩa quyết định của hook
 
-`before_install` là hook vòng đời runtime Plugin, không phải bề mặt chính sách cài đặt
-của người vận hành. Sử dụng `security.installPolicy` khi quyết định cho phép/chặn phải
-bao phủ các đường dẫn cài đặt hoặc cập nhật dựa trên CLI và Gateway.
+`before_install` là một hook vòng đời runtime của Plugin, không phải bề mặt chính sách
+cài đặt của người vận hành. Dùng `security.installPolicy` khi một quyết định cho phép/chặn phải
+bao quát các đường dẫn cài đặt hoặc cập nhật dựa trên CLI và Gateway.
 
-- `before_tool_call`: việc trả về `{ block: true }` sẽ kết thúc quá trình. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
-- `before_tool_call`: việc trả về `{ block: false }` được xem là không đưa ra quyết định (giống như bỏ qua `block`), không phải là ghi đè.
-- `before_install`: việc trả về `{ block: true }` sẽ kết thúc quá trình. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
-- `before_install`: việc trả về `{ block: false }` được xem là không đưa ra quyết định (giống như bỏ qua `block`), không phải là ghi đè.
-- `reply_dispatch`: việc trả về `{ handled: true, ... }` sẽ kết thúc quá trình. Khi bất kỳ trình xử lý nào nhận điều phối, các trình xử lý có mức ưu tiên thấp hơn và đường dẫn điều phối mô hình mặc định sẽ bị bỏ qua.
-- `message_sending`: việc trả về `{ cancel: true }` sẽ kết thúc quá trình. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
-- `message_sending`: việc trả về `{ cancel: false }` được xem là không đưa ra quyết định (giống như bỏ qua `cancel`), không phải là ghi đè.
-- `message_received`: sử dụng trường có kiểu `threadId` khi cần định tuyến luồng/chủ đề đến. Giữ `metadata` cho dữ liệu bổ sung dành riêng cho kênh.
-- `message_sending`: ưu tiên sử dụng các trường định tuyến có kiểu `replyToId` / `threadId` trước khi dự phòng sang `metadata` dành riêng cho kênh.
-- `gateway_start`: sử dụng `ctx.config`, `ctx.workspaceDir` và `ctx.getCron?.()` cho trạng thái khởi động do Gateway sở hữu thay vì phụ thuộc vào các hook nội bộ `gateway:startup`. Cron có thể vẫn đang tải tại thời điểm này.
-- `cron_reconciled`: xây dựng lại toàn bộ hình chiếu cron bên ngoài sau khi khởi động hoặc tải lại bộ lập lịch. Nó bao gồm `reason` và trạng thái `enabled` có hiệu lực, kể cả `enabled: false`, trong khi `ctx.getCron?.()` trả về chính xác bộ lập lịch đã được đối soát. Truyền `ctx.abortSignal` vào công việc hình chiếu bền vững; tín hiệu này sẽ hủy khi ảnh chụp nhanh bộ lập lịch đó bị thay thế hoặc Gateway đóng.
-- `cron_changed`: quan sát các thay đổi vòng đời cron do Gateway sở hữu. Các sự kiện `scheduled` và `removed` là gợi ý đối soát sau khi xác nhận, không phải nhật ký thay đổi theo thứ tự. `event.nextRunAtMs` của một sự kiện đã lập lịch sẽ không có khi tác vụ không có lần đánh thức tiếp theo; sự kiện đã xóa vẫn mang theo ảnh chụp nhanh của tác vụ đã bị xóa.
+- `before_tool_call`: việc trả về `{ block: true }` là kết thúc. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
+- `before_tool_call`: việc trả về `{ block: false }` được xem là không có quyết định (giống như bỏ qua `block`), không phải là ghi đè.
+- `before_install`: việc trả về `{ block: true }` là kết thúc. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
+- `before_install`: việc trả về `{ block: false }` được xem là không có quyết định (giống như bỏ qua `block`), không phải là ghi đè.
+- `reply_dispatch`: việc trả về `{ handled: true, ... }` là kết thúc. Khi bất kỳ trình xử lý nào nhận quyền điều phối, các trình xử lý có mức ưu tiên thấp hơn và đường dẫn điều phối mô hình mặc định sẽ bị bỏ qua.
+- `message_sending`: việc trả về `{ cancel: true }` là kết thúc. Khi bất kỳ trình xử lý nào đặt giá trị này, các trình xử lý có mức ưu tiên thấp hơn sẽ bị bỏ qua.
+- `message_sending`: việc trả về `{ cancel: false }` được xem là không có quyết định (giống như bỏ qua `cancel`), không phải là ghi đè.
+- `message_received`: dùng trường `threadId` có kiểu khi cần định tuyến luồng/chủ đề đến. Giữ `metadata` cho các phần bổ sung dành riêng cho kênh.
+- `message_sending`: dùng các trường định tuyến `replyToId` / `threadId` có kiểu trước khi chuyển sang phương án dự phòng `metadata` dành riêng cho kênh.
+- `gateway_start`: dùng `ctx.config`, `ctx.workspaceDir` và `ctx.getCron?.()` cho trạng thái khởi động do Gateway sở hữu thay vì dựa vào các hook `gateway:startup` nội bộ. Cron có thể vẫn đang tải tại thời điểm này.
+- `cron_reconciled`: xây dựng lại toàn bộ phép chiếu cron bên ngoài sau khi khởi động hoặc tải lại bộ lập lịch. Nó bao gồm `reason` và trạng thái `enabled` hiệu dụng, bao gồm `enabled: false`, trong khi `ctx.getCron?.()` trả về chính xác bộ lập lịch đã được đối soát. Truyền `ctx.abortSignal` vào công việc chiếu bền vững; nó hủy khi ảnh chụp nhanh của bộ lập lịch đó bị thay thế hoặc Gateway đóng.
+- `cron_changed`: theo dõi các thay đổi vòng đời cron do Gateway sở hữu. Các sự kiện `scheduled` và `removed` là gợi ý đối soát sau khi commit, không phải nhật ký chênh lệch có thứ tự. `event.nextRunAtMs` của một sự kiện đã lên lịch không tồn tại khi tác vụ không có lần đánh thức tiếp theo; một sự kiện đã xóa vẫn mang ảnh chụp nhanh của tác vụ đã bị xóa.
 
-Các bộ lập lịch đánh thức bên ngoài nên chống dội hoặc hợp nhất các sự kiện `cron_changed`,
-sau đó đọc lại toàn bộ chế độ xem bền vững từ bộ lập lịch được ghi nhận gần nhất bởi
-`cron_reconciled`. Không tiếp nhận bộ lập lịch từ ngữ cảnh `cron_changed`: một
-gợi ý tách rời từ bộ lập lịch cũ hơn có thể chồng lấn với lần tải lại sau đó.
+Các bộ lập lịch đánh thức bên ngoài nên chống dội hoặc gộp các sự kiện `cron_changed`,
+sau đó đọc lại toàn bộ chế độ xem bền vững từ bộ lập lịch được
+`cron_reconciled` ghi lại gần nhất. Không tiếp nhận bộ lập lịch từ ngữ cảnh `cron_changed`: một
+gợi ý tách rời từ bộ lập lịch cũ hơn có thể chồng lấn với một lần tải lại sau đó.
 
-Sử dụng `cron_reconciled` làm tác nhân kích hoạt ảnh chụp nhanh đầy đủ cho trạng thái bền vững được tải khi
-Gateway khởi động hoặc khi thay thế bộ lập lịch. Sự kiện này không được phát lại khi chỉ tải nóng lại
-Plugin. Các trình xử lý quan sát chạy song song và các lần điều phối không chờ kết quả
-có thể chồng lấn, vì vậy bên tiêu thụ không được phụ thuộc vào thứ tự hoàn thành sự kiện.
-Giữ OpenClaw làm nguồn dữ liệu chính xác cho việc kiểm tra đến hạn và thực thi.
+Dùng `cron_reconciled` làm trình kích hoạt ảnh chụp nhanh đầy đủ cho trạng thái bền vững được tải khi
+Gateway khởi động hoặc khi thay thế bộ lập lịch. Nó không được phát lại khi chỉ tải nóng lại
+một Plugin. Các trình xử lý theo dõi chạy song song và các lần điều phối
+không chờ kết quả có thể chồng lấn, vì vậy bên sử dụng không được phụ thuộc vào thứ tự hoàn tất sự kiện.
+Giữ OpenClaw làm nguồn dữ liệu chuẩn cho việc kiểm tra đến hạn và thực thi.
 
-Để xem một bộ điều hợp chỉ cho phép một lượt chạy với khả năng thay thế bền vững, thử lại/chờ lùi và
-tắt sạch, hãy xem [Hình chiếu cron bên ngoài an toàn](/vi/plugins/hooks#safe-external-cron-projection).
+Để xem một bộ điều hợp chỉ chạy một luồng với khả năng thay thế bền vững, thử lại/lùi thời gian và tắt
+sạch, hãy xem [Phép chiếu cron bên ngoài an toàn](/vi/plugins/hooks#safe-external-cron-projection).
 
 ### Các trường của đối tượng API
 
-| Trường                   | Kiểu                      | Mô tả                                                                                                   |
-| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | Mã định danh Plugin                                                                                     |
-| `api.name`               | `string`                  | Tên hiển thị                                                                                            |
-| `api.version`            | `string?`                 | Phiên bản Plugin (không bắt buộc)                                                                       |
-| `api.description`        | `string?`                 | Mô tả Plugin (không bắt buộc)                                                                           |
-| `api.source`             | `string`                  | Đường dẫn nguồn của Plugin                                                                              |
-| `api.rootDir`            | `string?`                 | Thư mục gốc của Plugin (không bắt buộc)                                                                 |
-| `api.config`             | `OpenClawConfig`          | Ảnh chụp nhanh cấu hình hiện tại (ảnh chụp nhanh thời gian chạy trong bộ nhớ đang hoạt động khi có)     |
-| `api.pluginConfig`       | `Record<string, unknown>` | Cấu hình dành riêng cho Plugin từ `plugins.entries.<id>.config`                                         |
-| `api.runtime`            | `PluginRuntime`           | [Các tiện ích thời gian chạy](/vi/plugins/sdk-runtime)                                                     |
-| `api.logger`             | `PluginLogger`            | Bộ ghi nhật ký theo phạm vi (`debug`, `info`, `warn`, `error`)                                          |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Chế độ tải hiện tại; `"setup-runtime"` là khoảng khởi động/thiết lập nhẹ trước khi tải mục nhập đầy đủ |
-| `api.resolvePath(input)` | `(string) => string`      | Phân giải đường dẫn tương đối với thư mục gốc của Plugin                                                |
+| Trường                   | Kiểu                      | Mô tả                                                                                        |
+| ------------------------ | ------------------------- | -------------------------------------------------------------------------------------------- |
+| `api.id`                 | `string`                  | ID Plugin                                                                                    |
+| `api.name`               | `string`                  | Tên hiển thị                                                                                 |
+| `api.version`            | `string?`                 | Phiên bản Plugin (không bắt buộc)                                                             |
+| `api.description`        | `string?`                 | Mô tả Plugin (không bắt buộc)                                                                |
+| `api.source`             | `string`                  | Đường dẫn nguồn Plugin                                                                       |
+| `api.rootDir`            | `string?`                 | Thư mục gốc của Plugin (không bắt buộc)                                                       |
+| `api.config`             | `OpenClawConfig`          | Ảnh chụp nhanh cấu hình hiện tại (ảnh chụp nhanh runtime trong bộ nhớ đang hoạt động khi có) |
+| `api.pluginConfig`       | `Record<string, unknown>` | Cấu hình dành riêng cho Plugin từ `plugins.entries.<id>.config`                              |
+| `api.runtime`            | `PluginRuntime`           | [Các trình trợ giúp runtime](/vi/plugins/sdk-runtime)                                           |
+| `api.logger`             | `PluginLogger`            | Trình ghi nhật ký theo phạm vi (`debug`, `info`, `warn`, `error`)                             |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Chế độ tải hiện tại; `"setup-runtime"` là khoảng thời gian khởi động/thiết lập nhẹ trước khi vào đầy đủ |
+| `api.resolvePath(input)` | `(string) => string`      | Phân giải đường dẫn tương đối với thư mục gốc của Plugin                                     |
 
 ## Quy ước mô-đun nội bộ
 
-Trong Plugin của bạn, hãy sử dụng các tệp barrel cục bộ cho các lệnh nhập nội bộ:
+Trong Plugin, hãy dùng các tệp barrel cục bộ cho các lệnh nhập nội bộ:
 
 ```text
 my-plugin/
-  api.ts            # Các nội dung xuất công khai dành cho bên tiêu thụ bên ngoài
-  runtime-api.ts    # Các nội dung xuất thời gian chạy chỉ dành cho nội bộ
+  api.ts            # Các nội dung xuất công khai dành cho đối tượng sử dụng bên ngoài
+  runtime-api.ts    # Các nội dung xuất chỉ dành cho runtime nội bộ
   index.ts          # Điểm vào của Plugin
-  setup-entry.ts    # Điểm vào nhẹ chỉ dành cho thiết lập (không bắt buộc)
+  setup-entry.ts    # Điểm vào nhẹ chỉ dành cho thiết lập (tùy chọn)
 ```
 
 <Warning>
-  Tuyệt đối không nhập Plugin của chính bạn qua `openclaw/plugin-sdk/<your-plugin>`
-  từ mã sản xuất. Định tuyến các lệnh nhập nội bộ qua `./api.ts` hoặc
+  Tuyệt đối không nhập chính plugin của bạn thông qua `openclaw/plugin-sdk/<your-plugin>`
+  từ mã production. Định tuyến các lệnh nhập nội bộ thông qua `./api.ts` hoặc
   `./runtime-api.ts`. Đường dẫn SDK chỉ là hợp đồng bên ngoài.
 </Warning>
 
-Các bề mặt công khai của Plugin tích hợp được tải qua facade (`api.ts`, `runtime-api.ts`,
-`index.ts`, `setup-entry.ts` và các tệp mục nhập công khai tương tự) ưu tiên
-ảnh chụp nhanh cấu hình thời gian chạy đang hoạt động khi OpenClaw đã chạy. Nếu chưa có
-ảnh chụp nhanh thời gian chạy, chúng sẽ dự phòng sang tệp cấu hình đã phân giải trên đĩa.
-Các facade của Plugin tích hợp đã đóng gói nên được tải qua các trình tải facade Plugin
-của OpenClaw; việc nhập trực tiếp từ `dist/extensions/...` sẽ bỏ qua các bước kiểm tra
-manifest và sidecar thời gian chạy mà bản cài đặt đóng gói sử dụng cho mã do Plugin sở hữu.
+Các bề mặt công khai của plugin tích hợp sẵn được tải qua facade (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts` và các tệp điểm vào công khai tương tự) ưu tiên
+ảnh chụp nhanh cấu hình runtime đang hoạt động khi OpenClaw đã chạy. Nếu chưa có
+ảnh chụp nhanh runtime, chúng sẽ dùng dự phòng là tệp cấu hình đã phân giải trên đĩa.
+Các facade của plugin tích hợp sẵn đã đóng gói phải được tải thông qua các trình tải
+facade plugin của OpenClaw; việc nhập trực tiếp từ `dist/extensions/...` sẽ bỏ qua các bước kiểm tra
+manifest và sidecar runtime mà bản cài đặt đóng gói sử dụng cho mã do plugin sở hữu.
 
-Các Plugin nhà cung cấp có thể cung cấp một barrel hợp đồng cục bộ hẹp dành riêng cho Plugin khi một
-tiện ích được chủ ý thiết kế riêng cho nhà cung cấp và chưa phù hợp với một đường dẫn con SDK dùng chung.
-Các ví dụ tích hợp:
+Các plugin nhà cung cấp có thể cung cấp một barrel hợp đồng hẹp cục bộ trong plugin khi một
+trình trợ giúp được chủ ý thiết kế riêng cho nhà cung cấp và chưa phù hợp với một đường dẫn con SDK
+chung. Các ví dụ tích hợp sẵn:
 
-- **Anthropic**: ranh giới `api.ts` / `contract-api.ts` công khai cho các tiện ích
-  tiêu đề beta và luồng `service_tier` của Claude.
+- **Anthropic**: seam công khai `api.ts` / `contract-api.ts` cho trình trợ giúp
+  beta-header và luồng `service_tier` của Claude.
 - **`@openclaw/openai-provider`**: `api.ts` xuất các trình dựng nhà cung cấp,
-  tiện ích mô hình mặc định và trình dựng nhà cung cấp thời gian thực.
+  trình trợ giúp mô hình mặc định và trình dựng nhà cung cấp thời gian thực.
 - **`@openclaw/openrouter-provider`**: `api.ts` xuất trình dựng nhà cung cấp
-  cùng các tiện ích hướng dẫn ban đầu/cấu hình.
+  cùng các trình trợ giúp onboarding/cấu hình.
 
 <Warning>
-  Mã sản xuất của phần mở rộng cũng nên tránh nhập `openclaw/plugin-sdk/<other-plugin>`.
-  Nếu một tiện ích thực sự dùng chung, hãy nâng nó lên một đường dẫn con SDK trung lập
-  như `openclaw/plugin-sdk/speech`, `.../provider-model-shared` hoặc một
-  bề mặt định hướng khả năng khác thay vì ghép nối hai Plugin với nhau.
+  Mã production của phần mở rộng cũng nên tránh các lệnh nhập `openclaw/plugin-sdk/<other-plugin>`.
+  Nếu một trình trợ giúp thực sự được dùng chung, hãy nâng nó lên một đường dẫn con SDK trung lập
+  như `openclaw/plugin-sdk/speech`, `.../provider-model-shared` hoặc một bề mặt khác
+  định hướng theo khả năng thay vì ghép nối hai plugin với nhau.
 </Warning>
 
 ## Liên quan
@@ -565,8 +747,8 @@ Các ví dụ tích hợp:
   <Card title="Điểm vào" icon="door-open" href="/vi/plugins/sdk-entrypoints">
     Các tùy chọn `definePluginEntry` và `defineChannelPluginEntry`.
   </Card>
-  <Card title="Các tiện ích thời gian chạy" icon="gears" href="/vi/plugins/sdk-runtime">
-    Tài liệu tham chiếu đầy đủ cho không gian tên `api.runtime`.
+  <Card title="Trình trợ giúp runtime" icon="gears" href="/vi/plugins/sdk-runtime">
+    Tài liệu tham chiếu đầy đủ về namespace `api.runtime`.
   </Card>
   <Card title="Thiết lập và cấu hình" icon="sliders" href="/vi/plugins/sdk-setup">
     Đóng gói, manifest và lược đồ cấu hình.

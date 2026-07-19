@@ -1,64 +1,60 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Linux पर OpenClaw ब्राउज़र नियंत्रण के लिए Chrome/Brave/Edge/Chromium CDP स्टार्टअप समस्याओं को ठीक करें
+summary: Linux पर OpenClaw ब्राउज़र नियंत्रण के लिए Chrome/Brave/Edge/Chromium CDP स्टार्टअप समस्याएँ ठीक करें
 title: ब्राउज़र समस्या निवारण
 x-i18n:
-    generated_at: "2026-06-29T00:16:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:47:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
+    source_hash: e0256e8ee441802086cd486923060be54f8966b423e5dcb71fc8961bbab5d729
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 16
 ---
 
-## समस्या: "पोर्ट 18800 पर Chrome CDP शुरू करने में विफल"
+## समस्या: पोर्ट 18800 पर Chrome CDP शुरू नहीं हो सका
 
-OpenClaw का ब्राउज़र नियंत्रण सर्वर Chrome/Brave/Edge/Chromium को इस त्रुटि के साथ लॉन्च करने में विफल होता है:
-
-```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
+```json
+{ "error": "त्रुटि: प्रोफ़ाइल \"openclaw\" के लिए पोर्ट 18800 पर Chrome CDP शुरू नहीं हो सका।" }
 ```
 
 ### मूल कारण
 
-Ubuntu (और कई Linux डिस्ट्रो) पर, डिफ़ॉल्ट Chromium इंस्टॉलेशन एक **snap package** होता है। Snap का AppArmor confinement OpenClaw द्वारा ब्राउज़र प्रक्रिया शुरू करने और मॉनिटर करने के तरीके में बाधा डालता है।
+Ubuntu और अधिकांश Linux डिस्ट्रीब्यूशन पर, `apt install chromium` वास्तविक ब्राउज़र के बजाय एक snap
+रैपर इंस्टॉल करता है:
 
-`apt install chromium` कमांड एक stub package इंस्टॉल करता है जो snap पर रीडायरेक्ट करता है:
-
+```text
+ध्यान दें, 'chromium' के बजाय 'chromium-browser' चुना जा रहा है
+chromium-browser पहले से नवीनतम संस्करण (2:1snap1-0ubuntu2) है।
 ```
-Note, selecting 'chromium-browser' instead of 'chromium'
-chromium-browser is already the newest version (2:1snap1-0ubuntu2).
-```
 
-यह वास्तविक ब्राउज़र नहीं है - यह सिर्फ़ एक wrapper है।
+Snap का AppArmor परिसीमन OpenClaw द्वारा ब्राउज़र प्रक्रिया शुरू करने और उसकी निगरानी करने के तरीके में
+बाधा डालता है।
 
-अन्य सामान्य Linux लॉन्च विफलताएं:
+Linux पर शुरू होने में विफलता के अन्य सामान्य कारण:
 
-- `The profile appears to be in use by another Chromium process` का अर्थ है कि Chrome को
-  managed profile डायरेक्टरी में पुराने `Singleton*` lock files मिले। OpenClaw
-  उन locks को हटाता है और एक बार फिर कोशिश करता है जब lock किसी मृत या
-  अलग-host प्रक्रिया की ओर संकेत करता है।
-- `Missing X server or $DISPLAY` का अर्थ है कि desktop session के बिना किसी host पर visible browser स्पष्ट रूप से
-  अनुरोधित था। डिफ़ॉल्ट रूप से, local managed
-  profiles अब Linux पर headless mode पर fallback करते हैं जब `DISPLAY` और
-  `WAYLAND_DISPLAY` दोनों unset हों। यदि आपने `OPENCLAW_BROWSER_HEADLESS=0`,
-  `browser.headless: false`, या `browser.profiles.<name>.headless: false` सेट किया है,
-  तो उस headed override को हटाएं, `OPENCLAW_BROWSER_HEADLESS=1` सेट करें, `Xvfb` शुरू करें,
-  one-shot managed launch के लिए `openclaw browser start --headless` चलाएं, या
-  OpenClaw को वास्तविक desktop session में चलाएं।
+- `The profile appears to be in use by another Chromium process`: प्रबंधित प्रोफ़ाइल डायरेक्टरी में पुराने
+  `Singleton*` लॉक फ़ाइलें। जब लॉक किसी बंद या
+  दूसरे होस्ट की प्रक्रिया की ओर संकेत करता है, तो OpenClaw इन लॉक को हटाकर एक बार पुनः प्रयास करता है।
+- `Missing X server or $DISPLAY`: डेस्कटॉप सत्र के बिना किसी होस्ट पर दृश्यमान ब्राउज़र का स्पष्ट रूप से अनुरोध किया गया।
+  जब `DISPLAY` और `WAYLAND_DISPLAY` दोनों सेट नहीं होते, तो Linux पर स्थानीय प्रबंधित प्रोफ़ाइल
+  हेडलेस मोड पर वापस आ जाती हैं।
+  यदि आपने `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless: false`, या
+  `browser.profiles.<name>.headless: false` सेट किया है, तो उस हेडेड ओवरराइड को हटाएँ,
+  `OPENCLAW_BROWSER_HEADLESS=1` सेट करें, `Xvfb` शुरू करें, एक बार के प्रबंधित लॉन्च के लिए
+  `openclaw browser start --headless` चलाएँ, या OpenClaw को
+  वास्तविक डेस्कटॉप सत्र में चलाएँ।
 
 ### समाधान 1: Google Chrome इंस्टॉल करें (अनुशंसित)
-
-आधिकारिक Google Chrome `.deb` package इंस्टॉल करें, जिसे snap sandbox नहीं करता:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # यदि निर्भरता संबंधी त्रुटियाँ हों
 ```
 
-फिर अपनी OpenClaw config (`~/.openclaw/openclaw.json`) अपडेट करें:
+`~/.openclaw/openclaw.json` अपडेट करें:
 
 ```json
 {
@@ -71,11 +67,10 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-### समाधान 2: Attach-Only Mode के साथ Snap Chromium का उपयोग करें
+### समाधान 2: snap Chromium को केवल-अटैच मोड में उपयोग करें
 
-यदि आपको snap Chromium का उपयोग करना ही है, तो manually-started browser से attach करने के लिए OpenClaw को configure करें:
-
-1. config अपडेट करें:
+यदि snap Chromium रखना आवश्यक है, तो OpenClaw को ब्राउज़र लॉन्च करने के बजाय
+मैन्युअल रूप से शुरू किए गए ब्राउज़र से अटैच होने के लिए कॉन्फ़िगर करें:
 
 ```json
 {
@@ -88,7 +83,7 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-2. Chromium को manually शुरू करें:
+Chromium को मैन्युअल रूप से शुरू करें:
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -97,12 +92,12 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. वैकल्पिक रूप से Chrome को auto-start करने के लिए systemd user service बनाएं:
+वैकल्पिक रूप से इसे systemd उपयोगकर्ता सेवा के साथ स्वतः शुरू करें:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
 [Unit]
-Description=OpenClaw Browser (Chrome CDP)
+Description=OpenClaw ब्राउज़र (Chrome CDP)
 After=network.target
 
 [Service]
@@ -114,68 +109,69 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-इससे enable करें: `systemctl --user enable --now openclaw-browser.service`
+```bash
+systemctl --user enable --now openclaw-browser.service
+```
 
-### ब्राउज़र के काम करने की पुष्टि करना
-
-status जांचें:
+### सत्यापित करें कि ब्राउज़र काम करता है
 
 ```bash
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
-```
-
-browsing का परीक्षण करें:
-
-```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
-### Config संदर्भ
+### कॉन्फ़िगरेशन संदर्भ
 
-| विकल्प                           | विवरण                                                          | डिफ़ॉल्ट                                                     |
-| -------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`                | browser control सक्षम करें                                               | `true`                                                      |
-| `browser.executablePath`         | Chromium-आधारित browser binary (Chrome/Brave/Edge/Chromium) का path | auto-detected (Chromium-आधारित होने पर default browser को प्राथमिकता देता है) |
-| `browser.headless`               | GUI के बिना चलाएं                                                      | `false`                                                     |
-| `OPENCLAW_BROWSER_HEADLESS`      | local managed browser headless mode के लिए per-process override         | सेट नहीं                                                       |
-| `browser.noSandbox`              | `--no-sandbox` flag जोड़ें (कुछ Linux setups के लिए आवश्यक)               | `false`                                                     |
-| `browser.attachOnly`             | browser launch न करें, केवल existing से attach करें                        | `false`                                                     |
-| `browser.cdpPort`                | Chrome DevTools Protocol port                                        | `18800`                                                     |
-| `browser.localLaunchTimeoutMs`   | Local managed Chrome discovery timeout                               | `15000`                                                     |
-| `browser.localCdpReadyTimeoutMs` | Local managed post-launch CDP readiness timeout                      | `8000`                                                      |
+| विकल्प                           | विवरण                                                          | डिफ़ॉल्ट                                                            |
+| -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `browser.enabled`                | ब्राउज़र नियंत्रण सक्षम करें                                               | `true`                                                             |
+| `browser.executablePath`         | Chromium-आधारित ब्राउज़र बाइनरी का पथ (Chrome/Brave/Edge/Chromium) | स्वतः पहचाना गया (Chromium-आधारित होने पर OS के डिफ़ॉल्ट ब्राउज़र को प्राथमिकता देता है) |
+| `browser.headless`               | GUI के बिना चलाएँ                                                      | `false`                                                            |
+| `OPENCLAW_BROWSER_HEADLESS`      | स्थानीय प्रबंधित ब्राउज़र के हेडलेस मोड के लिए प्रति-प्रक्रिया ओवरराइड         | सेट नहीं                                                              |
+| `browser.noSandbox`              | `--no-sandbox` फ़्लैग जोड़ें (कुछ Linux सेटअप के लिए आवश्यक)               | `false`                                                            |
+| `browser.attachOnly`             | ब्राउज़र लॉन्च न करें; केवल मौजूदा ब्राउज़र से अटैच हों              | `false`                                                            |
+| `browser.cdpPortRangeStart`      | स्वतः आवंटित प्रोफ़ाइलों के लिए आरंभिक स्थानीय CDP पोर्ट                   | `18800` (Gateway पोर्ट से व्युत्पन्न)                            |
+| `browser.localLaunchTimeoutMs`   | स्थानीय प्रबंधित Chrome खोज टाइमआउट, अधिकतम `120000`               | `15000`                                                            |
+| `browser.localCdpReadyTimeoutMs` | लॉन्च के बाद स्थानीय प्रबंधित CDP की तैयार स्थिति का टाइमआउट, अधिकतम `120000`      | `8000`                                                             |
 
-Raspberry Pi, पुराने VPS hosts, या slow storage पर,
-`browser.localLaunchTimeoutMs` बढ़ाएं जब Chrome को अपना CDP HTTP
-endpoint expose करने के लिए अधिक समय चाहिए। `browser.localCdpReadyTimeoutMs` तब बढ़ाएं जब launch सफल हो लेकिन
-`openclaw browser start` फिर भी `not reachable after start` रिपोर्ट करे। मान
-`120000` ms तक के positive integers होने चाहिए; invalid config values rejected होते हैं।
+दोनों टाइमआउट मान `120000` ms तक के धनात्मक पूर्णांक होने चाहिए; अन्य मान
+कॉन्फ़िगरेशन लोड करते समय अस्वीकार कर दिए जाते हैं। Raspberry Pi, पुराने VPS होस्ट या धीमे
+स्टोरेज पर, जब Chrome को अपना CDP HTTP एंडपॉइंट उपलब्ध कराने के लिए अधिक समय चाहिए, तो
+`browser.localLaunchTimeoutMs` बढ़ाएँ। जब लॉन्च सफल हो जाता है, लेकिन
+`openclaw browser start` अभी भी `not reachable
+after start` रिपोर्ट करता है, तो
+`browser.localCdpReadyTimeoutMs` बढ़ाएँ।
 
-### समस्या: "profile=\"user\" के लिए कोई Chrome tabs नहीं मिले"
+### समस्या: profile="user" के लिए कोई Chrome टैब नहीं मिला
 
-आप `existing-session` / Chrome MCP profile का उपयोग कर रहे हैं। OpenClaw local Chrome देख सकता है,
-लेकिन attach करने के लिए कोई open tabs उपलब्ध नहीं हैं।
+आप `user` (`existing-session` / Chrome MCP) प्रोफ़ाइल का उपयोग कर रहे हैं और अटैच होने के लिए
+कोई टैब खुला नहीं है।
 
-Fix विकल्प:
+सुधार के विकल्प:
 
-1. **managed browser का उपयोग करें:** `openclaw browser start --browser-profile openclaw`
-   (या `browser.defaultProfile: "openclaw"` सेट करें)।
-2. **Chrome MCP का उपयोग करें:** सुनिश्चित करें कि local Chrome कम से कम एक open tab के साथ चल रहा है, फिर `--browser-profile user` के साथ फिर कोशिश करें।
+1. इसके बजाय प्रबंधित ब्राउज़र का उपयोग करें:
+   `openclaw browser --browser-profile openclaw start` (या
+   `browser.defaultProfile: "openclaw"` सेट करें)।
+2. कम-से-कम एक खुला टैब रखते हुए स्थानीय Chrome को चालू रखें, फिर
+   `--browser-profile user` के साथ पुनः प्रयास करें।
 
-Notes:
+टिप्पणियाँ:
 
-- `user` host-only है। Linux servers, containers, या remote hosts के लिए, CDP profiles को प्राथमिकता दें।
-- `user` / अन्य `existing-session` profiles वर्तमान Chrome MCP limits रखते हैं:
-  ref-driven actions, one-file upload hooks, कोई dialog timeout overrides नहीं, कोई
-  `wait --load networkidle` नहीं, और कोई `responsebody`, PDF export, download
-  interception, या batch actions नहीं।
-- Local `openclaw` profiles `cdpPort`/`cdpUrl` auto-assign करते हैं; इन्हें केवल remote CDP के लिए सेट करें।
-- Remote CDP profiles `http://`, `https://`, `ws://`, और `wss://` स्वीकार करते हैं।
-  `/json/version` discovery के लिए HTTP(S) का उपयोग करें, या WS(S) का उपयोग करें जब आपका browser
-  service आपको direct DevTools socket URL देता है।
+- `user` केवल होस्ट के लिए है। Linux सर्वर, कंटेनर या दूरस्थ होस्ट पर इसके बजाय
+  CDP प्रोफ़ाइल को प्राथमिकता दें।
+- `user` और अन्य `existing-session` प्रोफ़ाइल वर्तमान Chrome MCP
+  सीमाएँ साझा करती हैं: केवल रेफ़रेंस-संचालित क्रियाएँ, प्रत्येक अपलोड में एक फ़ाइल, डायलॉग के लिए कोई `timeoutMs`
+  ओवरराइड नहीं, कोई `wait --load networkidle` नहीं, और कोई `responsebody`, PDF निर्यात,
+  डाउनलोड इंटरसेप्शन या बैच क्रियाएँ नहीं।
+- स्थानीय `openclaw`-ड्राइवर प्रोफ़ाइल `cdpPort`/`cdpUrl` को स्वतः आवंटित करती हैं; इन्हें केवल
+  दूरस्थ CDP के लिए मैन्युअल रूप से सेट करें।
+- दूरस्थ CDP प्रोफ़ाइल `http://`, `https://`, `ws://`, और `wss://` स्वीकार करती हैं।
+  `/json/version` खोज के लिए HTTP(S) का उपयोग करें, या जब आपकी ब्राउज़र
+  सेवा आपको प्रत्यक्ष DevTools सॉकेट URL देती है, तो WS(S) का उपयोग करें।
 
 ## संबंधित
 
-- [Browser](/hi/tools/browser)
-- [Browser login](/hi/tools/browser-login)
-- [Browser WSL2 troubleshooting](/hi/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [ब्राउज़र](/hi/tools/browser)
+- [ब्राउज़र लॉगिन](/hi/tools/browser-login)
+- [ब्राउज़र WSL2 समस्या निवारण](/hi/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

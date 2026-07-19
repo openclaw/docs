@@ -1,28 +1,29 @@
 ---
 read_when:
-    - किसी स्किल या Plugin को प्रकाशित करना
-    - स्वामी या पैकेज स्कोप त्रुटियों की डिबगिंग
+    - किसी skill या plugin को प्रकाशित करना
+    - ओनर या पैकेज स्कोप त्रुटियों को डीबग करना
     - प्रकाशन UI, CLI, या बैकएंड व्यवहार जोड़ना
-summary: Skills, Plugin, स्वामियों, scopes, रिलीज़ और समीक्षा के लिए ClawHub प्रकाशन कैसे काम करता है।
+summary: Skills, plugins, स्वामियों, स्कोप, रिलीज़ और समीक्षा के लिए ClawHub प्रकाशन कैसे काम करता है।
 x-i18n:
-    generated_at: "2026-06-28T22:45:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:00:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5c0270c0bc3316d970feddfc689c1125e1c90a62beeb40d8098dc6a6752cfa70
+    source_hash: 582dffaf4429e9f24d7c38f2809cc7dc05f8471e4ae2f9c6be60153cc8604e3f
     source_path: clawhub/publishing.md
     workflow: 16
 ---
 
 # प्रकाशन
 
-प्रकाशन आपके चुने हुए स्वामी के अंतर्गत किसी skill फ़ोल्डर या plugin पैकेज को ClawHub पर भेजता है। ClawHub जांचता है कि आपका टोकन उस स्वामी के लिए प्रकाशित कर सकता है, metadata, नाम, संस्करण, फ़ाइलें और source जानकारी को validate करता है, फिर release को संग्रहीत करता है और स्वचालित सुरक्षा जांच शुरू करता है।
+प्रकाशन आपके चुने हुए स्वामी के अंतर्गत किसी skill फ़ोल्डर या plugin पैकेज को ClawHub पर भेजता है। ClawHub जाँचता है कि आपका टोकन उस स्वामी के लिए प्रकाशित कर सकता है, मेटाडेटा, नाम, संस्करण, फ़ाइलों और स्रोत की जानकारी को सत्यापित करता है, फिर रिलीज़ को संग्रहीत करता है और स्वचालित सुरक्षा जाँच शुरू करता है।
 
-यदि validation विफल होता है, तो कुछ भी प्रकाशित नहीं होता। नए releases सामान्य install और download surfaces से तब तक बाहर भी रह सकते हैं जब तक review पूरा नहीं हो जाता।
+यदि सत्यापन विफल होता है, तो कुछ भी प्रकाशित नहीं किया जाता। नई रिलीज़ समीक्षा पूरी होने तक सामान्य इंस्टॉल और डाउनलोड सतहों से बाहर भी रह सकती हैं।
 
 ## Skills
 
-सबसे सरल प्रकाशन पथ CLI है। साइन इन करें, फिर एक local skill फ़ोल्डर प्रकाशित करें:
+प्रकाशन का सबसे सरल तरीका CLI है। साइन इन करें, फिर एक स्थानीय skill फ़ोल्डर प्रकाशित करें:
 
 ```bash
 clawhub login
@@ -32,12 +33,12 @@ clawhub skill publish ./my-skill \
   --owner <owner>
 ```
 
-किसी org स्वामी पर प्रकाशित करते समय `--owner <handle>` का उपयोग करें। authenticated user के रूप में प्रकाशित करने के लिए इसे छोड़ दें। प्रकाशन अपरिवर्तित content को छोड़ देता है। एक नया skill `1.0.0` से शुरू होता है, और बाद के बदलाव स्वतः अगला patch संस्करण प्रकाशित करते हैं। `--version` केवल तब पास करें जब आपको स्पष्ट संस्करण चाहिए।
+किसी संगठन स्वामी के अंतर्गत प्रकाशित करते समय `--owner <handle>` का उपयोग करें। प्रमाणीकृत उपयोगकर्ता के रूप में प्रकाशित करने के लिए इसे छोड़ दें। प्रकाशन अपरिवर्तित सामग्री को छोड़ देता है। नई skill की शुरुआत `1.0.0` से होती है, और बाद के बदलाव स्वचालित रूप से अगला पैच संस्करण प्रकाशित करते हैं। केवल तब `--version` दें, जब आपको कोई स्पष्ट संस्करण चाहिए।
 
-catalog repos के लिए, ClawHub के reusable
-[`skill-publish.yml` workflow](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
-का उपयोग करें। यह `root` के अंतर्गत प्रत्येक immediate skill फ़ोल्डर के लिए `skill publish` कॉल करता है (default:
-`skills`), या केवल `skill_path` के रूप में दिए गए फ़ोल्डर के लिए।
+कैटलॉग रिपॉज़िटरी के लिए ClawHub के पुनः उपयोग योग्य
+[`skill-publish.yml` वर्कफ़्लो](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml) का उपयोग करें।
+यह `root` के अंतर्गत प्रत्येक सीधे skill फ़ोल्डर (डिफ़ॉल्ट:
+`skills`) के लिए `skill publish` को कॉल करता है, या केवल `skill_path` के रूप में दिए गए फ़ोल्डर के लिए।
 
 ```yaml
 jobs:
@@ -50,42 +51,49 @@ jobs:
       clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
 ```
 
-प्रकाशित किए बिना नए और बदले हुए skills का preview करने के लिए `dry_run: true` का उपयोग करें।
+प्रकाशित किए बिना नई और बदली हुई skills का पूर्वावलोकन करने के लिए `dry_run: true` का उपयोग करें।
 
 ## Plugins
 
-Plugins npm-style package names का उपयोग करते हैं। scoped package names में नाम के पहले भाग में स्वामी शामिल होता है:
+Plugins npm-शैली के पैकेज नामों का उपयोग करते हैं। स्कोप वाले पैकेज नामों के पहले भाग में स्वामी शामिल होता है:
 
 ```text
 @owner/package-name
 ```
 
-scope चयनित publish स्वामी से मेल खाना चाहिए। यदि आपके package का नाम `@openclaw/dronzer` है, तो इसे केवल `@openclaw` के रूप में प्रकाशित किया जा सकता है। यदि आप `@vintageayu` के रूप में प्रकाशित करते हैं, तो package का नाम बदलकर `@vintageayu/dronzer` करें।
+स्कोप चयनित प्रकाशन स्वामी से मेल खाना चाहिए। यदि आपके पैकेज का नाम `@openclaw/dronzer` है, तो इसे केवल `@openclaw` के रूप में प्रकाशित किया जा सकता है। यदि आप `@vintageayu` के रूप में प्रकाशित करते हैं, तो पैकेज का नाम बदलकर `@vintageayu/dronzer` करें।
 
-यह किसी package को ऐसे org namespace का दावा करने से रोकता है जिसे publisher नियंत्रित नहीं करता।
+यह किसी पैकेज को ऐसे संगठन नेमस्पेस पर दावा करने से रोकता है जिसे प्रकाशक नियंत्रित नहीं करता।
 
-यदि आप किसी org, brand, package scope, owner handle, या namespace के rightful owner हैं जो ClawHub पर पहले से claim या reserve किया गया है, तो public, non-sensitive proof के साथ एक
-[Org / Namespace Claim issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-खोलें। क्या शामिल करना है और public issues से क्या बाहर रखना है, इसके लिए
-[Org और Namespace Claims](/hi/clawhub/namespace-claims) देखें।
+यदि आप किसी संगठन, ब्रांड, पैकेज स्कोप, स्वामी हैंडल या नेमस्पेस के वैध स्वामी हैं, जिस पर ClawHub में पहले ही दावा किया जा चुका है या जो आरक्षित है, तो सार्वजनिक और गैर-संवेदनशील प्रमाण के साथ
+[संगठन / नेमस्पेस दावा समस्या](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml) खोलें।
+क्या शामिल करना है और सार्वजनिक समस्याओं से क्या बाहर रखना है, इसके लिए
+[संगठन और नेमस्पेस दावे](/clawhub/namespace-claims) देखें।
 
 ### Plugin प्रकाशित करने से पहले
 
-- ऐसा स्वामी चुनें जो package scope से मेल खाता हो।
-- `openclaw.plugin.json` शामिल करें। code plugins को `openclaw.compat.pluginApi` और `openclaw.build.openclawVersion` के साथ `package.json` भी चाहिए।
-- custom plugin card icon दिखाने के लिए, किसी भी HTTPS image URL के साथ `openclaw.plugin.json` में `icon` जोड़ें।
-- source repository और exact commit metadata शामिल करें, या GitHub-backed checkout से CLI का उपयोग करें ताकि यह उन्हें detect कर सके।
-- प्रकाशित करने से पहले `clawhub package validate <source>` चलाएं। package, manifest, SDK import, या artifact findings के लिए,
-  [Plugin validation fixes](/hi/clawhub/plugin-validation-fixes) देखें।
-- release बनाने से पहले `clawhub package publish <source> --dry-run` चलाएं।
-- नए releases के public install surfaces से बाहर रहने की अपेक्षा करें जब तक automated security checks और verification पूरा न हो जाए।
+- पैकेज स्कोप से मेल खाने वाला स्वामी चुनें।
+- `openclaw.plugin.json` शामिल करें। कोड plugins को `openclaw.compat.pluginApi` और
+  `openclaw.build.openclawVersion` के साथ `package.json` भी चाहिए।
+- मुखपृष्ठ और plugin सूची पृष्ठों पर कस्टम plugin कैटलॉग आइकन दिखाने के लिए,
+  किसी भी HTTPS छवि URL के साथ `openclaw.plugin.json` में `icon` जोड़ें।
+- स्रोत रिपॉज़िटरी और सटीक कमिट मेटाडेटा शामिल करें, या GitHub-समर्थित
+  चेकआउट से CLI का उपयोग करें ताकि वह उनका पता लगा सके।
+- प्रकाशित करने से पहले `clawhub package validate <source>` चलाएँ। पैकेज,
+  मैनिफ़ेस्ट, SDK इंपोर्ट या आर्टिफ़ैक्ट निष्कर्षों के लिए
+  [Plugin सत्यापन सुधार](/clawhub/plugin-validation-fixes) देखें।
+- रिलीज़ बनाने से पहले `clawhub package publish <source> --dry-run` चलाएँ।
+- स्वचालित सुरक्षा जाँच और सत्यापन पूरा होने तक नई रिलीज़ के सार्वजनिक
+  इंस्टॉल सतहों से बाहर रहने की अपेक्षा करें।
 
-### Packages के लिए trusted publishing
+### पैकेजों के लिए विश्वसनीय प्रकाशन
 
-Package trusted publishing दो-चरणीय setup है:
+पैकेज का विश्वसनीय प्रकाशन दो-चरणीय सेटअप है:
 
-1. सामान्य manual या token-authenticated `clawhub package publish` के माध्यम से package को एक बार प्रकाशित करें। यह package row बनाता है और उन package managers को स्थापित करता है जो इसकी trusted publisher config बदल सकते हैं।
-2. एक package manager GitHub Actions trusted publisher config set करता है:
+1. पैकेज को सामान्य मैन्युअल या टोकन-प्रमाणीकृत
+   `clawhub package publish` के माध्यम से एक बार प्रकाशित करें। इससे पैकेज पंक्ति बनती है और
+   वे पैकेज प्रबंधक निर्धारित होते हैं जो इसके विश्वसनीय प्रकाशक कॉन्फ़िगरेशन को बदल सकते हैं।
+2. एक पैकेज प्रबंधक GitHub Actions का विश्वसनीय प्रकाशक कॉन्फ़िगरेशन सेट करता है:
 
 ```bash
 clawhub package trusted-publisher set @owner/package-name \
@@ -93,45 +101,45 @@ clawhub package trusted-publisher set @owner/package-name \
   --workflow-filename package-publish.yml
 ```
 
-config set होने के बाद, future supported GitHub Actions publishes repository में long-lived ClawHub token संग्रहीत किए बिना OIDC/trusted publishing का उपयोग कर सकते हैं। configured repository और workflow filename GitHub Actions OIDC claim से मेल खाने चाहिए। यदि आप `--environment <name>` भी पास करते हैं, तो GitHub Actions environment claim को उस नाम से exact match करना होगा।
+कॉन्फ़िगरेशन सेट होने के बाद, भविष्य के समर्थित GitHub Actions प्रकाशन रिपॉज़िटरी में दीर्घकालिक ClawHub टोकन संग्रहीत किए बिना OIDC/विश्वसनीय प्रकाशन का उपयोग कर सकते हैं। कॉन्फ़िगर की गई रिपॉज़िटरी और वर्कफ़्लो फ़ाइल नाम GitHub Actions के OIDC दावे से मेल खाने चाहिए। यदि आप `--environment <name>` भी देते हैं, तो GitHub Actions परिवेश का दावा उस नाम से सटीक रूप से मेल खाना चाहिए।
 
-trusted publisher config set होने पर ClawHub configured GitHub repository को verify करता है। Public repositories को public GitHub metadata के माध्यम से verify किया जा सकता है। Private repositories के लिए ClawHub को उस repository तक GitHub access चाहिए, उदाहरण के लिए future ClawHub GitHub App installation या किसी अन्य authorized GitHub integration के माध्यम से।
+विश्वसनीय प्रकाशक कॉन्फ़िगरेशन सेट किए जाने पर ClawHub कॉन्फ़िगर की गई GitHub रिपॉज़िटरी को सत्यापित करता है। सार्वजनिक रिपॉज़िटरी को सार्वजनिक GitHub मेटाडेटा के माध्यम से सत्यापित किया जा सकता है। निजी रिपॉज़िटरी के लिए ClawHub के पास उस रिपॉज़िटरी की GitHub पहुँच होना आवश्यक है, उदाहरण के लिए भविष्य के ClawHub GitHub App इंस्टॉलेशन या किसी अन्य अधिकृत GitHub एकीकरण के माध्यम से।
 
-current reusable package publish workflow `workflow_dispatch` publishes के लिए secretless trusted publishing support करता है जब `id-token: write` उपलब्ध हो। Tag-push real publishes को अभी भी `clawhub_token` चाहिए, इसलिए tag releases, first publishes, untrusted packages, या break-glass publishes के लिए `CLAWHUB_TOKEN` उपलब्ध रखें।
+वर्तमान पुनः उपयोग योग्य पैकेज प्रकाशन वर्कफ़्लो, `id-token: write` उपलब्ध होने पर `workflow_dispatch` प्रकाशनों के लिए रहस्य-रहित विश्वसनीय प्रकाशन का समर्थन करता है। टैग-पुश वास्तविक प्रकाशनों को अभी भी `clawhub_token` की आवश्यकता है, इसलिए टैग रिलीज़, प्रथम प्रकाशन, अविश्वसनीय पैकेज या आपातकालीन प्रकाशनों के लिए `CLAWHUB_TOKEN` उपलब्ध रखें।
 
-config inspect या remove करें:
+कॉन्फ़िगरेशन का निरीक्षण करने या उसे हटाने के लिए:
 
 ```bash
 clawhub package trusted-publisher get @owner/package-name
 clawhub package trusted-publisher delete @owner/package-name
 ```
 
-trusted publisher config हटाना rollback path है। यह future trusted publish token minting को तब तक disable करता है जब तक कोई package manager फिर से config set नहीं करता।
+विश्वसनीय प्रकाशक कॉन्फ़िगरेशन हटाना रोलबैक का तरीका है। यह तब तक भविष्य के विश्वसनीय प्रकाशन टोकन बनाना अक्षम कर देता है, जब तक कोई पैकेज प्रबंधक फिर से कॉन्फ़िगरेशन सेट नहीं करता।
 
-## FAQ
+## अक्सर पूछे जाने वाले प्रश्न
 
-### Package scope चयनित स्वामी से मेल खाना चाहिए
+### पैकेज स्कोप चयनित स्वामी से मेल खाना चाहिए
 
-यदि package scope और चयनित स्वामी मेल नहीं खाते, तो ClawHub publish को reject करता है:
+यदि पैकेज स्कोप और चयनित स्वामी मेल नहीं खाते, तो ClawHub प्रकाशन को अस्वीकार कर देता है:
 
 ```text
-Package scope "@openclaw" must match selected owner "@vintageayu".
-Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
+पैकेज स्कोप "@openclaw" चयनित स्वामी "@vintageayu" से मेल खाना चाहिए।
+"@openclaw" के रूप में प्रकाशित करें या इस पैकेज का नाम बदलकर "@vintageayu/dronzer" करें।
 ```
 
-इसे ठीक करने के लिए, या तो package scope द्वारा named स्वामी चुनें, या package का नाम बदलें ताकि scope उस स्वामी से मेल खाए जिसके रूप में आप publish कर सकते हैं।
+इसे ठीक करने के लिए, या तो पैकेज स्कोप द्वारा नामित स्वामी चुनें, या पैकेज का नाम बदलें ताकि स्कोप उस स्वामी से मेल खाए जिसके रूप में आप प्रकाशित कर सकते हैं।
 
-यदि package name में पहले से सही scope है लेकिन package गलत publisher के स्वामित्व में है, तो ownership transfer करें:
+यदि पैकेज नाम में पहले से सही स्कोप है, लेकिन पैकेज गलत प्रकाशक के स्वामित्व में है, तो इसके बजाय स्वामित्व स्थानांतरित करें:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-package या skill transfer का उपयोग केवल तब करें जब आपके पास current owner और destination publisher दोनों का admin access हो। Package transfer आपको ऐसे scope में publish करने की अनुमति नहीं देता जिसे आप manage नहीं कर सकते।
+पैकेज या skill स्थानांतरण का उपयोग केवल तब करें जब आपके पास वर्तमान स्वामी और गंतव्य प्रकाशक, दोनों की व्यवस्थापक पहुँच हो। पैकेज स्थानांतरण आपको ऐसे स्कोप में प्रकाशित करने की अनुमति नहीं देता जिसे आप प्रबंधित नहीं कर सकते।
 
-यदि आपके पास current owner तक access नहीं है लेकिन आपको लगता है कि आपका org, project, या brand rightful namespace owner है, तो staff review के लिए public, non-sensitive proof के साथ एक
-[Org / Namespace Claim issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-खोलें। file करने से पहले
-[Org और Namespace Claims](/hi/clawhub/namespace-claims) देखें।
+यदि आपके पास वर्तमान स्वामी की पहुँच नहीं है, लेकिन आपको लगता है कि आपका संगठन, प्रोजेक्ट या ब्रांड नेमस्पेस का वैध स्वामी है, तो कर्मचारी समीक्षा के लिए सार्वजनिक, गैर-संवेदनशील प्रमाण के साथ
+[संगठन / नेमस्पेस दावा समस्या](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml) खोलें।
+दर्ज करने से पहले [संगठन और नेमस्पेस दावे](/clawhub/namespace-claims) देखें।
 
-यह org namespaces की रक्षा करता है। `@openclaw/dronzer` नाम का package `@openclaw` namespace का दावा करता है, इसलिए केवल `@openclaw` स्वामी तक access रखने वाले publishers ही इसे publish कर सकते हैं।
+यह संगठन नेमस्पेस की सुरक्षा करता है। `@openclaw/dronzer` नाम वाला पैकेज
+`@openclaw` नेमस्पेस पर दावा करता है, इसलिए केवल `@openclaw` स्वामी की पहुँच वाले प्रकाशक ही इसे प्रकाशित कर सकते हैं।

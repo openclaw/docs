@@ -5,25 +5,26 @@ read_when:
 summary: Penyiapan Arcee AI (autentikasi + pemilihan model)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-07-12T14:35:28Z"
+    generated_at: "2026-07-19T05:07:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
+    source_hash: a4c2fc7b8d86dd0d2a300dfc48951657cbcfcd9250016f52c1804777b2966e11
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) menyediakan keluarga model mixture-of-experts Trinity melalui API yang kompatibel dengan OpenAI. Semua model Trinity berlisensi Apache 2.0. Arcee adalah plugin resmi OpenClaw yang tidak disertakan bersama inti, sehingga memerlukan langkah instalasi sebelum orientasi awal.
+[Arcee AI](https://arcee.ai) menyediakan keluarga model mixture-of-experts Trinity melalui API yang kompatibel dengan OpenAI. Semua model Trinity berlisensi Apache 2.0. Arcee adalah plugin resmi OpenClaw yang tidak dibundel dengan inti, sehingga memerlukan langkah instalasi sebelum onboarding.
 
 Akses model Arcee secara langsung melalui platform Arcee atau melalui [OpenRouter](/id/providers/openrouter).
 
 | Properti | Nilai                                                                                 |
 | -------- | ------------------------------------------------------------------------------------- |
 | Penyedia | `arcee`                                                                               |
-| Autentikasi | `ARCEEAI_API_KEY` (langsung) atau `OPENROUTER_API_KEY` (melalui OpenRouter)         |
-| API      | Kompatibel dengan OpenAI                                                              |
-| URL dasar | `https://api.arcee.ai/api/v1` (langsung) atau `https://openrouter.ai/api/v1` (OpenRouter) |
+| Autentikasi     | `ARCEEAI_API_KEY` (langsung) atau `OPENROUTER_API_KEY` (melalui OpenRouter)                   |
+| API      | Kompatibel dengan OpenAI                                                                     |
+| URL Dasar | `https://api.arcee.ai/api/v1` (langsung) atau `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Instal plugin
 
@@ -40,7 +41,7 @@ openclaw gateway restart
       <Step title="Dapatkan kunci API">
         Buat kunci API di [Arcee AI](https://chat.arcee.ai/).
       </Step>
-      <Step title="Jalankan orientasi awal">
+      <Step title="Jalankan onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
@@ -64,7 +65,7 @@ openclaw gateway restart
       <Step title="Dapatkan kunci API">
         Buat kunci API di [OpenRouter](https://openrouter.ai/keys).
       </Step>
-      <Step title="Jalankan orientasi awal">
+      <Step title="Jalankan onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
@@ -80,7 +81,7 @@ openclaw gateway restart
         }
         ```
 
-        Referensi model yang sama dapat digunakan untuk penyiapan langsung maupun melalui OpenRouter.
+        Referensi model yang sama berfungsi untuk penyiapan langsung maupun OpenRouter.
       </Step>
     </Steps>
 
@@ -109,26 +110,30 @@ openclaw gateway restart
   </Tab>
 </Tabs>
 
-## Katalog bawaan
+## Katalog langsung Arcee
 
-| Referensi model                | Nama                   | Masukan | Konteks | Keluaran maks. | Biaya (masuk/keluar per 1 jt.) | Alat | Catatan                                   |
-| ------------------------------ | ---------------------- | ------- | ------- | -------------- | ------------------------------ | ---- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | teks    | 256K    | 80K            | $0.25 / $0.90                  | Tidak | Model default; penalaran diperluas        |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | teks    | 128K    | 16K            | $0.25 / $1.00                  | Ya   | Serbaguna; 400 miliar parameter, 13 miliar aktif |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | teks    | 128K    | 80K            | $0.045 / $0.15                 | Ya   | Cepat dan hemat biaya; pemanggilan fungsi |
+| Referensi model                      | Nama                   | Masukan | Konteks | Keluaran maks. | Biaya (masuk/keluar per 1 juta) | Alat | Catatan                                     |
+| ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------- | ----- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | teks  | 256K    | 80K        | $0.25 / $0.90        | Tidak    | Model default; pemikiran mendalam          |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | teks  | 128K    | 16K        | $0.25 / $1.00        | Ya   | Serbaguna; 400B parameter, 13B aktif  |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | teks  | 128K    | 80K        | $0.045 / $0.15       | Ya   | Cepat dan hemat biaya; pemanggilan fungsi |
 
 <Tip>
-Preset orientasi awal menetapkan `arcee/trinity-large-thinking` sebagai model default.
+Preset onboarding menetapkan `arcee/trinity-large-thinking` sebagai model default.
 </Tip>
+
+## Katalog OpenRouter
+
+Onboarding OpenRouter menyediakan `arcee/trinity-large-preview` dan `arcee/trinity-large-thinking`. OpenClaw mempertahankan referensi model berkualifikasi penyedia tersebut dalam konfigurasi dan mengirim ID runtime kanonis OpenRouter `arcee-ai/*`. Trinity Mini tidak lagi disediakan oleh OpenRouter; gunakan API Arcee langsung untuk model tersebut.
 
 ## Fitur yang didukung
 
-| Fitur                                         | Dukungan                                     |
+| Fitur                                       | Didukung                                    |
 | --------------------------------------------- | -------------------------------------------- |
-| Streaming                                     | Ya                                           |
-| Penggunaan alat / pemanggilan fungsi          | Ya (Trinity Mini, Trinity Large Preview)     |
-| Keluaran terstruktur (mode JSON dan skema JSON) | Ya                                         |
-| Penalaran diperluas                           | Ya (Trinity Large Thinking; alat dinonaktifkan) |
+| Streaming                                     | Ya                                          |
+| Penggunaan alat / pemanggilan fungsi                   | Ya (Trinity Mini, Trinity Large Preview)    |
+| Keluaran terstruktur (mode JSON dan skema JSON) | Ya                                          |
+| Pemikiran mendalam                             | Ya (Trinity Large Thinking; alat dinonaktifkan) |
 
 <AccordionGroup>
   <Accordion title="Catatan lingkungan">
@@ -138,8 +143,9 @@ Preset orientasi awal menetapkan `arcee/trinity-large-thinking` sebagai model de
   </Accordion>
 
   <Accordion title="Perutean OpenRouter">
-    Saat menggunakan model Arcee melalui OpenRouter, referensi model `arcee/*` yang sama tetap berlaku.
-    OpenClaw melakukan perutean secara transparan berdasarkan pilihan autentikasi Anda. Lihat
+    OpenRouter menggunakan referensi model OpenClaw `arcee/trinity-large-thinking` yang sama.
+    OpenClaw merutekannya dengan ID runtime OpenRouter kanonis
+    `arcee-ai/trinity-large-thinking`. Lihat
     [dokumentasi penyedia OpenRouter](/id/providers/openrouter) untuk detail konfigurasi
     khusus OpenRouter.
   </Accordion>

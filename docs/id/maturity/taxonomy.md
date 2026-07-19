@@ -2,11 +2,12 @@
 summary: Referensi terperinci untuk area produk dan pemeriksaan yang mendasari kartu skor kematangan OpenClaw.
 title: Taksonomi kematangan
 x-i18n:
-    generated_at: "2026-07-12T14:18:47Z"
+    generated_at: "2026-07-19T05:12:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0739da06341d9bd86cc3a98772c8cbfbcb9a5acf80ca5ac1005c86dafaf273b7
+    source_hash: dbed5794f43b230d8c8adb211734d93eb81f02623fe57df078e1dfd5a6d2586c
     source_path: maturity/taxonomy.md
     workflow: 16
 ---
@@ -27,12 +28,12 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 ## Tingkat kematangan
 
 <div className="maturity-level-list">
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Direncanakan</span></span></span><span>Arahnya sudah diketahui, tetapi belum tersedia jalur pengguna yang didukung.</span><span className="maturity-level-promotion">Promosi: Masalah desain, pemilik, dan permukaan target tersedia.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Direncanakan</span></span></span><span>Arahnya sudah diketahui, tetapi belum ada jalur pengguna yang didukung.</span><span className="maturity-level-promotion">Promosi: Masalah desain, pemilik, dan permukaan target sudah tersedia.</span></div>
   <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperimental</span></span></span><span>Diimplementasikan dengan batasan, flag, build dari sumber, atau alur khusus pengelola.</span><span className="maturity-level-promotion">Promosi: Pengelola dapat menjalankan skenario dari main saat ini.</span></div>
   <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span></span><span>Pengguna nyata dapat mencobanya, tetapi perubahan yang merusak kompatibilitas dan UX yang belum lengkap masih diperkirakan.</span><span className="maturity-level-promotion">Promosi: Penyiapan terdokumentasi, pengujian dasar, batasan yang diketahui, dan setidaknya satu bukti dari lingkungan nyata.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span></span><span>Jalur publik tersedia dan alur kerja utama dapat digunakan dengan batasan yang jelas.</span><span className="maturity-level-promotion">Promosi: Dokumentasi instalasi/pembaruan, pengujian regresi, panduan operasional dukungan, dan bukti keberhasilan skenario di seluruh lingkungan yang diharapkan.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabil</span></span></span><span>Jalur yang direkomendasikan untuk pengguna umum. Kegagalan dianggap sebagai regresi.</span><span className="maturity-level-promotion">Promosi: Gerbang rilis, jalur doctor/pemecahan masalah, dokumentasi luas, dan bukti dunia nyata yang berulang.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Matang, menyenangkan, terinstrumentasi dengan baik, dan mampu bersaing dengan alur kerja terbaik yang sebanding.</span><span className="maturity-level-promotion">Promosi: Stabil ditambah kelulusan kartu skor pengguna dari pengguna yang representatif.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span></span><span>Jalur publik tersedia dan alur kerja utama dapat digunakan dengan batasan yang terkendali.</span><span className="maturity-level-promotion">Promosi: Dokumentasi instalasi/pembaruan, pengujian regresi, panduan dukungan, dan bukti skenario yang berhasil di seluruh lingkungan yang diharapkan.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>Stabil</span></span></span><span>Jalur yang direkomendasikan bagi pengguna umum. Kegagalan diperlakukan sebagai regresi.</span><span className="maturity-level-promotion">Promosi: Gerbang rilis, jalur doctor/pemecahan masalah, dokumentasi luas, dan bukti dunia nyata yang berulang.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>Disempurnakan, menyenangkan, terinstrumentasi dengan baik, dan mampu bersaing dengan alur kerja terbaik yang sebanding.</span><span className="maturity-level-promotion">Promosi: Stabil ditambah kelulusan kartu skor pengguna di antara pengguna yang representatif.</span></div>
 </div>
 
 ## Area produk
@@ -53,7 +54,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
     </a>
 
     <a className="maturity-surface-link" href="#agent-runtime">
-      <span className="maturity-surface-title">Runtime agen</span>
+      <span className="maturity-surface-title">Runtime Agen</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>9 area - 79% selesai</span></span>
     </a>
 
@@ -63,7 +64,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
     </a>
 
     <a className="maturity-surface-link" href="#channel-framework">
-      <span className="maturity-surface-title">Kerangka kerja kanal</span>
+      <span className="maturity-surface-title">Kerangka kerja saluran</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>8 area - 79% selesai</span></span>
     </a>
 
@@ -88,7 +89,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
     </a>
 
     <a className="maturity-surface-link" href="#automation-cron-hooks-tasks-polling">
-      <span className="maturity-surface-title">Otomatisasi: Cron, hook, tugas, polling</span>
+      <span className="maturity-surface-title">Otomatisasi: cron, hook, tugas, polling</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>Beta</span></span><span>6 area - 79% selesai</span></span>
     </a>
 
@@ -160,7 +161,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
 
     <a className="maturity-surface-link" href="#native-windows">
-      <span className="maturity-surface-title">Windows Native</span>
+      <span className="maturity-surface-title">Windows native</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>Alfa</span></span><span>4 area - 66% selesai</span></span>
     </a>
 
@@ -186,7 +187,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
     </a>
 
     <a className="maturity-surface-link" href="#native-windows-companion-app">
-      <span className="maturity-surface-title">aplikasi pendamping Windows Native</span>
+      <span className="maturity-surface-title">aplikasi pendamping Windows native</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>Direncanakan</span></span><span>5 area - 21% selesai</span></span>
     </a>
 
@@ -249,7 +250,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
     </a>
 
     <a className="maturity-surface-link" href="#voice-call-channel">
-      <span className="maturity-surface-title">kanal Panggilan Suara</span>
+      <span className="maturity-surface-title">kanal panggilan suara</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>Eksperimental</span></span><span>5 area - 44% selesai</span></span>
     </a>
 
@@ -314,7 +315,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="CLI - M4 Stabil - 7 area">
     <a id="cli" />
 
-    Jalur penyiapan dan perbaikan normal didokumentasikan dalam dokumentasi instalasi, CLI, dan Gateway. Jalur khusus platform Windows dilacak dalam baris Windows melalui WSL2 dan Windows Native.
+    Jalur penyiapan dan perbaikan normal didokumentasikan dalam dokumentasi instalasi, CLI, dan Gateway. Jalur Windows khusus platform dilacak di baris Windows melalui WSL2 dan Windows Native.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 4%</span><span>Kualitas Stabil - 83%</span><span>Kelengkapan Stabil - 90%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 6</span></span></div>
 
@@ -328,7 +329,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/install/index), [Penginstal](/id/install/installer), [Node](/id/install/node), [Pembaruan](/id/install/updating)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/install/index), [Penginstal](/id/install/installer), [Node](/id/install/node), [Pembaruan](/id/install/updating)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -338,7 +343,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Orientasi](/id/cli/onboard), [Konfigurasi](/id/cli/configure), [Ikhtisar Orientasi](/id/start/onboarding-overview)</div>
+        <div className="maturity-category-docs">
+
+    [Orientasi](/id/cli/onboard), [Konfigurasi](/id/cli/configure), [Ikhtisar Orientasi](/id/start/onboarding-overview)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -348,7 +357,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Orientasi](/id/cli/onboard), [Plugin](/id/cli/plugins), [Kanal](/id/cli/channels)</div>
+        <div className="maturity-category-docs">
+
+    [Orientasi](/id/cli/onboard), [Plugin](/id/cli/plugins), [Kanal](/id/cli/channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -358,7 +371,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway](/id/cli/gateway), [Pembaruan](/id/install/updating), [Pemecahan Masalah](/id/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Gateway](/id/cli/gateway), [Pembaruan](/id/install/updating), [Pemecahan Masalah](/id/gateway/troubleshooting)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -368,27 +385,39 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Status](/id/cli/status), [Kesehatan](/id/cli/health), [Log](/id/cli/logs), [Diagnostik](/id/gateway/diagnostics)</div>
+        <div className="maturity-category-docs">
+
+    [Status](/id/cli/status), [Kesehatan](/id/cli/health), [Log](/id/cli/logs), [Diagnostik](/id/gateway/diagnostics)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pemeriksa</span>
+          <span className="maturity-category-title">Doctor</span>
           <span>10 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pemeriksa](/id/cli/doctor), [Pemeriksa](/id/gateway/doctor), [Rahasia](/id/gateway/secrets), [Pemecahan Masalah](/id/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Doctor](/id/cli/doctor), [Doctor](/id/gateway/doctor), [Rahasia](/id/gateway/secrets), [Pemecahan Masalah](/id/gateway/troubleshooting)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pembaruan dan Peningkatan Versi</span>
+          <span className="maturity-category-title">Pembaruan dan Peningkatan</span>
           <span>5 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pembaruan](/id/install/updating), [Perbarui](/id/cli/update), [Pemecahan Masalah](/id/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Memperbarui](/id/install/updating), [Pembaruan](/id/cli/update), [Pemecahan Masalah](/id/gateway/troubleshooting)
+
+    </div>
       </div>
     </div>
 
@@ -397,7 +426,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Runtime Gateway - M4 Stabil - 13 area">
     <a id="gateway-runtime" />
 
-    Arsitektur inti, autentikasi, pemasangan, dokumentasi protokol, dokumentasi daemon, dan panduan operasional CLI memiliki cakupan luas dan mutakhir.
+    Arsitektur inti, autentikasi, pemasangan, dokumentasi protokol, dokumentasi daemon, dan panduan operasional CLI memiliki cakupan luas dan terkini.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 6%</span><span>Kualitas Stabil - 81%</span><span>Kelengkapan Stabil - 89%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 12</span></span></div>
 
@@ -406,82 +435,114 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Persetujuan dan Eksekusi Jarak Jauh</span>
-          <span>6 kemampuan / didukung LTS</span>
+          <span>6 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">API HTTP</span>
-          <span>4 kemampuan / didukung LTS</span>
+          <span>4 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [API HTTP OpenAI](/id/gateway/openai-http-api), [API HTTP OpenResponses](/id/gateway/openresponses-http-api), [API HTTP Pemanggilan Alat](/id/gateway/tools-invoke-http-api), [Hook](/id/automation/hooks), [Indeks](/id/web/index)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [API HTTP OpenAI](/id/gateway/openai-http-api), [API HTTP OpenResponses](/id/gateway/openresponses-http-api), [API HTTP Pemanggilan Alat](/id/gateway/tools-invoke-http-api), [Hook](/id/automation/hooks), [Indeks](/id/web/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Antarmuka Web yang Dihosting</span>
-          <span>4 kemampuan / didukung LTS</span>
+          <span className="maturity-category-title">Antarmuka Web yang Di-host</span>
+          <span>4 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture), [Antarmuka Kontrol](/id/web/control-ui), [Obrolan Web](/id/web/webchat), [Kanvas](/id/refactor/canvas)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture), [UI Kontrol](/id/web/control-ui), [Obrolan Web](/id/web/webchat), [Kanvas](/id/refactor/canvas)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">API dan Peristiwa RPC Gateway</span>
-          <span>20 kemampuan / didukung LTS</span>
+          <span className="maturity-category-title">API RPC dan Peristiwa Gateway</span>
+          <span>20 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>9%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "9%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Autentikasi dan Penyandingan Perangkat</span>
-          <span>10 kemampuan / didukung LTS</span>
+          <span>10 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Penyandingan](/id/gateway/pairing), [Indeks](/id/gateway/security/index)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Penyandingan](/id/gateway/pairing), [Indeks](/id/gateway/security/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Akses dan Penemuan Jaringan</span>
-          <span>6 kemampuan / didukung LTS</span>
+          <span>6 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Penemuan](/id/gateway/discovery), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Penemuan](/id/gateway/discovery), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Node dan Kemampuan Jarak Jauh</span>
-          <span>8 kemampuan</span>
+          <span className="maturity-category-title">Node dan Kapabilitas Jarak Jauh</span>
+          <span>8 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture), [Indeks](/id/nodes/index)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture), [Indeks](/id/nodes/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Kesehatan, Diagnostik, dan Perbaikan</span>
-          <span>7 kemampuan / didukung LTS</span>
+          <span>7 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Diagnostik](/id/gateway/diagnostics), [Doctor](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Diagnostik](/id/gateway/diagnostics), [Doctor](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -491,7 +552,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture), [Typebox](/id/concepts/typebox), [Protokol Bridge](/id/gateway/bridge-protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture), [TypeBox](/id/concepts/typebox), [Protokol Bridge](/id/gateway/bridge-protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -501,7 +566,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -511,7 +580,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Arsitektur](/id/concepts/architecture)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -521,7 +594,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/security/index), [Protokol](/id/gateway/protocol), [Penemuan](/id/gateway/discovery)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/security/index), [Protokol](/id/gateway/protocol), [Penemuan](/id/gateway/discovery)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -531,16 +608,20 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Arsitektur](/id/concepts/architecture)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Runtime Agen - M3 Beta - 9 area">
+  <Accordion title="Runtime Agen - Beta M3 - 9 area">
     <a id="agent-runtime" />
 
-    Loop utama, model, perutean penyedia, dan streaming alat merupakan fitur kelas utama, tetapi perilaku penyedia berubah setiap minggu dan memerlukan bukti skenario untuk setiap rilis.
+    Loop utama, model, perutean penyedia, dan streaming alat merupakan fitur utama, tetapi perilaku penyedia berubah setiap minggu dan memerlukan bukti skenario untuk setiap rilis.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 33%</span><span>Kualitas Beta - 78%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 6</span></span></div>
 
@@ -549,101 +630,137 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Eksekusi Giliran Agen</span>
-          <span>3 kemampuan / didukung LTS</span>
+          <span>3 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Perulangan Agen](/id/concepts/agent-loop), [Agen](/id/cli/agent), [Runtime Agen](/id/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">
+
+    [Loop Agen](/id/concepts/agent-loop), [Agen](/id/cli/agent), [Runtime Agen](/id/concepts/agent-runtimes)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Runtime Eksternal dan Subagen</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Runtime Agen](/id/concepts/agent-runtimes), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Subagen](/id/tools/subagents)</div>
+        <div className="maturity-category-docs">
+
+    [Runtime Agen](/id/concepts/agent-runtimes), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Subagen](/id/tools/subagents)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Eksekusi Penyedia Terhost</span>
-          <span>5 kemampuan / didukung LTS</span>
+          <span>5 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/id/providers/openai), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Model](/id/concepts/models)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Model](/id/concepts/models)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyedia Lokal dan Dihosting Sendiri</span>
-          <span>5 kemampuan</span>
+          <span className="maturity-category-title">Penyedia Lokal dan Dihosting Mandiri</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ollama](/id/providers/ollama), [Model](/id/concepts/models), [Agen](/id/cli/agent)</div>
+        <div className="maturity-category-docs">
+
+    [Ollama](/id/providers/ollama), [Model](/id/concepts/models), [Agen](/id/cli/agent)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pemilihan Model dan Runtime</span>
-          <span>4 kemampuan / didukung LTS</span>
+          <span>4 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Model](/id/concepts/models), [Model](/id/cli/models), [Openai](/id/providers/openai), [Runtime Agen](/id/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">
+
+    [Model](/id/concepts/models), [Model](/id/cli/models), [OpenAI](/id/providers/openai), [Runtime Agen](/id/concepts/agent-runtimes)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Autentikasi Penyedia</span>
-          <span>10 kemampuan / didukung LTS</span>
+          <span>10 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>24%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "24%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Model](/id/concepts/models), [Agen](/id/cli/agent), [Model](/id/cli/models), [Openai](/id/providers/openai), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Subagen](/id/tools/subagents)</div>
+        <div className="maturity-category-docs">
+
+    [Model](/id/concepts/models), [Agen](/id/cli/agent), [Model](/id/cli/models), [OpenAI](/id/providers/openai), [Anthropic](/id/providers/anthropic), [Google](/id/providers/google), [Subagen](/id/tools/subagents)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Streaming dan Kemajuan</span>
-          <span>2 kemampuan</span>
+          <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Streaming](/id/concepts/streaming), [Perulangan Agen](/id/concepts/agent-loop)</div>
+        <div className="maturity-category-docs">
+
+    [Streaming](/id/concepts/streaming), [Perulangan Agen](/id/concepts/agent-loop)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pemanggilan Alat dan Penanganan Respons</span>
-          <span>3 kemampuan / didukung LTS</span>
+          <span>3 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>65%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "65%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Perulangan Agen](/id/concepts/agent-loop), [Ollama](/id/providers/ollama)</div>
+        <div className="maturity-category-docs">
+
+    [Perulangan Agen](/id/concepts/agent-loop), [Ollama](/id/providers/ollama)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Kontrol Eksekusi Alat</span>
-          <span>6 kemampuan / didukung LTS</span>
+          <span>6 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sandbox vs Kebijakan Alat vs Hak Istimewa](/id/gateway/sandbox-vs-tool-policy-vs-elevated), [Siklus Agen](/id/concepts/agent-loop), [Subagen](/id/tools/subagents)</div>
+        <div className="maturity-category-docs">
+
+    [Sandbox vs Kebijakan Alat vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated), [Perulangan Agen](/id/concepts/agent-loop), [Subagen](/id/tools/subagents)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Sesi, memori, dan mesin konteks - M3 Beta - 9 area">
+  <Accordion title="Mesin sesi, memori, dan konteks - M3 Beta - 9 area">
     <a id="session-memory-and-context-engine" />
 
-    Dokumentasi yang kuat dan implementasi yang aktif. Kematangan bergantung pada ketahanan transkrip, kualitas Compaction, dan kesetaraan lintas klien.
+    Dokumentasi yang kuat dan implementasi aktif. Kematangan bergantung pada ketahanan transkrip, kualitas Compaction, dan kesetaraan lintas klien.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 30%</span><span>Kualitas Beta - 77%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 6</span></span></div>
 
@@ -657,7 +774,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sesi](/id/concepts/session), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction), [Sesi](/id/cli/sessions)</div>
+        <div className="maturity-category-docs">
+
+    [Sesi](/id/concepts/session), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction), [Sesi](/id/cli/sessions)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -667,7 +788,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Compaction](/id/concepts/compaction), [Konteks](/id/concepts/context), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction)</div>
+        <div className="maturity-category-docs">
+
+    [Compaction](/id/concepts/compaction), [Konteks](/id/concepts/context), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -677,17 +802,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Konteks](/id/concepts/context), [Mesin Konteks](/id/concepts/context-engine)</div>
+        <div className="maturity-category-docs">
+
+    [Konteks](/id/concepts/context), [Mesin Konteks](/id/concepts/context-engine)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kesetaraan Riwayat dan Sesi Lintas Klien</span>
+          <span className="maturity-category-title">Riwayat Lintas Klien dan Kesetaraan Sesi</span>
           <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Obrolan Web](/id/web/webchat), [Android](/id/platforms/android), [Perutean Kanal](/id/channels/channel-routing)</div>
+        <div className="maturity-category-docs">
+
+    [Webchat](/id/web/webchat), [Android](/id/platforms/android), [Perutean Kanal](/id/channels/channel-routing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -697,7 +830,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Diagnostik](/id/gateway/diagnostics), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction), [Flag](/id/diagnostics/flags)</div>
+        <div className="maturity-category-docs">
+
+    [Diagnostik](/id/gateway/diagnostics), [Compaction Pengelolaan Sesi](/id/reference/session-management-compaction), [Flag](/id/diagnostics/flags)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -707,7 +844,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Konteks](/id/concepts/context), [Kebersihan Transkrip](/id/reference/transcript-hygiene), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Konteks](/id/concepts/context), [Kebersihan Transkrip](/id/reference/transcript-hygiene), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -717,7 +858,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Konfigurasi Memori](/id/reference/memory-config), [Qmd Memori](/id/concepts/memory-qmd), [Memori](/id/concepts/memory), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Konfigurasi Memori](/id/reference/memory-config), [Qmd Memori](/id/concepts/memory-qmd), [Memori](/id/concepts/memory), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -727,7 +872,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sesi](/id/concepts/session), [Perutean Kanal](/id/channels/channel-routing), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Sesi](/id/concepts/session), [Perutean Kanal](/id/channels/channel-routing), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -737,16 +886,20 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Compaction Manajemen Sesi](/id/reference/session-management-compaction), [Kebersihan Transkrip](/id/reference/transcript-hygiene)</div>
+        <div className="maturity-category-docs">
+
+    [Compaction Manajemen Sesi](/id/reference/session-management-compaction), [Kebersihan Transkrip](/id/reference/transcript-hygiene)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Kerangka kerja kanal - Beta M3 - 8 area">
+  <Accordion title="Kerangka kerja saluran - M3 Beta - 8 area">
     <a id="channel-framework" />
 
-    Banyak saluran menggunakan kontrak pengiriman dan perutean Gateway yang sama, tetapi perilaku saluran berbeda-beda berdasarkan API hulu dan batasan kebijakan akun.
+    Banyak saluran berbagi kontrak pengiriman dan perutean Gateway, tetapi perilaku saluran berbeda-beda berdasarkan API hulu dan batasan kebijakan akun.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 13%</span><span>Kualitas Beta - 76%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 5</span></span></div>
 
@@ -754,106 +907,142 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Perintah Tindakan Kanal dan Persetujuan</span>
+          <span className="maturity-category-title">Perintah Tindakan dan Persetujuan Saluran</span>
           <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grup](/id/channels/groups), [Discord](/id/channels/discord), [Google Chat](/id/channels/googlechat), [Signal](/id/channels/signal), [Matrix](/id/channels/matrix)</div>
+        <div className="maturity-category-docs">
+
+    [Grup](/id/channels/groups), [Discord](/id/channels/discord), [Google Chat](/id/channels/googlechat), [Signal](/id/channels/signal), [Matrix](/id/channels/matrix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan Kanal</span>
+          <span className="maturity-category-title">Penyiapan Saluran</span>
           <span>5 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/channels/index), [Pemasangan](/id/channels/pairing), [Pemecahan Masalah](/id/channels/troubleshooting), [Plugin Kanal SDK](/id/plugins/sdk-channel-plugins)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/channels/index), [Pemasangan](/id/channels/pairing), [Pemecahan Masalah](/id/channels/troubleshooting), [Plugin Saluran SDK](/id/plugins/sdk-channel-plugins)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perilaku Utas Grup dan Ruang Ambien</span>
-          <span>5 kapabilitas</span>
+          <span>5 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>36%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "36%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grup](/id/channels/groups), [Pesan Grup](/id/channels/group-messages), [Peristiwa Ruang Ambien](/id/channels/ambient-room-events), [Grup Siaran](/id/channels/broadcast-groups), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Grup](/id/channels/groups), [Pesan Grup](/id/channels/group-messages), [Peristiwa Ruang Ambien](/id/channels/ambient-room-events), [Grup Siaran](/id/channels/broadcast-groups), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gerbang Akses Masuk dan Identitas</span>
-          <span>5 kapabilitas / didukung LTS</span>
+          <span>5 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups), [Discord](/id/channels/discord), [LINE](/id/channels/line)</div>
+        <div className="maturity-category-docs">
+
+    [Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups), [Discord](/id/channels/discord), [LINE](/id/channels/line)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Lampiran Media dan Data Kanal Kaya</span>
-          <span>4 kapabilitas</span>
+          <span>4 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[LINE](/id/channels/line), [Signal](/id/channels/signal), [Google Chat](/id/channels/googlechat), [Matrix](/id/channels/matrix), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [LINE](/id/channels/line), [Signal](/id/channels/signal), [Google Chat](/id/channels/googlechat), [Matrix](/id/channels/matrix), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Alur Pengiriman Keluar dan Balasan</span>
-          <span>4 kapabilitas / didukung LTS</span>
+          <span className="maturity-category-title">Pipeline Pengiriman Keluar dan Balasan</span>
+          <span>4 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Grup](/id/channels/groups), [Peristiwa Ruang Ambien](/id/channels/ambient-room-events), [Discord](/id/channels/discord), [Matrix](/id/channels/matrix), [Konfigurasi Kanal](/id/gateway/config-channels)</div>
+        <div className="maturity-category-docs">
+
+    [Grup](/id/channels/groups), [Peristiwa Ruang Ambien](/id/channels/ambient-room-events), [Discord](/id/channels/discord), [Matrix](/id/channels/matrix), [Konfigurasi Kanal](/id/gateway/config-channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perutean dan Pengiriman Percakapan</span>
-          <span>10 kapabilitas / didukung LTS</span>
+          <span>10 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Perutean Kanal](/id/channels/channel-routing), [Grup](/id/channels/groups), [Discord](/id/channels/discord), [Matrix](/id/channels/matrix), [Pemecahan Masalah](/id/channels/troubleshooting), [Referensi Konfigurasi](/id/gateway/configuration-reference)</div>
+        <div className="maturity-category-docs">
+
+    [Perutean Kanal](/id/channels/channel-routing), [Grup](/id/channels/groups), [Discord](/id/channels/discord), [Matrix](/id/channels/matrix), [Pemecahan Masalah](/id/channels/troubleshooting), [Referensi Konfigurasi](/id/gateway/configuration-reference)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Status Kesehatan dan Kontrol Operator</span>
+          <span className="maturity-category-title">Kondisi Status dan Kontrol Operator</span>
           <span>4 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kesehatan](/id/gateway/health), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Pemecahan Masalah](/id/channels/troubleshooting), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Kondisi](/id/gateway/health), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Pemecahan Masalah](/id/channels/troubleshooting), [Discord](/id/channels/discord)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Observabilitas - Beta M3 - 5 area">
+  <Accordion title="Observabilitas - M3 Beta - 5 area">
     <a id="observability" />
 
-    Dokumentasi OTel, Prometheus, pencatatan log, dan diagnostik sudah tersedia. Perlu penyempurnaan kematangan yang dapat diakses publik tentang "hal yang harus diperiksa terlebih dahulu oleh operator".
+    Dokumentasi OTel, Prometheus, pencatatan log, dan diagnostik tersedia. Memerlukan penyempurnaan kematangan publik tentang "apa yang harus diperiksa terlebih dahulu oleh operator".
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 18%</span><span>Kualitas Beta - 75%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parsial - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 18%</span><span>Kualitas Beta - 75%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 3</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kesehatan dan Perbaikan</span>
+          <span className="maturity-category-title">Kondisi dan Perbaikan</span>
           <span>12 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>28%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "28%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kesehatan](/id/gateway/health), [Telegram](/id/channels/telegram), [Doctor](/id/cli/doctor), [Doctor](/id/gateway/doctor), [Subjalur SDK](/id/plugins/sdk-subpaths), [Kesehatan](/id/cli/health), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Kondisi](/id/gateway/health), [Telegram](/id/channels/telegram), [Doctor](/id/cli/doctor), [Doctor](/id/gateway/doctor), [Subjalur SDK](/id/plugins/sdk-subpaths), [Kondisi](/id/cli/health), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -863,7 +1052,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pencatatan Log](/id/logging), [Pencatatan Log](/id/gateway/logging), [Log](/id/cli/logs)</div>
+        <div className="maturity-category-docs">
+
+    [Logging](/id/logging), [Logging](/id/gateway/logging), [Log](/id/cli/logs)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -873,7 +1066,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Diagnostik](/id/gateway/diagnostics), [Kesehatan](/id/gateway/health), [Harness Codex](/id/plugins/codex-harness), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Diagnostik](/id/gateway/diagnostics), [Kesehatan](/id/gateway/health), [Harness Codex](/id/plugins/codex-harness), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -883,7 +1080,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Hook](/id/plugins/hooks), [Opentelemetry](/id/gateway/opentelemetry), [Pencatatan Log](/id/logging), [Subjalur SDK](/id/plugins/sdk-subpaths), [Diagnostik Otel](/id/plugins/reference/diagnostics-otel), [Prometheus](/id/gateway/prometheus), [Diagnostik Prometheus](/id/plugins/reference/diagnostics-prometheus)</div>
+        <div className="maturity-category-docs">
+
+    [Hook](/id/plugins/hooks), [Opentelemetry](/id/gateway/opentelemetry), [Logging](/id/logging), [Subjalur SDK](/id/plugins/sdk-subpaths), [Otel Diagnostik](/id/plugins/reference/diagnostics-otel), [Prometheus](/id/gateway/prometheus), [Prometheus Diagnostik](/id/plugins/reference/diagnostics-prometheus)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -893,7 +1094,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Opentelemetry](/id/gateway/opentelemetry), [Prometheus](/id/gateway/prometheus), [Diagnostik](/id/gateway/diagnostics), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Opentelemetry](/id/gateway/opentelemetry), [Prometheus](/id/gateway/prometheus), [Diagnostik](/id/gateway/diagnostics), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
     </div>
 
@@ -902,9 +1107,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Aplikasi Web Gateway - M3 Beta - 6 area">
     <a id="gateway-web-app" />
 
-    Antarmuka web didokumentasikan dengan alur pemasangan, obrolan, PWA, Talk, push, dan Gateway jarak jauh. Promosikan setelah kartu skor lintas peramban dan PWA seluler tersedia.
+    UI Web didokumentasikan beserta alur pemasangan, obrolan, PWA, Talk, push, dan Gateway jarak jauh. Promosikan setelah kartu skor lintas peramban dan PWA seluler.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 4%</span><span>Kualitas Beta - 74%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 4%</span><span>Kualitas Beta - 74%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -916,7 +1121,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Protokol](/id/gateway/protocol), [Percakapan](/id/nodes/talk)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Protokol](/id/gateway/protocol), [Percakapan](/id/nodes/talk)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -926,7 +1135,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Dasbor](/id/web/dashboard), [Tailscale](/id/gateway/tailscale), [Jarak Jauh](/id/gateway/remote)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Dasbor](/id/web/dashboard), [Tailscale](/id/gateway/tailscale), [Jarak Jauh](/id/gateway/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -936,7 +1149,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Konfigurasi](/id/gateway/configuration)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Konfigurasi](/id/gateway/configuration)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -946,7 +1163,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Indeks](/id/web/index), [Dasbor](/id/web/dashboard), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Indeks](/id/web/index), [Dasbor](/id/web/dashboard), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -956,7 +1177,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>10%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "10%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [WebChat](/id/web/webchat), [Memulai](/id/start/getting-started), [Perutean Kanal](/id/channels/channel-routing), [Operasi Berkas Aman](/id/gateway/security/secure-file-operations)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Webchat](/id/web/webchat), [Memulai](/id/start/getting-started), [Perutean Saluran](/id/channels/channel-routing), [Operasi File Aman](/id/gateway/security/secure-file-operations)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -966,7 +1191,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Kesehatan](/id/gateway/health), [Protokol](/id/gateway/protocol), [Dasbor](/id/web/dashboard)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Kesehatan](/id/gateway/health), [Protokol](/id/gateway/protocol), [Dasbor](/id/web/dashboard)
+
+    </div>
       </div>
     </div>
 
@@ -975,7 +1204,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Plugin - M3 Beta - 9 area">
     <a id="plugins" />
 
-    Dokumentasi yang luas dan bukti runtime internal yang kuat tersedia di seluruh manifes, penemuan, pemuatan, arsitektur penyedia/perkakas, serta batas persetujuan. Pertahankan baris pada tingkat beta hingga bukti API/subjalur SDK publik dan distribusi eksternal menjadi lebih kuat.
+    Dokumentasi yang luas dan bukti runtime internal yang kuat tersedia untuk manifes, penemuan, pemuatan, arsitektur penyedia/alat, serta batas persetujuan. Pertahankan baris ini pada tahap beta hingga bukti API/subjalur SDK publik dan distribusi eksternal menjadi lebih kuat.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 12%</span><span>Kualitas Beta - 72%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 7</span></span></div>
 
@@ -983,13 +1212,17 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pembuatan dan pengemasan plugin</span>
+          <span className="maturity-category-title">Pembuatan dan Pengemasan Plugin</span>
           <span>8 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Membangun Plugin](/id/plugins/building-plugins), [Ikhtisar SDK](/id/plugins/sdk-overview), [Titik Masuk SDK](/id/plugins/sdk-entrypoints), [Subjalur SDK](/id/plugins/sdk-subpaths), [Manifes](/id/plugins/manifest), [Referensi](/id/plugins/reference)</div>
+        <div className="maturity-category-docs">
+
+    [Membangun Plugin](/id/plugins/building-plugins), [Ikhtisar SDK](/id/plugins/sdk-overview), [Titik Masuk SDK](/id/plugins/sdk-entrypoints), [Subjalur SDK](/id/plugins/sdk-subpaths), [Manifes](/id/plugins/manifest), [Referensi](/id/plugins/reference)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -999,27 +1232,39 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Inventaris Plugin](/id/plugins/plugin-inventory), [Plugin](/id/cli/plugins), [Internal Arsitektur](/id/plugins/architecture-internals)</div>
+        <div className="maturity-category-docs">
+
+    [Inventaris Plugin](/id/plugins/plugin-inventory), [Plugin](/id/cli/plugins), [Internal Arsitektur](/id/plugins/architecture-internals)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin kanvas</span>
+          <span className="maturity-category-title">Plugin Canvas</span>
           <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kanvas](/id/plugins/reference/canvas), [Kanvas](/id/refactor/canvas), [Referensi Konfigurasi](/id/gateway/configuration-reference)</div>
+        <div className="maturity-category-docs">
+
+    [Canvas](/id/plugins/reference/canvas), [Canvas](/id/refactor/canvas), [Referensi Konfigurasi](/id/gateway/configuration-reference)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Memasang dan menjalankan plugin</span>
+          <span className="maturity-category-title">Menginstal dan menjalankan plugin</span>
           <span>6 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>35%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "35%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Arsitektur](/id/plugins/architecture), [Internal Arsitektur](/id/plugins/architecture-internals), [Plugin](/id/cli/plugins)</div>
+        <div className="maturity-category-docs">
+
+    [Arsitektur](/id/plugins/architecture), [Internal Arsitektur](/id/plugins/architecture-internals), [Plugin](/id/cli/plugins)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1029,7 +1274,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin Saluran SDK](/id/plugins/sdk-channel-plugins), [Saluran Masuk SDK](/id/plugins/sdk-channel-inbound), [Saluran Keluar SDK](/id/plugins/sdk-channel-outbound)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin Saluran SDK](/id/plugins/sdk-channel-plugins), [Saluran Masuk SDK](/id/plugins/sdk-channel-inbound), [Saluran Keluar SDK](/id/plugins/sdk-channel-outbound)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1039,7 +1288,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>43%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "43%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin Penyedia SDK](/id/plugins/sdk-provider-plugins), [Plugin Alat](/id/plugins/tool-plugins), [Menambahkan Kapabilitas](/id/plugins/adding-capabilities)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin Penyedia SDK](/id/plugins/sdk-provider-plugins), [Plugin Alat](/id/plugins/tool-plugins), [Menambahkan Kapabilitas](/id/plugins/adding-capabilities)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1049,7 +1302,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Plugin Saluran SDK](/id/plugins/sdk-channel-plugins)</div>
+        <div className="maturity-category-docs">
+
+    [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Plugin Saluran SDK](/id/plugins/sdk-channel-plugins)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1059,17 +1316,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/id/cli/plugins), [Kompatibilitas](/id/plugins/compatibility), [Publikasi](/id/clawhub/publishing)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin](/id/cli/plugins), [Kompatibilitas](/id/plugins/compatibility), [Penerbitan](/id/clawhub/publishing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pengujian Plugin</span>
+          <span className="maturity-category-title">Menguji plugin</span>
           <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>27%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "27%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pengujian SDK](/id/plugins/sdk-testing), [Penyiapan SDK](/id/plugins/sdk-setup), [Harness Codex](/id/plugins/codex-harness)</div>
+        <div className="maturity-category-docs">
+
+    [Pengujian SDK](/id/plugins/sdk-testing), [Penyiapan SDK](/id/plugins/sdk-setup), [Harness Codex](/id/plugins/codex-harness)
+
+    </div>
       </div>
     </div>
 
@@ -1078,7 +1343,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Keamanan, autentikasi, pemasangan, dan rahasia - M3 Beta - 6 area">
     <a id="security-auth-pairing-and-secrets" />
 
-    Dokumentasi dan mekanisme penguatan yang baik sudah tersedia. Tingkatkan setelah pelaksanaan rutin skenario peningkatan versi dan keamanan membuktikan tidak ada regresi penyiapan.
+    Dokumentasi dan sarana penguatan yang baik telah tersedia. Promosikan setelah pelaksanaan skenario peningkatan/keamanan secara berkala membuktikan tidak ada regresi penyiapan.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 16%</span><span>Kualitas Beta - 72%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 5</span></span></div>
 
@@ -1092,7 +1357,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Persetujuan Eksekusi](/id/tools/exec-approvals), [Persetujuan](/id/cli/approvals), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Persetujuan Eksekusi](/id/tools/exec-approvals), [Persetujuan](/id/cli/approvals), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1102,17 +1371,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/security/index), [Panduan Operasional Eksposur](/id/gateway/security/exposure-runbook), [Autentikasi Proksi Tepercaya](/id/gateway/trusted-proxy-auth), [Tailscale](/id/gateway/tailscale), [Jarak Jauh](/id/gateway/remote), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Gateway](/id/cli/gateway), [Pemeriksa](/id/cli/doctor), [Antarmuka Kontrol](/id/web/control-ui), [Kontrol Peramban](/id/tools/browser-control), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/security/index), [Panduan Paparan](/id/gateway/security/exposure-runbook), [Autentikasi Proksi Tepercaya](/id/gateway/trusted-proxy-auth), [Tailscale](/id/gateway/tailscale), [Jarak Jauh](/id/gateway/remote), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Gateway](/id/cli/gateway), [Doctor](/id/cli/doctor), [UI Kontrol](/id/web/control-ui), [Kontrol Peramban](/id/tools/browser-control), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol Akses Kanal</span>
+          <span className="maturity-category-title">Kontrol Akses Saluran</span>
           <span>3 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pemasangan](/id/channels/pairing), [Telegram](/id/channels/telegram), [Grup Akses](/id/channels/access-groups), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Pemasangan](/id/channels/pairing), [Telegram](/id/channels/telegram), [Grup Akses](/id/channels/access-groups), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1122,7 +1399,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Protokol](/id/gateway/protocol), [Perangkat](/id/cli/devices), [Pemasangan](/id/channels/pairing), [Pemasangan](/id/gateway/pairing), [Cakupan Operator](/id/gateway/operator-scopes), [Antarmuka Kontrol](/id/web/control-ui), [Obrolan Web](/id/web/webchat), [Persetujuan](/id/cli/approvals)</div>
+        <div className="maturity-category-docs">
+
+    [Protokol](/id/gateway/protocol), [Perangkat](/id/cli/devices), [Pemasangan](/id/channels/pairing), [Pemasangan](/id/gateway/pairing), [Cakupan Operator](/id/gateway/operator-scopes), [UI Kontrol](/id/web/control-ui), [Obrolan Web](/id/web/webchat), [Persetujuan](/id/cli/approvals)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1132,7 +1413,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Manifes](/id/plugins/manifest), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Kelola Plugin](/id/plugins/manage-plugins), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Manifes](/id/plugins/manifest), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Kelola Plugin](/id/plugins/manage-plugins), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1142,16 +1427,20 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Autentikasi](/id/gateway/authentication), [Model](/id/cli/models), [OpenAI](/id/providers/openai), [OAuth](/id/concepts/oauth), [Rahasia](/id/gateway/secrets), [Rahasia](/id/cli/secrets), [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Autentikasi](/id/gateway/authentication), [Model](/id/cli/models), [OpenAI](/id/providers/openai), [OAuth](/id/concepts/oauth), [Rahasia](/id/gateway/secrets), [Rahasia](/id/cli/secrets), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Otomatisasi: Cron, hook, tugas, polling - M3 Beta - 6 area">
+  <Accordion title="Otomatisasi: cron, hook, tugas, polling - M3 Beta - 6 area">
     <a id="automation-cron-hooks-tasks-polling" />
 
-    Terdokumentasi dan dapat digunakan, tetapi pembuktian skenario harus mencakup pengiriman tanpa pengawasan, percobaan ulang, dan visibilitas kegagalan.
+    Terdokumentasi dan dapat digunakan, tetapi bukti skenario harus mencakup pengiriman tanpa pengawasan, percobaan ulang, dan visibilitas kegagalan.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 2%</span><span>Kualitas Beta - 72%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -1165,7 +1454,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pekerjaan Cron](/id/automation/cron-jobs), [Cron](/id/cli/cron), [Protokol](/id/gateway/protocol), [Tugas](/id/automation/tasks), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Pekerjaan Cron](/id/automation/cron-jobs), [Cron](/id/cli/cron), [Protokol](/id/gateway/protocol), [Tugas](/id/automation/tasks), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1175,7 +1468,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Zalo](/id/channels/zalo), [Pemecahan Masalah](/id/channels/troubleshooting), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Integrasi Gmail Pub/Sub](/id/automation/cron-jobs#gmail-pubsub-integration), [Gmail Pub/Sub](/id/automation/cron-jobs), [Webhook](/id/cli/webhooks), [Webhook](/id/automation/cron-jobs#webhooks), [Webhook](/id/automation/cron-jobs)</div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Zalo](/id/channels/zalo), [Pemecahan Masalah](/id/channels/troubleshooting), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Integrasi Gmail Pub/Sub](/id/automation/cron-jobs#gmail-pubsub-integration), [Gmail Pub/Sub](/id/automation/cron-jobs), [Webhook](/id/cli/webhooks), [Webhook](/id/automation/cron-jobs#webhooks), [Webhook](/id/automation/cron-jobs)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1185,7 +1482,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Hook](/id/automation/hooks), [Hook](/id/cli/hooks), [Hook](/id/plugins/hooks), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Subjalur SDK](/id/plugins/sdk-subpaths)</div>
+        <div className="maturity-category-docs">
+
+    [Hook](/id/automation/hooks), [Hook](/id/cli/hooks), [Hook](/id/plugins/hooks), [Permintaan Izin Plugin](/id/plugins/plugin-permission-requests), [Subjalur SDK](/id/plugins/sdk-subpaths)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1195,7 +1496,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Tugas](/id/automation/tasks), [Indeks](/id/automation/index), [Tugas](/id/cli/tasks), [TaskFlow](/id/automation/taskflow), [Runtime SDK](/id/plugins/sdk-runtime)</div>
+        <div className="maturity-category-docs">
+
+    [Tugas](/id/automation/tasks), [Indeks](/id/automation/index), [Tugas](/id/cli/tasks), [TaskFlow](/id/automation/taskflow), [Runtime SDK](/id/plugins/sdk-runtime)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1205,7 +1510,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/automation/index), [Heartbeat](/id/gateway/heartbeat), [Komitmen](/id/concepts/commitments)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/automation/index), [Heartbeat](/id/gateway/heartbeat), [Komitmen](/id/concepts/commitments)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1215,7 +1524,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Polling](/id/cli/message), [Pesan](/id/cli/message), [Telegram](/id/channels/telegram), [Microsoft Teams](/id/channels/msteams), [Proses Latar Belakang](/id/gateway/background-process)</div>
+        <div className="maturity-category-docs">
+
+    [Polling](/id/cli/message), [Pesan](/id/cli/message), [Telegram](/id/channels/telegram), [Microsoft Teams](/id/channels/msteams), [Proses Latar Belakang](/id/gateway/background-process)
+
+    </div>
       </div>
     </div>
 
@@ -1224,9 +1537,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Pemahaman media dan pembuatan media - M2 Alfa - 6 area">
     <a id="media-understanding-and-media-generation" />
 
-    Permukaan kapabilitas yang luas sudah tersedia, tetapi variasi antarpenyedia, batas berkas, serta kesetaraan Node/aplikasi membuatnya belum stabil.
+    Permukaan kapabilitas yang luas tersedia, tetapi variasi penyedia, batas file, serta kesetaraan node/aplikasi membuatnya belum stabil.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 2%</span><span>Kualitas Alfa - 64%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 2%</span><span>Kualitas Alfa - 64%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -1238,7 +1551,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ikhtisar Media](/id/tools/media-overview), [Pemahaman Media](/id/nodes/media-understanding), [Operasi File Aman](/id/gateway/security/secure-file-operations), [PDF](/id/tools/pdf), [Pembuatan Gambar](/id/tools/image-generation), [QR](/id/cli/qr), [LINE](/id/channels/line), [WhatsApp](/id/channels/whatsapp)</div>
+        <div className="maturity-category-docs">
+
+    [Ikhtisar Media](/id/tools/media-overview), [Pemahaman Media](/id/nodes/media-understanding), [Operasi File Aman](/id/gateway/security/secure-file-operations), [PDF](/id/tools/pdf), [Pembuatan Gambar](/id/tools/image-generation), [QR](/id/cli/qr), [LINE](/id/channels/line), [WhatsApp](/id/channels/whatsapp)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1248,7 +1565,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gambar](/id/nodes/images), [Ikhtisar Media](/id/tools/media-overview), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [Gambar](/id/nodes/images), [Ikhtisar Media](/id/tools/media-overview), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1258,17 +1579,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ikhtisar Media](/id/tools/media-overview), [Pembuatan Gambar](/id/tools/image-generation), [Manifes](/id/plugins/manifest), [Harness Codex](/id/plugins/codex-harness)</div>
+        <div className="maturity-category-docs">
+
+    [Ikhtisar Media](/id/tools/media-overview), [Pembuatan Gambar](/id/tools/image-generation), [Manifes](/id/plugins/manifest), [Harness Codex](/id/plugins/codex-harness)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyampaian Teks ke Ucapan</span>
+          <span className="maturity-category-title">Pengiriman Teks ke Ucapan</span>
           <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TTS](/id/tools/tts), [Ikhtisar Media](/id/tools/media-overview), [Discord](/id/channels/discord)</div>
+        <div className="maturity-category-docs">
+
+    [TTS](/id/tools/tts), [Ikhtisar Media](/id/tools/media-overview), [Discord](/id/channels/discord)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1278,7 +1607,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>7%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "7%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Audio](/id/nodes/audio), [Pemahaman Media](/id/nodes/media-understanding), [Ikhtisar Media](/id/tools/media-overview), [WhatsApp](/id/channels/whatsapp), [Gambar](/id/nodes/images), [Inferensi](/id/cli/infer), [PDF](/id/tools/pdf)</div>
+        <div className="maturity-category-docs">
+
+    [Audio](/id/nodes/audio), [Pemahaman Media](/id/nodes/media-understanding), [Ikhtisar Media](/id/tools/media-overview), [WhatsApp](/id/channels/whatsapp), [Gambar](/id/nodes/images), [Inferensi](/id/cli/infer), [PDF](/id/tools/pdf)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1288,13 +1621,17 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>5%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "5%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pembuatan Gambar](/id/tools/image-generation), [Ikhtisar Media](/id/tools/media-overview), [Skills](/id/tools/skills), [Pembuatan Musik](/id/tools/music-generation), [Pembuatan Video](/id/tools/video-generation)</div>
+        <div className="maturity-category-docs">
+
+    [Pembuatan Gambar](/id/tools/image-generation), [Ikhtisar Media](/id/tools/media-overview), [Skills](/id/tools/skills), [Pembuatan Musik](/id/tools/music-generation), [Pembuatan Video](/id/tools/video-generation)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Suara dan percakapan waktu nyata - M2 Alfa - 6 area">
+  <Accordion title="Suara dan percakapan waktu nyata - Alfa M2 - 6 area">
     <a id="voice-and-realtime-talk" />
 
     Terdapat beberapa implementasi di Control UI, aplikasi, dan penyedia. Memerlukan kartu skor latensi, mode kegagalan, dan penyiapan sebelum beta.
@@ -1306,62 +1643,86 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Penyedia Percakapan</span>
-          <span>7 kemampuan</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/id/providers/openai), [Google](/id/providers/google), [Plugin Penyedia SDK](/id/plugins/sdk-provider-plugins), [Percakapan](/id/nodes/talk), [UI Kontrol](/id/web/control-ui)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [Google](/id/providers/google), [Plugin Penyedia SDK](/id/plugins/sdk-provider-plugins), [Percakapan](/id/nodes/talk), [Control UI](/id/web/control-ui)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Sesi Percakapan Waktu Nyata</span>
-          <span>11 kemampuan</span>
+          <span>11 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Percakapan](/id/nodes/talk), [UI Kontrol](/id/web/control-ui)</div>
+        <div className="maturity-category-docs">
+
+    [Percakapan](/id/nodes/talk), [UI Kontrol](/id/web/control-ui)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Ucapan dan Transkripsi</span>
-          <span>5 kemampuan</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Percakapan](/id/nodes/talk), [Openai](/id/providers/openai), [Google](/id/providers/google)</div>
+        <div className="maturity-category-docs">
+
+    [Percakapan](/id/nodes/talk), [OpenAI](/id/providers/openai), [Google](/id/providers/google)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Percakapan Aplikasi Native</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Percakapan](/id/nodes/talk), [Pengaktifan Suara](/id/platforms/mac/voicewake)</div>
+        <div className="maturity-category-docs">
+
+    [Percakapan](/id/nodes/talk), [Pengaktifan Suara](/id/platforms/mac/voicewake)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pengaktifan Suara dan Perutean</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pengaktifan Suara](/id/nodes/voicewake), [Pengaktifan Suara](/id/platforms/mac/voicewake), [Hamparan Suara](/id/platforms/mac/voice-overlay)</div>
+        <div className="maturity-category-docs">
+
+    [Pengaktifan Suara](/id/nodes/voicewake), [Pengaktifan Suara](/id/platforms/mac/voicewake), [Overlay Suara](/id/platforms/mac/voice-overlay)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Observabilitas Percakapan</span>
-          <span>5 kemampuan</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[UI Kontrol](/id/web/control-ui), [Hamparan Suara](/id/platforms/mac/voice-overlay), [Percakapan](/id/nodes/talk)</div>
+        <div className="maturity-category-docs">
+
+    [UI Kontrol](/id/web/control-ui), [Overlay Suara](/id/platforms/mac/voice-overlay), [Percakapan](/id/nodes/talk)
+
+    </div>
       </div>
     </div>
 
@@ -1370,7 +1731,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="TUI - M2 Alfa - 5 area">
     <a id="tui" />
 
-    Tersedia dalam dokumentasi dan kode sumber, tetapi kurang terlihat sebagai alur kerja utama pengguna. Memerlukan definisi skenario yang eksplisit.
+    Tersedia dalam dokumentasi dan sumber, tetapi kurang terlihat sebagai alur kerja utama pengguna. Memerlukan definisi skenario yang eksplisit.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -1384,7 +1745,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/id/cli/tui), [TUI](/id/web/tui), [Indeks](/id/cli/index)</div>
+        <div className="maturity-category-docs">
+
+    [TUI](/id/cli/tui), [TUI](/id/web/tui), [Indeks](/id/cli/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1394,17 +1759,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/id/web/tui)</div>
+        <div className="maturity-category-docs">
+
+    [TUI](/id/web/tui)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Pengelolaan Sesi</span>
+          <span className="maturity-category-title">Manajemen Sesi</span>
           <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/id/web/tui), [Sesi](/id/cli/sessions)</div>
+        <div className="maturity-category-docs">
+
+    [TUI](/id/web/tui), [Sesi](/id/cli/sessions)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1414,17 +1787,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/id/web/tui), [TUI](/id/cli/tui)</div>
+        <div className="maturity-category-docs">
+
+    [TUI](/id/web/tui), [TUI](/id/cli/tui)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Keamanan Rendering dan Output</span>
+          <span className="maturity-category-title">Keamanan Rendering dan Keluaran</span>
           <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/id/web/tui), [QR](/id/cli/qr), [Log](/id/cli/logs), [Pelengkapan](/id/cli/completion)</div>
+        <div className="maturity-category-docs">
+
+    [TUI](/id/web/tui), [QR](/id/cli/qr), [Log](/id/cli/logs), [Penyelesaian](/id/cli/completion)
+
+    </div>
       </div>
     </div>
 
@@ -1433,7 +1814,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="ClawHub - M2 Alfa - 4 area">
     <a id="clawhub" />
 
-    Dokumentasi publik dan konsep ekosistem sudah tersedia. Memerlukan kartu skor untuk instalasi, kepercayaan, pembaruan, pengembalian ke versi sebelumnya, dan kompatibilitas.
+    Dokumentasi publik dan konsep ekosistem telah tersedia. Memerlukan kartu skor untuk instalasi, kepercayaan, pembaruan, pengembalian versi, dan kompatibilitas.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 58%</span><span>Kelengkapan Alfa - 62%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -1441,13 +1822,17 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Publikasi</span>
+          <span className="maturity-category-title">Penerbitan</span>
           <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Publikasi](/id/clawhub/publishing), [Membuat Skills](/id/tools/creating-skills), [Komunitas](/id/plugins/community)</div>
+        <div className="maturity-category-docs">
+
+    [Penerbitan](/id/clawhub/publishing), [Membuat Skills](/id/tools/creating-skills), [Komunitas](/id/plugins/community)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1457,7 +1842,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Skills](/id/cli/skills), [Skills](/id/tools/skills), [Komunitas](/id/plugins/community)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Skills](/id/cli/skills), [Skills](/id/tools/skills), [Komunitas](/id/plugins/community)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1467,7 +1856,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>56%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "56%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Kompatibilitas](/id/plugins/compatibility), [Inventaris Plugin](/id/plugins/plugin-inventory), [Publikasi](/id/clawhub/publishing), [Skills](/id/tools/skills), [Konfigurasi Skills](/id/tools/skills-config)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Kompatibilitas](/id/plugins/compatibility), [Inventaris Plugin](/id/plugins/plugin-inventory), [Penerbitan](/id/clawhub/publishing), [Skills](/id/tools/skills), [Konfigurasi Skills](/id/tools/skills-config)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1477,18 +1870,22 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Skills](/id/cli/skills), [Skills](/id/tools/skills), [Protokol](/id/gateway/protocol), [Bundel](/id/plugins/bundles), [Resolusi Dependensi](/id/plugins/dependency-resolution)</div>
+        <div className="maturity-category-docs">
+
+    [Plugin](/id/tools/plugin), [Plugin](/id/cli/plugins), [Skills](/id/cli/skills), [Skills](/id/tools/skills), [Protokol](/id/gateway/protocol), [Bundel](/id/plugins/bundles), [Resolusi Dependensi](/id/plugins/dependency-resolution)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="OpenClaw App SDK - M2 Alfa - 6 area">
+  <Accordion title="SDK Aplikasi OpenClaw - M2 Alfa - 6 area">
     <a id="openclaw-app-sdk" />
 
-    OpenClaw App SDK adalah kontrak aplikasi eksternal tersendiri yang terpisah dari runtime Gateway dan Plugin SDK. Penilaian saat ini menunjukkan jalur `@openclaw/sdk` yang nyata, dengan kesenjangan dalam pengemasan publik, penemuan otomatis, persetujuan, pembantu, dan kompatibilitas.
+    SDK Aplikasi OpenClaw merupakan kontrak aplikasi eksternal tersendiri yang terpisah dari runtime Gateway dan SDK Plugin. Penilaian saat ini menunjukkan jalur `@openclaw/sdk` yang nyata dengan kesenjangan terkait pengemasan publik, penemuan otomatis, persetujuan, fungsi pembantu, dan kompatibilitas.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 3%</span><span>Kualitas Alfa - 54%</span><span>Kelengkapan Alfa - 53%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 3%</span><span>Kualitas Alfa - 54%</span><span>Kelengkapan Alfa - 53%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -1500,7 +1897,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>51%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "51%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps)</div>
+        <div className="maturity-category-docs">
+
+    [SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1510,7 +1911,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)</div>
+        <div className="maturity-category-docs">
+
+    [SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol), [Indeks](/id/gateway/security/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1520,7 +1925,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1530,7 +1939,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>52%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "52%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1540,7 +1953,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>17%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "17%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>62%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "62%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps)</div>
+        <div className="maturity-category-docs">
+
+    [SDK OpenClaw](/id/gateway/external-apps), [Desain API SDK OpenClaw](/id/gateway/external-apps)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1550,7 +1967,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Desain API SDK OpenClaw](/id/gateway/external-apps), [Typebox](/id/concepts/typebox), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Desain API SDK OpenClaw](/id/gateway/external-apps), [Typebox](/id/concepts/typebox), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
     </div>
 
@@ -1564,9 +1985,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Host Gateway Linux - M4 Stabil - 5 area">
     <a id="linux-gateway-host" />
 
-    Runtime Node direkomendasikan, layanan pengguna systemd didokumentasikan, dan panduan VPS/kontainer memiliki cakupan luas.
+    Runtime Node direkomendasikan, layanan pengguna systemd didokumentasikan, dan panduan VPS/kontainer tersedia secara luas.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 75%</span><span>Kelengkapan Stabil - 89%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 75%</span><span>Kelengkapan Stabil - 89%</span><span><span className="maturity-lts maturity-lts-partial">Parsial - 4</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -1578,7 +1999,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/install/index), [Pembaruan](/id/install/updating), [Linux](/id/platforms/linux), [Indeks](/id/platforms/index)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/install/index), [Pembaruan](/id/install/updating), [Linux](/id/platforms/linux), [Indeks](/id/platforms/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1588,7 +2013,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Linux](/id/platforms/linux), [VPS](/id/vps)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Linux](/id/platforms/linux), [VPS](/id/vps)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1598,7 +2027,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale), [Panduan Operasional Paparan](/id/gateway/security/exposure-runbook), [Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets)</div>
+        <div className="maturity-category-docs">
+
+    [Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale), [Runbook Eksposur](/id/gateway/security/exposure-runbook), [Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1608,7 +2041,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Status](/id/cli/status), [Log](/id/cli/logs), [Doctor](/id/cli/doctor), [Diagnostik](/id/gateway/diagnostics), [Indeks](/id/gateway/index)</div>
+        <div className="maturity-category-docs">
+
+    [Status](/id/cli/status), [Log](/id/cli/logs), [Doctor](/id/cli/doctor), [Diagnostik](/id/gateway/diagnostics), [Indeks](/id/gateway/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1618,7 +2055,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
-        <div className="maturity-category-docs">[VPS](/id/vps), [Docker](/id/install/docker), [Hetzner](/id/install/hetzner), [DigitalOcean](/id/install/digitalocean), [Kubernetes](/id/install/kubernetes), [Podman](/id/install/podman)</div>
+        <div className="maturity-category-docs">
+
+    [Vps](/id/vps), [Docker](/id/install/docker), [Hetzner](/id/install/hetzner), [Digitalocean](/id/install/digitalocean), [Kubernetes](/id/install/kubernetes), [Podman](/id/install/podman)
+
+    </div>
       </div>
     </div>
 
@@ -1641,7 +2082,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/id/platforms/macos), [Gateway Bawaan](/id/platforms/mac/bundled-gateway), [Penginstal](/id/install/installer), [Node](/id/install/node)</div>
+        <div className="maturity-category-docs">
+
+    [Macos](/id/platforms/macos), [Gateway Terbundel](/id/platforms/mac/bundled-gateway), [Penginstal](/id/install/installer), [Node](/id/install/node)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1651,7 +2096,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/id/platforms/macos), [Gateway Bawaan](/id/platforms/mac/bundled-gateway), [Jarak Jauh](/id/platforms/mac/remote), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Bonjour](/id/gateway/bonjour)</div>
+        <div className="maturity-category-docs">
+
+    [Macos](/id/platforms/macos), [Gateway Terbundel](/id/platforms/mac/bundled-gateway), [Jarak Jauh](/id/platforms/mac/remote), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Bonjour](/id/gateway/bonjour)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1661,7 +2110,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Jarak Jauh](/id/platforms/mac/remote), [Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale)</div>
+        <div className="maturity-category-docs">
+
+    [Jarak Jauh](/id/platforms/mac/remote), [Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1671,7 +2124,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/id/platforms/macos), [Gateway Bawaan](/id/platforms/mac/bundled-gateway), [Gateway](/id/cli/gateway), [Indeks](/id/gateway/index), [Pembaruan](/id/cli/update), [Memperbarui](/id/install/updating), [Menghapus Instalasi](/id/install/uninstall), [Pemecahan Masalah](/id/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Macos](/id/platforms/macos), [Gateway Terbundel](/id/platforms/mac/bundled-gateway), [Gateway](/id/cli/gateway), [Indeks](/id/gateway/index), [Pembaruan](/id/cli/update), [Memperbarui](/id/install/updating), [Menghapus Instalasi](/id/install/uninstall), [Pemecahan Masalah](/id/gateway/troubleshooting)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1681,7 +2138,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway Bawaan](/id/platforms/mac/bundled-gateway), [Macos](/id/platforms/macos), [Gateway](/id/cli/gateway), [Doctor](/id/gateway/doctor), [Pemecahan Masalah](/id/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Gateway Terbundel](/id/platforms/mac/bundled-gateway), [Macos](/id/platforms/macos), [Gateway](/id/cli/gateway), [Doctor](/id/gateway/doctor), [Pemecahan Masalah](/id/gateway/troubleshooting)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1691,7 +2152,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/id/platforms/macos), [Jarak Jauh](/id/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Macos](/id/platforms/macos), [Jarak Jauh](/id/platforms/mac/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1701,7 +2166,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Beberapa Gateway](/id/gateway/multiple-gateways), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway)</div>
+        <div className="maturity-category-docs">
+
+    [Beberapa Gateway](/id/gateway/multiple-gateways), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway)
+
+    </div>
       </div>
     </div>
 
@@ -1709,7 +2178,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Aplikasi Android - M4 Stabil - 7 area">
     <a id="android-app" />
 
-    Distribusi resmi melalui Google Play tersedia, dokumentasi untuk membangun dan menjalankan dari sumber terus dipelihara, dan aplikasi Android didokumentasikan sebagai node pendamping standar bagi pengguna.
+    Distribusi resmi melalui Google Play tersedia, dokumentasi untuk membangun/menjalankan dari sumber dipelihara, dan aplikasi Android didokumentasikan sebagai node pendamping biasa bagi pengguna.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Stabil - 80%</span><span>Kelengkapan Stabil - 80%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -1723,17 +2192,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android), [Kamera](/id/nodes/camera)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android), [Kamera](/id/nodes/camera)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Obrolan Seluler</span>
+          <span className="maturity-category-title">Percakapan Seluler</span>
           <span>1 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1743,7 +2220,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android), [Bonjour](/id/gateway/bonjour), [Pemasangan](/id/gateway/pairing)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android), [Bonjour](/id/gateway/bonjour), [Penyandingan](/id/gateway/pairing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1753,7 +2234,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1763,7 +2248,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1773,7 +2262,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android), [Bicara](/id/nodes/talk)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android), [Bicara](/id/nodes/talk)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1783,7 +2276,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Android](/id/platforms/android), [Pemecahan Masalah](/id/nodes/troubleshooting), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Android](/id/platforms/android), [Pemecahan Masalah](/id/nodes/troubleshooting), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
     </div>
 
@@ -1791,7 +2288,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Aplikasi iOS - M4 Stabil - 8 area">
     <a id="ios-app" />
 
-    Distribusi resmi melalui App Store tersedia, push berbasis relai telah didokumentasikan, dan aplikasi iOS didokumentasikan sebagai Node pendamping biasa bagi pengguna.
+    Distribusi resmi melalui App Store tersedia, push berbasis relay telah didokumentasikan, dan aplikasi iOS didokumentasikan sebagai node pendamping normal bagi pengguna.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Stabil - 80%</span><span>Kelengkapan Stabil - 80%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -1800,82 +2297,114 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media dan Berbagi</span>
-          <span>1 kapabilitas</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Kamera](/id/nodes/camera)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Kamera](/id/nodes/camera)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Kanvas dan Layar</span>
-          <span>1 kapabilitas</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Kanvas](/id/plugins/reference/canvas)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Kanvas](/id/plugins/reference/canvas)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Percakapan dan Sesi</span>
-          <span>1 kapabilitas</span>
+          <span className="maturity-category-title">Obrolan dan Sesi</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Percakapan Web](/id/web/webchat), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Obrolan Web](/id/web/webchat), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Penyiapan dan Diagnostik Gateway</span>
-          <span>7 kapabilitas</span>
+          <span>7 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Pemasangan](/id/channels/pairing)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Pemasangan](/id/channels/pairing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Distribusi</span>
-          <span>1 kapabilitas</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perintah Perangkat</span>
-          <span>2 kapabilitas</span>
+          <span>2 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Notifikasi dan Latar Belakang</span>
-          <span>1 kapabilitas</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Konfigurasi](/id/gateway/configuration)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Konfigurasi](/id/gateway/configuration)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Suara</span>
-          <span>1 kapabilitas</span>
+          <span>1 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios), [Bicara](/id/nodes/talk)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios), [Bicara](/id/nodes/talk)
+
+    </div>
       </div>
     </div>
 
@@ -1884,51 +2413,67 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Hosting Docker dan Podman - M3 Beta - 4 area">
     <a id="docker-and-podman-hosting" />
 
-    Dokumentasi instalasi tersedia dan merupakan jalur penerapan yang umum. Promosikan setelah pengujian cepat rilis berulang mencakup perilaku peningkatan versi dan volume.
+    Dokumentasi instalasi tersedia dan merupakan jalur penerapan yang umum. Promosikan setelah uji asap rilis berulang mencatat perilaku peningkatan versi dan volume.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 7%</span><span>Kualitas Beta - 71%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 7%</span><span>Kualitas Beta - 71%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Penyiapan Kontainer</span>
-          <span>6 kemampuan</span>
+          <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/id/install/docker), [Podman](/id/install/podman)</div>
+        <div className="maturity-category-docs">
+
+    [Docker](/id/install/docker), [Podman](/id/install/podman)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Operasi Kontainer</span>
-          <span>11 kemampuan</span>
+          <span>11 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Podman](/id/install/podman), [Runtime VM Docker](/id/install/docker-vm-runtime), [Docker](/id/install/docker), [Hetzner](/id/install/hetzner), [Hostinger](/id/install/hostinger)</div>
+        <div className="maturity-category-docs">
+
+    [Podman](/id/install/podman), [Runtime VM Docker](/id/install/docker-vm-runtime), [Docker](/id/install/docker), [Hetzner](/id/install/hetzner), [Hostinger](/id/install/hostinger)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Rilis dan Validasi Citra</span>
-          <span>5 kemampuan</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/id/install/docker), [Runtime VM Docker](/id/install/docker-vm-runtime), [Validasi Rilis Lengkap](/id/reference/full-release-validation)</div>
+        <div className="maturity-category-docs">
+
+    [Docker](/id/install/docker), [Runtime VM Docker](/id/install/docker-vm-runtime), [Validasi Rilis Lengkap](/id/reference/full-release-validation)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Sandbox dan Peralatan Agen</span>
-          <span>3 kemampuan</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Docker](/id/install/docker), [Runtime VM Docker](/id/install/docker-vm-runtime)</div>
+        <div className="maturity-category-docs">
+
+    [Docker](/id/install/docker), [Runtime VM Docker](/id/install/docker-vm-runtime)
+
+    </div>
       </div>
     </div>
 
@@ -1937,7 +2482,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Windows melalui WSL2 - M3 Beta - 6 area">
     <a id="windows-via-wsl2" />
 
-    Jalur Windows yang direkomendasikan dengan panduan systemd/layanan pengguna dan dokumentasi rantai boot. Promosikan setelah kartu skor instalasi/pembaruan dilakukan berulang kali.
+    Jalur Windows yang direkomendasikan dengan panduan systemd/layanan pengguna dan dokumentasi rantai boot. Promosikan setelah kartu skor instalasi/pembaruan berulang.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 6%</span><span>Kualitas Alfa - 69%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 5</span></span></div>
 
@@ -1951,7 +2496,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Memulai](/id/start/getting-started)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Memulai](/id/start/getting-started)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1961,7 +2510,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Memulai](/id/start/getting-started), [Pembaruan](/id/install/updating), [Orientasi](/id/cli/onboard), [Diagnostik](/id/cli/doctor), [Status](/id/cli/status), [Log](/id/cli/logs)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Memulai](/id/start/getting-started), [Memperbarui](/id/install/updating), [Orientasi](/id/cli/onboard), [Diagnostik](/id/cli/doctor), [Status](/id/cli/status), [Log](/id/cli/logs)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1971,7 +2524,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Diagnostik](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Diagnostik](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1981,7 +2538,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets), [Jarak Jauh](/id/gateway/remote), [Panduan Operasional Eksposur](/id/gateway/security/exposure-runbook), [Windows](/id/platforms/windows)</div>
+        <div className="maturity-category-docs">
+
+    [Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets), [Jarak Jauh](/id/gateway/remote), [Panduan Operasional Eksposur](/id/gateway/security/exposure-runbook), [Windows](/id/platforms/windows)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1991,17 +2552,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Status](/id/cli/status), [Log](/id/cli/logs), [Diagnostik](/id/cli/doctor), [Diagnostik](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Status](/id/cli/status), [Log](/id/cli/logs), [Dokter](/id/cli/doctor), [Dokter](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Peramban dan UI Kontrol</span>
+          <span className="maturity-category-title">Browser dan Antarmuka Kontrol</span>
           <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pemecahan Masalah CDP Jarak Jauh Peramban WSL2 Windows](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Peramban](/id/tools/browser), [UI Kontrol](/id/web/control-ui)</div>
+        <div className="maturity-category-docs">
+
+    [Pemecahan Masalah CDP Jarak Jauh Browser WSL2 Windows](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Browser](/id/tools/browser), [Antarmuka Kontrol](/id/web/control-ui)
+
+    </div>
       </div>
     </div>
 
@@ -2012,7 +2581,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
     Dokumentasi platform tersedia dan jalur Gateway berbasis Linux. Memerlukan bukti uji asap rilis khusus perangkat keras untuk naik ke tingkat yang lebih tinggi.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 67%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 67%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -2024,7 +2593,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/id/install/raspberry-pi), [Indeks](/id/install/index), [Pertanyaan Umum Pengoperasian Pertama](/id/help/faq-first-run), [Pertanyaan Umum](/id/help/faq), [Linux](/id/platforms/linux), [Penginstal](/id/install/installer)</div>
+        <div className="maturity-category-docs">
+
+    [Raspberry Pi](/id/install/raspberry-pi), [Indeks](/id/install/index), [Tanya Jawab Pengoperasian Pertama](/id/help/faq-first-run), [Tanya Jawab](/id/help/faq), [Linux](/id/platforms/linux), [Penginstal](/id/install/installer)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2034,7 +2607,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/id/install/raspberry-pi), [Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets), [Penyandingan](/id/gateway/pairing), [Perangkat](/id/cli/devices), [Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale)</div>
+        <div className="maturity-category-docs">
+
+    [Raspberry Pi](/id/install/raspberry-pi), [Autentikasi](/id/gateway/authentication), [Rahasia](/id/gateway/secrets), [Pemasangan](/id/gateway/pairing), [Perangkat](/id/cli/devices), [Jarak Jauh](/id/gateway/remote), [Tailscale](/id/gateway/tailscale)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2044,7 +2621,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Raspberry Pi](/id/install/raspberry-pi), [Linux](/id/platforms/linux), [VPS](/id/vps)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Raspberry Pi](/id/install/raspberry-pi), [Linux](/id/platforms/linux), [VPS](/id/vps)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2054,7 +2635,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/id/install/raspberry-pi), [Linux](/id/platforms/linux), [Kesehatan](/id/gateway/health), [Diagnostik](/id/gateway/diagnostics)</div>
+        <div className="maturity-category-docs">
+
+    [Raspberry Pi](/id/install/raspberry-pi), [Linux](/id/platforms/linux), [Kesehatan](/id/gateway/health), [Diagnostik](/id/gateway/diagnostics)
+
+    </div>
       </div>
     </div>
 
@@ -2063,91 +2648,123 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Aplikasi pendamping macOS - M3 Beta - 8 area">
     <a id="macos-companion-app" />
 
-    Tersedia aplikasi bilah menu yang kaya fitur, perizinan, mode Node, Canvas, pengaktifan suara, WebChat, dan mode jarak jauh. Perkembangannya masih cukup cepat sehingga belum dapat berstatus Stabil.
+    Aplikasi bilah menu yang kaya fitur, izin, mode Node, Canvas, aktivasi suara, WebChat, dan mode jarak jauh telah tersedia. Perkembangannya masih cukup cepat sehingga belum dapat dianggap Stabil.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kanvas</span>
-          <span>4 kemampuan</span>
+          <span className="maturity-category-title">Canvas</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kanvas](/id/platforms/mac/canvas), [Macos](/id/platforms/macos), [Obrolan Web](/id/web/webchat)</div>
+        <div className="maturity-category-docs">
+
+    [Canvas](/id/platforms/mac/canvas), [macOS](/id/platforms/macos), [Webchat](/id/web/webchat)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Penyiapan Lokal</span>
-          <span>7 kemampuan</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Gateway Bawaan](/id/platforms/mac/bundled-gateway), [Macos](/id/platforms/macos), [Proses Anak](/id/platforms/mac/child-process), [Penyiapan Pengembangan](/id/platforms/mac/dev-setup)</div>
+        <div className="maturity-category-docs">
+
+    [Gateway Terbundel](/id/platforms/mac/bundled-gateway), [MacOS](/id/platforms/macos), [Proses Anak](/id/platforms/mac/child-process), [Penyiapan Pengembangan](/id/platforms/mac/dev-setup)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Status dan Pengaturan</span>
-          <span>5 kemampuan</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Bilah Menu](/id/platforms/mac/menu-bar), [Ikon](/id/platforms/mac/icon), [Macos](/id/platforms/macos), [Kesehatan](/id/platforms/mac/health), [Pencatatan Log](/id/platforms/mac/logging), [Jarak Jauh](/id/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Bilah Menu](/id/platforms/mac/menu-bar), [Ikon](/id/platforms/mac/icon), [MacOS](/id/platforms/macos), [Kesehatan](/id/platforms/mac/health), [Pencatatan Log](/id/platforms/mac/logging), [Jarak Jauh](/id/platforms/mac/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kemampuan Native</span>
-          <span>5 kemampuan</span>
+          <span className="maturity-category-title">Kapabilitas Native</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Macos](/id/platforms/macos), [Xpc](/id/platforms/mac/xpc), [Izin](/id/platforms/mac/permissions), [Penandatanganan](/id/platforms/mac/signing), [Peekaboo](/id/platforms/mac/peekaboo)</div>
+        <div className="maturity-category-docs">
+
+    [MacOS](/id/platforms/macos), [XPC](/id/platforms/mac/xpc), [Izin](/id/platforms/mac/permissions), [Penandatanganan](/id/platforms/mac/signing), [Peekaboo](/id/platforms/mac/peekaboo)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Koneksi Jarak Jauh</span>
-          <span>3 kemampuan</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Jarak Jauh](/id/platforms/mac/remote), [Macos](/id/platforms/macos), [Jarak Jauh](/id/gateway/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Jarak Jauh](/id/platforms/mac/remote), [MacOS](/id/platforms/macos), [Jarak Jauh](/id/gateway/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Suara dan Percakapan</span>
-          <span>3 kemampuan</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Aktivasi Suara](/id/platforms/mac/voicewake), [Lapisan Suara](/id/platforms/mac/voice-overlay), [Percakapan](/id/nodes/talk), [Macos](/id/platforms/macos)</div>
+        <div className="maturity-category-docs">
+
+    [Bangunkan dengan Suara](/id/platforms/mac/voicewake), [Hamparan Suara](/id/platforms/mac/voice-overlay), [Percakapan](/id/nodes/talk), [MacOS](/id/platforms/macos)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Obrolan Web</span>
-          <span>3 kemampuan</span>
+          <span className="maturity-category-title">WebChat</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Obrolan Web](/id/platforms/mac/webchat), [Macos](/id/platforms/macos), [Obrolan Web](/id/web/webchat)</div>
+        <div className="maturity-category-docs">
+
+    [Webchat](/id/platforms/mac/webchat), [macOS](/id/platforms/macos), [Webchat](/id/web/webchat)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Obrolan Web Jarak Jauh</span>
-          <span>5 kemampuan</span>
+          <span className="maturity-category-title">WebChat Jarak Jauh</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Obrolan Web](/id/platforms/mac/webchat), [Jarak Jauh](/id/gateway/remote), [Jarak Jauh](/id/platforms/mac/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Webchat](/id/platforms/mac/webchat), [Jarak Jauh](/id/gateway/remote), [Jarak Jauh](/id/platforms/mac/remote)
+
+    </div>
       </div>
     </div>
 
@@ -2156,9 +2773,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Windows Native - M2 Alfa - 4 area">
     <a id="native-windows" />
 
-    Alur inti CLI/Gateway berfungsi, tetapi dokumentasi masih merekomendasikan WSL2 untuk pengalaman lengkap dan mencantumkan batasan penggunaan secara native.
+    Alur CLI/Gateway inti berfungsi, tetapi dokumentasi masih merekomendasikan WSL2 untuk pengalaman lengkap dan mencantumkan keterbatasan native.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 58%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 1</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 58%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-partial">Parsial - 1</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -2170,7 +2787,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>64%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "64%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/install/index), [Penginstal](/id/install/installer), [Windows](/id/platforms/windows), [Memulai](/id/start/getting-started), [Orientasi](/id/cli/onboard)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/install/index), [Penginstal](/id/install/installer), [Windows](/id/platforms/windows), [Memulai](/id/start/getting-started), [Orientasi](/id/cli/onboard)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2180,7 +2801,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Diagnosis](/id/cli/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway), [Dokter](/id/cli/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2190,7 +2815,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Gateway](/id/cli/gateway)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2200,7 +2829,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Memperbarui](/id/install/updating), [CI](/id/ci)</div>
+        <div className="maturity-category-docs">
+
+    [Memperbarui](/id/install/updating), [CI](/id/ci)
+
+    </div>
       </div>
     </div>
 
@@ -2209,21 +2842,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Hosting Kubernetes - M2 Alfa - 4 area">
     <a id="kubernetes-hosting" />
 
-    Hosting Kubernetes adalah jalur deployment klaster berbasis Kustomize yang terpisah. Penilaian saat ini menunjukkan jalur deployment minimal yang nyata, dengan kesenjangan seputar CI khusus Kubernetes, pengemasan ingress/TLS/NetworkPolicy, pencadangan/pemulihan, dan penguatan eksposur produksi.
+    Hosting Kubernetes adalah jalur deployment klaster tersendiri berbasis Kustomize. Penilaian saat ini menunjukkan jalur deployment minimal yang nyata, dengan kekurangan pada Pipeline CI khusus Kubernetes, pemaketan ingress/TLS/NetworkPolicy, pencadangan/pemulihan, dan penguatan eksposur produksi.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 55%</span><span>Kelengkapan Alfa - 61%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 55%</span><span>Kelengkapan Alfa - 61%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan Penerapan</span>
+          <span className="maturity-category-title">Penyiapan Deployment</span>
           <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/id/install/kubernetes), [Indeks](/id/install/index)</div>
+        <div className="maturity-category-docs">
+
+    [Kubernetes](/id/install/kubernetes), [Indeks](/id/install/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2233,7 +2870,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/id/install/kubernetes), [Rahasia](/id/gateway/secrets), [Lingkungan](/id/help/environment)</div>
+        <div className="maturity-category-docs">
+
+    [Kubernetes](/id/install/kubernetes), [Rahasia](/id/gateway/secrets), [Lingkungan](/id/help/environment)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2243,7 +2884,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/id/install/kubernetes), [Autentikasi](/id/gateway/authentication), [Jarak Jauh](/id/gateway/remote), [Panduan Operasional Eksposur](/id/gateway/security/exposure-runbook)</div>
+        <div className="maturity-category-docs">
+
+    [Kubernetes](/id/install/kubernetes), [Autentikasi](/id/gateway/authentication), [Jarak Jauh](/id/gateway/remote), [Panduan Operasional Eksposur](/id/gateway/security/exposure-runbook)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2253,7 +2898,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/id/install/kubernetes), [Indeks](/id/gateway/index)</div>
+        <div className="maturity-category-docs">
+
+    [Kubernetes](/id/install/kubernetes), [Indeks](/id/gateway/index)
+
+    </div>
       </div>
     </div>
 
@@ -2262,61 +2911,81 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Jalur instalasi Nix - M1 Eksperimental - 5 area">
     <a id="nix-install-path" />
 
-    Alur instalasi opsional. Memerlukan kejelasan komitmen dukungan sebelum dipromosikan ke alfa/beta.
+    Alur instalasi opsional. Memerlukan janji dukungan yang lebih jelas sebelum dipromosikan ke alfa/beta.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 41%</span><span>Kelengkapan Eksperimental - 44%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 41%</span><span>Kelengkapan Eksperimental - 44%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Serah Terima Instalasi</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Nix](/id/install/nix), [Indeks](/id/install/index), [Direktori Dokumentasi](/id/start/docs-directory)</div>
+        <div className="maturity-category-docs">
+
+    [Nix](/id/install/nix), [Indeks](/id/install/index), [Direktori Dokumentasi](/id/start/docs-directory)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Siklus Hidup Plugin</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kelola Plugin](/id/plugins/manage-plugins), [Plugin](/id/tools/plugin), [Nix](/id/install/nix)</div>
+        <div className="maturity-category-docs">
+
+    [Kelola Plugin](/id/plugins/manage-plugins), [Plugin](/id/tools/plugin), [Nix](/id/install/nix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Aktivasi dan Pengalaman Pengguna Aplikasi</span>
-          <span>7 kemampuan</span>
+          <span className="maturity-category-title">Aktivasi dan UX Aplikasi</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Nix](/id/install/nix)</div>
+        <div className="maturity-category-docs">
+
+    [Nix](/id/install/nix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konfigurasi dan Status</span>
-          <span>7 kemampuan</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Nix](/id/install/nix), [Penyiapan](/id/cli/setup), [Lingkungan](/id/help/environment)</div>
+        <div className="maturity-category-docs">
+
+    [Nix](/id/install/nix), [Penyiapan](/id/cli/setup), [Lingkungan](/id/help/environment)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Runtime Layanan dan Pengamanan</span>
-          <span>8 kemampuan</span>
+          <span>8 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Nix](/id/install/nix), [Penyiapan](/id/cli/setup), [Pemeriksaan](/id/cli/doctor), [Pembaruan](/id/cli/update)</div>
+        <div className="maturity-category-docs">
+
+    [Nix](/id/install/nix), [Penyiapan](/id/cli/setup), [Doctor](/id/cli/doctor), [Pembaruan](/id/cli/update)
+
+    </div>
       </div>
     </div>
 
@@ -2327,7 +2996,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
     Sumber memiliki permukaan aplikasi/ekstensi Watch; dokumentasi publik belum menyajikannya sebagai fitur pengguna.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 41%</span><span>Kelengkapan Eksperimental - 44%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 41%</span><span>Kelengkapan Eksperimental - 44%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -2339,7 +3008,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2349,7 +3022,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Persetujuan Eksekusi](/id/tools/exec-approvals), [iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [Persetujuan Eksekusi](/id/tools/exec-approvals), [iOS](/id/platforms/ios)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2359,7 +3036,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2369,17 +3050,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">UI Aplikasi Jam Tangan</span>
+          <span className="maturity-category-title">UI Aplikasi Watch</span>
           <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/id/platforms/ios)</div>
+        <div className="maturity-category-docs">
+
+    [iOS](/id/platforms/ios)
+
+    </div>
       </div>
     </div>
 
@@ -2388,7 +3077,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Aplikasi pendamping Linux - M0 Direncanakan - 5 area">
     <a id="linux-companion-app" />
 
-    Dokumentasi menyatakan bahwa aplikasi pendamping Linux native direncanakan; Gateway adalah jalur Linux yang didukung saat ini.
+    Dokumentasi menyatakan bahwa aplikasi pendamping Linux native direncanakan; Gateway merupakan jalur Linux yang didukung saat ini.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 19%</span><span>Kelengkapan Eksperimental - 21%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
@@ -2397,63 +3086,83 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Distribusi Aplikasi</span>
-          <span>3 kemampuan</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/id/platforms/linux), [Indeks](/id/platforms/index), [Indeks](/id/install/index)</div>
+        <div className="maturity-category-docs">
+
+    [Linux](/id/platforms/linux), [Indeks](/id/platforms/index), [Indeks](/id/install/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Konektivitas Gateway</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/id/platforms/linux), [Indeks](/id/gateway/index), [Pemasangan](/id/gateway/pairing), [Jarak Jauh](/id/gateway/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Linux](/id/platforms/linux), [Indeks](/id/gateway/index), [Pemasangan](/id/gateway/pairing), [Jarak Jauh](/id/gateway/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Percakapan dan Sesi</span>
-          <span>3 kemampuan</span>
+          <span className="maturity-category-title">Obrolan dan Sesi</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/id/platforms/linux), [Protokol](/id/gateway/protocol), [Percakapan Web](/id/web/webchat)</div>
+        <div className="maturity-category-docs">
+
+    [Linux](/id/platforms/linux), [Protokol](/id/gateway/protocol), [Obrolan Web](/id/web/webchat)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kemampuan Desktop</span>
-          <span>9 kemampuan</span>
+          <span className="maturity-category-title">Kapabilitas Desktop</span>
+          <span>9 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/id/platforms/linux), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Rahasia](/id/gateway/secrets), [Indeks](/id/nodes/index), [Eksekusi](/id/tools/exec), [Bicara](/id/nodes/talk), [Kamera](/id/nodes/camera)</div>
+        <div className="maturity-category-docs">
+
+    [Linux](/id/platforms/linux), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Rahasia](/id/gateway/secrets), [Indeks](/id/nodes/index), [Eksekusi](/id/tools/exec), [Bicara](/id/nodes/talk), [Kamera](/id/nodes/camera)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Status dan Diagnostik</span>
-          <span>7 kemampuan</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/id/platforms/linux), [Openclaw](/id/start/openclaw), [Diagnostik](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Linux](/id/platforms/linux), [OpenClaw](/id/start/openclaw), [Doctor](/id/gateway/doctor)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Aplikasi pendamping Windows native - M0 Direncanakan - 5 area">
+  <Accordion title="Aplikasi pendamping native Windows - M0 Direncanakan - 5 area">
     <a id="native-windows-companion-app" />
 
     Hanya direncanakan.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 19%</span><span>Kelengkapan Eksperimental - 21%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 19%</span><span>Kelengkapan Eksperimental - 21%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -2465,7 +3174,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/install/index)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/install/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2475,17 +3188,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Pemasangan](/id/gateway/pairing), [Jarak Jauh](/id/gateway/remote)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/gateway/index), [Pemasangan](/id/gateway/pairing), [Jarak Jauh](/id/gateway/remote)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Sesi Percakapan</span>
+          <span className="maturity-category-title">Sesi Obrolan</span>
           <span>2 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2495,7 +3216,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Doctor](/id/gateway/doctor), [Indeks](/id/gateway/index)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Doctor](/id/gateway/doctor), [Indeks](/id/gateway/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2505,7 +3230,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Windows](/id/platforms/windows), [Indeks](/id/nodes/index), [Eksekusi](/id/tools/exec), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Indeks](/id/gateway/security/index)</div>
+        <div className="maturity-category-docs">
+
+    [Windows](/id/platforms/windows), [Indeks](/id/nodes/index), [Exec](/id/tools/exec), [Persetujuan Exec](/id/tools/exec-approvals), [Indeks](/id/gateway/security/index)
+
+    </div>
       </div>
     </div>
 
@@ -2513,7 +3242,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
 </AccordionGroup>
 
-### Kanal
+### Saluran
 
 <AccordionGroup>
   <Accordion title="Discord - M4 Stabil - 6 area">
@@ -2521,80 +3250,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
     Dokumentasi mendalam dan cakupan fitur yang luas. Jalur suara/delegasi harus tetap dinilai secara terpisah sebagai beta/alfa.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 73%</span><span>Kelengkapan Stabil - 87%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 4</span></span></div>
-
-    <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Operasi Kanal</span>
-          <span>10 kapabilitas / didukung LTS</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord), [Discord](/id/plugins/reference/discord), [Fly](/id/install/fly), [Perintah Garis Miring](/id/tools/slash-commands), [Kesehatan](/id/gateway/health), [Kanal](/id/cli/channels), [Konfigurasi Kanal](/id/gateway/config-channels)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Akses dan Identitas</span>
-          <span>6 kapabilitas / didukung LTS</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Perutean dan Pengiriman Percakapan</span>
-          <span>12 kapabilitas / didukung LTS</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord), [Perutean Kanal](/id/channels/channel-routing), [Grup](/id/channels/groups), [Grup Akses](/id/channels/access-groups), [Agen ACP](/id/tools/acp-agents), [Subagen](/id/tools/subagents)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Media dan Konten Kaya</span>
-          <span>1 kapabilitas / didukung LTS</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
-          <span>5 kapabilitas</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord), [Perintah Garis Miring](/id/tools/slash-commands)</div>
-      </div>
-      <div className="maturity-category-row">
-        <div className="maturity-category-area">
-          <span className="maturity-category-title">Suara dan Panggilan Waktu Nyata</span>
-          <span>5 kapabilitas</span>
-        </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Discord](/id/channels/discord), [OpenAI](/id/providers/openai), [ElevenLabs](/id/providers/elevenlabs), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Konfigurasi Kanal](/id/gateway/config-channels)</div>
-      </div>
-    </div>
-
-  </Accordion>
-
-  <Accordion title="Telegram - M3 Beta - 5 area">
-    <a id="telegram" />
-
-    Kanal inti cukup matang untuk penggunaan rutin, tetapi pengalaman pengguna yang sangat bervariasi dan kasus ekstrem media memerlukan pembuktian skenario secara berkala.
-
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 68%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Penuh - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 73%</span><span>Kelengkapan Stabil - 87%</span><span><span className="maturity-lts maturity-lts-partial">Parsial - 4</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -2604,49 +3260,166 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
           <span>10 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Konfigurasi Saluran](/id/gateway/config-channels), [Saluran](/id/cli/channels)</div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord), [Discord](/id/plugins/reference/discord), [Fly](/id/install/fly), [Perintah Slash](/id/tools/slash-commands), [Kesehatan](/id/gateway/health), [Saluran](/id/cli/channels), [Konfigurasi Saluran](/id/gateway/config-channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Akses dan Identitas</span>
-          <span>10 kemampuan / didukung LTS</span>
+          <span>6 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups), [Multiagen](/id/concepts/multi-agent)</div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perutean dan Pengiriman Percakapan</span>
-          <span>1 kemampuan / didukung LTS</span>
+          <span>12 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Grup](/id/channels/groups), [Multiagen](/id/concepts/multi-agent)</div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord), [Perutean Kanal](/id/channels/channel-routing), [Grup](/id/channels/groups), [Grup Akses](/id/channels/access-groups), [Agen ACP](/id/tools/acp-agents), [Subagen](/id/tools/subagents)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media dan Konten Kaya</span>
-          <span>1 kemampuan / didukung LTS</span>
+          <span>1 kapabilitas / didukung LTS</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord)
+
+    </div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
+          <span>5 kapabilitas</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord), [Perintah Garis Miring](/id/tools/slash-commands)
+
+    </div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Suara dan Panggilan Waktu Nyata</span>
+          <span>5 kapabilitas</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>73%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "73%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">Stabil</span><span>87%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "87%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Discord](/id/channels/discord), [OpenAI](/id/providers/openai), [Elevenlabs](/id/providers/elevenlabs), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Konfigurasi Kanal](/id/gateway/config-channels)
+
+    </div>
+      </div>
+    </div>
+
+  </Accordion>
+
+  <Accordion title="Telegram - M3 Beta - 5 area">
+    <a id="telegram" />
+
+    Kanal inti cukup matang untuk penggunaan rutin, tetapi UX dengan variasi tinggi dan kasus tepi media memerlukan pembuktian skenario berulang.
+
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 68%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Penuh - 5</span></span></div>
+
+    <div className="maturity-category-list">
+      <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Penyiapan dan Operasi Kanal</span>
+          <span>10 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Lokasi](/id/channels/location)</div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Konfigurasi Saluran](/id/gateway/config-channels), [Saluran](/id/cli/channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Bawaan</span>
-          <span>9 kemampuan / didukung LTS</span>
+          <span className="maturity-category-title">Akses dan Identitas</span>
+          <span>10 kapabilitas / didukung LTS</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Grup](/id/channels/groups), [Multi-Agen](/id/concepts/multi-agent)
+
+    </div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Perutean dan Pengiriman Percakapan</span>
+          <span>1 kapabilitas / didukung LTS</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Grup](/id/channels/groups), [Multi-Agen](/id/concepts/multi-agent)
+
+    </div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Media dan Konten Kaya</span>
+          <span>1 kapabilitas / didukung LTS</span>
+        </div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Lokasi](/id/channels/location)
+
+    </div>
+      </div>
+      <div className="maturity-category-row">
+        <div className="maturity-category-area">
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
+          <span>9 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/id/channels/telegram), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Reaksi](/id/tools/reactions)</div>
+        <div className="maturity-category-docs">
+
+    [Telegram](/id/channels/telegram), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Reaksi](/id/tools/reactions)
+
+    </div>
       </div>
     </div>
 
@@ -2655,7 +3428,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Slack - M3 Beta - 5 area">
     <a id="slack" />
 
-    Dokumentasi saluran dan permukaan perutean kelas utama. Memerlukan kartu skor skenario instalasi ruang kerja/administrator.
+    Dokumentasi kanal dan permukaan perutean kelas satu. Memerlukan kartu skor skenario penginstalan/admin ruang kerja.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-full">Penuh - 5</span></span></div>
 
@@ -2669,7 +3442,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/id/channels/slack), [Slack](/id/plugins/reference/slack), [Rahasia](/id/gateway/secrets), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Pemecahan Masalah](/id/channels/troubleshooting)</div>
+        <div className="maturity-category-docs">
+
+    [Slack](/id/channels/slack), [Slack](/id/plugins/reference/slack), [Rahasia](/id/gateway/secrets), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Pemecahan Masalah](/id/channels/troubleshooting)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2679,7 +3456,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/id/channels/slack), [Pemasangan](/id/channels/pairing)</div>
+        <div className="maturity-category-docs">
+
+    [Slack](/id/channels/slack), [Pemasangan](/id/channels/pairing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2689,7 +3470,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/id/channels/slack), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Pemasangan](/id/channels/pairing)</div>
+        <div className="maturity-category-docs">
+
+    [Slack](/id/channels/slack), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Pemasangan](/id/channels/pairing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2699,17 +3484,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/id/channels/slack), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation)</div>
+        <div className="maturity-category-docs">
+
+    [Slack](/id/channels/slack), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Bawaan</span>
+          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
           <span>8 kapabilitas / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Slack](/id/channels/slack), [Perintah Garis Miring](/id/tools/slash-commands), [Persetujuan Eksekusi](/id/tools/exec-approvals)</div>
+        <div className="maturity-category-docs">
+
+    [Slack](/id/channels/slack), [Perintah Garis Miring](/id/tools/slash-commands), [Persetujuan Eksekusi](/id/tools/exec-approvals)
+
+    </div>
       </div>
     </div>
 
@@ -2718,21 +3511,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="iMessage dan BlueBubbles - M3 Beta - 5 area">
     <a id="imessage-and-bluebubbles" />
 
-    iMessage yang didukung berjalan melalui imsg pada host macOS Messages yang telah masuk; konfigurasi BlueBubbles lama memerlukan migrasi. Pastikan izin macOS, pembungkus SSH, SIP/API privat, dan catatan migrasi tetap terlihat.
+    iMessage yang didukung berjalan melalui imsg pada host Pesan macOS yang telah masuk; konfigurasi BlueBubbles lama memerlukan migrasi. Pastikan catatan penting tentang izin macOS, pembungkus SSH, SIP/API privat, dan migrasi tetap terlihat.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Operasional Kanal</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Kanal</span>
           <span>11 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage BlueBubbles](/id/announcements/bluebubbles-imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels), [iMessage](/id/channels/imessage)</div>
+        <div className="maturity-category-docs">
+
+    [iMessage BlueBubbles](/id/announcements/bluebubbles-imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels), [iMessage](/id/channels/imessage)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2742,7 +3539,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/id/channels/imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels)</div>
+        <div className="maturity-category-docs">
+
+    [iMessage](/id/channels/imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2752,7 +3553,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/id/channels/imessage)</div>
+        <div className="maturity-category-docs">
+
+    [iMessage](/id/channels/imessage)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2762,17 +3567,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/id/channels/imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels)</div>
+        <div className="maturity-category-docs">
+
+    [iMessage](/id/channels/imessage), [iMessage dari BlueBubbles](/id/channels/imessage-from-bluebubbles), [Konfigurasi Kanal](/id/gateway/config-channels)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
           <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/id/channels/imessage)</div>
+        <div className="maturity-category-docs">
+
+    [iMessage](/id/channels/imessage)
+
+    </div>
       </div>
     </div>
 
@@ -2781,7 +3594,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="WhatsApp - M3 Beta - 5 area">
     <a id="whatsapp" />
 
-    Jalur inti penting dan terdokumentasi; volatilitas Baileys/sesi upstream membuatnya tetap berada di bawah Stabil.
+    Jalur inti penting dan terdokumentasi; volatilitas Baileys/sesi upstream membuatnya tetap di bawah Stabil.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -2790,61 +3603,81 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Penyiapan dan Operasi Kanal</span>
-          <span>5 kemampuan</span>
+          <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/id/channels/whatsapp), [Konfigurasi Kanal](/id/gateway/config-channels), [WhatsApp](/id/plugins/reference/whatsapp), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Doctor](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [WhatsApp](/id/channels/whatsapp), [Konfigurasi Kanal](/id/gateway/config-channels), [WhatsApp](/id/plugins/reference/whatsapp), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Doctor](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Akses dan Identitas</span>
-          <span>7 kemampuan</span>
+          <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/id/channels/whatsapp), [Konfigurasi Kanal](/id/gateway/config-channels), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Pemasangan](/id/channels/pairing)</div>
+        <div className="maturity-category-docs">
+
+    [WhatsApp](/id/channels/whatsapp), [Konfigurasi Kanal](/id/gateway/config-channels), [Otomatisasi QA E2E](/id/concepts/qa-e2e-automation), [Pemasangan](/id/channels/pairing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perutean dan Pengiriman Percakapan</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/id/channels/whatsapp), [Pesan Grup](/id/channels/group-messages)</div>
+        <div className="maturity-category-docs">
+
+    [WhatsApp](/id/channels/whatsapp), [Pesan Grup](/id/channels/group-messages)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media dan Konten Kaya</span>
-          <span>2 kemampuan</span>
+          <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/id/channels/whatsapp)</div>
+        <div className="maturity-category-docs">
+
+    [WhatsApp](/id/channels/whatsapp)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
-          <span>2 kemampuan</span>
+          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
+          <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/id/channels/whatsapp)</div>
+        <div className="maturity-category-docs">
+
+    [WhatsApp](/id/channels/whatsapp)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Matriks - M2 Alfa - 6 area">
+  <Accordion title="Matrix - M2 Alfa - 6 area">
     <a id="matrix" />
 
-    Didukung melalui plugin bawaan. Memerlukan kartu skor untuk bridge, autentikasi, dan siklus hidup ruang.
+    Didukung melalui plugin bawaan. Memerlukan kartu skor bridge, autentikasi, dan siklus hidup ruang.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 60%</span><span>Kelengkapan Alfa - 67%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -2858,7 +3691,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix), [Migrasi Matrix](/id/channels/matrix-migration)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix), [Migrasi Matrix](/id/channels/matrix-migration)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2868,7 +3705,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix), [Grup](/id/channels/groups), [Perlindungan dari Perulangan Bot](/id/channels/bot-loop-protection)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix), [Grup](/id/channels/groups), [Perlindungan dari Perulangan Bot](/id/channels/bot-loop-protection)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2878,7 +3719,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2888,27 +3733,39 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Bawaan</span>
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
           <span>6 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Enkripsi dan Verifikasi</span>
-          <span>3 kemampuan</span>
+          <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>60%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "60%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Matrix](/id/channels/matrix), [Migrasi Matrix](/id/channels/matrix-migration)</div>
+        <div className="maturity-category-docs">
+
+    [Matrix](/id/channels/matrix), [Migrasi Matrix](/id/channels/matrix-migration)
+
+    </div>
       </div>
     </div>
 
@@ -2917,21 +3774,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Google Chat - M2 Alfa - 5 area">
     <a id="google-chat" />
 
-    Kanal terdokumentasi, tetapi penyiapan perusahaan/admin meningkatkan risiko kematangan.
+    Saluran terdokumentasi, tetapi penyiapan perusahaan/admin meningkatkan risiko kematangan.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Operasi Kanal</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Saluran</span>
           <span>16 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/id/channels/googlechat), [Google Chat](/id/plugins/reference/googlechat), [Konfigurasi Kanal](/id/gateway/config-channels), [Referensi CLI Wizard](/id/start/wizard-cli-reference), [Rahasia](/id/gateway/secrets), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface), [Kesehatan](/id/gateway/health), [Inventaris Plugin](/id/plugins/plugin-inventory), [Indeks](/id/channels/index)</div>
+        <div className="maturity-category-docs">
+
+    [Google Chat](/id/channels/googlechat), [Google Chat](/id/plugins/reference/googlechat), [Konfigurasi Saluran](/id/gateway/config-channels), [Referensi CLI Wizard](/id/start/wizard-cli-reference), [Rahasia](/id/gateway/secrets), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface), [Kesehatan](/id/gateway/health), [Inventaris Plugin](/id/plugins/plugin-inventory), [Indeks](/id/channels/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2941,7 +3802,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/id/channels/googlechat), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Konfigurasi Kanal](/id/gateway/config-channels), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Perutean Kanal](/id/channels/channel-routing)</div>
+        <div className="maturity-category-docs">
+
+    [Google Chat](/id/channels/googlechat), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups), [Konfigurasi Saluran](/id/gateway/config-channels), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Perutean Saluran](/id/channels/channel-routing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2951,7 +3816,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/id/channels/googlechat), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Grup Akses](/id/channels/access-groups), [Perutean Kanal](/id/channels/channel-routing)</div>
+        <div className="maturity-category-docs">
+
+    [Google Chat](/id/channels/googlechat), [Perlindungan Perulangan Bot](/id/channels/bot-loop-protection), [Grup Akses](/id/channels/access-groups), [Perutean Saluran](/id/channels/channel-routing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2961,17 +3830,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/id/channels/googlechat), [Pesan](/id/cli/message), [Pemahaman Media](/id/nodes/media-understanding), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface)</div>
+        <div className="maturity-category-docs">
+
+    [Google Chat](/id/channels/googlechat), [Pesan](/id/cli/message), [Pemahaman Media](/id/nodes/media-understanding), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Bawaan</span>
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
           <span>16 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/id/channels/googlechat), [Pesan](/id/cli/message), [Pemahaman Media](/id/nodes/media-understanding), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface), [Reaksi](/id/tools/reactions), [Perintah Garis Miring](/id/tools/slash-commands), [Konfigurasi Agen](/id/gateway/config-agents), [Refaktor Siklus Hidup Pesan](/id/concepts/message-lifecycle-refactor)</div>
+        <div className="maturity-category-docs">
+
+    [Google Chat](/id/channels/googlechat), [Pesan](/id/cli/message), [Pemahaman Media](/id/nodes/media-understanding), [Permukaan Kredensial Secretref](/id/reference/secretref-credential-surface), [Reaksi](/id/tools/reactions), [Perintah Garis Miring](/id/tools/slash-commands), [Konfigurasi Agen](/id/gateway/config-agents), [Refaktor Siklus Hidup Pesan](/id/concepts/message-lifecycle-refactor)
+
+    </div>
       </div>
     </div>
 
@@ -2982,19 +3859,23 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
     Alur autentikasi/admin perusahaan memerlukan bukti skenario yang eksplisit.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Operasional Kanal</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Saluran</span>
           <span>9 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/id/channels/msteams), [Msteams](/id/plugins/reference/msteams), [Konfigurasi Kanal](/id/gateway/config-channels), [Kesehatan](/id/gateway/health)</div>
+        <div className="maturity-category-docs">
+
+    [Microsoft Teams](/id/channels/msteams), [Microsoft Teams](/id/plugins/reference/msteams), [Konfigurasi Kanal](/id/gateway/config-channels), [Kesehatan](/id/gateway/health)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3004,7 +3885,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/id/channels/msteams), [Penyandingan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups)</div>
+        <div className="maturity-category-docs">
+
+    [Microsoft Teams](/id/channels/msteams), [Pemasangan](/id/channels/pairing), [Grup Akses](/id/channels/access-groups)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3014,7 +3899,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/id/channels/msteams), [Grup](/id/channels/groups), [Perutean Kanal](/id/channels/channel-routing)</div>
+        <div className="maturity-category-docs">
+
+    [Microsoft Teams](/id/channels/msteams), [Grup](/id/channels/groups), [Perutean Kanal](/id/channels/channel-routing)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3024,17 +3913,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/id/channels/msteams)</div>
+        <div className="maturity-category-docs">
+
+    [Microsoft Teams](/id/channels/msteams)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol dan Persetujuan Bawaan</span>
+          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
           <span>5 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Msteams](/id/channels/msteams), [Persetujuan Eksekusi Tingkat Lanjut](/id/tools/exec-approvals-advanced)</div>
+        <div className="maturity-category-docs">
+
+    [Microsoft Teams](/id/channels/msteams), [Persetujuan Eksekusi Lanjutan](/id/tools/exec-approvals-advanced)
+
+    </div>
       </div>
     </div>
 
@@ -3043,21 +3940,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Signal - M2 Alfa - 5 area">
     <a id="signal" />
 
-    Dokumentasi kanal yang didukung tersedia; memerlukan bukti instalasi dan penyambungan kembali yang lebih kuat.
+    Dokumentasi kanal yang didukung tersedia; memerlukan bukti instalasi dan penyambungan ulang yang lebih kuat.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 59%</span><span>Kelengkapan Alfa - 66%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Operasional Saluran</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Saluran</span>
           <span>7 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/id/channels/signal), [Signal](/id/plugins/reference/signal)</div>
+        <div className="maturity-category-docs">
+
+    [Signal](/id/channels/signal), [Signal](/id/plugins/reference/signal)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3067,7 +3968,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/id/channels/signal)</div>
+        <div className="maturity-category-docs">
+
+    [Signal](/id/channels/signal)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3077,7 +3982,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/id/channels/signal)</div>
+        <div className="maturity-category-docs">
+
+    [Signal](/id/channels/signal)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3087,40 +3996,52 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/id/channels/signal)</div>
+        <div className="maturity-category-docs">
+
+    [Signal](/id/channels/signal)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kontrol Native dan Persetujuan</span>
+          <span className="maturity-category-title">Kontrol dan Persetujuan Native</span>
           <span>3 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Signal](/id/channels/signal)</div>
+        <div className="maturity-category-docs">
+
+    [Signal](/id/channels/signal)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, saluran regional - M2 Alfa - 4 area">
+  <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, saluran regional - M2 Alpha - 4 area">
     <a id="feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels" />
 
-    Cakupan regional penting, tetapi tingkat dukungan publik harus disesuaikan berdasarkan jenis akun, persetujuan pihak hulu, dan bukti dari pengelola.
+    Cakupan regional penting, tetapi tingkat dukungan publik harus disesuaikan berdasarkan jenis akun, persetujuan upstream, dan bukti dari pengelola.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 55%</span><span>Kelengkapan Alfa - 58%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alpha - 55%</span><span>Kelengkapan Alpha - 58%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Pengoperasian Kanal</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Saluran</span>
           <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/channels/index), [Pemasangan](/id/channels/pairing), [Feishu](/id/plugins/reference/feishu), [Internal Arsitektur](/id/plugins/architecture-internals)</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/channels/index), [Pemasangan](/id/channels/pairing), [Feishu](/id/plugins/reference/feishu), [Internal Arsitektur](/id/plugins/architecture-internals)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3128,9 +4049,13 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
           <span>1 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3138,9 +4063,13 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
           <span>1 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
-        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alpha</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3150,7 +4079,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
     </div>
 
@@ -3159,9 +4092,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alfa - 4 area">
     <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
 
-    Permukaan yang didukung tersedia, tetapi tingkat kematangannya kemungkinan bervariasi berdasarkan cakupan hulu dan pengelola. Beri skor satu per satu nanti.
+    Permukaan yang didukung tersedia, tetapi tingkat kematangannya kemungkinan bervariasi berdasarkan cakupan upstream dan pengelola. Berikan skor secara individual nanti.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 53%</span><span>Kelengkapan Alfa - 54%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 53%</span><span>Kelengkapan Alfa - 54%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -3173,7 +4106,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3183,7 +4120,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3193,7 +4134,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3203,16 +4148,20 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
-        <div className="maturity-category-docs">Tidak ada dokumentasi tertaut</div>
+        <div className="maturity-category-docs">
+
+    Tidak ada dokumentasi tertaut
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Kanal Panggilan Suara - M1 Eksperimental - 5 area">
+  <Accordion title="Saluran Panggilan Suara - M1 Eksperimental - 5 area">
     <a id="voice-call-channel" />
 
-    Jalur opsional/Plugin dengan perilaku waktu nyata yang kompleks. Memerlukan kartu skor skenario sebelum beta publik.
+    Jalur opsional/plugin dengan perilaku waktu nyata yang kompleks. Memerlukan kartu skor skenario sebelum beta publik.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Eksperimental - 41%</span><span>Kelengkapan Eksperimental - 44%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -3220,13 +4169,17 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyiapan dan Pengoperasian Kanal</span>
+          <span className="maturity-category-title">Penyiapan dan Operasi Saluran</span>
           <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panggilan suara](/id/cli/voicecall), [Panggilan Suara](/id/plugins/voice-call), [Protokol](/id/gateway/protocol)</div>
+        <div className="maturity-category-docs">
+
+    [Voicecall](/id/cli/voicecall), [Panggilan Suara](/id/plugins/voice-call), [Protokol](/id/gateway/protocol)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3236,7 +4189,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panggilan Suara](/id/plugins/voice-call), [Panggilan suara](/id/cli/voicecall)</div>
+        <div className="maturity-category-docs">
+
+    [Panggilan Suara](/id/plugins/voice-call), [Voicecall](/id/cli/voicecall)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3246,27 +4203,39 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panggilan Suara](/id/plugins/voice-call)</div>
+        <div className="maturity-category-docs">
+
+    [Panggilan Suara](/id/plugins/voice-call)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Media dan Konten Kaya</span>
-          <span>2 kapabilitas</span>
+          <span>2 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panggilan Suara](/id/plugins/voice-call), [Inventaris Plugin](/id/plugins/plugin-inventory)</div>
+        <div className="maturity-category-docs">
+
+    [Panggilan Suara](/id/plugins/voice-call), [Inventaris Plugin](/id/plugins/plugin-inventory)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Suara dan Panggilan Waktu Nyata</span>
-          <span>2 kapabilitas</span>
+          <span>2 kemampuan</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Panggilan Suara](/id/plugins/voice-call)</div>
+        <div className="maturity-category-docs">
+
+    [Panggilan Suara](/id/plugins/voice-call)
+
+    </div>
       </div>
     </div>
 
@@ -3277,7 +4246,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 ### Penyedia dan alat
 
 <AccordionGroup>
-  <Accordion title="Otomatisasi peramban, alat eksekusi, dan sandbox - M3 Beta - 3 area">
+  <Accordion title="Otomatisasi peramban, exec, dan alat sandbox - M3 Beta - 3 area">
     <a id="browser-automation-exec-and-sandbox-tools" />
 
     Alat inti telah didokumentasikan, tetapi keamanan host dan pengalaman pengguna terkait izin harus tetap ditinjau secara aktif dalam kartu skor.
@@ -3294,7 +4263,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kontrol Peramban](/id/tools/browser-control), [Pengujian](/id/help/testing), [Peramban](/id/tools/browser), [Indeks](/id/gateway/security/index), [Pemeriksaan Audit](/id/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">
+
+    [Kontrol Peramban](/id/tools/browser-control), [Pengujian](/id/help/testing), [Peramban](/id/tools/browser), [Indeks](/id/gateway/security/index), [Pemeriksaan Audit](/id/gateway/security/audit-checks)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3304,7 +4277,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Eksekusi](/id/tools/exec), [Proses Latar Belakang](/id/gateway/background-process), [API HTTP Pemanggilan Alat](/id/gateway/tools-invoke-http-api), [Cakupan Operator](/id/gateway/operator-scopes), [Protokol](/id/gateway/protocol), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Persetujuan Eksekusi Lanjutan](/id/tools/exec-approvals-advanced), [Hak Istimewa](/id/tools/elevated)</div>
+        <div className="maturity-category-docs">
+
+    [Eksekusi](/id/tools/exec), [Proses Latar Belakang](/id/gateway/background-process), [Pemanggilan Alat melalui API HTTP](/id/gateway/tools-invoke-http-api), [Cakupan Operator](/id/gateway/operator-scopes), [Protokol](/id/gateway/protocol), [Persetujuan Eksekusi](/id/tools/exec-approvals), [Persetujuan Eksekusi Lanjutan](/id/tools/exec-approvals-advanced), [Ditingkatkan](/id/tools/elevated)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3314,7 +4291,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Sandboxing](/id/gateway/sandboxing), [Sandbox vs Kebijakan Alat vs Hak Istimewa](/id/gateway/sandbox-vs-tool-policy-vs-elevated), [Alat Sandbox Multiagen](/id/tools/multi-agent-sandbox-tools), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Alat Konfigurasi](/id/gateway/config-tools)</div>
+        <div className="maturity-category-docs">
+
+    [Sandboxing](/id/gateway/sandboxing), [Sandbox vs Kebijakan Alat vs Ditingkatkan](/id/gateway/sandbox-vs-tool-policy-vs-elevated), [Alat Sandbox Multiagen](/id/tools/multi-agent-sandbox-tools), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Alat Konfigurasi](/id/gateway/config-tools)
+
+    </div>
       </div>
     </div>
 
@@ -3323,31 +4304,39 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Jalur penyedia OpenAI dan Codex - M3 Beta - 5 area">
     <a id="openai-and-codex-provider-path" />
 
-    Dokumentasi mendalam, jalur OAuth/langganan, suara waktu nyata, gambar, dan perilaku kompatibilitas. Perubahan penyedia yang cepat mencegahnya mencapai Stabil tanpa bukti kartu skor rilis.
+    Dokumentasi mendalam, jalur OAuth/langganan, suara waktu nyata, gambar, dan perilaku kompatibilitas. Perubahan penyedia yang cepat menghalangi status Stabil tanpa bukti kartu skor rilis.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 26%</span><span>Kualitas Beta - 74%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Sebagian - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 26%</span><span>Kualitas Beta - 74%</span><span>Kelengkapan Beta - 79%</span><span><span className="maturity-lts maturity-lts-partial">Parsial - 3</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Model dan Autentikasi</span>
-          <span>6 kapabilitas / didukung LTS</span>
+          <span>6 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[OpenAI](/id/providers/openai), [Harness Codex](/id/plugins/codex-harness), [Model](/id/concepts/models), [OAuth](/id/concepts/oauth), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Pemantauan Autentikasi](/id/gateway/authentication)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [Harness Codex](/id/plugins/codex-harness), [Model](/id/concepts/models), [OAuth](/id/concepts/oauth), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Pemantauan Autentikasi](/id/gateway/authentication)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Kompatibilitas Respons dan Alat</span>
-          <span>4 kapabilitas / didukung LTS</span>
+          <span className="maturity-category-title">Respons dan Kompatibilitas Alat</span>
+          <span>4 kemampuan / didukung LTS</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[OpenAI](/id/providers/openai), [API HTTP OpenResponses](/id/gateway/openresponses-http-api), [API HTTP OpenAI](/id/gateway/openai-http-api), [Plugin Native Codex](/id/plugins/codex-native-plugins)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [API HTTP OpenResponses](/id/gateway/openresponses-http-api), [API HTTP OpenAI](/id/gateway/openai-http-api), [Plugin Native Codex](/id/plugins/codex-native-plugins)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3357,17 +4346,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>44%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "44%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Harness Codex](/id/plugins/codex-harness), [Runtime Harness Codex](/id/plugins/codex-harness-runtime), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Plugin Native Codex](/id/plugins/codex-native-plugins)</div>
+        <div className="maturity-category-docs">
+
+    [Harness Codex](/id/plugins/codex-harness), [Runtime Harness Codex](/id/plugins/codex-harness-runtime), [Referensi Harness Codex](/id/plugins/codex-harness-reference), [Plugin Native Codex](/id/plugins/codex-native-plugins)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Masukan Gambar dan Multimodal</span>
+          <span className="maturity-category-title">Input Gambar dan Multimodal</span>
           <span>2 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[OpenAI](/id/providers/openai), [Pembuatan Gambar](/id/tools/image-generation), [Gambar](/id/nodes/images)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [Pembuatan Gambar](/id/tools/image-generation), [Gambar](/id/nodes/images)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3377,7 +4374,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[OpenAI](/id/providers/openai), [Discord](/id/channels/discord), [Panggilan Suara](/id/plugins/voice-call)</div>
+        <div className="maturity-category-docs">
+
+    [OpenAI](/id/providers/openai), [Discord](/id/channels/discord), [Panggilan Suara](/id/plugins/voice-call)
+
+    </div>
       </div>
     </div>
 
@@ -3400,7 +4401,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>11%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "11%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/id/tools/web), [Brave Search](/id/tools/brave-search), [Tavily](/id/tools/tavily), [Exa Search](/id/tools/exa-search), [Firecrawl](/id/tools/firecrawl), [Perplexity Search](/id/tools/perplexity-search), [Duckduckgo Search](/id/tools/duckduckgo-search), [Searxng Search](/id/tools/searxng-search), [Gemini Search](/id/tools/gemini-search), [Grok Search](/id/tools/grok-search), [Kimi Search](/id/tools/kimi-search), [Minimax Search](/id/tools/minimax-search), [Ollama Search](/id/tools/ollama-search), [Subjalur SDK](/id/plugins/sdk-subpaths), [Ikhtisar SDK](/id/plugins/sdk-overview), [Manifes](/id/plugins/manifest)</div>
+        <div className="maturity-category-docs">
+
+    [Web](/id/tools/web), [Brave Search](/id/tools/brave-search), [Tavily](/id/tools/tavily), [Exa Search](/id/tools/exa-search), [Firecrawl](/id/tools/firecrawl), [Perplexity Search](/id/tools/perplexity-search), [Pencarian Duckduckgo](/id/tools/duckduckgo-search), [Pencarian Searxng](/id/tools/searxng-search), [Pencarian Gemini](/id/tools/gemini-search), [Pencarian Grok](/id/tools/grok-search), [Pencarian Kimi](/id/tools/kimi-search), [Pencarian Minimax](/id/tools/minimax-search), [Pencarian Ollama](/id/tools/ollama-search), [Subjalur Sdk](/id/plugins/sdk-subpaths), [Ikhtisar Sdk](/id/plugins/sdk-overview), [Manifes](/id/plugins/manifest)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3410,7 +4415,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/id/tools/web), [Pengambilan Web](/id/tools/web-fetch), [Tanya Jawab](/id/help/faq), [Biaya Penggunaan API](/id/reference/api-usage-costs), [Brave Search](/id/tools/brave-search), [Perplexity Search](/id/tools/perplexity-search), [Tavily](/id/tools/tavily), [Firecrawl](/id/tools/firecrawl)</div>
+        <div className="maturity-category-docs">
+
+    [Web](/id/tools/web), [Pengambilan Web](/id/tools/web-fetch), [Tanya Jawab Umum](/id/help/faq), [Biaya Penggunaan Api](/id/reference/api-usage-costs), [Brave Search](/id/tools/brave-search), [Perplexity Search](/id/tools/perplexity-search), [Tavily](/id/tools/tavily), [Firecrawl](/id/tools/firecrawl)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3420,17 +4429,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Web](/id/tools/web), [Pengambilan Web](/id/tools/web-fetch), [Firecrawl](/id/tools/firecrawl), [Searxng Search](/id/tools/searxng-search)</div>
+        <div className="maturity-category-docs">
+
+    [Web](/id/tools/web), [Pengambilan Web](/id/tools/web-fetch), [Firecrawl](/id/tools/firecrawl), [Pencarian Searxng](/id/tools/searxng-search)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Ketersediaan dan Pengambilan Alat</span>
+          <span className="maturity-category-title">Ketersediaan Alat dan Pengambilan</span>
           <span>11 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Konfigurasi Alat](/id/gateway/config-tools), [Pengambilan Web](/id/tools/web-fetch), [Web](/id/tools/web), [Tanya Jawab](/id/help/faq)</div>
+        <div className="maturity-category-docs">
+
+    [Alat Konfigurasi](/id/gateway/config-tools), [Pengambilan Web](/id/tools/web-fetch), [Web](/id/tools/web), [Tanya Jawab Umum](/id/help/faq)
+
+    </div>
       </div>
     </div>
 
@@ -3439,9 +4456,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Jalur penyedia Anthropic - M3 Beta - 5 area">
     <a id="anthropic-provider-path" />
 
-    Penyedia model kelas utama. Memerlukan bukti skenario autentikasi/katalog/panggilan alat secara berkala.
+    Penyedia model kelas utama. Memerlukan bukti skenario autentikasi/katalog/panggilan alat secara berulang.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 71%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Beta - 71%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -3453,7 +4470,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/id/providers/anthropic), [Doctor](/id/gateway/doctor), [Contoh Konfigurasi](/id/gateway/configuration-examples), [Pemecahan Masalah](/id/gateway/troubleshooting), [Penyimpanan Cache Prompt](/id/reference/prompt-caching)</div>
+        <div className="maturity-category-docs">
+
+    [Anthropic](/id/providers/anthropic), [Doctor](/id/gateway/doctor), [Contoh Konfigurasi](/id/gateway/configuration-examples), [Pemecahan Masalah](/id/gateway/troubleshooting), [Penyimpanan Cache Prompt](/id/reference/prompt-caching)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3463,17 +4484,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/id/providers/anthropic), [Konfigurasi Agen](/id/gateway/config-agents), [Model](/id/concepts/models), [Backend CLI](/id/gateway/cli-backends)</div>
+        <div className="maturity-category-docs">
+
+    [Anthropic](/id/providers/anthropic), [Konfigurasi Agen](/id/gateway/config-agents), [Model](/id/concepts/models), [Backend CLI](/id/gateway/cli-backends)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Transportasi Permintaan dan Semantik Giliran</span>
+          <span className="maturity-category-title">Transport Permintaan dan Semantik Giliran</span>
           <span>10 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/id/providers/anthropic), [Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Pemecahan Masalah](/id/gateway/troubleshooting), [Backend CLI](/id/gateway/cli-backends), [Penyedia Model](/id/concepts/model-providers)</div>
+        <div className="maturity-category-docs">
+
+    [Anthropic](/id/providers/anthropic), [Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Pemecahan Masalah](/id/gateway/troubleshooting), [Backend CLI](/id/gateway/cli-backends), [Penyedia Model](/id/concepts/model-providers)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3483,17 +4512,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/id/providers/anthropic), [Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Pemecahan Masalah](/id/gateway/troubleshooting), [Heartbeat](/id/gateway/heartbeat)</div>
+        <div className="maturity-category-docs">
+
+    [Anthropic](/id/providers/anthropic), [Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Pemecahan Masalah](/id/gateway/troubleshooting), [Heartbeat](/id/gateway/heartbeat)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Input Media</span>
+          <span className="maturity-category-title">Masukan Media</span>
           <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/id/providers/anthropic), [Konfigurasi Agen](/id/gateway/config-agents)</div>
+        <div className="maturity-category-docs">
+
+    [Anthropic](/id/providers/anthropic), [Konfigurasi Agen](/id/gateway/config-agents)
+
+    </div>
       </div>
     </div>
 
@@ -3502,7 +4539,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Jalur penyedia Google - M3 Beta - 5 area">
     <a id="google-provider-path" />
 
-    Penyedia kelas utama dengan antarmuka model dan waktu nyata. Memerlukan penilaian Live/Talk secara terpisah.
+    Penyedia kelas utama dengan antarmuka model dan waktu nyata. Memerlukan penilaian Live/Talk terpisah.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
@@ -3516,17 +4553,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers)</div>
+        <div className="maturity-category-docs">
+
+    [Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Perutean Model dan Titik Akhir</span>
+          <span className="maturity-category-title">Perutean Model dan Endpoint</span>
           <span>10 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Google](/id/plugins/reference/google), [Pencarian Gemini](/id/tools/gemini-search)</div>
+        <div className="maturity-category-docs">
+
+    [Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Google](/id/plugins/reference/google), [Pencarian Gemini](/id/tools/gemini-search)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3536,7 +4581,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Tanya Jawab Model](/id/help/faq-models), [Pengujian Langsung](/id/help/testing-live)</div>
+        <div className="maturity-category-docs">
+
+    [Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Tanya Jawab Umum Model](/id/help/faq-models), [Pengujian Langsung](/id/help/testing-live)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3546,7 +4595,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/id/plugins/reference/google), [Google](/id/providers/google)</div>
+        <div className="maturity-category-docs">
+
+    [Google](/id/plugins/reference/google), [Google](/id/providers/google)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3556,7 +4609,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Penggunaan Token](/id/reference/token-use)</div>
+        <div className="maturity-category-docs">
+
+    [Penyimpanan Cache Prompt](/id/reference/prompt-caching), [Google](/id/providers/google), [Penyedia Model](/id/concepts/model-providers), [Penggunaan Token](/id/reference/token-use)
+
+    </div>
       </div>
     </div>
 
@@ -3565,9 +4622,9 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Jalur penyedia OpenRouter - M3 Beta - 4 area">
     <a id="openrouter-provider-path" />
 
-    Jalur penyedia terpadu telah didokumentasikan dan bermanfaat, tetapi perilaku khusus setiap model berbeda-beda.
+    Jalur penyedia terpadu telah didokumentasikan dan bermanfaat, tetapi perilaku khusus model berbeda-beda.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 66%</span><span>Kelengkapan Beta - 78%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -3579,17 +4636,25 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/id/providers/openrouter), [Penyedia Model](/id/concepts/model-providers), [Konfigurasi](/id/cli/configure), [Autentikasi](/id/gateway/authentication), [Lingkungan](/id/help/environment), [Model](/id/cli/models), [Model](/id/concepts/models)</div>
+        <div className="maturity-category-docs">
+
+    [OpenRouter](/id/providers/openrouter), [Penyedia Model](/id/concepts/model-providers), [Konfigurasi](/id/cli/configure), [Autentikasi](/id/gateway/authentication), [Lingkungan](/id/help/environment), [Model](/id/cli/models), [Model](/id/concepts/models)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Runtime dan Normalisasi Percakapan</span>
+          <span className="maturity-category-title">Runtime dan Normalisasi Chat</span>
           <span>15 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/id/providers/openrouter), [Penyedia Model](/id/concepts/model-providers), [Caching Prompt](/id/reference/prompt-caching)</div>
+        <div className="maturity-category-docs">
+
+    [Openrouter](/id/providers/openrouter), [Penyedia Model](/id/concepts/model-providers), [Cache Prompt](/id/reference/prompt-caching)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3599,7 +4664,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Failover Model](/id/concepts/model-failover), [Openrouter](/id/providers/openrouter), [Model](/id/cli/models)</div>
+        <div className="maturity-category-docs">
+
+    [Failover Model](/id/concepts/model-failover), [Openrouter](/id/providers/openrouter), [Model](/id/cli/models)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3609,7 +4678,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">Beta</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openrouter](/id/providers/openrouter), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Musik](/id/tools/music-generation), [Ikhtisar Media](/id/tools/media-overview), [Pembuatan Video](/id/tools/video-generation), [Tts](/id/tools/tts)</div>
+        <div className="maturity-category-docs">
+
+    [Openrouter](/id/providers/openrouter), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Musik](/id/tools/music-generation), [Ikhtisar Media](/id/tools/media-overview), [Pembuatan Video](/id/tools/video-generation), [Tts](/id/tools/tts)
+
+    </div>
       </div>
     </div>
 
@@ -3618,61 +4691,81 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
   <Accordion title="Alat pembuatan gambar, video, dan musik - M2 Alfa - 5 area">
     <a id="image-video-and-music-generation-tools" />
 
-    Kapabilitas tersedia di berbagai penyedia, tetapi kualitas, latensi, dan kompatibilitas parameter terlalu bervariasi untuk mencapai tahap beta tanpa bukti untuk setiap penyedia.
+    Kapabilitas tersedia di berbagai penyedia, tetapi kualitas, latensi, dan kompatibilitas parameter terlalu bervariasi untuk mencapai beta tanpa bukti per penyedia.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 61%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 61%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Perutean dan Penemuan Media</span>
-          <span>4 kemampuan</span>
+          <span>4 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Agen Konfigurasi](/id/gateway/config-agents), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Video](/id/tools/video-generation), [Pembuatan Musik](/id/tools/music-generation)</div>
+        <div className="maturity-category-docs">
+
+    [Konfigurasi Agen](/id/gateway/config-agents), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Video](/id/tools/video-generation), [Pembuatan Musik](/id/tools/music-generation)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Siklus Hidup dan Pengiriman Tugas</span>
-          <span>12 kemampuan</span>
+          <span className="maturity-category-title">Siklus Hidup dan Penyampaian Tugas</span>
+          <span>12 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ikhtisar Media](/id/tools/media-overview), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Video](/id/tools/video-generation), [Pembuatan Musik](/id/tools/music-generation)</div>
+        <div className="maturity-category-docs">
+
+    [Ikhtisar Media](/id/tools/media-overview), [Pembuatan Gambar](/id/tools/image-generation), [Pembuatan Video](/id/tools/video-generation), [Pembuatan Musik](/id/tools/music-generation)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pembuatan Gambar</span>
-          <span>9 kemampuan</span>
+          <span>9 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pembuatan Gambar](/id/tools/image-generation), [Inferensi](/id/cli/infer), [Ikhtisar Media](/id/tools/media-overview)</div>
+        <div className="maturity-category-docs">
+
+    [Pembuatan Gambar](/id/tools/image-generation), [Infer](/id/cli/infer), [Ikhtisar Media](/id/tools/media-overview)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pembuatan Video</span>
-          <span>11 kemampuan</span>
+          <span>11 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pembuatan Video](/id/tools/video-generation), [Runway](/id/providers/runway), [Pixverse](/id/providers/pixverse), [Fal](/id/providers/fal), [Openrouter](/id/providers/openrouter)</div>
+        <div className="maturity-category-docs">
+
+    [Pembuatan Video](/id/tools/video-generation), [Runway](/id/providers/runway), [Pixverse](/id/providers/pixverse), [Fal](/id/providers/fal), [Openrouter](/id/providers/openrouter)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Pembuatan Musik</span>
-          <span>6 kemampuan</span>
+          <span>6 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Pembuatan Musik](/id/tools/music-generation)</div>
+        <div className="maturity-category-docs">
+
+    [Pembuatan Musik](/id/tools/music-generation)
+
+    </div>
       </div>
     </div>
 
@@ -3683,7 +4776,7 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
 
     Berguna dan terdokumentasi, tetapi variasi lingkungan sangat tinggi.
 
-    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 61%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
+    <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 61%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak ada</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
@@ -3695,7 +4788,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Model Lokal](/id/gateway/local-models), [Lmstudio](/id/providers/lmstudio), [Ollama](/id/providers/ollama), [Vllm](/id/providers/vllm), [Layanan Model Lokal](/id/gateway/local-model-services), [Konfigurasi Agen](/id/gateway/config-agents), [Pemecahan Masalah](/id/gateway/troubleshooting), [Doctor](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Model Lokal](/id/gateway/local-models), [Lmstudio](/id/providers/lmstudio), [Ollama](/id/providers/ollama), [Vllm](/id/providers/vllm), [Layanan Model Lokal](/id/gateway/local-model-services), [Konfigurasi Agen](/id/gateway/config-agents), [Pemecahan Masalah](/id/gateway/troubleshooting), [Doctor](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3705,7 +4802,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Ollama](/id/providers/ollama), [Lmstudio](/id/providers/lmstudio)</div>
+        <div className="maturity-category-docs">
+
+    [Ollama](/id/providers/ollama), [Lmstudio](/id/providers/lmstudio)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3715,7 +4816,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Vllm](/id/providers/vllm), [Sglang](/id/providers/sglang), [Model Lokal](/id/gateway/local-models), [Lmstudio](/id/providers/lmstudio)</div>
+        <div className="maturity-category-docs">
+
+    [Vllm](/id/providers/vllm), [Sglang](/id/providers/sglang), [Model Lokal](/id/gateway/local-models), [Lmstudio](/id/providers/lmstudio)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3725,7 +4830,11 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Memori](/id/concepts/memory), [Doctor](/id/gateway/doctor)</div>
+        <div className="maturity-category-docs">
+
+    [Memori](/id/concepts/memory), [Doctor](/id/gateway/doctor)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3735,16 +4844,20 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/gateway/security/index), [Konfigurasi Alat](/id/gateway/config-tools), [Model Lokal](/id/gateway/local-models)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/gateway/security/index), [Alat Konfigurasi](/id/gateway/config-tools), [Model Lokal](/id/gateway/local-models)
+
+    </div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Penyedia terkelola berekor panjang - M2 Alpha - 3 area">
+  <Accordion title="Penyedia terkelola berekor panjang - M2 Alfa - 3 area">
     <a id="long-tail-hosted-providers" />
 
-    Terdapat banyak halaman dokumentasi/referensi; skor sebaiknya dibuat berdasarkan metadata penyedia serta cakupan pengujian smoke langsung.
+    Terdapat banyak halaman dokumentasi/referensi; skor seharusnya dihasilkan dari metadata penyedia ditambah cakupan uji cepat langsung.
 
     <div className="maturity-surface-rollup"><span>Cakupan Eksperimental - 0%</span><span>Kualitas Alfa - 61%</span><span>Kelengkapan Alfa - 68%</span><span><span className="maturity-lts maturity-lts-none">Tidak Ada</span></span></div>
 
@@ -3752,33 +4865,45 @@ Permukaan adalah area produk seperti runtime Gateway, Discord, atau aplikasi mac
       <div className="maturity-category-row maturity-category-row-header"><span>Area</span><span>Cakupan</span><span>Kualitas</span><span>Kelengkapan</span><span>Dokumentasi</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyedia LLM Terhosting</span>
-          <span>12 kemampuan</span>
+          <span className="maturity-category-title">Penyedia LLM Terkelola</span>
+          <span>12 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/providers/index), [Penyedia Model](/id/concepts/model-providers), [Pengujian Langsung](/id/help/testing-live), [Orientasi](/id/cli/onboard)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/providers/index), [Penyedia Model](/id/concepts/model-providers), [Pengujian Langsung](/id/help/testing-live), [Orientasi](/id/cli/onboard)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Penyedia Media Terhosting</span>
-          <span>8 kemampuan</span>
+          <span className="maturity-category-title">Penyedia Media Terkelola</span>
+          <span>8 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Manifes](/id/plugins/manifest), [Pengujian Langsung](/id/help/testing-live), [Indeks](/id/providers/index)</div>
+        <div className="maturity-category-docs">
+
+    [Manifes](/id/plugins/manifest), [Pengujian Langsung](/id/help/testing-live), [Indeks](/id/providers/index)
+
+    </div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Operasi Penyedia</span>
-          <span>12 kemampuan</span>
+          <span>12 kapabilitas</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">Eksperimental</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">Alfa</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Indeks](/id/providers/index), [Penyedia Model](/id/concepts/model-providers), [Manifes](/id/plugins/manifest), [Pengujian Langsung](/id/help/testing-live), [Model](/id/cli/models)</div>
+        <div className="maturity-category-docs">
+
+    [Indeks](/id/providers/index), [Penyedia Model](/id/concepts/model-providers), [Manifes](/id/plugins/manifest), [Pengujian Langsung](/id/help/testing-live), [Model](/id/cli/models)
+
+    </div>
       </div>
     </div>
 

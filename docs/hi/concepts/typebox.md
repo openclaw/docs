@@ -1,98 +1,84 @@
 ---
 read_when:
-    - प्रोटोकॉल स्कीमा या codegen अपडेट करना
-summary: Gateway प्रोटोकॉल के लिए सत्य के एकल स्रोत के रूप में TypeBox स्कीमा
+    - प्रोटोकॉल स्कीमा या कोड जनरेशन को अपडेट करना
+summary: Gateway प्रोटोकॉल के लिए सत्य के एकमात्र स्रोत के रूप में TypeBox स्कीमा
 title: TypeBox
 x-i18n:
-    generated_at: "2026-06-28T23:03:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:32:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
+    source_hash: 24490edf0d73e918f834e9dd53d09ba0e5183b2bc126ee981a94f8099e76283b
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox एक TypeScript-first schema लाइब्रेरी है। हम इसका उपयोग **Gateway
-WebSocket protocol** (handshake, request/response, server events) को परिभाषित करने के लिए करते हैं। वे schemas
-**runtime validation**, **JSON Schema export**, और macOS app के लिए **Swift codegen** चलाते हैं। सत्य का एक स्रोत; बाकी सब generated है।
+TypeBox एक TypeScript-प्रथम स्कीमा लाइब्रेरी है। OpenClaw इसका उपयोग **Gateway WebSocket प्रोटोकॉल** (हैंडशेक, अनुरोध/प्रतिक्रिया, सर्वर इवेंट) को परिभाषित करने के लिए करता है। वे स्कीमा **रनटाइम सत्यापन** (AJV), **JSON Schema निर्यात**, और macOS ऐप के लिए **Swift कोड जनरेशन** संचालित करते हैं। सत्य का एक स्रोत है; बाकी सब कुछ जनरेट किया जाता है।
 
-यदि आपको उच्च-स्तरीय protocol संदर्भ चाहिए, तो
-[Gateway architecture](/hi/concepts/architecture) से शुरू करें।
+उच्च-स्तरीय प्रोटोकॉल संदर्भ के लिए, [Gateway आर्किटेक्चर](/hi/concepts/architecture) से शुरू करें।
 
 ## मानसिक मॉडल (30 सेकंड)
 
-हर Gateway WS message इन तीन frames में से एक होता है:
+हर Gateway WS संदेश तीन फ़्रेमों में से एक होता है:
 
-- **Request**: `{ type: "req", id, method, params }`
-- **Response**: `{ type: "res", id, ok, payload | error }`
-- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
+- **अनुरोध**: `{ type: "req", id, method, params }`
+- **प्रतिक्रिया**: `{ type: "res", id, ok, payload | error }`
+- **इवेंट**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-पहला frame **अनिवार्य रूप से** `connect` request होना चाहिए। उसके बाद, clients
-methods (जैसे `health`, `send`, `chat.send`) call कर सकते हैं और events (जैसे
-`presence`, `tick`, `agent`) subscribe कर सकते हैं।
+पहला फ़्रेम **अनिवार्य रूप से** एक `connect` अनुरोध होना चाहिए। उसके बाद, क्लाइंट विधियों को कॉल करते हैं (जैसे `health`, `send`, `chat.send`) और इवेंट की सदस्यता लेते हैं (जैसे `presence`, `tick`, `agent`)।
 
-Connection flow (न्यूनतम):
+कनेक्शन प्रवाह (न्यूनतम):
 
-```
-Client                    Gateway
-  |---- req:connect -------->|
-  |<---- res:hello-ok --------|
-  |<---- event:tick ----------|
-  |---- req:health ---------->|
-  |<---- res:health ----------|
+```text
+क्लाइंट                   Gateway
+  |---- अनुरोध:connect ------>|
+  |<---- प्रतिक्रिया:hello-ok -|
+  |<---- इवेंट:tick ----------|
+  |---- अनुरोध:health -------->|
+  |<---- प्रतिक्रिया:health ---|
 ```
 
-सामान्य methods + events:
+सामान्य विधियाँ और इवेंट:
 
-| श्रेणी     | उदाहरण                                                    | नोट्स                              |
-| ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| Core       | `connect`, `health`, `status`                              | `connect` पहले होना चाहिए          |
-| Messaging  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effects को `idempotencyKey` चाहिए |
-| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat इन्हें उपयोग करता है       |
-| Sessions   | `sessions.list`, `sessions.patch`, `sessions.delete`       | session admin                      |
-| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + cron control                |
-| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + node actions          |
-| Events     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
+| श्रेणी     | उदाहरण                                                    | टिप्पणियाँ                                          |
+| ---------- | ---------------------------------------------------------- | --------------------------------------------------- |
+| मूल        | `connect`, `health`, `status`                              | `connect` पहले होना चाहिए                          |
+| संदेश सेवा | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | दुष्प्रभाव वाली विधियों को `idempotencyKey` चाहिए |
+| चैट        | `chat.history`, `chat.send`, `chat.abort`                  | WebChat इनका उपयोग करता है                         |
+| सत्र       | `sessions.list`, `sessions.patch`, `sessions.delete`       | सत्र प्रशासन                                        |
+| स्वचालन    | `wake`, `cron.list`, `cron.run`, `cron.runs`               | वेक और Cron नियंत्रण                                |
+| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS और Node क्रियाएँ                         |
+| इवेंट      | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | सर्वर पुश                                           |
 
-प्रामाणिक advertised **discovery** inventory
-`src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`) में रहती है।
+प्रामाणिक रूप से विज्ञापित **डिस्कवरी** सूची `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`) में रहती है।
 
-## Schemas कहां रहते हैं
+## स्कीमा कहाँ रहते हैं
 
-- Source: `packages/gateway-protocol/src/schema.ts`
-- Runtime validators (AJV): `packages/gateway-protocol/src/index.ts`
-- Advertised feature/discovery registry: `src/gateway/server-methods-list.ts`
-- Server handshake + method dispatch: `src/gateway/server.impl.ts`
-- Node client: `src/gateway/client.ts`
-- Generated JSON Schema: `dist/protocol.schema.json`
-- Generated Swift models: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- स्रोत बैरल: `packages/gateway-protocol/src/schema.ts`, `packages/gateway-protocol/src/schema/*.ts` के अंतर्गत डोमेन मॉड्यूल को पुनः निर्यात करता है (शीर्ष-स्तरीय एनवेलप और हैंडशेक के लिए `frames.ts`, तथा प्रत्येक सुविधा क्षेत्र के लिए `agent.ts`, `sessions.ts`, `cron.ts` आदि)। `protocol-schemas.ts` केंद्रीय `ProtocolSchemas` रजिस्ट्री है, जो स्कीमा नामों को उनकी TypeBox परिभाषाओं से मैप करती है।
+- रनटाइम सत्यापक (AJV): `packages/gateway-protocol/src/index.ts`
+- विज्ञापित सुविधा/डिस्कवरी रजिस्ट्री: `src/gateway/server-methods-list.ts`
+- सर्वर हैंडशेक और विधि डिस्पैच: `src/gateway/server.impl.ts`
+- Node क्लाइंट: `src/gateway/client.ts`
+- जनरेट किया गया JSON Schema: `dist/protocol.schema.json` (बिल्ड आउटपुट, कमिट नहीं किया गया)
+- जनरेट किए गए Swift मॉडल: `apps/shared/OpenClawKit/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## मौजूदा pipeline
+## वर्तमान पाइपलाइन
 
-- `pnpm protocol:gen`
-  - JSON Schema (draft-07) को `dist/protocol.schema.json` में लिखता है
-- `pnpm protocol:gen:swift`
-  - Swift gateway models generate करता है
-- `pnpm protocol:check`
-  - दोनों generators चलाता है और verify करता है कि output committed है
+- `pnpm protocol:gen`, JSON Schema (draft-07) को `dist/protocol.schema.json` में लिखता है।
+- `pnpm protocol:gen:swift`, Swift Gateway मॉडल जनरेट करता है।
+- `pnpm protocol:check`, दोनों जनरेटर चलाता है और सत्यापित करता है कि Swift आउटपुट कमिट किया गया है (JSON Schema आउटपुट gitignore किया गया बिल्ड आर्टिफ़ैक्ट है)।
 
-## Runtime पर schemas का उपयोग कैसे होता है
+## रनटाइम पर स्कीमा का उपयोग कैसे होता है
 
-- **Server side**: हर inbound frame AJV से validate किया जाता है। handshake केवल
-  वह `connect` request accept करता है जिसके params `ConnectParams` से match करते हैं।
-- **Client side**: JS client event और response frames को उपयोग करने से पहले
-  validate करता है।
-- **Feature discovery**: Gateway `listGatewayMethods()` और
-  `GATEWAY_EVENTS` से `hello-ok` में एक conservative `features.methods`
-  और `features.events` list भेजता है।
-- वह discovery list `coreGatewayHandlers` में मौजूद हर callable helper का generated dump
-  नहीं है; कुछ helper RPCs `src/gateway/server-methods/*.ts` में implement होते हैं,
-  बिना advertised feature list में enumerate हुए।
+- **सर्वर पक्ष**: हर इनबाउंड फ़्रेम को AJV से सत्यापित किया जाता है। हैंडशेक केवल ऐसा `connect` अनुरोध स्वीकार करता है, जिसके पैरामीटर `ConnectParams` से मेल खाते हों।
+- **क्लाइंट पक्ष**: JS क्लाइंट इवेंट और प्रतिक्रिया फ़्रेमों का उपयोग करने से पहले उन्हें सत्यापित करता है।
+- **सुविधा डिस्कवरी**: Gateway, `hello-ok` में `listGatewayMethods()` और `GATEWAY_EVENTS` से एक सीमित `features.methods` और `features.events` सूची भेजता है।
+- वह डिस्कवरी सूची `coreGatewayHandlers` के हर कॉल-योग्य सहायक का जनरेट किया हुआ डंप नहीं है; कुछ सहायक RPC, विज्ञापित सुविधा सूची में गिनाए बिना `src/gateway/server-methods/*.ts` में कार्यान्वित किए गए हैं।
 
-## Example frames
+## उदाहरण फ़्रेम
 
-Connect (पहला message):
+कनेक्ट (पहला संदेश):
 
 ```json
 {
@@ -114,7 +100,7 @@ Connect (पहला message):
 }
 ```
 
-Hello-ok response:
+Hello-ok प्रतिक्रिया:
 
 ```json
 {
@@ -132,12 +118,13 @@ Hello-ok response:
       "stateVersion": { "presence": 0, "health": 0 },
       "uptimeMs": 0
     },
+    "auth": { "role": "operator", "scopes": ["operator.read"] },
     "policy": { "maxPayload": 1048576, "maxBufferedBytes": 1048576, "tickIntervalMs": 30000 }
   }
 }
 ```
 
-Request + response:
+अनुरोध और प्रतिक्रिया:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -147,15 +134,15 @@ Request + response:
 { "type": "res", "id": "r1", "ok": true, "payload": { "ok": true } }
 ```
 
-Event:
+इवेंट:
 
 ```json
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## न्यूनतम client (Node.js)
+## न्यूनतम क्लाइंट (Node.js)
 
-सबसे छोटा उपयोगी flow: connect + health।
+सबसे छोटा उपयोगी प्रवाह: कनेक्ट + स्वास्थ्य जाँच।
 
 ```ts
 import { WebSocket } from "ws";
@@ -195,13 +182,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## Worked example: एक method end-to-end जोड़ें
+## व्यावहारिक उदाहरण: किसी विधि को शुरू से अंत तक जोड़ना
 
-Example: एक नया `system.echo` request जोड़ें जो `{ ok: true, text }` लौटाता है।
+उदाहरण: एक नया `system.echo` अनुरोध जोड़ें, जो `{ ok: true, text }` लौटाता है।
 
-1. **Schema (सत्य का स्रोत)**
+1. **स्कीमा (सत्य का स्रोत)**
 
-`packages/gateway-protocol/src/schema.ts` में जोड़ें:
+`packages/gateway-protocol/src/schema/system.ts` (या सबसे निकट मेल खाने वाले सुविधा मॉड्यूल) में जोड़ें:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -215,7 +202,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-दोनों को `ProtocolSchemas` में जोड़ें और types export करें:
+दोनों को `packages/gateway-protocol/src/schema/protocol-schemas.ts` में आयात करें, उन्हें `ProtocolSchemas` रजिस्ट्री में जोड़ें, और व्युत्पन्न प्रकार निर्यात करें:
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -227,17 +214,17 @@ export type SystemEchoParams = Static<typeof SystemEchoParamsSchema>;
 export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 ```
 
-2. **Validation**
+2. **सत्यापन**
 
-`packages/gateway-protocol/src/index.ts` में, एक AJV validator export करें:
+`packages/gateway-protocol/src/index.ts` में, एक AJV सत्यापक निर्यात करें:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
 ```
 
-3. **Server behavior**
+3. **सर्वर व्यवहार**
 
-`src/gateway/server-methods/system.ts` में एक handler जोड़ें:
+`src/gateway/server-methods/system.ts` में एक हैंडलर जोड़ें:
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -248,67 +235,59 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-इसे `src/gateway/server-methods.ts` में register करें (पहले से `systemHandlers` merge करता है),
-फिर `src/gateway/server-methods-list.ts` में `listGatewayMethods` input में
-`"system.echo"` जोड़ें।
+इसे `src/gateway/server-methods.ts` में पंजीकृत करें (यह पहले से `systemHandlers` को मर्ज करता है), फिर `src/gateway/server-methods-list.ts` में `listGatewayMethods` इनपुट में `"system.echo"` जोड़ें।
 
-यदि method operator या node clients द्वारा callable है, तो इसे
-`src/gateway/method-scopes.ts` में भी classify करें ताकि scope enforcement और `hello-ok` feature
-advertising aligned रहें।
+यदि विधि को ऑपरेटर या Node क्लाइंट कॉल कर सकते हैं, तो इसे `src/gateway/method-scopes.ts` में भी वर्गीकृत करें, ताकि स्कोप प्रवर्तन और `hello-ok` सुविधा विज्ञापन समन्वित रहें।
 
-4. **Regenerate**
+4. **पुनः जनरेट करें**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **Tests + docs**
+5. **परीक्षण और दस्तावेज़**
 
-`src/gateway/server.*.test.ts` में एक server test जोड़ें और docs में method note करें।
+`src/gateway/server.*.test.ts` में एक सर्वर परीक्षण जोड़ें और दस्तावेज़ों में विधि का उल्लेख करें।
 
-## Swift codegen behavior
+## Swift कोड जनरेशन का व्यवहार
 
-Swift generator emit करता है:
+Swift जनरेटर निम्नलिखित उत्सर्जित करता है:
 
-- `GatewayFrame` enum, जिसमें `req`, `res`, `event`, और `unknown` cases होते हैं
-- Strongly typed payload structs/enums
-- `ErrorCode` values, `GATEWAY_PROTOCOL_VERSION`, और `GATEWAY_MIN_PROTOCOL_VERSION`
+- `req`, `res`, `event`, और `unknown` केस वाला एक `GatewayFrame` enum
+- दृढ़ता से टाइप किए गए पेलोड struct/enum
+- `ErrorCode` मान, `GATEWAY_PROTOCOL_VERSION`, और `GATEWAY_MIN_PROTOCOL_VERSION`
 
-Forward compatibility के लिए unknown frame types raw payloads के रूप में preserve किए जाते हैं।
+फ़ॉरवर्ड संगतता के लिए अज्ञात फ़्रेम प्रकारों को रॉ पेलोड के रूप में सुरक्षित रखा जाता है।
 
-## Versioning + compatibility
+## संस्करण निर्धारण और संगतता
 
-- `PROTOCOL_VERSION` `packages/gateway-protocol/src/version.ts` में रहता है।
-- Clients `minProtocol` + `maxProtocol` भेजते हैं; server उन ranges को reject करता है जो
-  उसके current protocol को include नहीं करते।
-- Swift models older clients को break करने से बचाने के लिए unknown frame types रखते हैं।
+- `PROTOCOL_VERSION`, `packages/gateway-protocol/src/version.ts` में रहता है (वर्तमान मान: `4`)।
+- क्लाइंट `minProtocol` और `maxProtocol` भेजते हैं; सर्वर उन सीमाओं को अस्वीकार करता है जिनमें उसका वर्तमान प्रोटोकॉल शामिल नहीं है।
+- पुराने क्लाइंट को टूटने से बचाने के लिए Swift मॉडल अज्ञात फ़्रेम प्रकारों को सुरक्षित रखते हैं।
 
-## Schema patterns और conventions
+## स्कीमा पैटर्न और परंपराएँ
 
-- अधिकांश objects strict payloads के लिए `additionalProperties: false` उपयोग करते हैं।
-- IDs और method/event names के लिए `NonEmptyString` default है।
-- Top-level `GatewayFrame` `type` पर **discriminator** उपयोग करता है।
-- Side effects वाले methods को आमतौर पर params में `idempotencyKey` चाहिए होता है
-  (example: `send`, `poll`, `agent`, `chat.send`)।
-- `agent` runtime-generated orchestration context के लिए optional `internalEvents` accept करता है
-  (उदाहरण के लिए subagent/cron task completion handoff); इसे internal API surface मानें।
+- अधिकांश ऑब्जेक्ट सख़्त पेलोड के लिए `additionalProperties: false` का उपयोग करते हैं।
+- `NonEmptyString` (`Type.String({ minLength: 1 })`), ID और विधि/इवेंट नामों के लिए डिफ़ॉल्ट है।
+- शीर्ष-स्तरीय `GatewayFrame`, `type` पर एक **डिस्क्रिमिनेटर** का उपयोग करता है।
+- दुष्प्रभाव वाली विधियों को सामान्यतः पैरामीटर में एक `idempotencyKey` की आवश्यकता होती है (उदाहरण: `send`, `poll`, `agent`, `chat.send`)।
+- `agent`, रनटाइम द्वारा जनरेट किए गए ऑर्केस्ट्रेशन संदर्भ के लिए वैकल्पिक `internalEvents` स्वीकार करता है (उदाहरण के लिए सबएजेंट/Cron कार्य पूर्ण होने का हैंडऑफ़); इसे आंतरिक API सतह मानें।
 
-## Live schema JSON
+## लाइव स्कीमा JSON
 
-Generated JSON Schema repo में `dist/protocol.schema.json` पर है। Published raw file आमतौर पर यहां उपलब्ध होती है:
+जनरेट किया गया JSON Schema एक बिल्ड आर्टिफ़ैक्ट है, रिपॉज़िटरी में कमिट नहीं किया जाता। प्रकाशित रॉ फ़ाइल सामान्यतः यहाँ उपलब्ध होती है:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## जब आप schemas बदलते हैं
+## स्कीमा बदलते समय
 
-1. TypeBox schemas update करें।
-2. Method/event को `src/gateway/server-methods-list.ts` में register करें।
-3. जब नए RPC को operator या node scope classification चाहिए हो, तो
-   `src/gateway/method-scopes.ts` update करें।
-4. `pnpm protocol:check` चलाएं।
-5. Regenerated schema + Swift models commit करें।
+1. स्वामी `packages/gateway-protocol/src/schema/*.ts` मॉड्यूल में TypeBox स्कीमा अपडेट करें और उन्हें `protocol-schemas.ts` में पंजीकृत करें।
+2. विधि/इवेंट को `src/gateway/server-methods-list.ts` में पंजीकृत करें।
+3. जब नए RPC को ऑपरेटर या Node स्कोप वर्गीकरण की आवश्यकता हो, तब `src/gateway/method-scopes.ts` अपडेट करें।
+4. `pnpm protocol:check` चलाएँ।
+5. पुनः जनरेट किए गए Swift मॉडल कमिट करें।
 
 ## संबंधित
 
-- [Rich output protocol](/hi/reference/rich-output-protocol)
-- [RPC adapters](/hi/reference/rpc)
+- [रिच आउटपुट प्रोटोकॉल](/hi/reference/rich-output-protocol)
+- [RPC अडैप्टर](/hi/reference/rpc)

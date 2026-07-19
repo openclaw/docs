@@ -2,128 +2,131 @@
 read_when:
     - आप Gateway के लिए एक सस्ता, हमेशा चालू रहने वाला Linux होस्ट चाहते हैं
     - आप अपना VPS चलाए बिना दूरस्थ Control UI एक्सेस चाहते हैं
-summary: OpenClaw Gateway को दूरस्थ पहुंच के लिए exe.dev (VM + HTTPS प्रॉक्सी) पर चलाएं
+summary: दूरस्थ पहुँच के लिए exe.dev (VM + HTTPS प्रॉक्सी) पर OpenClaw Gateway चलाएँ
 title: exe.dev
 x-i18n:
-    generated_at: "2026-06-28T23:20:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:09:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
 ---
 
-लक्ष्य: exe.dev VM पर चल रहा OpenClaw Gateway, आपके लैपटॉप से इसके ज़रिए पहुंच योग्य: `https://<vm-name>.exe.xyz`
+**लक्ष्य:** OpenClaw Gateway को [exe.dev](https://exe.dev) VM पर चलाना, जो `https://<vm-name>.exe.xyz` पर उपलब्ध हो।
 
-यह पेज exe.dev की डिफ़ॉल्ट **exeuntu** इमेज मानकर चलता है। अगर आपने अलग distro चुना है, तो packages को उसी अनुसार map करें।
-
-## शुरुआती त्वरित पथ
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. ज़रूरत के अनुसार अपनी auth key/token भरें
-3. अपनी VM के पास "Agent" पर क्लिक करें और Shelley के provisioning पूरा करने तक प्रतीक्षा करें
-4. `https://<vm-name>.exe.xyz/` खोलें और configured shared secret से authenticate करें (यह गाइड डिफ़ॉल्ट रूप से token auth का उपयोग करती है, लेकिन अगर आप `gateway.auth.mode` बदलते हैं तो password auth भी काम करता है)
-5. किसी भी pending device pairing requests को `openclaw devices approve <requestId>` से approve करें
+यह मार्गदर्शिका exe.dev की डिफ़ॉल्ट **exeuntu** इमेज मानकर चलती है। अन्य डिस्ट्रो पर पैकेजों को तदनुसार मैप करें।
 
 ## आपको क्या चाहिए
 
-- exe.dev account
-- [exe.dev](https://exe.dev) virtual machines तक `ssh exe.dev` access (वैकल्पिक)
+- exe.dev खाता
+- exe.dev VM तक `ssh exe.dev` पहुँच (वैकल्पिक, मैन्युअल सेटअप के लिए)
 
-## Shelley के साथ automated install
+## शुरुआती उपयोगकर्ताओं के लिए त्वरित तरीका
 
-Shelley, [exe.dev](https://exe.dev) का agent, हमारे prompt से OpenClaw तुरंत install कर सकता है। उपयोग किया गया prompt नीचे है:
+1. [https://exe.new/openclaw](https://exe.new/openclaw) खोलें
+2. आवश्यकतानुसार अपनी प्रमाणीकरण कुंजी/टोकन भरें
+3. अपने VM के पास "Agent" पर क्लिक करें और Shelley द्वारा प्रोविज़निंग पूरी किए जाने तक प्रतीक्षा करें
+4. `https://<vm-name>.exe.xyz/` खोलें और कॉन्फ़िगर किए गए साझा सीक्रेट से प्रमाणित करें (डिफ़ॉल्ट रूप से टोकन प्रमाणीकरण; यदि आप `gateway.auth.mode` बदलते हैं, तो पासवर्ड प्रमाणीकरण भी काम करता है)
+5. लंबित डिवाइस पेयरिंग अनुरोधों को `openclaw devices approve <requestId>` से स्वीकृत करें
 
-```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
-```
+## Shelley के साथ स्वचालित इंस्टॉलेशन
 
-## Manual installation
+exe.dev का एजेंट Shelley, प्रॉम्प्ट से OpenClaw इंस्टॉल कर सकता है:
 
-## 1) VM बनाएं
-
-अपने device से:
-
-```bash
-ssh exe.dev new
+```text
+इस VM पर OpenClaw (https://docs.openclaw.ai/install) सेट अप करें। OpenClaw ऑनबोर्डिंग के लिए नॉन-इंटरैक्टिव और accept-risk फ़्लैग का उपयोग करें। आवश्यकतानुसार दी गई प्रमाणीकरण जानकारी या टोकन जोड़ें। nginx को डिफ़ॉल्ट पोर्ट 18789 से डिफ़ॉल्ट रूप से सक्षम साइट कॉन्फ़िगरेशन के रूट लोकेशन पर फ़ॉरवर्ड करने के लिए कॉन्फ़िगर करें और Websocket समर्थन सक्षम करना सुनिश्चित करें। पेयरिंग "openclaw devices list" और "openclaw devices approve <request id>" से की जाती है। सुनिश्चित करें कि डैशबोर्ड पर OpenClaw का स्वास्थ्य ठीक दिखता है। exe.dev हमारे लिए पोर्ट 8000 से पोर्ट 80/443 पर फ़ॉरवर्डिंग और HTTPS संभालता है, इसलिए अंतिम "पहुंच योग्य" पता बिना पोर्ट निर्दिष्ट किए <vm-name>.exe.xyz होना चाहिए।
 ```
 
-फिर connect करें:
+## मैन्युअल इंस्टॉलेशन
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+<Steps>
+  <Step title="VM बनाएँ">
+    अपने डिवाइस से:
 
-<Tip>
-इस VM को **stateful** रखें। OpenClaw `openclaw.json`, per-agent `auth-profiles.json`, sessions, और channel/provider state को `~/.openclaw/` के तहत store करता है, साथ ही workspace को `~/.openclaw/workspace/` के तहत।
-</Tip>
+    ```bash
+    ssh exe.dev new
+    ```
 
-## 2) prerequisites install करें (VM पर)
+    फिर कनेक्ट करें:
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-## 3) OpenClaw install करें
+    <Tip>
+    इस VM को **स्टेटफुल** रखें। OpenClaw, `openclaw.json`, प्रति-एजेंट `auth-profiles.json`, सेशन और चैनल/प्रोवाइडर स्थिति को `~/.openclaw/` के अंतर्गत, तथा वर्कस्पेस को `~/.openclaw/workspace/` के अंतर्गत संग्रहीत करता है।
+    </Tip>
 
-OpenClaw install script चलाएं:
+  </Step>
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+  <Step title="पूर्वापेक्षाएँ इंस्टॉल करें (VM पर)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-## 4) OpenClaw को port 8000 पर proxy करने के लिए nginx setup करें
+  <Step title="OpenClaw इंस्टॉल करें">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-`/etc/nginx/sites-enabled/default` को इससे edit करें
+  <Step title="पोर्ट 8000 को प्रॉक्सी करने के लिए nginx कॉन्फ़िगर करें">
+    `/etc/nginx/sites-enabled/default` संपादित करें:
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-    server_name _;
+        server_name _;
 
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+            # WebSocket समर्थन
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
+            # मानक प्रॉक्सी हेडर
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # लंबे समय तक चलने वाले कनेक्शन के लिए टाइमआउट सेटिंग
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-client-supplied chains को preserve करने के बजाय forwarding headers overwrite करें।
-OpenClaw forwarded IP metadata पर केवल explicitly configured proxies से ही trust करता है,
-और append-style `X-Forwarded-For` chains को hardening risk माना जाता है।
+    क्लाइंट द्वारा दी गई चेन को बनाए रखने के बजाय फ़ॉरवर्डिंग हेडर को ओवरराइट करें। OpenClaw केवल स्पष्ट रूप से कॉन्फ़िगर किए गए प्रॉक्सी से फ़ॉरवर्ड किए गए IP मेटाडेटा पर भरोसा करता है, और जोड़ने की शैली वाली `X-Forwarded-For` चेन को सुरक्षा सुदृढ़ीकरण के लिए जोखिम माना जाता है।
 
-## 5) OpenClaw access करें और privileges grant करें
+  </Step>
 
-`https://<vm-name>.exe.xyz/` access करें (onboarding से Control UI output देखें)। अगर यह auth के लिए prompt करता है, तो VM से configured shared secret paste करें। यह गाइड token auth का उपयोग करती है, इसलिए `gateway.auth.token`
-को `openclaw config get gateway.auth.token` से retrieve करें (या `openclaw doctor --generate-gateway-token` से generate करें)।
-अगर आपने gateway को password auth में बदला है, तो इसके बजाय `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` उपयोग करें।
-`openclaw devices list` और `openclaw devices approve <requestId>` से devices approve करें। संदेह होने पर, अपने browser से Shelley का उपयोग करें!
+  <Step title="OpenClaw तक पहुँचें और डिवाइस स्वीकृत करें">
+    `https://<vm-name>.exe.xyz/` खोलें (ऑनबोर्डिंग से मिला Control UI आउटपुट देखें)। यदि यह प्रमाणीकरण माँगे, तो VM से कॉन्फ़िगर किया गया साझा सीक्रेट पेस्ट करें।
 
-## Remote channel setup
+    यह मार्गदर्शिका डिफ़ॉल्ट रूप से टोकन प्रमाणीकरण का उपयोग करती है, इसलिए `gateway.auth.token` को `openclaw config get gateway.auth.token` से प्राप्त करें, या `openclaw doctor --n` से नया जनरेट करें। यदि आपने Gateway को पासवर्ड प्रमाणीकरण पर स्विच किया है, तो इसके बजाय `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` का उपयोग करें।
 
-remote hosts के लिए, `config set` पर कई SSH calls के बजाय एक `config patch` call को प्राथमिकता दें। real tokens को VM environment या `~/.openclaw/.env` में रखें, और `openclaw.json` में केवल SecretRefs डालें।
+    डिवाइसों को `openclaw devices list` और `openclaw devices approve <requestId>` से स्वीकृत करें। संदेह होने पर अपने ब्राउज़र से Shelley का उपयोग करें।
 
-VM पर, service environment में वे secrets शामिल करें जिनकी उसे ज़रूरत है:
+  </Step>
+</Steps>
+
+## रिमोट चैनल सेटअप
+
+रिमोट होस्ट के लिए, `config set` पर कई SSH कॉल के बजाय एक `config patch` कॉल को प्राथमिकता दें। वास्तविक टोकन VM परिवेश या `~/.openclaw/.env` में रखें, और `openclaw.json` में केवल SecretRefs रखें। संपूर्ण SecretRef अनुबंध के लिए [सीक्रेट प्रबंधन](/hi/gateway/secrets) देखें।
+
+VM पर, सेवा परिवेश में उसके लिए आवश्यक सीक्रेट शामिल करें:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -134,7 +137,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-अपनी local machine से, एक patch file बनाएं और उसे VM में pipe करें:
+अपनी स्थानीय मशीन से एक पैच फ़ाइल बनाएँ और उसे VM में पाइप करें:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -163,9 +166,9 @@ EOF
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -178,28 +181,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-जब कोई nested allowlist ठीक patch value ही बननी चाहिए, तब `--replace-path` उपयोग करें, उदाहरण के लिए Discord channel allowlist replace करते समय:
+जब किसी नेस्टेड अनुमति-सूची को ठीक पैच मान के बराबर बनाना हो, तो `--replace-path` का उपयोग करें, उदाहरण के लिए Discord चैनल की अनुमति-सूची को बदलना:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
-## Remote access
+चैनल कॉन्फ़िगरेशन के संपूर्ण संदर्भ के लिए [Discord](/hi/channels/discord) और [Slack](/hi/channels/slack) देखें।
 
-Remote access [exe.dev](https://exe.dev) के authentication द्वारा handle किया जाता है। डिफ़ॉल्ट रूप से, port 8000 से HTTP traffic को email auth के साथ `https://<vm-name>.exe.xyz` पर forward किया जाता है।
+## रिमोट पहुँच
 
-## Updating
+exe.dev रिमोट पहुँच के लिए प्रमाणीकरण संभालता है। डिफ़ॉल्ट रूप से, पोर्ट 8000 से HTTP ट्रैफ़िक को ईमेल प्रमाणीकरण के साथ `https://<vm-name>.exe.xyz` पर फ़ॉरवर्ड किया जाता है।
+
+## अपडेट करना
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-गाइड: [Updating](/hi/install/updating)
+चैनल बदलने और मैन्युअल पुनर्प्राप्ति के लिए [अपडेट करना](/hi/install/updating) देखें।
 
-## Related
+## संबंधित
 
-- [Remote gateway](/hi/gateway/remote)
-- [Install overview](/hi/install)
+- [रिमोट Gateway](/hi/gateway/remote)
+- [इंस्टॉलेशन का अवलोकन](/hi/install)

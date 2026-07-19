@@ -6,28 +6,29 @@ read_when:
 summary: Penyiapan Volcano Engine (model Doubao, endpoint pengodean, dan TTS Seed Speech)
 title: Volcengine (Doubao)
 x-i18n:
-    generated_at: "2026-07-12T14:38:40Z"
+    generated_at: "2026-07-19T05:34:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e853a1c8847704caedf0ec83c38332569f72105c5e34ad973daf614a2e80550b
+    source_hash: 0ac0e86b5b94b0c0f08e76878d16e9c5562e0d3f9923697713bef20ebba5bab2
     source_path: providers/volcengine.md
     workflow: 16
 ---
 
 Penyedia Volcengine memberikan akses ke model Doubao dan model pihak ketiga yang dihosting di Volcano Engine, dengan endpoint terpisah untuk beban kerja umum dan pengodean. Plugin bawaan yang sama juga mendaftarkan Volcengine Speech sebagai penyedia TTS.
 
-| Detail              | Nilai                                                      |
-| ------------------- | ---------------------------------------------------------- |
-| Penyedia            | `volcengine` (umum + TTS), `volcengine-plan` (pengodean)   |
-| Autentikasi model   | `VOLCANO_ENGINE_API_KEY`                                   |
-| Autentikasi TTS     | `VOLCENGINE_TTS_API_KEY` atau `BYTEPLUS_SEED_SPEECH_API_KEY` |
-| API                 | Model yang kompatibel dengan OpenAI, TTS BytePlus Seed Speech |
+| Detail           | Nilai                                                              |
+| ---------------- | ------------------------------------------------------------------ |
+| Penyedia         | `volcengine` (umum + TTS), `volcengine-plan` (pengodean)   |
+| Autentikasi model | `VOLCANO_ENGINE_API_KEY`                                                 |
+| Autentikasi TTS  | `VOLCENGINE_TTS_API_KEY` atau `BYTEPLUS_SEED_SPEECH_API_KEY`                         |
+| API              | Model kompatibel OpenAI, TTS BytePlus Seed Speech                  |
 
 ## Memulai
 
 <Steps>
-  <Step title="Set the API key">
+  <Step title="Tetapkan kunci API">
     Jalankan orientasi interaktif:
 
     ```bash
@@ -37,7 +38,7 @@ Penyedia Volcengine memberikan akses ke model Doubao dan model pihak ketiga yang
     Ini mendaftarkan penyedia umum (`volcengine`) dan pengodean (`volcengine-plan`) dari satu kunci API.
 
   </Step>
-  <Step title="Set a default model">
+  <Step title="Tetapkan model default">
     ```json5
     {
       agents: {
@@ -48,7 +49,7 @@ Penyedia Volcengine memberikan akses ke model Doubao dan model pihak ketiga yang
     }
     ```
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Pastikan model tersedia">
     ```bash
     openclaw models list --provider volcengine
     openclaw models list --provider volcengine-plan
@@ -82,24 +83,20 @@ Kedua penyedia dikonfigurasi dari satu kunci API. Penyiapan mendaftarkan keduany
 ## Katalog bawaan
 
 <Tabs>
-  <Tab title="General (volcengine)">
-    | Referensi model                               | Nama                            | Masukan      | Konteks |
-    | --------------------------------------------- | ------------------------------- | ------------ | ------- |
-    | `volcengine/deepseek-v3-2-251201`             | DeepSeek V3.2                   | teks, gambar | 128,000 |
-    | `volcengine/doubao-seed-1-8-251228`           | Doubao Seed 1.8                 | teks, gambar | 256,000 |
-    | `volcengine/doubao-seed-code-preview-251028`  | doubao-seed-code-preview-251028 | teks, gambar | 256,000 |
-    | `volcengine/glm-4-7-251222`                   | GLM 4.7                         | teks, gambar | 200,000 |
-    | `volcengine/kimi-k2-5-260127`                 | Kimi K2.5                       | teks, gambar | 256,000 |
+  <Tab title="Umum (volcengine)">
+    | Referensi model                              | Nama                            | Input       | Konteks |
+    | -------------------------------------------- | ------------------------------- | ----------- | ------- |
+    | `volcengine/deepseek-v3-2-251201`            | DeepSeek V3.2                   | teks, gambar | 128,000 |
+    | `volcengine/doubao-seed-1-8-251228`          | Doubao Seed 1.8                 | teks, gambar | 256,000 |
+    | `volcengine/doubao-seed-code-preview-251028` | doubao-seed-code-preview-251028 | teks, gambar | 256,000 |
+    | `volcengine/glm-4-7-251222`                  | GLM 4.7                         | teks, gambar | 200,000 |
+    | `volcengine/kimi-k2-5-260127`                | Kimi K2.5                       | teks, gambar | 256,000 |
   </Tab>
-  <Tab title="Coding (volcengine-plan)">
-    | Referensi model                                  | Nama                     | Masukan | Konteks |
-    | ------------------------------------------------ | ------------------------ | ------- | ------- |
-    | `volcengine-plan/ark-code-latest`                 | Ark Coding Plan          | teks    | 256,000 |
-    | `volcengine-plan/doubao-seed-code`                | Doubao Seed Code         | teks    | 256,000 |
-    | `volcengine-plan/doubao-seed-code-preview-251028` | Doubao Seed Code Preview | teks    | 256,000 |
-    | `volcengine-plan/glm-4.7`                         | GLM 4.7 Coding           | teks    | 200,000 |
-    | `volcengine-plan/kimi-k2-thinking`                | Kimi K2 Thinking         | teks    | 256,000 |
-    | `volcengine-plan/kimi-k2.5`                       | Kimi K2.5 Coding         | teks    | 256,000 |
+  <Tab title="Pengodean (volcengine-plan)">
+    | Referensi model                                   | Nama                     | Input | Konteks |
+    | ------------------------------------------------- | ------------------------ | ----- | ------- |
+    | `volcengine-plan/ark-code-latest`                 | Ark Coding Plan          | teks  | 256,000 |
+    | `volcengine-plan/doubao-seed-code`                | Doubao Seed Code         | teks  | 256,000 |
   </Tab>
 </Tabs>
 
@@ -134,9 +131,9 @@ Kemudian aktifkan di `openclaw.json`:
 }
 ```
 
-Kolom yang tersedia di bawah `messages.tts.providers.volcengine`: `apiKey`, `voice`, `speedRatio` (0.2-3.0), `emotion`, `cluster`, `resourceId`, `appKey`, dan `baseUrl`. `!emotion=<value>` juga dapat digunakan sebagai arahan suara sebaris ketika penggantian pengaturan suara diizinkan.
+Bidang yang tersedia di bawah `messages.tts.providers.volcengine`: `apiKey`, `voice`, `speedRatio` (0.2-3.0), `emotion`, `cluster`, `resourceId`, `appKey`, dan `baseUrl`. `!emotion=<value>` juga berfungsi sebagai direktif suara sebaris ketika penggantian pengaturan suara diizinkan.
 
-Untuk target pesan suara, OpenClaw meminta `ogg_opus` asli penyedia. Untuk lampiran audio biasa, OpenClaw meminta `mp3`. Alias penyedia `bytedance` dan `doubao` juga mengarah ke penyedia ucapan ini.
+Untuk target catatan suara, OpenClaw meminta `ogg_opus` native penyedia. Untuk lampiran audio biasa, OpenClaw meminta `mp3`. Alias penyedia `bytedance` dan `doubao` juga mengarah ke penyedia ucapan ini.
 
 ID sumber daya default adalah `seed-tts-1.0`, yaitu hak akses yang diberikan BytePlus secara default kepada kunci API Seed Speech yang baru dibuat. Jika proyek Anda memiliki hak akses TTS 2.0, tetapkan `VOLCENGINE_TTS_RESOURCE_ID=seed-tts-2.0`.
 
@@ -152,41 +149,41 @@ export VOLCENGINE_TTS_TOKEN="speech_access_token"
 export VOLCENGINE_TTS_CLUSTER="volcano_tts"
 ```
 
-Variabel lingkungan TTS opsional lainnya: `VOLCENGINE_TTS_VOICE`, `VOLCENGINE_TTS_APP_KEY`, dan `VOLCENGINE_TTS_BASE_URL` menggantikan kolom konfigurasi `messages.tts.providers.volcengine` yang bersesuaian ketika ditetapkan.
+Variabel lingkungan TTS opsional lainnya: `VOLCENGINE_TTS_VOICE`, `VOLCENGINE_TTS_APP_KEY`, dan `VOLCENGINE_TTS_BASE_URL` menggantikan bidang konfigurasi `messages.tts.providers.volcengine` yang sesuai ketika ditetapkan.
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Default model after onboarding">
+  <Accordion title="Model default setelah orientasi">
     `openclaw onboard --auth-choice volcengine-api-key` menetapkan `volcengine-plan/ark-code-latest` sebagai model default sekaligus mendaftarkan katalog umum `volcengine`.
   </Accordion>
 
-  <Accordion title="Model picker fallback behavior">
-    Selama pemilihan model dalam orientasi/konfigurasi, pilihan autentikasi Volcengine memprioritaskan baris `volcengine/*` dan `volcengine-plan/*`. Jika model tersebut belum dimuat, OpenClaw beralih ke katalog tanpa filter, alih-alih menampilkan pemilih yang dibatasi untuk penyedia tetapi kosong.
+  <Accordion title="Perilaku fallback pemilih model">
+    Selama pemilihan model dalam orientasi/konfigurasi, pilihan autentikasi Volcengine memprioritaskan baris `volcengine/*` dan `volcengine-plan/*`. Jika model tersebut belum dimuat, OpenClaw melakukan fallback ke katalog tanpa filter alih-alih menampilkan pemilih yang tercakup pada penyedia tetapi kosong.
   </Accordion>
 
-  <Accordion title="Environment variables for daemon processes">
+  <Accordion title="Variabel lingkungan untuk proses daemon">
     Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan variabel lingkungan model dan TTS seperti `VOLCANO_ENGINE_API_KEY`, `VOLCENGINE_TTS_API_KEY`, `BYTEPLUS_SEED_SPEECH_API_KEY`, `VOLCENGINE_TTS_APPID`, dan `VOLCENGINE_TTS_TOKEN` tersedia bagi proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Saat menjalankan OpenClaw sebagai layanan latar belakang, variabel lingkungan yang ditetapkan di shell interaktif Anda tidak diwarisi secara otomatis. Lihat catatan daemon di atas.
+Saat menjalankan OpenClaw sebagai layanan latar belakang, variabel lingkungan yang ditetapkan di shell interaktif Anda tidak diwariskan secara otomatis. Lihat catatan daemon di atas.
 </Warning>
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
     Memilih penyedia, referensi model, dan perilaku failover.
   </Card>
-  <Card title="Configuration" href="/id/gateway/configuration" icon="gear">
+  <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
     Referensi konfigurasi lengkap untuk agen, model, dan penyedia.
   </Card>
-  <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
-    Masalah umum dan langkah-langkah penelusuran kesalahan.
+  <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
+    Masalah umum dan langkah-langkah debugging.
   </Card>
   <Card title="FAQ" href="/id/help/faq" icon="circle-question">
-    Pertanyaan yang sering diajukan tentang penyiapan OpenClaw.
+    Pertanyaan umum tentang penyiapan OpenClaw.
   </Card>
 </CardGroup>

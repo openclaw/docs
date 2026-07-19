@@ -6,35 +6,35 @@ read_when:
 summary: 'Ikhtisar konfigurasi: tugas umum, penyiapan cepat, dan tautan ke referensi lengkap'
 title: Konfigurasi
 x-i18n:
-    generated_at: "2026-07-16T18:04:10Z"
+    generated_at: "2026-07-19T04:56:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 77f45ec71032ad6f651fcb68f9fb37f6677de90ec5ccca33ee84794056c58f89
+    source_hash: 0fa0f0cd54052ebb3a2aa4cd5600d7bdcb65a0a499a07d7e62496ee23464afdd
     source_path: gateway/configuration.md
     workflow: 16
 ---
 
-OpenClaw membaca konfigurasi <Tooltip tip="JSON5 mendukung komentar dan koma di akhir">**JSON5**</Tooltip> opsional dari `~/.openclaw/openclaw.json`. Jika file tidak ada, OpenClaw menggunakan nilai default yang aman.
+OpenClaw membaca konfigurasi <Tooltip tip="JSON5 mendukung komentar dan koma di akhir">**JSON5**</Tooltip> opsional dari `~/.openclaw/openclaw.json`. Jika file tersebut tidak ada, OpenClaw menggunakan nilai default yang aman.
 
-Jalur konfigurasi aktif harus berupa file biasa. Penulisan yang dimiliki OpenClaw menggantinya secara atomik (mengganti nama ke jalur tersebut), sehingga target `openclaw.json` yang berupa symlink akan diganti alih-alih ditulisi melalui symlink tersebut—hindari tata letak konfigurasi yang menggunakan symlink. Jika Anda menyimpan konfigurasi di luar direktori status default, arahkan `OPENCLAW_CONFIG_PATH` langsung ke file sebenarnya.
+Jalur konfigurasi aktif harus berupa file biasa. Penulisan milik OpenClaw menggantinya secara atomik (mengganti nama ke jalur tersebut), sehingga target `openclaw.json` yang berupa tautan simbolis akan diganti alih-alih ditulisi melalui tautan tersebut—hindari tata letak konfigurasi dengan tautan simbolis. Jika konfigurasi disimpan di luar direktori status default, arahkan `OPENCLAW_CONFIG_PATH` langsung ke file sebenarnya.
 
 Alasan umum untuk menambahkan konfigurasi:
 
-- Hubungkan channel dan kendalikan siapa yang dapat mengirim pesan ke bot
+- Hubungkan kanal dan kendalikan siapa yang dapat mengirim pesan ke bot
 - Atur model, alat, sandboxing, atau otomatisasi (cron, hook)
 - Sesuaikan sesi, media, jaringan, atau UI
 
-Lihat [referensi lengkap](/id/gateway/configuration-reference) untuk setiap bidang yang tersedia.
+Lihat [referensi lengkap](/id/gateway/configuration-reference) untuk setiap kolom yang tersedia.
 
 Agen dan otomatisasi harus menggunakan `config.schema.lookup` untuk dokumentasi
-tingkat bidang yang tepat sebelum mengedit konfigurasi. Gunakan halaman ini untuk panduan berorientasi tugas dan
-[Referensi konfigurasi](/id/gateway/configuration-reference) untuk peta bidang dan nilai default
-yang lebih luas.
+tingkat kolom yang presisi sebelum mengedit konfigurasi. Gunakan halaman ini untuk panduan berorientasi tugas dan
+[Referensi konfigurasi](/id/gateway/configuration-reference) untuk pemetaan kolom
+dan nilai default yang lebih luas.
 
 <Tip>
-**Baru mengenal konfigurasi?** Mulailah dengan `openclaw onboard` untuk penyiapan interaktif, atau lihat panduan [Contoh Konfigurasi](/id/gateway/configuration-examples) untuk konfigurasi lengkap yang dapat langsung disalin dan ditempel.
+**Baru mengenal konfigurasi?** Mulailah dengan `openclaw onboard` untuk penyiapan interaktif, atau lihat panduan [Contoh Konfigurasi](/id/gateway/configuration-examples) untuk konfigurasi lengkap yang siap disalin dan ditempel.
 </Tip>
 
 ## Konfigurasi minimal
@@ -64,12 +64,12 @@ yang lebih luas.
     ```
   </Tab>
   <Tab title="UI Kontrol">
-    Buka [http://127.0.0.1:18789](http://127.0.0.1:18789) dan gunakan tab **Config**.
-    UI Kontrol merender formulir dari skema konfigurasi aktif, termasuk metadata dokumentasi bidang
-    `title` / `description` serta skema plugin dan channel jika
-    tersedia, dengan editor **Raw JSON** sebagai jalan keluar. Untuk UI
+    Buka [http://127.0.0.1:18789](http://127.0.0.1:18789) dan gunakan tab **Konfigurasi**.
+    UI Kontrol merender formulir dari skema konfigurasi aktif, termasuk metadata dokumentasi
+    kolom `title` / `description` serta skema plugin dan kanal jika
+    tersedia, dengan editor **JSON Mentah** sebagai jalan keluar. Untuk UI
     penelusuran mendalam dan alat lainnya, Gateway juga menyediakan `config.schema.lookup` untuk
-    mengambil satu node skema yang dibatasi jalur beserta ringkasan turunan langsungnya.
+    mengambil satu node skema bercakupan jalur beserta ringkasan anak langsungnya.
   </Tab>
   <Tab title="Edit langsung">
     Edit `~/.openclaw/openclaw.json` secara langsung. Gateway memantau file tersebut dan menerapkan perubahan secara otomatis (lihat [pemuatan ulang langsung](#config-hot-reload)).
@@ -83,34 +83,34 @@ OpenClaw hanya menerima konfigurasi yang sepenuhnya cocok dengan skema. Kunci ya
 </Warning>
 
 `openclaw config schema` mencetak Skema JSON kanonis yang digunakan oleh UI Kontrol
-dan validasi. `config.schema.lookup` mengambil satu node yang dibatasi jalur beserta
-ringkasan turunannya untuk alat penelusuran mendalam. Metadata dokumentasi bidang `title`/`description`
-diteruskan melalui objek bertingkat, wildcard (`*`), item larik (`[]`), dan cabang `anyOf`/
-`oneOf`/`allOf`. Skema plugin dan channel runtime digabungkan saat
+dan validasi. `config.schema.lookup` mengambil satu node bercakupan jalur beserta
+ringkasan anak untuk alat penelusuran mendalam. Metadata dokumentasi kolom `title`/`description`
+diteruskan melalui objek bersarang, wildcard (`*`), item larik (`[]`), dan cabang `anyOf`/
+`oneOf`/`allOf`. Skema plugin dan kanal waktu proses digabungkan ketika
 registri manifes dimuat.
 
 Ketika validasi gagal:
 
 - Gateway tidak melakukan boot
 - Hanya perintah diagnostik yang berfungsi (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
-- Jalankan `openclaw doctor` untuk melihat masalah yang tepat
-- Jalankan `openclaw doctor --fix` (`--repair` adalah flag yang sama; `--yes` melewati prompt) untuk menerapkan perbaikan
+- Jalankan `openclaw doctor` untuk melihat masalah secara presisi
+- Jalankan `openclaw doctor --fix` (`--repair` adalah flag yang sama; `--yes` melewati perintah konfirmasi) untuk menerapkan perbaikan
 
-Gateway menyimpan salinan tepercaya terakhir yang diketahui baik setelah setiap startup yang berhasil,
-tetapi startup dan pemuatan ulang langsung tidak memulihkannya secara otomatis—hanya `openclaw doctor --fix`
-yang melakukannya. Jika `openclaw.json` gagal dalam validasi (termasuk validasi lokal plugin), startup
-Gateway gagal atau pemuatan ulang dilewati dan runtime saat ini tetap menggunakan konfigurasi terakhir yang
-diterima. Penulisan yang ditolak juga disimpan sebagai `<path>.rejected.<timestamp>` untuk diperiksa.
-Gateway memblokir penulisan yang tampak seperti penimpaan tidak sengaja—menghapus `gateway.mode`,
-kehilangan blok `meta`, atau mengecilkan file lebih dari setengah—kecuali penulisan tersebut
+Gateway menyimpan salinan tepercaya terakhir yang diketahui baik setelah setiap proses mulai yang berhasil,
+tetapi proses mulai dan pemuatan ulang langsung tidak memulihkannya secara otomatis—hanya `openclaw doctor --fix`
+yang melakukannya. Jika `openclaw.json` gagal divalidasi (termasuk validasi lokal plugin), proses
+mulai Gateway gagal atau pemuatan ulang dilewati dan waktu proses saat ini mempertahankan
+konfigurasi terakhir yang diterima. Penulisan yang ditolak juga disimpan sebagai `<path>.rejected.<timestamp>` untuk diperiksa.
+Gateway memblokir penulisan yang tampak seperti penimpaan tidak disengaja—menghapus `gateway.mode`,
+menghilangkan blok `meta`, atau memperkecil file lebih dari setengah—kecuali penulisan tersebut
 secara eksplisit mengizinkan perubahan destruktif. Promosi menjadi salinan terakhir yang diketahui baik dilewati ketika
-kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[redacted]`.
+kandidat berisi placeholder rahasia yang disunting seperti `***` atau `[redacted]`.
 
 ## Tugas umum
 
 <AccordionGroup>
-  <Accordion title="Menyiapkan channel (WhatsApp, Telegram, Discord, dll.)">
-    Setiap channel memiliki bagian konfigurasinya sendiri di bawah `channels.<provider>`. Lihat halaman khusus channel untuk langkah-langkah penyiapan:
+  <Accordion title="Siapkan kanal (WhatsApp, Telegram, Discord, dan sebagainya)">
+    Setiap kanal memiliki bagian konfigurasinya sendiri di bawah `channels.<provider>`. Lihat halaman khusus kanal untuk langkah penyiapan:
 
     - [Discord](/id/channels/discord) - `channels.discord`
     - [Feishu](/id/channels/feishu) - `channels.feishu`
@@ -123,7 +123,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     - [Telegram](/id/channels/telegram) - `channels.telegram`
     - [WhatsApp](/id/channels/whatsapp) - `channels.whatsapp`
 
-    Semua channel menggunakan pola kebijakan DM yang sama:
+    Semua kanal menggunakan pola kebijakan DM yang sama:
 
     ```json5
     {
@@ -140,7 +140,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
 
   </Accordion>
 
-  <Accordion title="Memilih dan mengonfigurasi model">
+  <Accordion title="Pilih dan konfigurasikan model">
     Atur model utama dan fallback opsional:
 
     ```json5
@@ -160,39 +160,39 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - `agents.defaults.models` menentukan katalog model dan berfungsi sebagai daftar izin untuk `/model`; entri `provider/*` memfilter `/model`, `/models`, dan pemilih model ke penyedia yang dipilih sambil tetap menggunakan penemuan model dinamis.
-    - Gunakan `openclaw config set agents.defaults.models '<json>' --strict-json --merge` untuk menambahkan entri daftar izin tanpa menghapus model yang ada. Penggantian biasa yang akan menghapus entri ditolak kecuali Anda meneruskan `--replace`.
+    - `agents.defaults.models` menyimpan alias dan pengaturan per model; menambahkan entri tidak pernah membatasi penggantian `/model` atau `--model`.
+    - `agents.defaults.modelPolicy.allow` adalah daftar izin eksplisit untuk penggantian dan pemilih model. Kolom ini menerima referensi persis dan wildcard `provider/*`; hilangkan atau gunakan `[]` untuk mengizinkan model apa pun.
     - Referensi model menggunakan format `provider/model` (misalnya `anthropic/claude-opus-4-6`).
-    - `agents.defaults.imageMaxDimensionPx` mengontrol penurunan skala gambar transkrip/alat (default `1200`); nilai yang lebih rendah biasanya mengurangi penggunaan token visi pada proses yang banyak menggunakan tangkapan layar.
-    - Lihat [CLI Model](/id/concepts/models) untuk mengganti model dalam chat dan [Failover Model](/id/concepts/model-failover) untuk rotasi autentikasi dan perilaku fallback.
-    - Untuk penyedia khusus/yang di-host sendiri, lihat [Penyedia khusus](/id/gateway/config-tools#custom-providers-and-base-urls) dalam referensi.
+    - `agents.defaults.imageMaxDimensionPx` mengendalikan penurunan skala gambar transkrip/alat (default `1200`); nilai yang lebih rendah biasanya mengurangi penggunaan token visi pada proses yang sarat tangkapan layar.
+    - Lihat [CLI Model](/id/concepts/models) untuk beralih model dalam obrolan dan [Failover Model](/id/concepts/model-failover) untuk rotasi autentikasi dan perilaku fallback.
+    - Untuk penyedia khusus/yang dihosting sendiri, lihat [Penyedia khusus](/id/gateway/config-tools#custom-providers-and-base-urls) dalam referensi.
 
   </Accordion>
 
-  <Accordion title="Mengendalikan siapa yang dapat mengirim pesan ke bot">
-    Akses DM dikendalikan per channel melalui `dmPolicy` (default `"pairing"`):
+  <Accordion title="Kendalikan siapa yang dapat mengirim pesan ke bot">
+    Akses DM dikendalikan per kanal melalui `dmPolicy` (default `"pairing"`):
 
     - `"pairing"`: pengirim yang tidak dikenal mendapatkan kode pemasangan satu kali untuk disetujui
     - `"allowlist"`: hanya pengirim dalam `allowFrom` (atau penyimpanan izin yang telah dipasangkan)
     - `"open"`: izinkan semua DM masuk (memerlukan `allowFrom: ["*"]`)
     - `"disabled"`: abaikan semua DM
 
-    Untuk grup, gunakan `groupPolicy` (`"allowlist" | "open" | "disabled"`) serta `groupAllowFrom` atau daftar izin khusus channel.
+    Untuk grup, gunakan `groupPolicy` (`"allowlist" | "open" | "disabled"`) beserta `groupAllowFrom` atau daftar izin khusus kanal.
 
-    Lihat [referensi lengkap](/id/gateway/config-channels#dm-and-group-access) untuk detail per channel.
+    Lihat [referensi lengkap](/id/gateway/config-channels#dm-and-group-access) untuk detail per kanal.
 
   </Accordion>
 
-  <Accordion title="Menyiapkan gerbang sebutan chat grup">
-    Pesan grup secara default **memerlukan sebutan**. Konfigurasikan pola pemicu per agen. Balasan grup/channel normal diposting secara otomatis; pilih jalur alat pesan untuk ruang bersama tempat agen harus memutuskan kapan akan berbicara:
+  <Accordion title="Siapkan pembatasan penyebutan dalam obrolan grup">
+    Pesan grup secara default **memerlukan penyebutan**. Konfigurasikan pola pemicu per agen. Balasan grup/kanal normal dikirim secara otomatis; aktifkan jalur alat pesan untuk ruang bersama tempat agen harus menentukan kapan perlu berbicara:
 
     ```json5
     {
       messages: {
-        visibleReplies: "automatic", // atur "message_tool" agar pengiriman alat pesan diwajibkan di semua tempat
+        visibleReplies: "automatic", // atur "message_tool" untuk mewajibkan pengiriman dengan alat pesan di semua tempat
         groupChat: {
-          visibleReplies: "message_tool", // pilihan aktif; keluaran yang terlihat memerlukan message(action=send)
-          unmentionedInbound: "room_event", // percakapan grup selalu aktif tanpa sebutan menjadi konteks senyap
+          visibleReplies: "message_tool", // ikut serta; keluaran yang terlihat memerlukan message(action=send)
+          unmentionedInbound: "room_event", // percakapan grup selalu aktif tanpa penyebutan menjadi konteks senyap
         },
       },
       agents: {
@@ -213,16 +213,16 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - **Sebutan metadata**: @-mention native (ketuk untuk menyebut di WhatsApp, @bot di Telegram, dll.)
+    - **Penyebutan metadata**: @-mention native (ketuk untuk menyebut di WhatsApp, @bot di Telegram, dan sebagainya)
     - **Pola teks**: pola regex aman dalam `mentionPatterns`
-    - **Balasan terlihat**: `messages.visibleReplies` dapat mewajibkan pengiriman alat pesan secara global; `messages.groupChat.visibleReplies` menimpanya untuk grup/channel.
-    - Lihat [referensi lengkap](/id/gateway/config-channels#group-chat-mention-gating) untuk mode balasan terlihat, penggantian per channel, dan mode chat mandiri.
+    - **Balasan yang terlihat**: `messages.visibleReplies` dapat mewajibkan pengiriman dengan alat pesan secara global; `messages.groupChat.visibleReplies` menggantikannya untuk grup/kanal.
+    - Lihat [referensi lengkap](/id/gateway/config-channels#group-chat-mention-gating) untuk mode balasan yang terlihat, penggantian per kanal, dan mode obrolan mandiri.
 
   </Accordion>
 
-  <Accordion title="Membatasi Skills per agen">
-    Gunakan `agents.defaults.skills` untuk acuan bersama, lalu timpa agen tertentu
-    dengan `agents.list[].skills`:
+  <Accordion title="Batasi Skills per agen">
+    Gunakan `agents.defaults.skills` untuk dasar bersama, lalu ganti untuk agen
+    tertentu dengan `agents.list[].skills`:
 
     ```json5
     {
@@ -232,7 +232,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
         },
         list: [
           { id: "writer" }, // mewarisi github, weather
-          { id: "docs", skills: ["docs-search"] }, // mengganti nilai default
+          { id: "docs", skills: ["docs-search"] }, // menggantikan nilai default
           { id: "locked-down", skills: [] }, // tanpa skills
         ],
       },
@@ -247,8 +247,8 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
 
   </Accordion>
 
-  <Accordion title="Menyesuaikan pemantauan kesehatan channel Gateway">
-    Kendalikan seberapa agresif Gateway memulai ulang channel yang tampak tidak aktif:
+  <Accordion title="Sesuaikan pemantauan kesehatan kanal Gateway">
+    Kendalikan seberapa agresif Gateway memulai ulang kanal yang tampak tidak aktif:
 
     ```json5
     {
@@ -270,16 +270,16 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - Nilai yang ditampilkan adalah nilai default. Atur `gateway.channelHealthCheckMinutes: 0` untuk menonaktifkan mulai ulang pemantau kesehatan secara global.
+    - Nilai yang ditampilkan adalah nilai default. Atur `gateway.channelHealthCheckMinutes: 0` untuk menonaktifkan proses mulai ulang oleh pemantau kesehatan secara global.
     - `channelStaleEventThresholdMinutes` harus lebih besar dari atau sama dengan interval pemeriksaan.
-    - Gunakan `channels.<provider>.healthMonitor.enabled` atau `channels.<provider>.accounts.<id>.healthMonitor.enabled` untuk menonaktifkan mulai ulang otomatis bagi satu channel atau akun tanpa menonaktifkan pemantau global.
-    - Lihat [Pemeriksaan Kesehatan](/id/gateway/health) untuk debugging operasional dan [referensi lengkap](/id/gateway/configuration-reference#gateway) untuk semua bidang.
+    - Gunakan `channels.<provider>.healthMonitor.enabled` atau `channels.<provider>.accounts.<id>.healthMonitor.enabled` untuk menonaktifkan proses mulai ulang otomatis bagi satu kanal atau akun tanpa menonaktifkan pemantau global.
+    - Lihat [Pemeriksaan Kesehatan](/id/gateway/health) untuk debugging operasional dan [referensi lengkap](/id/gateway/configuration-reference#gateway) untuk semua kolom.
 
   </Accordion>
 
-  <Accordion title="Menyesuaikan batas waktu handshake WebSocket Gateway">
-    Beri klien lokal lebih banyak waktu untuk menyelesaikan handshake WebSocket praautentikasi pada
-    host yang sedang terbebani atau berdaya rendah:
+  <Accordion title="Sesuaikan batas waktu handshake WebSocket Gateway">
+    Berikan waktu lebih lama kepada klien lokal untuk menyelesaikan handshake WebSocket praautentikasi pada
+    host yang sibuk atau berdaya rendah:
 
     ```json5
     {
@@ -290,8 +290,8 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     ```
 
     - Nilai default adalah `15000` milidetik.
-    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS` tetap diprioritaskan untuk penggantian sementara per layanan atau shell.
-    - Utamakan memperbaiki kemacetan saat startup/loop peristiwa terlebih dahulu; pengaturan ini ditujukan untuk host yang sehat tetapi lambat selama pemanasan.
+    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS` tetap diutamakan untuk penggantian sementara pada layanan atau shell.
+    - Utamakan memperbaiki kemacetan startup/event loop terlebih dahulu; pengaturan ini ditujukan bagi host yang sehat tetapi lambat selama pemanasan.
 
   </Accordion>
 
@@ -317,7 +317,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     ```
 
     - `dmScope`: `main` (bersama) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
-    - `threadBindings`: nilai default global untuk perutean sesi yang terikat ke utas. `/focus`, `/unfocus`, `/agents`, `/session idle`, dan `/session max-age` mengikat, melepas ikatan, mencantumkan, dan menyesuaikan ini per sesi (Discord mengikat utas, Telegram mengikat topik/percakapan).
+    - `threadBindings`: default global untuk perutean sesi yang terikat ke utas. `/focus`, `/unfocus`, `/agents`, `/session idle`, dan `/session max-age` mengikat, melepas ikatan, mencantumkan, dan menyesuaikan ini per sesi (Discord mengikat utas, Telegram mengikat topik/percakapan).
     - Lihat [Pengelolaan Sesi](/id/concepts/session) untuk cakupan, tautan identitas, dan kebijakan pengiriman.
     - Lihat [referensi lengkap](/id/gateway/config-agents#session) untuk semua bidang.
 
@@ -339,7 +339,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    Bangun citra terlebih dahulu—dari checkout sumber, jalankan `scripts/sandbox-setup.sh`, atau dari instalasi npm, lihat perintah inline `docker build` di [Sandbox § Citra dan penyiapan](/id/gateway/sandboxing#images-and-setup).
+    Buat image terlebih dahulu - dari checkout sumber, jalankan `scripts/sandbox-setup.sh`, atau dari instalasi npm, lihat perintah inline `docker build` di [Sandbox § Image dan penyiapan](/id/gateway/sandboxing#images-and-setup).
 
     Lihat [Sandbox](/id/gateway/sandboxing) untuk panduan lengkap dan [referensi lengkap](/id/gateway/config-agents#agentsdefaultssandbox) untuk semua opsi.
 
@@ -348,7 +348,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
   <Accordion title="Aktifkan push berbasis relay untuk build iOS resmi">
     Push berbasis relay untuk build App Store publik menggunakan relay OpenClaw yang di-host: `https://ios-push-relay.openclaw.ai`.
 
-    Deployment relay khusus memerlukan jalur build/deployment iOS yang sengaja dipisahkan dan URL relay-nya cocok dengan URL relay gateway. Jika menggunakan build relay khusus, atur ini dalam konfigurasi gateway:
+    Deployment relay khusus memerlukan jalur build/deployment iOS terpisah yang sengaja dibuat dan URL relay-nya cocok dengan URL relay gateway. Jika menggunakan build relay khusus, tetapkan ini dalam konfigurasi gateway:
 
     ```json5
     {
@@ -374,36 +374,36 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
 
     Fungsinya:
 
-    - Memungkinkan gateway mengirim `push.test`, dorongan untuk membangunkan, dan pembangkitan saat penyambungan ulang melalui relay eksternal.
+    - Memungkinkan gateway mengirim `push.test`, dorongan bangun, dan perintah bangun untuk menyambung kembali melalui relay eksternal.
     - Menggunakan izin pengiriman dengan cakupan pendaftaran yang diteruskan oleh aplikasi iOS yang dipasangkan. Gateway tidak memerlukan token relay untuk seluruh deployment.
     - Mengikat setiap pendaftaran berbasis relay ke identitas gateway yang dipasangkan dengan aplikasi iOS, sehingga gateway lain tidak dapat menggunakan kembali pendaftaran yang tersimpan.
-    - Mempertahankan APNs langsung untuk build iOS lokal/manual. Pengiriman berbasis relay hanya berlaku untuk build yang didistribusikan secara resmi dan didaftarkan melalui relay.
-    - Harus cocok dengan URL dasar relay yang ditanamkan dalam build iOS agar lalu lintas pendaftaran dan pengiriman mencapai deployment relay yang sama.
+    - Mempertahankan penggunaan APNs langsung pada build iOS lokal/manual. Pengiriman berbasis relay hanya berlaku untuk build resmi yang didistribusikan dan didaftarkan melalui relay.
+    - Harus cocok dengan URL dasar relay yang disematkan dalam build iOS agar lalu lintas pendaftaran dan pengiriman mencapai deployment relay yang sama.
 
     Alur menyeluruh:
 
     1. Instal aplikasi iOS resmi.
-    2. Opsional: konfigurasikan `gateway.push.apns.relay.baseUrl` pada gateway hanya saat menggunakan build relay khusus yang sengaja dipisahkan.
-    3. Pasangkan aplikasi iOS dengan gateway dan biarkan sesi node maupun operator terhubung.
+    2. Opsional: konfigurasikan `gateway.push.apns.relay.baseUrl` pada gateway hanya saat menggunakan build relay khusus yang sengaja dibuat terpisah.
+    3. Pasangkan aplikasi iOS dengan gateway dan izinkan sesi node maupun operator terhubung.
     4. Aplikasi iOS mengambil identitas gateway, mendaftar ke relay menggunakan App Attest beserta tanda terima aplikasi, lalu memublikasikan payload `push.apns.register` berbasis relay ke gateway yang dipasangkan.
-    5. Gateway menyimpan handel relay dan izin pengiriman, lalu menggunakannya untuk `push.test`, dorongan untuk membangunkan, dan pembangkitan saat penyambungan ulang.
+    5. Gateway menyimpan handel relay dan izin pengiriman, lalu menggunakannya untuk `push.test`, dorongan bangun, dan perintah bangun untuk menyambung kembali.
 
     Catatan operasional:
 
-    - Jika aplikasi iOS dialihkan ke gateway lain, sambungkan kembali aplikasi agar dapat memublikasikan pendaftaran relay baru yang terikat ke gateway tersebut.
-    - Jika Anda merilis build iOS baru yang mengarah ke deployment relay lain, aplikasi akan menyegarkan pendaftaran relay dalam cache alih-alih menggunakan kembali asal relay lama.
+    - Jika Anda mengalihkan aplikasi iOS ke gateway lain, sambungkan kembali aplikasi agar dapat memublikasikan pendaftaran relay baru yang terikat ke gateway tersebut.
+    - Jika Anda merilis build iOS baru yang mengarah ke deployment relay lain, aplikasi memperbarui pendaftaran relay yang di-cache dan tidak menggunakan kembali asal relay lama.
 
     Catatan kompatibilitas:
 
     - `OPENCLAW_APNS_RELAY_BASE_URL` dan `OPENCLAW_APNS_RELAY_TIMEOUT_MS` tetap berfungsi sebagai penggantian sementara melalui variabel lingkungan.
-    - URL relay gateway khusus harus cocok dengan URL dasar relay yang ditanamkan dalam build iOS; jalur rilis App Store publik menolak penggantian URL relay iOS khusus.
-    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` tetap menjadi jalan keluar pengembangan khusus loopback; jangan simpan URL relay HTTP dalam konfigurasi.
+    - URL relay gateway khusus harus cocok dengan URL dasar relay yang disematkan dalam build iOS; jalur rilis App Store publik menolak penggantian URL relay iOS khusus.
+    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` tetap menjadi jalur darurat pengembangan khusus loopback; jangan simpan URL relay HTTP dalam konfigurasi.
 
     Lihat [Aplikasi iOS](/id/platforms/ios#relay-backed-push-for-official-builds) untuk alur menyeluruh dan [Alur autentikasi dan kepercayaan](/id/platforms/ios#authentication-and-trust-flow) untuk model keamanan relay.
 
   </Accordion>
 
-  <Accordion title="Siapkan Heartbeat (check-in berkala)">
+  <Accordion title="Siapkan Heartbeat (pemeriksaan berkala)">
     ```json5
     {
       agents: {
@@ -417,7 +417,7 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - `every`: string durasi (`30m`, `2h`). Atur `0m` untuk menonaktifkan. Default: `30m`.
+    - `every`: string durasi (`30m`, `2h`). Tetapkan `0m` untuk menonaktifkan. Default: `30m`.
     - `target`: `last` | `none` | `<channel-id>` (misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`)
     - `directPolicy`: `allow` (default) atau `block` untuk target Heartbeat bergaya DM
     - Lihat [Heartbeat](/id/gateway/heartbeat) untuk panduan lengkap.
@@ -435,8 +435,8 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - `sessionRetention`: pangkas sesi eksekusi terisolasi yang telah selesai dari baris sesi SQLite (default `24h`; atur `false` untuk menonaktifkan).
-    - Riwayat eksekusi secara otomatis menyimpan 2000 baris terminal terbaru per tugas; baris yang hilang tetap mempertahankan jendela pembersihan 24 jam.
+    - `sessionRetention`: pangkas sesi proses terisolasi yang telah selesai dari baris sesi SQLite (default `24h`; tetapkan `false` untuk menonaktifkan).
+    - Riwayat proses secara otomatis menyimpan 2000 baris terminal terbaru per tugas; baris yang hilang tetap memiliki jangka waktu pembersihan 24 jam.
     - Lihat [Tugas Cron](/id/automation/cron-jobs) untuk ikhtisar fitur dan contoh CLI.
 
   </Accordion>
@@ -470,9 +470,9 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     - Gunakan `hooks.token` khusus; jangan gunakan kembali rahasia autentikasi Gateway yang aktif (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` atau `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`).
     - Autentikasi hook hanya melalui header (`Authorization: Bearer ...` atau `x-openclaw-token`); token string kueri ditolak.
     - `hooks.path` tidak boleh berupa `/`; pertahankan ingress Webhook pada subjalur khusus seperti `/hooks`.
-    - Biarkan flag pengabaian konten tidak aman tetap dinonaktifkan (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`), kecuali saat melakukan debug dengan cakupan ketat.
-    - Jika mengaktifkan `hooks.allowRequestSessionKey`, atur juga `hooks.allowedSessionKeyPrefixes` untuk membatasi kunci sesi yang dipilih pemanggil.
-    - Untuk agen yang dipicu oleh hook, utamakan tingkatan model modern yang tangguh dan kebijakan alat yang ketat (misalnya hanya perpesanan ditambah sandbox jika memungkinkan).
+    - Pertahankan flag pengabaian konten tidak aman dalam keadaan nonaktif (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`) kecuali saat melakukan debugging dengan cakupan sangat terbatas.
+    - Jika Anda mengaktifkan `hooks.allowRequestSessionKey`, tetapkan juga `hooks.allowedSessionKeyPrefixes` untuk membatasi kunci sesi yang dipilih pemanggil.
+    - Untuk agen yang digerakkan oleh hook, utamakan tingkat model modern yang kuat dan kebijakan alat yang ketat (misalnya hanya olah pesan ditambah sandbox jika memungkinkan).
 
     Lihat [referensi lengkap](/id/gateway/configuration-reference#hooks) untuk semua opsi pemetaan dan integrasi Gmail.
 
@@ -500,8 +500,8 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
 
   </Accordion>
 
-  <Accordion title="Pisahkan konfigurasi menjadi beberapa file ($include)">
-    Gunakan `$include` untuk mengatur konfigurasi besar:
+  <Accordion title="Pisahkan konfigurasi menjadi beberapa berkas ($include)">
+    Gunakan `$include` untuk menata konfigurasi besar:
 
     ```json5
     // ~/.openclaw/openclaw.json
@@ -514,36 +514,36 @@ kandidat berisi placeholder rahasia yang telah disunting seperti `***` atau `[re
     }
     ```
 
-    - **File tunggal**: menggantikan objek yang memuatnya
-    - **Larik file**: digabungkan secara mendalam sesuai urutan (yang belakangan menang), hingga kedalaman 10 tingkat bersarang
+    - **Satu berkas**: menggantikan objek yang memuatnya
+    - **Larik berkas**: digabungkan secara mendalam sesuai urutan (yang terakhir berlaku), hingga kedalaman 10 tingkat bertumpuk
     - **Kunci sejajar**: digabungkan setelah penyertaan (menggantikan nilai yang disertakan)
-    - **Jalur relatif**: diuraikan relatif terhadap file yang menyertakan
-    - **Format jalur**: jalur penyertaan tidak boleh memuat byte null dan panjangnya harus benar-benar kurang dari 4096 karakter sebelum maupun sesudah resolusi
+    - **Jalur relatif**: diselesaikan relatif terhadap berkas yang menyertakan
+    - **Format jalur**: jalur penyertaan tidak boleh mengandung byte null dan panjangnya harus benar-benar kurang dari 4096 karakter sebelum dan sesudah resolusi
     - **Penulisan milik OpenClaw**: ketika suatu penulisan hanya mengubah satu bagian tingkat teratas
-      yang didukung oleh penyertaan satu file seperti `plugins: { $include: "./plugins.json5" }`,
-      OpenClaw memperbarui file yang disertakan tersebut dan membiarkan `openclaw.json` tetap utuh
-    - **Penerusan penulisan yang tidak didukung**: penyertaan root, larik penyertaan, dan penyertaan
+      yang didukung oleh penyertaan satu berkas seperti `plugins: { $include: "./plugins.json5" }`,
+      OpenClaw memperbarui berkas yang disertakan tersebut dan membiarkan `openclaw.json` tetap utuh
+    - **Penulisan tembus yang tidak didukung**: penyertaan root, larik penyertaan, dan penyertaan
       dengan penggantian sejajar akan gagal secara tertutup untuk penulisan milik OpenClaw alih-alih
       meratakan konfigurasi
-    - **Pembatasan**: jalur `$include` harus diuraikan di bawah direktori yang memuat
-      `openclaw.json`. Untuk berbagi hierarki antar mesin atau pengguna, atur
+    - **Pembatasan**: jalur `$include` harus diselesaikan di bawah direktori yang menyimpan
+      `openclaw.json`. Untuk berbagi suatu pohon antarmesin atau pengguna, tetapkan
       `OPENCLAW_INCLUDE_ROOTS` ke daftar jalur (`:` pada POSIX, `;` pada Windows) berisi
-      direktori tambahan yang boleh dirujuk oleh penyertaan. Symlink diuraikan
+      direktori tambahan yang dapat dirujuk oleh penyertaan. Symlink diselesaikan
       dan diperiksa ulang, sehingga jalur yang secara leksikal berada dalam direktori konfigurasi tetapi
-      target sebenarnya keluar dari setiap root yang diizinkan tetap ditolak.
-    - **Penanganan kesalahan**: kesalahan yang jelas untuk file yang tidak ada, kesalahan penguraian, penyertaan melingkar, format jalur tidak valid, dan panjang berlebihan
+      target sebenarnya keluar dari semua root yang diizinkan tetap ditolak.
+    - **Penanganan kesalahan**: kesalahan yang jelas untuk berkas yang hilang, kesalahan penguraian, penyertaan melingkar, format jalur yang tidak valid, dan panjang yang berlebihan
 
   </Accordion>
 </AccordionGroup>
 
 ## Muat ulang konfigurasi secara langsung
 
-Gateway memantau `~/.openclaw/openclaw.json` dan menerapkan perubahan secara otomatis—sebagian besar pengaturan tidak memerlukan mulai ulang manual.
+Gateway memantau `~/.openclaw/openclaw.json` dan menerapkan perubahan secara otomatis - sebagian besar pengaturan tidak memerlukan mulai ulang manual.
 
-Pengeditan file secara langsung dianggap tidak tepercaya hingga lolos validasi. Pemantau menunggu
-perubahan file sementara/penggantian nama dari editor mereda, membaca file akhir, dan menolak
+Pengeditan berkas secara langsung dianggap tidak tepercaya sampai berhasil divalidasi. Pemantau menunggu
+aktivitas penulisan sementara/penggantian nama oleh editor mereda, membaca berkas akhir, dan menolak
 pengeditan eksternal yang tidak valid tanpa menulis ulang `openclaw.json`. Penulisan konfigurasi
-milik OpenClaw menggunakan gerbang skema yang sama sebelum menulis (lihat [Validasi ketat](#strict-validation)
+milik OpenClaw menggunakan pemeriksaan skema yang sama sebelum menulis (lihat [Validasi ketat](#strict-validation)
 untuk aturan penimpaan/pemulihan yang berlaku pada setiap penulisan).
 
 Jika Anda melihat `config reload skipped (invalid config)` atau startup melaporkan `Invalid
@@ -555,9 +555,9 @@ untuk daftar periksa.
 
 | Mode                   | Perilaku                                                                                |
 | ---------------------- | --------------------------------------------------------------------------------------- |
-| **`hybrid`** (bawaan) | Menerapkan perubahan aman secara langsung tanpa restart. Memulai ulang secara otomatis untuk perubahan kritis.           |
-| **`hot`**              | Hanya menerapkan perubahan aman secara langsung tanpa restart. Mencatat peringatan ketika restart diperlukan—Anda yang menanganinya. |
-| **`restart`**          | Memulai ulang Gateway setiap kali ada perubahan konfigurasi, baik aman maupun tidak.                                 |
+| **`hybrid`** (default) | Menerapkan perubahan aman secara langsung tanpa restart. Otomatis memulai ulang untuk perubahan kritis.           |
+| **`hot`**              | Hanya menerapkan perubahan aman secara langsung tanpa restart. Mencatat peringatan saat restart diperlukan—Anda yang menanganinya. |
+| **`restart`**          | Memulai ulang Gateway pada setiap perubahan konfigurasi, baik aman maupun tidak.                                 |
 | **`off`**              | Menonaktifkan pemantauan berkas. Perubahan berlaku pada restart manual berikutnya.                 |
 
 ```json5
@@ -568,62 +568,63 @@ untuk daftar periksa.
 }
 ```
 
-### Perubahan yang langsung diterapkan vs. yang memerlukan restart
+### Perubahan yang langsung diterapkan dan yang memerlukan restart
 
-Sebagian besar bidang langsung diterapkan tanpa waktu henti; beberapa bagian yang langsung diterapkan hanya memulai ulang
-subsistem tersebut (saluran, cron, heartbeat, pemantau kesehatan), bukan seluruh Gateway. Dalam
-mode `hybrid`, perubahan yang memerlukan restart Gateway ditangani secara otomatis.
+Sebagian besar kolom langsung diterapkan tanpa waktu henti; beberapa bagian yang langsung diterapkan hanya memulai ulang
+subsistem tersebut (kanal, cron, heartbeat, pemantau kesehatan), bukan seluruh Gateway. Dalam
+mode `hybrid`, perubahan yang mengharuskan restart Gateway ditangani secara otomatis.
 
-| Kategori            | Bidang                                                                  | Perlu restart Gateway?      |
+| Kategori            | Kolom                                                                  | Perlu restart Gateway?      |
 | ------------------- | ----------------------------------------------------------------------- | ---------------------------- |
-| Saluran            | `channels.*`, `web` (WhatsApp)—semua saluran bawaan dan Plugin       | Tidak (memulai ulang saluran tersebut)   |
+| Kanal            | `channels.*`, `web` (WhatsApp)—semua kanal bawaan dan plugin       | Tidak (memulai ulang kanal tersebut)   |
 | Agen & model      | `agent`, `agents`, `models`, `routing`                                  | Tidak                           |
 | Otomatisasi          | `hooks`, `cron`, `agent.heartbeat`                                      | Tidak (memulai ulang subsistem tersebut) |
 | Sesi & pesan | `session`, `messages`                                                   | Tidak                           |
 | Alat & media       | `tools`, `skills`, `mcp`, `audio`, `talk`                               | Tidak                           |
-| Konfigurasi Plugin       | `plugins.entries.*`, `plugins.allow`, `plugins.deny`, `plugins.enabled` | Tidak (memuat ulang runtime Plugin)  |
+| Konfigurasi plugin       | `plugins.entries.*`, `plugins.allow`, `plugins.deny`, `plugins.enabled` | Tidak (memuat ulang runtime plugin)  |
 | UI & lain-lain           | `ui`, `logging`, `identity`, `bindings`                                 | Tidak                           |
 | Server Gateway      | `gateway.*` (port, pengikatan, autentikasi, tailscale, TLS, HTTP, push)              | **Ya**                      |
 | Infrastruktur      | `discovery`, `browser`, `plugins.load`, `plugins.installs`              | **Ya**                      |
 
 <Note>
-`gateway.reload` dan `gateway.remote` merupakan pengecualian di bawah `gateway.*`—mengubahnya **tidak** memicu restart. Setiap Plugin juga dapat mengganti tabel ini: Plugin yang dimuat dapat mendeklarasikan prefiks konfigurasinya sendiri yang memicu restart (misalnya, Plugin Canvas bawaan memulai ulang Gateway untuk `plugins.enabled`, `plugins.allow`, dan `plugins.deny`, bukan hanya `plugins.entries.canvas` miliknya sendiri), sehingga perilaku sebenarnya bergantung pada Plugin yang aktif.
+`gateway.reload` dan `gateway.remote` merupakan pengecualian dalam `gateway.*`—mengubahnya **tidak** memicu restart. Setiap plugin juga dapat mengganti ketentuan tabel ini: plugin yang dimuat dapat mendeklarasikan prefiks konfigurasinya sendiri yang memicu restart (misalnya, plugin Canvas bawaan memulai ulang Gateway untuk `plugins.enabled`, `plugins.allow`, dan `plugins.deny`, bukan hanya `plugins.entries.canvas` miliknya sendiri), sehingga perilaku sebenarnya bergantung pada plugin yang aktif.
 </Note>
 
 ### Perencanaan pemuatan ulang
 
 Saat Anda mengedit berkas sumber yang dirujuk melalui `$include`, OpenClaw merencanakan
-pemuatan ulang berdasarkan tata letak yang ditulis dalam sumber, bukan tampilan dalam memori yang telah diratakan.
-Hal ini menjaga agar keputusan pemuatan ulang langsung (penerapan langsung vs. restart) tetap dapat diprediksi, bahkan ketika
+pemuatan ulang berdasarkan tata letak yang dibuat dalam sumber, bukan tampilan dalam memori yang telah diratakan.
+Hal ini menjaga keputusan pemuatan ulang langsung (langsung diterapkan atau restart) tetap dapat diprediksi, bahkan ketika
 satu bagian tingkat atas berada dalam berkas tersertakan tersendiri seperti
 `plugins: { $include: "./plugins.json5" }`. Perencanaan pemuatan ulang gagal secara tertutup jika
-tata letak sumber ambigu.
+tata letak sumber bersifat ambigu.
 
 ## RPC konfigurasi (pembaruan terprogram)
 
 Untuk alat yang menulis konfigurasi melalui API Gateway, utamakan alur berikut:
 
-- `config.schema.lookup` untuk memeriksa satu subpohon (Node skema dangkal + ringkasan
-  turunan)
+- `config.schema.lookup` untuk memeriksa satu subpohon (simpul skema dangkal + ringkasan
+  anak)
 - `config.get` untuk mengambil snapshot saat ini beserta `hash`
 - `config.patch` untuk pembaruan parsial (patch penggabungan JSON: objek digabungkan, `null`
-  menghapus, array diganti ketika dikonfirmasi secara eksplisit dengan `replacePaths` jika
+  menghapus, array diganti jika dikonfirmasi secara eksplisit dengan `replacePaths` apabila
   entri akan dihapus)
-- `config.apply` hanya ketika Anda bermaksud mengganti seluruh konfigurasi
-- `update.run` untuk pembaruan mandiri eksplisit beserta restart; sertakan `continuationMessage` ketika sesi setelah restart harus menjalankan satu giliran tindak lanjut
-- `update.status` untuk memeriksa penanda restart pembaruan terbaru dan memverifikasi versi yang berjalan setelah restart
+- `config.apply` hanya jika Anda bermaksud mengganti seluruh konfigurasi
+- `update.run` untuk pembaruan mandiri eksplisit beserta restart; sertakan `continuationMessage` jika sesi setelah restart harus menjalankan satu giliran tindak lanjut
+- `update.status` untuk memeriksa sentinel restart pembaruan terbaru dan memverifikasi versi yang berjalan setelah restart
 
 Agen harus menggunakan `config.schema.lookup` sebagai rujukan pertama untuk dokumentasi dan batasan
-tingkat bidang yang tepat. Gunakan [referensi konfigurasi](/id/gateway/configuration-reference)
-ketika memerlukan peta konfigurasi yang lebih luas, nilai bawaan, atau tautan ke referensi
+tingkat kolom yang tepat. Gunakan [Referensi konfigurasi](/id/gateway/configuration-reference)
+ketika memerlukan peta konfigurasi yang lebih luas, nilai default, atau tautan ke referensi
 subsistem khusus.
 
 <Note>
-Penulisan bidang kendali (`config.apply`, `config.patch`, `update.run`)
-dibatasi hingga 3 permintaan per 60 detik per `deviceId+clientIp`. Permintaan
-restart digabungkan lalu memberlakukan masa jeda 30 detik di antara siklus restart.
-`update.status` hanya-baca, tetapi dibatasi untuk admin karena penanda restart dapat
-menyertakan ringkasan langkah pembaruan dan bagian akhir keluaran perintah.
+Penulisan bidang kontrol (`config.apply`, `config.patch`, `update.run`)
+dibatasi hingga 30 permintaan per 60 detik, per metode, per
+`deviceId+clientIp`; lihat [Pembatasan laju](/gateway/security/rate-limiting). Permintaan restart
+digabungkan, lalu menerapkan masa tunggu 30 detik di antara siklus restart.
+`update.status` hanya-baca, tetapi dibatasi untuk admin karena sentinel restart dapat
+mencakup ringkasan langkah pembaruan dan bagian akhir keluaran perintah.
 </Note>
 
 Contoh patch parsial:
@@ -638,14 +639,14 @@ openclaw gateway call config.patch --params '{
 
 Baik `config.apply` maupun `config.patch` menerima `raw`, `baseHash`, `sessionKey`,
 `note`, dan `restartDelayMs`. `baseHash` diwajibkan untuk kedua metode setelah
-berkas konfigurasi sudah ada (penulisan pertama tanpa konfigurasi yang sudah ada melewati pemeriksaan tersebut).
+berkas konfigurasi sudah ada (penulisan pertama tanpa konfigurasi yang sudah ada melewati pemeriksaan).
 
-`config.patch` juga menerima `replacePaths`, sebuah array berisi jalur konfigurasi yang penggantian
+`config.patch` juga menerima `replacePaths`, yaitu array jalur konfigurasi yang penggantian
 array-nya disengaja. Jika patch akan mengganti atau menghapus array yang sudah ada
-dengan jumlah entri lebih sedikit, Gateway menolak penulisan kecuali jalur yang tepat tersebut tercantum
-dalam `replacePaths`; array bersarang di bawah entri array menggunakan `[]`, seperti
+dengan entri yang lebih sedikit, Gateway menolak penulisan kecuali jalur persis tersebut tercantum
+dalam `replacePaths`; array bertingkat di bawah entri array menggunakan `[]`, seperti
 `agents.list[].skills`. Hal ini mencegah snapshot `config.get` yang terpotong
-menimpa array perutean atau daftar izin secara diam-diam. Gunakan `config.apply` ketika Anda
+menimpa array perutean atau daftar yang diizinkan secara diam-diam. Gunakan `config.apply` jika Anda
 bermaksud mengganti seluruh konfigurasi.
 
 ## Variabel lingkungan
@@ -655,7 +656,7 @@ OpenClaw membaca variabel lingkungan dari proses induk serta:
 - `.env` dari direktori kerja saat ini (jika ada)
 - `~/.openclaw/.env` (fallback global)
 
-Kedua berkas tersebut tidak mengganti variabel lingkungan yang sudah ada. Anda juga dapat menetapkan variabel lingkungan langsung dalam konfigurasi:
+Kedua berkas tersebut tidak mengganti variabel lingkungan yang sudah ada. Anda juga dapat menetapkan variabel lingkungan sebaris dalam konfigurasi:
 
 ```json5
 {
@@ -677,7 +678,7 @@ Kedua berkas tersebut tidak mengganti variabel lingkungan yang sudah ada. Anda j
 }
 ```
 
-Variabel lingkungan yang setara: `OPENCLAW_LOAD_SHELL_ENV=1`. `timeoutMs` bawaan: `15000`.
+Variabel lingkungan yang setara: `OPENCLAW_LOAD_SHELL_ENV=1`. `timeoutMs` default: `15000`.
 </Accordion>
 
 <Accordion title="Substitusi variabel lingkungan dalam nilai konfigurasi">
@@ -693,15 +694,15 @@ Variabel lingkungan yang setara: `OPENCLAW_LOAD_SHELL_ENV=1`. `timeoutMs` bawaan
 Aturan:
 
 - Hanya nama huruf besar yang dicocokkan: `[A-Z_][A-Z0-9_]*`
-- Variabel yang tidak ada/kosong memunculkan kesalahan saat pemuatan
+- Variabel yang tidak ada/kosong memunculkan galat saat pemuatan
 - Loloskan dengan `$${VAR}` untuk keluaran literal
 - Berfungsi di dalam berkas `$include`
-- Substitusi langsung: `"${BASE}/v1"` → `"https://api.example.com/v1"`
+- Substitusi sebaris: `"${BASE}/v1"` → `"https://api.example.com/v1"`
 
 </Accordion>
 
 <Accordion title="Referensi rahasia (lingkungan, berkas, eksekusi)">
-  Untuk bidang yang mendukung objek SecretRef, Anda dapat menggunakan:
+  Untuk kolom yang mendukung objek SecretRef, Anda dapat menggunakan:
 
 ```json5
 {
@@ -733,15 +734,15 @@ Aturan:
 }
 ```
 
-Detail SecretRef (termasuk `secrets.providers` untuk `env`/`file`/`exec`) tersedia di [Pengelolaan Rahasia](/id/gateway/secrets).
-Jalur kredensial yang didukung tercantum dalam [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface).
+Detail SecretRef (termasuk `secrets.providers` untuk `env`/`file`/`exec`) tersedia di [Pengelolaan rahasia](/id/gateway/secrets).
+Jalur kredensial yang didukung tercantum di [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface).
 </Accordion>
 
-Lihat [Lingkungan](/id/help/environment) untuk presedensi dan sumber selengkapnya.
+Lihat [Lingkungan](/id/help/environment) untuk urutan prioritas dan sumber lengkap.
 
 ## Referensi lengkap
 
-Untuk referensi lengkap setiap bidang, lihat **[Referensi Konfigurasi](/id/gateway/configuration-reference)**.
+Untuk referensi lengkap setiap kolom, lihat **[Referensi Konfigurasi](/id/gateway/configuration-reference)**.
 
 ---
 

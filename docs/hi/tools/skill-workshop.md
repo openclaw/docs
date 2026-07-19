@@ -1,169 +1,217 @@
 ---
 read_when:
-    - आप चाहते हैं कि एजेंट चैट से कोई कौशल बनाए या अपडेट करे
-    - आपको जनरेट किए गए skill ड्राफ़्ट की समीक्षा करनी, उसे लागू करना, अस्वीकार करना या क्वारंटीन करना होगा
-    - आप Skill Workshop की स्वीकृति, स्वायत्तता, स्टोरेज, या सीमाएं कॉन्फ़िगर कर रहे हैं
+    - आप चाहते हैं कि एजेंट चैट से कोई स्किल बनाए या अपडेट करे
+    - आपको जनरेट किए गए कौशल मसौदे की समीक्षा करनी है, उसे लागू करना है, अस्वीकार करना है या क्वारंटीन करना है
+    - आप Skill Workshop की स्वीकृति, स्वायत्तता, स्टोरेज या सीमाएँ कॉन्फ़िगर कर रहे हैं
+    - आप यह समझना चाहते हैं कि स्व-अधिगम प्रस्तावों की समीक्षा कहाँ की जाती है
 sidebarTitle: Skill Workshop
-summary: Skill Workshop समीक्षा के माध्यम से workspace Skills बनाएँ और अपडेट करें
-title: कौशल कार्यशाला
+summary: Skill Workshop समीक्षा के माध्यम से वर्कस्पेस Skills बनाएँ और अपडेट करें
+title: Skills कार्यशाला
 x-i18n:
-    generated_at: "2026-06-29T00:23:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:58:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 449b9cb4d26731555af97ff5b85a6fed48eecad02c81965ff95d871cc6fe1b33
+    source_hash: 2c2590f2a1bcad3b22ef8504eac7b3a44611c3fedc0df3832660f8926ce04252
     source_path: tools/skill-workshop.md
     workflow: 16
 ---
 
-Skill Workshop कार्यस्थल skills बनाने और अपडेट करने के लिए OpenClaw का शासित पथ है।
+Skill Workshop, कार्यस्थान Skills बनाने और अपडेट करने के लिए OpenClaw का नियंत्रित मार्ग है। एजेंट और ऑपरेटर इस मार्ग के माध्यम से कभी भी सीधे `SKILL.md` नहीं लिखते — वे एक **प्रस्ताव** बनाते हैं (सामग्री, लक्ष्य बाइंडिंग, स्कैनर स्थिति, हैश और रोलबैक मेटाडेटा वाला लंबित मसौदा), जो लागू किए जाने पर ही सक्रिय Skill बनता है।
 
-एजेंट और ऑपरेटर इस पथ के माध्यम से सक्रिय `SKILL.md` फ़ाइलें सीधे नहीं लिखते। वे पहले एक **प्रस्ताव** बनाते हैं। प्रस्ताव एक लंबित ड्राफ्ट होता है जिसमें प्रस्तावित skill सामग्री, लक्ष्य बाइंडिंग, स्कैनर स्थिति, हैश, सहायक-फ़ाइल मेटाडेटा, और रोलबैक मेटाडेटा शामिल होते हैं। यह केवल लागू किए जाने पर लाइव skill बनता है।
-
-Skill Workshop केवल कार्यस्थल skills लिखता है। यह bundled, plugin, ClawHub, extra-root, managed, personal-agent, या system skills को परिवर्तित नहीं करता।
+Skill Workshop केवल कार्यस्थान Skills लिखता है। यह बंडल किए गए, Plugin, ClawHub, अतिरिक्त-रूट, प्रबंधित, व्यक्तिगत-एजेंट या सिस्टम Skills को कभी नहीं छूता।
 
 ## यह कैसे काम करता है
 
-- **पहले प्रस्ताव:** जनरेट की गई skill सामग्री `SKILL.md` नहीं, बल्कि `PROPOSAL.md` के रूप में संग्रहीत होती है।
-- **लागू करना ही एकमात्र लाइव लेखन है:** create, update, और revise सक्रिय skills को नहीं बदलते।
-- **कार्यस्थल-सीमित:** create लक्ष्य कार्यस्थल `skills/` रूट को बनाते हैं। अपडेट केवल लिखने योग्य कार्यस्थल skills के लिए अनुमत हैं।
-- **ओवरराइट नहीं:** यदि लक्ष्य skill पहले से मौजूद है, तो create विफल हो जाता है।
-- **हैश-बद्ध:** अपडेट प्रस्ताव वर्तमान लक्ष्य हैश से बंधते हैं और यदि apply से पहले लाइव skill बदल जाती है तो पुराने हो जाते हैं।
-- **स्कैनर-नियंत्रित:** apply लिखने से पहले स्कैनिंग दोबारा चलाता है।
-- **पुनर्प्राप्त करने योग्य:** apply लाइव फ़ाइलें बदलने से पहले रोलबैक मेटाडेटा लिखता है।
-- **सुसंगत सतहें:** chat, CLI, और Gateway सभी वही Skill Workshop सेवा कॉल करते हैं।
+- **पहले प्रस्ताव:** जनरेट की गई सामग्री `SKILL.md` के रूप में नहीं, बल्कि `PROPOSAL.md` के रूप में संग्रहीत होती है।
+- **लागू करना ही एकमात्र सक्रिय लेखन है:** बनाना, अपडेट करना और संशोधित करना सक्रिय Skills को कभी नहीं बदलते।
+- **कार्यस्थान के दायरे में:** नए Skills कार्यस्थान के `skills/` रूट को लक्षित करते हैं; अपडेट केवल लिखने योग्य कार्यस्थान Skills के लिए अनुमत हैं।
+- **ओवरराइट नहीं:** यदि लक्षित Skill पहले से मौजूद है, तो निर्माण विफल हो जाता है।
+- **हैश से बंधा:** अपडेट प्रस्ताव वर्तमान लक्ष्य हैश से बंधे होते हैं और लागू करने से पहले सक्रिय Skill बदलने पर `stale` हो जाते हैं।
+- **स्कैनर द्वारा नियंत्रित:** लागू करने से पहले सुरक्षा स्कैनर दोबारा चलता है।
+- **पुनर्प्राप्त करने योग्य:** लागू करने की प्रक्रिया सक्रिय फ़ाइलों को छूने से पहले रोलबैक मेटाडेटा लिखती है।
+- **सुसंगत इंटरफ़ेस:** चैट, CLI और Gateway सभी एक ही सेवा को कॉल करते हैं।
 
 ## जीवनचक्र
 
 ```text
-create/update -> pending
-revise        -> pending
-apply         -> applied
-reject        -> rejected
-quarantine    -> quarantined
-target change -> stale
+बनाना/अपडेट करना -> लंबित
+संशोधित करना    -> लंबित
+लागू करना       -> लागू
+अस्वीकार करना   -> अस्वीकृत
+क्वारंटीन करना  -> क्वारंटीन
+लक्ष्य परिवर्तन -> अप्रचलित
 ```
 
-केवल `pending` प्रस्तावों को revise, apply, reject, या quarantine किया जा सकता है।
+केवल `pending` प्रस्ताव को संशोधित, लागू, अस्वीकार या क्वारंटीन किया जा सकता है।
 
-## Chat
+## जीवनचक्र प्रबंधन
 
-एजेंट से वह skill मांगें जो आप चाहते हैं। एजेंट `skill_workshop` कॉल करता है और प्रस्ताव id लौटाता है।
+Gateway साझा स्थिति डेटाबेस में Skill के कुल उपयोग को ट्रैक करता है। यह दिन में एक बार Skill Workshop द्वारा बनाए और लागू किए गए Skills की समीक्षा करता है। 30 दिनों से अधिक समय तक उपयोग न किए गए Skills `stale` बन जाते हैं; 90 दिनों के बाद वे `archived` बन जाते हैं और नए एजेंट Skill स्नैपशॉट में शामिल नहीं किए जाते। संग्रहीत Skill फ़ाइलें डिस्क पर अपरिवर्तित रहती हैं। मैन्युअल रूप से बनाए गए Skills का प्रबंधन कभी नहीं किया जाता; केवल Skill Workshop प्रस्तावों द्वारा बनाए गए Skills ही जीवनचक्र प्रबंधन में शामिल होते हैं।
 
-बनाएं:
+पिन किए गए Skills जीवनचक्र परिवर्तनों से मुक्त रहते हैं। किसी अप्रचलित Skill का उपयोग होने और अगला स्वीप चलने के बाद वह फिर से `active` हो जाता है। संग्रहीत Skills केवल स्पष्ट पुनर्स्थापना के माध्यम से लौटते हैं:
+
+जीवनचक्र परिवर्तन और पुनर्स्थापनाएँ नए सत्रों पर लागू होती हैं; चल रहे सत्र अपने वर्तमान Skill स्नैपशॉट को बनाए रखते हैं।
+
+```bash
+openclaw skills curator status
+openclaw skills curator pin <skill>
+openclaw skills curator unpin <skill>
+openclaw skills curator restore <skill>
+```
+
+सभी क्यूरेटर कमांड `--json` स्वीकार करते हैं। स्थिति नियतात्मक ओवरलैप उम्मीदवारों को भी केवल सुझावों के रूप में रिपोर्ट करती है; यह कभी Skills को मर्ज नहीं करती या किसी मॉडल को कॉल नहीं करती।
+
+## चैट
+
+एजेंट से इच्छित Skill के लिए कहें; वह `skill_workshop` को कॉल करके प्रस्ताव आईडी लौटाता है।
+
+### हाल के काम से सीखें
+
+वर्तमान बातचीत या नामित स्रोतों को मानक-निर्देशित Skill प्रस्ताव में बदलने के लिए `/learn` का उपयोग करें:
 
 ```text
-Make a skill called morning-catchup that runs my Monday inbox routine.
+/learn
+/learn docs/runbook.md और https://example.com/guide; पुनर्प्राप्ति पर ध्यान दें
 ```
 
-मौजूदा कार्यस्थल skill अपडेट करें:
+कोई अनुरोध न होने पर, `/learn` एजेंट से वर्तमान बातचीत में मौजूद पुनः उपयोग योग्य कार्यप्रवाह को सारांशित करने के लिए कहता है। अनुरोध होने पर, एजेंट फ़ोकस, दायरे और नामकरण आवश्यकताओं का पालन करते हुए पथों, URL, चिपकाए गए नोट्स और बातचीत के संदर्भों को स्रोत मानता है। वह अपने मौजूदा टूल से स्रोत एकत्र करता है, फिर `action: "create"` के साथ `skill_workshop` को कॉल करता है।
+
+परिणामी प्रस्ताव `pending` ही रहता है; `/learn` उसे कभी लागू नहीं करता। सामान्य अनुमोदन प्रवाह या `openclaw skills workshop` के माध्यम से उसकी समीक्षा करें और उसे लागू करें।
+
+बनाएँ:
 
 ```text
-Update trip-planning to also check seat maps before booking.
+morning-catchup नाम का एक Skill बनाएँ, जो मेरी सोमवार की इनबॉक्स दिनचर्या चलाए।
 ```
 
-लंबित प्रस्ताव पर पुनरावृत्ति करें:
+किसी मौजूदा कार्यस्थान Skill को अपडेट करें:
 
 ```text
-Show me the morning-catchup proposal.
-Revise it to also flag anything marked urgent.
-Apply the morning-catchup proposal.
+trip-planning को अपडेट करें ताकि बुकिंग से पहले सीट मानचित्र भी जाँचे जाएँ।
 ```
 
-डिफ़ॉल्ट रूप से, एजेंट द्वारा शुरू किए गए `apply`, `reject`, और `quarantine` चलने से पहले एक स्वीकृति prompt दिखाते हैं। विश्वसनीय वातावरणों के लिए prompt छोड़ने के लिए `skills.workshop.approvalPolicy` को `"auto"` पर सेट करें।
+किसी लंबित प्रस्ताव पर पुनरावृत्ति करें:
+
+```text
+मुझे morning-catchup प्रस्ताव दिखाएँ।
+इसे संशोधित करें ताकि urgent चिह्नित किसी भी चीज़ को भी फ़्लैग किया जाए।
+morning-catchup प्रस्ताव लागू करें।
+```
+
+एजेंट द्वारा शुरू किए गए `apply`, `reject` और `quarantine` डिफ़ॉल्ट रूप से किसी अतिरिक्त अनुमोदन संकेत के बिना चलते हैं। इन कार्रवाइयों से पहले ऑपरेटर का अनुमोदन आवश्यक बनाने के लिए `skills.workshop.approvalPolicy` को `"pending"` पर सेट करें।
+
+जब अनुमोदन आवश्यक होता है, तो संकेत प्रस्ताव आईडी और लक्षित Skill की पहचान करता है तथा प्रस्ताव का विवरण, सहायक फ़ाइलों की संख्या और मुख्य सामग्री का आकार दिखाता है। अनुमोदन अनुरोधों की समय-सीमा इस तरह सीमित होती है कि वे एजेंट टूल वॉचडॉग से पहले समाप्त हो जाएँ। संकेत की समय-सीमा समाप्त होने से पहले कोई निर्णय न मिलने पर जीवनचक्र कार्रवाई नहीं चलती: प्रस्ताव लंबित और अपरिवर्तित रहता है। बाद में Skill Workshop UI में निर्णय लें या `openclaw skills workshop apply|reject|quarantine <proposal-id>` चलाएँ। एजेंटों को समय-सीमा समाप्त हो चुकी जीवनचक्र कार्रवाई का लूप में पुनः प्रयास नहीं करना चाहिए।
 
 ## CLI
 
-नया skill प्रस्ताव बनाएं:
-
 ```bash
+# बनाएँ
 openclaw skills workshop propose-create \
   --name morning-catchup \
-  --description "Daily inbox catch-up: triage, archive, surface, draft, plan" \
+  --description "दैनिक इनबॉक्स समीक्षा: छँटाई, संग्रहण, प्रमुखता, मसौदा, योजना" \
   --proposal ./PROPOSAL.md
-```
 
-मौजूदा कार्यस्थल skill के लिए अपडेट प्रस्ताव बनाएं:
-
-```bash
+# किसी मौजूदा कार्यस्थान Skill को अपडेट करें
 openclaw skills workshop propose-update trip-planning --proposal ./PROPOSAL.md
-```
 
-सूचीबद्ध करें और निरीक्षण करें:
-
-```bash
+# सूचीबद्ध करें और निरीक्षण करें
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
-```
 
-स्वीकृति से पहले संशोधित करें:
-
-```bash
+# अनुमोदन से पहले संशोधित करें
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
-```
 
-प्रस्ताव को पूरा करें:
-
-```bash
+# प्रक्रिया पूरी करें
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "डुप्लिकेट"
+openclaw skills workshop quarantine <proposal-id> --reason "सुरक्षा समीक्षा आवश्यक है"
 ```
+
+प्रत्येक उपकमांड `--agent <id>` (लक्षित कार्यस्थान; डिफ़ॉल्ट रूप से पहले cwd से अनुमानित, फिर डिफ़ॉल्ट एजेंट) और `--json` (संरचित आउटपुट) स्वीकार करता है। `propose-create`, `propose-update` और `revise`, `--proposal` के साथ प्रस्ताव संदर्भ दर्ज करने के लिए `--goal <text>` और `--evidence <text>` भी स्वीकार करते हैं।
 
 ## प्रस्ताव सामग्री
 
-लंबित रहते समय, प्रस्ताव `PROPOSAL.md` के रूप में केवल-प्रस्ताव frontmatter के साथ संग्रहीत होता है:
+लंबित रहने के दौरान प्रस्ताव, केवल-प्रस्ताव फ्रंटमैटर के साथ `PROPOSAL.md` के रूप में संग्रहीत होता है:
 
 ```markdown
 ---
 name: "morning-catchup"
-description: "Daily inbox catch-up: triage, archive, surface, draft, plan"
+description: "दैनिक इनबॉक्स समीक्षा: छँटाई, संग्रहण, प्रमुखता, मसौदा, योजना"
 status: proposal
 version: "v1"
 date: "2026-05-30T00:00:00.000Z"
 ---
 ```
 
-लागू करने पर, Skill Workshop सक्रिय `SKILL.md` लिखता है और केवल-प्रस्ताव फ़ील्ड हटाता है: `status`, प्रस्ताव `version`, और प्रस्ताव `date`।
+लागू करने पर, Skill Workshop सक्रिय `SKILL.md` लिखता है और केवल-प्रस्ताव फ़ील्ड हटाता है: `status`, प्रस्ताव `version` और प्रस्ताव `date`।
 
 ## सहायक फ़ाइलें
 
-जब प्रस्तावित skill को `PROPOSAL.md` के साथ फ़ाइलों की आवश्यकता हो, तो `--proposal-dir` का उपयोग करें:
+जब प्रस्तावित Skill को `PROPOSAL.md` के पास अतिरिक्त फ़ाइलों की आवश्यकता हो, तो `--proposal-dir` का उपयोग करें:
 
 ```bash
 openclaw skills workshop propose-create \
   --name weekly-update \
-  --description "Friday wrap-up: stats, highlights, next week's top three" \
+  --description "शुक्रवार समापन: आँकड़े, मुख्य बातें, अगले सप्ताह की शीर्ष तीन प्राथमिकताएँ" \
   --proposal-dir ./weekly-update-proposal
 ```
 
-डायरेक्टरी में `PROPOSAL.md` होना चाहिए। सहायक फ़ाइलें इनके अंतर्गत होनी चाहिए:
+डायरेक्टरी में `PROPOSAL.md` होना आवश्यक है। सहायक फ़ाइलें `assets/`, `examples/`, `references/`, `scripts/` या `templates/` के अंतर्गत होनी चाहिए। Skill Workshop उन्हें स्कैन और हैश करके प्रस्ताव के साथ संग्रहीत करता है, फिर केवल लागू करने पर उन्हें सक्रिय `SKILL.md` के पास लिखता है।
 
-- `assets/`
-- `examples/`
-- `references/`
-- `scripts/`
-- `templates/`
-
-Skill Workshop प्रस्ताव के साथ सहायक फ़ाइलों को स्कैन, हैश, और संग्रहीत करता है। वे केवल apply पर लाइव `SKILL.md` के साथ लिखी जाती हैं।
-
-अस्वीकृत सहायक-फ़ाइल पथों में absolute paths, छिपे path segments, path traversal, overlapping paths, प्रस्ताव directories से executable files, non-UTF-8 text, null bytes, और मानक support folders के बाहर की फ़ाइलें शामिल हैं।
+अस्वीकृत सहायक-फ़ाइल पथ: निरपेक्ष पथ, छिपे हुए पथ खंड, पथ ट्रैवर्सल, ओवरलैप होते पथ, निष्पादन योग्य फ़ाइलें, गैर-UTF-8 टेक्स्ट, नल बाइट और मानक सहायक फ़ोल्डरों के बाहर के पथ।
 
 ## एजेंट टूल
 
-मॉडल `skill_workshop` का उपयोग करता है:
+मॉडल एक आवश्यक `action`: `create | update | revise | list | inspect | apply | reject | quarantine` के साथ `skill_workshop` का उपयोग करता है।
+अन्य पैरामीटर कार्रवाई के अनुसार लागू होते हैं:
 
-```text
-action: create | update | revise | list | inspect | apply | reject | quarantine
-```
+| पैरामीटर                  | इनके द्वारा उपयोग किया जाता है                                              | टिप्पणियाँ                                                                |
+| -------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------- |
+| `name`                     | `create`, `inspect`, `revise`                        | `create` के लिए आवश्यक; अन्यथा नाम से लंबित प्रस्ताव खोजता है |
+| `description`              | `create`, `update`, `revise`                         | अधिकतम 160 बाइट                                                        |
+| `skill_name`               | `update`                                             | मौजूदा Skill का नाम या कुंजी                                           |
+| `proposal_content`         | `create`, `update`, `revise`                         | `PROPOSAL.md` के रूप में संग्रहीत; `skills.workshop.maxSkillBytes` द्वारा सीमित   |
+| `support_files`            | `create`, `update`, `revise`                         | `{ path, content }` की सरणी                                         |
+| `goal`, `evidence`         | `create`, `update`, `revise`                         | मुक्त-पाठ संदर्भ                                                    |
+| `proposal_id`              | `inspect`, `revise`, `apply`, `reject`, `quarantine` | लक्षित प्रस्ताव                                                      |
+| `reason`                   | `apply`, `reject`, `quarantine`                      | वैकल्पिक                                                             |
+| `query`, `status`, `limit` | `list`                                               | फ़िल्टर/पृष्ठांकन; `limit` अधिकतम 50, डिफ़ॉल्ट 20                          |
 
-एजेंटों को generated skill work के लिए `skill_workshop` का उपयोग करना चाहिए। उन्हें `write`, `edit`, `exec`, shell commands, या direct filesystem operations के माध्यम से proposal files बनानी या बदलनी नहीं चाहिए।
+एजेंटों को जनरेट किए गए Skill कार्य के लिए `skill_workshop` का उपयोग करना आवश्यक है। उन्हें `write`, `edit`, `exec`, शेल कमांड या प्रत्यक्ष फ़ाइलसिस्टम कार्रवाइयों के माध्यम से प्रस्ताव फ़ाइलें बनानी या बदलनी नहीं चाहिए।
 
 <Note>
-`skill_workshop` एक built-in agent tool है और `tools.profile: "coding"` में शामिल है। यदि कोई stricter policy इसे छिपाती है, तो `skill_workshop` को सक्रिय `tools.allow` सूची में जोड़ें, या जब scope बिना explicit `tools.allow` वाले profile का उपयोग करता हो तो `tools.alsoAllow: ["skill_workshop"]` का उपयोग करें। Sandboxed runs host-side Skill Workshop tool नहीं बनाते, इसलिए proposal review actions को सामान्य host-side agent session या CLI से चलाएं।
+`skill_workshop` एक अंतर्निहित एजेंट टूल है और `tools.profile: "coding"` में शामिल है। यदि कोई अधिक कठोर नीति इसे छिपाती है, तो सक्रिय `tools.allow` सूची में `skill_workshop` जोड़ें या जब दायरा स्पष्ट `tools.allow` के बिना किसी प्रोफ़ाइल का उपयोग करता हो, तब `tools.alsoAllow: ["skill_workshop"]` का उपयोग करें। सैंडबॉक्स किए गए रन होस्ट-साइड Skill Workshop टूल नहीं बनाते, इसलिए प्रस्ताव समीक्षा कार्रवाइयाँ किसी सामान्य होस्ट-साइड एजेंट सत्र या CLI से चलाएँ।
 </Note>
 
-## स्वीकृति और स्वायत्तता
+## सुझाए गए Skills
+
+OpenClaw किसी इंटरैक्टिव टर्न के समाप्त होने पर “अगली बार”, “याद रखें कि” जैसे स्थायी निर्देशों और प्रतिक्रियात्मक सुधारों का पता लगाता है, जिसमें विफल टर्न भी शामिल हैं। अगले टर्न पर, एजेंट `skill_workshop` के माध्यम से सबसे हाल में पहचाने गए कार्यप्रवाह को सहेजने की पेशकश करता है; उपयोगकर्ता तय करता है कि प्रस्ताव बनाना है या नहीं। यह अंतर्निहित सुझाव स्वयं कोई Skill बनाता या बदलता नहीं है। इसके बजाय सीधे लंबित प्रस्ताव बनाने के लिए `skills.workshop.autonomous.enabled` सक्षम करें। Control UI में, Workshop टैब पृष्ठ हेडर में **स्वयं-शिक्षण** टॉगल और खाली प्रस्ताव बोर्ड पर सक्षम करने वाले बटन के रूप में यही सेटिंग प्रदान करता है।
+
+### पिछले सत्र स्कैन करें
+
+Control UI स्वायत्त स्वयं-शिक्षण सक्षम किए बिना पुराने काम की समीक्षा कर सकता है। **Plugins → Workshop** खोलें और **Skill के सुझाव खोजें** चुनें। स्कैन सबसे नए पात्र सत्रों से शुरू होता है और पर्याप्त कार्य की सीमित विंडो की समीक्षा करता है। यह Cron, Heartbeat, हुक, उप-एजेंट, ACP, Plugin-स्वामित्व वाले और आंतरिक समीक्षा सत्रों के साथ-साथ छह से कम मॉडल टर्न वाली बातचीत को छोड़ देता है।
+
+समीक्षक चयनित एजेंट के कॉन्फ़िगर किए गए मॉडल का उपयोग करता है और उसे गोपनीय जानकारी से संशोधित, आकार-सीमित ट्रांसक्रिप्ट बंडल मिलता है। यह अनुभव समीक्षा के समान ही रूढ़िवादी मानदंड लागू करता है: कोई ठोस पुनर्प्राप्ति पैटर्न या स्थिर प्रक्रिया, जो भविष्य में मॉडल या टूल की कम-से-कम दो कॉल हटाए। नियमित कार्य और एकबारगी तथ्यों से कोई प्रस्ताव नहीं बनना चाहिए।
+
+एक स्कैन अधिकतम तीन लंबित प्रस्ताव बना या संशोधित कर सकता है। यह किसी सक्रिय Skill को लागू, अस्वीकार, क्वारंटीन या संपादित नहीं कर सकता। Workshop संचयी कवरेज दिखाता है, उदाहरण के लिए **20 सत्रों की समीक्षा हुई · 18 जून–आज · 2 सुझाव मिले**। स्थायी सबसे-पुराने-सत्र कर्सर से जारी रखने के लिए **पहले का काम स्कैन करें** चुनें। उपलब्ध इतिहास समाप्त हो जाने के बाद, कार्रवाई **नया काम स्कैन करें** बन जाती है।
+
+ऐतिहासिक समीक्षा मैन्युअल होती है, भले ही
+`skills.workshop.autonomous.enabled`, `false` हो। प्रत्येक क्लिक एक मॉडल रन शुरू करता है,
+इसलिए प्रदाता के मूल्य-निर्धारण और डेटा-प्रबंधन की शर्तें लागू होती हैं। कर्सर और कवरेज की संख्याएँ
+साझा OpenClaw स्थिति डेटाबेस में संग्रहीत होती हैं; ट्रांसक्रिप्ट सामग्री को
+स्कैन स्थिति में कॉपी नहीं किया जाता।
+
+स्वायत्त कैप्चर सक्षम होने पर, OpenClaw सफल और पर्याप्त कार्य के बाद तथा संपूर्ण
+एजेंट सिस्टम के निष्क्रिय हो जाने पर एक रूढ़िवादी समीक्षा भी कर सकता है। वह पृथक समीक्षा अधिकतम
+एक लंबित प्रस्ताव बना या संशोधित कर सकती है। वह किसी सक्रिय स्किल को अपडेट नहीं कर सकती या किसी
+प्रस्ताव को लागू, अस्वीकार अथवा क्वारंटीन नहीं कर सकती, भले ही `approvalPolicy`, `"auto"` हो।
+
+सक्षमता, पात्रता, गोपनीयता और लागत के विवरण, प्रस्ताव सीमा तथा समस्या निवारण के लिए
+[स्व-अधिगम](/hi/tools/self-learning) देखें।
+
+## अनुमोदन और स्वायत्तता
 
 ```json5
 {
@@ -173,7 +221,7 @@ action: create | update | revise | list | inspect | apply | reject | quarantine
         enabled: false,
       },
       allowSymlinkTargetWrites: false,
-      approvalPolicy: "pending",
+      approvalPolicy: "auto",
       maxPending: 50,
       maxSkillBytes: 40000,
     },
@@ -181,29 +229,61 @@ action: create | update | revise | list | inspect | apply | reject | quarantine
 }
 ```
 
-- `autonomous.enabled`: सफल turns के बाद durable conversation signals से OpenClaw को pending proposals बनाने की अनुमति देता है। डिफ़ॉल्ट: `false`।
-- `allowSymlinkTargetWrites`: apply को workspace skill symlinks के माध्यम से लिखने की अनुमति देता है जिनका वास्तविक लक्ष्य `skills.load.allowSymlinkTargets` में सूचीबद्ध है। डिफ़ॉल्ट: `false`।
-- `approvalPolicy: "pending"`: agent-initiated `apply`, `reject`, या `quarantine` से पहले approval prompt आवश्यक करता है।
-- `approvalPolicy: "auto"`: उस approval prompt को छोड़ देता है। एजेंट को फिर भी action कॉल करना होगा।
-- `maxPending`: प्रति कार्यस्थल pending और quarantined proposals की सीमा तय करता है।
-- `maxSkillBytes`: proposal body size की सीमा तय करता है। डिफ़ॉल्ट: `40000`।
+| सेटिंग                    | डिफ़ॉल्ट  | प्रभाव                                                                                                                                                              |
+| -------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autonomous.enabled`       | `false`  | स्पष्ट सुधारों से और निष्क्रियता की देरी के बाद ऐसे पर्याप्त पूर्ण किए गए कार्य से लंबित प्रस्ताव बनाता है, जिसमें पुनः उपयोग योग्य पुनर्प्राप्ति या सार्थक राउंड-ट्रिप बचत हो।   |
+| `allowSymlinkTargetWrites` | `false`  | लागू करने की कार्रवाई को उन वर्कस्पेस स्किल सिमलिंक के माध्यम से लिखने देता है जिनका वास्तविक लक्ष्य `skills.load.allowSymlinkTargets` में सूचीबद्ध है।                                                 |
+| `approvalPolicy`           | `"auto"` | `"auto"`, एजेंट द्वारा शुरू किए गए `apply`, `reject`, या `quarantine` के लिए अतिरिक्त संकेत छोड़ देता है (एजेंट को फिर भी कार्रवाई कॉल करनी होती है)। `"pending"` के लिए अनुमोदन आवश्यक है। |
+| `maxPending`               | `50`     | प्रति वर्कस्पेस लंबित और क्वारंटीन किए गए प्रस्तावों की सीमा तय करता है (1-200)।                                                                                                       |
+| `maxSkillBytes`            | `40000`  | प्रस्ताव के मुख्य भाग का आकार बाइट में सीमित करता है (1024-200000)।                                                                                                                     |
 
-प्रस्ताव विवरण हमेशा 160 bytes तक सीमित होते हैं।
+स्वायत्त कैप्चर भावी नियमों (उदाहरण के लिए, “अब से”) और प्रतिक्रियात्मक
+सुधारों (उदाहरण के लिए, “मैंने यह नहीं माँगा था”) को पहचानता है। यह नए निर्देशों को विषय के अनुसार
+प्रति टर्न अधिकतम तीन प्रस्तावों में समूहित करता है, शब्दावली के मिलानों को मौजूदा लिखने योग्य वर्कस्पेस स्किल तक भेजता है, और
+जब कोई अन्य सुधार उसी स्किल को लक्षित करता है, तो अपने लंबित प्रस्ताव को संशोधित करता है।
 
-## Gateway methods
+बिना किसी स्पष्ट सुधार के सफल पर्याप्त कार्य के लिए, चयनित मॉडल का एक पृथक रन
+तय करता है कि पूर्ण की गई कार्य-यात्रा रूढ़िवादी प्रस्ताव मानदंड को पूरा करती है या नहीं। अग्रभूमि
+मॉडल को उत्तर देने से पहले सीखने के लिए प्रेरित नहीं किया जाता। पृष्ठभूमि समीक्षक प्रस्ताव के उद्गम के रूप में
+अग्रभूमि रन को सुरक्षित रखता है, सामान्य एजेंट टूल तक पहुँच नहीं सकता और जीवनचक्र संबंधी
+निर्णय नहीं ले सकता। समीक्षा केवल तभी शुरू होती है जब अग्रभूमि रनटाइम अपने सटीक रूप से रिज़ॉल्व किए गए मॉडल और
+`skill_workshop` के वास्तव में उपलब्ध होने—दोनों की रिपोर्ट करता है। इसलिए प्रतिबंधात्मक या अज्ञात टूल नीति
+सुरक्षित रूप से विफल होती है और कोई प्रस्ताव नहीं बनाती।
 
-```text
-skills.proposals.list
-skills.proposals.inspect
-skills.proposals.create
-skills.proposals.update
-skills.proposals.revise
-skills.proposals.apply
-skills.proposals.reject
-skills.proposals.quarantine
-```
+संपूर्ण स्वायत्त समीक्षा व्यवहार और सुरक्षा मॉडल के लिए
+[स्व-अधिगम](/hi/tools/self-learning) देखें।
 
-Read-only methods के लिए `operator.read` आवश्यक है। Mutating methods के लिए `operator.admin` आवश्यक है।
+प्रस्ताव विवरण हमेशा 160 बाइट तक सीमित होते हैं, चाहे
+`maxSkillBytes` कुछ भी हो।
+
+## Gateway विधियाँ
+
+| विधि                             | दायरा            |
+| ---------------------------------- | ---------------- |
+| `skills.proposals.list`            | `operator.read`  |
+| `skills.proposals.inspect`         | `operator.read`  |
+| `skills.proposals.historyStatus`   | `operator.read`  |
+| `skills.proposals.historyScan`     | `operator.admin` |
+| `skills.proposals.create`          | `operator.admin` |
+| `skills.proposals.update`          | `operator.admin` |
+| `skills.proposals.revise`          | `operator.admin` |
+| `skills.proposals.requestRevision` | `operator.admin` |
+| `skills.proposals.apply`           | `operator.admin` |
+| `skills.proposals.reject`          | `operator.admin` |
+| `skills.proposals.quarantine`      | `operator.admin` |
+| `skills.curator.status`            | `operator.read`  |
+| `skills.curator.pin`               | `operator.admin` |
+| `skills.curator.unpin`             | `operator.admin` |
+| `skills.curator.restore`           | `operator.admin` |
+
+`requestRevision` केवल Gateway के लिए है (कोई CLI या एजेंट-टूल समकक्ष नहीं): यह
+उन UI के लिए, जो एजेंट से शाब्दिक नई सामग्री जमा करने के बजाय संशोधन करने को कहते हैं,
+`PROPOSAL.md` को सीधे बदलने के बजाय मुक्त-पाठ संशोधन निर्देश स्वामी एजेंट के चैट सत्र को
+अग्रेषित करता है।
+
+`historyStatus` और `historyScan` Control UI समर्थन विधियाँ हैं। `historyScan`
+`direction: "older" | "newer"` स्वीकार करता है; यह परिणामों को हमेशा लंबित
+प्रस्ताव के रूप में ही रखता है।
 
 ## संग्रहण
 
@@ -221,37 +301,50 @@ Read-only methods के लिए `operator.read` आवश्यक है। 
     templates/
 ```
 
-डिफ़ॉल्ट state directory: `~/.openclaw`।
+डिफ़ॉल्ट स्थिति डायरेक्टरी: `~/.openclaw`।
 
-- `proposal.json`: canonical proposal record।
-- `proposals.json`: तेज़ listing index, proposal folders से rebuild किया जा सकता है।
-- `PROPOSAL.md`: pending skill proposal।
-- `rollback.json`: apply द्वारा live files बदलने से पहले लिखा गया recovery metadata।
+- `proposal.json`: प्रामाणिक प्रस्ताव रिकॉर्ड।
+- `proposals.json`: तेज़ सूचीकरण सूचकांक, जिसे प्रस्ताव फ़ोल्डरों से पुनः बनाया जा सकता है।
+- `PROPOSAL.md`: लंबित स्किल प्रस्ताव।
+- `rollback.json`: लागू करने की कार्रवाई द्वारा सक्रिय फ़ाइलें बदलने से पहले लिखे गए पुनर्प्राप्ति मेटाडेटा।
 
-## सीमाएं
+## सीमाएँ
 
-- विवरण: 160 bytes।
-- प्रस्ताव body: `skills.workshop.maxSkillBytes` (डिफ़ॉल्ट 40,000)।
-- सहायक फ़ाइलें: प्रति प्रस्ताव 64।
-- सहायक फ़ाइल आकार: प्रत्येक 256 KB, कुल 2 MB।
-- Pending और quarantined proposals: प्रति कार्यस्थल `skills.workshop.maxPending` (डिफ़ॉल्ट 50)।
+| सीमा                           | मान                                                                |
+| ------------------------------- | -------------------------------------------------------------------- |
+| विवरण                     | 160 बाइट                                                            |
+| प्रस्ताव का मुख्य भाग                   | `skills.workshop.maxSkillBytes` (डिफ़ॉल्ट 40,000; अधिकतम सीमा 1 MiB) |
+| सहायक फ़ाइलें                   | प्रति प्रस्ताव 64                                                      |
+| सहायक फ़ाइल का आकार               | प्रत्येक 256 KiB, कुल 2 MiB                                            |
+| लंबित + क्वारंटीन किए गए प्रस्ताव | प्रति वर्कस्पेस `skills.workshop.maxPending` (डिफ़ॉल्ट 50)              |
 
 ## समस्या निवारण
 
 | समस्या                                        | समाधान                                                                                                                                                                                                  |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Skill proposal description is too large`      | `description` को 160 bytes या उससे कम तक छोटा करें।                                                                                                                                                                 |
-| `Skill proposal content is too large`          | proposal body को छोटा करें या `skills.workshop.maxSkillBytes` बढ़ाएं।                                                                                                                                         |
-| `Target skill changed after proposal creation` | वर्तमान लक्ष्य के विरुद्ध proposal को revise करें, या नया proposal बनाएं।                                                                                                                                   |
-| `Proposal scan failed`                         | scanner findings का निरीक्षण करें, फिर proposal को revise या quarantine करें।                                                                                                                                           |
-| `untrusted symlink target`                     | `skills.load.allowSymlinkTargets` कॉन्फ़िगर करें और `skills.workshop.allowSymlinkTargetWrites` केवल जानबूझकर साझा skill roots के लिए सक्षम करें।                                                                  |
-| `Support file paths must be under one of...`   | support files को `assets/`, `examples/`, `references/`, `scripts/`, या `templates/` के अंतर्गत ले जाएं।                                                                                                                |
-| Proposal does not show in list                 | चुने गए `--agent` कार्यस्थल और `OPENCLAW_STATE_DIR` की जांच करें।                                                                                                                                            |
-| Agent cannot call `skill_workshop`             | सक्रिय tool policy और run mode की जांच करें। `coding` tool शामिल करता है; restrictive `tools.allow` policies में इसे स्पष्ट रूप से सूचीबद्ध करना होगा, और sandboxed runs को सामान्य host-side agent session या CLI का उपयोग करना होगा। |
+| `Skill proposal description is too large`      | `description` को 160 बाइट या उससे कम करें।                                                                                                                                                                 |
+| `Skill proposal content is too large`          | प्रस्ताव का मुख्य भाग छोटा करें या `skills.workshop.maxSkillBytes` बढ़ाएँ।                                                                                                                                         |
+| `Target skill changed after proposal creation` | वर्तमान लक्ष्य के अनुसार प्रस्ताव संशोधित करें या नया प्रस्ताव बनाएँ।                                                                                                                                   |
+| `Proposal scan failed`                         | स्कैनर के निष्कर्षों का निरीक्षण करें, फिर प्रस्ताव को संशोधित या क्वारंटीन करें।                                                                                                                                           |
+| `untrusted symlink target`                     | `skills.load.allowSymlinkTargets` कॉन्फ़िगर करें और `skills.workshop.allowSymlinkTargetWrites` को केवल जानबूझकर साझा किए गए स्किल रूट के लिए सक्षम करें।                                                                  |
+| `Support file paths must be under one of...`   | सहायक फ़ाइलों को `assets/`, `examples/`, `references/`, `scripts/`, या `templates/` के अंतर्गत ले जाएँ।                                                                                                                |
+| प्रस्ताव सूची में दिखाई नहीं देता                 | चयनित `--agent` वर्कस्पेस और `OPENCLAW_STATE_DIR` जाँचें।                                                                                                                                            |
+| एजेंट `skill_workshop` कॉल नहीं कर सकता             | सक्रिय टूल नीति और रन मोड जाँचें। `coding` में टूल शामिल है; प्रतिबंधात्मक `tools.allow` नीतियों में इसे स्पष्ट रूप से सूचीबद्ध करना आवश्यक है और सैंडबॉक्स किए गए रन को सामान्य होस्ट-साइड एजेंट सत्र या CLI का उपयोग करना चाहिए। |
+
+### टूल-नीति निदान
+
+स्वायत्त कैप्चर सक्षम होने पर, `openclaw doctor` डिफ़ॉल्ट एजेंट के लिए
+`core/doctor/skill-workshop-tool-policy` जाँच चलाता है। यदि नीति
+`skill_workshop` छिपाती है, तो चेतावनी पहले बहिष्कृत करने वाले कॉन्फ़िगरेशन स्तर और
+किए जाने वाले सटीक `allow` या `alsoAllow` परिवर्तन का नाम बताती है। पुराने रनबुक अब भी
+`openclaw plugins inspect skill-workshop` का उपयोग कर सकते हैं; वह कमांड अब स्पष्ट करता है कि Skill
+Workshop अंतर्निर्मित है और लागू होने पर वही नीति संकेत प्रिंट करता है।
 
 ## संबंधित
 
-- [Skills](/hi/tools/skills) load order, precedence, और visibility के लिए
-- [Skills बनाना](/hi/tools/creating-skills) हाथ से लिखे गए `SKILL.md` की बुनियादी बातों के लिए
-- [Skills config](/hi/tools/skills-config) पूर्ण `skills.workshop` schema के लिए
-- [Skills CLI](/hi/cli/skills) `openclaw skills` commands के लिए
+- लोड क्रम, प्राथमिकता और दृश्यता के लिए [Skills](/hi/tools/skills)
+- रूढ़िवादी पोस्ट-रन स्किल प्रस्तावों के लिए [स्व-अधिगम](/hi/tools/self-learning)
+- हाथ से लिखे गए `SKILL.md` के
+  मूल सिद्धांतों के लिए [स्किल बनाना](/hi/tools/creating-skills)
+- संपूर्ण `skills.workshop` स्कीमा के लिए [स्किल कॉन्फ़िगरेशन](/hi/tools/skills-config)
+- `openclaw skills` कमांड के लिए [Skills CLI](/hi/cli/skills)

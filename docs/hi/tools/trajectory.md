@@ -1,113 +1,104 @@
 ---
 read_when:
-    - यह डीबग करना कि किसी एजेंट ने किसी खास तरीके से उत्तर क्यों दिया, विफल क्यों हुआ, या टूल क्यों कॉल किए
+    - किसी एजेंट ने उत्तर क्यों दिया, विफल क्यों हुआ, या टूल्स को किसी खास तरीके से क्यों कॉल किया—इसकी डीबगिंग करना
     - OpenClaw सत्र के लिए सहायता बंडल निर्यात करना
     - प्रॉम्प्ट संदर्भ, टूल कॉल, रनटाइम त्रुटियों या उपयोग मेटाडेटा की जाँच करना
-    - ट्रैजेक्टरी कैप्चर को अक्षम करना या स्थानांतरित करना
-summary: OpenClaw एजेंट सत्र की डीबगिंग के लिए गोपनीय अंश हटाए गए प्रक्षेपवक्र बंडल निर्यात करें
+    - ट्रैजेक्टरी कैप्चर अक्षम करना
+summary: OpenClaw एजेंट सत्र की डीबगिंग के लिए संपादित ट्रैजेक्टरी बंडल निर्यात करें
 title: ट्रैजेक्टरी बंडल
 x-i18n:
-    generated_at: "2026-06-29T00:25:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:38:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf48616c29a1055f26d39a88869c025db7e6261b13dcaa0cd35be438c6a86a88
+    source_hash: 7fc494732b6239ad4ea58dca3920a47cb7433c680e7566855dd265c986b55e74
     source_path: tools/trajectory.md
     workflow: 16
 ---
 
-ट्रैजेक्टरी कैप्चर OpenClaw का प्रति-सत्र फ्लाइट रिकॉर्डर है। यह हर agent run के लिए
-एक संरचित टाइमलाइन रिकॉर्ड करता है, फिर `/export-trajectory` वर्तमान सत्र को
-एक संशोधित support bundle में पैकेज करता है।
+Trajectory कैप्चर OpenClaw का प्रति-सत्र फ़्लाइट रिकॉर्डर है। यह प्रत्येक एजेंट रन के लिए
+एक संरचित समयरेखा रिकॉर्ड करता है, फिर `/export-trajectory` वर्तमान सत्र को
+एक संशोधित सहायता बंडल में पैकेज करता है, जिसमें ये शामिल होते हैं:
 
-इसे तब उपयोग करें जब आपको ऐसे प्रश्नों के उत्तर देने हों:
+- मॉडल को भेजा गया प्रॉम्प्ट, सिस्टम प्रॉम्प्ट और टूल
+- किन ट्रांसक्रिप्ट संदेशों और टूल कॉल के कारण उत्तर मिला
+- क्या रन का समय समाप्त हुआ, उसे निरस्त किया गया, उसका Compaction हुआ या प्रदाता त्रुटि आई
+- कौन-सा मॉडल, plugins, skills और रनटाइम सेटिंग सक्रिय थे
+- प्रदाता द्वारा लौटाया गया उपयोग और प्रॉम्प्ट-कैश मेटाडेटा
 
-- मॉडल को कौन-सा prompt, system prompt, और tools भेजे गए थे?
-- कौन-से transcript messages और tool calls इस उत्तर तक ले गए?
-- क्या run time out हुआ, abort हुआ, compact हुआ, या provider error आई?
-- कौन-सा model, plugins, Skills, और runtime settings सक्रिय थे?
-- provider ने कौन-सा usage और prompt-cache metadata लौटाया?
-
-यदि आप किसी live Gateway issue के लिए व्यापक support report दाखिल कर रहे हैं, तो
-[`/diagnostics`](/hi/gateway/diagnostics#chat-command) से शुरू करें। Diagnostics
-sanitized Gateway bundle इकट्ठा करता है और, OpenAI Codex harness sessions के लिए,
-approval के बाद Codex feedback को OpenAI servers पर भी भेज सकता है। `/export-trajectory`
-का उपयोग तब करें जब आपको विशेष रूप से विस्तृत प्रति-सत्र prompt, tool, और transcript
-timeline चाहिए।
+व्यापक Gateway सहायता रिपोर्ट के लिए इसके बजाय
+[`/diagnostics`](/hi/gateway/diagnostics#chat-command) से शुरू करें; यह
+साफ़ किया गया Gateway बंडल एकत्र करता है और OpenAI Codex हार्नेस सत्रों के लिए,
+स्वीकृति के बाद Codex फ़ीडबैक OpenAI को भेज सकता है। जब आपको विस्तृत
+प्रति-सत्र प्रॉम्प्ट, टूल और ट्रांसक्रिप्ट समयरेखा चाहिए, तब `/export-trajectory` का उपयोग करें।
 
 ## त्वरित शुरुआत
 
-इसे सक्रिय सत्र में भेजें:
+सक्रिय सत्र में भेजें (उपनाम `/trajectory`):
 
 ```text
 /export-trajectory
 ```
 
-Alias:
-
-```text
-/trajectory
-```
-
-OpenClaw bundle को workspace के अंतर्गत लिखता है:
+OpenClaw बंडल को कार्यस्थान के अंतर्गत लिखता है:
 
 ```text
 .openclaw/trajectory-exports/openclaw-trajectory-<session>-<timestamp>/
 ```
 
-आप एक relative output directory name चुन सकते हैं:
+इसे ओवरराइड करने के लिए सापेक्ष आउटपुट डायरेक्टरी नाम दें:
 
 ```text
 /export-trajectory bug-1234
 ```
 
-custom path `.openclaw/trajectory-exports/` के अंदर resolve किया जाता है। Absolute
-paths और `~` paths अस्वीकार किए जाते हैं।
+नाम `.openclaw/trajectory-exports/` के भीतर रिज़ॉल्व होता है। निरपेक्ष पथ और
+`~` पथ अस्वीकार कर दिए जाते हैं।
 
-Trajectory bundles में prompts, model messages, tool schemas, tool results,
-runtime events, और local paths हो सकते हैं। इसलिए chat slash command हर बार
-exec approval से होकर चलता है। जब आप bundle बनाना चाहते हों, तो export को एक बार
-approve करें; allow-all का उपयोग न करें। group chats में, OpenClaw approval prompt
-और export result को shared room में trajectory details वापस पोस्ट करने के बजाय
-owner को privately भेजता है।
+Trajectory बंडल में प्रॉम्प्ट, मॉडल संदेश, टूल स्कीमा, टूल
+परिणाम, रनटाइम इवेंट और स्थानीय पथ हो सकते हैं, इसलिए चैट कमांड हमेशा
+exec स्वीकृति से होकर चलता है। जब आप बंडल बनाना चाहते हों, तो निर्यात को
+एक बार स्वीकृत करें; सभी को अनुमति देने वाले विकल्प का उपयोग न करें। समूह चैट में OpenClaw
+Trajectory विवरण साझा कक्ष में वापस पोस्ट करने के बजाय स्वीकृति
+प्रॉम्प्ट और निर्यात परिणाम स्वामी को निजी रूप से भेजता है।
 
-local inspection या support workflows के लिए, आप approved command path को सीधे भी चला सकते हैं:
+स्थानीय निरीक्षण या सहायता वर्कफ़्लो के लिए, अंतर्निहित CLI कमांड
+सीधे चलाएँ:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
 ```
 
-## पहुंच
+अन्य फ़्लैग: `--output <path>` (`.openclaw/trajectory-exports` के भीतर
+डायरेक्टरी नाम), `--store <path>` (सत्र स्टोर ओवरराइड),
+`--agent <id>` (स्टोर रिज़ॉल्यूशन के लिए एजेंट आईडी), `--json` (संरचित आउटपुट)।
 
-Trajectory export एक owner command है। sender को channel के लिए सामान्य command
-authorization checks और owner checks पास करने होंगे।
+## पहुँच
 
-## क्या रिकॉर्ड होता है
+Trajectory निर्यात एक स्वामी कमांड है। प्रेषक को सामान्य कमांड
+प्राधिकरण जाँचों के साथ चैनल की स्वामी जाँच भी पास करनी होगी।
 
-OpenClaw agent runs के लिए Trajectory capture default रूप से चालू है।
+## क्या रिकॉर्ड किया जाता है
 
-Runtime events में शामिल हैं:
+OpenClaw एजेंट रन के लिए Trajectory कैप्चर डिफ़ॉल्ट रूप से चालू होता है।
+
+रनटाइम इवेंट में ये शामिल हैं:
 
 - `session.started`
 - `trace.metadata`
 - `context.compiled`
 - `prompt.submitted`
-- `model.fallback_step`, जिसमें source model, next model, failure reason/detail, chain position, और fallback ने chain को advance किया, सफल हुआ, या exhausted किया, यह शामिल है
+- `model.fallback_step`, जिसमें स्रोत मॉडल, अगला मॉडल, विफलता का कारण/विवरण, शृंखला की स्थिति और यह शामिल है कि शृंखला आगे बढ़ी, सफल हुई या समाप्त हो गई
 - `model.completed`
 - `trace.artifacts`
 - `session.ended`
 
-Transcript events भी active session branch से पुनर्निर्मित किए जाते हैं:
+ट्रांसक्रिप्ट इवेंट सक्रिय सत्र शाखा से पुनर्निर्मित किए जाते हैं: उपयोगकर्ता
+संदेश, सहायक संदेश, टूल कॉल, टूल परिणाम, Compaction, मॉडल
+परिवर्तन, लेबल और कस्टम सत्र प्रविष्टियाँ।
 
-- user messages
-- assistant messages
-- tool calls
-- tool results
-- compactions
-- model changes
-- labels और custom session entries
-
-Events को इस schema marker के साथ JSON Lines के रूप में लिखा जाता है:
+इवेंट इस स्कीमा मार्कर के साथ JSON Lines के रूप में लिखे जाते हैं:
 
 ```json
 {
@@ -116,120 +107,100 @@ Events को इस schema marker के साथ JSON Lines के रूप 
 }
 ```
 
-## Bundle files
+## बंडल फ़ाइलें
 
-Exported bundle में ये हो सकते हैं:
-
-| File                  | Contents                                                                                       |
+| फ़ाइल                  | सामग्री                                                                                       |
 | --------------------- | ---------------------------------------------------------------------------------------------- |
-| `manifest.json`       | Bundle schema, source files, event counts, और generated file list                             |
-| `events.jsonl`        | Ordered runtime और transcript timeline                                                        |
-| `session-branch.json` | Redacted active transcript branch और session header                                           |
-| `metadata.json`       | OpenClaw version, OS/runtime, model, config snapshot, plugins, Skills, और prompt metadata     |
-| `artifacts.json`      | Final status, errors, usage, prompt cache, compaction count, assistant text, और tool metadata |
-| `prompts.json`        | Submitted prompts और selected prompt-building details                                         |
-| `system-prompt.txt`   | Latest compiled system prompt, जब capture किया गया हो                                                   |
-| `tools.json`          | model को भेजी गई Tool definitions, जब capture की गई हों                                              |
+| `manifest.json`       | बंडल स्कीमा, स्रोत फ़ाइलें, इवेंट संख्या और जनरेट की गई फ़ाइलों की सूची                             |
+| `events.jsonl`        | क्रमबद्ध रनटाइम और ट्रांसक्रिप्ट समयरेखा                                                        |
+| `session-branch.json` | संशोधित सक्रिय ट्रांसक्रिप्ट शाखा और सत्र हेडर                                           |
+| `metadata.json`       | OpenClaw संस्करण, OS/रनटाइम, मॉडल, कॉन्फ़िगरेशन स्नैपशॉट, plugins, skills और प्रॉम्प्ट मेटाडेटा     |
+| `artifacts.json`      | अंतिम स्थिति, त्रुटियाँ, उपयोग, प्रॉम्प्ट कैश, Compaction संख्या, सहायक टेक्स्ट और टूल मेटाडेटा |
+| `prompts.json`        | सबमिट किए गए प्रॉम्प्ट और चुने गए प्रॉम्प्ट-निर्माण विवरण                                         |
+| `system-prompt.txt`   | कैप्चर किए जाने पर नवीनतम संकलित सिस्टम प्रॉम्प्ट                                                   |
+| `tools.json`          | कैप्चर किए जाने पर मॉडल को भेजी गई टूल परिभाषाएँ                                              |
 
-`manifest.json` उस bundle में मौजूद files की सूची देता है। जब session ने संबंधित
-runtime data capture नहीं किया हो, तो कुछ files छोड़ी जाती हैं।
+`manifest.json` किसी दिए गए बंडल में मौजूद फ़ाइलों की सूची देता है; जब सत्र ने
+संबंधित रनटाइम डेटा कैप्चर नहीं किया हो, तो कुछ फ़ाइलें छोड़ दी जाती हैं।
 
-## Capture location
+## कैप्चर संग्रहण
 
-Default रूप से, runtime trajectory events session file के पास लिखे जाते हैं:
+रनटाइम Trajectory इवेंट प्रति-एजेंट SQLite डेटाबेस में सत्र के साथ
+संग्रहीत किए जाते हैं। Trajectory निर्यात करने पर एक संशोधित JSONL सहायता बंडल तैयार होता है;
+लाइव रनटाइम कैप्चर सत्र के पास स्थित JSONL साइडकार नहीं होता।
 
-```text
-<session>.trajectory.jsonl
-```
+पुराने रिलीज़ या स्पष्ट लेगेसी-फ़ाइल निर्यातों से लेगेसी `.trajectory.jsonl` और `.trajectory-path.json` फ़ाइलें
+अब भी दिखाई दे सकती हैं। सत्र रखरखाव इन
+फ़ाइलों को क्लीनअप लक्ष्य मानता है; सक्रिय कैप्चर डेटाबेस पंक्तियाँ लिखता है।
 
-OpenClaw session के पास एक best-effort pointer file भी लिखता है:
-
-```text
-<session>.trajectory-path.json
-```
-
-runtime trajectory sidecars को dedicated directory में store करने के लिए
-`OPENCLAW_TRAJECTORY_DIR` set करें:
-
-```bash
-export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
-```
-
-जब यह variable set होता है, OpenClaw उस directory में प्रति session id एक JSONL file लिखता है।
-
-Session maintenance trajectory sidecars को तब हटाता है जब उनकी owning session entry
-sessions disk budget द्वारा pruned, capped, या evicted हो जाती है। sessions directory
-के बाहर runtime files केवल तब हटाई जाती हैं जब pointer target अब भी यह साबित करता है
-कि वह उसी session से संबंधित है।
-
-## Capture बंद करें
-
-OpenClaw शुरू करने से पहले `OPENCLAW_TRAJECTORY=0` set करें:
+## कैप्चर अक्षम करें
 
 ```bash
 export OPENCLAW_TRAJECTORY=0
 ```
 
-यह runtime trajectory capture को बंद करता है। `/export-trajectory` अब भी transcript
-branch export कर सकता है, लेकिन compiled context, provider artifacts, और prompt
-metadata जैसी runtime-only files अनुपस्थित हो सकती हैं।
+यह OpenClaw शुरू करने से पहले रनटाइम Trajectory कैप्चर अक्षम करता है।
+`/export-trajectory` अब भी ट्रांसक्रिप्ट शाखा निर्यात कर सकता है, लेकिन केवल रनटाइम
+डेटा, जैसे संकलित कॉन्टेक्स्ट, प्रदाता आर्टिफ़ैक्ट और प्रॉम्प्ट मेटाडेटा,
+अनुपलब्ध हो सकते हैं।
 
-## Flush timeout tune करें
+## फ़्लश टाइमआउट समायोजित करें
 
-OpenClaw agent cleanup के दौरान runtime trajectory sidecars flush करता है। Default
-cleanup timeout 10,000 ms है। धीमे disks या large stores पर, OpenClaw शुरू करने से पहले
-`OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS` set करें:
+OpenClaw एजेंट क्लीनअप के दौरान रनटाइम Trajectory पंक्तियाँ फ़्लश करता है। डिफ़ॉल्ट
+क्लीनअप टाइमआउट 10,000 ms है। धीमी डिस्क या बड़े स्टोर पर OpenClaw शुरू करने से पहले
+`OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS` सेट करें:
 
 ```bash
 export OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS=30000
 ```
 
-यह नियंत्रित करता है कि OpenClaw कब `openclaw-trajectory-flush` timeout log करे और जारी रखे।
-यह trajectory size caps को नहीं बदलता। सभी agent cleanup steps को tune करने के लिए
-जो explicit timeout pass नहीं करते, `OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS` set करें।
+यह नियंत्रित करता है कि OpenClaw कब `openclaw-trajectory-flush` टाइमआउट लॉग करके
+आगे बढ़ता है; यह Trajectory आकार सीमाएँ नहीं बदलता। उन सभी एजेंट
+क्लीनअप चरणों को समायोजित करने के लिए, जो स्पष्ट टाइमआउट नहीं देते,
+`OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS` सेट करें।
 
-## Privacy and limits
+## गोपनीयता और सीमाएँ
 
-Trajectory bundles support और debugging के लिए design किए गए हैं, public posting के लिए नहीं।
-OpenClaw export files लिखने से पहले sensitive values redact करता है:
+Trajectory बंडल सहायता और डीबगिंग के लिए हैं, सार्वजनिक रूप से पोस्ट करने के लिए नहीं। OpenClaw
+निर्यात फ़ाइलें लिखने से पहले संवेदनशील मान संशोधित करता है:
 
-- credentials और ज्ञात secret-like payload fields
-- image data
-- local state paths
-- workspace paths, जिन्हें `$WORKSPACE_DIR` से replace किया जाता है
-- home directory paths, जहां detect हों
+- क्रेडेंशियल और ज्ञात सीक्रेट-जैसे पेलोड फ़ील्ड
+- इमेज डेटा
+- स्थानीय स्थिति पथ
+- कार्यस्थान पथ, जिन्हें `$WORKSPACE_DIR` से बदला जाता है
+- होम डायरेक्टरी पथ, जहाँ उनका पता चलता है
 
-exporter input size को भी सीमित करता है:
+निर्यातक इनपुट आकार को भी सीमित करता है:
 
-- runtime sidecar files: live capture 10 MiB पर रुक जाता है और space remaining होने पर truncation event record करता है; export मौजूदा runtime sidecars को 50 MiB तक accept करता है
-- session files: 50 MiB
-- runtime events: 200,000
-- total exported events: 250,000
-- individual runtime event lines 256 KiB से ऊपर truncate किए जाते हैं
+- रनटाइम कैप्चर: लाइव कैप्चर 10 MiB तक सीमित रोलिंग विंडो है, जो नए इवेंट के लिए जगह बनाने हेतु सबसे पुराने इवेंट हटाती है; निर्यात 50 MiB तक की मौजूदा लेगेसी रनटाइम साइडकार फ़ाइलें स्वीकार करता है
+- सत्र फ़ाइलें: 50 MiB
+- प्रति निर्यात रनटाइम इवेंट: 200,000
+- कुल निर्यातित इवेंट: 250,000
+- अलग-अलग रनटाइम इवेंट पंक्तियाँ 256 KiB से ऊपर काट दी जाती हैं
 
-Bundles को अपनी team के बाहर share करने से पहले review करें। Redaction best-effort है
-और हर application-specific secret को नहीं जान सकता।
+बंडल को अपनी टीम से बाहर साझा करने से पहले उसकी समीक्षा करें। संशोधन सर्वोत्तम प्रयास के आधार पर होता है
+और प्रत्येक एप्लिकेशन-विशिष्ट सीक्रेट को नहीं जान सकता।
 
-## Troubleshooting
+## समस्या निवारण
 
-यदि export में कोई runtime events नहीं हैं:
+यदि निर्यात में कोई रनटाइम इवेंट नहीं है:
 
-- confirm करें कि OpenClaw `OPENCLAW_TRAJECTORY=0` के बिना शुरू किया गया था
-- check करें कि `OPENCLAW_TRAJECTORY_DIR` writable directory की ओर point करता है या नहीं
-- session में एक और message run करें, फिर फिर से export करें
-- `runtimeEventCount` के लिए `manifest.json` inspect करें
+- पुष्टि करें कि OpenClaw को `OPENCLAW_TRAJECTORY=0` के बिना शुरू किया गया था
+- सत्र में एक और संदेश चलाएँ, फिर दोबारा निर्यात करें
+- `runtimeEventCount` के लिए `manifest.json` का निरीक्षण करें
 
-यदि command output path reject करता है:
+यदि कमांड आउटपुट पथ अस्वीकार करता है:
 
-- `bug-1234` जैसा relative name use करें
-- `/tmp/...` या `~/...` pass न करें
-- export को `.openclaw/trajectory-exports/` के अंदर रखें
+- `bug-1234` जैसा सापेक्ष नाम उपयोग करें
+- `/tmp/...` या `~/...` न दें
+- निर्यात को `.openclaw/trajectory-exports/` के भीतर रखें
 
-यदि export size error के साथ fail होता है, तो session या sidecar ने export safety limits
-exceed कर दी हैं। नया session शुरू करें या smaller reproduction export करें।
+यदि आकार त्रुटि के साथ निर्यात विफल होता है, तो सत्र या साइडकार ने ऊपर दी गई
+निर्यात सुरक्षा सीमाएँ पार कर दी हैं। नया सत्र शुरू करें या छोटा
+पुनरुत्पादन निर्यात करें।
 
-## Related
+## संबंधित
 
-- [Diffs](/hi/tools/diffs)
-- [Session management](/hi/concepts/session)
-- [Exec tool](/hi/tools/exec)
+- [अंतर](/hi/tools/diffs)
+- [सत्र प्रबंधन](/hi/concepts/session)
+- [Exec टूल](/hi/tools/exec)

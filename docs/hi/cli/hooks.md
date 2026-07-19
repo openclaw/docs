@@ -1,353 +1,133 @@
 ---
 read_when:
-    - आप agent hooks प्रबंधित करना चाहते हैं
+    - आप एजेंट हुक प्रबंधित करना चाहते हैं
     - आप हुक की उपलब्धता जाँचना या वर्कस्पेस हुक सक्षम करना चाहते हैं
 summary: '`openclaw hooks` (एजेंट हुक्स) के लिए CLI संदर्भ'
 title: हुक्स
 x-i18n:
-    generated_at: "2026-06-28T22:49:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:10:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-एजेंट hooks प्रबंधित करें (`/new`, `/reset`, और gateway startup जैसे कमांड के लिए event-driven automation).
+एजेंट हुक प्रबंधित करें (इवेंट-संचालित ऑटोमेशन, जो `/new`, `/reset` और Gateway स्टार्टअप जैसे कमांड के लिए होते हैं)। केवल `openclaw hooks`, `openclaw hooks list` के समतुल्य है।
 
-बिना subcommand के `openclaw hooks` चलाना `openclaw hooks list` के बराबर है।
+संबंधित: [हुक](/hi/automation/hooks) - [Plugin हुक](/hi/plugins/hooks)
 
-संबंधित:
-
-- Hooks: [Hooks](/hi/automation/hooks)
-- Plugin hooks: [Plugin hooks](/hi/plugins/hooks)
-
-## सभी hooks सूचीबद्ध करें
+## हुक सूचीबद्ध करें
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-workspace, managed, extra, और bundled directories से खोजे गए सभी hooks सूचीबद्ध करें।
-Gateway startup आंतरिक hook handlers को तब तक लोड नहीं करता जब तक कम से कम एक आंतरिक hook कॉन्फ़िगर न हो।
+वर्कस्पेस, प्रबंधित, अतिरिक्त और बंडल की गई डायरेक्टरियों से खोजे गए हुक सूचीबद्ध करता है।
 
-**विकल्प:**
-
-- `--eligible`: केवल eligible hooks दिखाएं (requirements पूरी)
-- `--json`: JSON के रूप में output दें
-- `-v, --verbose`: missing requirements सहित विस्तृत जानकारी दिखाएं
-
-**उदाहरण output:**
+- `--eligible`: केवल वे हुक जिनकी आवश्यकताएँ पूरी होती हैं।
+- `--json`: संरचित आउटपुट।
+- `-v, --verbose`: पूरी न हुई आवश्यकताओं के साथ Missing कॉलम शामिल करें।
 
 ```
-Hooks (4/4 ready)
+हुक (4/5 तैयार)
 
-Ready:
-  🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
-  📝 command-logger ✓ - Log all command events to a centralized audit file
-  💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
+तैयार:
+  🚀 boot-md ✓ - Gateway स्टार्टअप पर BOOT.md चलाएँ
+  📎 bootstrap-extra-files ✓ - एजेंट बूटस्ट्रैप के दौरान अतिरिक्त वर्कस्पेस बूटस्ट्रैप फ़ाइलें इंजेक्ट करें
+  📝 command-logger ✓ - सभी कमांड इवेंट को एक केंद्रीकृत ऑडिट फ़ाइल में लॉग करें
+  💾 session-memory ✓ - /new या /reset कमांड जारी होने पर सत्र संदर्भ को मेमोरी में सहेजें
 ```
 
-**उदाहरण (verbose):**
+## हुक की जानकारी प्राप्त करें
 
 ```bash
-openclaw hooks list --verbose
+openclaw hooks info <name> [--json]
 ```
 
-ineligible hooks के लिए missing requirements दिखाता है।
+`<name>` हुक का नाम या हुक कुंजी है (उदाहरण के लिए `session-memory`)। स्रोत, फ़ाइल/हैंडलर पथ, होमपेज, इवेंट और प्रत्येक आवश्यकता की स्थिति (बाइनरी, env, कॉन्फ़िगरेशन, OS) दिखाता है।
 
-**उदाहरण (JSON):**
+## पात्रता जाँचें
 
 ```bash
-openclaw hooks list --json
+openclaw hooks check [--json]
 ```
 
-programmatic उपयोग के लिए structured JSON लौटाता है।
+तैयार/तैयार-नहीं संख्या का सारांश प्रिंट करता है; तैयार न होने वाले हुक के लिए प्रत्येक हुक को उसके अवरोधक कारण सहित सूचीबद्ध करता है।
 
-## Hook जानकारी प्राप्त करें
-
-```bash
-openclaw hooks info <name>
-```
-
-किसी विशिष्ट hook के बारे में विस्तृत जानकारी दिखाएं।
-
-**Arguments:**
-
-- `<name>`: Hook name या hook key (उदा., `session-memory`)
-
-**विकल्प:**
-
-- `--json`: JSON के रूप में output दें
-
-**उदाहरण:**
-
-```bash
-openclaw hooks info session-memory
-```
-
-**Output:**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## Hooks eligibility जांचें
-
-```bash
-openclaw hooks check
-```
-
-hook eligibility status का सारांश दिखाएं (कितने ready हैं बनाम not ready).
-
-**विकल्प:**
-
-- `--json`: JSON के रूप में output दें
-
-**उदाहरण output:**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
-
-## Hook सक्षम करें
+## हुक सक्षम करें
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-किसी विशिष्ट hook को अपने config में जोड़कर सक्षम करें (default रूप से `~/.openclaw/openclaw.json`).
+कॉन्फ़िगरेशन में `hooks.internal.entries.<name>.enabled = true` जोड़ता/अपडेट करता है और `hooks.internal.enabled` मास्टर स्विच भी चालू करता है (जब तक कम-से-कम एक हुक कॉन्फ़िगर न हो, Gateway कोई आंतरिक हुक हैंडलर लोड नहीं करता)। यदि हुक मौजूद नहीं है, Plugin द्वारा प्रबंधित है या पात्र नहीं है (आवश्यकताएँ अनुपलब्ध हैं), तो यह विफल हो जाता है।
 
-**नोट:** Workspace hooks default रूप से disabled रहते हैं जब तक यहां या config में enabled न किए जाएं। plugins द्वारा managed hooks `openclaw hooks list` में `plugin:<id>` दिखाते हैं और यहां enabled/disabled नहीं किए जा सकते। इसके बजाय plugin को enable/disable करें।
+Plugin द्वारा प्रबंधित हुक `hooks list` में `plugin:<id>` दिखाते हैं और उन्हें यहाँ सक्षम/अक्षम नहीं किया जा सकता; इसके बजाय स्वामी Plugin को सक्षम या अक्षम करें।
 
-**Arguments:**
+सक्षम करने के बाद Gateway पुनः आरंभ करें (macOS मेनू बार ऐप को पुनः आरंभ करें या dev में अपनी Gateway प्रक्रिया पुनः आरंभ करें), ताकि वह हुक फिर से लोड करे।
 
-- `<name>`: Hook name (उदा., `session-memory`)
-
-**उदाहरण:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Output:**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**यह क्या करता है:**
-
-- जांचता है कि hook मौजूद है और eligible है
-- आपके config में `hooks.internal.entries.<name>.enabled = true` अपडेट करता है
-- config को disk पर सहेजता है
-
-यदि hook `<workspace>/hooks/` से आया है, तो Gateway द्वारा उसे लोड करने से पहले
-यह opt-in step आवश्यक है।
-
-**सक्षम करने के बाद:**
-
-- gateway restart करें ताकि hooks reload हों (macOS पर menu bar app restart, या dev में अपना gateway process restart करें).
-
-## Hook अक्षम करें
+## हुक अक्षम करें
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-अपने config को अपडेट करके किसी विशिष्ट hook को अक्षम करें।
+`hooks.internal.entries.<name>.enabled = false` सेट करता है। इसके बाद Gateway पुनः आरंभ करें।
 
-**Arguments:**
-
-- `<name>`: Hook name (उदा., `command-logger`)
-
-**उदाहरण:**
+## हुक पैक इंस्टॉल और अपडेट करें
 
 ```bash
-openclaw hooks disable command-logger
-```
+openclaw plugins install <package>        # डिफ़ॉल्ट रूप से npm
+openclaw plugins install npm:<package>    # केवल npm
+openclaw plugins install <package> --pin  # रिज़ॉल्व किया गया संस्करण पिन करें
+openclaw plugins install <path>           # स्थानीय डायरेक्टरी या आर्काइव
+openclaw plugins install -l <path>        # कॉपी करने के बजाय स्थानीय डायरेक्टरी लिंक करें
 
-**Output:**
-
-```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**अक्षम करने के बाद:**
-
-- gateway restart करें ताकि hooks reload हों
-
-## नोट्स
-
-- `openclaw hooks list --json`, `info --json`, और `check --json` structured JSON को सीधे stdout पर लिखते हैं।
-- Plugin-managed hooks यहां enabled या disabled नहीं किए जा सकते; इसके बजाय owning plugin को enable या disable करें।
-
-## Hook packs install करें
-
-```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
-
-unified plugins installer के माध्यम से hook packs install करें।
-
-`openclaw hooks install` अब भी compatibility alias के रूप में काम करता है, लेकिन यह
-deprecation warning print करता है और `openclaw plugins install` को forward करता है।
-
-Npm specs **केवल registry** हैं (package name + optional **exact version** या
-**dist-tag**). Git/URL/file specs और semver ranges अस्वीकार किए जाते हैं। Dependency
-installs सुरक्षा के लिए `--ignore-scripts` के साथ project-local चलते हैं, तब भी जब आपके
-shell में global npm install settings हों।
-
-Bare specs और `@latest` stable track पर रहते हैं। यदि npm इनमें से किसी को
-prerelease पर resolve करता है, तो OpenClaw रुकता है और आपसे `@beta`/`@rc` जैसे
-prerelease tag या exact prerelease version के साथ स्पष्ट opt in करने को कहता है।
-
-**यह क्या करता है:**
-
-- hook pack को `~/.openclaw/hooks/<id>` में copy करता है
-- installed hooks को `hooks.internal.entries.*` में enable करता है
-- install को `hooks.internal.installs` के अंतर्गत record करता है
-
-**विकल्प:**
-
-- `-l, --link`: copy करने के बजाय local directory link करें (इसे `hooks.internal.load.extraDirs` में जोड़ता है)
-- `--pin`: npm installs को `hooks.internal.installs` में exact resolved `name@version` के रूप में record करें
-
-**Supported archives:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
-
-**उदाहरण:**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-Linked hook packs को operator-configured directory से managed hooks माना जाता है,
-workspace hooks नहीं।
-
-## Hook packs update करें
-
-```bash
 openclaw plugins update <id>
 openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-unified plugins updater के माध्यम से tracked npm-based hook packs update करें।
+हुक पैक एकीकृत Plugin इंस्टॉलर/अपडेटर के माध्यम से इंस्टॉल होते हैं; `openclaw hooks install` / `openclaw hooks update` अब भी बहिष्कृत उपनामों के रूप में काम करते हैं, जो चेतावनी प्रिंट करके `plugins` कमांड को अग्रेषित करते हैं।
 
-`openclaw hooks update` अब भी compatibility alias के रूप में काम करता है, लेकिन यह
-deprecation warning print करता है और `openclaw plugins update` को forward करता है।
+- Npm स्पेसिफ़िकेशन केवल रजिस्ट्री के लिए हैं: पैकेज नाम और वैकल्पिक सटीक संस्करण या dist-tag। Git/URL/फ़ाइल स्पेसिफ़िकेशन और semver श्रेणियाँ अस्वीकार कर दी जाती हैं। डिपेंडेंसी इंस्टॉलेशन `--ignore-scripts` के साथ प्रोजेक्ट में स्थानीय रूप से चलते हैं।
+- साधारण स्पेसिफ़िकेशन और `@latest` स्थिर ट्रैक पर बने रहते हैं; यदि npm किसी प्रीरिलीज़ को रिज़ॉल्व करता है, तो OpenClaw रुक जाता है और आपसे स्पष्ट रूप से ऑप्ट-इन करने को कहता है (`@beta`, `@rc` या कोई सटीक प्रीरिलीज़ संस्करण)।
+- समर्थित आर्काइव: `.zip`, `.tgz`, `.tar.gz`, `.tar`।
+- `-l, --link` किसी स्थानीय डायरेक्टरी को कॉपी करने के बजाय लिंक करता है (उसे `hooks.internal.load.extraDirs` में जोड़ता है); लिंक किए गए हुक पैक ऑपरेटर द्वारा कॉन्फ़िगर की गई डायरेक्टरी के प्रबंधित हुक हैं, वर्कस्पेस हुक नहीं।
+- `--pin`, npm इंस्टॉलेशन को `hooks.internal.installs` में सटीक रूप से रिज़ॉल्व किए गए `name@version` के रूप में रिकॉर्ड करता है।
+- इंस्टॉलेशन पैक को `~/.openclaw/hooks/<id>` में कॉपी करता है, उसके हुक को `hooks.internal.entries.*` के अंतर्गत सक्षम करता है और इंस्टॉलेशन को `hooks.internal.installs` के अंतर्गत रिकॉर्ड करता है।
+- यदि संग्रहीत इंटेग्रिटी हैश अब प्राप्त आर्टिफ़ैक्ट से मेल नहीं खाता, तो OpenClaw चेतावनी देता है और जारी रखने से पहले संकेत देता है; संकेत को छोड़ने के लिए वैश्विक `--yes` पास करें (उदाहरण के लिए CI में)।
 
-**विकल्प:**
+## बंडल किए गए हुक
 
-- `--all`: सभी tracked hook packs update करें
-- `--dry-run`: लिखे बिना दिखाएं कि क्या बदलेगा
+| हुक                   | इवेंट                                             | यह क्या करता है                                                                                       |
+| --------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                 | प्रत्येक कॉन्फ़िगर किए गए एजेंट स्कोप के लिए Gateway स्टार्टअप पर `BOOT.md` चलाता है                                  |
+| bootstrap-extra-files | `agent:bootstrap`                                 | एजेंट बूटस्ट्रैप के दौरान अतिरिक्त बूटस्ट्रैप फ़ाइलें (उदाहरण के लिए मोनोरेपो `AGENTS.md`/`TOOLS.md`) इंजेक्ट करता है |
+| command-logger        | `command`                                         | कमांड इवेंट को `~/.openclaw/logs/commands.log` में लॉग करता है                                             |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | सत्र Compaction शुरू और समाप्त होने पर दृश्यमान चैट सूचनाएँ भेजता है                             |
+| session-memory        | `command:new`, `command:reset`                    | `/new` या `/reset` पर सत्र संदर्भ को मेमोरी में सहेजता है                                              |
 
-जब stored integrity hash मौजूद हो और fetched artifact hash बदल जाए,
-OpenClaw warning print करता है और आगे बढ़ने से पहले confirmation मांगता है। CI/non-interactive runs में prompts bypass करने के लिए
-global `--yes` का उपयोग करें।
+किसी भी बंडल किए गए हुक को `openclaw hooks enable <hook-name>` से सक्षम करें। पूर्ण विवरण, कॉन्फ़िगरेशन कुंजियाँ और डिफ़ॉल्ट: [बंडल किए गए हुक](/hi/automation/hooks#bundled-hooks)।
 
-## Bundled hooks
-
-### session-memory
-
-जब आप `/new` या `/reset` issue करते हैं तो session context को memory में सहेजता है।
-
-**सक्षम करें:**
+### command-logger लॉग फ़ाइल
 
 ```bash
-openclaw hooks enable session-memory
+tail -n 20 ~/.openclaw/logs/commands.log        # हाल के कमांड
+cat ~/.openclaw/logs/commands.log | jq .          # सुव्यवस्थित रूप से प्रिंट करें
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # कार्रवाई के अनुसार फ़िल्टर करें
 ```
 
-**Output:** default रूप से `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`. model-generated filename slugs के लिए `hooks.internal.entries.session-memory.llmSlug: true` सेट करें।
+## टिप्पणियाँ
 
-**देखें:** [session-memory documentation](/hi/automation/hooks#session-memory)
-
-### bootstrap-extra-files
-
-`agent:bootstrap` के दौरान अतिरिक्त bootstrap files (उदाहरण के लिए monorepo-local `AGENTS.md` / `TOOLS.md`) inject करता है।
-
-**सक्षम करें:**
-
-```bash
-openclaw hooks enable bootstrap-extra-files
-```
-
-**देखें:** [bootstrap-extra-files documentation](/hi/automation/hooks#bootstrap-extra-files)
-
-### command-logger
-
-सभी command events को centralized audit file में log करता है।
-
-**सक्षम करें:**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**Output:** `~/.openclaw/logs/commands.log`
-
-**Logs देखें:**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**देखें:** [command-logger documentation](/hi/automation/hooks#command-logger)
-
-### boot-md
-
-gateway शुरू होने पर `BOOT.md` चलाता है (channels शुरू होने के बाद).
-
-**Events**: `gateway:startup`
-
-**सक्षम करें**:
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**देखें:** [boot-md documentation](/hi/automation/hooks#boot-md)
+- `hooks list --json`, `info --json` और `check --json` संरचित JSON को सीधे stdout पर लिखते हैं।
 
 ## संबंधित
 
-- [CLI reference](/hi/cli)
-- [Automation hooks](/hi/automation/hooks)
+- [CLI संदर्भ](/hi/cli)
+- [ऑटोमेशन हुक](/hi/automation/hooks)

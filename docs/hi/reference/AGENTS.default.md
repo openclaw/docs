@@ -1,30 +1,31 @@
 ---
 read_when:
     - नया OpenClaw एजेंट सत्र शुरू करना
-    - डिफ़ॉल्ट Skills सक्षम करना या ऑडिट करना
+    - डिफ़ॉल्ट Skills को सक्षम करना या उनका ऑडिट करना
 summary: व्यक्तिगत सहायक सेटअप के लिए डिफ़ॉल्ट OpenClaw एजेंट निर्देश और Skills सूची
 title: डिफ़ॉल्ट AGENTS.md
 x-i18n:
-    generated_at: "2026-06-29T00:05:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:48:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6af0d9e5bb250fe91dda6ad31b7e0b169d94d4e7c19c2fc0943b816b4599ec26
+    source_hash: 645342f8c6e2805135817cf4bbc2c8bd1d57066054ed671eda93876b2762ffb1
     source_path: reference/AGENTS.default.md
     workflow: 16
 ---
 
-## पहला रन (अनुशंसित)
+## पहली बार चलाना (अनुशंसित)
 
-OpenClaw एजेंट के लिए एक समर्पित workspace डायरेक्टरी का उपयोग करता है। डिफ़ॉल्ट: `~/.openclaw/workspace` (`agents.defaults.workspace` के ज़रिए कॉन्फ़िगर योग्य)।
+OpenClaw एजेंट एक वर्कस्पेस डायरेक्टरी का उपयोग करते हैं। डिफ़ॉल्ट: `~/.openclaw/workspace` (`agents.defaults.workspace` के माध्यम से कॉन्फ़िगर करने योग्य, `~` समर्थित है)।
 
-1. workspace बनाएँ (यदि यह पहले से मौजूद नहीं है):
+1. वर्कस्पेस बनाएँ:
 
 ```bash
 mkdir -p ~/.openclaw/workspace
 ```
 
-2. डिफ़ॉल्ट workspace टेम्पलेट्स को workspace में कॉपी करें:
+2. डिफ़ॉल्ट वर्कस्पेस टेम्प्लेट इसमें कॉपी करें:
 
 ```bash
 cp docs/reference/templates/AGENTS.md ~/.openclaw/workspace/AGENTS.md
@@ -32,13 +33,13 @@ cp docs/reference/templates/SOUL.md ~/.openclaw/workspace/SOUL.md
 cp docs/reference/templates/TOOLS.md ~/.openclaw/workspace/TOOLS.md
 ```
 
-3. वैकल्पिक: यदि आप personal assistant skill roster चाहते हैं, तो AGENTS.md को इस फ़ाइल से बदलें:
+3. वैकल्पिक: सामान्य टेम्प्लेट के बजाय इस फ़ाइल की निजी-सहायक Skills सूची का उपयोग करें:
 
 ```bash
 cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 ```
 
-4. वैकल्पिक: `agents.defaults.workspace` सेट करके अलग workspace चुनें (`~` समर्थित है):
+4. वैकल्पिक: किसी अन्य वर्कस्पेस की ओर इंगित करें:
 
 ```json5
 {
@@ -46,98 +47,102 @@ cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 }
 ```
 
-## सुरक्षा डिफ़ॉल्ट
+## डिफ़ॉल्ट सुरक्षा सेटिंग्स
 
-- डायरेक्टरियाँ या रहस्य chat में डंप न करें।
-- विनाशकारी कमांड तब तक न चलाएँ जब तक स्पष्ट रूप से न कहा गया हो।
-- config या schedulers बदलने से पहले (उदाहरण के लिए crontab, systemd units, nginx configs, या shell rc files), पहले मौजूदा स्थिति की जाँच करें और डिफ़ॉल्ट रूप से preserve/merge करें।
-- बाहरी messaging surfaces पर आंशिक/streaming replies न भेजें (केवल अंतिम replies)।
+- डायरेक्टरी की सामग्री या गोपनीय जानकारी चैट में न डालें।
+- स्पष्ट रूप से कहे जाने तक विनाशकारी कमांड न चलाएँ।
+- कॉन्फ़िगरेशन या शेड्यूलर (crontab, systemd यूनिट, nginx कॉन्फ़िगरेशन, shell rc फ़ाइलें) बदलने से पहले मौजूदा स्थिति जाँचें और डिफ़ॉल्ट रूप से उसे सुरक्षित रखते हुए मर्ज करें।
+- बाहरी मैसेजिंग माध्यमों पर अधूरे/स्ट्रीमिंग उत्तर न भेजें (केवल अंतिम उत्तर भेजें)।
 
-## मौजूदा समाधानों की प्रीफ़्लाइट
+## मौजूदा समाधानों की प्रारंभिक जाँच
 
-कस्टम system, feature, workflow, tool, integration, या automation प्रस्तावित करने या बनाने से पहले, open-source projects, maintained libraries, मौजूदा OpenClaw plugins, या free platforms के लिए संक्षिप्त जाँच करें जो इसे पहले से पर्याप्त रूप से हल करते हों। उपयुक्त होने पर उन्हें प्राथमिकता दें। कस्टम केवल तब बनाएँ जब मौजूदा विकल्प अनुपयुक्त, बहुत महंगे, unmaintained, unsafe, non-compliant हों, या user स्पष्ट रूप से custom माँगे। जब तक user स्पष्ट रूप से खर्च को approve न करे, paid-service recommendations से बचें। इसे हल्का रखें: एक preflight gate, व्यापक research assignment नहीं।
+कोई कस्टम सिस्टम, सुविधा, वर्कफ़्लो, टूल, एकीकरण या ऑटोमेशन प्रस्तावित करने या बनाने से पहले जाँचें कि क्या कोई ओपन-सोर्स प्रोजेक्ट, सक्रिय रूप से अनुरक्षित लाइब्रेरी, मौजूदा OpenClaw plugins या निःशुल्क प्लेटफ़ॉर्म पहले से इसे पर्याप्त रूप से हल करता है। पर्याप्त होने पर इन्हें प्राथमिकता दें। केवल तभी कस्टम बनाएँ जब मौजूदा विकल्प अनुपयुक्त, बहुत महँगे, अनुरक्षण-रहित, असुरक्षित या गैर-अनुपालक हों, या उपयोगकर्ता स्पष्ट रूप से कस्टम समाधान माँगे। जब तक उपयोगकर्ता खर्च को स्पष्ट रूप से स्वीकृति न दे, सशुल्क सेवाओं की अनुशंसा से बचें। इसे हल्की प्रारंभिक जाँच रखें, शोध कार्य नहीं।
 
-## session start (आवश्यक)
+## सत्र का आरंभ (आवश्यक)
 
-- `SOUL.md`, `USER.md`, और `memory/` में आज+कल पढ़ें।
+- उत्तर देने से पहले `SOUL.md`, `USER.md`, और `memory/` में आज और कल का विवरण पढ़ें।
 - मौजूद होने पर `MEMORY.md` पढ़ें।
-- जवाब देने से पहले यह करें।
 
-## Soul (आवश्यक)
+## व्यक्तित्व (आवश्यक)
 
-- `SOUL.md` identity, tone, और boundaries परिभाषित करता है। इसे current रखें।
-- यदि आप `SOUL.md` बदलते हैं, तो user को बताएँ।
-- आप हर session में एक fresh instance हैं; continuity इन फ़ाइलों में रहती है।
+- `SOUL.md` पहचान, लहजा और सीमाएँ निर्धारित करता है। इसे अद्यतित रखें।
+- यदि आप `SOUL.md` बदलते हैं, तो उपयोगकर्ता को बताएँ।
+- आप प्रत्येक सत्र में एक नया इंस्टेंस होते हैं; निरंतरता इन फ़ाइलों में रहती है।
 
-## Shared spaces (अनुशंसित)
+## साझा स्थान (अनुशंसित)
 
-- आप user की आवाज़ नहीं हैं; group chats या public channels में सावधान रहें।
-- private data, contact info, या internal notes साझा न करें।
+- आप उपयोगकर्ता की आवाज़ नहीं हैं; समूह चैट या सार्वजनिक चैनलों में सावधानी बरतें।
+- निजी डेटा, संपर्क जानकारी या आंतरिक नोट्स साझा न करें।
 
-## Memory system (अनुशंसित)
+## मेमोरी सिस्टम (अनुशंसित)
 
-- दैनिक log: `memory/YYYY-MM-DD.md` (ज़रूरत हो तो `memory/` बनाएँ)।
-- Long-term memory: durable facts, preferences, और decisions के लिए `MEMORY.md`।
-- lowercase `memory.md` केवल legacy repair input है; जानबूझकर दोनों root files न रखें।
-- session start पर, मौजूद होने पर आज + कल + `MEMORY.md` पढ़ें।
-- memory files लिखने से पहले, उन्हें पहले पढ़ें; केवल concrete updates लिखें, कभी empty placeholders नहीं।
-- capture करें: decisions, preferences, constraints, open loops।
-- secrets से बचें जब तक स्पष्ट रूप से अनुरोध न किया जाए।
+- दैनिक लॉग: `memory/YYYY-MM-DD.md` (आवश्यकता होने पर `memory/` बनाएँ)।
+- दीर्घकालिक मेमोरी: स्थायी तथ्यों, प्राथमिकताओं और निर्णयों के लिए `MEMORY.md`।
+- छोटे अक्षरों वाला `memory.md` केवल पुराने डेटा की मरम्मत के लिए इनपुट है; जानबूझकर दोनों रूट फ़ाइलें न रखें।
+- सत्र के आरंभ पर आज + कल + मौजूद होने पर `MEMORY.md` पढ़ें।
+- मेमोरी फ़ाइलों में लिखने से पहले उन्हें पढ़ें; केवल ठोस अपडेट लिखें, कभी खाली प्लेसहोल्डर नहीं।
+- दर्ज करें: निर्णय, प्राथमिकताएँ, बाधाएँ, लंबित कार्य।
+- स्पष्ट रूप से अनुरोध न किए जाने तक गोपनीय जानकारी से बचें।
 
-## Tools और Skills
+## टूल और Skills
 
-- Tools, skills में रहते हैं; जब आपको किसी skill की ज़रूरत हो, तो उसके `SKILL.md` का पालन करें।
-- environment-specific notes `TOOLS.md` (Notes for Skills) में रखें।
+- टूल Skills में होते हैं; आवश्यकता होने पर प्रत्येक Skill के `SKILL.md` का पालन करें।
+- पर्यावरण-विशिष्ट नोट्स `TOOLS.md` में रखें (Skills के लिए नोट्स)।
 
-## Backup tip (अनुशंसित)
+## बैकअप सुझाव (अनुशंसित)
 
-यदि आप इस workspace को Clawd की "memory" मानते हैं, तो इसे git repo बनाएँ (आदर्श रूप से private), ताकि `AGENTS.md` और आपकी memory files backed up रहें।
+इस वर्कस्पेस को सहायक की मेमोरी मानें: इसे एक git रेपो बनाएँ (आदर्श रूप से निजी), ताकि `AGENTS.md` और मेमोरी फ़ाइलों का बैकअप रहे।
 
 ```bash
 cd ~/.openclaw/workspace
 git init
 git add AGENTS.md
-git commit -m "Add Clawd workspace"
-# Optional: add a private remote + push
+git commit -m "वर्कस्पेस जोड़ें"
+# वैकल्पिक: एक निजी रिमोट जोड़ें + पुश करें
 ```
 
 ## OpenClaw क्या करता है
 
-- WhatsApp gateway + embedded OpenClaw agent चलाता है ताकि assistant chats पढ़/लिख सके, context fetch कर सके, और host Mac के ज़रिए skills चला सके।
-- macOS app permissions (screen recording, notifications, microphone) manage करता है और अपने bundled binary के ज़रिए `openclaw` CLI expose करता है।
-- Direct chats डिफ़ॉल्ट रूप से agent के `main` session में collapse हो जाते हैं; groups `agent:<agentId>:<channel>:group:<id>` के रूप में isolated रहते हैं (rooms/channels: `agent:<agentId>:<channel>:channel:<id>`); heartbeats background tasks को alive रखते हैं।
+- यह एक मैसेजिंग-चैनल Gateway (WhatsApp, Telegram, Discord, Signal, iMessage, Slack आदि) और एक अंतर्निहित एजेंट चलाता है, ताकि सहायक चैट पढ़/लिख सके, संदर्भ प्राप्त कर सके और होस्ट मशीन के माध्यम से Skills चला सके।
+- macOS ऐप अनुमतियाँ (स्क्रीन रिकॉर्डिंग, सूचनाएँ, माइक्रोफ़ोन) प्रबंधित करता है और अपने साथ शामिल बाइनरी के माध्यम से `openclaw` CLI उपलब्ध कराता है।
+- डिफ़ॉल्ट रूप से सीधी चैट एजेंट के `main` सत्र में समाहित हो जाती हैं; समूहों और चैनलों/रूम को अपनी अलग सत्र कुंजियाँ मिलती हैं। कुंजियों के सटीक प्रारूप के लिए [चैनल रूटिंग](/hi/channels/channel-routing) देखें। Heartbeat पृष्ठभूमि कार्यों को सक्रिय रखते हैं।
 
-## Core skills (Settings → Skills में enable करें)
+## मुख्य Skills (Settings → Skills में सक्षम करें)
 
-- **mcporter** - external skill backends manage करने के लिए tool server runtime/CLI।
-- **Peekaboo** - optional AI vision analysis के साथ तेज़ macOS screenshots।
-- **camsnap** - RTSP/ONVIF security cams से frames, clips, या motion alerts capture करें।
-- **oracle** - session replay और browser control के साथ OpenAI-ready agent CLI।
-- **eightctl** - terminal से अपनी sleep control करें।
-- **imsg** - iMessage और SMS send, read, stream करें।
-- **wacli** - WhatsApp CLI: sync, search, send।
-- **discord** - Discord actions: react, stickers, polls। `user:<id>` या `channel:<id>` targets का उपयोग करें (bare numeric ids ambiguous होते हैं)।
+निजी-सहायक वर्कस्पेस के लिए उदाहरण सूची; अपने सेटअप के अनुकूल Skills चुनें।
+
+- **mcporter** - बाहरी Skill बैकएंड प्रबंधित करने के लिए टूल सर्वर रनटाइम/CLI।
+- **Peekaboo** - वैकल्पिक AI विज़न विश्लेषण के साथ तेज़ macOS स्क्रीनशॉट।
+- **camsnap** - RTSP/ONVIF सुरक्षा कैमरों से फ़्रेम, क्लिप या गति अलर्ट कैप्चर करें।
+- **oracle** - सत्र रीप्ले और ब्राउज़र नियंत्रण के साथ OpenAI-संगत एजेंट CLI।
+- **eightctl** - टर्मिनल से अपनी नींद नियंत्रित करें।
+- **imsg** - iMessage और SMS भेजें, पढ़ें और स्ट्रीम करें।
+- **wacli** - WhatsApp CLI: सिंक करें, खोजें, भेजें।
+- **discord** - Discord क्रियाएँ: प्रतिक्रिया, स्टिकर, मतदान। `user:<id>` या `channel:<id>` लक्ष्य उपयोग करें (केवल संख्यात्मक आईडी अस्पष्ट होती हैं)।
 - **gog** - Google Suite CLI: Gmail, Calendar, Drive, Contacts।
-- **spotify-player** - playback search/queue/control करने के लिए Terminal Spotify client।
-- **sag** - mac-style say UX के साथ ElevenLabs speech; डिफ़ॉल्ट रूप से speakers पर streams करता है।
-- **Sonos CLI** - scripts से Sonos speakers (discover/status/playback/volume/grouping) control करें।
-- **blucli** - scripts से BluOS players को play, group, और automate करें।
-- **OpenHue CLI** - scenes और automations के लिए Philips Hue lighting control।
-- **OpenAI Whisper** - quick dictation और voicemail transcripts के लिए local speech-to-text।
-- **Gemini CLI** - fast Q&A के लिए terminal से Google Gemini models।
-- **agent-tools** - automations और helper scripts के लिए utility toolkit।
+- **spotify-player** - प्लेबैक खोजने/कतार में लगाने/नियंत्रित करने के लिए टर्मिनल Spotify क्लाइंट।
+- **sag** - macOS-जैसे say अनुभव के साथ ElevenLabs वाणी; डिफ़ॉल्ट रूप से स्पीकर पर स्ट्रीम करता है।
+- **Sonos CLI** - स्क्रिप्ट से Sonos स्पीकर नियंत्रित करें (खोज/स्थिति/प्लेबैक/वॉल्यूम/समूहीकरण)।
+- **blucli** - स्क्रिप्ट से BluOS प्लेयर चलाएँ, समूहित करें और स्वचालित करें।
+- **OpenHue CLI** - दृश्यों और ऑटोमेशन के लिए Philips Hue प्रकाश नियंत्रण।
+- **OpenAI Whisper** - त्वरित श्रुतलेखन और वॉइसमेल प्रतिलेखों के लिए स्थानीय वाणी-से-पाठ।
+- **Gemini CLI** - तेज़ प्रश्नोत्तर के लिए टर्मिनल से Google Gemini मॉडल।
+- **agent-tools** - ऑटोमेशन और सहायक स्क्रिप्ट के लिए उपयोगिता टूलकिट।
 
-## उपयोग नोट्स
+## उपयोग संबंधी नोट्स
 
-- scripting के लिए `openclaw` CLI को प्राथमिकता दें; mac app permissions संभालता है।
-- installs को Skills tab से चलाएँ; यदि binary पहले से मौजूद है तो यह button छिपा देता है।
-- heartbeats enabled रखें ताकि assistant reminders schedule कर सके, inboxes monitor कर सके, और camera captures trigger कर सके।
-- Canvas UI native overlays के साथ full-screen चलता है। critical controls को top-left/top-right/bottom edges में रखने से बचें; layout में explicit gutters जोड़ें और safe-area insets पर निर्भर न रहें।
-- browser-driven verification के लिए, OpenClaw-managed Chrome profile के साथ `openclaw browser` (tabs/status/screenshot) का उपयोग करें।
-- DOM inspection के लिए, `openclaw browser eval|query|dom|snapshot` का उपयोग करें (और जब machine output चाहिए हो तो `--json`/`--out`)।
-- interactions के लिए, `openclaw browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` का उपयोग करें (click/type को snapshot refs चाहिए; CSS selectors के लिए `evaluate` का उपयोग करें)।
+- स्क्रिप्टिंग के लिए `openclaw` CLI को प्राथमिकता दें; डेस्कटॉप ऐप अनुमतियाँ संभालता है।
+- इंस्टॉलेशन Skills टैब से चलाएँ; आवश्यक बाइनरी पहले से मौजूद होने पर इंस्टॉल बटन छिप जाता है।
+- Heartbeat सक्षम रखें, ताकि सहायक रिमाइंडर शेड्यूल कर सके, इनबॉक्स की निगरानी कर सके और कैमरा कैप्चर ट्रिगर कर सके।
+- Canvas UI मूल ओवरले के साथ फ़ुल-स्क्रीन चलता है। महत्वपूर्ण नियंत्रणों को ऊपर-बाएँ/ऊपर-दाएँ/नीचे के किनारों पर रखने से बचें; सुरक्षित-क्षेत्र इनसेट पर निर्भर रहने के बजाय स्पष्ट लेआउट गटर जोड़ें।
+- ब्राउज़र-आधारित सत्यापन के लिए OpenClaw द्वारा प्रबंधित Chrome/Brave/Edge/Chromium प्रोफ़ाइल के साथ `openclaw browser` CLI (साथ में शामिल `browser` plugin) का उपयोग करें।
+- प्रबंधित करें: `status`, `doctor [--deep]`, `start [--headless]`, `stop`, `tabs`, `tab [new|select|close]`, `open <url>`, `focus <id>`, `close <id>`।
+- निरीक्षण करें: `screenshot [--full-page|--ref|--labels]`, `snapshot [--format ai|aria|--interactive|--efficient]`, `console`, `errors`, `requests`, `pdf`, `responsebody`।
+- कार्रवाई करें: `navigate`, `click <ref>`, `type <ref> <text>`, `press`, `hover`, `drag`, `select`, `upload`, `download`, `fill`, `dialog`, `wait`, `evaluate --fn <js>`, `highlight`। कार्रवाइयों के लिए `snapshot` से एक `ref` आवश्यक है (कार्रवाइयों के लिए CSS चयनकर्ता स्वीकार नहीं किए जाते); `document.querySelector`-शैली का लक्ष्य निर्धारण आवश्यक होने पर `evaluate` का उपयोग करें।
+- किसी भी निरीक्षण कमांड पर मशीन-पठनीय आउटपुट के लिए `--json` जोड़ें।
 
 ## संबंधित
 
-- [Agent workspace](/hi/concepts/agent-workspace)
-- [Agent runtime](/hi/concepts/agent)
+- [एजेंट वर्कस्पेस](/hi/concepts/agent-workspace)
+- [एजेंट रनटाइम](/hi/concepts/agent)
+- [चैनल रूटिंग](/hi/channels/channel-routing)

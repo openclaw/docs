@@ -1,20 +1,23 @@
 ---
 read_when:
-    - Anda ingin memicu proses agen dari skrip atau baris perintah
+    - Anda ingin memicu eksekusi agen dari skrip atau baris perintah
     - Anda perlu mengirimkan balasan agen ke saluran obrolan secara terprogram
 summary: Jalankan giliran agen dari CLI dan kirimkan balasan ke saluran secara opsional
 title: Pengiriman agen
 x-i18n:
-    generated_at: "2026-07-12T14:44:52Z"
+    generated_at: "2026-07-19T05:37:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
+    source_hash: c7928ee5d7d4d6abf1b5580df96d4856cff71a2ffbf7b414fed82dbe7fab5ff5
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` menjalankan satu giliran agen dari baris perintah tanpa pesan obrolan masuk. Gunakan untuk alur kerja berskrip, pengujian, dan pengiriman terprogram. Referensi lengkap tanda dan perilaku:
+`openclaw agent` menjalankan satu giliran agen dari baris perintah tanpa pesan chat
+masuk. Gunakan untuk alur kerja berskrip, pengujian, dan
+pengiriman terprogram. Referensi lengkap flag dan perilaku:
 [Referensi CLI agen](/id/cli/agent).
 
 ## Mulai cepat
@@ -22,122 +25,140 @@ x-i18n:
 <Steps>
   <Step title="Jalankan giliran agen sederhana">
     ```bash
-    openclaw agent --agent main --message "What is the weather today?"
+    openclaw agent --agent main --message "Bagaimana cuaca hari ini?"
     ```
 
     Mengirim pesan melalui Gateway dan mencetak balasannya.
 
   </Step>
 
-  <Step title="Kirim perintah multibaris dari berkas">
+  <Step title="Kirim prompt multibaris dari file">
     ```bash
     openclaw agent --agent ops --message-file ./task.md
     ```
 
-    Membaca berkas UTF-8 yang valid sebagai isi pesan agen.
+    Membaca file UTF-8 yang valid sebagai isi pesan agen.
 
   </Step>
 
-  <Step title="Tuju agen atau sesi tertentu">
+  <Step title="Targetkan agen atau sesi tertentu">
     ```bash
-    # Target a specific agent
-    openclaw agent --agent ops --message "Summarize logs"
+    # Targetkan agen tertentu
+    openclaw agent --agent ops --message "Ringkas log"
 
-    # Target a phone number (derives session key)
-    openclaw agent --to +15555550123 --message "Status update"
+    # Targetkan nomor telepon (menghasilkan kunci sesi)
+    openclaw agent --to +15555550123 --message "Pembaruan status"
 
-    # Reuse an existing session
-    openclaw agent --session-id abc123 --message "Continue the task"
+    # Gunakan kembali sesi yang sudah ada
+    openclaw agent --session-id abc123 --message "Lanjutkan tugas"
 
-    # Target an exact session key
-    openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+    # Targetkan kunci sesi yang tepat
+    openclaw agent --session-key agent:ops:incident-42 --message "Ringkas status"
     ```
 
   </Step>
 
   <Step title="Kirim balasan ke saluran">
     ```bash
-    # Deliver to WhatsApp (default channel)
-    openclaw agent --to +15555550123 --message "Report ready" --deliver
+    # Kirim ke WhatsApp (saluran default)
+    openclaw agent --to +15555550123 --message "Laporan siap" --deliver
 
-    # Deliver to Slack
-    openclaw agent --agent ops --message "Generate report" \
+    # Kirim ke Slack
+    openclaw agent --agent ops --message "Buat laporan" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
 
   </Step>
 </Steps>
 
-## Tanda
+## Flag
 
-| Tanda                       | Deskripsi                                                                  |
-| --------------------------- | -------------------------------------------------------------------------- |
-| `--message <text>`          | Pesan sebaris yang akan dikirim                                            |
-| `--message-file <path>`     | Baca pesan dari berkas UTF-8 yang valid                                    |
-| `--to <dest>`               | Turunkan kunci sesi dari target (telepon, id obrolan)                       |
-| `--session-key <key>`       | Gunakan kunci sesi eksplisit                                               |
-| `--agent <id>`              | Tuju agen yang dikonfigurasi (menggunakan sesi `main`-nya)                  |
-| `--session-id <id>`         | Gunakan kembali sesi yang ada berdasarkan id                               |
-| `--model <id>`              | Penggantian model untuk eksekusi ini (`provider/model` atau id model)       |
-| `--local`                   | Paksa runtime tersemat lokal (lewati Gateway)                               |
-| `--deliver`                 | Kirim balasan ke saluran obrolan                                           |
-| `--channel <name>`          | Saluran pengiriman; dengan `--agent` + `--to`, juga menerapkan cakupan DM   |
-| `--reply-to <target>`       | Penggantian target pengiriman                                              |
-| `--reply-channel <name>`    | Penggantian saluran pengiriman                                             |
-| `--reply-account <id>`      | Penggantian id akun pengiriman                                             |
-| `--thinking <level>`        | Atur tingkat pemikiran untuk profil model yang dipilih                     |
+| Flag                        | Deskripsi                                                            |
+| --------------------------- | -------------------------------------------------------------------- |
+| `--message <text>`          | Pesan sebaris yang akan dikirim                                      |
+| `--message-file <path>`     | Baca pesan dari file UTF-8 yang valid (maks. 4 MiB)                  |
+| `--to <dest>`               | Hasilkan kunci sesi dari target (telepon, id chat)                   |
+| `--session-key <key>`       | Gunakan kunci sesi eksplisit                                         |
+| `--agent <id>`              | Targetkan agen terkonfigurasi (menggunakan sesi `main` miliknya) |
+| `--session-id <id>`         | Gunakan kembali sesi yang sudah ada berdasarkan id                   |
+| `--model <id>`              | Penggantian model untuk proses ini (`provider/model` atau id model) |
+| `--local`                   | Paksa runtime tertanam lokal (lewati Gateway)                        |
+| `--deliver`                 | Kirim balasan ke saluran chat                                        |
+| `--channel <name>`          | Saluran pengiriman; dengan `--agent` + `--to`, juga berlaku untuk cakupan DM |
+| `--reply-to <target>`       | Penggantian target pengiriman                                        |
+| `--reply-channel <name>`    | Penggantian saluran pengiriman                                       |
+| `--reply-account <id>`      | Penggantian id akun pengiriman                                       |
+| `--thinking <level>`        | Atur tingkat pemikiran untuk profil model yang dipilih               |
 | `--verbose <on\|full\|off>` | Pertahankan tingkat verbositas untuk sesi (`full` juga mencatat keluaran alat) |
-| `--timeout <seconds>`       | Ganti batas waktu agen (bawaan 600, atau nilai konfigurasi)                 |
-| `--json`                    | Keluarkan JSON terstruktur                                                 |
+| `--timeout <seconds>`       | Ganti batas waktu agen (default 600, atau nilai konfigurasi)          |
+| `--json`                    | Keluarkan JSON terstruktur                                           |
 
 ## Perilaku
 
-- Secara bawaan, CLI berjalan **melalui Gateway**. Tambahkan `--local` untuk memaksa runtime tersemat pada mesin saat ini.
-- Teruskan tepat salah satu dari `--message` atau `--message-file`. Pesan berkas mempertahankan konten multibaris setelah menghapus BOM UTF-8 opsional.
-- Jika permintaan Gateway gagal, CLI **beralih kembali** ke eksekusi tersemat lokal; batas waktu Gateway beralih kembali dengan sesi baru alih-alih berpacu dengan transkrip asli.
-- Pemilihan sesi: `--to` menurunkan kunci sesi (target grup/saluran mempertahankan isolasi; obrolan langsung disatukan ke `main`). Saat `--agent`, `--channel`, dan `--to` digunakan bersama, perutean mengikuti penerima kanonis saluran dan `session.dmScope`. Identitas stabil khusus keluar menggunakan sesi milik penyedia yang diisolasi dari sesi utama agen.
-- `--session-key` memilih kunci eksplisit. Kunci berawalan agen harus menggunakan `agent:<agent-id>:<session-key>`, dan `--agent` harus cocok dengan id agen tersebut saat keduanya diberikan. Kunci polos non-sentinel dicakupkan ke `--agent` jika diberikan; misalnya, `--agent ops --session-key incident-42` dirutekan ke `agent:ops:incident-42`. Tanpa `--agent`, kunci polos non-sentinel dicakupkan ke agen bawaan yang dikonfigurasi. Literal `global` dan `unknown` tetap tanpa cakupan hanya saat `--agent` tidak diberikan; jalur peralihan tersemat menyelesaikan sesi sentinel tersebut ke agen bawaan yang dikonfigurasi.
+- Secara default, CLI berjalan **melalui Gateway**. Tambahkan `--local` untuk memaksa
+  runtime tertanam pada mesin saat ini.
+- Berikan tepat salah satu dari `--message` atau `--message-file`. Pesan file mempertahankan
+  konten multibaris setelah menghapus BOM UTF-8 opsional. File yang lebih besar dari
+  4 MiB ditolak sebelum dikirim.
+- Jika permintaan Gateway gagal, CLI **beralih** ke proses tertanam
+  lokal; batas waktu Gateway beralih menggunakan sesi baru, bukan menjalankannya bersamaan dengan
+  transkrip asli.
+- Pemilihan sesi: `--to` menghasilkan kunci sesi (target grup/saluran
+  mempertahankan isolasi; chat langsung disatukan menjadi `main`). Dengan `--agent`,
+  `--channel`, dan `--to` secara bersamaan, perutean mengikuti penerima kanonis
+  saluran dan `session.dmScope`. Identitas stabil yang hanya untuk pengiriman keluar menggunakan
+  sesi milik penyedia yang diisolasi dari sesi utama agen.
+- `--session-key` memilih kunci eksplisit. Kunci berawalan agen harus menggunakan
+  `agent:<agent-id>:<session-key>`, dan `--agent` harus cocok dengan id agen tersebut jika
+  keduanya diberikan. Kunci biasa non-sentinel dicakupkan ke `--agent` jika
+  diberikan; misalnya, `--agent ops --session-key incident-42` dirutekan ke
+  `agent:ops:incident-42`. Tanpa `--agent`, kunci biasa non-sentinel dicakupkan
+  ke agen default yang dikonfigurasi. Literal `global` dan `unknown` tetap
+  tanpa cakupan hanya jika tidak ada `--agent` yang diberikan; jalur peralihan tertanam
+  mengarahkan sesi sentinel tersebut ke agen default yang dikonfigurasi.
 - `--reply-channel` dan `--reply-account` hanya memengaruhi pengiriman.
-- Tanda pemikiran dan verbositas dipertahankan ke penyimpanan sesi.
-- Keluaran: teks biasa secara bawaan, atau `--json` untuk muatan terstruktur + metadata.
-- Dengan `--json --deliver`, JSON menyertakan status pengiriman untuk pengiriman yang terkirim, ditekan, parsial, dan gagal. Lihat [status pengiriman JSON](/id/cli/agent#json-delivery-status).
+- Flag pemikiran dan verbositas dipertahankan dalam penyimpanan sesi.
+- Keluaran: teks biasa secara default, atau `--json` untuk payload terstruktur + metadata.
+- Dengan `--json --deliver`, JSON menyertakan status pengiriman untuk kiriman yang terkirim,
+  dibatalkan, parsial, dan gagal. Lihat
+  [Status pengiriman JSON](/id/cli/agent#json-delivery-status).
 
 ## Contoh
 
 ```bash
-# Simple turn with JSON output
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+# Giliran sederhana dengan keluaran JSON
+openclaw agent --to +15555550123 --message "Telusuri log" --verbose on --json
 
-# Turn with a model override
-openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
+# Giliran dengan penggantian model
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Ringkas log"
 
-# Turn with thinking level
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+# Giliran dengan tingkat pemikiran
+openclaw agent --session-id 1234 --message "Ringkas kotak masuk" --thinking medium
 
-# Multiline prompt from a file
+# Prompt multibaris dari file
 openclaw agent --agent ops --message-file ./task.md
 
-# Exact session key
-openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+# Kunci sesi yang tepat
+openclaw agent --session-key agent:ops:incident-42 --message "Ringkas status"
 
-# Legacy key scoped to an agent
-openclaw agent --agent ops --session-key incident-42 --message "Summarize status"
+# Kunci lama yang dicakupkan ke agen
+openclaw agent --agent ops --session-key incident-42 --message "Ringkas status"
 
-# Deliver to a different channel than the session
-openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
+# Kirim ke saluran yang berbeda dari sesi
+openclaw agent --agent ops --message "Peringatan" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Referensi CLI agen" href="/id/cli/agent" icon="terminal">
-    Referensi lengkap tanda dan opsi `openclaw agent`.
+    Referensi lengkap flag dan opsi `openclaw agent`.
   </Card>
   <Card title="Subagen" href="/id/tools/subagents" icon="users">
-    Peluncuran subagen di latar belakang.
+    Pembuatan subagen di latar belakang.
   </Card>
   <Card title="Sesi" href="/id/concepts/session" icon="comments">
-    Cara kerja kunci sesi dan cara `--to`, `--agent`, serta `--session-id` menyelesaikannya.
+    Cara kerja kunci sesi dan cara `--to`, `--agent`, serta `--session-id` mengarahkannya.
   </Card>
   <Card title="Perintah garis miring" href="/id/tools/slash-commands" icon="slash">
     Katalog perintah native yang digunakan di dalam sesi agen.

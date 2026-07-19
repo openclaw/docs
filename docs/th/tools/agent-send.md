@@ -1,30 +1,31 @@
 ---
 read_when:
-    - คุณต้องการเรียกใช้เอเจนต์จากสคริปต์หรือบรรทัดคำสั่ง
-    - คุณต้องส่งคำตอบของเอเจนต์ไปยังช่องแชตด้วยโปรแกรม
-summary: เรียกใช้รอบการทำงานของเอเจนต์จาก CLI และเลือกส่งคำตอบไปยังช่องทางต่าง ๆ ได้
+    - คุณต้องการทริกเกอร์การทำงานของเอเจนต์จากสคริปต์หรือบรรทัดคำสั่ง
+    - คุณต้องส่งคำตอบของเอเจนต์ไปยังช่องแชทโดยอัตโนมัติผ่านโปรแกรม
+summary: เรียกใช้รอบการทำงานของเอเจนต์จาก CLI และเลือกส่งคำตอบไปยังช่องทางต่างๆ ได้
 title: การส่งของเอเจนต์
 x-i18n:
-    generated_at: "2026-07-12T16:49:23Z"
+    generated_at: "2026-07-19T08:03:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
+    source_hash: c7928ee5d7d4d6abf1b5580df96d4856cff71a2ffbf7b414fed82dbe7fab5ff5
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
 `openclaw agent` เรียกใช้การทำงานของเอเจนต์หนึ่งรอบจากบรรทัดคำสั่งโดยไม่มี
 ข้อความแชตขาเข้า ใช้สำหรับเวิร์กโฟลว์แบบสคริปต์ การทดสอบ และ
-การส่งผลลัพธ์ด้วยโปรแกรม เอกสารอ้างอิงแฟล็กและพฤติกรรมทั้งหมด:
-[เอกสารอ้างอิง CLI ของเอเจนต์](/th/cli/agent)
+การส่งแบบโปรแกรม เอกสารอ้างอิงแฟล็กและลักษณะการทำงานฉบับเต็ม:
+[เอกสารอ้างอิง Agent CLI](/th/cli/agent)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
 <Steps>
   <Step title="เรียกใช้การทำงานของเอเจนต์แบบง่ายหนึ่งรอบ">
     ```bash
-    openclaw agent --agent main --message "What is the weather today?"
+    openclaw agent --agent main --message "วันนี้สภาพอากาศเป็นอย่างไร?"
     ```
 
     ส่งข้อความผ่าน Gateway และพิมพ์คำตอบ
@@ -42,28 +43,28 @@ x-i18n:
 
   <Step title="ระบุเอเจนต์หรือเซสชันที่ต้องการ">
     ```bash
-    # Target a specific agent
-    openclaw agent --agent ops --message "Summarize logs"
+    # ระบุเอเจนต์ที่ต้องการ
+    openclaw agent --agent ops --message "สรุปบันทึก"
 
-    # Target a phone number (derives session key)
-    openclaw agent --to +15555550123 --message "Status update"
+    # ระบุหมายเลขโทรศัพท์ (ใช้สร้างคีย์เซสชัน)
+    openclaw agent --to +15555550123 --message "อัปเดตสถานะ"
 
-    # Reuse an existing session
-    openclaw agent --session-id abc123 --message "Continue the task"
+    # ใช้เซสชันที่มีอยู่อีกครั้ง
+    openclaw agent --session-id abc123 --message "ทำงานต่อ"
 
-    # Target an exact session key
-    openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+    # ระบุคีย์เซสชันแบบเจาะจง
+    openclaw agent --session-key agent:ops:incident-42 --message "สรุปสถานะ"
     ```
 
   </Step>
 
   <Step title="ส่งคำตอบไปยังช่องทาง">
     ```bash
-    # Deliver to WhatsApp (default channel)
-    openclaw agent --to +15555550123 --message "Report ready" --deliver
+    # ส่งไปยัง WhatsApp (ช่องทางเริ่มต้น)
+    openclaw agent --to +15555550123 --message "รายงานพร้อมแล้ว" --deliver
 
-    # Deliver to Slack
-    openclaw agent --agent ops --message "Generate report" \
+    # ส่งไปยัง Slack
+    openclaw agent --agent ops --message "สร้างรายงาน" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
 
@@ -72,93 +73,94 @@ x-i18n:
 
 ## แฟล็ก
 
-| แฟล็ก                       | คำอธิบาย                                                                 |
-| --------------------------- | ------------------------------------------------------------------------- |
-| `--message <text>`          | ข้อความแบบอินไลน์ที่จะส่ง                                                  |
-| `--message-file <path>`     | อ่านข้อความจากไฟล์ UTF-8 ที่ถูกต้อง                                       |
-| `--to <dest>`               | สร้างคีย์เซสชันจากเป้าหมาย (โทรศัพท์, รหัสแชต)                            |
-| `--session-key <key>`       | ใช้คีย์เซสชันที่ระบุอย่างชัดเจน                                           |
-| `--agent <id>`              | ระบุเอเจนต์ที่กำหนดค่าไว้ (ใช้เซสชัน `main` ของเอเจนต์นั้น)               |
-| `--session-id <id>`         | ใช้เซสชันที่มีอยู่แล้วซ้ำตามรหัส                                          |
-| `--model <id>`              | แทนที่โมเดลสำหรับการเรียกใช้ครั้งนี้ (`provider/model` หรือรหัสโมเดล)     |
-| `--local`                   | บังคับใช้รันไทม์แบบฝังภายในเครื่อง (ข้าม Gateway)                         |
-| `--deliver`                 | ส่งคำตอบไปยังช่องทางแชต                                                    |
-| `--channel <name>`          | ช่องทางการส่ง; เมื่อใช้ร่วมกับ `--agent` + `--to` จะใช้กับขอบเขต DM ด้วย |
-| `--reply-to <target>`       | แทนที่เป้าหมายการส่ง                                                       |
-| `--reply-channel <name>`    | แทนที่ช่องทางการส่ง                                                        |
-| `--reply-account <id>`      | แทนที่รหัสบัญชีสำหรับการส่ง                                                |
-| `--thinking <level>`        | กำหนดระดับการคิดสำหรับโปรไฟล์โมเดลที่เลือก                               |
-| `--verbose <on\|full\|off>` | บันทึกระดับรายละเอียดสำหรับเซสชัน (`full` จะบันทึกผลลัพธ์ของเครื่องมือด้วย) |
-| `--timeout <seconds>`       | แทนที่ระยะหมดเวลาของเอเจนต์ (ค่าเริ่มต้น 600 หรือค่าจากการกำหนดค่า)      |
-| `--json`                    | แสดงผลเป็น JSON ที่มีโครงสร้าง                                             |
+| แฟล็ก                        | คำอธิบาย                                                          |
+| --------------------------- | -------------------------------------------------------------------- |
+| `--message <text>`          | ข้อความแบบอินไลน์ที่จะส่ง                                               |
+| `--message-file <path>`     | อ่านข้อความจากไฟล์ UTF-8 ที่ถูกต้อง (สูงสุด 4 MiB)                 |
+| `--to <dest>`               | สร้างคีย์เซสชันจากปลายทาง (โทรศัพท์, รหัสแชต)                    |
+| `--session-key <key>`       | ใช้คีย์เซสชันที่ระบุไว้อย่างชัดเจน                                          |
+| `--agent <id>`              | ระบุเอเจนต์ที่กำหนดค่าไว้ (ใช้เซสชัน `main` ของเอเจนต์นั้น)                  |
+| `--session-id <id>`         | ใช้เซสชันที่มีอยู่อีกครั้งตามรหัส                                      |
+| `--model <id>`              | แทนที่โมเดลสำหรับการเรียกใช้ครั้งนี้ (`provider/model` หรือรหัสโมเดล)           |
+| `--local`                   | บังคับใช้รันไทม์แบบฝังในเครื่อง (ข้าม Gateway)                          |
+| `--deliver`                 | ส่งคำตอบไปยังช่องทางแชต                                     |
+| `--channel <name>`          | ช่องทางการส่ง; เมื่อใช้ร่วมกับ `--agent` + `--to` จะนำไปใช้กับขอบเขต DM ด้วย     |
+| `--reply-to <target>`       | แทนที่ปลายทางการส่ง                                             |
+| `--reply-channel <name>`    | แทนที่ช่องทางการส่ง                                            |
+| `--reply-account <id>`      | แทนที่รหัสบัญชีสำหรับการส่ง                                         |
+| `--thinking <level>`        | ตั้งค่าระดับการคิดสำหรับโปรไฟล์โมเดลที่เลือก                    |
+| `--verbose <on\|full\|off>` | บันทึกระดับรายละเอียดสำหรับเซสชัน (`full` จะบันทึกเอาต์พุตของเครื่องมือด้วย) |
+| `--timeout <seconds>`       | แทนที่ระยะหมดเวลาของเอเจนต์ (ค่าเริ่มต้น 600 หรือค่าจากการกำหนดค่า)                |
+| `--json`                    | ส่งออก JSON แบบมีโครงสร้าง                                               |
 
-## พฤติกรรม
+## ลักษณะการทำงาน
 
 - โดยค่าเริ่มต้น CLI จะทำงาน **ผ่าน Gateway** เพิ่ม `--local` เพื่อบังคับใช้
-  รันไทม์แบบฝังบนเครื่องปัจจุบัน
-- ส่ง `--message` หรือ `--message-file` อย่างใดอย่างหนึ่งเท่านั้น ข้อความจากไฟล์จะคง
-  เนื้อหาหลายบรรทัดไว้หลังจากนำ UTF-8 BOM ที่อาจมีออก
-- หากคำขอไปยัง Gateway ล้มเหลว CLI จะ **สลับไปใช้** การทำงานแบบฝังภายในเครื่อง
-  หาก Gateway หมดเวลา ระบบจะสลับไปใช้เซสชันใหม่แทนการทำงานแข่งกับ
+  รันไทม์แบบฝังในเครื่องปัจจุบัน
+- ส่งค่า `--message` หรือ `--message-file` อย่างใดอย่างหนึ่งเท่านั้น ข้อความจากไฟล์จะคง
+  เนื้อหาหลายบรรทัดไว้หลังจากนำ UTF-8 BOM ที่อาจมีออก ไฟล์ที่มีขนาดใหญ่กว่า
+  4 MiB จะถูกปฏิเสธก่อนส่งต่อ
+- หากคำขอไปยัง Gateway ล้มเหลว CLI จะ **สลับไปใช้** การเรียกใช้แบบฝัง
+  ในเครื่อง ส่วนการหมดเวลาของ Gateway จะสลับไปใช้เซสชันใหม่ แทนที่จะทำงานแข่งกับ
   ทรานสคริปต์เดิม
-- การเลือกเซสชัน: `--to` สร้างคีย์เซสชัน (เป้าหมายกลุ่ม/ช่องทาง
-  จะรักษาการแยกจากกัน ส่วนแชตโดยตรงจะรวมเป็น `main`) เมื่อใช้ `--agent`,
+- การเลือกเซสชัน: `--to` สร้างคีย์เซสชัน (ปลายทางแบบกลุ่ม/ช่องทาง
+  ยังคงแยกจากกัน ส่วนแชตโดยตรงจะรวมเป็น `main`) เมื่อใช้ `--agent`,
   `--channel` และ `--to` ร่วมกัน การกำหนดเส้นทางจะเป็นไปตามผู้รับมาตรฐานของช่องทาง
-  และ `session.dmScope` ข้อมูลประจำตัวที่เสถียรสำหรับการส่งออกเท่านั้นจะใช้
+  และ `session.dmScope` ตัวตนแบบส่งออกเท่านั้นที่คงที่จะใช้
   เซสชันที่ผู้ให้บริการเป็นเจ้าของ ซึ่งแยกจากเซสชันหลักของเอเจนต์
-- `--session-key` เลือกคีย์ที่ระบุอย่างชัดเจน คีย์ที่ขึ้นต้นด้วยเอเจนต์ต้องใช้
-  `agent:<agent-id>:<session-key>` และเมื่อระบุทั้งสองค่า `--agent` ต้องตรงกับรหัสเอเจนต์นั้น
-  คีย์เปล่าที่ไม่ใช่ค่าเซนทิเนลจะถูกกำหนดขอบเขตตาม `--agent` เมื่อระบุไว้
-  ตัวอย่างเช่น `--agent ops --session-key incident-42` จะกำหนดเส้นทางไปยัง
-  `agent:ops:incident-42` หากไม่มี `--agent` คีย์เปล่าที่ไม่ใช่ค่าเซนทิเนลจะถูกกำหนดขอบเขต
-  ตามเอเจนต์เริ่มต้นที่กำหนดค่าไว้ ค่า `global` และ `unknown` แบบตรงตัวจะยังคง
-  ไม่มีขอบเขตเฉพาะเมื่อไม่ได้ระบุ `--agent` เท่านั้น ส่วนเส้นทางสำรองแบบฝัง
-  จะแปลงเซสชันเซนทิเนลเหล่านั้นเป็นเอเจนต์เริ่มต้นที่กำหนดค่าไว้
+- `--session-key` เลือกคีย์ที่ระบุไว้อย่างชัดเจน คีย์ที่ขึ้นต้นด้วยเอเจนต์ต้องใช้
+  `agent:<agent-id>:<session-key>` และ `--agent` ต้องตรงกับรหัสเอเจนต์นั้นเมื่อ
+  ระบุทั้งสองค่า คีย์เปล่าที่ไม่ใช่ sentinel จะถูกจำกัดขอบเขตไว้ที่ `--agent` เมื่อ
+  ระบุค่า เช่น `--agent ops --session-key incident-42` จะกำหนดเส้นทางไปยัง
+  `agent:ops:incident-42` หากไม่มี `--agent` คีย์เปล่าที่ไม่ใช่ sentinel จะถูกจำกัดขอบเขต
+  ไว้ที่เอเจนต์เริ่มต้นที่กำหนดค่าไว้ ค่าตรงตัว `global` และ `unknown` จะยังคง
+  ไม่มีขอบเขตเฉพาะเมื่อไม่ได้ระบุ `--agent` เท่านั้น เส้นทางสำรองแบบฝัง
+  จะจับคู่เซสชัน sentinel เหล่านั้นกับเอเจนต์เริ่มต้นที่กำหนดค่าไว้
 - `--reply-channel` และ `--reply-account` มีผลต่อการส่งเท่านั้น
-- แฟล็กระดับการคิดและระดับรายละเอียดจะถูกบันทึกไว้ในที่เก็บเซสชัน
-- ผลลัพธ์: เป็นข้อความธรรมดาโดยค่าเริ่มต้น หรือใช้ `--json` สำหรับเพย์โหลดแบบมีโครงสร้างพร้อมข้อมูลเมตา
-- เมื่อใช้ `--json --deliver` JSON จะรวมสถานะการส่งสำหรับการส่งที่
-  สำเร็จ ถูกระงับ สำเร็จบางส่วน และล้มเหลว ดู
-  [สถานะการส่ง JSON](/th/cli/agent#json-delivery-status)
+- แฟล็กระดับการคิดและระดับรายละเอียดจะถูกบันทึกไว้ในที่จัดเก็บเซสชัน
+- เอาต์พุต: ค่าเริ่มต้นเป็นข้อความธรรมดา หรือใช้ `--json` สำหรับเพย์โหลดแบบมีโครงสร้าง + ข้อมูลเมตา
+- เมื่อใช้ `--json --deliver` JSON จะรวมสถานะการส่งสำหรับการส่งที่สำเร็จ
+  ถูกระงับ สำเร็จบางส่วน และล้มเหลว ดู
+  [สถานะการส่งใน JSON](/th/cli/agent#json-delivery-status)
 
 ## ตัวอย่าง
 
 ```bash
-# Simple turn with JSON output
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+# การทำงานแบบง่ายหนึ่งรอบพร้อมเอาต์พุต JSON
+openclaw agent --to +15555550123 --message "ติดตามบันทึก" --verbose on --json
 
-# Turn with a model override
-openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
+# การทำงานหนึ่งรอบโดยแทนที่โมเดล
+openclaw agent --agent ops --model openai/gpt-5.4 --message "สรุปบันทึก"
 
-# Turn with thinking level
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+# การทำงานหนึ่งรอบพร้อมระดับการคิด
+openclaw agent --session-id 1234 --message "สรุปกล่องจดหมายเข้า" --thinking medium
 
-# Multiline prompt from a file
+# พรอมต์หลายบรรทัดจากไฟล์
 openclaw agent --agent ops --message-file ./task.md
 
-# Exact session key
-openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+# คีย์เซสชันแบบเจาะจง
+openclaw agent --session-key agent:ops:incident-42 --message "สรุปสถานะ"
 
-# Legacy key scoped to an agent
-openclaw agent --agent ops --session-key incident-42 --message "Summarize status"
+# คีย์แบบเดิมที่จำกัดขอบเขตไว้กับเอเจนต์
+openclaw agent --agent ops --session-key incident-42 --message "สรุปสถานะ"
 
-# Deliver to a different channel than the session
-openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
+# ส่งไปยังช่องทางอื่นที่ไม่ใช่ช่องทางของเซสชัน
+openclaw agent --agent ops --message "การแจ้งเตือน" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="เอกสารอ้างอิง CLI ของเอเจนต์" href="/th/cli/agent" icon="terminal">
-    เอกสารอ้างอิงแฟล็กและตัวเลือกทั้งหมดของ `openclaw agent`
+  <Card title="เอกสารอ้างอิง Agent CLI" href="/th/cli/agent" icon="terminal">
+    เอกสารอ้างอิงแฟล็กและตัวเลือก `openclaw agent` ฉบับเต็ม
   </Card>
   <Card title="เอเจนต์ย่อย" href="/th/tools/subagents" icon="users">
     การสร้างเอเจนต์ย่อยในเบื้องหลัง
   </Card>
   <Card title="เซสชัน" href="/th/concepts/session" icon="comments">
-    วิธีการทำงานของคีย์เซสชัน และวิธีที่ `--to`, `--agent` และ `--session-id` ใช้ระบุคีย์เหล่านั้น
+    วิธีการทำงานของคีย์เซสชัน และวิธีที่ `--to`, `--agent` และ `--session-id` จับคู่คีย์เหล่านั้น
   </Card>
   <Card title="คำสั่งแบบสแลช" href="/th/tools/slash-commands" icon="slash">
-    แค็ตตาล็อกคำสั่งเนทีฟที่ใช้ภายในเซสชันของเอเจนต์
+    แค็ตตาล็อกคำสั่งแบบเนทีฟที่ใช้ภายในเซสชันของเอเจนต์
   </Card>
 </CardGroup>

@@ -1,21 +1,22 @@
 ---
 read_when:
     - आप tencent Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: OpenClaw में Tencent TokenHub मॉडल प्रदाता समर्थन जोड़ता है।
+summary: OpenClaw में Tencent TokenHub और Tencent Tokenplan मॉडल प्रदाता समर्थन जोड़ता है।
 title: Tencent Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:49:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:08:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
+    source_hash: c053ff4f5e142ac9414c03388352474da68e86715ff4f7f00781c3dfced185c4
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
 # Tencent Plugin
 
-OpenClaw में Tencent TokenHub मॉडल प्रदाता समर्थन जोड़ता है।
+OpenClaw में Tencent TokenHub और Tencent Tokenplan मॉडल प्रदाता का समर्थन जोड़ता है।
 
 ## वितरण
 
@@ -24,8 +25,8 @@ OpenClaw में Tencent TokenHub मॉडल प्रदाता समर
 
 ## सतह
 
-providers: tencent-tokenhub
+प्रदाता: `tencent-tokenhub`, `tencent-tokenplan`
 
 ## संबंधित दस्तावेज़
 
-- [tencent](/hi/providers/tencent)
+- [Tencent](/hi/providers/tencent)

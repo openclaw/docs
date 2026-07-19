@@ -1,51 +1,48 @@
 ---
 read_when:
-    - OpenClaw अद्यतन, डॉक्टर, पैकेज स्वीकृति या Plugin स्थापना व्यवहार बदलना
-    - रिलीज़ कैंडिडेट तैयार करना या अनुमोदित करना
-    - पैकेज अपडेट, plugin dependency cleanup, या plugin install regressions की debugging
+    - OpenClaw के अपडेट, डॉक्टर, पैकेज स्वीकृति या Plugin इंस्टॉल व्यवहार में बदलाव करना
+    - रिलीज़ कैंडिडेट तैयार करना या स्वीकृत करना
+    - पैकेज अपडेट, Plugin डिपेंडेंसी क्लीनअप या Plugin इंस्टॉलेशन रिग्रेशन की डीबगिंग
 sidebarTitle: Update and plugin tests
 summary: OpenClaw अपडेट पथों, पैकेज माइग्रेशन और Plugin इंस्टॉल/अपडेट व्यवहार को कैसे सत्यापित करता है
-title: 'परीक्षण: अपडेट और Plugin'
+title: 'परीक्षण: अपडेट और plugins'
 x-i18n:
-    generated_at: "2026-06-28T23:17:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:43:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
+    source_hash: 96a11fe42472f758d4fd1cc568486e301f7460982fdb547cab8b39de04a8dabe
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-यह update और Plugin सत्यापन के लिए समर्पित checklist है। लक्ष्य
-सरल है: यह साबित करना कि installable package वास्तविक user state को update कर सकता है, `doctor` के जरिए stale
-legacy state को repair कर सकता है, और supported sources से
-plugins को अब भी install, load, update, और uninstall कर सकता है।
+अपडेट और Plugin सत्यापन के लिए चेकलिस्ट: सिद्ध करें कि इंस्टॉल योग्य पैकेज
+वास्तविक उपयोगकर्ता स्थिति को अपडेट कर सकता है, `doctor` के माध्यम से पुराने लेगेसी स्थिति की मरम्मत कर सकता है, और फिर भी
+हर समर्थित स्रोत से plugins इंस्टॉल, लोड, अपडेट और अनइंस्टॉल कर सकता है।
 
-व्यापक test runner map के लिए, [Testing](/hi/help/testing) देखें। live provider
-keys और network-touching suites के लिए, [Testing live](/hi/help/testing-live) देखें।
+व्यापक टेस्ट रनर मानचित्र के लिए, [परीक्षण](/hi/help/testing) देखें। लाइव प्रदाता
+कुंजियों और नेटवर्क का उपयोग करने वाले सुइट्स के लिए, [लाइव परीक्षण](/hi/help/testing-live) देखें।
 
 ## हम क्या सुरक्षित रखते हैं
 
-Update और plugin tests ये contracts सुरक्षित रखते हैं:
+- एक पैकेज टारबॉल पूर्ण है, उसमें मान्य `dist/postinstall-inventory.json` है,
+  और वह अनपैक की गई रेपो फ़ाइलों पर निर्भर नहीं है।
+- उपयोगकर्ता कॉन्फ़िगरेशन, एजेंट, सत्र, कार्यक्षेत्र, Plugin अनुमति-सूचियाँ या
+  चैनल कॉन्फ़िगरेशन खोए बिना पुराने प्रकाशित पैकेज से उम्मीदवार पैकेज पर जा सकता है।
+- `openclaw doctor --fix --non-interactive` लेगेसी क्लीनअप और मरम्मत
+  पथों का स्वामी है। स्टार्टअप को पुराने Plugin स्थिति के लिए छिपे हुए संगतता माइग्रेशन नहीं बढ़ाने चाहिए।
+- Plugin इंस्टॉलेशन स्थानीय डायरेक्टरियों, git रेपो, npm पैकेजों और
+  ClawHub रजिस्ट्री पथ से काम करते हैं।
+- Plugin की npm निर्भरताएँ प्रति Plugin एक प्रबंधित npm प्रोजेक्ट में इंस्टॉल होती हैं,
+  विश्वास करने से पहले स्कैन की जाती हैं, और Plugin अनइंस्टॉल के दौरान
+  `npm uninstall` के माध्यम से हटाई जाती हैं, ताकि ऊपर उठाई गई निर्भरताएँ शेष न रहें।
+- कुछ भी न बदलने पर Plugin अपडेट कोई कार्रवाई नहीं करता: इंस्टॉल रिकॉर्ड, समाधान किया गया
+  स्रोत, इंस्टॉल की गई निर्भरता संरचना और सक्षम स्थिति अक्षुण्ण रहते हैं।
 
-- package tarball complete है, उसमें valid `dist/postinstall-inventory.json` है,
-  और वह unpacked repo files पर depend नहीं करता।
-- user config, agents, sessions, workspaces, plugin allowlists, या
-  channel config खोए बिना पुराने published package से candidate package पर जा सकता है।
-- `openclaw doctor --fix --non-interactive` legacy cleanup और repair
-  paths का owner है। Startup को stale
-  plugin state के लिए hidden compatibility migrations नहीं बढ़ानी चाहिए।
-- Plugin installs local directories, git repos, npm packages, और
-  ClawHub registry path से काम करते हैं।
-- Plugin npm dependencies हर plugin के लिए एक managed npm project में install होती हैं,
-  trust से पहले scanned होती हैं, और uninstall के दौरान npm के जरिए हटाई जाती हैं ताकि hoisted
-  dependencies बची न रहें।
-- जब कुछ बदला न हो तब Plugin update stable रहता है: install records, resolved
-  source, installed dependency layout, और enabled state intact रहते हैं।
+## विकास के दौरान स्थानीय प्रमाण
 
-## development के दौरान local proof
-
-संकीर्ण दायरे से शुरू करें:
+सीमित दायरे से शुरू करें:
 
 ```bash
 pnpm changed:lanes --json
@@ -53,31 +50,32 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Plugin install, uninstall, dependency, या package-inventory changes के लिए, edited seam को cover करने वाले focused tests भी
-चलाएँ:
+Plugin इंस्टॉल, अनइंस्टॉल, निर्भरता या पैकेज-सूची परिवर्तनों के लिए, संपादित सीम को कवर करने वाले
+केंद्रित परीक्षण भी चलाएँ:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-किसी package Docker lane द्वारा tarball consume करने से पहले, package artifact साबित करें:
+कोई पैकेज Docker लेन किसी टारबॉल का उपयोग करे, उससे पहले पैकेज आर्टिफ़ैक्ट प्रमाणित करें:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` config/docs/API drift checks चलाता है, package dist
-inventory लिखता है, `npm pack --dry-run` चलाता है, forbidden packed files reject करता है,
-tarball को temp prefix में install करता है, postinstall चलाता है, और bundled channel
-entrypoints smoke करता है।
+`release:check` कॉन्फ़िगरेशन/दस्तावेज़/API अंतर जाँच चलाता है (कॉन्फ़िगरेशन स्कीमा, कॉन्फ़िगरेशन दस्तावेज़
+बेसलाइन, Plugin SDK API अनुबंध मैनिफ़ेस्ट और निर्यात, Plugin संस्करण/सूची),
+पैकेज वितरण सूची लिखता है, `npm pack --dry-run` चलाता है, निषिद्ध
+पैक की गई फ़ाइलें अस्वीकार करता है, टारबॉल को अस्थायी प्रीफ़िक्स में इंस्टॉल करता है, पोस्टइंस्टॉल चलाता है और
+बंडल किए गए चैनल प्रवेश-बिंदुओं का स्मोक परीक्षण करता है।
 
-## Docker lanes
+## Docker लेन
 
-Docker lanes product-level proof हैं। वे Linux containers के अंदर real
-package install या update करते हैं और CLI commands,
-Gateway startup, HTTP probes, RPC status, और filesystem state के जरिए behavior assert करते हैं।
+Docker लेन उत्पाद-स्तरीय प्रमाण हैं। वे Linux कंटेनरों के भीतर वास्तविक
+पैकेज इंस्टॉल या अपडेट करते हैं और CLI कमांड,
+Gateway स्टार्टअप, HTTP प्रोब, RPC स्थिति और फ़ाइल-सिस्टम स्थिति के माध्यम से व्यवहार सत्यापित करते हैं।
 
-Iterate करते समय focused lanes का उपयोग करें:
+पुनरावृत्ति करते समय केंद्रित लेन का उपयोग करें:
 
 ```bash
 pnpm test:docker:plugins
@@ -89,38 +87,40 @@ pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-महत्वपूर्ण lanes:
+महत्वपूर्ण लेन:
 
-- `test:docker:plugins` plugin install smoke, local folder installs,
-  local folder update skip behavior, preinstalled
-  dependencies वाले local folders, `file:` package installs, CLI execution के साथ git installs, git
-  moving-ref updates, hoisted transitive
-  dependencies के साथ npm registry installs, npm update no-ops, malformed npm package metadata rejection,
-  local ClawHub fixture installs और update no-ops, marketplace update behavior,
-  और Claude-bundle enable/inspect validate करता है। ClawHub block को hermetic/offline रखने के लिए `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` set करें।
-- `test:docker:plugin-lifecycle-matrix` candidate package को bare
-  container में install करता है, npm plugin को install, inspect, disable, enable,
-  explicit upgrade, explicit downgrade, और plugin
-  code delete करने के बाद uninstall से गुजारता है। यह हर phase के लिए RSS और CPU metrics log करता है।
-- `test:docker:plugin-update` validate करता है कि unchanged installed plugin
-  `openclaw plugins update` के दौरान reinstall नहीं होता या install metadata नहीं खोता।
-- `test:docker:upgrade-survivor` candidate tarball को dirty
-  old-user fixture के ऊपर install करता है, package update plus non-interactive doctor चलाता है, फिर
-  loopback Gateway शुरू करता है और state preservation checks करता है।
-- `test:docker:published-upgrade-survivor` पहले published baseline install करता है,
-  baked `openclaw config set` recipe से उसे configure करता है, उसे
-  candidate tarball पर update करता है, doctor चलाता है, legacy cleanup check करता है, Gateway शुरू करता है, और
-  `/healthz`, `/readyz`, और RPC status probe करता है।
-- `test:docker:update-restart-auth` candidate package install करता है, managed token-auth Gateway शुरू करता है,
-  `openclaw update --yes --json` के लिए caller gateway auth env unset करता है,
-  और candidate update command से normal probes से पहले Gateway restart करवाना require करता है।
-- `test:docker:update-migration` cleanup-heavy published-update lane है। यह
-  configured Discord/Telegram-style user state से शुरू करता है, baseline
-  doctor चलाता है ताकि configured plugin dependencies materialize होने का मौका पा सकें, configured packaged plugin के लिए
-  legacy plugin dependency debris seed करता है, candidate tarball पर update करता है, और post-update doctor से legacy
-  dependency roots हटाना require करता है।
+- `test:docker:plugins` Plugin इंस्टॉल स्मोक, स्थानीय फ़ोल्डर इंस्टॉल,
+  स्थानीय फ़ोल्डर अपडेट छोड़ने का व्यवहार, पहले से इंस्टॉल निर्भरताओं वाले स्थानीय फ़ोल्डर,
+  `file:` पैकेज इंस्टॉल, CLI निष्पादन वाले git इंस्टॉल, git
+  गतिशील-रेफ़ अपडेट, ऊपर उठाई गई ट्रांज़िटिव निर्भरताओं वाले npm रजिस्ट्री इंस्टॉल,
+  npm अपडेट की निष्क्रिय कार्रवाई, विकृत npm पैकेज मेटाडेटा अस्वीकृति,
+  स्थानीय ClawHub फ़िक्स्चर इंस्टॉल और अपडेट की निष्क्रिय कार्रवाई, मार्केटप्लेस अपडेट व्यवहार
+  और Claude-बंडल सक्षम/निरीक्षण को कवर करता है। ClawHub ब्लॉक को
+  हर्मेटिक/ऑफ़लाइन रखने के लिए `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` सेट करें।
+- `test:docker:plugin-lifecycle-matrix` उम्मीदवार पैकेज को खाली
+  कंटेनर में इंस्टॉल करता है, npm Plugin को इंस्टॉल, निरीक्षण, अक्षम, सक्षम,
+  स्पष्ट अपग्रेड, स्पष्ट डाउनग्रेड और Plugin
+  कोड हटाने के बाद अनइंस्टॉल के माध्यम से चलाता है। यह प्रत्येक चरण के RSS और CPU मेट्रिक्स लॉग करता है।
+- `test:docker:plugin-update` सत्यापित करता है कि अपरिवर्तित इंस्टॉल किया गया Plugin
+  `openclaw plugins update` के दौरान दोबारा इंस्टॉल नहीं होता या इंस्टॉल मेटाडेटा नहीं खोता।
+- `test:docker:upgrade-survivor` उम्मीदवार टारबॉल को अव्यवस्थित
+  पुराने-उपयोगकर्ता फ़िक्स्चर के ऊपर इंस्टॉल करता है, पैकेज अपडेट और गैर-संवादात्मक डॉक्टर चलाता है, फिर
+  लूपबैक Gateway शुरू करके स्थिति संरक्षण जाँचता है।
+- `test:docker:published-upgrade-survivor` पहले प्रकाशित बेसलाइन इंस्टॉल करता है,
+  उसे अंतर्निहित `openclaw config set` रेसिपी के माध्यम से कॉन्फ़िगर करता है, उम्मीदवार
+  टारबॉल पर अपडेट करता है, डॉक्टर चलाता है, लेगेसी क्लीनअप जाँचता है, Gateway शुरू करता है और
+  `/healthz`, `/readyz` तथा RPC स्थिति को प्रोब करता है।
+- `test:docker:update-restart-auth` उम्मीदवार पैकेज इंस्टॉल करता है,
+  प्रबंधित टोकन-प्रमाणीकरण Gateway शुरू करता है, `openclaw update --yes --json` के लिए
+  कॉलर का Gateway प्रमाणीकरण परिवेश हटाता है और सामान्य प्रोब से पहले
+  उम्मीदवार अपडेट कमांड द्वारा Gateway पुनरारंभ करना आवश्यक बनाता है।
+- `test:docker:update-migration` क्लीनअप-प्रधान प्रकाशित-अपडेट लेन है। यह
+  कॉन्फ़िगर की गई Discord/Telegram-शैली की उपयोगकर्ता स्थिति से शुरू होता है, बेसलाइन
+  डॉक्टर चलाता है ताकि कॉन्फ़िगर किए गए Plugin की निर्भरताओं को साकार होने का अवसर मिले,
+  कॉन्फ़िगर किए गए पैकेज्ड Plugin के लिए लेगेसी Plugin निर्भरता अवशेष तैयार करता है, उम्मीदवार
+  टारबॉल पर अपडेट करता है और अपडेट-पश्चात डॉक्टर से लेगेसी निर्भरता रूट हटाना आवश्यक बनाता है।
 
-Useful published-upgrade survivor variants:
+उपयोगी प्रकाशित-अपग्रेड सर्वाइवर प्रकार:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -132,15 +132,16 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-Available scenarios हैं `base`, `feishu-channel`, `bootstrap-persona`,
-`plugin-deps-cleanup`, `configured-plugin-installs`,
-`stale-source-plugin-shadow`, `tilde-log-path`, और `versioned-runtime-deps`। aggregate runs में,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` सभी reported
-issue-shaped scenarios तक expand होता है, जिसमें configured-plugin install migration शामिल है।
+उपलब्ध परिदृश्य: `base`, `acpx-openclaw-tools-bridge`, `feishu-channel`,
+`bootstrap-persona`, `channel-post-core-restore`, `plugin-deps-cleanup`,
+`configured-plugin-installs`, `stale-source-plugin-shadow`, `tilde-log-path`
+और `versioned-runtime-deps`। समग्र रन में, `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`
+(उपनाम `far-reaching`) कॉन्फ़िगर किए गए Plugin इंस्टॉल माइग्रेशन सहित
+सभी परिदृश्यों में विस्तृत होता है।
 
-Full update migration को Full Release CI से जानबूझकर अलग रखा गया है। जब release question यह हो कि "क्या
-2026.4.23 से आगे की हर published stable release इस candidate पर update हो सकती है और
-plugin dependency debris clean up कर सकती है?", तब manual `Update Migration` workflow का उपयोग करें:
+पूर्ण अपडेट माइग्रेशन को जानबूझकर पूर्ण रिलीज़ CI से अलग रखा गया है। जब रिलीज़ संबंधी प्रश्न यह हो कि “क्या
+2026.4.23 से आगे की प्रत्येक प्रकाशित स्थिर रिलीज़ इस उम्मीदवार पर अपडेट होकर
+Plugin निर्भरता अवशेष साफ़ कर सकती है?”, तब मैन्युअल `Update Migration` वर्कफ़्लो का उपयोग करें:
 
 ```bash
 gh workflow run update-migration.yml \
@@ -151,42 +152,43 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Package Acceptance
+## पैकेज स्वीकृति
 
-Package Acceptance GitHub-native package gate है। यह एक candidate
-package को `package-under-test` tarball में resolve करता है, version और SHA-256 record करता है, फिर
-उसी exact tarball के खिलाफ reusable Docker E2E lanes चलाता है। workflow harness
-ref package source ref से अलग है, इसलिए current test logic पुराने trusted releases को validate कर सकता है।
+पैकेज स्वीकृति GitHub-मूल पैकेज गेट है। यह एक उम्मीदवार
+पैकेज को `package-under-test` टारबॉल में समाधान करता है, संस्करण और SHA-256 रिकॉर्ड करता है, फिर
+उसी सटीक टारबॉल के विरुद्ध पुनः उपयोग योग्य Docker E2E लेन चलाता है। वर्कफ़्लो हार्नेस
+रेफ़ पैकेज स्रोत रेफ़ से अलग है, इसलिए वर्तमान परीक्षण तर्क पुराने विश्वसनीय रिलीज़ों को
+सत्यापित कर सकता है।
 
-Candidate sources:
+उम्मीदवार स्रोत:
 
-- `source=npm`: `openclaw@beta`, `openclaw@latest`, या exact
-  published version validate करें।
-- `source=ref`: selected current
-  harness के साथ trusted branch, tag, या commit pack करें।
-- `source=url`: required `package_sha256` के साथ public HTTPS tarball validate करें।
-  यह path URL credentials, non-default HTTPS ports, private/internal
-  hostnames या DNS/IP results, special-use IP space, और unsafe redirects reject करता है।
-- `source=trusted-url`: maintainer-owned policy
-  `.github/package-trusted-sources.json` के खिलाफ required
-  `package_sha256` और `trusted_source_id` के साथ HTTPS tarball validate करें। enterprise/private
-  mirrors के लिए इसका उपयोग करें, `source=url` को input-level allow-private
-  switch से कमजोर करने के बजाय। Bearer auth, जब policy से configured हो, fixed
-  `OPENCLAW_TRUSTED_PACKAGE_TOKEN` secret का उपयोग करता है।
-- `source=artifact`: किसी अन्य Actions run द्वारा uploaded tarball reuse करें।
+- `source=npm`: `openclaw@extended-stable`, `openclaw@beta`,
+  `openclaw@latest` या किसी सटीक प्रकाशित संस्करण को सत्यापित करें।
+- `source=ref`: चयनित वर्तमान हार्नेस के साथ किसी विश्वसनीय ब्रांच, टैग या कमिट को पैक करें।
+- `source=url`: आवश्यक `package_sha256` वाले सार्वजनिक HTTPS टारबॉल को सत्यापित करें।
+  यह पथ URL क्रेडेंशियल, गैर-डिफ़ॉल्ट HTTPS पोर्ट, निजी/आंतरिक
+  होस्टनाम या DNS/IP परिणाम, विशेष-उपयोग IP स्थान और असुरक्षित रीडायरेक्ट अस्वीकार करता है।
+- `source=trusted-url`: आवश्यक
+  `package_sha256` और `trusted_source_id` वाले HTTPS टारबॉल को `.github/package-trusted-sources.json` में
+  अनुरक्षक-स्वामित्व वाली नीति के विरुद्ध सत्यापित करें। इनपुट-स्तरीय निजी-अनुमति
+  स्विच से `source=url` को कमज़ोर करने के बजाय एंटरप्राइज़/निजी
+  मिरर के लिए इसका उपयोग करें। नीति द्वारा कॉन्फ़िगर किया गया बियरर प्रमाणीकरण निश्चित
+  `OPENCLAW_TRUSTED_PACKAGE_TOKEN` सीक्रेट का उपयोग करता है।
+- `source=artifact`: किसी अन्य Actions रन द्वारा अपलोड किए गए टारबॉल का पुनः उपयोग करें।
 
-Full Release Validation default रूप से `source=artifact` का उपयोग करता है, जिसे
-resolved release SHA से बनाया जाता है। post-publish proof के लिए,
-`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` pass करें ताकि वही upgrade matrix
-shipped npm package को target करे।
+पूर्ण रिलीज़ सत्यापन डिफ़ॉल्ट रूप से समाधान किए गए रिलीज़ SHA से निर्मित
+`source=artifact` का उपयोग करता है। प्रकाशन-पश्चात प्रमाण के लिए,
+`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` पास करें, ताकि वही अपग्रेड मैट्रिक्स
+जारी किए गए npm पैकेज को लक्ष्य बनाए।
 
-Release checks Package Acceptance को package/update/restart/plugin set के साथ call करते हैं:
+रिलीज़ जाँच पैकेज स्वीकृति को पैकेज/अपडेट/पुनरारंभ/Plugin सेट के साथ कॉल करती हैं:
 
 ```text
-doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape
 ```
 
-जब release soak enabled होता है, वे यह भी pass करते हैं:
+रिलीज़ सोक सक्षम होने पर (`release_profile=stable` और
+`full` के लिए अनिवार्य), वे यह भी पास करती हैं:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -194,25 +196,26 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-यह package migration, update channel switching, corrupt managed-plugin
-tolerance, stale plugin dependency cleanup, offline plugin coverage, plugin
-update behavior, और Telegram package QA को उसी resolved artifact पर रखता है, default release package gate को हर published release पर चलाए बिना।
+इससे पैकेज माइग्रेशन, अपडेट चैनल स्विचिंग, दूषित प्रबंधित-Plugin
+सहनशीलता, पुराने Plugin निर्भरता क्लीनअप, ऑफ़लाइन Plugin कवरेज, Plugin
+अपडेट व्यवहार और Telegram पैकेज QA एक ही समाधान किए गए आर्टिफ़ैक्ट पर रहते हैं, और
+डिफ़ॉल्ट रिलीज़ पैकेज गेट को प्रत्येक प्रकाशित रिलीज़ पर चलाने की आवश्यकता नहीं पड़ती।
 
-`last-stable-4` चार latest stable npm-published OpenClaw
-releases पर resolve होता है। Release package acceptance `2026.4.23` को first plugin-update
-compatibility boundary, `2026.5.2` को plugin-architecture churn boundary, और
-`2026.4.15` को पुराने 2026.4.1x published-update baseline के रूप में pin करता है; resolver
-उन pins को dedupe करता है जो पहले से latest four में हैं। exhaustive published
-update migration coverage के लिए, Full Release CI के बजाय अलग Update
-Migration workflow में `all-since-2026.4.23` का उपयोग करें। जब आप legacy pre-date
-anchor भी चाहते हों, तब manual wider sampling के लिए `release-history` उपलब्ध रहता है।
+`last-stable-4` npm पर प्रकाशित OpenClaw की चार नवीनतम स्थिर
+रिलीज़ों में समाधान होता है। रिलीज़ पैकेज स्वीकृति `2026.4.23` को पहले Plugin-अपडेट
+संगतता सीमा, `2026.5.2` को Plugin-वास्तुकला परिवर्तन सीमा और
+`2026.4.15` को पुराने 2026.4.1x प्रकाशित-अपडेट बेसलाइन के रूप में पिन करती है; रिज़ॉल्वर
+उन पिन को डीडुप्लिकेट करता है जो नवीनतम चार में पहले से हैं। संपूर्ण प्रकाशित
+अपडेट माइग्रेशन कवरेज के लिए, पूर्ण रिलीज़ CI के बजाय अलग अपडेट
+माइग्रेशन वर्कफ़्लो में `all-since-2026.4.23` का उपयोग करें। यदि लेगेसी पूर्व-तिथि
+एंकर के साथ व्यापक मैन्युअल नमूनाकरण भी चाहिए, तो `release-history` उपलब्ध रहता है।
 
-जब multiple published-upgrade survivor baselines चुने जाते हैं, reusable
-Docker workflow हर baseline को अपने targeted runner job में shard करता है। हर
-baseline shard अब भी selected scenario set चलाता है, लेकिन logs और artifacts
-per-baseline रहते हैं और wall time एक बड़े serial job के बजाय slowest shard से bounded होता है।
+जब कई प्रकाशित-अपग्रेड सर्वाइवर बेसलाइन चुनी जाती हैं, तो पुनः उपयोग योग्य
+Docker वर्कफ़्लो प्रत्येक बेसलाइन को उसके अपने लक्षित रनर जॉब में शार्ड करता है। प्रत्येक
+बेसलाइन शार्ड फिर भी चयनित परिदृश्य सेट चलाता है, लेकिन लॉग और आर्टिफ़ैक्ट
+प्रति-बेसलाइन बने रहते हैं और कुल समय एक बड़े क्रमिक जॉब के बजाय सबसे धीमे शार्ड से सीमित होता है।
 
-release से पहले candidate validate करते समय package profile manually चलाएँ:
+रिलीज़ से पहले किसी उम्मीदवार को सत्यापित करते समय पैकेज प्रोफ़ाइल मैन्युअल रूप से चलाएँ:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -226,72 +229,77 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-जब release question में MCP channels,
-cron/subagent cleanup, OpenAI web search, या OpenWebUI शामिल हों, तब `suite_profile=product` का उपयोग करें। `suite_profile=full`
-का उपयोग केवल तब करें जब आपको full Docker release-path coverage चाहिए।
+प्रकाशित विस्तारित-स्थिर कैनरी के लिए,
+`package_spec=openclaw@extended-stable` सेट करें। Docker लेन चलने से पहले पैकेज स्वीकृति उस
+चयनकर्ता को सटीक टारबॉल में समाधान करती है।
 
-## Release default
+जब रिलीज़ संबंधी प्रश्न में MCP चैनल,
+cron/सबएजेंट क्लीनअप, OpenAI वेब खोज या OpenWebUI शामिल हों, तब `suite_profile=product` का उपयोग करें।
+पूर्ण Docker रिलीज़-पथ कवरेज की आवश्यकता होने पर ही `suite_profile=full` का उपयोग करें।
 
-Release candidates के लिए, default proof stack है:
+## रिलीज़ डिफ़ॉल्ट
 
-1. source-level regressions के लिए `pnpm check:changed` और `pnpm test:changed`।
-2. package artifact integrity के लिए `pnpm release:check`।
-3. install/update/restart/plugin contracts के लिए Package Acceptance `package` profile या release-check custom package
-   lanes।
-4. OS-specific installer, onboarding, और platform
-   behavior के लिए Cross-OS release checks।
-5. Live suites केवल तब जब changed surface provider या hosted-service
-   behavior को touch करे।
+रिलीज़ उम्मीदवारों के लिए, डिफ़ॉल्ट प्रमाण स्टैक है:
 
-Maintainer machines पर, broad gates और Docker/package product proof Testbox में चलना चाहिए,
-जब तक कि explicitly local proof न किया जा रहा हो।
+1. स्रोत-स्तरीय रिग्रेशन के लिए `pnpm check:changed` और `pnpm test:changed`।
+2. पैकेज आर्टिफ़ैक्ट अखंडता के लिए `pnpm release:check`।
+3. इंस्टॉल/अपडेट/पुनरारंभ/Plugin अनुबंधों के लिए पैकेज स्वीकृति `package`
+   प्रोफ़ाइल या रिलीज़-जाँच कस्टम पैकेज लेन।
+4. OS-विशिष्ट इंस्टॉलर, ऑनबोर्डिंग और प्लेटफ़ॉर्म
+   व्यवहार के लिए क्रॉस-OS रिलीज़ जाँच।
+5. लाइव सुइट केवल तब, जब बदली गई सतह प्रदाता या होस्टेड-सेवा
+   व्यवहार को प्रभावित करती हो।
 
-## Legacy compatibility
+अनुरक्षक मशीनों पर, व्यापक गेट और Docker/पैकेज उत्पाद प्रमाण को
+Testbox में चलना चाहिए, जब तक स्थानीय प्रमाण स्पष्ट रूप से न किया जा रहा हो।
 
-Compatibility leniency संकीर्ण और time boxed है:
+## लेगेसी संगतता
 
-- `2026.4.25` तक के packages, जिनमें `2026.4.25-beta.*` शामिल हैं,
-  Package Acceptance में already-shipped package metadata gaps tolerate कर सकते हैं।
-- published `2026.4.26` package already shipped local build metadata stamp
-  files के लिए warn कर सकता है।
-- बाद के packages को modern contracts satisfy करने होंगे। वही gaps warning या skipping के बजाय fail होंगे।
+संगतता में ढील सीमित और समयबद्ध है:
 
-इन old shapes के लिए नए startup migrations न जोड़ें। doctor
-repair add या extend करें, फिर update command restart own करता हो तो उसे `upgrade-survivor`, `published-upgrade-survivor`, या
-`update-restart-auth` से prove करें।
+- `2026.4.25` तक के पैकेज, जिनमें `2026.4.25-beta.*` भी शामिल है,
+  पैकेज स्वीकृति में पहले से जारी पैकेज मेटाडेटा कमियों को सहन कर सकते हैं।
+- प्रकाशित `2026.4.26` पैकेज पहले से जारी स्थानीय बिल्ड मेटाडेटा स्टाम्प
+  फ़ाइलों के लिए चेतावनी दे सकता है।
+- बाद के पैकेजों को आधुनिक अनुबंधों को पूरा करना अनिवार्य है। वही कमियाँ चेतावनी या
+  छोड़ दिए जाने के बजाय विफल होती हैं।
 
-## Coverage जोड़ना
+इन पुराने आकारों के लिए नए स्टार्टअप माइग्रेशन न जोड़ें। डॉक्टर
+मरम्मत जोड़ें या विस्तारित करें, फिर उसे `upgrade-survivor`, `published-upgrade-survivor` या
+अपडेट कमांड द्वारा पुनरारंभ नियंत्रित किए जाने पर `update-restart-auth` से प्रमाणित करें।
 
-Update या plugin behavior बदलते समय, सबसे lower layer पर coverage जोड़ें जो
-सही वजह से fail हो सके:
+## कवरेज जोड़ना
 
-- शुद्ध पाथ या मेटाडेटा लॉजिक: source के पास unit test।
-- पैकेज इन्वेंटरी या पैक्ड-फ़ाइल व्यवहार: `package-dist-inventory` या tarball
-  checker test।
-- CLI install/update व्यवहार: Docker lane assertion या fixture।
-- प्रकाशित-रिलीज़ migration व्यवहार: `published-upgrade-survivor` scenario।
-- update-owned restart व्यवहार: `update-restart-auth`।
-- registry/package source व्यवहार: `test:docker:plugins` fixture या ClawHub
-  fixture server।
-- dependency layout या cleanup व्यवहार: runtime execution और
-  filesystem boundary, दोनों assert करें। npm dependencies Plugin के
-  managed npm project के अंदर hoist हो सकती हैं, इसलिए tests को साबित करना चाहिए
-  कि उसी project को scan/clean किया जाता है, बजाय इसके कि केवल Plugin package-local `node_modules` tree मान लिया जाए।
+अपडेट या Plugin के व्यवहार में बदलाव करते समय, सबसे निचली उस परत पर कवरेज जोड़ें जो
+सही कारण से विफल हो सकती है:
 
-नए Docker fixtures को default रूप से hermetic रखें। local fixture registries और
-fake packages का उपयोग करें, जब तक test का उद्देश्य live registry व्यवहार न हो।
+- शुद्ध पाथ या मेटाडेटा लॉजिक: स्रोत के पास यूनिट टेस्ट।
+- पैकेज इन्वेंट्री या पैक की गई फ़ाइल का व्यवहार: `package-dist-inventory` या टारबॉल
+  चेकर टेस्ट।
+- CLI इंस्टॉल/अपडेट व्यवहार: Docker लेन अभिकथन या फ़िक्सचर।
+- प्रकाशित-रिलीज़ माइग्रेशन व्यवहार: `published-upgrade-survivor` परिदृश्य।
+- अपडेट के स्वामित्व वाला रीस्टार्ट व्यवहार: `update-restart-auth`।
+- रजिस्ट्री/पैकेज स्रोत व्यवहार: `test:docker:plugins` फ़िक्सचर या ClawHub
+  फ़िक्सचर सर्वर।
+- डिपेंडेंसी लेआउट या क्लीनअप व्यवहार: रनटाइम निष्पादन और
+  फ़ाइल सिस्टम सीमा, दोनों का अभिकथन करें। npm डिपेंडेंसियों को Plugin के
+  प्रबंधित npm प्रोजेक्ट के भीतर ऊपर उठाया जा सकता है, इसलिए टेस्ट यह साबित करें कि केवल Plugin के पैकेज-स्थानीय
+  `node_modules` ट्री को मान लेने के बजाय उस प्रोजेक्ट को स्कैन/क्लीन किया जाता है।
 
-## failure triage
+नई Docker फ़िक्सचरों को डिफ़ॉल्ट रूप से हर्मेटिक रखें। स्थानीय फ़िक्सचर रजिस्ट्रियों और
+नकली पैकेजों का उपयोग करें, जब तक कि टेस्ट का उद्देश्य लाइव रजिस्ट्री व्यवहार न हो।
 
-artifact identity से शुरू करें:
+## विफलता की छँटाई
 
-- पैकेज स्वीकृति `resolve_package` summary: source, version, SHA-256, और
-  artifact name।
-- Docker artifacts: `.artifacts/docker-tests/**/summary.json`,
-  `failures.json`, lane logs, और rerun commands।
-- upgrade survivor summary: `.artifacts/upgrade-survivor/summary.json`,
-  जिसमें baseline version, candidate version, scenario, phase timings, और
-  recipe steps शामिल हों।
+आर्टिफ़ैक्ट की पहचान से शुरू करें:
 
-पूरे release umbrella को rerun करने के बजाय उसी package artifact के साथ
-failed exact lane को rerun करना प्राथमिकता दें।
+- Package Acceptance `resolve_package` सारांश: स्रोत, संस्करण, SHA-256 और
+  आर्टिफ़ैक्ट का नाम।
+- Docker आर्टिफ़ैक्ट: `.artifacts/docker-tests/**/summary.json`,
+  `failures.json`, लेन लॉग और दोबारा चलाने के कमांड।
+- अपग्रेड सर्वाइवर सारांश: `.artifacts/upgrade-survivor/summary.json`,
+  जिसमें बेसलाइन संस्करण, कैंडिडेट संस्करण, परिदृश्य, चरणों का समय और
+  कॉन्फ़िग रेसिपी कवरेज शामिल हैं।
+
+पूरे रिलीज़ अम्ब्रेला को दोबारा चलाने के बजाय, उसी पैकेज आर्टिफ़ैक्ट के साथ
+विफल हुई सटीक लेन को दोबारा चलाना बेहतर है।

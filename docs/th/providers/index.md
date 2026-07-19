@@ -1,15 +1,16 @@
 ---
 read_when:
     - คุณต้องการเลือกผู้ให้บริการโมเดล
-    - คุณต้องการภาพรวมคร่าว ๆ ของระบบเบื้องหลัง LLM ที่รองรับ
+    - ต้องการภาพรวมโดยย่อของแบ็กเอนด์ LLM ที่รองรับ
 summary: ผู้ให้บริการโมเดล (LLM) ที่ OpenClaw รองรับ
 title: ไดเรกทอรีผู้ให้บริการ
 x-i18n:
-    generated_at: "2026-07-12T16:37:42Z"
+    generated_at: "2026-07-19T07:27:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
+    source_hash: e98910f016e461dedcd06e40a2933631bbd6ac09ceebd340bab82f14805e06a6
     source_path: providers/index.md
     workflow: 16
 ---
@@ -17,11 +18,11 @@ x-i18n:
 OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลายราย เลือกผู้ให้บริการ ยืนยันตัวตน แล้วตั้งค่า
 โมเดลเริ่มต้นเป็น `provider/model`
 
-กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่หรือไม่? ดู[ช่องทาง](/th/channels)
+กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่ใช่ไหม ดู[ช่องทาง](/th/channels)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-1. ยืนยันตัวตนกับผู้ให้บริการ (โดยทั่วไปผ่าน `openclaw onboard`)
+1. ยืนยันตัวตนกับผู้ให้บริการ (โดยปกติผ่าน `openclaw onboard`)
 2. ตั้งค่าโมเดลเริ่มต้น:
 
 ```json5
@@ -38,10 +39,11 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Anthropic (API + Claude CLI)](/th/providers/anthropic)
 - [Arcee AI (โมเดล Trinity)](/th/providers/arcee)
 - [Azure Speech](/th/providers/azure-speech)
+- [Baseten (Inkling + API โมเดล)](/th/providers/baseten)
 - [BytePlus (ระหว่างประเทศ)](/th/concepts/model-providers#byteplus-international)
 - [Cerebras](/th/providers/cerebras)
 - [Chutes](/th/providers/chutes)
-- [ClawRouter (การกำหนดเส้นทางหลายผู้ให้บริการแบบมีการจัดการ)](/th/providers/clawrouter)
+- [ClawRouter (การกำหนดเส้นทางแบบหลายผู้ให้บริการที่มีการจัดการ)](/th/providers/clawrouter)
 - [Cloudflare AI Gateway](/th/providers/cloudflare-ai-gateway)
 - [Cohere](/th/providers/cohere)
 - [ComfyUI](/th/providers/comfy)
@@ -49,7 +51,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [ds4 (DeepSeek V4 ภายในเครื่อง)](/th/providers/ds4)
 - [ElevenLabs](/th/providers/elevenlabs)
 - [fal](/th/providers/fal)
-- [Featherless AI](/providers/featherless)
+- [Featherless AI](/th/providers/featherless)
 - [Fireworks](/th/providers/fireworks)
 - [GitHub Copilot](/th/providers/github-copilot)
 - [GMI Cloud](/th/providers/gmi)
@@ -57,7 +59,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Gradium](/th/providers/gradium)
 - [Groq (การอนุมานด้วย LPU)](/th/providers/groq)
 - [Hugging Face (การอนุมาน)](/th/providers/huggingface)
-- [inferrs (โมเดลภายในเครื่อง)](/th/providers/inferrs)
+- [Inferrs (โมเดลภายในเครื่อง)](/th/providers/inferrs)
 - [Kilocode](/th/providers/kilocode)
 - [LiteLLM (Gateway แบบรวมศูนย์)](/th/providers/litellm)
 - [LM Studio (โมเดลภายในเครื่อง)](/th/providers/lmstudio)
@@ -76,7 +78,6 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Perplexity (การค้นหาเว็บ)](/th/providers/perplexity-provider)
 - [Qianfan](/th/providers/qianfan)
 - [Qwen Cloud](/th/providers/qwen)
-- [Qwen OAuth / Portal](/th/providers/qwen-oauth)
 - [Runway](/th/providers/runway)
 - [SenseAudio](/th/providers/senseaudio)
 - [SGLang (โมเดลภายในเครื่อง)](/th/providers/sglang)
@@ -95,7 +96,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 
 ## หน้าภาพรวมที่ใช้ร่วมกัน
 
-- [ตัวเลือกเพิ่มเติมของผู้ให้บริการ](/th/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
+- [ตัวแปรเพิ่มเติมของผู้ให้บริการ](/th/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
 - [การสร้างรูปภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
 - [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
 - [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
@@ -111,7 +112,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 
 ## เครื่องมือจากชุมชน
 
-- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลประจำตัวของการสมัครสมาชิก Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
+- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลประจำตัวการสมัครสมาชิก Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
 
-สำหรับแค็ตตาล็อกผู้ให้บริการทั้งหมด (xAI, Groq, Mistral ฯลฯ) และการกำหนดค่าขั้นสูง
+สำหรับแค็ตตาล็อกผู้ให้บริการฉบับเต็ม (xAI, Groq, Mistral ฯลฯ) และการกำหนดค่าขั้นสูง
 โปรดดู[ผู้ให้บริการโมเดล](/th/concepts/model-providers)

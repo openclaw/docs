@@ -1,35 +1,39 @@
 ---
 read_when:
-    - आपको एजेंट कार्यक्षेत्र या उसके फ़ाइल लेआउट को समझाना है
-    - आप एजेंट वर्कस्पेस का बैकअप लेना या माइग्रेट करना चाहते हैं
+    - आपको एजेंट वर्कस्पेस या उसके फ़ाइल लेआउट की व्याख्या करनी है
+    - आप किसी एजेंट कार्यक्षेत्र का बैकअप लेना या उसे माइग्रेट करना चाहते हैं
 sidebarTitle: Agent workspace
-summary: 'एजेंट वर्कस्पेस: स्थान, लेआउट, और बैकअप रणनीति'
-title: एजेंट कार्यक्षेत्र
+summary: 'एजेंट कार्यस्थान: स्थान, संरचना और बैकअप रणनीति'
+title: एजेंट कार्यस्थान
 x-i18n:
-    generated_at: "2026-06-28T22:55:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:29:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6020aa96b2aa829a9684164994d1fb1fb1b31157c47b60e947ad82f9f5508e1c
+    source_hash: ea72dd9366876691dca751518d88f95741d68a39e409a2a300a497a58f8b9d37
     source_path: concepts/agent-workspace.md
     workflow: 16
 ---
 
-कार्यक्षेत्र एजेंट का घर है। यह फ़ाइल टूल्स और कार्यक्षेत्र संदर्भ के लिए उपयोग की जाने वाली एकमात्र कार्यशील डायरेक्टरी है। इसे निजी रखें और इसे मेमोरी की तरह मानें।
+वर्कस्पेस एजेंट का घर है: फ़ाइल टूल और वर्कस्पेस संदर्भ के लिए उपयोग की जाने वाली कार्यशील डायरेक्टरी। इसे निजी रखें और स्मृति की तरह मानें।
 
-यह `~/.openclaw/` से अलग है, जहाँ config, credentials, और sessions संग्रहीत होते हैं।
+यह `~/.openclaw/` से अलग है, जिसमें कॉन्फ़िगरेशन, क्रेडेंशियल और सत्र संग्रहीत होते हैं।
 
 <Warning>
-कार्यक्षेत्र **डिफ़ॉल्ट cwd** है, कोई कठोर sandbox नहीं। टूल्स सापेक्ष पाथ को कार्यक्षेत्र के विरुद्ध resolve करते हैं, लेकिन यदि sandboxing सक्षम नहीं है तो absolute paths अभी भी host पर कहीं और पहुँच सकते हैं। यदि आपको isolation चाहिए, तो [`agents.defaults.sandbox`](/hi/gateway/sandboxing) (और/या प्रति-एजेंट sandbox config) का उपयोग करें।
+वर्कस्पेस **डिफ़ॉल्ट cwd** है, कोई सख़्त सैंडबॉक्स नहीं। टूल वर्कस्पेस के सापेक्ष पाथ का समाधान करते हैं, लेकिन सैंडबॉक्सिंग सक्षम न होने पर निरपेक्ष पाथ अब भी होस्ट पर अन्य स्थानों तक पहुँच सकते हैं। यदि आपको पृथक्करण चाहिए, तो [`agents.defaults.sandbox`](/hi/gateway/sandboxing) (और/या प्रति-एजेंट सैंडबॉक्स कॉन्फ़िगरेशन) का उपयोग करें।
 
-जब sandboxing सक्षम हो और `workspaceAccess` `"rw"` नहीं हो, तो टूल्स आपके host कार्यक्षेत्र में नहीं, बल्कि `~/.openclaw/sandboxes` के अंतर्गत sandbox कार्यक्षेत्र के अंदर काम करते हैं।
+जब सैंडबॉक्सिंग सक्षम हो और `workspaceAccess`, `"rw"` न हो, तो टूल आपके होस्ट वर्कस्पेस के बजाय `~/.openclaw/sandboxes` के अंतर्गत सैंडबॉक्स वर्कस्पेस में काम करते हैं।
 </Warning>
 
 ## डिफ़ॉल्ट स्थान
 
 - डिफ़ॉल्ट: `~/.openclaw/workspace`
-- यदि `OPENCLAW_PROFILE` सेट है और `"default"` नहीं है, तो डिफ़ॉल्ट `~/.openclaw/workspace-<profile>` बन जाता है।
-- `~/.openclaw/openclaw.json` में override करें:
+- यदि `OPENCLAW_PROFILE` सेट है और `"default"` नहीं है, तो डिफ़ॉल्ट `~/.openclaw/workspace-<profile>` हो जाता है।
+- सेट होने पर `OPENCLAW_WORKSPACE_DIR` ऊपर दिए गए दोनों को ओवरराइड करता है।
+- स्पष्ट वर्कस्पेस के बिना गैर-डिफ़ॉल्ट एजेंट (`agents.list[]`) साझा डिफ़ॉल्ट वर्कस्पेस के बजाय `<state-dir>/workspace-<agentId>` पर समाधान करते हैं।
+
+`~/.openclaw/openclaw.json` में ओवरराइड करें:
 
 ```json5
 {
@@ -41,97 +45,105 @@ x-i18n:
 }
 ```
 
-`openclaw onboard`, `openclaw configure`, या `openclaw setup` कार्यक्षेत्र बनाएँगे और यदि bootstrap फ़ाइलें अनुपस्थित हैं तो उन्हें seed करेंगे।
+प्रति-एजेंट ओवरराइड: `agents.list[].workspace`।
+
+यदि वर्कस्पेस और बूटस्ट्रैप फ़ाइलें मौजूद नहीं हैं, तो `openclaw onboard`, `openclaw configure`, या `openclaw setup` उन्हें बनाते और प्रारंभिक सामग्री भरते हैं।
 
 <Note>
-Sandbox seed copies केवल नियमित in-workspace फ़ाइलें स्वीकार करती हैं; source workspace के बाहर resolve होने वाले symlink/hardlink aliases अनदेखा कर दिए जाते हैं।
+सैंडबॉक्स प्रारंभिक प्रतियाँ केवल वर्कस्पेस के भीतर की नियमित फ़ाइलें स्वीकार करती हैं; स्रोत वर्कस्पेस के बाहर समाधान करने वाले सिमलिंक/हार्डलिंक उपनाम अनदेखे किए जाते हैं।
 </Note>
 
-यदि आप पहले से ही कार्यक्षेत्र फ़ाइलें स्वयं manage करते हैं, तो आप bootstrap फ़ाइल निर्माण अक्षम कर सकते हैं:
+यदि आप पहले से वर्कस्पेस फ़ाइलों का प्रबंधन स्वयं करते हैं, तो बूटस्ट्रैप फ़ाइल निर्माण अक्षम करें:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
 ```
 
-## अतिरिक्त कार्यक्षेत्र फ़ोल्डर
+## अतिरिक्त वर्कस्पेस फ़ोल्डर
 
-पुराने installs ने `~/openclaw` बनाया हो सकता है। कई कार्यक्षेत्र डायरेक्टरी रखना भ्रमित करने वाला auth या state drift पैदा कर सकता है, क्योंकि एक समय में केवल एक कार्यक्षेत्र active होता है।
+पुराने इंस्टॉलेशन ने शायद `~/openclaw` बनाया हो। कई वर्कस्पेस डायरेक्टरियाँ रखने से प्रमाणीकरण या स्थिति में भ्रमित करने वाला विचलन हो सकता है, क्योंकि एक समय में केवल एक वर्कस्पेस सक्रिय रहता है।
 
 <Note>
-**सिफ़ारिश:** एक ही active कार्यक्षेत्र रखें। यदि अब आप अतिरिक्त फ़ोल्डर उपयोग नहीं करते, तो उन्हें archive करें या Trash में ले जाएँ (उदाहरण के लिए `trash ~/openclaw`)। यदि आप जानबूझकर कई कार्यक्षेत्र रखते हैं, तो सुनिश्चित करें कि `agents.defaults.workspace` active वाले की ओर point करता है।
-
-`openclaw doctor` अतिरिक्त कार्यक्षेत्र डायरेक्टरी detect करने पर चेतावनी देता है।
+**अनुशंसा:** केवल एक सक्रिय वर्कस्पेस रखें। यदि अब अतिरिक्त फ़ोल्डरों का उपयोग नहीं करते हैं, तो उन्हें संग्रहित करें या Trash में ले जाएँ (उदाहरण के लिए `trash ~/openclaw`)। यदि आप जानबूझकर कई वर्कस्पेस रखते हैं, तो सुनिश्चित करें कि `agents.defaults.workspace` (या प्रति-एजेंट `workspace` कुंजी) सक्रिय वर्कस्पेस की ओर संकेत करती है।
 </Note>
 
-## कार्यक्षेत्र फ़ाइल मानचित्र
+## वर्कस्पेस फ़ाइल मानचित्र
 
-ये वे मानक फ़ाइलें हैं जिनकी OpenClaw कार्यक्षेत्र के अंदर अपेक्षा करता है:
+वर्कस्पेस में OpenClaw द्वारा अपेक्षित मानक फ़ाइलें:
 
 <AccordionGroup>
   <Accordion title="AGENTS.md - संचालन निर्देश">
-    एजेंट के लिए संचालन निर्देश और उसे मेमोरी का उपयोग कैसे करना चाहिए। हर session की शुरुआत में loaded होता है। नियमों, प्राथमिकताओं, और "कैसे व्यवहार करें" विवरणों के लिए अच्छी जगह।
+    एजेंट के लिए संचालन निर्देश और यह स्मृति का उपयोग कैसे करे। प्रत्येक सत्र के आरंभ में लोड किए जाते हैं। नियमों, प्राथमिकताओं और "कैसे व्यवहार करें" संबंधी विवरणों के लिए उपयुक्त स्थान।
   </Accordion>
-  <Accordion title="SOUL.md - persona और tone">
-    Persona, tone, और boundaries। हर session में loaded होता है। Guide: [SOUL.md personality guide](/hi/concepts/soul).
+  <Accordion title="SOUL.md - व्यक्तित्व और लहजा">
+    व्यक्तित्व, लहजा और सीमाएँ। प्रत्येक सत्र में लोड किए जाते हैं। मार्गदर्शिका: [SOUL.md व्यक्तित्व मार्गदर्शिका](/hi/concepts/soul)।
   </Accordion>
-  <Accordion title="USER.md - user कौन है">
-    User कौन है और उन्हें कैसे address करना है। हर session में loaded होता है।
+  <Accordion title="USER.md - उपयोगकर्ता कौन है">
+    उपयोगकर्ता कौन है और उसे कैसे संबोधित करना है। प्रत्येक सत्र में लोड किया जाता है।
   </Accordion>
-  <Accordion title="IDENTITY.md - name, vibe, emoji">
-    एजेंट का name, vibe, और emoji। bootstrap ritual के दौरान बनाया/अपडेट किया जाता है।
+  <Accordion title="IDENTITY.md - नाम, अंदाज़, इमोजी">
+    एजेंट का नाम, अंदाज़ और इमोजी। बूटस्ट्रैप प्रक्रिया के दौरान बनाया/अपडेट किया जाता है।
   </Accordion>
-  <Accordion title="TOOLS.md - स्थानीय tool conventions">
-    आपके स्थानीय tools और conventions के बारे में notes। यह tool availability नियंत्रित नहीं करता; यह केवल guidance है।
+  <Accordion title="TOOLS.md - स्थानीय टूल परंपराएँ">
+    आपके स्थानीय टूल और परंपराओं के बारे में टिप्पणियाँ। यह टूल की उपलब्धता नियंत्रित नहीं करता; यह केवल मार्गदर्शन है।
   </Accordion>
-  <Accordion title="HEARTBEAT.md - Heartbeat checklist">
-    Heartbeat runs के लिए वैकल्पिक छोटी checklist। token burn से बचने के लिए इसे छोटा रखें।
+  <Accordion title="HEARTBEAT.md - Heartbeat चेकलिस्ट">
+    Heartbeat रन के लिए वैकल्पिक छोटी चेकलिस्ट। टोकन की अनावश्यक खपत से बचने के लिए इसे संक्षिप्त रखें।
   </Accordion>
-  <Accordion title="BOOT.md - startup checklist">
-    वैकल्पिक startup checklist जो gateway restart पर automatic चलती है (जब [internal hooks](/hi/automation/hooks) सक्षम हों)। इसे छोटा रखें; outbound sends के लिए message tool का उपयोग करें।
+  <Accordion title="BOOT.md - स्टार्टअप चेकलिस्ट">
+    Gateway के पुनः आरंभ होने पर स्वचालित रूप से चलाई जाने वाली वैकल्पिक स्टार्टअप चेकलिस्ट (जब [आंतरिक हुक](/hi/automation/hooks) सक्षम हों)। इसे संक्षिप्त रखें; बाहर संदेश भेजने के लिए संदेश टूल का उपयोग करें।
   </Accordion>
-  <Accordion title="BOOTSTRAP.md - first-run ritual">
-    एक बार चलने वाला first-run ritual। केवल बिल्कुल नए कार्यक्षेत्र के लिए बनाया जाता है। ritual पूरा होने के बाद इसे delete कर दें।
+  <Accordion title="BOOTSTRAP.md - पहली बार चलाने की प्रक्रिया">
+    पहली बार चलाने की एकबारगी प्रक्रिया। केवल बिल्कुल नए वर्कस्पेस के लिए बनाई जाती है। प्रक्रिया पूरी होने के बाद इसे हटा दें।
   </Accordion>
-  <Accordion title="memory/YYYY-MM-DD.md - दैनिक मेमोरी log">
-    दैनिक मेमोरी log (प्रति दिन एक फ़ाइल)। session start पर today + yesterday पढ़ने की सिफ़ारिश की जाती है।
+  <Accordion title="memory/YYYY-MM-DD.md - दैनिक स्मृति लॉग">
+    दैनिक स्मृति लॉग (प्रति दिन एक फ़ाइल)। सत्र आरंभ होने पर आज + कल की फ़ाइल पढ़ने की अनुशंसा की जाती है।
   </Accordion>
-  <Accordion title="MEMORY.md - curated long-term memory (वैकल्पिक)">
-    Curated long-term memory: durable facts, preferences, decisions, और short summaries। विस्तृत logs `memory/YYYY-MM-DD.md` में रखें ताकि memory tools उन्हें हर prompt में inject किए बिना on demand retrieve कर सकें। `MEMORY.md` को केवल main, private session में load करें (shared/group contexts में नहीं)। workflow और automatic memory flush के लिए [Memory](/hi/concepts/memory) देखें।
+  <Accordion title="MEMORY.md - व्यवस्थित दीर्घकालिक स्मृति (वैकल्पिक)">
+    व्यवस्थित दीर्घकालिक स्मृति: स्थायी तथ्य, प्राथमिकताएँ, निर्णय और संक्षिप्त सारांश। विस्तृत लॉग `memory/YYYY-MM-DD.md` में रखें, ताकि स्मृति टूल उन्हें प्रत्येक प्रॉम्प्ट में शामिल किए बिना आवश्यकता के अनुसार प्राप्त कर सकें। `MEMORY.md` को केवल मुख्य, निजी सत्र में लोड करें (साझा/समूह संदर्भों में नहीं)। कार्यप्रवाह और स्वचालित स्मृति फ़्लश के लिए [स्मृति](/hi/concepts/memory) देखें।
   </Accordion>
-  <Accordion title="skills/ - कार्यक्षेत्र Skills (वैकल्पिक)">
-    कार्यक्षेत्र-विशिष्ट Skills। उस कार्यक्षेत्र के लिए सबसे उच्च-precedence skill location। names collide होने पर project agent skills, personal agent skills, managed skills, bundled skills, और `skills.load.extraDirs` को override करता है।
+  <Accordion title="skills/ - वर्कस्पेस Skills (वैकल्पिक)">
+    वर्कस्पेस-विशिष्ट Skills। नाम टकराने पर उस वर्कस्पेस के लिए सर्वोच्च-प्राथमिकता वाला Skills स्थान, जो प्रोजेक्ट एजेंट Skills, व्यक्तिगत एजेंट Skills, प्रबंधित Skills, बंडल किए गए Skills और `skills.load.extraDirs` से आगे रहता है।
   </Accordion>
-  <Accordion title="canvas/ - Canvas UI files (वैकल्पिक)">
-    node displays के लिए Canvas UI files (उदाहरण के लिए `canvas/index.html`)।
+  <Accordion title="canvas/ - Canvas UI फ़ाइलें (वैकल्पिक)">
+    Node डिस्प्ले के लिए Canvas UI फ़ाइलें (उदाहरण के लिए `canvas/index.html`)।
   </Accordion>
 </AccordionGroup>
 
 <Note>
-यदि कोई bootstrap फ़ाइल अनुपस्थित है, तो OpenClaw session में "missing file" marker inject करता है और जारी रखता है। बड़ी bootstrap फ़ाइलें inject करते समय truncate की जाती हैं; limits को `agents.defaults.bootstrapMaxChars` (डिफ़ॉल्ट: 20000) और `agents.defaults.bootstrapTotalMaxChars` (डिफ़ॉल्ट: 60000) से adjust करें। `openclaw setup` मौजूदा फ़ाइलों को overwrite किए बिना missing defaults फिर से बना सकता है।
+यदि कोई बूटस्ट्रैप फ़ाइल अनुपस्थित है, तो OpenClaw सत्र में "अनुपस्थित फ़ाइल" मार्कर डालता है और आगे बढ़ता है। बड़ी बूटस्ट्रैप फ़ाइलों को शामिल करते समय छोटा कर दिया जाता है; सीमाएँ `agents.defaults.bootstrapMaxChars` (डिफ़ॉल्ट: `20000`) और `agents.defaults.bootstrapTotalMaxChars` (डिफ़ॉल्ट: `60000`) से समायोजित करें। `openclaw setup` मौजूदा फ़ाइलों को ओवरराइट किए बिना अनुपस्थित डिफ़ॉल्ट फ़ाइलें फिर से बना सकता है।
 </Note>
 
-## कार्यक्षेत्र में क्या नहीं है
+## वर्कस्पेस में क्या नहीं होता
 
-ये `~/.openclaw/` के अंतर्गत रहते हैं और कार्यक्षेत्र repo में commit नहीं किए जाने चाहिए:
+ये `~/.openclaw/` के अंतर्गत रहते हैं और इन्हें वर्कस्पेस रिपॉज़िटरी में कमिट नहीं किया जाना चाहिए:
 
-- `~/.openclaw/openclaw.json` (config)
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (model auth profiles: OAuth + API keys)
-- `~/.openclaw/agents/<agentId>/agent/codex-home/` (per-agent Codex runtime account, config, skills, plugins, और native thread state)
-- `~/.openclaw/credentials/` (channel/provider state plus legacy OAuth import data)
-- `~/.openclaw/agents/<agentId>/sessions/` (session transcripts + metadata)
-- `~/.openclaw/skills/` (managed skills)
+- `~/.openclaw/openclaw.json` (कॉन्फ़िगरेशन)
+- `~/.openclaw/state/openclaw.sqlite` (साझा वर्कस्पेस सेटअप स्थिति और सत्यापन)
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (मॉडल प्रमाणीकरण प्रोफ़ाइल: OAuth + API कुंजियाँ)
+- `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` (सत्र पंक्तियाँ, प्रतिलेख और प्रति-एजेंट रनटाइम स्थिति)
+- `~/.openclaw/agents/<agentId>/agent/codex-home/` (प्रति-एजेंट Codex रनटाइम खाता, कॉन्फ़िगरेशन, Skills, Plugins और नेटिव थ्रेड स्थिति)
+- `~/.openclaw/credentials/` (चैनल/प्रोवाइडर स्थिति और पुराना OAuth आयात डेटा)
+- `~/.openclaw/agents/<agentId>/sessions/` (पुराने माइग्रेशन स्रोत और संग्रह/सहायता आर्टिफ़ैक्ट)
+- `~/.openclaw/skills/` (प्रबंधित Skills)
 
-यदि आपको sessions या config migrate करने हैं, तो उन्हें अलग से copy करें और version control से बाहर रखें।
+यदि आपको सत्र या कॉन्फ़िगरेशन माइग्रेट करना है, तो उन्हें अलग से कॉपी करें और संस्करण नियंत्रण से बाहर रखें।
 
-## Git backup (सिफ़ारिश की गई, निजी)
+OpenClaw के पुराने रिलीज़ ने `openclaw-workspace-state.json`,
+`.openclaw/workspace-state.json`, और `.attested` वर्कस्पेस साइडकार लिखे थे। वर्तमान
+रनटाइम उस स्थिति के लिए केवल साझा SQLite डेटाबेस का उपयोग करता है। यदि Doctor इनमें से
+किसी फ़ाइल की रिपोर्ट करता है, तो `openclaw doctor --fix` चलाएँ; Doctor मान्य पुरानी
+स्थिति आयात करता है और डेटाबेस पंक्तियाँ सत्यापित करने के बाद ही स्रोत हटाता है।
 
-कार्यक्षेत्र को निजी मेमोरी की तरह मानें। इसे **private** git repo में रखें ताकि इसका backup हो और यह recoverable रहे।
+## Git बैकअप (अनुशंसित, निजी)
 
-इन steps को उस machine पर run करें जहाँ Gateway चलता है (वही जगह है जहाँ कार्यक्षेत्र रहता है)।
+वर्कस्पेस को निजी स्मृति मानें। इसका बैकअप लेने और पुनर्प्राप्त करने योग्य बनाने के लिए इसे **निजी** git रिपॉज़िटरी में रखें।
+
+ये चरण उस मशीन पर चलाएँ जहाँ Gateway चलता है (वर्कस्पेस वहीं रहता है)।
 
 <Steps>
-  <Step title="Repo initialize करें">
-    यदि git installed है, तो बिल्कुल नए कार्यक्षेत्र automatic initialize होते हैं। यदि यह कार्यक्षेत्र पहले से repo नहीं है, तो run करें:
+  <Step title="रिपॉज़िटरी आरंभ करें">
+    यदि git इंस्टॉल है, तो बिल्कुल नए वर्कस्पेस स्वचालित रूप से आरंभ किए जाते हैं। यदि यह वर्कस्पेस पहले से रिपॉज़िटरी नहीं है, तो चलाएँ:
 
     ```bash
     cd ~/.openclaw/workspace
@@ -141,13 +153,13 @@ Sandbox seed copies केवल नियमित in-workspace फ़ाइल
     ```
 
   </Step>
-  <Step title="Private remote जोड़ें">
+  <Step title="निजी रिमोट जोड़ें">
     <Tabs>
-      <Tab title="GitHub web UI">
-        1. GitHub पर एक नया **private** repository बनाएँ।
-        2. README से initialize न करें (merge conflicts से बचता है)।
-        3. HTTPS remote URL copy करें।
-        4. remote add करें और push करें:
+      <Tab title="GitHub वेब UI">
+        1. GitHub पर नई **निजी** रिपॉज़िटरी बनाएँ।
+        2. README के साथ आरंभ न करें (मर्ज टकराव से बचाता है)।
+        3. HTTPS रिमोट URL कॉपी करें।
+        4. रिमोट जोड़ें और पुश करें:
 
         ```bash
         git branch -M main
@@ -161,11 +173,11 @@ Sandbox seed copies केवल नियमित in-workspace फ़ाइल
         gh repo create openclaw-workspace --private --source . --remote origin --push
         ```
       </Tab>
-      <Tab title="GitLab web UI">
-        1. GitLab पर एक नया **private** repository बनाएँ।
-        2. README से initialize न करें (merge conflicts से बचता है)।
-        3. HTTPS remote URL copy करें।
-        4. remote add करें और push करें:
+      <Tab title="GitLab वेब UI">
+        1. GitLab पर नई **निजी** रिपॉज़िटरी बनाएँ।
+        2. README के साथ आरंभ न करें (मर्ज टकराव से बचाता है)।
+        3. HTTPS रिमोट URL कॉपी करें।
+        4. रिमोट जोड़ें और पुश करें:
 
         ```bash
         git branch -M main
@@ -176,7 +188,7 @@ Sandbox seed copies केवल नियमित in-workspace फ़ाइल
     </Tabs>
 
   </Step>
-  <Step title="लगातार updates">
+  <Step title="निरंतर अपडेट">
     ```bash
     git status
     git add .
@@ -186,19 +198,19 @@ Sandbox seed copies केवल नियमित in-workspace फ़ाइल
   </Step>
 </Steps>
 
-## Secrets commit न करें
+## सीक्रेट कमिट न करें
 
 <Warning>
-Private repo में भी, कार्यक्षेत्र में secrets store करने से बचें:
+निजी रिपॉज़िटरी में भी वर्कस्पेस में सीक्रेट संग्रहीत करने से बचें:
 
-- API keys, OAuth tokens, passwords, या private credentials.
+- API कुंजियाँ, OAuth टोकन, पासवर्ड या निजी क्रेडेंशियल।
 - `~/.openclaw/` के अंतर्गत कुछ भी।
-- chats या sensitive attachments के raw dumps।
+- चैट या संवेदनशील अटैचमेंट के रॉ डंप।
 
-यदि आपको sensitive references store करने ही हों, तो placeholders का उपयोग करें और real secret कहीं और रखें (password manager, environment variables, या `~/.openclaw/`)।
+यदि आपको संवेदनशील संदर्भ संग्रहीत करने ही हों, तो प्लेसहोल्डर का उपयोग करें और वास्तविक सीक्रेट कहीं और रखें (पासवर्ड मैनेजर, पर्यावरण चर या `~/.openclaw/`)।
 </Warning>
 
-Suggested `.gitignore` starter:
+सुझाया गया आरंभिक `.gitignore`:
 
 ```gitignore
 .DS_Store
@@ -208,31 +220,33 @@ Suggested `.gitignore` starter:
 **/secrets*
 ```
 
-## कार्यक्षेत्र को नई machine पर ले जाना
+## वर्कस्पेस को नई मशीन पर ले जाना
 
 <Steps>
-  <Step title="Repo clone करें">
-    Repo को desired path पर clone करें (डिफ़ॉल्ट `~/.openclaw/workspace`)।
+  <Step title="रिपॉज़िटरी क्लोन करें">
+    रिपॉज़िटरी को इच्छित पाथ पर क्लोन करें (डिफ़ॉल्ट `~/.openclaw/workspace`)।
   </Step>
-  <Step title="Config update करें">
-    `~/.openclaw/openclaw.json` में `agents.defaults.workspace` को उस path पर set करें।
+  <Step title="कॉन्फ़िगरेशन अपडेट करें">
+    `~/.openclaw/openclaw.json` में `agents.defaults.workspace` को उस पाथ पर सेट करें।
   </Step>
-  <Step title="Missing files seed करें">
-    किसी भी missing files को seed करने के लिए `openclaw setup --workspace <path>` run करें।
+  <Step title="अनुपस्थित फ़ाइलों में प्रारंभिक सामग्री भरें">
+    अनुपस्थित फ़ाइलों में प्रारंभिक सामग्री भरने के लिए `openclaw setup --workspace <path>` चलाएँ।
   </Step>
-  <Step title="Sessions copy करें (वैकल्पिक)">
-    यदि आपको sessions चाहिए, तो old machine से `~/.openclaw/agents/<agentId>/sessions/` अलग से copy करें।
+  <Step title="सत्र कॉपी करें (वैकल्पिक)">
+    यदि आपको सत्र चाहिए, तो पुरानी मशीन से `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+    अलग से कॉपी करें। `~/.openclaw/agents/<agentId>/sessions/` को केवल तभी कॉपी करें
+    जब आपको पुराने माइग्रेशन इनपुट या संग्रह/सहायता आर्टिफ़ैक्ट भी चाहिए।
   </Step>
 </Steps>
 
-## Advanced notes
+## उन्नत टिप्पणियाँ
 
-- Multi-agent routing प्रति एजेंट अलग-अलग कार्यक्षेत्रों का उपयोग कर सकती है। routing configuration के लिए [Channel routing](/hi/channels/channel-routing) देखें।
-- यदि `agents.defaults.sandbox` सक्षम है, तो non-main sessions `agents.defaults.sandbox.workspaceRoot` के अंतर्गत per-session sandbox workspaces का उपयोग कर सकते हैं।
+- बहु-एजेंट रूटिंग `agents.list[].workspace` के माध्यम से प्रत्येक एजेंट के लिए अलग-अलग वर्कस्पेस का उपयोग कर सकती है। रूटिंग कॉन्फ़िगरेशन के लिए [चैनल रूटिंग](/hi/channels/channel-routing) देखें।
+- यदि `agents.defaults.sandbox` सक्षम है, तो गैर-मुख्य सत्र `agents.defaults.sandbox.workspaceRoot` के अंतर्गत प्रति-सत्र सैंडबॉक्स वर्कस्पेस का उपयोग कर सकते हैं।
 
-## Related
+## संबंधित
 
-- [Heartbeat](/hi/gateway/heartbeat) - HEARTBEAT.md कार्यक्षेत्र फ़ाइल
-- [Sandboxing](/hi/gateway/sandboxing) - sandboxed environments में कार्यक्षेत्र access
-- [Session](/hi/concepts/session) - session storage paths
-- [Standing orders](/hi/automation/standing-orders) - कार्यक्षेत्र फ़ाइलों में persistent instructions
+- [Heartbeat](/hi/gateway/heartbeat) - HEARTBEAT.md वर्कस्पेस फ़ाइल
+- [सैंडबॉक्सिंग](/hi/gateway/sandboxing) - सैंडबॉक्स किए गए परिवेशों में वर्कस्पेस पहुँच
+- [सत्र](/hi/concepts/session) - सत्र संग्रहण पाथ
+- [स्थायी निर्देश](/hi/automation/standing-orders) - वर्कस्पेस फ़ाइलों में स्थायी निर्देश

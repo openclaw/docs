@@ -1,57 +1,68 @@
 ---
 read_when:
-    - Thay đổi runtime của tác nhân, bootstrap không gian làm việc hoặc hành vi phiên
-summary: Thời gian chạy agent, hợp đồng workspace và khởi tạo phiên
-title: Thời gian chạy của tác tử
+    - Thay đổi runtime của tác nhân, quá trình khởi tạo không gian làm việc hoặc hành vi phiên làm việc
+summary: Thời gian chạy của agent, hợp đồng workspace và khởi tạo phiên làm việc
+title: Môi trường thực thi tác tử
 x-i18n:
-    generated_at: "2026-06-27T17:22:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T05:42:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2fb4d3f0bb6e8aa2a23d00f5def5eb0ffa152bc75f82a12c40ac7ed00776011c
+    source_hash: 731de7000f261180483570f6eb597f9284ab774ebdeffd5f23019a9431e8750e
     source_path: concepts/agent.md
     workflow: 16
 ---
 
-OpenClaw chạy một **runtime tác nhân nhúng duy nhất** - một tiến trình tác nhân cho mỗi
-Gateway, với không gian làm việc, tệp bootstrap và kho phiên riêng. Trang này
-trình bày hợp đồng runtime đó: không gian làm việc phải chứa gì, tệp nào được
-chèn vào, và phiên bootstrap dựa trên đó như thế nào.
+OpenClaw cung cấp một **runtime agent nhúng**: vòng lặp agent tích hợp sẵn, cơ chế kết nối công cụ và lắp ráp prompt, tách biệt với việc ủy quyền các lượt cho một tiến trình harness bên ngoài. Mỗi agent đã cấu hình (xem [Định tuyến đa agent](/vi/concepts/multi-agent) để chạy nhiều agent) có workspace, tệp bootstrap và kho phiên riêng. Trang này trình bày hợp đồng runtime đó: workspace phải chứa những gì, những tệp nào được chèn và cách các phiên bootstrap dựa trên workspace.
 
-## Không gian làm việc (bắt buộc)
+## Workspace (bắt buộc)
 
-OpenClaw dùng một thư mục không gian làm việc tác nhân duy nhất (`agents.defaults.workspace`) làm thư mục làm việc **duy nhất** (`cwd`) của tác nhân cho công cụ và ngữ cảnh.
+Mỗi agent sử dụng một thư mục workspace duy nhất (`agents.defaults.workspace`, hoặc
+`agents.list[].workspace` cho mỗi agent) làm **thư mục làm việc duy nhất** (`cwd`)
+cho công cụ và ngữ cảnh.
 
-Khuyến nghị: dùng `openclaw setup` để tạo `~/.openclaw/openclaw.json` nếu còn thiếu và khởi tạo các tệp không gian làm việc.
+Khuyến nghị: sử dụng `openclaw setup` để tạo `~/.openclaw/openclaw.json` nếu chưa có và khởi tạo các tệp workspace.
 
-Bố cục không gian làm việc đầy đủ + hướng dẫn sao lưu: [Không gian làm việc tác nhân](/vi/concepts/agent-workspace)
+Bố cục workspace đầy đủ + hướng dẫn sao lưu: [Workspace của agent](/vi/concepts/agent-workspace)
 
-Nếu `agents.defaults.sandbox` được bật, các phiên không phải main có thể ghi đè điều này bằng
-không gian làm việc theo từng phiên bên dưới `agents.defaults.sandbox.workspaceRoot` (xem
+Nếu `agents.defaults.sandbox` được bật, các phiên không phải phiên chính có thể ghi đè thiết lập này bằng
+workspace riêng cho từng phiên trong `agents.defaults.sandbox.workspaceRoot` (xem
 [Cấu hình Gateway](/vi/gateway/configuration)).
 
 ## Tệp bootstrap (được chèn)
 
-Bên trong `agents.defaults.workspace`, OpenClaw mong đợi các tệp người dùng có thể chỉnh sửa này:
+Bên trong workspace, OpenClaw yêu cầu các tệp mà người dùng có thể chỉnh sửa sau:
 
-- `AGENTS.md` - chỉ dẫn vận hành + "bộ nhớ"
-- `SOUL.md` - persona, ranh giới, giọng điệu
-- `TOOLS.md` - ghi chú công cụ do người dùng duy trì (ví dụ: `imsg`, `sag`, quy ước)
-- `BOOTSTRAP.md` - nghi thức chạy lần đầu một lần (bị xóa sau khi hoàn tất)
-- `IDENTITY.md` - tên/cảm giác/emoji của tác nhân
-- `USER.md` - hồ sơ người dùng + cách xưng hô ưu tiên
+| Tệp            | Mục đích                                              |
+| -------------- | ---------------------------------------------------- |
+| `AGENTS.md`    | Hướng dẫn vận hành + "bộ nhớ"                    |
+| `SOUL.md`      | Tính cách, ranh giới, giọng điệu                            |
+| `TOOLS.md`     | Ghi chú và quy ước về công cụ do người dùng duy trì           |
+| `IDENTITY.md`  | Tên/cảm xúc/emoji của agent                                |
+| `USER.md`      | Hồ sơ người dùng + cách xưng hô ưu tiên                     |
+| `HEARTBEAT.md` | Hướng dẫn dành riêng cho Heartbeat                      |
+| `BOOTSTRAP.md` | Nghi thức chạy lần đầu một lần duy nhất (bị xóa sau khi hoàn tất) |
+| `MEMORY.md`    | Tệp bộ nhớ dài hạn gốc, nếu có               |
 
-Ở lượt đầu tiên của một phiên mới, OpenClaw chèn nội dung của các tệp này vào Project Context của system prompt.
+Ở lượt đầu tiên của một phiên mới, OpenClaw chèn nội dung của các tệp này vào Ngữ cảnh dự án trong prompt hệ thống. `MEMORY.md` chỉ được chèn khi tồn tại tại thư mục gốc của workspace.
 
-Các tệp trống bị bỏ qua. Tệp lớn được cắt gọn và rút ngắn kèm một marker để prompt luôn gọn nhẹ (đọc tệp để xem nội dung đầy đủ).
+Các tệp trống được bỏ qua. Các tệp lớn được rút gọn và cắt bớt kèm một dấu đánh dấu để prompt luôn gọn nhẹ (hãy đọc tệp để xem toàn bộ nội dung). Nếu thiếu tệp (ngoại trừ `MEMORY.md`), hệ thống sẽ chèn một dòng đánh dấu "thiếu tệp"; `openclaw setup` tạo một mẫu mặc định an toàn cho tệp đó.
 
-Nếu thiếu một tệp, OpenClaw chèn một dòng marker "thiếu tệp" duy nhất (và `openclaw setup` sẽ tạo một mẫu mặc định an toàn).
+`BOOTSTRAP.md` chỉ được tạo cho một **workspace hoàn toàn mới** (không có tệp bootstrap nào khác). Trong khi tệp này đang chờ xử lý, OpenClaw giữ nó trong Ngữ cảnh dự án và thêm hướng dẫn bootstrap vào prompt hệ thống cho nghi thức ban đầu thay vì sao chép nó vào thông điệp người dùng. Nếu bạn xóa tệp sau khi hoàn tất nghi thức, tệp sẽ không được tạo lại trong các lần khởi động sau.
 
-`BOOTSTRAP.md` chỉ được tạo cho một **không gian làm việc hoàn toàn mới** (không có tệp bootstrap nào khác hiện diện). Khi tệp này còn đang chờ, OpenClaw giữ nó trong Project Context và thêm hướng dẫn bootstrap ở system prompt cho nghi thức ban đầu thay vì sao chép nó vào tin nhắn người dùng. Nếu bạn xóa nó sau khi hoàn tất nghi thức, nó sẽ không được tạo lại ở các lần khởi động lại sau.
+Sau khi một workspace đã được ghi nhận, OpenClaw lưu trạng thái thiết lập và
+chứng thực của workspace đó trong cơ sở dữ liệu SQLite dùng chung tại
+`~/.openclaw/state/openclaw.sqlite`. Nếu một workspace mới được chứng thực gần đây
+biến mất hoặc bị xóa sạch, quá trình khởi động sẽ từ chối âm thầm tạo lại `BOOTSTRAP.md`;
+hãy khôi phục workspace hoặc sử dụng thao tác đặt lại quy trình onboard đầy đủ để workspace và
+trạng thái cơ sở dữ liệu của nó được xóa cùng nhau.
 
-Sau khi một không gian làm việc đã được quan sát, OpenClaw cũng giữ một marker chứng thực trong thư mục trạng thái cho đường dẫn không gian làm việc. Nếu một không gian làm việc vừa được chứng thực gần đây biến mất hoặc bị xóa sạch, quá trình khởi động sẽ từ chối âm thầm gieo lại `BOOTSTRAP.md`; hãy khôi phục không gian làm việc hoặc dùng đặt lại onboard đầy đủ để không gian làm việc và marker được xóa cùng nhau.
+Các bản phát hành cũ sử dụng JSON trong workspace và các tệp sidecar `.attested`. Runtime không
+đọc các tệp đó. Chạy `openclaw doctor --fix` để xác thực chúng, nhập
+trạng thái của chúng vào SQLite và xóa từng nguồn sau khi xác minh các hàng đã nhập.
 
-Để tắt hoàn toàn việc tạo tệp bootstrap (cho không gian làm việc đã được tạo sẵn), đặt:
+Để tắt hoàn toàn việc tạo tệp bootstrap (đối với các workspace đã được điền sẵn), hãy đặt:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
@@ -59,92 +70,93 @@ Sau khi một không gian làm việc đã được quan sát, OpenClaw cũng gi
 
 ## Công cụ tích hợp sẵn
 
-Các công cụ lõi (read/exec/edit/write và công cụ hệ thống liên quan) luôn có sẵn,
-tùy theo chính sách công cụ. `apply_patch` là tùy chọn và được kiểm soát bởi
-`tools.exec.applyPatch`. `TOOLS.md` **không** kiểm soát công cụ nào tồn tại; đó là
+Các công cụ cốt lõi (đọc/thực thi/chỉnh sửa/ghi và các công cụ hệ thống liên quan) luôn khả dụng,
+tùy thuộc vào chính sách công cụ. `apply_patch` được bật theo mặc định cho các mô hình OpenAI và được kiểm soát bởi
+`tools.exec.applyPatch` (`enabled`, `workspaceOnly`, `allowModels`). `TOOLS.md` **không** kiểm soát công cụ nào tồn tại; đó là
 hướng dẫn về cách _bạn_ muốn chúng được sử dụng.
 
 ## Skills
 
-OpenClaw tải Skills từ các vị trí này (độ ưu tiên cao nhất trước):
+OpenClaw tải Skills từ các vị trí sau (theo thứ tự ưu tiên từ cao xuống thấp):
 
-- Không gian làm việc: `<workspace>/skills`
-- Skills tác nhân dự án: `<workspace>/.agents/skills`
-- Skills tác nhân cá nhân: `~/.agents/skills`
+- Workspace: `<workspace>/skills`
+- Skills của agent trong dự án: `<workspace>/.agents/skills`
+- Skills cá nhân của agent: `~/.agents/skills`
 - Được quản lý/cục bộ: `~/.openclaw/skills`
-- Đóng gói kèm (đi cùng bản cài đặt)
-- Thư mục Skills bổ sung: `skills.load.extraDirs`
+- Đi kèm (được phân phối cùng bản cài đặt)
+- Các thư mục skill bổ sung: `skills.load.extraDirs`
 
-Gốc Skills có thể chứa các thư mục được nhóm như
-`<workspace>/skills/personal/foo/SKILL.md`; Skill vẫn được hiển thị bằng tên
-frontmatter phẳng của nó, ví dụ `foo`.
+Thư mục gốc của skill có thể chứa các thư mục được nhóm như
+`<workspace>/skills/personal/foo/SKILL.md`; skill vẫn được cung cấp bằng tên frontmatter phẳng,
+ví dụ `foo`.
 
-Skills có thể được kiểm soát bằng config/env (xem `skills` trong [Cấu hình Gateway](/vi/gateway/configuration)).
+Skills có thể được kiểm soát bằng cấu hình/biến môi trường (xem `skills` trong [Cấu hình Gateway](/vi/gateway/configuration)).
 
 ## Ranh giới runtime
 
-Runtime tác nhân nhúng thuộc sở hữu của OpenClaw: khám phá model, nối dây công cụ,
-lắp ráp prompt, quản lý phiên và phân phối kênh chia sẻ một bề mặt runtime
-tích hợp duy nhất.
+Runtime agent nhúng thuộc quyền sở hữu của OpenClaw: khám phá mô hình, kết nối công cụ,
+lắp ráp prompt, quản lý phiên và phân phối qua kênh dùng chung một
+bề mặt runtime tích hợp.
 
 ## Phiên
 
-Bản ghi phiên được lưu dưới dạng JSONL tại:
+Các hàng phiên được lưu trữ trong cơ sở dữ liệu SQLite riêng cho từng agent:
 
-- `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
+- `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
 
-ID phiên ổn định và do OpenClaw chọn.
-Các thư mục phiên cũ từ công cụ khác không được đọc.
+Các tệp bản ghi JSONL vẫn có thể nằm trong
+`~/.openclaw/agents/<agentId>/sessions/` dưới dạng đầu vào di chuyển cũ, kho lưu trữ đã xóa hoặc
+đặt lại, dữ liệu nhập, dữ liệu xuất và tạo tác hỗ trợ. Lịch sử agent đang hoạt động được
+lưu trong SQLite cùng các hàng phiên. ID phiên ổn định và do
+OpenClaw chọn. OpenClaw không đọc thư mục phiên từ các công cụ khác.
 
-## Điều hướng khi đang streaming
+## Điều hướng trong khi phát trực tuyến
 
-Prompt đến giữa lúc đang chạy mặc định được điều hướng vào lượt chạy hiện tại.
-Việc điều hướng được gửi **sau khi lượt trợ lý hiện tại hoàn tất thực thi các
-lệnh gọi công cụ**, trước lệnh gọi LLM tiếp theo, và không còn bỏ qua các lệnh gọi công cụ còn lại
-từ tin nhắn trợ lý hiện tại.
+Các prompt đầu vào đến giữa lúc đang chạy mặc định được điều hướng vào lượt chạy hiện tại.
+Việc điều hướng được chuyển đến **sau khi lượt hiện tại của trợ lý hoàn tất thực thi các
+lệnh gọi công cụ**, trước lệnh gọi LLM tiếp theo, và không còn bỏ qua các lệnh gọi công cụ
+còn lại từ thông điệp hiện tại của trợ lý.
 
-`/queue steer` là hành vi mặc định cho lượt chạy đang hoạt động. `/queue followup` và
-`/queue collect` khiến tin nhắn chờ một lượt sau thay vì điều hướng.
-`/queue interrupt` thì hủy lượt chạy đang hoạt động. Xem [Hàng đợi](/vi/concepts/queue)
-và [Hàng đợi điều hướng](/vi/concepts/queue-steering) để biết hành vi hàng đợi và ranh giới.
+`/queue steer` là hành vi mặc định khi lượt chạy đang hoạt động. `/queue followup` và
+`/queue collect` khiến thông điệp chờ đến một lượt sau thay vì điều hướng.
+`/queue interrupt` hủy lượt chạy đang hoạt động. Xem [Hàng đợi](/vi/concepts/queue)
+và [Hàng đợi điều hướng](/vi/concepts/queue-steering) để biết hành vi của hàng đợi và ranh giới.
 
-Streaming theo khối gửi các khối trợ lý đã hoàn tất ngay khi chúng xong; tính năng này
+Phát trực tuyến theo khối gửi các khối hoàn chỉnh của trợ lý ngay khi chúng hoàn tất; tính năng này
 **tắt theo mặc định** (`agents.defaults.blockStreamingDefault: "off"`).
-Tinh chỉnh ranh giới qua `agents.defaults.blockStreamingBreak` (`text_end` so với `message_end`; mặc định là text_end).
-Kiểm soát việc chia nhỏ khối mềm bằng `agents.defaults.blockStreamingChunk` (mặc định là
-800-1200 ký tự; ưu tiên ngắt đoạn, sau đó xuống dòng; câu là cuối cùng).
-Gộp các phần được stream bằng `agents.defaults.blockStreamingCoalesce` để giảm
-spam một dòng (gộp dựa trên trạng thái nhàn rỗi trước khi gửi). Các kênh không phải Telegram cần
-`*.blockStreaming: true` rõ ràng để bật phản hồi theo khối.
-Tóm tắt công cụ chi tiết được phát ra khi công cụ bắt đầu (không debounce); Control UI
-stream đầu ra công cụ qua sự kiện tác nhân khi có sẵn.
-Chi tiết thêm: [Streaming + chia nhỏ](/vi/concepts/streaming).
+Điều chỉnh ranh giới thông qua `agents.defaults.blockStreamingBreak` (`text_end` so với `message_end`; mặc định là `text_end`).
+Kiểm soát việc chia khối mềm bằng `agents.defaults.blockStreamingChunk` (mặc định
+800-1200 ký tự; ưu tiên ngắt đoạn, sau đó ngắt dòng; cuối cùng là câu).
+Gộp các đoạn được phát trực tuyến bằng `agents.defaults.blockStreamingCoalesce` để giảm
+tình trạng gửi dồn dập từng dòng (gộp dựa trên thời gian nhàn rỗi trước khi gửi). Các kênh không phải Telegram yêu cầu
+`*.streaming.block.enabled: true` rõ ràng để bật phản hồi theo khối (thay vào đó, QQ Bot
+phát trực tuyến phản hồi theo khối trừ khi `channels.qqbot.streaming.mode` là `"off"`).
+Các bản tóm tắt công cụ chi tiết được phát ra khi công cụ bắt đầu (không trì hoãn chống dội); Control UI
+phát trực tuyến đầu ra công cụ qua các sự kiện agent khi khả dụng.
+Chi tiết thêm: [Phát trực tuyến + chia khối](/vi/concepts/streaming).
 
-## Tham chiếu model
+## Tham chiếu mô hình
 
-Tham chiếu model trong cấu hình (ví dụ `agents.defaults.model` và `agents.defaults.models`) được phân tích bằng cách tách tại dấu `/` **đầu tiên**.
+Các tham chiếu mô hình trong cấu hình (ví dụ `agents.defaults.model` và `agents.defaults.models`) được phân tích bằng cách tách tại `/` **đầu tiên**.
 
-- Dùng `provider/model` khi cấu hình model.
-- Nếu chính ID model chứa `/` (kiểu OpenRouter), hãy bao gồm tiền tố provider (ví dụ: `openrouter/moonshotai/kimi-k2`).
-- Nếu bạn bỏ qua provider, OpenClaw sẽ thử alias trước, rồi một kết quả khớp
-  provider đã cấu hình duy nhất cho đúng model id đó, và chỉ sau đó mới quay về
-  provider mặc định đã cấu hình. Nếu provider đó không còn cung cấp model mặc định
-  đã cấu hình, OpenClaw quay về provider/model đã cấu hình đầu tiên
-  thay vì hiển thị một mặc định provider đã bị xóa và lỗi thời.
+- Sử dụng `provider/model` khi cấu hình mô hình.
+- Nếu chính ID mô hình chứa `/` (theo kiểu OpenRouter), hãy bao gồm tiền tố nhà cung cấp (ví dụ: `openrouter/moonshotai/kimi-k2`).
+- Nếu bỏ qua nhà cung cấp, trước tiên OpenClaw thử một bí danh, sau đó thử một kết quả khớp duy nhất
+  từ nhà cung cấp đã cấu hình cho chính xác ID mô hình đó, và chỉ khi đó mới dự phòng
+  về nhà cung cấp mặc định đã cấu hình. Nếu nhà cung cấp đó không còn cung cấp
+  mô hình mặc định đã cấu hình, OpenClaw sẽ dự phòng về cặp nhà cung cấp/mô hình
+  được cấu hình đầu tiên thay vì hiển thị một mặc định cũ của nhà cung cấp đã bị xóa.
 
 ## Cấu hình (tối thiểu)
 
-Tối thiểu, đặt:
+Tối thiểu, hãy đặt:
 
 - `agents.defaults.workspace`
-- `channels.whatsapp.allowFrom` (rất khuyến nghị)
-
----
-
-_Tiếp theo: [Nhóm trò chuyện](/vi/channels/group-messages)_ 🦞
+- `channels.whatsapp.allowFrom` (đặc biệt khuyến nghị)
 
 ## Liên quan
 
-- [Không gian làm việc tác nhân](/vi/concepts/agent-workspace)
-- [Định tuyến đa tác nhân](/vi/concepts/multi-agent)
+- [Workspace của agent](/vi/concepts/agent-workspace)
+- [Định tuyến đa agent](/vi/concepts/multi-agent)
 - [Quản lý phiên](/vi/concepts/session)
+- [Trò chuyện nhóm](/vi/channels/group-messages)

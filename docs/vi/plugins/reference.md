@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Bạn cần một trang tham khảo cho một plugin OpenClaw cụ thể
+    - Bạn cần một trang tham khảo cho một Plugin OpenClaw cụ thể
     - Bạn đang kiểm tra mức độ bao phủ của tài liệu Plugin
-summary: Chỉ mục được tạo tự động của các trang tham khảo Plugin OpenClaw
-title: Tài liệu tham khảo Plugin
+summary: Chỉ mục được tạo tự động cho các trang tham chiếu Plugin của OpenClaw
+title: Tham khảo Plugin
 x-i18n:
-    generated_at: "2026-07-12T08:08:52Z"
+    generated_at: "2026-07-19T05:55:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 03099acfb0bcbe9814fa53f5d2d893a08a39f42bf713ff140e9604783f9cef0e
+    source_hash: f1d33fb54bc28e392de104462f6276d7f9b479e923f5ac4d2b88b24e835fb7a5
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -23,5 +24,5 @@ Trang này được tạo từ `extensions/*/package.json` và
 pnpm plugins:inventory:gen
 ```
 
-Sử dụng [Danh mục Plugin](/vi/plugins/plugin-inventory) để duyệt tất cả 136
-trang tham chiếu Plugin được tạo theo bản phân phối, gói và mô tả.
+Sử dụng [Danh mục Plugin](/vi/plugins/plugin-inventory) để duyệt tất cả 142
+trang tham chiếu Plugin đã tạo theo bản phân phối, gói và mô tả.

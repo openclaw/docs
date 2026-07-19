@@ -1,96 +1,105 @@
 ---
 read_when:
-    - exec अनुमोदन या allowlists कॉन्फ़िगर करना
+    - exec अनुमोदन या अनुमति-सूचियाँ कॉन्फ़िगर करना
     - macOS ऐप में exec अनुमोदन UX लागू करना
-    - सैंडबॉक्स-एस्केप प्रॉम्प्ट्स और उनके प्रभावों की समीक्षा
+    - सैंडबॉक्स-एस्केप प्रॉम्प्ट और उनके निहितार्थों की समीक्षा करना
 sidebarTitle: Exec approvals
-summary: 'होस्ट exec अनुमोदन: नीति नियंत्रण, अनुमति-सूचियाँ, और YOLO/strict कार्यप्रवाह'
+summary: 'होस्ट exec अनुमोदन: नीति नियंत्रण, अनुमति-सूचियाँ, और YOLO/सख्त कार्यप्रवाह'
 title: Exec अनुमोदन
 x-i18n:
-    generated_at: "2026-06-29T00:18:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:49:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 44a4a5c9c56da458fdb25d5fe698df305af17188695d8befc1d4cfd8e8333e96
+    source_hash: 4553f129db78cce95bfde7c4a13b95a2282f9d1ab38ba5819a0816a4fd5ea4c6
     source_path: tools/exec-approvals.md
     workflow: 16
 ---
 
-Exec अनुमोदन **companion app / node host guardrail** हैं, जो
-किसी sandboxed agent को वास्तविक host (`gateway` या `node`) पर commands चलाने देते हैं। एक
-सुरक्षा interlock: commands केवल तब अनुमत होते हैं जब policy + allowlist +
-(वैकल्पिक) user approval सभी सहमत हों। Exec approvals, tool policy और elevated gating
-के **ऊपर** stack होते हैं (जब तक elevated को `full` पर सेट न किया गया हो, जो approvals को छोड़ देता है)।
+Exec अनुमोदन एक सैंडबॉक्स्ड एजेंट को वास्तविक होस्ट (`gateway` या `node`) पर कमांड चलाने देने के लिए **सहायक ऐप / Node होस्ट सुरक्षा-सीमा** हैं। कमांड केवल तभी चलते हैं जब नीति + अनुमति-सूची + (वैकल्पिक) उपयोगकर्ता अनुमोदन, सभी सहमत हों।
+अनुमोदन टूल नीति और एलिवेटेड गेटिंग के **ऊपर अतिरिक्त रूप से** लागू होते हैं (एलिवेटेड
+`full` उन्हें छोड़ देता है)।
 
 `deny`, `allowlist`, `ask`, `auto`, `full`,
-Codex Guardian mapping, और ACPX harness permissions के mode-first overview के लिए, देखें
-[Permission modes](/hi/tools/permission-modes)।
+Codex Guardian मैपिंग और ACPX हार्नेस अनुमतियों के मोड-प्रथम अवलोकन के लिए,
+[अनुमति मोड](/hi/tools/permission-modes) देखें।
 
 <Note>
-Effective policy `tools.exec.*` और approvals defaults में से **अधिक सख्त** होती है; यदि approvals field छोड़ी गई है, तो `tools.exec` value
-उपयोग की जाती है। Host exec उस machine पर local approvals state भी उपयोग करता है - execution host approvals file में host-local `ask: "always"` prompting जारी रखता है, भले ही session या config defaults `ask: "on-miss"` request करें।
+प्रभावी नीति, `tools.exec.*` और अनुमोदन डिफ़ॉल्ट में से **अधिक कठोर** होती है: अनुमोदन केवल कॉन्फ़िगरेशन-व्युत्पन्न सुरक्षा/पूछताछ को अधिक कठोर बना सकते हैं, कभी भी
+उन्हें शिथिल नहीं कर सकते। यदि कोई अनुमोदन फ़ील्ड छोड़ा गया है, तो `tools.exec` मान
+का उपयोग होता है। होस्ट Exec उस मशीन पर स्थानीय अनुमोदन स्थिति का भी उपयोग करता है—निष्पादन होस्ट की अनुमोदन फ़ाइल में होस्ट-स्थानीय `ask: "always"`, सत्र या कॉन्फ़िगरेशन डिफ़ॉल्ट द्वारा `ask: "on-miss"` का अनुरोध किए जाने पर भी
+संकेत देता रहता है।
 </Note>
 
-## प्रभावी policy की जांच करना
+## यह कहाँ लागू होता है
 
-| Command                                                          | यह क्या दिखाता है                                                                          |
+Exec अनुमोदन निष्पादन होस्ट पर स्थानीय रूप से लागू किए जाते हैं:
+
+- **Gateway होस्ट** -> Gateway मशीन पर `openclaw` प्रक्रिया।
+- **Node होस्ट** -> Node रनर (macOS सहायक ऐप या हेडलेस Node होस्ट)।
+
+### विश्वास मॉडल
+
+- Gateway-प्रमाणित कॉलर उस Gateway के विश्वसनीय ऑपरेटर होते हैं।
+- युग्मित Node उस विश्वसनीय ऑपरेटर क्षमता को Node होस्ट तक विस्तारित करते हैं।
+- अनुमोदन आकस्मिक निष्पादन का जोखिम कम करते हैं, लेकिन वे **प्रति-उपयोगकर्ता प्रमाणीकरण सीमा या फ़ाइल-सिस्टम केवल-पठन नीति नहीं** हैं।
+- अनुमोदित होने के बाद, कोई कमांड चुने गए होस्ट या सैंडबॉक्स फ़ाइल-सिस्टम अनुमतियों के अनुसार फ़ाइलें बदल सकता है।
+- अनुमोदित Node-होस्ट रन प्रामाणिक निष्पादन संदर्भ को बाँधते हैं: cwd, सटीक argv, मौजूद होने पर env बाइंडिंग, और लागू होने पर पिन किया गया निष्पादनयोग्य पथ।
+- शेल स्क्रिप्ट और सीधे इंटरप्रेटर/रनटाइम फ़ाइल आह्वानों के लिए, OpenClaw एक ठोस स्थानीय फ़ाइल ऑपरेंड को भी बाँधने का प्रयास करता है। यदि वह फ़ाइल अनुमोदन के बाद लेकिन निष्पादन से पहले बदलती है, तो परिवर्तित सामग्री चलाने के बजाय रन अस्वीकार कर दिया जाता है।
+- फ़ाइल बाइंडिंग सर्वोत्तम-प्रयास है, प्रत्येक इंटरप्रेटर/रनटाइम लोडर पथ का पूर्ण मॉडल नहीं। यदि ठीक एक ठोस स्थानीय फ़ाइल पहचानी नहीं जा सकती, तो OpenClaw पूर्ण कवरेज का दिखावा करने के बजाय अनुमोदन-समर्थित रन बनाने से इनकार करता है।
+
+### macOS विभाजन
+
+- **Node होस्ट सेवा**, `system.run` को स्थानीय IPC पर **macOS ऐप** को अग्रेषित करती है।
+- **macOS ऐप** अनुमोदन लागू करता है और UI संदर्भ में कमांड निष्पादित करता है।
+
+## प्रभावी नीति का निरीक्षण
+
+| कमांड                                                          | यह क्या दिखाता है                                                                          |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Requested policy, host policy sources, और effective result।                       |
-| `openclaw exec-policy show`                                      | Local-machine merged view।                                                             |
-| `openclaw exec-policy set` / `preset`                            | Local requested policy को local host approvals file के साथ एक step में synchronize करें। |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | अनुरोधित नीति, होस्ट नीति स्रोत और प्रभावी परिणाम।                       |
+| `openclaw exec-policy show`                                      | स्थानीय-मशीन का मर्ज किया गया दृश्य।                                                             |
+| `openclaw exec-policy set` / `preset`                            | स्थानीय अनुरोधित नीति को स्थानीय होस्ट अनुमोदन फ़ाइल के साथ एक चरण में समकालित करता है। |
 
-जब कोई local scope `host=node` request करता है, तो `exec-policy show` उस
-scope को runtime पर node-managed के रूप में report करता है, बजाय इसके कि local
-approvals file को source of truth बताया जाए।
+<Note>
+प्रति-सत्र `/exec` ओवरराइड शामिल नहीं हैं। संबंधित सत्र के वर्तमान डिफ़ॉल्ट का निरीक्षण करने के लिए उसमें `/exec` चलाएँ। [सत्र ओवरराइड](/hi/tools/exec#session-overrides-exec) देखें।
+</Note>
 
-यदि companion app UI **उपलब्ध नहीं** है, तो कोई भी request जो
-सामान्यतः prompt करेगी, **ask fallback** (default: `deny`) द्वारा resolve की जाती है।
+पूर्ण CLI संदर्भ (फ़्लैग, JSON आउटपुट, अनुमति-सूची जोड़ना/हटाना): [अनुमोदन CLI](/hi/cli/approvals)।
+
+जब कोई स्थानीय स्कोप `host=node` का अनुरोध करता है, तो `exec-policy show` स्थानीय अनुमोदन फ़ाइल को सत्य का स्रोत मानने के बजाय
+उस स्कोप को रनटाइम पर Node-प्रबंधित बताता है।
+
+यदि सहायक ऐप UI **उपलब्ध नहीं है**, तो सामान्य रूप से संकेत देने वाला कोई भी अनुरोध **पूछताछ फ़ॉलबैक** (डिफ़ॉल्ट: `deny`) द्वारा हल किया जाता है।
 
 <Tip>
-Native chat approval clients pending approval message पर channel-specific affordances seed कर सकते हैं। उदाहरण के लिए, Matrix reaction shortcuts seed करता है
-(`✅` allow once, `❌` deny, `♾️` allow always), जबकि fallback के रूप में message में
-`/approve ...` commands भी छोड़ता है।
+नेटिव चैट अनुमोदन क्लाइंट लंबित अनुमोदन संदेश पर चैनल-विशिष्ट सुविधाएँ पहले से जोड़ सकते हैं। Matrix प्रतिक्रिया शॉर्टकट (`✅` एक बार अनुमति दें,
+`♾️` हमेशा अनुमति दें, `❌` अस्वीकार करें) जोड़ता है, जबकि फ़ॉलबैक के रूप में संदेश में `/approve ...` भी बनाए रखता है।
 </Tip>
 
-## यह कहां लागू होता है
+## सेटिंग और भंडारण
 
-Exec approvals execution host पर locally enforce किए जाते हैं:
-
-- **Gateway host** → gateway machine पर `openclaw` process।
-- **Node host** → node runner (macOS companion app या headless node host)।
-
-### Trust model
-
-- Gateway-authenticated callers उस Gateway के लिए trusted operators होते हैं।
-- Paired nodes उस trusted operator capability को node host तक extend करते हैं।
-- Exec approvals accidental execution risk को घटाते हैं, लेकिन **न तो** per-user auth boundary हैं और न filesystem read-only policy।
-- एक बार approved होने के बाद, command selected host या sandbox filesystem permissions के अनुसार files mutate कर सकता है।
-- Approved node-host runs canonical execution context bind करते हैं: canonical cwd, exact argv, env binding जब मौजूद हो, और applicable होने पर pinned executable path।
-- Shell scripts और direct interpreter/runtime file invocations के लिए, OpenClaw एक concrete local file operand bind करने की भी कोशिश करता है। यदि वह bound file approval के बाद लेकिन execution से पहले बदल जाती है, तो drifted content execute करने के बजाय run deny कर दिया जाता है।
-- File binding जानबूझकर best-effort है, हर interpreter/runtime loader path का complete semantic model **नहीं**। यदि approval mode bind करने के लिए exactly one concrete local file identify नहीं कर सकता, तो वह full coverage का दिखावा करने के बजाय approval-backed run mint करने से इंकार करता है।
-
-### macOS split
-
-- **node host service** local IPC पर `system.run` को **macOS app** तक forward करता है।
-- **macOS app** approvals enforce करता है और UI context में command execute करता है।
-
-## Settings और storage
-
-Approvals execution host पर local JSON file में रहते हैं। जब
-`OPENCLAW_STATE_DIR` set होता है, तो file उस state directory का अनुसरण करती है;
-अन्यथा यह default OpenClaw state directory उपयोग करती है:
+अनुमोदन निष्पादन होस्ट पर एक स्थानीय JSON फ़ाइल में रहते हैं। जब
+`OPENCLAW_STATE_DIR` सेट होता है, तो फ़ाइल उस स्थिति निर्देशिका का अनुसरण करती है;
+अन्यथा यह डिफ़ॉल्ट OpenClaw स्थिति निर्देशिका का उपयोग करती है:
 
 ```text
 $OPENCLAW_STATE_DIR/exec-approvals.json
-# otherwise
+# अन्यथा
 ~/.openclaw/exec-approvals.json
 ```
 
-Default approval socket समान root का अनुसरण करता है:
+डिफ़ॉल्ट अनुमोदन सॉकेट उसी रूट का अनुसरण करता है:
 `$OPENCLAW_STATE_DIR/exec-approvals.sock`, या
-variable unset होने पर `~/.openclaw/exec-approvals.sock`।
+चर के अनसेट होने पर `~/.openclaw/exec-approvals.sock`।
 
-Example schema:
+स्थिति निर्देशिकाएँ स्वतंत्र विश्वास स्कोप हैं। जब `OPENCLAW_STATE_DIR`
+किसी अन्य स्थान की ओर संकेत करता है, तो OpenClaw कभी भी
+`~/.openclaw/exec-approvals.json` को आयात या संग्रहित नहीं करता; कस्टम स्थिति निर्देशिका के लिए अनुमोदन अलग से कॉन्फ़िगर करें। Doctor भी विरासती
+`plugin-binding-approvals.json` को केवल तभी आयात करता है, जब वह सक्रिय स्थिति निर्देशिका से संबंधित हो।
+
+उदाहरण स्कीमा:
 
 ```json
 {
@@ -116,7 +125,6 @@ Example schema:
           "id": "B0C8C0B3-2C2D-4F8A-9A3C-5A4B3C2D1E0F",
           "pattern": "~/Projects/**/bin/rg",
           "source": "allow-always",
-          "commandText": "rg -n TODO",
           "lastUsedAt": 1737150000000,
           "lastUsedCommand": "rg -n TODO",
           "lastResolvedPath": "/Users/user/Projects/.../bin/rg"
@@ -127,134 +135,128 @@ Example schema:
 }
 ```
 
-## Policy knobs
+## नीति नियंत्रण
 
 ### `tools.exec.mode`
 
-`tools.exec.mode` host exec के लिए preferred normalized policy surface है।
-Values हैं:
+`tools.exec.mode` होस्ट Exec के लिए पसंदीदा सामान्यीकृत नीति सतह है:
 
-- `deny` - host exec को block करें।
-- `allowlist` - केवल allowlisted commands बिना पूछे चलाएं।
-- `ask` - allowlist policy उपयोग करें और misses पर पूछें।
-- `auto` - allowlist policy उपयोग करें, deterministic matches सीधे चलाएं, और approval misses को human approval route पर fallback करने से पहले OpenClaw के native auto reviewer के माध्यम से भेजें।
-- `full` - approval prompts के बिना host exec चलाएं।
+| मान       | व्यवहार                                                                                                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deny`      | होस्ट Exec को अवरुद्ध करें।                                                                                                                                                          |
+| `allowlist` | बिना पूछे केवल अनुमति-सूचीबद्ध कमांड चलाएँ।                                                                                                                             |
+| `ask`       | अनुमति-सूची नीति का उपयोग करें और मेल न मिलने पर पूछें।                                                                                                                                   |
+| `auto`      | अनुमति-सूची नीति का उपयोग करें, निर्धारक मेल सीधे चलाएँ, और अनुमोदन न मिलने के मामलों को मानव अनुमोदन मार्ग पर फ़ॉलबैक करने से पहले OpenClaw के नेटिव स्वचालित समीक्षक को भेजें। |
+| `full`      | अनुमोदन संकेतों के बिना होस्ट Exec चलाएँ।                                                                                                                                   |
 
-Legacy `tools.exec.security` / `tools.exec.ask` supported रहते हैं और अभी भी तब win करते हैं
-जब narrower session या agent scope पर set हों।
+विरासती `tools.exec.security` / `tools.exec.ask` समर्थित बने हुए हैं और उस स्कोप पर जहाँ भी `mode` अनसेट है, अब भी
+लागू होते हैं।
 
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` - सभी host exec requests block करें।
-  - `allowlist` - केवल allowlisted commands allow करें।
-  - `full` - सब कुछ allow करें (elevated के equivalent)।
+  - `deny` - सभी होस्ट Exec अनुरोध अवरुद्ध करें।
+  - `allowlist` - केवल अनुमति-सूचीबद्ध कमांड की अनुमति दें।
+  - `full` - सभी की अनुमति दें (एलिवेटेड के समतुल्य)।
 
+Gateway/Node होस्ट के लिए डिफ़ॉल्ट `full` है; इसके बजाय `sandbox` होस्ट का डिफ़ॉल्ट
+`deny` होता है।
 </ParamField>
 
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  Host exec के लिए configured ask policy। `tools.exec.ask` और host approvals defaults से baseline approval
-  prompt behavior control करता है। Per-call `ask` tool parameter (देखें [Exec tool](/hi/tools/exec#parameters))
-  उस baseline को केवल harden कर सकता है, और channel-origin model calls इसे ignore करते हैं
-  जब effective host ask `off` हो।
+  होस्ट Exec के लिए कॉन्फ़िगर की गई पूछताछ नीति। `tools.exec.ask` और होस्ट अनुमोदन डिफ़ॉल्ट से आधारभूत अनुमोदन
+  संकेत व्यवहार को नियंत्रित करती है।
+  डिफ़ॉल्ट `off` है। प्रति-कॉल `ask` टूल पैरामीटर ([Exec टूल](/hi/tools/exec#parameters) देखें) केवल उस आधाररेखा को अधिक कठोर बना सकता है, और
+  प्रभावी होस्ट पूछताछ `off` होने पर चैनल-मूल मॉडल कॉल इसे अनदेखा करते हैं।
 
-- `off` - कभी prompt न करें।
-- `on-miss` - केवल तब prompt करें जब allowlist match नहीं करता।
-- `always` - हर command पर prompt करें। `allow-always` durable trust prompts को **suppress नहीं करता** जब effective ask mode `always` हो।
+- `off` - कभी संकेत न दें।
+- `on-miss` - केवल तभी संकेत दें जब अनुमति-सूची मेल न खाए।
+- `always` - प्रत्येक कमांड पर संकेत दें। प्रभावी पूछताछ मोड `always` होने पर `allow-always` स्थायी विश्वास संकेतों को **नहीं** रोकता।
 
 </ParamField>
 
 ### `askFallback`
 
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
-  Resolution जब prompt required हो लेकिन कोई UI reachable न हो। यदि यह
-  field छोड़ी गई है, तो OpenClaw default रूप से `deny` उपयोग करता है।
+  जब संकेत आवश्यक हो लेकिन कोई UI पहुँच योग्य न हो (या संकेत का समय समाप्त हो जाए), तब समाधान। छोड़े जाने पर डिफ़ॉल्ट `deny` होता है।
 
-- `deny` - block करें।
-- `allowlist` - केवल allowlist match होने पर allow करें।
-- `full` - allow करें।
+- `deny` - अवरुद्ध करें।
+- `allowlist` - केवल अनुमति-सूची के मेल खाने पर अनुमति दें।
+- `full` - अनुमति दें।
 
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
 
 <ParamField path="strictInlineEval" type="boolean">
-  जब `true`, OpenClaw inline code-eval forms को approval-only मानता है,
-  भले ही interpreter binary स्वयं allowlisted हो। उन interpreter loaders के लिए defense-in-depth
-  जो एक stable file operand से cleanly map नहीं होते।
+  `true` होने पर, इनलाइन कोड-मूल्यांकन रूपों को केवल-अनुमोदन मानता है, भले ही
+  इंटरप्रेटर बाइनरी स्वयं अनुमति-सूचीबद्ध हो। उन इंटरप्रेटर लोडरों के लिए गहन प्रतिरक्षा जो एक स्थिर फ़ाइल ऑपरेंड से साफ़ तौर पर मैप नहीं होते।
 </ParamField>
 
-Strict mode जिन examples को पकड़ता है:
+सख़्त मोड द्वारा पकड़े जाने वाले उदाहरण: `python -c`, `node -e`/`--eval`/`-p`,
+`ruby -e`, `perl -e`/`-E`, `php -r`, `lua -e`, `osascript -e` (साथ ही `awk`,
+`sed`, `make`, `find -exec`, और `xargs` इनलाइन रूप)।
 
-- `python -c`
-- `node -e`, `node --eval`, `node -p`
-- `ruby -e`
-- `perl -e`, `perl -E`
-- `php -r`
-- `lua -e`
-- `osascript -e`
-
-Strict mode में इन commands को अभी भी explicit approval चाहिए, और
-`allow-always` उनके लिए automatically नई allowlist entries persist नहीं करता।
+सख़्त मोड में इन कमांडों को समीक्षक या स्पष्ट अनुमोदन चाहिए। `tools.exec.mode: "auto"` के साथ, जब कमांड में लागू की जा सकने वाली योजना हो, तो समीक्षक एक कम-जोखिम निष्पादन की अनुमति दे सकता है; अन्यथा OpenClaw किसी मानव से पूछता है।
+समीक्षक फ़ॉलबैक तक पहुँचने वाले `Codex app-server` कमांड अनुमोदन किसी मानव से पूछते हैं, क्योंकि उनके अनुमोदन अनुरोध लागू किया जा सकने वाला समाधान किया हुआ
+निष्पादनयोग्य उजागर नहीं करते।
+`allow-always` इनलाइन-मूल्यांकन कमांड के लिए नई अनुमति-सूची प्रविष्टियाँ स्थायी नहीं करता।
 
 ### `tools.exec.commandHighlighting`
 
 <ParamField path="commandHighlighting" type="boolean" default="false">
-  Exec approval prompts में केवल presentation control करता है। Enabled होने पर,
-  OpenClaw parser-derived command spans attach कर सकता है ताकि Web approval
-  prompts command tokens highlight कर सकें। Command text highlighting enable करने के लिए
-  इसे `true` पर set करें।
+  केवल प्रस्तुति: सक्षम होने पर, OpenClaw पार्सर-व्युत्पन्न
+  कमांड विस्तार संलग्न कर सकता है, ताकि Web अनुमोदन संकेत कमांड टोकन को हाइलाइट कर सकें। यह
+  `security`, `ask`, अनुमति-सूची मिलान, सख़्त इनलाइन-मूल्यांकन
+  व्यवहार, अनुमोदन अग्रेषण या कमांड निष्पादन को **नहीं** बदलता।
 </ParamField>
 
-यह setting `security`, `ask`, allowlist matching,
-strict inline-eval behavior, approval forwarding, या command execution को **नहीं** बदलती।
-इसे globally `tools.exec.commandHighlighting` के तहत या per
-agent `agents.list[].tools.exec.commandHighlighting` के तहत set किया जा सकता है।
+इसे वैश्विक रूप से `tools.exec.commandHighlighting` के अंतर्गत या प्रति एजेंट
+`agents.list[].tools.exec.commandHighlighting` के अंतर्गत सेट करें।
 
-## YOLO mode (no-approval)
+## YOLO मोड (बिना-अनुमोदन)
 
-यदि आप चाहते हैं कि host exec approval prompts के बिना चले, तो आपको
-**दोनों** policy layers खोलनी होंगी - OpenClaw config में requested exec policy
-(`tools.exec.*`) **और** execution host approvals file में host-local approvals policy।
+अनुमोदन संकेतों के बिना होस्ट Exec चलाने के लिए, **दोनों** नीति परतें खोलें:
+OpenClaw कॉन्फ़िगरेशन में अनुरोधित Exec नीति (`tools.exec.*`) **और**
+निष्पादन होस्ट अनुमोदन फ़ाइल में होस्ट-स्थानीय अनुमोदन नीति।
 
-OpenClaw छोड़े गए `askFallback` को default रूप से `deny` करता है। जब no-UI approval prompt को
-allow पर fallback करना चाहिए, तो host `askFallback` को स्पष्ट रूप से `full` पर set करें।
+छोड़े गए `askFallback` का डिफ़ॉल्ट `deny` होता है। जब बिना-UI अनुमोदन संकेत को अनुमति पर फ़ॉलबैक करना चाहिए, तो होस्ट `askFallback` को स्पष्ट रूप से `full` पर सेट करें।
 
-| Layer                 | YOLO setting               |
+| परत                 | YOLO सेटिंग               |
 | --------------------- | -------------------------- |
 | `tools.exec.security` | `gateway`/`node` पर `full` |
 | `tools.exec.ask`      | `off`                      |
-| Host `askFallback`    | `full`                     |
+| होस्ट `askFallback`    | `full`                     |
 
 <Warning>
-**महत्वपूर्ण distinctions:**
+**महत्वपूर्ण अंतर:**
 
-- `tools.exec.host=auto` चुनता है कि exec **कहां** चलेगा: उपलब्ध होने पर sandbox, अन्यथा gateway।
-- YOLO चुनता है कि host exec **कैसे** approved होगा: `security=full` plus `ask=off`।
-- YOLO mode में, OpenClaw configured host exec policy के ऊपर कोई separate heuristic command-obfuscation approval gate या script-preflight rejection layer **नहीं** जोड़ता।
-- `auto` sandboxed session से gateway routing को free override नहीं बनाता। Per-call `host=node` request `auto` से allowed है; `host=gateway` केवल `auto` से तब allowed है जब कोई sandbox runtime active नहीं है। Stable non-auto default के लिए, `tools.exec.host` set करें या `/exec host=...` explicit रूप से उपयोग करें।
+- `tools.exec.host=auto` चुनता है कि exec **कहाँ** चलता है: उपलब्ध होने पर sandbox में, अन्यथा gateway पर।
+- YOLO चुनता है कि host exec को **कैसे** स्वीकृति दी जाती है: `security=full` और `ask=off`।
+- YOLO, कॉन्फ़िगर की गई host exec नीति के ऊपर कोई अलग ह्यूरिस्टिक कमांड-अस्पष्टीकरण स्वीकृति गेट या स्क्रिप्ट-प्रीफ़्लाइट अस्वीकृति परत **नहीं** जोड़ता।
+- `auto` sandbox किए गए सत्र से gateway रूटिंग को स्वतंत्र रूप से ओवरराइड करने योग्य नहीं बनाता। प्रति-कॉल `host=node` अनुरोध की अनुमति `auto` से है; `host=gateway` की अनुमति `auto` से केवल तभी है, जब कोई sandbox रनटाइम सक्रिय न हो। स्थिर non-auto डिफ़ॉल्ट के लिए, `tools.exec.host` सेट करें या स्पष्ट रूप से `/exec host=...` का उपयोग करें।
 
 </Warning>
 
-CLI-backed providers जो अपना noninteractive permission mode expose करते हैं
-इस policy का अनुसरण कर सकते हैं। Claude CLI
-`--permission-mode bypassPermissions` जोड़ता है जब OpenClaw की effective exec
-policy YOLO होती है। OpenClaw-managed Claude live sessions के लिए, OpenClaw की
-effective exec policy Claude के native permission mode पर authoritative है:
-YOLO live launches को `--permission-mode bypassPermissions` में normalize करता है, और
-restrictive effective exec policy live launches को
-`--permission-mode default` में normalize करती है, भले ही raw Claude backend args कोई दूसरा
-mode specify करें।
+अपने स्वयं के गैर-इंटरैक्टिव अनुमति मोड उपलब्ध कराने वाले CLI-आधारित प्रदाता
+इस नीति का पालन कर सकते हैं। जब OpenClaw की प्रभावी exec
+नीति YOLO होती है, तो Claude CLI
+`--permission-mode bypassPermissions` जोड़ता है। OpenClaw द्वारा प्रबंधित Claude लाइव सत्रों के लिए, OpenClaw की
+प्रभावी exec नीति Claude के मूल अनुमति मोड पर आधिकारिक होती है:
+YOLO लाइव लॉन्च को `--permission-mode bypassPermissions` में सामान्यीकृत करता है, और
+प्रतिबंधात्मक प्रभावी exec नीति लाइव लॉन्च को
+`--permission-mode default` में सामान्यीकृत करती है, भले ही कच्चे Claude backend आर्ग्युमेंट कोई अन्य
+मोड निर्दिष्ट करें।
 
-यदि आप अधिक conservative setup चाहते हैं, तो OpenClaw exec policy को फिर से
-`allowlist` / `on-miss` या `deny` तक tighten करें।
+यदि आप अधिक रूढ़िवादी सेटअप चाहते हैं, तो OpenClaw exec नीति को वापस
+`allowlist` / `on-miss` या `deny` तक सख्त करें।
 
-### Persistent gateway-host "never prompt" setup
+### स्थायी gateway-host "कभी संकेत न दें" सेटअप
 
 <Steps>
-  <Step title="Requested config policy set करें">
+  <Step title="अनुरोधित कॉन्फ़िगरेशन नीति सेट करें">
     ```bash
     openclaw config set tools.exec.host gateway
     openclaw config set tools.exec.security full
@@ -262,7 +264,7 @@ mode specify करें।
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Host approvals file match करें">
+  <Step title="host approvals फ़ाइल का मिलान करें">
     ```bash
     openclaw approvals set --stdin <<'EOF'
     {
@@ -278,24 +280,31 @@ mode specify करें।
   </Step>
 </Steps>
 
-### Local shortcut
+### स्थानीय शॉर्टकट
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-वह local shortcut दोनों को update करता है:
+यह स्थानीय `tools.exec.host/security/ask` और स्थानीय approvals
+फ़ाइल के डिफ़ॉल्ट (जिसमें `askFallback: "full"` शामिल है), दोनों को अपडेट करता है। इसे जानबूझकर
+केवल स्थानीय रखा गया है। gateway-host या node-host approvals को दूरस्थ रूप से बदलने के लिए,
+`openclaw approvals set --gateway` या `openclaw approvals set --node
+<id|name|ip>` का उपयोग करें।
 
-- Local `tools.exec.host/security/ask`।
-- Local approvals file defaults, जिसमें `askFallback: "full"` शामिल है।
+अन्य अंतर्निर्मित प्रीसेट: `cautious` (`host=gateway`, `security=allowlist`,
+`ask=on-miss`, `askFallback=deny`) और `deny-all` (`host=gateway`,
+`security=deny`, `ask=off`, `askFallback=deny`)। उसी तरह लागू करें:
+`openclaw exec-policy preset cautious`।
 
-यह जानबूझकर local-only है। Gateway-host या node-host
-approvals को remotely बदलने के लिए, `openclaw approvals set --gateway` या
-`openclaw approvals set --node <id|name|ip>` उपयोग करें।
+पूर्ण प्रीसेट के बजाय अलग-अलग फ़ील्ड सेट करने के लिए,
+इनमें से किसी भी फ़्लैग के उपसमुच्चय के साथ `openclaw exec-policy set --host <auto|sandbox|gateway|node> --security
+<deny|allowlist|full> --ask <off|on-miss|always> --ask-fallback
+<deny|allowlist|full>` का उपयोग करें।
 
 ### Node host
 
-Node host के लिए, वही approvals file उस node पर apply करें:
+इसके बजाय Node पर वही approvals फ़ाइल लागू करें:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -311,39 +320,38 @@ EOF
 ```
 
 <Note>
-**Local-only limitations:**
+**केवल-स्थानीय सीमाएँ:**
 
-- `openclaw exec-policy` node approvals synchronize नहीं करता।
-- `openclaw exec-policy set --host node` reject किया जाता है।
-- Node exec approvals runtime पर node से fetched होते हैं, इसलिए node-targeted updates को `openclaw approvals --node ...` उपयोग करना होगा।
+- `openclaw exec-policy` Node approvals को सिंक्रनाइज़ नहीं करता।
+- `openclaw exec-policy set --host node` अस्वीकार कर दिया जाता है।
+- Node exec approvals रनटाइम पर Node से प्राप्त किए जाते हैं, इसलिए Node-लक्षित अपडेट के लिए `openclaw approvals --node ...` का उपयोग करना आवश्यक है।
 
 </Note>
 
-### Session-only shortcut
+### केवल-सत्र शॉर्टकट
 
 - `/exec security=full ask=off` केवल वर्तमान सत्र को बदलता है।
-- `/elevated full` एक आपातकालीन शॉर्टकट है जो exec अनुमोदनों को केवल तब छोड़ता है जब
-  अनुरोधित नीति और होस्ट अनुमोदन फ़ाइल दोनों
-  `security: "full"` और `ask: "off"` पर हल हों। अधिक सख्त होस्ट फ़ाइल, जैसे
-  `ask: "always"`, फिर भी संकेत दिखाती है।
+- `/elevated full` एक आपातकालीन शॉर्टकट है, जो exec approvals को केवल
+  तभी छोड़ता है, जब अनुरोधित नीति और host approvals फ़ाइल, दोनों
+  `security: "full"` और `ask: "off"` में परिणत हों। `ask:
+"always"` जैसी अधिक सख्त host फ़ाइल फिर भी संकेत देती है।
 
-यदि होस्ट अनुमोदन फ़ाइल कॉन्फ़िग से अधिक सख्त रहती है, तो अधिक सख्त होस्ट
+यदि host approvals फ़ाइल कॉन्फ़िगरेशन से अधिक सख्त रहती है, तो अधिक सख्त host
 नीति ही प्रभावी रहती है।
 
 ## अनुमति-सूची (प्रति एजेंट)
 
 अनुमति-सूचियाँ **प्रति एजेंट** होती हैं। यदि कई एजेंट मौजूद हैं, तो macOS ऐप में
-वह एजेंट बदलें जिसे आप संपादित कर रहे हैं। पैटर्न glob मिलान होते हैं।
+वह एजेंट बदलें जिसे आप संपादित कर रहे हैं। पैटर्न glob मिलान हैं।
 
-पैटर्न हल किए गए बाइनरी पथ glob या केवल कमांड-नाम glob हो सकते हैं।
-केवल नाम उन कमांड से मिलते हैं जिन्हें `PATH` के माध्यम से चलाया गया हो, इसलिए `rg`
-`/opt/homebrew/bin/rg` से मिल सकता है जब कमांड `rg` हो, लेकिन **नहीं** `./rg` या
-`/tmp/rg` से। जब आप किसी एक विशिष्ट बाइनरी स्थान पर भरोसा करना चाहते हैं,
-तब पथ glob का उपयोग करें।
+पैटर्न resolved binary path globs या केवल command-name globs हो सकते हैं।
+केवल नाम उन्हीं कमांड से मेल खाते हैं जिन्हें `PATH` के माध्यम से चलाया जाता है, इसलिए जब कमांड `rg` हो, तब `rg`
+`/opt/homebrew/bin/rg` से मेल खा सकता है, लेकिन `./rg` या
+`/tmp/rg` से **नहीं**। किसी विशिष्ट binary स्थान पर भरोसा करने के लिए path glob का उपयोग करें।
 
-पुरानी `agents.default` प्रविष्टियाँ लोड पर `agents.main` में माइग्रेट की जाती हैं।
-`echo ok && pwd` जैसी shell chains को अभी भी हर शीर्ष-स्तरीय segment
-को अनुमति-सूची नियमों को पूरा करना होगा।
+पुरानी `agents.default` प्रविष्टियाँ लोड होने पर `agents.main` में माइग्रेट की जाती हैं।
+`echo ok && pwd` जैसी shell chains में भी प्रत्येक शीर्ष-स्तरीय खंड को
+अनुमति-सूची नियमों को पूरा करना आवश्यक है।
 
 उदाहरण:
 
@@ -352,13 +360,14 @@ EOF
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-### argPattern से arguments सीमित करना
+### argPattern से आर्ग्युमेंट प्रतिबंधित करना
 
-जब किसी अनुमति-सूची प्रविष्टि को किसी बाइनरी और किसी विशिष्ट argument आकार
-से मिलना चाहिए, तब `argPattern` जोड़ें। OpenClaw नियमित अभिव्यक्ति का मूल्यांकन
-parsed command arguments के विरुद्ध करता है, executable token
-(`argv[0]`) को छोड़कर। हाथ से लिखी प्रविष्टियों के लिए, arguments को एक
-single space से जोड़ा जाता है, इसलिए जब आपको exact match चाहिए तब pattern को anchor करें।
+जब किसी अनुमति-सूची प्रविष्टि को binary और किसी विशिष्ट आर्ग्युमेंट संरचना से मेल खाना हो, तो
+`argPattern` जोड़ें। OpenClaw प्रत्येक host पर ECMAScript (JavaScript) regular
+expression semantics का उपयोग करता है और expression का मूल्यांकन
+पार्स किए गए command arguments के विरुद्ध करता है, जिसमें executable token (`argv[0]`) शामिल नहीं होता।
+हाथ से लिखी प्रविष्टियों के लिए, arguments को एकल स्पेस से जोड़ा जाता है, इसलिए
+सटीक मिलान की आवश्यकता होने पर pattern को anchor करें।
 
 ```json
 {
@@ -376,143 +385,140 @@ single space से जोड़ा जाता है, इसलिए जब 
 }
 ```
 
-वह प्रविष्टि `python3 safe.py` को अनुमति देती है; `python3 other.py` अनुमति-सूची
-miss है। यदि उसी बाइनरी के लिए path-only प्रविष्टि भी मौजूद है, तो unmatched
-arguments अभी भी उस path-only प्रविष्टि पर वापस जा सकते हैं। जब लक्ष्य बाइनरी को
-घोषित arguments तक सीमित करना हो, तो path-only प्रविष्टि छोड़ दें।
+वह प्रविष्टि `python3 safe.py` की अनुमति देती है; `python3 other.py` अनुमति-सूची से
+मेल नहीं खाता। यदि उसी binary के लिए केवल-path प्रविष्टि भी मौजूद है, तो मेल न खाने वाले
+arguments अभी भी उस केवल-path प्रविष्टि पर fallback कर सकते हैं। यदि लक्ष्य binary को घोषित arguments तक
+सीमित करना है, तो केवल-path प्रविष्टि को छोड़ दें।
 
-approval flows द्वारा सहेजी गई प्रविष्टियाँ exact argv matching के लिए एक internal separator format
-का उपयोग कर सकती हैं। encoded value को हाथ से संपादित करने के बजाय उन
-प्रविष्टियों को दोबारा बनाने के लिए UI या approval flow को प्राथमिकता दें। यदि OpenClaw किसी command segment
-के लिए argv parse नहीं कर सकता, तो `argPattern` वाली प्रविष्टियाँ match नहीं करतीं।
+स्वीकृति प्रवाहों द्वारा सहेजी गई प्रविष्टियाँ सटीक
+argv मिलान के लिए आंतरिक separator format का उपयोग करती हैं। encoded value को हाथ से संपादित करने के बजाय उन प्रविष्टियों को
+फिर से बनाने के लिए UI या स्वीकृति प्रवाह को प्राथमिकता दें। यदि OpenClaw किसी command segment के लिए argv
+पार्स नहीं कर पाता, तो `argPattern` वाली प्रविष्टियाँ मेल नहीं खातीं।
 
-हर अनुमति-सूची प्रविष्टि यह समर्थन करती है:
+प्रत्येक अनुमति-सूची प्रविष्टि इसका समर्थन करती है:
 
-| फ़ील्ड              | अर्थ                                                       |
-| ------------------ | ------------------------------------------------------------- |
-| `pattern`          | हल किया गया बाइनरी पथ glob या केवल कमांड-नाम glob           |
-| `argPattern`       | वैकल्पिक argv regex; छोड़ी गई प्रविष्टियाँ path-only होती हैं            |
-| `id`               | UI पहचान के लिए उपयोग किया जाने वाला स्थिर UUID                              |
-| `source`           | प्रविष्टि स्रोत, जैसे `allow-always`                          |
-| `commandText`      | अनुमोदन flow ने प्रविष्टि बनाते समय capture किया गया command text |
-| `lastUsedAt`       | आखिरी उपयोग का timestamp                                           |
-| `lastUsedCommand`  | आखिरी matched command                                     |
-| `lastResolvedPath` | आखिरी हल किया गया बाइनरी पथ                                     |
+| फ़ील्ड              | अर्थ                                              |
+| ------------------ | ---------------------------------------------------- |
+| `pattern`          | resolved binary path glob या केवल command-name glob  |
+| `argPattern`       | वैकल्पिक ECMAScript argv regex; अनुपस्थित होने पर केवल-path |
+| `id`               | स्थिर opaque ID; अनुपस्थित होने पर UUID के रूप में जनरेट किया जाता है    |
+| `source`           | प्रविष्टि स्रोत, जैसे `allow-always`                 |
+| `commandText`      | पुराना plaintext input; लोड होने के दौरान हटा दिया जाता है        |
+| `lastUsedAt`       | अंतिम उपयोग का timestamp                                  |
+| `lastUsedCommand`  | अंतिम मेल खाने वाला command                            |
+| `lastResolvedPath` | अंतिम resolved binary path                            |
 
-## skill CLI को auto-allow करना
+## Skill CLI को स्वतः अनुमति देना
 
-जब **skill CLI को auto-allow करें** सक्षम होता है, तो ज्ञात skills द्वारा संदर्भित executables
-को nodes (macOS node या headless node host) पर अनुमति-सूचीबद्ध माना जाता है।
-यह skill bin list लाने के लिए Gateway RPC पर `skills.bins` का उपयोग करता है।
-यदि आप सख्त manual allowlists चाहते हैं, तो इसे अक्षम करें।
+जब **Skill CLI को स्वतः अनुमति दें** (`autoAllowSkills`) सक्षम होता है, तो ज्ञात Skills द्वारा
+संदर्भित executables को Nodes (macOS Node
+या headless Node host) पर अनुमति-सूचीबद्ध माना जाता है। यह Skill bin list प्राप्त करने के लिए Gateway RPC पर `skills.bins` का
+उपयोग करता है। यदि आप सख्त मैन्युअल
+अनुमति-सूचियाँ चाहते हैं, तो इसे अक्षम करें।
 
 <Warning>
-- यह manual path allowlist प्रविष्टियों से अलग एक **implicit convenience allowlist** है।
-- यह trusted operator environments के लिए है जहाँ Gateway और node समान trust boundary में होते हैं।
-- यदि आपको strict explicit trust चाहिए, तो `autoAllowSkills: false` रखें और केवल manual path allowlist प्रविष्टियों का उपयोग करें।
+- यह मैन्युअल path अनुमति-सूची प्रविष्टियों से अलग एक **अंतर्निहित सुविधाजनक अनुमति-सूची** है।
+- यह उन विश्वसनीय ऑपरेटर परिवेशों के लिए है, जहाँ Gateway और Node एक ही विश्वास सीमा में होते हैं।
+- यदि आपको सख्त स्पष्ट विश्वास चाहिए, तो `autoAllowSkills: false` बनाए रखें और केवल मैन्युअल path अनुमति-सूची प्रविष्टियों का उपयोग करें।
 
 </Warning>
 
-## सुरक्षित bins और approval forwarding
+## सुरक्षित binaries और स्वीकृति अग्रेषण
 
-safe bins (stdin-only fast-path), interpreter binding विवरण, और
-approval prompts को Slack/Discord/Telegram पर forward करने (या उन्हें
-native approval clients के रूप में चलाने) के तरीके के लिए देखें
-[Exec अनुमोदन - उन्नत](/hi/tools/exec-approvals-advanced)।
+सुरक्षित binaries (केवल-stdin तेज़ पथ), interpreter binding विवरण, और
+स्वीकृति संकेतों को Slack/Discord/Telegram पर अग्रेषित करने (या उन्हें
+मूल स्वीकृति क्लाइंट के रूप में चलाने) के तरीके के लिए,
+[Exec approvals - उन्नत](/hi/tools/exec-approvals-advanced) देखें।
 
-## Control UI संपादन
+## Control UI में संपादन
 
-defaults, प्रति-एजेंट overrides, और allowlists संपादित करने के लिए **Control UI → Nodes → Exec अनुमोदन**
-card का उपयोग करें। एक scope (Defaults या कोई एजेंट) चुनें,
-policy बदलें, allowlist patterns जोड़ें/हटाएँ, फिर **Save** करें। UI
-हर pattern के लिए last-used metadata दिखाता है ताकि आप सूची को व्यवस्थित रख सकें।
+डिफ़ॉल्ट, प्रति-एजेंट ओवरराइड और अनुमति-सूचियाँ संपादित करने के लिए **Control UI -> Nodes -> Exec approvals** कार्ड का उपयोग करें।
+एक कार्यक्षेत्र (Defaults या कोई एजेंट) चुनें,
+नीति समायोजित करें, अनुमति-सूची पैटर्न जोड़ें/हटाएँ, फिर **Save** करें। सूची को व्यवस्थित रखने में सहायता के लिए UI
+प्रत्येक पैटर्न के अंतिम उपयोग का metadata दिखाता है।
 
-target selector **Gateway** (local approvals) या किसी **Node** को चुनता है।
-Nodes को `system.execApprovals.get/set` (macOS app या
-headless node host) advertise करना होगा। यदि कोई node अभी तक exec approvals advertise नहीं करता,
-तो उसकी local approvals file को सीधे संपादित करें।
+लक्ष्य selector **Gateway** (स्थानीय approvals) या कोई **Node** चुनता है।
+Nodes को `system.execApprovals.get/set` विज्ञापित करना आवश्यक है (macOS ऐप या headless
+Node host)। यदि कोई Node अभी exec approvals विज्ञापित नहीं करता, तो उसकी
+स्थानीय approvals फ़ाइल सीधे संपादित करें।
 
-CLI: `openclaw approvals` gateway या node editing का समर्थन करता है - देखें
+Windows companion सहित कुछ Node hosts की अपनी अलग approval
+policy format होती है। Control UI इन host-native policies को read-only दिखाता है। उन्हें संपादित करने के लिए
+companion ऐप या native
+policy shape के साथ `openclaw approvals set --node <id|name|ip>` का उपयोग करें; [Approvals CLI](/hi/cli/approvals) देखें।
+
+CLI: `openclaw approvals` Gateway या Node संपादन का समर्थन करता है — देखें
 [Approvals CLI](/hi/cli/approvals)।
 
-## अनुमोदन flow
+## स्वीकृति प्रवाह
 
-जब prompt आवश्यक होता है, gateway operator clients को
-`exec.approval.requested` broadcast करता है। Control UI और macOS
-app इसे `exec.approval.resolve` के माध्यम से resolve करते हैं, फिर gateway
-approved request को node host पर forward करता है।
+जब संकेत आवश्यक होता है, तो Gateway ऑपरेटर क्लाइंट को
+`exec.approval.requested` प्रसारित करता है। Control UI और macOS
+ऐप इसे `exec.approval.resolve` के माध्यम से हल करते हैं, फिर Gateway स्वीकृत अनुरोध को
+Node host पर अग्रेषित करता है।
 
-`host=node` के लिए, approval requests में canonical `systemRunPlan`
-payload शामिल होता है। gateway approved `system.run`
-requests forward करते समय उस plan को authoritative command/cwd/session context
-के रूप में उपयोग करता है।
+`host=node` के लिए, स्वीकृति अनुरोधों में canonical `systemRunPlan`
+payload शामिल होता है। स्वीकृत `system.run` अनुरोधों को अग्रेषित करते समय Gateway उस योजना को आधिकारिक command/cwd/session
+संदर्भ के रूप में उपयोग करता है:
 
-यह async approval latency के लिए महत्वपूर्ण है:
+- Node exec पथ शुरुआत में ही एक canonical योजना तैयार करता है।
+- स्वीकृति रिकॉर्ड उस योजना और उसके binding metadata को संग्रहीत करता है।
+- स्वीकृति मिलने के बाद, अंतिम अग्रेषित `system.run` कॉल बाद के caller edits पर भरोसा करने के बजाय संग्रहीत योजना का पुनः उपयोग करती है।
+- यदि स्वीकृति अनुरोध बनाए जाने के बाद caller `command`, `rawCommand`, `cwd`, `agentId`, या `sessionKey` बदलता है, तो Gateway अग्रेषित run को स्वीकृति बेमेल के रूप में अस्वीकार कर देता है।
 
-- node exec path शुरुआत में एक canonical plan तैयार करता है।
-- approval record उस plan और उसके binding metadata को store करता है।
-- approval के बाद, अंतिम forwarded `system.run` call बाद के caller edits पर भरोसा करने के बजाय stored plan को reuse करता है।
-- यदि approval request बनने के बाद caller `command`, `rawCommand`, `cwd`, `agentId`, या `sessionKey` बदलता है, तो gateway forwarded run को approval mismatch के रूप में reject करता है।
+## सिस्टम घटनाएँ और अस्वीकृतियाँ
 
-## System events
+Node द्वारा पूर्णता रिपोर्ट करने के बाद exec lifecycle एजेंट के
+सत्र में `Exec finished` सिस्टम संदेश पोस्ट करता है। स्वीकृति मिलने के बाद,
+`tools.exec.approvalRunningNoticeMs` बीतने पर OpenClaw
+प्रगति में होने की सूचना भी भेज सकता है (डिफ़ॉल्ट `10000`, `0` इसे अक्षम
+करता है)। अस्वीकृत exec approvals host command के लिए अंतिम होती हैं: command
+नहीं चलता।
 
-Exec lifecycle system messages के रूप में surfaced होता है:
+- मूल सत्र वाले मुख्य-एजेंट के async approvals के लिए, OpenClaw
+  अस्वीकृति को आंतरिक followup के रूप में उसी सत्र में वापस पोस्ट करता है, ताकि एजेंट
+  async command की प्रतीक्षा बंद कर सके और missing-result
+  repair से बच सके।
+- यदि कोई सत्र नहीं है या सत्र फिर से शुरू नहीं किया जा सकता, तो OpenClaw
+  फिर भी ऑपरेटर या सीधे chat route पर संक्षिप्त अस्वीकृति रिपोर्ट कर सकता है।
+- उप-एजेंट और Cron सत्रों की अस्वीकृतियाँ उस
+  सत्र में वापस पोस्ट नहीं की जातीं।
 
-- `Exec running` (केवल यदि command running notice threshold से अधिक समय लेता है)।
-- `Exec finished`।
+Gateway-host exec approvals भी वही completion lifecycle event उत्सर्जित करते हैं।
+स्वीकृति-गेटेड execs लंबित
+अनुरोध को उसके completion/denial संदेश (`Exec finished (gateway
+id=...)` / `Exec denied (gateway id=...)`) से सहसंबद्ध करने के लिए approval id का पुनः उपयोग करते हैं।
 
-ये node द्वारा event report करने के बाद agent के session में post किए जाते हैं।
-Denied exec approvals host command के लिए terminal होते हैं: command
-run नहीं करता। originating session वाले main-agent async approvals के लिए,
-OpenClaw denial को उस session में internal followup के रूप में वापस post करता है ताकि
-agent async command पर waiting बंद कर सके और missing-result repair से बच सके।
-यदि कोई session नहीं है या session resume नहीं किया जा सकता, तो OpenClaw अभी भी
-operator या direct chat route को संक्षिप्त denial report कर सकता है। subagent sessions के लिए
-denials subagent में वापस post नहीं किए जाते।
-Gateway-host exec approvals command finish होने पर वही lifecycle events emit करते हैं
-(और threshold से अधिक लंबा चलने पर वैकल्पिक रूप से running event भी)।
-Approval-gated execs आसान correlation के लिए इन
-messages में approval id को `runId` के रूप में reuse करते हैं।
+## निहितार्थ
 
-## Denied approval behavior
-
-जब async exec approval deny होता है, OpenClaw host command को
-terminal और fail-closed मानता है। main-agent sessions के लिए, denial को एक
-internal session followup के रूप में deliver किया जाता है जो agent को बताता है कि async command run नहीं हुआ।
-यह stale command output expose किए बिना transcript continuity बनाए रखता है। यदि
-session delivery unavailable है, तो OpenClaw सुरक्षित route मौजूद होने पर संक्षिप्त operator या
-direct-chat denial पर fallback करता है।
-
-## प्रभाव
-
-- **`full`** शक्तिशाली है; संभव हो तो allowlists को प्राथमिकता दें।
-- **`ask`** आपको loop में रखता है जबकि fast approvals की अनुमति देता है।
-- प्रति-एजेंट allowlists एक एजेंट के approvals को दूसरों में leak होने से रोकती हैं।
-- Approvals केवल **authorized senders** से आए host exec requests पर लागू होते हैं। Unauthorized senders `/exec` issue नहीं कर सकते।
-- `/exec security=full` authorized operators के लिए session-level convenience है और design के अनुसार approvals छोड़ता है। host exec को hard-block करने के लिए, approvals security को `deny` पर set करें या tool policy के माध्यम से `exec` tool को deny करें।
+- **`full`** शक्तिशाली है; संभव होने पर अनुमति-सूचियों को प्राथमिकता दें।
+- **`ask`** तेज़ approvals की अनुमति देते हुए भी आपको प्रक्रिया में शामिल रखता है।
+- प्रति-एजेंट अनुमति-सूचियाँ एक एजेंट की approvals को दूसरे एजेंटों तक पहुँचने से रोकती हैं।
+- Approvals केवल **अधिकृत प्रेषकों** से आने वाले host exec अनुरोधों पर लागू होती हैं। अनधिकृत प्रेषक `/exec` जारी नहीं कर सकते।
+- `/exec security=full` अधिकृत ऑपरेटरों के लिए सत्र-स्तरीय सुविधा है और डिज़ाइन के अनुसार approvals को छोड़ देता है। host exec को पूरी तरह अवरुद्ध करने के लिए, approvals security को `deny` पर सेट करें या tool policy के माध्यम से `exec` tool को अस्वीकार करें।
 
 ## संबंधित
 
 <CardGroup cols={2}>
   <Card title="Exec अनुमोदन - उन्नत" href="/hi/tools/exec-approvals-advanced" icon="gear">
-    Safe bins, interpreter binding, और chat पर approval forwarding।
+    सुरक्षित बिन, इंटरप्रेटर बाइंडिंग और चैट में अनुमोदन अग्रेषण।
   </Card>
-  <Card title="Exec tool" href="/hi/tools/exec" icon="terminal">
-    Shell command execution tool।
+  <Card title="Exec टूल" href="/hi/tools/exec" icon="terminal">
+    शेल कमांड निष्पादन टूल।
   </Card>
-  <Card title="Elevated mode" href="/hi/tools/elevated" icon="shield-exclamation">
-    आपातकालीन path जो approvals भी छोड़ता है।
+  <Card title="एलिवेटेड मोड" href="/hi/tools/elevated" icon="shield-exclamation">
+    आपातकालीन मार्ग, जो अनुमोदनों को भी छोड़ देता है।
   </Card>
-  <Card title="Sandboxing" href="/hi/gateway/sandboxing" icon="box">
-    Sandbox modes और workspace access।
+  <Card title="सैंडबॉक्सिंग" href="/hi/gateway/sandboxing" icon="box">
+    सैंडबॉक्स मोड और कार्यस्थान की पहुँच।
   </Card>
-  <Card title="Security" href="/hi/gateway/security" icon="lock">
-    Security model और hardening।
+  <Card title="सुरक्षा" href="/hi/gateway/security" icon="lock">
+    सुरक्षा मॉडल और सुदृढ़ीकरण।
   </Card>
-  <Card title="Sandbox बनाम tool policy बनाम elevated" href="/hi/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    हर control का उपयोग कब करना है।
+  <Card title="सैंडबॉक्स बनाम टूल नीति बनाम एलिवेटेड" href="/hi/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
+    प्रत्येक नियंत्रण का उपयोग कब करें।
   </Card>
   <Card title="Skills" href="/hi/tools/skills" icon="sparkles">
-    Skill-backed auto-allow behavior।
+    Skill-समर्थित स्वतः-अनुमति व्यवहार।
   </Card>
 </CardGroup>

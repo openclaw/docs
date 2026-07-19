@@ -1,159 +1,221 @@
 ---
 read_when:
     - आप कई मॉडल प्रदाताओं के लिए एक प्रबंधित कुंजी चाहते हैं
-    - आपको OpenClaw में ClawRouter मॉडल खोज या कोटा रिपोर्टिंग चाहिए
+    - आपको OpenClaw में ClawRouter मॉडल खोज या कोटा रिपोर्टिंग की आवश्यकता है
 summary: क्रेडेंशियल-स्कोप वाले मॉडलों को ClawRouter के माध्यम से रूट करें और प्रबंधित कोटा दिखाएँ
 title: ClawRouter
 x-i18n:
-    generated_at: "2026-07-04T03:48:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:42:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 363426cc68e74f6a910f6fa956c323449ab827aee43db4320e98620245e593d2
+    source_hash: 929a93e8d1d003e21f792d0fdab9542553ffab374f59d4d0505819b0f719591f
     source_path: providers/clawrouter.md
     workflow: 16
 ---
 
-ClawRouter, OpenClaw को कई अपस्ट्रीम मॉडल
-प्रदाताओं के लिए एक नीति-स्कोप्ड कुंजी देता है। बंडल किया गया Plugin केवल उस कुंजी के लिए अनुमत मॉडलों को खोजता है,
-हर मॉडल को उसके घोषित प्रोटोकॉल के ज़रिए रूट करता है, और OpenClaw उपयोग सतहों पर कुंजी का बजट
-और कुल उपयोग रिपोर्ट करता है।
+ClawRouter, OpenClaw को कई अपस्ट्रीम मॉडल प्रदाताओं के लिए एक नीति-स्कोप वाली कुंजी देता है। बंडल किया गया `clawrouter` Plugin केवल उस कुंजी के लिए अनुमत मॉडलों की खोज करता है, प्रत्येक मॉडल को उसके घोषित प्रोटोकॉल से रूट करता है, और OpenClaw के उपयोग इंटरफ़ेसों पर कुंजी के बजट और समग्र उपयोग की रिपोर्ट देता है।
 
-आप OpenClaw होस्ट पर हर अपस्ट्रीम प्रदाता Plugin को इंस्टॉल या प्रमाणित नहीं करते। अपस्ट्रीम क्रेडेंशियल और प्रदाता-विशिष्ट फ़ॉरवर्डिंग
-ClawRouter में रहते हैं। OpenClaw को केवल बंडल किए गए `@openclaw/clawrouter` Plugin और जारी किए गए
-ClawRouter क्रेडेंशियल की ज़रूरत होती है।
+अपस्ट्रीम क्रेडेंशियल और प्रदाता-विशिष्ट फ़ॉरवर्डिंग ClawRouter में ही रहते हैं, इसलिए आपको OpenClaw होस्ट पर प्रत्येक अपस्ट्रीम प्रदाता Plugin को कभी भी इंस्टॉल या प्रमाणित नहीं करना पड़ता। Plugin, OpenClaw के साथ बंडल होकर आता है (`enabledByDefault: true`); आपको केवल जारी किया गया ClawRouter क्रेडेंशियल चाहिए।
 
-| गुण          | मान                                      |
+| गुण           | मान                                      |
 | ------------- | ---------------------------------------- |
-| प्रदाता       | `clawrouter`                             |
-| पैकेज        | `@openclaw/clawrouter`                   |
-| प्रमाणीकरण    | `CLAWROUTER_API_KEY`                     |
-| डिफ़ॉल्ट URL  | `https://clawrouter.openclaw.ai`         |
-| मॉडल कैटलॉग  | `/v1/catalog` के ज़रिए क्रेडेंशियल-स्कोप्ड |
-| कोटा         | `/v1/usage` के ज़रिए मासिक बजट और उपयोग |
+| प्रदाता       | `clawrouter`                       |
+| Plugin        | बंडल किया गया (OpenClaw में शामिल)       |
+| प्रमाणीकरण    | `CLAWROUTER_API_KEY`                       |
+| डिफ़ॉल्ट URL  | `https://clawrouter.openclaw.ai`                       |
+| मॉडल कैटलॉग   | `/v1/catalog` के माध्यम से क्रेडेंशियल-स्कोप वाला |
+| कोटा          | `/v1/usage` के माध्यम से मासिक बजट और उपयोग |
 
-## शुरू करना
+## आरंभ करना
 
 <Steps>
-  <Step title="Get a scoped credential">
-    अपने ClawRouter व्यवस्थापक से ऐसा क्रेडेंशियल मांगें जिसकी नीति में वे
-    प्रदाता, मॉडल और मासिक बजट शामिल हों जिनका आपको उपयोग करना चाहिए। क्रेडेंशियल जारी किए जाने पर
-    एक बार दिखाए जाते हैं।
+  <Step title="स्कोप वाला क्रेडेंशियल प्राप्त करें">
+    अपने ClawRouter व्यवस्थापक से ऐसा क्रेडेंशियल माँगें जिसकी नीति में वे प्रदाता, मॉडल और मासिक बजट शामिल हों जिनका आपको उपयोग करना है। जारी किए जाने पर क्रेडेंशियल केवल एक बार दिखाए जाते हैं।
   </Step>
-  <Step title="Configure OpenClaw">
+  <Step title="OpenClaw कॉन्फ़िगर करें">
     ```bash
     export CLAWROUTER_API_KEY="..."
     openclaw onboard --auth-choice clawrouter-api-key
     openclaw plugins enable clawrouter
     ```
 
-    Plugin OpenClaw के साथ बंडल किया गया है। अगर आपका कॉन्फ़िगरेशन
-    `plugins.allow` सेट करता है, तो इसे सक्षम करने से पहले उस सूची में `clawrouter` जोड़ें। कस्टम
-    डिप्लॉयमेंट के लिए, `models.providers.clawrouter.baseUrl` को
-    ClawRouter origin पर सेट करें; डिफ़ॉल्ट `https://clawrouter.openclaw.ai` है।
+    `clawrouter` बंडल किया गया है और डिफ़ॉल्ट रूप से सक्षम है। यदि आपके कॉन्फ़िगरेशन में `plugins.allow` सेट है, तो इसे सक्षम करने से पहले उस सूची में `clawrouter` जोड़ें। कस्टम परिनियोजन के लिए, `models.providers.clawrouter.baseUrl` को ClawRouter ओरिजिन पर सेट करें; डिफ़ॉल्ट `https://clawrouter.openclaw.ai` है।
 
   </Step>
-  <Step title="List granted models">
+  <Step title="प्रदान किए गए मॉडल सूचीबद्ध करें">
     ```bash
     openclaw models list --all --provider clawrouter
     ```
 
-    लौटाए गए मॉडल refs का ठीक उसी तरह उपयोग करें जैसे दिखाए गए हैं। वे अपस्ट्रीम
-    namespace बनाए रखते हैं, जैसे `clawrouter/openai/...`, `clawrouter/anthropic/...`, या
-    `clawrouter/google/...`। अगर आपके कॉन्फ़िगरेशन में `agents.defaults.models` एक allowlist है,
-    तो हर चुने गए ClawRouter ref को उसमें जोड़ें।
+    लौटाए गए मॉडल रेफ़रेंस का ठीक दिखाए गए रूप में उपयोग करें। वे अपस्ट्रीम नेमस्पेस बनाए रखते हैं, जैसे `clawrouter/openai/gpt-5.5`, `clawrouter/anthropic/claude-sonnet-4-6`, या `clawrouter/google/gemini-3.5-flash`। यदि `agents.defaults.modelPolicy.allow` कॉन्फ़िगर किया गया है, तो प्रत्येक चयनित ClawRouter रेफ़रेंस उसमें जोड़ें।
 
   </Step>
-  <Step title="Select a model">
+  <Step title="मॉडल चुनें">
     ```bash
     openclaw models set clawrouter/<provider>/<model>
     ```
 
-    आप एक रन के लिए लौटाए गए मॉडल को
-    `openclaw agent --model clawrouter/<provider>/<model> --message "..."` से भी चुन सकते हैं।
+    आप एक रन के लिए लौटाया गया मॉडल `openclaw agent --model clawrouter/<provider>/<model> --message "..."` के साथ भी चुन सकते हैं।
 
   </Step>
 </Steps>
 
+## प्रबंधित गैर-इंटरैक्टिव परिनियोजन
+
+प्रॉक्सी कुंजी को वर्कलोड के सीक्रेट इंजेक्शन में रखें और `openclaw.json` में केवल SecretRef संग्रहीत करें। प्रामाणिक प्रबंधित फ़ील्ड ये हैं:
+
+| उद्देश्य       | कॉन्फ़िगरेशन या एनवायरनमेंट फ़ील्ड                                      |
+| ------------- | ------------------------------------------------------------------------ |
+| राउटर ओरिजिन  | `models.providers.clawrouter.baseUrl`                                                       |
+| क्रेडेंशियल    | `models.providers.clawrouter.apiKey` -> env SecretRef                                      |
+| सीक्रेट मान    | Gateway प्रक्रिया के एनवायरनमेंट में `CLAWROUTER_API_KEY`                  |
+| डिफ़ॉल्ट मॉडल  | `agents.defaults.model.primary` -> `clawrouter/<provider>/<model>`                                 |
+| वर्कलोड टैग    | `models.providers.clawrouter.headers.X-ClawRouter-Project-Id` (वैकल्पिक)                                            |
+
+उदाहरण के लिए, कोई परिनियोजन नियंत्रक इस JSON5 पैच का स्वामित्व रख सकता है:
+
+```json5
+{
+  plugins: {
+    entries: { clawrouter: { enabled: true } },
+  },
+  models: {
+    providers: {
+      clawrouter: {
+        baseUrl: "https://clawrouter.internal.example",
+        apiKey: {
+          source: "env",
+          provider: "default",
+          id: "CLAWROUTER_API_KEY",
+        },
+        headers: {
+          "X-ClawRouter-Project-Id": "fakeco",
+        },
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      model: { primary: "clawrouter/openai/gpt-5.5" },
+    },
+  },
+}
+```
+
+यदि परिनियोजन `plugins.allow` सेट करता है, तो उसकी मौजूदा प्रविष्टियाँ बनाए रखें और `clawrouter` जोड़ें। इंटरैक्टिव विज़ार्ड के बिना सत्यापित और लागू करें:
+
+```bash
+openclaw config patch --file ./clawrouter.patch.json5 --dry-run --json
+openclaw config patch --file ./clawrouter.patch.json5
+```
+
+ड्राई रन SecretRef को रिज़ॉल्व करता है, लेकिन उसका मान कभी प्रिंट नहीं करता। क्रेडेंशियल रोटेट करने के लिए, `CLAWROUTER_API_KEY` प्रदान करने वाले बाहरी Secret को अपडेट करें और Gateway वर्कलोड पुनः आरंभ करें, ताकि नया प्रक्रिया एनवायरनमेंट लोड हो जाए। कॉन्फ़िगरेशन फ़ाइल और मॉडल रेफ़रेंस नहीं बदलते।
+
+स्रोत से बनाए गए स्टैंडअलोन Docker Gateway के लिए, ClawRouter पहले से रूट रनटाइम में शामिल है। केवल वह चैनल Plugin चुनें जिसे अलग पैकेजिंग चाहिए, जैसे `OPENCLAW_EXTENSIONS=clickclack`, `slack`, या `msteams`; [चयनित Plugins वाली स्रोत से बनाई गई इमेज](/hi/install/docker#source-built-images-with-selected-plugins) देखें। आर्काइव/एप्लायंस परिनियोजनों को OCI इमेज का उपयोग करने के बजाय उसी लैंड किए गए स्रोत को अपनी आर्टिफ़ैक्ट पाइपलाइन से पैकेज करना होगा।
+
+## तत्परता और लाइव प्रमाण
+
+ये जाँचें अलग-अलग सीमाओं को प्रमाणित करती हैं; किसी एक को दूसरे का विकल्प न बनाएँ:
+
+```bash
+# केवल ClawRouter प्रक्रिया का स्वास्थ्य; किसी क्रेडेंशियल या अपस्ट्रीम मॉडल का प्रयोग नहीं किया जाता।
+curl -fsS https://clawrouter.internal.example/v1/health
+
+# केवल OpenClaw Gateway स्टार्टअप की तत्परता; कोई मॉडल कॉल नहीं किया जाता।
+curl -fsS http://127.0.0.1:18789/readyz
+
+# क्रेडेंशियल-स्कोप वाले कैटलॉग की खोज।
+openclaw models list --all --provider clawrouter --json
+
+# कॉन्फ़िगर किए गए ClawRouter प्रदाता से न्यूनतम वास्तविक इन्फ़रेंस प्रोब।
+openclaw models status --probe --probe-provider clawrouter --probe-max-tokens 8 --json
+
+# ठीक प्रदान किए गए मॉडल रेफ़रेंस का उपयोग करने वाला वर्कलोड कैनरी।
+openclaw agent --agent main \
+  --model clawrouter/openai/gpt-5.5 \
+  --message "ठीक यही उत्तर दें: CLAWROUTER_CANARY_OK" \
+  --json
+```
+
+उदाहरण मॉडल को आँख मूँदकर कॉपी करने के बजाय स्कोप वाले कैटलॉग द्वारा लौटाए गए मॉडल का उपयोग करें। सफल `/readyz` प्रतिक्रिया का अर्थ है कि Gateway अनुरोधों को सेवा दे सकता है; यह दावा नहीं करता कि ClawRouter, उसका क्रेडेंशियल या कोई अपस्ट्रीम प्रदाता तैयार है। मॉडल प्रोब और एजेंट कैनरी इन्फ़रेंस के प्रमाण हैं।
+
+लाइव निदान के लिए, कैनरी जारी करें और Gateway के मानक लॉग देखें। मौजूदा केवल-मेटाडेटा मॉडल ट्रांसपोर्ट डायग्नोस्टिक्स निम्न रूप वाली पंक्तियाँ उत्सर्जित करते हैं:
+
+```text
+[model-fetch] आरंभ provider=clawrouter api=openai-responses model=openai/gpt-5.5 method=POST url=https://clawrouter.internal.example/v1/responses
+[model-fetch] प्रतिक्रिया provider=clawrouter api=openai-responses model=openai/gpt-5.5 status=200
+```
+
+जब वे पहचानकर्ता उपलब्ध होते हैं, तब Plugin सीमाबद्ध `X-ClawRouter-Client`, `X-ClawRouter-Agent-Id`, और `X-ClawRouter-Session-Id` हेडर भेजता है। यह मॉडल कॉल के डायग्नोस्टिक `callId` (`<run-id>:model:<n>`) को `X-Request-ID` पर मैप भी करता है, ताकि OpenClaw मॉडल-कॉल इवेंट को ClawRouter के केवल-मेटाडेटा ऑडिट ट्रेल से जोड़ा जा सके। 128-वर्ण की अनुरोध-ID सीमा के भीतर के मान समान होते हैं। लंबे मान `:model:<n>` प्रत्यय और एक निर्धारक हैश बनाए रखते हैं, ताकि अलग-अलग कॉल सीमाबद्ध और जोड़ने योग्य रहें। `X-ClawRouter-Project-Id` जैसे स्थिर परिनियोजन मेटाडेटा को प्रदाता के `headers` मैप में सेट किया जा सकता है। एजेंट और सत्र एट्रिब्यूशन हेडर अपनी अलग 256-वर्ण सीमा बनाए रखते हैं। ClawRouter के ASCII पहचानकर्ता सेट से बाहर के वर्णों वाली स्वचालित अनुरोध ID उसी निर्धारक सीमाबद्ध रूप का उपयोग करती हैं।
+`X-Request-ID` के किसी भी केस वेरिएंट सहित स्पष्ट रूप से कॉन्फ़िगर किए गए हेडर, स्वचालित मानों पर प्राथमिकता पाते हैं। ट्रांसपोर्ट डायग्नोस्टिक रूटिंग और प्रतिक्रिया मेटाडेटा दर्ज करता है; यह क्रेडेंशियल, अनुरोध ID, प्रॉम्प्ट या कम्प्लीशन लॉग नहीं करता। ClawRouter का अपना ऑडिट इवेंट चयनित अपस्ट्रीम प्रदाता और सामग्री-प्रतिधारण स्थिति प्रदान करता है।
+
 ## मॉडल खोज
 
-`GET /v1/catalog` सत्य का स्रोत है। OpenClaw, ClawRouter मॉडलों की कोई दूसरी,
-स्थिर सूची शिप नहीं करता। ClawRouter में कॉन्फ़िगर किया गया मॉडल तब दिखाई देता है जब:
+`GET /v1/catalog`, `{ providers: [...] }` लौटाता है, जहाँ प्रत्येक प्रदाता प्रविष्टि अपने `models[]` (अपस्ट्रीम ID, क्षमताओं और मूल्य निर्धारण सहित) और उसके समर्थित अनुरोध रूट सूचीबद्ध करती है। OpenClaw, ClawRouter मॉडलों की दूसरी निश्चित सूची के साथ नहीं आता। कोई कैटलॉग मॉडल OpenClaw मॉडल के रूप में तब प्रदर्शित किया जाता है, जब:
 
 - क्रेडेंशियल की नीति उसके प्रदाता को अनुमति देती है;
-- प्रदाता कनेक्शन सक्षम और तैयार है;
-- कैटलॉग मॉडल समर्थित LLM क्षमता का विज्ञापन करता है; और
-- कैटलॉग ऐसा transport contract दिखाता है जिसे Plugin समर्थन देता है।
+- कैटलॉग मॉडल किसी समर्थित LLM क्षमता (`llm.responses`, `llm.chat`, `llm.messages`, या मेल खाते स्ट्रीमिंग रूट के साथ `llm.stream`) का विज्ञापन करता है; और
+- प्रदाता नीचे दिए गए ट्रांसपोर्ट में से किसी एक के लिए मेल खाता रूट उपलब्ध कराता है।
 
-इसलिए समर्थित ClawRouter प्रदाता में कोई और मॉडल जोड़ने के लिए
-OpenClaw रिलीज़ या किसी दूसरे प्रदाता Plugin की ज़रूरत नहीं होती। अगला कैटलॉग
-refresh उसे खोज लेता है। जिस मॉडल को नए wire protocol की ज़रूरत है, उसे OpenClaw द्वारा विज्ञापित करने से पहले
-ClawRouter Plugin में समर्थन चाहिए।
+किसी समर्थित ClawRouter प्रदाता में मॉडल जोड़ने के लिए OpenClaw रिलीज़ की आवश्यकता नहीं होती: अगला कैटलॉग रिफ़्रेश (प्रति क्रेडेंशियल स्कोप 60 सेकंड तक कैश किया गया) उसे खोज लेता है। जिस मॉडल को नया वायर प्रोटोकॉल चाहिए, उसके लिए पहले Plugin समर्थन आवश्यक है।
 
 ## प्रोटोकॉल और प्रदाता Plugins
 
-आपको हर अपस्ट्रीम कंपनी का auth Plugin इंस्टॉल करने की ज़रूरत नहीं है। ClawRouter
-अपस्ट्रीम क्रेडेंशियल का स्वामी है; उसका कैटलॉग OpenClaw को बताता है कि कौन-सा transport उपयोग करना है।
-Plugin इसका समर्थन करता है:
+ClawRouter अपस्ट्रीम क्रेडेंशियल का स्वामी है; उसका कैटलॉग OpenClaw को बताता है कि कौन-सा ट्रांसपोर्ट उपयोग करना है, इसलिए आपको प्रत्येक अपस्ट्रीम कंपनी का प्रमाणीकरण Plugin कभी भी इंस्टॉल नहीं करना पड़ता।
 
-| कैटलॉग route                  | OpenClaw transport     |
-| ------------------------------ | ---------------------- |
-| OpenAI-संगत चैट               | `openai-completions`   |
-| OpenAI-संगत Responses         | `openai-responses`     |
-| नेटिव Anthropic Messages      | `anthropic-messages`   |
-| नेटिव Google Gemini streaming | `google-generative-ai` |
+| कैटलॉग क्षमता / रूट                                    | OpenClaw ट्रांसपोर्ट    |
+| ------------------------------------------------------ | ---------------------- |
+| `llm.responses` (OpenAI-संगत प्रदाता)               | `openai-responses`     |
+| `llm.chat` (OpenAI-संगत प्रदाता)               | `openai-completions`     |
+| `llm.messages` + `anthropic.messages` रूट            | `anthropic-messages`     |
+| `llm.stream` + स्ट्रीमिंग `google.generate_content` रूट | `google-generative-ai`     |
 
-Plugin उन परिवारों के लिए मेल खाती replay और tool-schema नीतियां भी लागू करता है।
-किसी दूसरे request/stream फ़ॉर्मैट का उपयोग करने वाली कैटलॉग पंक्तियों को जानबूझकर
-OpenClaw text models के रूप में विज्ञापित नहीं किया जाता। असंगत payload भेजने के बजाय
-उन प्रदाताओं को ClawRouter में समर्थित contracts में से किसी एक पर normalize करें।
+Plugin उन फ़ैमिली के लिए मेल खाने वाली रीप्ले और टूल-स्कीमा नीतियाँ भी लागू करता है (OpenAI/DeepSeek/Gemini/Perplexity टूल-स्कीमा संगतता; नेटिव Anthropic और Google Gemini रीप्ले नीतियाँ)। Perplexity मॉडलों को सख्त स्कीमा पुनर्लेखन मिलता है: `patternProperties` और `additionalProperties` हटा दिए जाते हैं और प्रत्येक ऑब्जेक्ट स्कीमा `properties` घोषित करता है, क्योंकि Perplexity इनके बिना टूल स्कीमा अस्वीकार करता है। केवल असमर्थित अनुरोध फ़ॉर्मेट उपलब्ध कराने वाले कैटलॉग प्रदाता को जानबूझकर OpenClaw टेक्स्ट मॉडल के रूप में प्रदर्शित नहीं किया जाता। असंगत पेलोड भेजने के बजाय उन प्रदाताओं को ClawRouter में समर्थित अनुबंधों में से किसी एक के अनुसार सामान्यीकृत करें।
 
 ## कोटा और उपयोग
 
-ClawRouter का `/v1/usage` response सामान्य OpenClaw provider-usage
-सतहों को फ़ीड करता है। `/status` और संबंधित dashboard status, कुंजी की सीमा होने पर मासिक बजट window,
-साथ ही request, token और spend totals दिखाते हैं। Unmetered कुंजियां
-बिना percentage window के भी कुल उपयोग दिखाती हैं।
+ClawRouter की `/v1/usage` प्रतिक्रिया सामान्य OpenClaw प्रदाता-उपयोग इंटरफ़ेसों को डेटा देती है: अनुरोध, टोकन और व्यय के कुल आँकड़े, साथ ही कुंजी की सीमा होने पर मासिक बजट विंडो। बिना मीटर वाली कुंजियाँ भी प्रतिशत विंडो के बिना समग्र उपयोग दिखाती हैं।
 
-Quota lookup, model discovery जैसी ही scoped key का उपयोग करता है। असफल quota lookup
-model execution को block नहीं करता।
+कोटा लुकअप मॉडल खोज वाली उसी स्कोप की कुंजी का उपयोग करता है। विफल कोटा लुकअप मॉडल निष्पादन को अवरुद्ध नहीं करता।
 
-लाइव snapshot देखें:
+लाइव स्नैपशॉट की जाँच इसके साथ करें:
 
 ```bash
 openclaw status --usage
 openclaw models status
 ```
 
-वही provider snapshot चैट में `/status` और OpenClaw के
-usage UI के लिए उपलब्ध है। बजट policy-wide होता है, इसलिए उसी
-ClawRouter policy का उपयोग करने वाले किसी दूसरे client द्वारा किए गए requests शेष percentage बदल सकते हैं।
+वही प्रदाता स्नैपशॉट चैट में `/status` और OpenClaw के उपयोग UI के लिए उपलब्ध है। बजट पूरी नीति पर लागू होता है, इसलिए उसी ClawRouter नीति का उपयोग करने वाले किसी अन्य क्लाइंट के अनुरोध शेष प्रतिशत बदल सकते हैं।
 
 ## समस्या निवारण
 
-| लक्षण                                    | जांचें                                                                                                                                          |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| कोई ClawRouter मॉडल नहीं                 | पुष्टि करें कि Plugin enabled है और `plugins.allow` द्वारा allowed है, फिर जांचें कि credential active है और कम से कम एक ready provider grant करता है। |
-| कॉन्फ़िगर किया गया ClawRouter मॉडल गायब है | उसकी `/v1/catalog` capability और route format निरीक्षण करें। Unsupported transport contracts जानबूझकर filtered होते हैं।                             |
-| `Unknown model: clawrouter/...`          | जब उस configuration map का allowlist के रूप में उपयोग हो रहा हो, तो exact catalog ref को `agents.defaults.models` में जोड़ें।                               |
-| catalog या usage से `401` या `403`       | ClawRouter credential को फिर से जारी करें या फिर से scope करें; OpenClaw upstream provider keys पर fall back नहीं करता।                                          |
-| discovery के बाद model call fail होता है | ClawRouter में provider connection और upstream health जांचें, फिर उसकी readiness state recover होने के बाद retry करें।                                |
-| Usage में totals हैं लेकिन percentage नहीं | policy unmetered है; percentage window expose करने के लिए ClawRouter में monthly budget जोड़ें।                                                     |
+| लक्षण                                     | जाँच                                                                                                                                             |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| कोई ClawRouter मॉडल नहीं                  | पुष्टि करें कि Plugin सक्षम है और `plugins.allow` द्वारा अनुमत है, फिर जाँचें कि क्रेडेंशियल सक्रिय है और कम-से-कम एक तैयार प्रदाता की अनुमति देता है। |
+| कॉन्फ़िगर किया गया ClawRouter मॉडल गायब है | उसकी `/v1/catalog` क्षमता और रूट समर्थन देखें। असमर्थित ट्रांसपोर्ट अनुबंध जानबूझकर फ़िल्टर किए जाते हैं।                                        |
+| मॉडल ओवरराइड नीति द्वारा अस्वीकृत         | ठीक वही कैटलॉग रेफ़रेंस या `clawrouter/*`, `agents.defaults.modelPolicy.allow` में जोड़ें।                                                                      |
+| कैटलॉग या उपयोग से `401` या `403` | ClawRouter क्रेडेंशियल दोबारा जारी करें या उसका स्कोप बदलें; OpenClaw अपस्ट्रीम प्रदाता कुंजियों पर फ़ॉलबैक नहीं करता।                              |
+| खोज के बाद मॉडल कॉल विफल                  | ClawRouter में प्रदाता कनेक्शन और अपस्ट्रीम स्वास्थ्य जाँचें, फिर उसकी तत्परता स्थिति ठीक होने के बाद पुनः प्रयास करें।                            |
+| उपयोग में कुल आँकड़े हैं, लेकिन प्रतिशत नहीं | नीति बिना मीटर वाली है; प्रतिशत विंडो दिखाने के लिए ClawRouter में मासिक बजट जोड़ें।                                                               |
 
 ## सुरक्षा व्यवहार
 
-- Catalog discovery configured proxy key तक scoped है और per key cached है।
-- Proxy key केवल request dispatch पर attached होती है; यह model metadata में stored नहीं होती।
-- Native Anthropic और Gemini model ids केवल dispatch पर उनके upstream ids में rewritten होते हैं।
-- Unsupported या ungranted catalog rows fail closed होते हैं और selectable नहीं होते।
+- कैटलॉग खोज कॉन्फ़िगर की गई प्रॉक्सी कुंजी तक सीमित होती है और प्रत्येक क्रेडेंशियल दायरे (एजेंट डायरेक्टरी, वर्कस्पेस डायरेक्टरी, प्रमाणीकरण प्रोफ़ाइल आईडी और आधार URL) के लिए कैश की जाती है।
+- प्रॉक्सी कुंजी केवल अनुरोध भेजते समय संलग्न की जाती है; इसे मॉडल मेटाडेटा में संग्रहीत नहीं किया जाता।
+- स्वचालित एट्रिब्यूशन और अनुरोध-सहसंबंध मानों को भेजने से पहले ट्रिम किया जाता है और नियंत्रण वर्ण पाए जाने पर अस्वीकार कर दिया जाता है। एट्रिब्यूशन मान अधिकतम 256 वर्णों और अनुरोध आईडी अधिकतम 128 वर्णों तक सीमित होते हैं।
+- मॉडल ट्रांसपोर्ट निदान में केवल मेटाडेटा होता है और उनमें प्रॉक्सी कुंजी या मॉडल सामग्री कभी शामिल नहीं होती।
+- नेटिव Anthropic और Gemini मॉडल आईडी को केवल अनुरोध भेजते समय उनकी अपस्ट्रीम आईडी में पुनर्लिखित किया जाता है।
+- असमर्थित या अनुमति न मिली कैटलॉग पंक्तियाँ सुरक्षित रूप से विफल होती हैं और चयन योग्य नहीं होतीं।
 
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/hi/concepts/model-providers" icon="layers">
+  <Card title="मॉडल प्रदाता" href="/hi/concepts/model-providers" icon="layers">
     प्रदाता कॉन्फ़िगरेशन और मॉडल चयन।
   </Card>
-  <Card title="Usage tracking" href="/hi/concepts/usage-tracking" icon="chart-line">
-    OpenClaw उपयोग और status सतहें।
+  <Card title="उपयोग ट्रैकिंग" href="/hi/concepts/usage-tracking" icon="chart-line">
+    OpenClaw के उपयोग और स्थिति की सतहें।
   </Card>
 </CardGroup>

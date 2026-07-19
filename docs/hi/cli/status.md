@@ -1,15 +1,16 @@
 ---
 read_when:
-    - आप चैनल की स्थिति और हालिया सत्र प्राप्तकर्ताओं का त्वरित निदान चाहते हैं
-    - आप डीबगिंग के लिए चिपकाने योग्य "all" स्थिति चाहते हैं
-summary: '`openclaw status` के लिए CLI संदर्भ (निदान, प्रोब, उपयोग स्नैपशॉट)'
+    - आप चैनल की स्थिति और हाल के सत्र प्राप्तकर्ताओं का त्वरित निदान चाहते हैं
+    - आप डीबगिंग के लिए पेस्ट किया जा सकने वाला "all" स्टेटस चाहते हैं
+summary: '`openclaw status` के लिए CLI संदर्भ (निदान, जाँच, उपयोग स्नैपशॉट)'
 title: openclaw status
 x-i18n:
-    generated_at: "2026-06-28T22:53:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T08:20:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: aeb9e99b2aa9eb12fe97c8ee018ac6a5227cad990d151c3579d16009c5b9258a
+    source_hash: abf35fe5e60e7fce94aacf86c009d77ac1cc993e0099d294d248e7b884a3f9dc
     source_path: cli/status.md
     workflow: 16
 ---
@@ -23,31 +24,89 @@ openclaw status --deep
 openclaw status --usage
 ```
 
-नोट्स:
+| फ़्लैग                    | विवरण                                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--all`                 | पूर्ण निदान (केवल-पठन, चिपकाने योग्य)। इसमें सुरक्षा ऑडिट, Plugin संगतता और मेमोरी-वेक्टर जाँच शामिल हैं। |
+| `--deep`                | लाइव जाँच चलाता है (WhatsApp Web + Telegram + Discord + Slack + Signal)। सुरक्षा ऑडिट भी सक्षम करता है।         |
+| `--usage`               | सामान्यीकृत प्रदाता उपयोग विंडो को `X% left` के रूप में प्रिंट करता है।                                                          |
+| `--json`                | मशीन-पठनीय आउटपुट।                                                                                        |
+| `--verbose` / `--debug` | रिपोर्ट से पहले कच्चा Gateway लक्ष्य रिज़ॉल्यूशन भी प्रिंट करता है।                                                 |
 
-- `--deep` लाइव probes चलाता है (WhatsApp Web + Telegram + Discord + Slack + Signal)।
-- सामान्य `openclaw status` तेज़ read-only पथ पर रहता है और memory निरीक्षण छोड़ने पर memory को अनुपलब्ध के बजाय `not checked` के रूप में चिह्नित करता है। भारी सुरक्षा ऑडिट, Plugin संगतता, और memory-vector probes को `openclaw status --all`, `openclaw status --deep`, `openclaw security audit`, और `openclaw memory status --deep` के लिए छोड़ा जाता है।
-- `status --json --all` `plugins.slots.memory` द्वारा चुने गए सक्रिय memory Plugin runtime से memory विवरण रिपोर्ट करता है। कस्टम memory Plugins अंतर्निहित `agents.defaults.memorySearch.enabled` को अक्षम छोड़ सकते हैं और फिर भी अपनी फ़ाइलों, chunks, vector, और FTS स्थिति की रिपोर्ट कर सकते हैं।
-- `--usage` सामान्यीकृत provider usage windows को `X% left` के रूप में प्रिंट करता है।
-- सत्र स्थिति आउटपुट `Execution:` को `Runtime:` से अलग करता है। `Execution` sandbox पथ है (`direct`, `docker/*`), जबकि `Runtime` बताता है कि सत्र `OpenClaw Default`, `OpenAI Codex`, कोई CLI backend, या `codex (acp/acpx)` जैसा ACP backend उपयोग कर रहा है। provider/model/runtime के अंतर के लिए [Agent runtimes](/hi/concepts/agent-runtimes) देखें।
-- MiniMax के कच्चे `usage_percent` / `usagePercent` फ़ील्ड शेष quota होते हैं, इसलिए OpenClaw उन्हें प्रदर्शित करने से पहले उलट देता है; count-based फ़ील्ड मौजूद होने पर प्राथमिकता पाते हैं। `model_remains` प्रतिक्रियाएँ chat-model entry को प्राथमिकता देती हैं, ज़रूरत होने पर timestamps से window label निकालती हैं, और plan label में model name शामिल करती हैं।
-- जब वर्तमान सत्र snapshot विरल हो, `/status` सबसे हाल के transcript usage log से token और cache counters backfill कर सकता है। मौजूदा nonzero live values फिर भी transcript fallback values पर प्राथमिकता रखते हैं।
-- `/status` में संक्षिप्त Gateway process uptime और host system uptime शामिल हैं।
-- जब live session entry में सक्रिय runtime model label अनुपस्थित हो, transcript fallback उसे भी पुनर्प्राप्त कर सकता है। यदि वह transcript model चुने गए model से अलग है, तो status चुने गए model के बजाय पुनर्प्राप्त runtime model के विरुद्ध context window resolve करता है।
-- जब कोई सत्र configured primary से अलग model पर pinned हो, status दोनों values, कारण (`session override`), और स्पष्ट संकेत (`/model default`) प्रिंट करता है। configured primary नए या unpinned सत्रों पर लागू होता है; मौजूदा pinned सत्र clear किए जाने तक अपना session selection रखते हैं।
-- prompt-size accounting के लिए, जब session metadata अनुपस्थित या छोटा हो, transcript fallback बड़े prompt-oriented total को प्राथमिकता देता है, ताकि custom-provider sessions `0` token displays तक न सिमटें।
-- जब कई agents configured हों, output में per-agent session stores शामिल होते हैं।
-- उपलब्ध होने पर overview में Gateway + node host service install/runtime status शामिल होता है।
-- overview में update channel + git SHA (source checkouts के लिए) शामिल होता है।
-- Update जानकारी Overview में दिखाई देती है; यदि update उपलब्ध है, तो status `openclaw update` चलाने का संकेत प्रिंट करता है ([Updating](/hi/install/updating) देखें)।
-- Model pricing refresh failures वैकल्पिक pricing warnings के रूप में दिखाई जाती हैं। उनका मतलब यह
-  नहीं है कि Gateway या channels अस्वस्थ हैं।
-- Read-only status surfaces (`status`, `status --json`, `status --all`) संभव होने पर अपने लक्षित config paths के लिए supported SecretRefs resolve करते हैं।
-- यदि supported channel SecretRef configured है लेकिन वर्तमान command path में unavailable है, तो status read-only रहता है और crash करने के बजाय degraded output रिपोर्ट करता है। Human output "configured token unavailable in this command path" जैसी warnings दिखाता है, और JSON output में `secretDiagnostics` शामिल होता है।
-- जब command-local SecretRef resolution सफल होता है, status resolved snapshot को प्राथमिकता देता है और अंतिम output से transient "secret unavailable" channel markers clear करता है।
-- `status --all` में Secrets overview row और diagnosis section शामिल होता है, जो report generation रोके बिना secret diagnostics का सार देता है (readability के लिए truncated)।
+सादा `openclaw status` तेज़ केवल-पठन पथ पर बना रहता है और मेमोरी निरीक्षण छोड़ने पर
+मेमोरी को अनुपलब्ध के बजाय `not checked` के रूप में चिह्नित करता है। व्यापक
+सुरक्षा ऑडिट, Plugin संगतता और मेमोरी-वेक्टर जाँच
+`openclaw status --all`, `openclaw status --deep`, `openclaw security audit`,
+और `openclaw memory status --deep` के लिए छोड़ी जाती हैं।
+
+## सत्र और मॉडल रिज़ॉल्यूशन
+
+- सत्र स्थिति आउटपुट `Execution:` को `Runtime:` से अलग करता है। `Execution`
+  सैंडबॉक्स पथ (`direct`, `docker/*`) है, जबकि `Runtime` बताता है
+  कि सत्र `OpenClaw Default`, `OpenAI Codex`, किसी CLI
+  बैकएंड या `codex (acp/acpx)` जैसे ACP बैकएंड का उपयोग कर रहा है। प्रदाता/मॉडल/रनटाइम
+  के अंतर के लिए [एजेंट रनटाइम](/hi/concepts/agent-runtimes) देखें।
+- जब वर्तमान सत्र स्नैपशॉट में सीमित जानकारी होती है, तो `/status` सबसे हाल के ट्रांसक्रिप्ट उपयोग लॉग से टोकन
+  और कैश काउंटर भर सकता है। मौजूदा
+  शून्येतर लाइव मानों को फिर भी ट्रांसक्रिप्ट फ़ॉलबैक मानों पर प्राथमिकता मिलती है।
+- जब लाइव सत्र प्रविष्टि में सक्रिय रनटाइम मॉडल लेबल मौजूद न हो, तो
+  ट्रांसक्रिप्ट फ़ॉलबैक उसे भी पुनर्प्राप्त कर सकता है। यदि वह ट्रांसक्रिप्ट मॉडल चयनित
+  मॉडल से अलग है, तो स्थिति संदर्भ विंडो को चयनित मॉडल के बजाय
+  पुनर्प्राप्त रनटाइम मॉडल के अनुसार रिज़ॉल्व करती है।
+- प्रॉम्प्ट-आकार की गणना के लिए, सत्र मेटाडेटा अनुपस्थित या छोटा होने पर ट्रांसक्रिप्ट फ़ॉलबैक बड़े
+  प्रॉम्प्ट-उन्मुख कुल को प्राथमिकता देता है, ताकि
+  कस्टम-प्रदाता सत्र `0` टोकन प्रदर्शन तक सीमित न हो जाएँ।
+- जब किसी सत्र को कॉन्फ़िगर किए गए
+  प्राथमिक मॉडल से अलग मॉडल पर पिन किया जाता है, तो स्थिति दोनों मान, कारण (`session override`) और
+  संकेत `/model default` प्रिंट करती है। कॉन्फ़िगर किया गया प्राथमिक मॉडल नए या
+  बिना पिन किए गए सत्रों पर लागू होता है; मौजूदा पिन किए गए सत्र साफ़ किए जाने तक अपना सत्र चयन
+  बनाए रखते हैं।
+- एकाधिक एजेंट कॉन्फ़िगर होने पर आउटपुट में प्रति-एजेंट सत्र स्टोर शामिल होते हैं।
+
+## उपयोग और कोटा
+
+- `--usage` सामान्यीकृत प्रदाता उपयोग विंडो को `X% left` के रूप में प्रिंट करता है।
+- MiniMax के कच्चे `usage_percent` / `usagePercent` फ़ील्ड शेष कोटा हैं,
+  इसलिए OpenClaw उन्हें प्रदर्शित करने से पहले उलटता है; मौजूद होने पर
+  गणना-आधारित फ़ील्ड को प्राथमिकता मिलती है। `model_remains` प्रतिक्रियाएँ चैट-मॉडल प्रविष्टि को प्राथमिकता देती हैं, आवश्यकता होने पर टाइमस्टैम्प से
+  विंडो लेबल प्राप्त करती हैं और योजना लेबल में मॉडल का नाम
+  शामिल करती हैं।
+- मॉडल मूल्य-निर्धारण रीफ़्रेश विफलताएँ वैकल्पिक मूल्य-निर्धारण चेतावनियों के रूप में दिखाई जाती हैं।
+  उनका अर्थ यह नहीं है कि Gateway या चैनल अस्वस्थ हैं।
+
+## अवलोकन और अपडेट स्थिति
+
+- उपलब्ध होने पर अवलोकन में Gateway + Node होस्ट सेवा की स्थापना/रनटाइम स्थिति के साथ
+  संक्षिप्त Gateway प्रक्रिया अपटाइम और होस्ट सिस्टम अपटाइम शामिल होते हैं।
+- अवलोकन में अपडेट चैनल + git SHA (स्रोत चेकआउट के लिए) शामिल होते हैं।
+- अपडेट जानकारी अवलोकन में दिखाई देती है; यदि कोई अपडेट उपलब्ध है, तो स्थिति
+  `openclaw update` चलाने का संकेत प्रिंट करती है ([अपडेट करना](/hi/install/updating) देखें)।
+
+## सीक्रेट
+
+- जब चल रहे Gateway में स्टार्टअप, रीलोड या कॉन्फ़िग लेखन से कोई पृथक SecretRef स्वामी होता है, तो स्थिति JSON में `degradedSecretOwners` और मानव-पठनीय आउटपुट में **अवक्रमित सीक्रेट** अवलोकन पंक्ति शामिल करती है। प्रत्येक प्रविष्टि में स्वामी, अवक्रमण स्थिति (`cold` या `stale`), कॉन्फ़िग पथ और संशोधित कारण का उल्लेख होता है। कोल्ड स्वामी अनुपलब्ध होते हैं; स्टेल स्वामी अंतिम ज्ञात सही मानों के साथ जारी रहते हैं।
+- केवल-पठन स्थिति सतहें (`status`, `status --json`, `status --all`)
+  संभव होने पर अपने लक्षित कॉन्फ़िग पथों के लिए समर्थित SecretRefs को
+  रिज़ॉल्व करती हैं।
+- यदि कोई समर्थित चैनल SecretRef कॉन्फ़िगर है, लेकिन
+  वर्तमान कमांड पथ में अनुपलब्ध है, तो स्थिति केवल-पठन बनी रहती है और क्रैश होने के बजाय अवक्रमित आउटपुट
+  की रिपोर्ट करती है। मानव-पठनीय आउटपुट में "इस कमांड पथ में कॉन्फ़िगर किया गया टोकन
+  अनुपलब्ध है" जैसी चेतावनियाँ दिखाई देती हैं और JSON आउटपुट में
+  `secretDiagnostics` शामिल होता है।
+- जब कमांड-स्थानीय SecretRef रिज़ॉल्यूशन सफल होता है, तो स्थिति
+  रिज़ॉल्व किए गए स्नैपशॉट को प्राथमिकता देती है और अंतिम आउटपुट से अस्थायी "सीक्रेट अनुपलब्ध" चैनल
+  चिह्नकों को हटा देती है।
+- `status --all` में सीक्रेट अवलोकन पंक्ति और एक निदान अनुभाग शामिल होता है,
+  जो रिपोर्ट निर्माण रोके बिना सीक्रेट निदान का सारांश देता है
+  (पठनीयता के लिए संक्षिप्त किया गया)।
+
+## मेमोरी
+
+`status --json --all`, `plugins.slots.memory` द्वारा चयनित सक्रिय मेमोरी Plugin
+रनटाइम से मेमोरी विवरण की रिपोर्ट करता है। कस्टम मेमोरी Plugin अंतर्निहित
+`agents.defaults.memorySearch.enabled` को अक्षम छोड़ सकते हैं और फिर भी
+अपनी फ़ाइलों, चंक्स, वेक्टर और FTS स्थिति की रिपोर्ट कर सकते हैं।
 
 ## संबंधित
 
-- [CLI reference](/hi/cli)
-- [Doctor](/hi/gateway/doctor)
+- [CLI संदर्भ](/hi/cli)
+- [डॉक्टर](/hi/gateway/doctor)

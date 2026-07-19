@@ -3,13 +3,14 @@ read_when:
     - Anda ingin memilih penyedia model
     - Anda menginginkan contoh penyiapan cepat untuk autentikasi LLM + pemilihan model
 summary: Penyedia model (LLM) yang didukung oleh OpenClaw
-title: Panduan mulai cepat penyedia model
+title: Panduan memulai cepat penyedia model
 x-i18n:
-    generated_at: "2026-07-12T14:33:34Z"
+    generated_at: "2026-07-19T05:08:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
+    source_hash: 3988d6985cbe203a6a3357d59160190990b1b53245ea25f1538dbc6f567afec1
     source_path: providers/models.md
     workflow: 16
 ---
@@ -27,11 +28,12 @@ Pilih penyedia, lakukan autentikasi, lalu tetapkan model default sebagai `provid
 }
 ```
 
-## Penyedia yang didukung (kumpulan awal)
+## Penyedia yang didukung (set awal)
 
 - [Alibaba Model Studio](/id/providers/alibaba)
 - [Amazon Bedrock](/id/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/id/providers/anthropic)
+- [Baseten (Inkling + API Model)](/providers/baseten)
 - [BytePlus (Internasional)](/id/concepts/model-providers#byteplus-international)
 - [Chutes](/id/providers/chutes)
 - [Cloudflare AI Gateway](/id/providers/cloudflare-ai-gateway)
@@ -62,8 +64,8 @@ Untuk katalog penyedia lengkap dan konfigurasi lanjutan, lihat
 
 ## Varian penyedia tambahan
 
-- `anthropic-vertex` - instal `@openclaw/anthropic-vertex-provider` untuk dukungan Anthropic implisit di Google Vertex saat kredensial Vertex tersedia; tidak ada pilihan autentikasi orientasi awal terpisah
-- `copilot-proxy` - jembatan VS Code Copilot Proxy lokal; gunakan `openclaw onboard --auth-choice copilot-proxy`
+- `anthropic-vertex` - instal `@openclaw/anthropic-vertex-provider` untuk dukungan Anthropic implisit di Google Vertex ketika kredensial Vertex tersedia; tidak ada pilihan autentikasi orientasi awal yang terpisah
+- `copilot-proxy` - jembatan Proksi Copilot VS Code lokal; gunakan `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - alur OAuth Gemini CLI tidak resmi; memerlukan instalasi lokal `gemini` (`brew install gemini-cli` atau `npm install -g @google/gemini-cli`); model default `google-gemini-cli/gemini-3-flash-preview`; gunakan `openclaw onboard --auth-choice google-gemini-cli` atau `openclaw models auth login --provider google-gemini-cli --set-default`
 
 ## Terkait

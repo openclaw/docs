@@ -1,71 +1,23 @@
 ---
 read_when:
-    - आप SSRF और DNS रीबाइंडिंग हमलों के विरुद्ध बहु-स्तरीय सुरक्षा चाहते हैं
-    - OpenClaw runtime ट्रैफ़िक के लिए बाहरी forward proxy कॉन्फ़िगर करना
-summary: OpenClaw रनटाइम HTTP और WebSocket ट्रैफ़िक को ऑपरेटर-प्रबंधित फ़िल्टरिंग प्रॉक्सी के माध्यम से कैसे रूट करें
+    - आप SSRF और DNS रीबाइंडिंग हमलों के विरुद्ध बहुस्तरीय सुरक्षा चाहते हैं
+    - OpenClaw रनटाइम ट्रैफ़िक के लिए बाहरी फ़ॉरवर्ड प्रॉक्सी कॉन्फ़िगर करना
+summary: ऑपरेटर-प्रबंधित फ़िल्टरिंग प्रॉक्सी के माध्यम से OpenClaw रनटाइम HTTP और WebSocket ट्रैफ़िक को कैसे रूट करें
 title: नेटवर्क प्रॉक्सी
 x-i18n:
-    generated_at: "2026-06-29T00:13:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T09:42:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3fc68d950037922ba3dc983c94a71bac3374750a02ef25f2c046cf782410be68
+    source_hash: fd82684a17a79242891eca69c549c0bfcdd5bde40fa4e791dda7f2b62c473c89
     source_path: security/network-proxy.md
     workflow: 16
 ---
 
-OpenClaw रनटाइम HTTP और WebSocket ट्रैफ़िक को ऑपरेटर-प्रबंधित फ़ॉरवर्ड प्रॉक्सी के माध्यम से रूट कर सकता है। यह उन डिप्लॉयमेंट के लिए वैकल्पिक रक्षा-गहराई है जो केंद्रीय ईग्रेस नियंत्रण, मजबूत SSRF सुरक्षा, और बेहतर नेटवर्क ऑडिटेबिलिटी चाहते हैं।
+OpenClaw रनटाइम HTTP और WebSocket ट्रैफ़िक को ऑपरेटर-प्रबंधित फ़ॉरवर्ड प्रॉक्सी के माध्यम से रूट कर सकता है। यह वैकल्पिक बहुस्तरीय सुरक्षा है: केंद्रीकृत इग्रेस नियंत्रण, अधिक सुदृढ़ SSRF सुरक्षा, और नेटवर्क सीमा पर गंतव्य की ऑडिट-योग्यता। चूँकि प्रॉक्सी DNS रिज़ॉल्यूशन के बाद और अपस्ट्रीम कनेक्शन खोलने से ठीक पहले, कनेक्ट करते समय गंतव्य का मूल्यांकन करता है, इसलिए यह उस अंतराल को भी कम करता है जिस पर DNS-रीबाइंडिंग हमला पहले के एप्लिकेशन-स्तरीय DNS जाँच और वास्तविक आउटबाउंड कनेक्शन के बीच निर्भर करता है। एकल प्रॉक्सी नीति ऑपरेटरों को OpenClaw का पुनर्निर्माण किए बिना गंतव्य नियम, नेटवर्क विभाजन, दर सीमाएँ या आउटबाउंड अनुमति-सूचियाँ लागू करने के लिए एक ही स्थान भी देती है।
 
-OpenClaw कोई प्रॉक्सी शिप, डाउनलोड, शुरू, कॉन्फ़िगर, या प्रमाणित नहीं करता। आप अपने परिवेश के लिए उपयुक्त प्रॉक्सी तकनीक चलाते हैं, और OpenClaw सामान्य प्रक्रिया-स्थानीय HTTP और WebSocket क्लाइंट्स को उसके माध्यम से रूट करता है।
-
-## प्रॉक्सी का उपयोग क्यों करें
-
-प्रॉक्सी ऑपरेटरों को आउटबाउंड HTTP और WebSocket ट्रैफ़िक के लिए एक नेटवर्क नियंत्रण बिंदु देता है। यह SSRF हार्डनिंग के बाहर भी उपयोगी हो सकता है:
-
-- केंद्रीय नीति: हर एप्लिकेशन HTTP कॉल साइट पर नेटवर्क नियमों को सही कराने पर निर्भर रहने के बजाय एक ईग्रेस नीति बनाए रखें।
-- कनेक्ट-समय जांचें: DNS रिज़ॉल्यूशन के बाद और प्रॉक्सी द्वारा अपस्ट्रीम कनेक्शन खोलने से ठीक पहले गंतव्य का मूल्यांकन करें।
-- DNS रीबाइंडिंग रक्षा: एप्लिकेशन-स्तरीय DNS जांच और वास्तविक आउटबाउंड कनेक्शन के बीच का अंतर घटाएं।
-- व्यापक JavaScript कवरेज: सामान्य `fetch`, `node:http`, `node:https`, WebSocket, axios, got, node-fetch, और समान क्लाइंट्स को उसी पथ से रूट करें।
-- ऑडिटेबिलिटी: ईग्रेस सीमा पर अनुमत और अस्वीकृत गंतव्यों को लॉग करें।
-- परिचालन नियंत्रण: OpenClaw को फिर से बनाए बिना गंतव्य नियम, नेटवर्क सेगमेंटेशन, दर सीमाएं, या आउटबाउंड अलाउलिस्ट लागू करें।
-
-प्रॉक्सी रूटिंग सामान्य HTTP और WebSocket ईग्रेस के लिए प्रक्रिया-स्तरीय गार्डरेल है। यह ऑपरेटरों को समर्थित JavaScript HTTP क्लाइंट्स को उनके अपने फ़िल्टरिंग प्रॉक्सी के माध्यम से रूट करने के लिए fail-closed पथ देता है, लेकिन यह OS-स्तरीय नेटवर्क सैंडबॉक्स नहीं है और OpenClaw को प्रॉक्सी की गंतव्य नीति प्रमाणित नहीं कराता।
-
-## OpenClaw ट्रैफ़िक कैसे रूट करता है
-
-जब `proxy.enabled=true` हो और प्रॉक्सी URL कॉन्फ़िगर किया गया हो, तो संरक्षित रनटाइम प्रक्रियाएं जैसे `openclaw gateway run`, `openclaw node run`, और `openclaw agent --local` सामान्य HTTP और WebSocket ईग्रेस को कॉन्फ़िगर किए गए प्रॉक्सी के माध्यम से रूट करती हैं:
-
-```text
-OpenClaw process
-  fetch                  -> operator-managed filtering proxy -> public internet
-  node:http and https    -> operator-managed filtering proxy -> public internet
-  WebSocket clients      -> operator-managed filtering proxy -> public internet
-```
-
-सार्वजनिक अनुबंध रूटिंग व्यवहार है, उसे लागू करने के लिए उपयोग किए गए आंतरिक Node hooks नहीं। OpenClaw Gateway control-plane WebSocket क्लाइंट local loopback Gateway RPC ट्रैफ़िक के लिए एक संकीर्ण प्रत्यक्ष पथ का उपयोग करते हैं जब Gateway URL `localhost` या शाब्दिक लूपबैक IP जैसे `127.0.0.1` या `[::1]` का उपयोग करता है। उस control-plane पथ को loopback Gateways तक पहुंच पाने में सक्षम होना चाहिए, भले ही ऑपरेटर प्रॉक्सी लूपबैक गंतव्यों को ब्लॉक करे। सामान्य रनटाइम HTTP और WebSocket अनुरोध फिर भी कॉन्फ़िगर किए गए प्रॉक्सी का उपयोग करते हैं।
-
-आंतरिक रूप से, OpenClaw इस सुविधा के लिए प्रक्रिया-स्तरीय रूटिंग रनटाइम के रूप में Proxyline इंस्टॉल करता है। Proxyline `fetch`, undici-आधारित क्लाइंट्स, Node core `node:http` / `node:https` callers, सामान्य WebSocket क्लाइंट्स, और helper-created CONNECT tunnels को कवर करता है। Managed proxy mode caller-provided Node HTTP agents को बदल देता है ताकि स्पष्ट agents गलती से ऑपरेटर प्रॉक्सी को bypass न कर दें।
-
-कुछ plugins custom transports के स्वामी होते हैं जिन्हें process-level routing मौजूद होने पर भी explicit proxy wiring की आवश्यकता होती है। उदाहरण के लिए, Telegram का Bot API transport अपना HTTP/1 undici dispatcher उपयोग करता है और इसलिए उस owner-specific transport path में process proxy env के साथ managed `OPENCLAW_PROXY_URL` fallback का सम्मान करता है।
-
-प्रॉक्सी URL स्वयं `http://` या `https://` में से किसी का उपयोग कर सकता है। ये schemes OpenClaw से प्रॉक्सी endpoint तक के कनेक्शन का वर्णन करती हैं:
-
-- `http://proxy.example:3128`: OpenClaw forward proxy के लिए plain TCP connection खोलता है और HTTPS गंतव्यों के लिए `CONNECT` सहित HTTP proxy requests भेजता है।
-- `https://proxy.example:8443`: OpenClaw proxy endpoint तक TLS खोलता है, proxy certificate सत्यापित करता है, और फिर उस TLS session के अंदर HTTP proxy requests भेजता है।
-
-Destination HTTPS proxy endpoint TLS से अलग है। HTTPS destination के लिए, OpenClaw अब भी proxy से HTTP `CONNECT` tunnel मांगता है और फिर उस tunnel के माध्यम से destination TLS शुरू करता है।
-
-जब proxy सक्रिय हो, OpenClaw `no_proxy` और `NO_PROXY` साफ़ करता है। वे bypass lists destination-based होती हैं, इसलिए वहां `localhost` या `127.0.0.1` छोड़ने से high-risk SSRF targets filtering proxy को skip कर सकते हैं।
-
-Shutdown पर, OpenClaw पिछला proxy environment restore करता है और cached process routing state reset करता है।
-
-## संबंधित प्रॉक्सी शब्द
-
-- `proxy.enabled` / `proxy.proxyUrl`: OpenClaw runtime egress के लिए outbound forward-proxy routing। यह पृष्ठ उस सुविधा का दस्तावेज़ीकरण करता है।
-- `gateway.auth.mode: "trusted-proxy"`: Gateway access के लिए inbound identity-aware reverse-proxy authentication। देखें [Trusted proxy auth](/hi/gateway/trusted-proxy-auth)।
-- `openclaw proxy`: development और support के लिए local debug proxy और capture inspector। देखें [openclaw proxy](/hi/cli/proxy)।
-- `tools.web.fetch.useTrustedEnvProxy`: default strict DNS pinning और hostname policy बनाए रखते हुए `web_fetch` को operator-controlled HTTP(S) env proxy से DNS resolve कराने के लिए opt-in। देखें [Web fetch](/hi/tools/web-fetch#trusted-env-proxy)।
-- Channel या provider-specific proxy settings: किसी विशेष transport के लिए owner-specific overrides। जब लक्ष्य runtime भर में central egress control हो, तो managed network proxy को प्राथमिकता दें।
+OpenClaw किसी प्रॉक्सी को शिप, डाउनलोड, प्रारंभ, कॉन्फ़िगर या प्रमाणित नहीं करता। आप अपने परिवेश के अनुकूल प्रॉक्सी तकनीक चलाते हैं; OpenClaw अपने HTTP और WebSocket क्लाइंट को उसके माध्यम से रूट करता है।
 
 ## कॉन्फ़िगरेशन
 
@@ -75,7 +27,33 @@ proxy:
   proxyUrl: http://127.0.0.1:3128
 ```
 
-private proxy CA वाले HTTPS proxy endpoint के लिए:
+कॉन्फ़िगरेशन में `proxy.enabled: true` बनाए रखते हुए आप URL को एनवायरनमेंट के माध्यम से भी सेट कर सकते हैं:
+
+```bash
+OPENCLAW_PROXY_URL=http://127.0.0.1:3128 openclaw gateway run
+```
+
+`proxy.proxyUrl` को `OPENCLAW_PROXY_URL` पर प्राथमिकता मिलती है। यदि `proxy.enabled`, `true` है, लेकिन कोई मान्य URL रिज़ॉल्व नहीं होता, तो संरक्षित कमांड प्रत्यक्ष नेटवर्क पहुँच पर वापस जाने के बजाय स्टार्टअप में विफल हो जाते हैं।
+
+| कुंजी                  | प्रकार                                 | डिफ़ॉल्ट        | टिप्पणियाँ                                                                                                                                 |
+| -------------------- | ------------------------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `proxy.enabled`      | बूलियन                              | सेट नहीं          | रूटिंग सक्रिय करने के लिए `true` होना आवश्यक है।                                                                                                   |
+| `proxy.proxyUrl`     | स्ट्रिंग                               | सेट नहीं          | `http://` या `https://` फ़ॉरवर्ड प्रॉक्सी URL। URL में एम्बेड किए गए क्रेडेंशियल संवेदनशील माने जाते हैं और स्नैपशॉट/लॉग से छिपा दिए जाते हैं। |
+| `proxy.tls.caFile`   | स्ट्रिंग                               | सेट नहीं          | निजी CA द्वारा हस्ताक्षरित `https://` प्रॉक्सी एंडपॉइंट को सत्यापित करने के लिए CA बंडल।                                                          |
+| `proxy.loopbackMode` | `gateway-only` \| `proxy` \| `block` | `gateway-only` | लूपबैक बायपास व्यवहार नियंत्रित करता है; नीचे देखें।                                                                                         |
+
+प्रबंधित Gateway सेवाओं के लिए, URL को फ़ोरग्राउंड एनवायरनमेंट पर निर्भर रखने के बजाय कॉन्फ़िगरेशन में संग्रहित करें, ताकि वह पुनः इंस्टॉल करने के बाद भी बना रहे:
+
+```bash
+openclaw config set proxy.enabled true
+openclaw config set proxy.proxyUrl http://127.0.0.1:3128
+openclaw gateway install --force
+openclaw gateway start
+```
+
+`OPENCLAW_PROXY_URL` एनवायरनमेंट फ़ॉलबैक फ़ोरग्राउंड रन के लिए सर्वोत्तम है। इसे इंस्टॉल की गई सेवा के साथ उपयोग करने के लिए, इसे सेवा के स्थायी एनवायरनमेंट (`$OPENCLAW_STATE_DIR/.env`, डिफ़ॉल्ट `~/.openclaw/.env`) में रखें, फिर पुनः इंस्टॉल करें ताकि launchd/systemd/Scheduled Tasks इसे अपना ले।
+
+### निजी CA वाला HTTPS प्रॉक्सी एंडपॉइंट
 
 ```yaml
 proxy:
@@ -85,17 +63,40 @@ proxy:
     caFile: /etc/openclaw/proxy-ca.pem
 ```
 
-आप config में `proxy.enabled=true` रखते हुए environment के माध्यम से भी URL दे सकते हैं:
+`proxy.tls.caFile` प्रॉक्सी एंडपॉइंट के अपने TLS प्रमाणपत्र को सत्यापित करता है। यह गंतव्य MITM विश्वास सेटिंग, क्लाइंट प्रमाणपत्र या प्रॉक्सी की गंतव्य नीति का विकल्प नहीं है। इसके बजाय `NODE_EXTRA_CA_CERTS` का उपयोग केवल तभी करें, जब संपूर्ण Node प्रक्रिया को स्टार्टअप से किसी अतिरिक्त CA पर विश्वास करना आवश्यक हो (उदाहरण के लिए, प्रत्येक HTTPS गंतव्य प्रमाणपत्र पर पुनः हस्ताक्षर करने वाली एंटरप्राइज़ TLS-निरीक्षण प्रणाली) — वह वेरिएबल पूरी प्रक्रिया पर लागू होता है और उसे Node के प्रारंभ होने से पहले सेट करना आवश्यक है, इसलिए OpenClaw उसे रन के बीच में उस तरह लागू नहीं कर सकता, जिस तरह वह `proxy.tls.caFile` को लागू करता है। HTTPS प्रॉक्सी एंडपॉइंट विश्वास के लिए `proxy.tls.caFile` को प्राथमिकता दें: इसका दायरा पूरी प्रक्रिया के बजाय प्रबंधित प्रॉक्सी रूटिंग तक सीमित है।
 
 ```bash
-OPENCLAW_PROXY_URL=http://127.0.0.1:3128 openclaw gateway run
+openclaw config set proxy.enabled true
+openclaw config set proxy.proxyUrl https://proxy.corp.example:8443
+openclaw config set proxy.tls.caFile /etc/openclaw/proxy-ca.pem
+openclaw gateway run
 ```
 
-`proxy.proxyUrl`, `OPENCLAW_PROXY_URL` पर प्राथमिकता लेता है।
+## रूटिंग कैसे काम करती है
+
+`proxy.enabled: true` और मान्य URL के साथ, संरक्षित रनटाइम प्रक्रियाएँ (`openclaw gateway run`, `openclaw node run`, `openclaw agent --local`) सामान्य HTTP और WebSocket इग्रेस को प्रॉक्सी के माध्यम से रूट करती हैं:
+
+```text
+OpenClaw प्रक्रिया
+  fetch, node:http, node:https, WebSocket क्लाइंट  -> ऑपरेटर प्रॉक्सी -> गंतव्य
+```
+
+आंतरिक रूप से, OpenClaw प्रक्रिया-स्तरीय रूटिंग रनटाइम के रूप में [Proxyline](https://github.com/openclaw/proxyline) इंस्टॉल करता है। यह `fetch`, undici-आधारित क्लाइंट, `node:http`/`node:https`, सामान्य WebSocket क्लाइंट और हेल्पर द्वारा बनाए गए `CONNECT` टनल को कवर करता है, और यह कॉलर द्वारा दिए गए Node HTTP एजेंटों को बदल देता है, ताकि स्पष्ट एजेंट (जिनमें `axios`, `got`, `node-fetch` और समान Node-एजेंट-आधारित क्लाइंट शामिल हैं) प्रॉक्सी को चुपचाप बायपास न कर सकें।
+
+प्रॉक्सी URL स्कीम OpenClaw से प्रॉक्सी तक के हॉप का वर्णन करती है, अंतिम गंतव्य तक के हॉप का नहीं:
+
+- `http://proxy.example:3128` — प्रॉक्सी तक प्लेन TCP; OpenClaw HTTP प्रॉक्सी अनुरोध भेजता है, जिनमें HTTPS गंतव्यों के लिए `CONNECT` शामिल है।
+- `https://proxy.example:8443` — OpenClaw स्वयं प्रॉक्सी तक TLS खोलता है (प्रॉक्सी के प्रमाणपत्र को सत्यापित करते हुए), फिर उस सत्र के भीतर HTTP प्रॉक्सी अनुरोध भेजता है।
+
+गंतव्य TLS, प्रॉक्सी-एंडपॉइंट TLS से स्वतंत्र है: किसी HTTPS गंतव्य के लिए OpenClaw हमेशा प्रॉक्सी से `CONNECT` टनल माँगता है और उस टनल के माध्यम से गंतव्य TLS प्रारंभ करता है।
+
+प्रॉक्सी सक्रिय रहने के दौरान, OpenClaw `no_proxy`/`NO_PROXY` को साफ़ कर देता है। वे बायपास सूचियाँ गंतव्य-आधारित हैं; उनमें `localhost` या `127.0.0.1` छोड़ने से SSRF लक्ष्य प्रॉक्सी को पूरी तरह छोड़ सकते हैं। शटडाउन पर, OpenClaw पिछले प्रॉक्सी एनवायरनमेंट को पुनर्स्थापित करता है और कैश की गई रूटिंग स्थिति रीसेट करता है।
+
+कुछ plugins के पास कस्टम ट्रांसपोर्ट होता है, जिसके लिए प्रक्रिया-स्तरीय रूटिंग सक्रिय होने पर भी अपनी प्रॉक्सी वायरिंग आवश्यक होती है। Telegram का Bot API क्लाइंट अपने स्वयं के HTTP/1 undici डिस्पैचर का उपयोग करता है और प्रक्रिया के प्रॉक्सी एनवायरनमेंट के साथ `OPENCLAW_PROXY_URL` फ़ॉलबैक का भी अलग से सम्मान करता है।
 
 ### Gateway लूपबैक मोड
 
-Local Gateway control-plane clients आमतौर पर `ws://127.0.0.1:18789` जैसे loopback WebSocket से connect करते हैं। Managed proxy सक्रिय होने पर loopback managed-proxy exceptions कैसे व्यवहार करें यह चुनने के लिए `proxy.loopbackMode` उपयोग करें:
+स्थानीय Gateway कंट्रोल-प्लेन क्लाइंट सामान्यतः `ws://127.0.0.1:18789` जैसे लूपबैक WebSocket से कनेक्ट होते हैं। `proxy.loopbackMode` नियंत्रित करता है कि वह ट्रैफ़िक प्रबंधित प्रॉक्सी को बायपास करता है या नहीं:
 
 ```yaml
 proxy:
@@ -104,84 +105,63 @@ proxy:
   loopbackMode: gateway-only # gateway-only, proxy, or block
 ```
 
-- `gateway-only` (default): OpenClaw Gateway loopback authority को Proxyline की managed bypass policy में register करता है ताकि local Gateway WebSocket traffic सीधे connect कर सके। Custom loopback Gateway ports काम करते हैं क्योंकि active Gateway URL का host और port registered होते हैं। Bundled browser plugin OpenClaw-launched managed browsers के लिए exact local CDP readiness और DevTools WebSocket endpoints भी register कर सकता है, और bundled Ollama memory embedding provider exact configured host-local loopback embedding origin के लिए अपना narrower guarded direct path उपयोग कर सकता है।
-- `proxy`: OpenClaw Gateway या Ollama loopback bypasses register नहीं करता, इसलिए वह loopback traffic managed proxy के माध्यम से भेजा जाता है। यदि proxy remote है, तो उसे OpenClaw host की loopback service के लिए special routing देना होगा, जैसे उसे proxy-reachable hostname, IP, या tunnel पर map करना। Standard remote proxies `127.0.0.1` और `localhost` को proxy host से resolve करते हैं, OpenClaw host से नहीं।
-- `block`: OpenClaw socket खोलने से पहले Gateway loopback control-plane connections और guarded Ollama host-local embedding loopback connections को अस्वीकार करता है।
+| मोड                     | व्यवहार                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway-only` (डिफ़ॉल्ट) | OpenClaw सक्रिय Gateway लूपबैक अथॉरिटी को प्रत्यक्ष-कनेक्ट अपवाद के रूप में पंजीकृत करता है, इसलिए स्थानीय Gateway WebSocket ट्रैफ़िक प्रॉक्सी के बिना कनेक्ट होता है। कस्टम लूपबैक पोर्ट काम करते हैं, क्योंकि अपवाद सटीक कॉन्फ़िगर किए गए होस्ट/पोर्ट को लक्षित करता है। बंडल किया गया ब्राउज़र plugin, OpenClaw द्वारा लॉन्च किए गए प्रबंधित ब्राउज़र के सटीक स्थानीय CDP तत्परता और DevTools WebSocket URL के लिए उसी प्रकार का अपवाद पंजीकृत करता है; बंडल किए गए Ollama मेमोरी एम्बेडिंग प्रदाता के पास उसके सटीक कॉन्फ़िगर किए गए होस्ट-स्थानीय लूपबैक एम्बेडिंग ओरिजिन के लिए अधिक सीमित और संरक्षित प्रत्यक्ष पथ है। |
+| `proxy`                  | कोई लूपबैक अपवाद पंजीकृत नहीं किया जाता; Gateway और Ollama लूपबैक ट्रैफ़िक प्रॉक्सी से होकर जाता है। रिमोट प्रॉक्सी को OpenClaw होस्ट की लूपबैक सेवा तक वापस रूट करने में सक्षम होना आवश्यक है (उदाहरण के लिए, पहुँच योग्य होस्टनेम, IP या टनल के माध्यम से) — एक मानक रिमोट प्रॉक्सी `127.0.0.1`/`localhost` को OpenClaw होस्ट के विरुद्ध नहीं, बल्कि स्वयं के विरुद्ध रिज़ॉल्व करता है।                                                                                                                                                                                                                |
+| `block`                  | OpenClaw सॉकेट खोलने से पहले Gateway लूपबैक कंट्रोल-प्लेन कनेक्शन और संरक्षित Ollama लूपबैक एम्बेडिंग कनेक्शन अस्वीकार कर देता है।                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
-यदि `enabled=true` है लेकिन कोई valid proxy URL configured नहीं है, तो protected commands direct network access पर fallback करने के बजाय startup fail करती हैं।
+Gateway कंट्रोल-प्लेन बायपास `localhost` और शाब्दिक लूपबैक IP URL तक सीमित है — `ws://127.0.0.1:18789`, `ws://[::1]:18789` या `ws://localhost:18789` का उपयोग करें। अन्य होस्टनेम सामान्य ट्रैफ़िक की तरह रूट होते हैं।
 
-`openclaw gateway start` से शुरू की गई managed gateway services के लिए, URL को config में store करना बेहतर है:
+### कंटेनर
 
-```bash
-openclaw config set proxy.enabled true
-openclaw config set proxy.proxyUrl http://127.0.0.1:3128
-openclaw gateway install --force
-openclaw gateway start
-```
+`openclaw --container ...` कमांड के लिए, सेट होने पर OpenClaw `OPENCLAW_PROXY_URL` को कंटेनर-लक्षित चाइल्ड CLI में फ़ॉरवर्ड करता है। URL कंटेनर के भीतर से पहुँच योग्य होना आवश्यक है — वहाँ `127.0.0.1` होस्ट को नहीं, बल्कि स्वयं कंटेनर को संदर्भित करता है। OpenClaw कंटेनर-लक्षित कमांड के लिए लूपबैक प्रॉक्सी URL अस्वीकार करता है, जब तक कि आप उस जाँच को स्पष्ट रूप से ओवरराइड करने के लिए `OPENCLAW_CONTAINER_ALLOW_LOOPBACK_PROXY_URL=1` सेट न करें।
 
-Environment fallback foreground runs के लिए सबसे उपयुक्त है। यदि आप इसे installed service के साथ उपयोग करते हैं, तो `OPENCLAW_PROXY_URL` को service durable environment में रखें, जैसे `$OPENCLAW_STATE_DIR/.env` या `~/.openclaw/.env`, फिर service को reinstall करें ताकि launchd, systemd, या Scheduled Tasks उस value के साथ gateway शुरू करे।
+## संबंधित प्रॉक्सी शब्द
 
-`openclaw --container ...` commands के लिए, OpenClaw set होने पर `OPENCLAW_PROXY_URL` को container-targeted child CLI में forward करता है। URL container के अंदर से reachable होना चाहिए; `127.0.0.1` host नहीं, container स्वयं को संदर्भित करता है। OpenClaw container-targeted commands के लिए loopback proxy URLs को अस्वीकार करता है, जब तक कि आप उस safety check को explicitly override न करें।
+- `proxy.enabled` / `proxy.proxyUrl` — रनटाइम इग्रेस के लिए आउटबाउंड फ़ॉरवर्ड-प्रॉक्सी रूटिंग। यह पृष्ठ।
+- `gateway.auth.mode: "trusted-proxy"` — Gateway पहुँच के लिए इनबाउंड पहचान-जागरूक रिवर्स-प्रॉक्सी प्रमाणीकरण। [विश्वसनीय प्रॉक्सी प्रमाणीकरण](/hi/gateway/trusted-proxy-auth) देखें।
+- `openclaw proxy` — विकास और सहायता के लिए स्थानीय डीबग प्रॉक्सी और कैप्चर निरीक्षक। [openclaw proxy](/hi/cli/proxy) देखें।
+- `tools.web.fetch.useTrustedEnvProxy` — डिफ़ॉल्ट रूप से कठोर DNS पिनिंग और होस्टनेम नीति बनाए रखते हुए, ऑपरेटर-नियंत्रित HTTP(S) एनवायरनमेंट प्रॉक्सी को DNS रिज़ॉल्व करने देने के लिए `web_fetch` हेतु ऑप्ट-इन। [वेब फ़ेच](/hi/tools/web-fetch#trusted-env-proxy) देखें।
+- चैनल- या प्रदाता-विशिष्ट प्रॉक्सी सेटिंग — एक ट्रांसपोर्ट के लिए स्वामी-विशिष्ट ओवरराइड। पूरे रनटाइम में केंद्रीकृत इग्रेस नियंत्रण के लिए प्रबंधित नेटवर्क प्रॉक्सी को प्राथमिकता दें।
 
-## प्रॉक्सी आवश्यकताएं
+## प्रॉक्सी का सत्यापन
 
-प्रॉक्सी नीति ही सुरक्षा सीमा है। OpenClaw यह सत्यापित नहीं कर सकता कि प्रॉक्सी सही targets को block करता है।
+प्रॉक्सी की गंतव्य नीति ही वास्तविक सुरक्षा सीमा है; OpenClaw यह सत्यापित नहीं कर सकता कि आपका प्रॉक्सी सही लक्ष्यों को अवरुद्ध करता है। इसे इस प्रकार कॉन्फ़िगर करें:
 
-प्रॉक्सी को इस तरह कॉन्फ़िगर करें कि वह:
+- केवल लूपबैक या किसी निजी विश्वसनीय इंटरफ़ेस से बाइंड करें, जिस तक केवल OpenClaw प्रक्रिया/होस्ट/कंटेनर/सेवा खाता पहुँच सके।
+- गंतव्यों को स्वयं रिज़ॉल्व करें और सादे HTTP तथा HTTPS `CONNECT` टनल—दोनों के लिए, कनेक्ट करते समय DNS रिज़ॉल्यूशन के बाद IP के आधार पर ब्लॉक करें।
+- लूपबैक, निजी, लिंक-लोकल, मेटाडेटा, मल्टीकास्ट, आरक्षित और दस्तावेज़ीकरण श्रेणियों के लिए गंतव्य-आधारित बायपास अस्वीकार करें।
+- होस्टनेम अनुमति-सूचियों से बचें, जब तक कि आपको DNS रिज़ॉल्यूशन पथ पर पूर्ण विश्वास न हो।
+- गंतव्य, निर्णय, स्थिति और कारण लॉग करें—अनुरोध बॉडी, प्राधिकरण हेडर, कुकी या अन्य गोपनीय जानकारी कभी नहीं।
+- नीति को संस्करण नियंत्रण में रखें और परिवर्तनों की सुरक्षा-संवेदनशील मानकर समीक्षा करें।
 
-- केवल loopback या private trusted interface से bind करे।
-- access को restrict करे ताकि केवल OpenClaw process, host, container, या service account ही उसका उपयोग कर सके।
-- destinations को स्वयं resolve करे और DNS resolution के बाद destination IPs को block करे।
-- plain HTTP requests और HTTPS `CONNECT` tunnels, दोनों के लिए connect time पर policy लागू करे।
-- loopback, private, link-local, metadata, multicast, reserved, या documentation ranges के लिए destination-based bypasses को reject करे।
-- hostname allowlists से बचें, जब तक कि आप DNS resolution path पर पूरी तरह trust न करते हों।
-- request bodies, authorization headers, cookies, या अन्य secrets को log किए बिना destination, decision, status, और reason log करे।
-- proxy policy को version control में रखें और changes की समीक्षा security-sensitive configuration की तरह करें।
-
-## अनुशंसित ब्लॉक किए गए गंतव्य
-
-किसी भी forward proxy, firewall, या egress policy के लिए इस denylist को starting point के रूप में उपयोग करें।
-
-OpenClaw application-level classifier logic `src/infra/net/ssrf.ts` और `packages/net-policy/src/ip.ts` में रहता है। संबंधित parity hooks `BLOCKED_HOSTNAMES`, `BLOCKED_IPV4_SPECIAL_USE_RANGES`, `BLOCKED_IPV6_SPECIAL_USE_RANGES`, `RFC2544_BENCHMARK_PREFIX`, और NAT64, 6to4, Teredo, ISATAP, और IPv4-mapped forms के लिए embedded IPv4 sentinel handling हैं। External proxy policy maintain करते समय वे files उपयोगी references हैं, लेकिन OpenClaw आपके proxy में उन rules को automatically export या enforce नहीं करता।
-
-| श्रेणी या होस्ट                                                                      | ब्लॉक करने का कारण                                   |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `127.0.0.0/8`, `localhost`, `localhost.localdomain`                                  | IPv4 लूपबैक                                         |
-| `::1/128`                                                                            | IPv6 लूपबैक                                         |
-| `0.0.0.0/8`, `::/128`                                                                | अनिर्दिष्ट और इस-नेटवर्क पते                        |
-| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`                                      | RFC1918 निजी नेटवर्क                                 |
-| `169.254.0.0/16`, `fe80::/10`                                                        | लिंक-लोकल पते और सामान्य क्लाउड मेटाडेटा पथ        |
-| `169.254.169.254`, `metadata.google.internal`                                        | क्लाउड मेटाडेटा सेवाएं                              |
-| `100.64.0.0/10`                                                                      | कैरियर-ग्रेड NAT साझा पता स्थान                     |
-| `198.18.0.0/15`, `2001:2::/48`                                                       | बेंचमार्किंग श्रेणियां                              |
-| `192.0.0.0/24`, `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32` | विशेष-उपयोग और दस्तावेज़ीकरण श्रेणियां              |
-| `224.0.0.0/4`, `ff00::/8`                                                            | मल्टीकास्ट                                          |
-| `240.0.0.0/4`                                                                        | आरक्षित IPv4                                        |
-| `fc00::/7`, `fec0::/10`                                                              | IPv6 स्थानीय/निजी श्रेणियां                         |
-| `100::/64`, `2001:20::/28`                                                           | IPv6 डिस्कार्ड और ORCHIDv2 श्रेणियां                |
-| `64:ff9b::/96`, `64:ff9b:1::/48`                                                     | एम्बेडेड IPv4 वाले NAT64 प्रीफ़िक्स                 |
-| `2002::/16`, `2001::/32`                                                             | एम्बेडेड IPv4 वाले 6to4 और Teredo                   |
-| `::/96`, `::ffff:0:0/96`                                                             | IPv4-संगत और IPv4-मैप्ड IPv6                        |
-
-यदि आपका क्लाउड प्रदाता या नेटवर्क प्लेटफ़ॉर्म अतिरिक्त मेटाडेटा होस्ट या आरक्षित श्रेणियां दस्तावेज़ित करता है, तो उन्हें भी जोड़ें।
-
-## सत्यापन
-
-प्रॉक्सी को उसी होस्ट, कंटेनर, या सेवा खाते से सत्यापित करें जो OpenClaw चलाता है:
+उसी होस्ट/कंटेनर/सेवा खाते से सत्यापित करें जो OpenClaw चलाता है:
 
 ```bash
 openclaw proxy validate --proxy-url http://127.0.0.1:3128
 ```
 
-निजी CA द्वारा हस्ताक्षरित HTTPS प्रॉक्सी एंडपॉइंट के लिए:
+निजी-CA वाले HTTPS प्रॉक्सी एंडपॉइंट के साथ:
 
 ```bash
 openclaw proxy validate --proxy-url https://proxy.corp.example:8443 --proxy-ca-file /etc/openclaw/proxy-ca.pem
 ```
 
-डिफ़ॉल्ट रूप से, जब कोई कस्टम गंतव्य नहीं दिए जाते, कमांड जांचता है कि `https://example.com/` सफल होता है और एक अस्थायी लूपबैक कैनरी शुरू करता है, जिस तक प्रॉक्सी नहीं पहुंचनी चाहिए। डिफ़ॉल्ट अस्वीकृत जांच तब पास होती है जब प्रॉक्सी non-2xx अस्वीकृति प्रतिक्रिया लौटाता है या ट्रांसपोर्ट विफलता के साथ कैनरी को ब्लॉक करता है; यदि सफल प्रतिक्रिया कैनरी तक पहुंचती है तो यह विफल होती है। यदि कोई प्रॉक्सी सक्षम और कॉन्फ़िगर नहीं है, तो सत्यापन कॉन्फ़िग समस्या रिपोर्ट करता है; कॉन्फ़िग बदलने से पहले एकबारगी प्रीफ़्लाइट के लिए `--proxy-url` का उपयोग करें। परिनियोजन-विशिष्ट अपेक्षाओं की जांच के लिए `--allowed-url` और `--denied-url` का उपयोग करें। यह भी सत्यापित करने के लिए `--apns-reachable` जोड़ें कि सीधी APNs HTTP/2 डिलीवरी प्रॉक्सी के माध्यम से CONNECT टनल खोल सकती है और sandbox APNs प्रतिक्रिया प्राप्त कर सकती है; जांच जानबूझकर अमान्य प्रदाता टोकन का उपयोग करती है, इसलिए `403 InvalidProviderToken` अपेक्षित है और पहुंच योग्य माना जाता है। कस्टम अस्वीकृत गंतव्य fail-closed होते हैं: किसी भी HTTP प्रतिक्रिया का अर्थ है कि गंतव्य प्रॉक्सी के माध्यम से पहुंच योग्य था, और किसी भी ट्रांसपोर्ट त्रुटि को अनिर्णायक बताया जाता है क्योंकि OpenClaw यह साबित नहीं कर सकता कि प्रॉक्सी ने किसी पहुंच योग्य origin को ब्लॉक किया। सत्यापन विफल होने पर, कमांड कोड 1 के साथ बाहर निकलता है।
+| फ़्लैग                     | उद्देश्य                                                              |
+| ------------------------ | -------------------------------------------------------------------- |
+| `--proxy-url <url>`      | कॉन्फ़िगरेशन/पर्यावरण को रिज़ॉल्व करने के बजाय इस URL को सत्यापित करें।                   |
+| `--proxy-ca-file <path>` | HTTPS प्रॉक्सी एंडपॉइंट के लिए CA बंडल।                               |
+| `--allowed-url <url>`    | ऐसा गंतव्य जिसके सफल होने की अपेक्षा है (दोहराया जा सकता है)।                        |
+| `--denied-url <url>`     | ऐसा गंतव्य जिसके ब्लॉक होने की अपेक्षा है (दोहराया जा सकता है)।                     |
+| `--apns-reachable`       | यह भी सत्यापित करें कि प्रॉक्सी सीधे सैंडबॉक्स APNs HTTP/2 प्रोब को टनल कर सकता है। |
+| `--apns-authority <url>` | `--apns-reachable` से जाँचे गए APNs प्राधिकरण को ओवरराइड करें।          |
+| `--timeout-ms <ms>`      | प्रति-अनुरोध टाइमआउट।                                                 |
+| `--json`                 | मशीन-पठनीय आउटपुट।                                             |
 
-ऑटोमेशन के लिए `--json` का उपयोग करें। JSON आउटपुट में समग्र परिणाम, प्रभावी प्रॉक्सी कॉन्फ़िग स्रोत, कोई भी कॉन्फ़िग त्रुटियां, और प्रत्येक गंतव्य जांच शामिल होती है। प्रॉक्सी URL क्रेडेंशियल टेक्स्ट और JSON आउटपुट में redacted होते हैं:
+यदि `proxy.enabled`, `true` नहीं है और कोई `--proxy-url` नहीं दिया गया है, तो कमांड सत्यापन करने के बजाय कॉन्फ़िगरेशन समस्या की रिपोर्ट करता है; कॉन्फ़िगरेशन बदलने से पहले एकबारगी पूर्व-जाँच के लिए `--proxy-url` पास करें।
+
+`--allowed-url`/`--denied-url` के बिना, डिफ़ॉल्ट जाँचें हैं: `https://example.com/` को सफल होना चाहिए, और एक अस्थायी लूपबैक कैनरी सर्वर—जिस तक प्रॉक्सी को नहीं पहुँचना चाहिए—ब्लॉक होना चाहिए। लूपबैक जाँच परिवहन विफलता पर, या ऐसे गैर-2xx प्रत्युत्तर पर सफल मानी जाती है जिसमें कैनरी का प्रति-रन टोकन नहीं है; टोकन के बिना 2xx प्रत्युत्तर पर यह विफल होती है (कैनरी के अतिरिक्त किसी अन्य स्रोत से अप्रत्याशित सफलता), और विशेष रूप से मेल खाते टोकन वाले किसी भी प्रत्युत्तर पर विफल होती है, क्योंकि इससे सिद्ध होता है कि प्रॉक्सी ने वास्तव में ऐसे लूपबैक गंतव्य को अग्रेषित किया जिसे उसे अस्वीकार करना चाहिए था। कस्टम `--denied-url` लक्ष्यों में ऐसा कोई कैनरी टोकन नहीं होता, इसलिए वे विफलता-सुरक्षित हैं: कोई भी HTTP प्रत्युत्तर पहुँच-योग्य माना जाता है (विफल), और परिवहन त्रुटि को सिद्ध रूप से ब्लॉक मानने के बजाय अनिर्णायक बताया जाता है, क्योंकि OpenClaw यह पुष्टि नहीं कर सकता कि आपके प्रॉक्सी ने पहुँच-योग्य मूल स्रोत को अस्वीकार किया या कोई अन्य समस्या हुई। `--apns-reachable` जानबूझकर अमान्य प्रदाता टोकन भेजता है, इसलिए `403 InvalidProviderToken` प्रत्युत्तर इस बात का प्रमाण माना जाता है कि टनल Apple तक पहुँची। किसी भी सत्यापन विफलता पर कमांड `1` के साथ बाहर निकलता है; प्रॉक्सी URL क्रेडेंशियल टेक्स्ट और JSON—दोनों आउटपुट से संपादित कर दिए जाते हैं।
 
 ```json
 {
@@ -193,23 +173,13 @@ openclaw proxy validate --proxy-url https://proxy.corp.example:8443 --proxy-ca-f
     "errors": []
   },
   "checks": [
-    {
-      "kind": "allowed",
-      "url": "https://example.com/",
-      "ok": true,
-      "status": 200
-    },
-    {
-      "kind": "apns",
-      "url": "https://api.sandbox.push.apple.com",
-      "ok": true,
-      "status": 403
-    }
+    { "kind": "allowed", "url": "https://example.com/", "ok": true, "status": 200 },
+    { "kind": "apns", "url": "https://api.sandbox.push.apple.com", "ok": true, "status": 403 }
   ]
 }
 ```
 
-आप `curl` के साथ मैन्युअल रूप से भी सत्यापित कर सकते हैं:
+मैन्युअल `curl` जाँच (सार्वजनिक अनुरोध सफल होना चाहिए; लूपबैक और मेटाडेटा अनुरोधों को स्वयं प्रॉक्सी द्वारा ब्लॉक किया जाना चाहिए—केवल `curl`, प्रॉक्सी द्वारा अस्वीकार किए जाने और पहुँच से बाहर मूल स्रोत के बीच उस तरह अंतर नहीं कर सकता, जैसे `openclaw proxy validate` का अंतर्निहित कैनरी कर सकता है):
 
 ```bash
 curl -x http://127.0.0.1:3128 https://example.com/
@@ -217,60 +187,44 @@ curl -x http://127.0.0.1:3128 http://127.0.0.1/
 curl -x http://127.0.0.1:3128 http://169.254.169.254/
 ```
 
-सार्वजनिक अनुरोध सफल होना चाहिए। लूपबैक और मेटाडेटा अनुरोध प्रॉक्सी द्वारा ब्लॉक किए जाने चाहिए। `openclaw proxy validate` के लिए, बिल्ट-इन लूपबैक कैनरी प्रॉक्सी अस्वीकृति को पहुंच योग्य origin से अलग कर सकती है। कस्टम `--denied-url` जांचों में वह कैनरी नहीं होती, इसलिए HTTP प्रतिक्रियाओं और अस्पष्ट ट्रांसपोर्ट विफलताओं, दोनों को सत्यापन विफलता मानें, जब तक कि आपका प्रॉक्सी कोई परिनियोजन-विशिष्ट अस्वीकृति संकेत उजागर नहीं करता जिसे आप अलग से सत्यापित कर सकें।
+## अनुशंसित ब्लॉक किए जाने वाले गंतव्य
 
-## प्रॉक्सी CA भरोसा
+किसी भी फ़ॉरवर्ड प्रॉक्सी, फ़ायरवॉल या निर्गमन नीति के लिए आरंभिक निषेध-सूची। OpenClaw का अपना SSRF वर्गीकारक `src/infra/net/ssrf.ts` और `packages/net-policy/src/ip.ts` में स्थित है (`BLOCKED_HOSTNAMES`, `BLOCKED_IPV4_SPECIAL_USE_RANGES`, `BLOCKED_IPV6_SPECIAL_USE_RANGES`, RFC 2544 बेंचमार्क उपसर्ग तथा NAT64/6to4/Teredo/ISATAP/IPv4-मैप्ड रूपों के लिए एम्बेडेड-IPv4 प्रबंधन)—ये उपयोगी संदर्भ हैं, लेकिन OpenClaw इन नियमों को आपके बाहरी प्रॉक्सी में निर्यात या लागू नहीं करता।
 
-जब प्रॉक्सी एंडपॉइंट स्वयं निजी CA द्वारा हस्ताक्षरित प्रमाणपत्र का उपयोग करता है, तो प्रबंधित `proxy.tls.caFile` का उपयोग करें:
+| श्रेणी या होस्ट                                                                        | ब्लॉक करने का कारण                                      |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| `127.0.0.0/8`, `localhost`, `localhost.localdomain`                                  | IPv4 लूपबैक                                     |
+| `::1/128`                                                                            | IPv6 लूपबैक                                     |
+| `0.0.0.0/8`, `::/128`                                                                | अनिर्दिष्ट / इस-नेटवर्क के पते              |
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`                                      | RFC 1918 निजी नेटवर्क                         |
+| `169.254.0.0/16`, `fe80::/10`                                                        | लिंक-लोकल, सामान्य क्लाउड मेटाडेटा पथों सहित |
+| `169.254.169.254`, `metadata.google.internal`                                        | क्लाउड मेटाडेटा सेवाएँ                           |
+| `100.64.0.0/10`                                                                      | कैरियर-ग्रेड NAT साझा पता-स्थान            |
+| `198.18.0.0/15`, `2001:2::/48`                                                       | बेंचमार्किंग श्रेणियाँ                               |
+| `192.0.0.0/24`, `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32` | विशेष-उपयोग और दस्तावेज़ीकरण श्रेणियाँ              |
+| `224.0.0.0/4`, `ff00::/8`                                                            | मल्टीकास्ट                                         |
+| `240.0.0.0/4`                                                                        | आरक्षित IPv4                                     |
+| `fc00::/7`, `fec0::/10`                                                              | IPv6 स्थानीय/निजी श्रेणियाँ                         |
+| `100::/64`, `2001:20::/28`                                                           | IPv6 डिस्कार्ड और ORCHIDv2 श्रेणियाँ                  |
+| `64:ff9b::/96`, `64:ff9b:1::/48`                                                     | एम्बेडेड IPv4 वाले NAT64 उपसर्ग                 |
+| `2002::/16`, `2001::/32`                                                             | एम्बेडेड IPv4 वाले 6to4 और Teredo                |
+| `::/96`, `::ffff:0:0/96`                                                             | IPv4-संगत और IPv4-मैप्ड IPv6              |
 
-```yaml
-proxy:
-  enabled: true
-  proxyUrl: https://proxy.corp.example:8443
-  tls:
-    caFile: /etc/openclaw/proxy-ca.pem
-```
+अपने क्लाउड प्रदाता या नेटवर्क प्लेटफ़ॉर्म द्वारा दस्तावेज़ित कोई भी अतिरिक्त मेटाडेटा होस्ट या आरक्षित श्रेणियाँ जोड़ें।
 
-उस CA का उपयोग प्रॉक्सी एंडपॉइंट के TLS सत्यापन के लिए किया जाता है। यह गंतव्य MITM भरोसा सेटिंग, क्लाइंट प्रमाणपत्र, या प्रॉक्सी की गंतव्य नीति का प्रतिस्थापन नहीं है।
+## सीमाएँ
 
-`NODE_EXTRA_CA_CERTS` का उपयोग केवल तब करें जब पूरे Node प्रोसेस को प्रोसेस startup से अतिरिक्त CA पर भरोसा करना हो, जैसे जब कोई enterprise TLS inspection system प्रोसेस में हर HTTPS क्लाइंट के लिए गंतव्य प्रमाणपत्रों पर फिर से हस्ताक्षर करता है। `NODE_EXTRA_CA_CERTS` प्रोसेस-वैश्विक है और Node शुरू होने से पहले मौजूद होना चाहिए। HTTPS प्रॉक्सी एंडपॉइंट भरोसे के लिए `proxy.tls.caFile` को प्राथमिकता दें क्योंकि यह प्रबंधित प्रॉक्सी रूटिंग तक सीमित होता है।
+| सतह                                                      | प्रबंधित प्रॉक्सी स्थिति                                                                                                                                     |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetch`, `node:http`, `node:https`, सामान्य WebSocket क्लाइंट | कॉन्फ़िगर होने पर प्रबंधित प्रॉक्सी हुक के माध्यम से रूट किए जाते हैं।                                                                                                      |
+| APNs प्रत्यक्ष HTTP/2                                           | APNs प्रबंधित `CONNECT` सहायक के माध्यम से रूट किया जाता है।                                                                                                        |
+| Gateway नियंत्रण-प्लेन लूपबैक                               | केवल ठीक उसी कॉन्फ़िगर किए गए स्थानीय लूपबैक Gateway URL के लिए प्रत्यक्ष।                                                                                         |
+| डीबग प्रॉक्सी अपस्ट्रीम अग्रेषण                              | प्रबंधित प्रॉक्सी मोड सक्रिय होने पर अक्षम रहता है, जब तक कि स्थानीय निदान के लिए स्पष्ट रूप से सक्षम न किया जाए।                                                             |
+| IRC                                                          | कच्चा TCP/TLS; प्रबंधित HTTP प्रॉक्सी मोड द्वारा प्रॉक्सी नहीं किया जाता। यदि आपके परिनियोजन में सभी निर्गमन को फ़ॉरवर्ड प्रॉक्सी से होकर जाना आवश्यक है, तो `channels.irc.enabled: false` सेट करें। |
+| अन्य कच्चे `net`, `tls`, या `http2` क्लाइंट कॉल              | सम्मिलित किए जाने से पहले कच्चे सॉकेट गार्ड द्वारा वर्गीकृत किए जाने चाहिए।                                                                                               |
 
-फिर OpenClaw प्रॉक्सी रूटिंग सक्षम करें:
-
-```bash
-openclaw config set proxy.enabled true
-openclaw config set proxy.proxyUrl https://proxy.corp.example:8443
-openclaw config set proxy.tls.caFile /etc/openclaw/proxy-ca.pem
-openclaw gateway run
-```
-
-या सेट करें:
-
-```yaml
-proxy:
-  enabled: true
-  proxyUrl: https://proxy.corp.example:8443
-  tls:
-    caFile: /etc/openclaw/proxy-ca.pem
-```
-
-## सीमाएं
-
-- प्रॉक्सी process-local JavaScript HTTP और WebSocket क्लाइंट के लिए कवरेज सुधारता है, लेकिन यह OS-स्तरीय नेटवर्क sandbox नहीं है।
-- Gateway लूपबैक control-plane ट्रैफ़िक डिफ़ॉल्ट रूप से `proxy.loopbackMode: "gateway-only"` के माध्यम से सीधे local bypass पर जाता है। OpenClaw यह bypass Proxyline की managed bypass policy में सक्रिय Gateway लूपबैक authority को पंजीकृत करके लागू करता है। ऑपरेटर Gateway लूपबैक ट्रैफ़िक को प्रबंधित प्रॉक्सी के माध्यम से भेजने के लिए `proxy.loopbackMode: "proxy"` सेट कर सकते हैं, या लूपबैक Gateway कनेक्शन अस्वीकार करने के लिए `proxy.loopbackMode: "block"` सेट कर सकते हैं। remote-proxy caveat के लिए [Gateway लूपबैक मोड](#gateway-loopback-mode) देखें।
-- Raw `net`, `tls`, और `http2` sockets, native addons, और गैर-OpenClaw child processes Node-स्तरीय प्रॉक्सी रूटिंग को bypass कर सकते हैं, जब तक वे प्रॉक्सी environment variables inherit और respect नहीं करते। Forked OpenClaw child CLIs प्रबंधित प्रॉक्सी URL और `proxy.loopbackMode` state inherit करते हैं।
-- IRC ऑपरेटर-प्रबंधित forward proxy routing के बाहर एक raw TCP/TLS channel है। जिन परिनियोजनों में सभी egress उस forward proxy के माध्यम से जाना आवश्यक है, वहां `channels.irc.enabled=false` सेट करें, जब तक direct IRC egress स्पष्ट रूप से approved न हो।
-- local debug proxy diagnostic tooling है और managed proxy mode सक्रिय रहते हुए proxy requests और CONNECT tunnels के लिए उसका direct upstream forwarding डिफ़ॉल्ट रूप से disabled होता है; direct forwarding केवल approved local diagnostics के लिए सक्षम करें।
-- उपयोगकर्ता local WebUIs और local model servers को आवश्यकता पड़ने पर operator proxy policy में allowlist किया जाना चाहिए; OpenClaw उनके लिए कोई general local-network bypass उजागर नहीं करता। bundled Ollama memory embedding provider अधिक संकीर्ण है: यह केवल configured `baseUrl` से निकाले गए exact host-local loopback embedding origin के लिए guarded direct path का उपयोग कर सकता है, ताकि managed proxy host loopback तक नहीं पहुंच पाने पर भी host-local embeddings काम करती रहें। LAN, tailnet, private-network, और public Ollama embedding hosts अभी भी managed proxy path का उपयोग करते हैं। `proxy.loopbackMode: "proxy"` इस Ollama loopback traffic को managed proxy के माध्यम से भेजता है, और `proxy.loopbackMode: "block"` connection खोलने से पहले इसे अस्वीकार करता है।
-- Gateway control-plane proxy bypass जानबूझकर `localhost` और literal loopback IP URLs तक सीमित है। local direct Gateway control-plane connections के लिए `ws://127.0.0.1:18789`, `ws://[::1]:18789`, या `ws://localhost:18789` का उपयोग करें; अन्य hostnames ordinary hostname-based traffic की तरह route होते हैं।
-- OpenClaw आपकी प्रॉक्सी नीति का निरीक्षण, परीक्षण, या प्रमाणन नहीं करता।
-- प्रॉक्सी नीति परिवर्तनों को security-sensitive operational changes मानें।
-
-| सतह                                                         | प्रबंधित प्रॉक्सी स्थिति                                                                          |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `fetch`, `node:http`, `node:https`, common WebSocket clients | कॉन्फ़िगर होने पर managed proxy hooks के माध्यम से route किया जाता है।                            |
-| APNs direct HTTP/2                                           | APNs managed CONNECT helper के माध्यम से route किया जाता है।                                      |
-| Gateway control-plane loopback                               | केवल configured local loopback Gateway URL के लिए direct।                                         |
-| Debug proxy upstream forwarding                              | managed proxy mode सक्रिय रहते हुए disabled, जब तक local diagnostics के लिए स्पष्ट रूप से enabled न हो। |
-| IRC                                                          | Raw TCP/TLS; managed HTTP proxy mode द्वारा proxied नहीं। जब तक direct IRC egress approved न हो, disabled रखें। |
-| अन्य raw `net`, `tls`, या `http2` client calls              | landing से पहले raw socket guard द्वारा classified होना चाहिए।                                    |
+- यह JavaScript HTTP/WebSocket क्लाइंट के लिए प्रक्रिया-स्तरीय कवरेज है, OS-स्तरीय नेटवर्क सैंडबॉक्स नहीं।
+- कच्चे `net`, `tls`, `http2` सॉकेट, नेटिव ऐडऑन और गैर-OpenClaw चाइल्ड प्रक्रियाएँ Node-स्तरीय रूटिंग को बायपास कर सकती हैं, जब तक कि वे प्रॉक्सी पर्यावरण चर विरासत में लेकर उनका पालन न करें। फ़ोर्क किए गए OpenClaw चाइल्ड CLI प्रबंधित प्रॉक्सी URL और `proxy.loopbackMode` स्थिति विरासत में लेते हैं।
+- उपयोगकर्ता के स्थानीय WebUI और स्थानीय मॉडल सर्वर सामान्य स्थानीय-नेटवर्क बायपास के अंतर्गत नहीं आते—आवश्यक होने पर उन्हें ऑपरेटर प्रॉक्सी नीति में अनुमति-सूचीबद्ध करें। अपवाद बंडल किया गया Ollama मेमोरी एम्बेडिंग प्रदाता का संरक्षित प्रत्यक्ष पथ है, जो उसके कॉन्फ़िगर किए गए `baseUrl` से ठीक उसी होस्ट-स्थानीय लूपबैक मूल स्रोत तक सीमित है; LAN, टेलनेट, निजी-नेटवर्क और सार्वजनिक Ollama होस्ट फिर भी प्रबंधित प्रॉक्सी का उपयोग करते हैं।
+- स्थानीय डीबग प्रॉक्सी का प्रत्यक्ष अपस्ट्रीम अग्रेषण (प्रॉक्सी अनुरोधों और `CONNECT` टनल के लिए) प्रबंधित प्रॉक्सी मोड सक्रिय होने पर डिफ़ॉल्ट रूप से अक्षम रहता है; इसे केवल अनुमोदित स्थानीय निदान के लिए सक्षम करें।
+- OpenClaw आपकी प्रॉक्सी नीति का निरीक्षण, परीक्षण या प्रमाणीकरण नहीं करता। प्रॉक्सी नीति परिवर्तनों को सुरक्षा-संवेदनशील परिचालन परिवर्तन मानें।

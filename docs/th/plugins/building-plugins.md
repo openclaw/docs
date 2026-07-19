@@ -2,39 +2,43 @@
 doc-schema-version: 1
 read_when:
     - คุณต้องการสร้าง Plugin ใหม่สำหรับ OpenClaw
-    - คุณต้องการคู่มือเริ่มต้นฉบับย่อสำหรับการพัฒนา Plugin
+    - คุณต้องการคู่มือเริ่มต้นใช้งานฉบับย่อสำหรับการพัฒนา Plugin
     - คุณกำลังเลือกระหว่างเอกสารเกี่ยวกับช่องทาง ผู้ให้บริการ แบ็กเอนด์ CLI เครื่องมือ หรือฮุก
 sidebarTitle: Getting Started
-summary: สร้าง Plugin แรกของ OpenClaw ได้ภายในไม่กี่นาที
+summary: สร้าง Plugin OpenClaw แรกของคุณได้ภายในไม่กี่นาที
 title: การสร้าง Plugin
 x-i18n:
-    generated_at: "2026-07-16T19:25:53Z"
+    generated_at: "2026-07-19T07:18:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 0d64d455c260f4aa85affc6160233a91c45237f17a6a87cb35e2c2a77f2e3cc1
+    source_hash: 673fb33c2b3f33344a8fdde15c3813b953aa32872ba7175229d35c6c353099a2
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Plugin ช่วยขยายความสามารถของ OpenClaw โดยไม่ต้องแก้ไขส่วนแกนหลัก Plugin สามารถเพิ่มช่องทางการส่งข้อความ ผู้ให้บริการโมเดล แบ็กเอนด์ CLI ภายในเครื่อง เครื่องมือเอเจนต์ ฮุก ผู้ให้บริการสื่อ หรือความสามารถอื่นที่ Plugin เป็นเจ้าของ
+Plugins ขยายความสามารถของ OpenClaw ได้โดยไม่ต้องเปลี่ยนแปลงแกนหลัก Plugin สามารถเพิ่มช่องทาง
+รับส่งข้อความ ผู้ให้บริการโมเดล แบ็กเอนด์ CLI ภายในเครื่อง เครื่องมือเอเจนต์ hook ผู้ให้บริการสื่อ
+หรือความสามารถอื่นที่ Plugin เป็นเจ้าของ
 
-ไม่จำเป็นต้องเพิ่ม Plugin ภายนอกลงในรีโพซิทอรี OpenClaw ให้เผยแพร่แพ็กเกจไปยัง [ClawHub](/clawhub) แล้วผู้ใช้ติดตั้งด้วย:
+ไม่จำเป็นต้องเพิ่ม Plugin ภายนอกลงในรีโพซิทอรี OpenClaw ให้เผยแพร่
+แพ็กเกจไปยัง [ClawHub](/th/clawhub) แล้วผู้ใช้ติดตั้งด้วย:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-ในช่วงเปลี่ยนผ่านของการเปิดตัว ข้อกำหนดแพ็กเกจแบบไม่มีคำนำหน้ายังคงติดตั้งจาก npm ใช้คำนำหน้า `clawhub:` เมื่อต้องการให้ ClawHub ดำเนินการแก้ไขตำแหน่งแพ็กเกจ
+ข้อกำหนดแพ็กเกจแบบเปล่ายังคงติดตั้งจาก npm ในระหว่างช่วงเปลี่ยนผ่านการเปิดตัว ใช้คำนำหน้า
+`clawhub:` เมื่อต้องการให้แก้ไขตำแหน่งผ่าน ClawHub
 
 ## ข้อกำหนด
 
 - Node 22.22.3+, Node 24.15+ หรือ Node 25.9+ และ `npm` หรือ `pnpm`
 - โมดูล TypeScript ESM
-- สำหรับงานพัฒนา Plugin แบบบันเดิลภายในรีโพซิทอรี ให้โคลนรีโพซิทอรีแล้วเรียกใช้ `pnpm install`
-  การพัฒนา Plugin จากซอร์สเช็กเอาต์รองรับเฉพาะ pnpm เนื่องจาก OpenClaw ค้นพบ
-  Plugin แบบบันเดิลจากแพ็กเกจเวิร์กสเปซ `extensions/*`
+- สำหรับงาน Plugin แบบรวมอยู่ในรีโพซิทอรี ให้โคลนรีโพซิทอรีและเรียกใช้ `pnpm install`
+  การพัฒนา Plugin จากซอร์สที่ checkout รองรับเฉพาะ pnpm เนื่องจาก OpenClaw ค้นหา
+  Plugins ที่รวมมาให้จากแพ็กเกจ workspace `extensions/*`
 
 ## เลือกรูปแบบ Plugin
 
@@ -43,10 +47,10 @@ openclaw plugins install clawhub:<package-name>
     เชื่อมต่อ OpenClaw กับแพลตฟอร์มรับส่งข้อความ
   </Card>
   <Card title="Plugin ผู้ให้บริการ" icon="cpu" href="/th/plugins/sdk-provider-plugins">
-    เพิ่มผู้ให้บริการโมเดล สื่อ การค้นหา การดึงข้อมูล เสียงพูด หรือการทำงานแบบเรียลไทม์
+    เพิ่มผู้ให้บริการโมเดล สื่อ การค้นหา การดึงข้อมูล เสียงพูด หรือแบบเรียลไทม์
   </Card>
   <Card title="Plugin แบ็กเอนด์ CLI" icon="terminal" href="/th/plugins/cli-backend-plugins">
-    เรียกใช้ AI CLI ภายในเครื่องผ่านกลไกสำรองโมเดลของ OpenClaw
+    เรียกใช้ CLI สำหรับ AI ภายในเครื่องผ่านกลไกสำรองโมเดลของ OpenClaw
   </Card>
   <Card title="Plugin เครื่องมือ" icon="wrench" href="/th/plugins/tool-plugins">
     ลงทะเบียนเครื่องมือเอเจนต์
@@ -55,8 +59,8 @@ openclaw plugins install clawhub:<package-name>
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-สร้าง Plugin เครื่องมือขั้นต่ำโดยลงทะเบียนเครื่องมือเอเจนต์ที่จำเป็นหนึ่งรายการ นี่คือ
-รูปแบบ Plugin ที่สั้นที่สุดแต่ใช้งานได้จริง และครอบคลุมแพ็กเกจ แมนิเฟสต์ จุดเข้าใช้งาน และ
+สร้าง Plugin เครื่องมือขั้นต่ำด้วยการลงทะเบียนเครื่องมือเอเจนต์ที่จำเป็นหนึ่งรายการ นี่คือ
+รูปแบบ Plugin ที่สั้นที่สุดแต่ใช้งานได้จริง และครอบคลุมแพ็กเกจ manifest จุดเข้าใช้งาน และ
 การพิสูจน์ภายในเครื่อง
 
 <Steps>
@@ -92,7 +96,7 @@ openclaw plugins install clawhub:<package-name>
 {
   "id": "my-plugin",
   "name": "My Plugin",
-  "description": "เพิ่มเครื่องมือแบบกำหนดเองให้ OpenClaw",
+  "description": "Adds a custom tool to OpenClaw",
   "contracts": {
     "tools": ["my_tool"]
   },
@@ -108,22 +112,22 @@ openclaw plugins install clawhub:<package-name>
 
     </CodeGroup>
 
-    Plugin ภายนอกที่เผยแพร่แล้วควรกำหนดให้รายการรันไทม์ชี้ไปยังไฟล์ JavaScript
-    ที่สร้างเสร็จแล้ว ดูสัญญาจุดเข้าใช้งานฉบับเต็มได้ที่ [จุดเข้าใช้งาน SDK](/th/plugins/sdk-entrypoints)
+    Plugins ภายนอกที่เผยแพร่แล้วควรกำหนดให้จุดเข้าใช้งานของรันไทม์ชี้ไปยังไฟล์ JavaScript
+    ที่สร้างแล้ว ดูสัญญาจุดเข้าใช้งานฉบับเต็มที่ [จุดเข้าใช้งาน SDK](/th/plugins/sdk-entrypoints)
 
-    Plugin ทุกตัวต้องมีแมนิเฟสต์ แม้ไม่มีการกำหนดค่าก็ตาม เครื่องมือรันไทม์ต้อง
+    Plugin ทุกตัวต้องมี manifest แม้ไม่มีการกำหนดค่า เครื่องมือรันไทม์ต้อง
     ปรากฏใน `contracts.tools` เพื่อให้ OpenClaw ค้นพบความเป็นเจ้าของได้โดยไม่ต้อง
     โหลดรันไทม์ของ Plugin ทุกตัวล่วงหน้า กำหนด `activation.onStartup`
-    อย่างตั้งใจ ตัวอย่างนี้จะโหลดเมื่อ Gateway เริ่มทำงาน
+    อย่างตั้งใจ ตัวอย่างนี้โหลดเมื่อ Gateway เริ่มทำงาน
 
-    พื้นผิว Plugin ที่โฮสต์ไว้วางใจก็ถูกควบคุมด้วยแมนิเฟสต์เช่นกัน และ Plugin
-    ที่ติดตั้งต้องประกาศอย่างชัดเจน: `api.registerAgentToolResultMiddleware(...)`
-    ต้องระบุรันไทม์เป้าหมายแต่ละรายการใน `contracts.agentToolResultMiddleware`
-    และ `api.registerTrustedToolPolicy(...)` ต้องระบุรหัสนโยบายแต่ละรายการใน
-    `contracts.trustedToolPolicies` การประกาศเหล่านี้ช่วยให้การตรวจสอบขณะติดตั้ง
+    พื้นผิว Plugin ที่โฮสต์เชื่อถือก็ถูกควบคุมด้วย manifest เช่นกัน และ Plugins
+    ที่ติดตั้งแล้วต้องประกาศอย่างชัดเจน: `api.registerAgentToolResultMiddleware(...)`
+    ต้องมีรันไทม์เป้าหมายแต่ละรายการอยู่ใน `contracts.agentToolResultMiddleware`
+    และ `api.registerTrustedToolPolicy(...)` ต้องมีรหัสนโยบายแต่ละรายการอยู่ใน
+    `contracts.trustedToolPolicies` การประกาศเหล่านี้ทำให้การตรวจสอบขณะติดตั้ง
     สอดคล้องกับการลงทะเบียนขณะรันไทม์
 
-    สำหรับฟิลด์ทั้งหมดในแมนิเฟสต์ โปรดดู [แมนิเฟสต์ Plugin](/th/plugins/manifest)
+    ดูข้อมูลทุกฟิลด์ของ manifest ได้ที่ [manifest ของ Plugin](/th/plugins/manifest)
 
   </Step>
 
@@ -141,9 +145,15 @@ openclaw plugins install clawhub:<package-name>
           name: "my_tool",
           description: "Echo one input value",
           parameters: Type.Object({ input: Type.String() }),
+          outputSchema: Type.Object(
+            { input: Type.String() },
+            { additionalProperties: false },
+          ),
           async execute(_id, params) {
+            const details = { input: params.input };
             return {
               content: [{ type: "text", text: `Got: ${params.input}` }],
+              details,
             };
           },
         });
@@ -151,7 +161,7 @@ openclaw plugins install clawhub:<package-name>
     });
     ```
 
-    ใช้ `definePluginEntry` สำหรับ Plugin ที่ไม่ใช่ช่องทาง ส่วน Plugin ช่องทางให้ใช้
+    ใช้ `definePluginEntry` สำหรับ Plugins ที่ไม่ใช่ช่องทาง ส่วน Plugins ช่องทางให้ใช้
     `defineChannelPluginEntry` จาก `openclaw/plugin-sdk/core` แทน
 
   </Step>
@@ -166,8 +176,9 @@ openclaw plugins install clawhub:<package-name>
     หาก Plugin ลงทะเบียนคำสั่ง CLI ให้เรียกใช้คำสั่งนั้นด้วยและยืนยัน
     เอาต์พุต เช่น `openclaw demo-plugin ping`
 
-    สำหรับ Plugin แบบบันเดิลในรีโพซิทอรีนี้ OpenClaw จะค้นพบแพ็กเกจ Plugin
-    จากซอร์สเช็กเอาต์ในเวิร์กสเปซ `extensions/*` ให้เรียกใช้การทดสอบแบบเจาะจงที่ใกล้เคียงที่สุด:
+    สำหรับ Plugin ที่รวมอยู่ในรีโพซิทอรีนี้ OpenClaw จะค้นหาแพ็กเกจ Plugin
+    จากซอร์สที่ checkout ใน workspace `extensions/*` ให้เรียกใช้การทดสอบเฉพาะจุด
+    ที่ใกล้เคียงที่สุด:
 
     ```bash
     pnpm test extensions/my-plugin/
@@ -178,12 +189,12 @@ openclaw plugins install clawhub:<package-name>
 
   <Step title="ทดสอบการติดตั้งแพ็กเกจ">
     ก่อนเผยแพร่ Plugin ที่พร้อมเป็นแพ็กเกจ ให้ทดสอบด้วยรูปแบบการติดตั้งเดียวกับที่ผู้ใช้
-    จะได้รับ ขั้นแรกให้เพิ่มขั้นตอนบิลด์ กำหนดให้รายการรันไทม์ เช่น
+    จะได้รับ ขั้นแรกให้เพิ่มขั้นตอนการสร้าง กำหนดให้จุดเข้าใช้งานรันไทม์ เช่น
     `openclaw.extensions` ชี้ไปยัง JavaScript ที่สร้างแล้ว เช่น `./dist/index.js` และตรวจสอบว่า
-    `npm pack` รวมเอาต์พุต `dist/` นั้น รายการซอร์ส TypeScript
-    มีไว้สำหรับซอร์สเช็กเอาต์และเส้นทางการพัฒนาภายในเครื่องเท่านั้น
+    `npm pack` รวมเอาต์พุต `dist/` นั้น จุดเข้าใช้งานซอร์ส TypeScript
+    มีไว้เฉพาะสำหรับซอร์สที่ checkout และเส้นทางการพัฒนาภายในเครื่อง
 
-    จากนั้นแพ็ก Plugin และติดตั้งทาร์บอลด้วย `npm-pack:`:
+    จากนั้นแพ็ก Plugin และติดตั้ง tarball ด้วย `npm-pack:`:
 
     ```bash
     npm pack --pack-destination /tmp
@@ -192,24 +203,25 @@ openclaw plugins install clawhub:<package-name>
     ```
 
     `npm-pack:` ใช้โปรเจกต์ npm ต่อ Plugin ที่ OpenClaw จัดการ จึงตรวจพบ
-    ข้อผิดพลาดด้านการขึ้นต่อกันของรันไทม์ที่การทดสอบซอร์สเช็กเอาต์อาจซ่อนไว้ วิธีนี้พิสูจน์
-    รูปแบบแพ็กเกจและการขึ้นต่อกัน ไม่ใช่สถานะความไว้วางใจอย่างเป็นทางการที่เชื่อมโยงกับแค็ตตาล็อก
+    ข้อผิดพลาดของ dependency ขณะรันไทม์ที่การทดสอบจากซอร์สที่ checkout อาจซ่อนไว้ได้ วิธีนี้พิสูจน์
+    รูปแบบแพ็กเกจและ dependency ไม่ใช่ความเชื่อถืออย่างเป็นทางการที่เชื่อมโยงกับแค็ตตาล็อก
     การนำเข้าขณะรันไทม์ต้องอยู่ใน `dependencies` หรือ `optionalDependencies`;
-    การขึ้นต่อกันที่อยู่เฉพาะใน `devDependencies` จะไม่ถูกติดตั้งให้กับ
-    โปรเจกต์รันไทม์ที่จัดการไว้
+    dependencies ที่มีเฉพาะใน `devDependencies` จะไม่ถูกติดตั้งให้กับ
+    โปรเจกต์รันไทม์ที่ได้รับการจัดการ
 
-    อย่าใช้การติดตั้งจากไฟล์เก็บถาวรหรือพาธโดยตรงเป็นหลักฐานขั้นสุดท้ายสำหรับพฤติกรรม
+    อย่าใช้การติดตั้งจากไฟล์เก็บถาวรหรือพาธโดยตรงเป็นหลักฐานสุดท้ายสำหรับพฤติกรรม
     ของ Plugin อย่างเป็นทางการหรือที่มีสิทธิ์พิเศษ ซอร์สดิบมีประโยชน์สำหรับการดีบักภายในเครื่อง แต่
-    ไม่ได้พิสูจน์เส้นทางการขึ้นต่อกันแบบเดียวกับการติดตั้งจาก npm หรือ ClawHub หาก
-    Plugin อาศัยสถานะ Plugin ทางการที่เชื่อถือได้ ให้เพิ่มหลักฐานชุดที่สอง
+    ไม่ได้พิสูจน์เส้นทาง dependency เดียวกับการติดตั้งผ่าน npm หรือ ClawHub หาก
+    Plugin ของคุณอาศัยสถานะ Plugin อย่างเป็นทางการที่เชื่อถือได้ ให้เพิ่มการพิสูจน์ครั้งที่สอง
     ผ่านการติดตั้งอย่างเป็นทางการที่มีแค็ตตาล็อกรองรับ หรือเส้นทางแพ็กเกจที่เผยแพร่แล้วซึ่ง
-    บันทึกสถานะความไว้วางใจอย่างเป็นทางการ ดูรายละเอียดความเป็นเจ้าของรูทการติดตั้งและ
-    การขึ้นต่อกันที่ [การแก้ไขการขึ้นต่อกันของ Plugin](/th/plugins/dependency-resolution)
+    บันทึกความเชื่อถืออย่างเป็นทางการ ดูรายละเอียดรากการติดตั้งและความเป็นเจ้าของ
+    dependency ที่
+    [การแก้ไข dependency ของ Plugin](/th/plugins/dependency-resolution)
 
   </Step>
 
   <Step title="เผยแพร่">
-    ตรวจสอบความถูกต้องของแพ็กเกจก่อนเผยแพร่:
+    ตรวจสอบแพ็กเกจก่อนเผยแพร่:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -235,11 +247,11 @@ openclaw plugins install clawhub:<package-name>
 ## การลงทะเบียนเครื่องมือ
 
 เครื่องมืออาจเป็นแบบจำเป็นหรือไม่บังคับ เครื่องมือที่จำเป็นจะพร้อมใช้งานเสมอเมื่อ
-เปิดใช้งาน Plugin ส่วนเครื่องมือที่ไม่บังคับต้องให้ผู้ใช้เลือกเข้าร่วมอย่างชัดเจนก่อนที่ OpenClaw
-จะโหลดรันไทม์ของ Plugin เจ้าของ
+เปิดใช้ Plugin ส่วนเครื่องมือที่ไม่บังคับต้องให้ผู้ใช้เลือกเข้าร่วมอย่างชัดเจนก่อนที่ OpenClaw
+จะโหลดรันไทม์ของ Plugin ที่เป็นเจ้าของ
 
 แฟกทอรีเครื่องมือจะได้รับบริบทรันไทม์ที่เชื่อถือได้ รวมถึง `deliveryContext`,
-`nativeChannelId` สำหรับบทสนทนาบนแพลตฟอร์มที่ใช้งานอยู่เมื่อมี และ
+`nativeChannelId` สำหรับการสนทนาบนแพลตฟอร์มที่กำลังใช้งานเมื่อมีข้อมูล และ
 `requesterSenderId`
 
 ```typescript
@@ -249,8 +261,15 @@ register(api) {
       name: "workflow_tool",
       description: "Run a workflow",
       parameters: Type.Object({ pipeline: Type.String() }),
+      outputSchema: Type.Object(
+        { pipeline: Type.String() },
+        { additionalProperties: false },
+      ),
       async execute(_id, params) {
-        return { content: [{ type: "text", text: params.pipeline }] };
+        return {
+          content: [{ type: "text", text: params.pipeline }],
+          details: { pipeline: params.pipeline },
+        };
       },
     },
     { optional: true },
@@ -258,8 +277,14 @@ register(api) {
 }
 ```
 
-เครื่องมือทุกตัวที่ลงทะเบียนด้วย `api.registerTool(...)` ต้องประกาศใน
-แมนิเฟสต์ของ Plugin ด้วย:
+`outputSchema` เป็นตัวเลือก โดยอธิบายค่า `details` ที่มีโครงสร้างซึ่งใช้โดย
+[โหมดโค้ด](/tools/code-mode) และ [การค้นหาเครื่องมือ](/th/tools/tool-search) การเรียกใช้แค็ตตาล็อก
+จะปฏิเสธสคีมาที่ไม่ถูกต้องก่อนดำเนินการ และตรวจสอบค่าขั้นสุดท้ายหลังจาก
+hook ของเครื่องมือ ไม่ต้องระบุฟิลด์นี้สำหรับเครื่องมือที่ไม่มีผลลัพธ์ JSON ที่เสถียร ดู
+สัญญาฉบับเต็มที่ [Plugins เครื่องมือ](/th/plugins/tool-plugins#output-contracts)
+
+เครื่องมือทุกตัวที่ลงทะเบียนด้วย `api.registerTool(...)` ต้องประกาศไว้ใน
+manifest ของ Plugin ด้วย:
 
 ```json
 {
@@ -278,34 +303,35 @@ register(api) {
 
 ```json5
 {
-  tools: { allow: ["workflow_tool"] }, // หรือ ["my-plugin"] สำหรับเครื่องมือทั้งหมดจาก Plugin เดียว
+  tools: { allow: ["workflow_tool"] }, // or ["my-plugin"] for every tool from one plugin
 }
 ```
 
 เครื่องมือที่ไม่บังคับควบคุมว่าเครื่องมือจะถูกเปิดเผยต่อโมเดลหรือไม่ ใช้
 [คำขอสิทธิ์ของ Plugin](/th/plugins/plugin-permission-requests) เมื่อเครื่องมือ
-หรือฮุกควรขอการอนุมัติหลังจากโมเดลเลือกแล้วและก่อนดำเนินการ
+หรือ hook ควรขออนุมัติหลังจากโมเดลเลือกแล้วและก่อนที่
+การดำเนินการจะเริ่มขึ้น
 
-ใช้เครื่องมือที่ไม่บังคับสำหรับผลข้างเคียง ไบนารีที่ไม่ทั่วไป หรือความสามารถที่
-ไม่ควรถูกเปิดเผยโดยค่าเริ่มต้น ชื่อเครื่องมือต้องไม่ขัดแย้งกับชื่อเครื่องมือแกนหลัก
+ใช้เครื่องมือที่ไม่บังคับสำหรับผลข้างเคียง ไบนารีที่ไม่ปกติ หรือความสามารถที่
+ไม่ควรเปิดเผยโดยค่าเริ่มต้น ชื่อเครื่องมือต้องไม่ขัดแย้งกับชื่อเครื่องมือหลัก
 รายการที่ขัดแย้งจะถูกข้ามและรายงานในการวินิจฉัย Plugin การลงทะเบียนที่มีรูปแบบ
-ไม่ถูกต้องจะถูกข้ามและรายงานในลักษณะเดียวกัน ได้แก่ ไม่มี `name`
-ที่ไม่ว่างเปล่า, `execute` ที่ไม่ใช่ฟังก์ชัน หรือตัวอธิบายเครื่องมือที่ไม่มีออบเจ็กต์ `parameters`
+ไม่ถูกต้องจะถูกข้ามและรายงานในลักษณะเดียวกัน ได้แก่ `name` ที่ไม่มีหรือว่างเปล่า,
+`execute` ที่ไม่ใช่ฟังก์ชัน หรือคำอธิบายเครื่องมือที่ไม่มีออบเจ็กต์ `parameters`
 
-แฟกทอรีเครื่องมือจะได้รับออบเจ็กต์บริบทที่รันไทม์จัดหาให้ ใช้ `ctx.activeModel`
-เมื่อเครื่องมือต้องบันทึก แสดงผล หรือปรับตามโมเดลที่ใช้งานอยู่สำหรับเทิร์นปัจจุบัน
-โดยอาจมี `provider`, `modelId` และ `modelRef` ให้ถือว่าเป็น
-ข้อมูลเมตารันไทม์เพื่อให้ข้อมูล ไม่ใช่ขอบเขตความปลอดภัยสำหรับป้องกันโอเปอเรเตอร์
-ภายในเครื่อง โค้ด Plugin ที่ติดตั้ง หรือรันไทม์ OpenClaw ที่ถูกดัดแปลง เครื่องมือ
-ภายในเครื่องที่ละเอียดอ่อนยังคงต้องกำหนดให้ Plugin หรือโอเปอเรเตอร์เลือกเข้าร่วมอย่างชัดเจน และ
-ปฏิเสธการทำงานโดยค่าเริ่มต้นเมื่อข้อมูลเมตาของโมเดลที่ใช้งานอยู่หายไปหรือไม่เหมาะสม
+แฟกทอรีเครื่องมือจะได้รับออบเจ็กต์บริบทที่รันไทม์จัดให้ ใช้ `ctx.activeModel`
+เมื่อเครื่องมือต้องบันทึก แสดง หรือปรับให้เข้ากับโมเดลที่กำลังใช้งานในรอบ
+ปัจจุบัน โดยอาจมี `provider`, `modelId` และ `modelRef` ให้ถือว่าสิ่งนี้เป็น
+ข้อมูลเมตารันไทม์เชิงข้อมูล ไม่ใช่ขอบเขตความปลอดภัยที่ป้องกันผู้ควบคุม
+ภายในเครื่อง โค้ด Plugin ที่ติดตั้งแล้ว หรือรันไทม์ OpenClaw ที่ถูกดัดแปลง เครื่องมือ
+ภายในเครื่องที่ละเอียดอ่อนยังควรกำหนดให้มีการเลือกเข้าร่วมจาก Plugin หรือผู้ควบคุมอย่างชัดเจน และ
+ปฏิเสธการทำงานโดยค่าเริ่มต้นเมื่อข้อมูลเมตาของโมเดลที่กำลังใช้งานหายไปหรือไม่เหมาะสม
 
-แมนิเฟสต์ประกาศความเป็นเจ้าของและการค้นพบ ส่วนการดำเนินการยังคงเรียกใช้อิมพลีเมนเทชัน
-เครื่องมือสดที่ลงทะเบียนไว้ รักษา `toolMetadata.<tool>.optional: true`
-ให้สอดคล้องกับ `api.registerTool(..., { optional: true })` เพื่อให้ OpenClaw หลีกเลี่ยง
-การโหลดรันไทม์ของ Plugin นั้นจนกว่าเครื่องมือจะถูกเพิ่มลงในรายการอนุญาตอย่างชัดเจน
+manifest ประกาศความเป็นเจ้าของและการค้นพบ ส่วนการดำเนินการยังคงเรียกใช้
+การติดตั้งเครื่องมือจริงที่ลงทะเบียนไว้ ให้ `toolMetadata.<tool>.optional: true`
+สอดคล้องกับ `api.registerTool(..., { optional: true })` เพื่อให้ OpenClaw หลีกเลี่ยง
+การโหลดรันไทม์ของ Plugin นั้นจนกว่าเครื่องมือจะถูกเพิ่มในรายการอนุญาตอย่างชัดเจน
 
-## แนวทางการนำเข้า
+## รูปแบบการนำเข้า
 
 นำเข้าจากพาธย่อย SDK ที่เจาะจง:
 
@@ -314,72 +340,72 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 ```
 
-อย่านำเข้าจากบาร์เรลรูทที่เลิกใช้แล้ว:
+อย่านำเข้าจาก root barrel ที่เลิกใช้แล้ว:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-ภายในแพ็กเกจ Plugin ให้ใช้ไฟล์บาร์เรลภายในเครื่อง เช่น `api.ts` และ
+ภายในแพ็กเกจ Plugin ให้ใช้ไฟล์ barrel ภายในเครื่อง เช่น `api.ts` และ
 `runtime-api.ts` สำหรับการนำเข้าภายใน อย่านำเข้า Plugin ของตนเองผ่าน
-พาธ SDK ตัวช่วยเฉพาะผู้ให้บริการควรอยู่ในแพ็กเกจผู้ให้บริการ เว้นแต่
-รอยต่อดังกล่าวจะเป็นแบบทั่วไปอย่างแท้จริง
+พาธ SDK ตัวช่วยเฉพาะผู้ให้บริการควรอยู่ในแพ็กเกจของผู้ให้บริการ เว้นแต่
+จุดเชื่อมต่อนั้นจะเป็นแบบทั่วไปอย่างแท้จริง
 
-เมธอด Gateway RPC แบบกำหนดเองเป็นจุดเข้าใช้งานขั้นสูง ให้ใช้คำนำหน้า
-เฉพาะ Plugin เนมสเปซผู้ดูแลระบบแกนหลัก เช่น `config.*`,
+เมธอด RPC ของ Gateway แบบกำหนดเองเป็นจุดเข้าใช้งานขั้นสูง ให้ใช้
+คำนำหน้าเฉพาะ Plugin ส่วน namespace ผู้ดูแลระบบหลัก เช่น `config.*`,
 `exec.approvals.*`, `operator.admin.*`, `wizard.*` และ `update.*` ยังคงสงวนไว้
 และแก้ไขเป็น `operator.admin` บริดจ์
 `openclaw/plugin-sdk/gateway-method-runtime` สงวนไว้สำหรับเส้นทาง HTTP ของ Plugin
 ที่ประกาศ `contracts.gatewayMethodDispatch: ["authenticated-request"]`
 
-สำหรับแผนผังการนำเข้าฉบับเต็ม โปรดดู [ภาพรวม Plugin SDK](/th/plugins/sdk-overview)
+ดูแผนผังการนำเข้าฉบับเต็มที่ [ภาพรวม SDK ของ Plugin](/th/plugins/sdk-overview)
 
 ## รายการตรวจสอบก่อนส่ง
 
 <Check>**package.json** มีข้อมูลเมตา `openclaw` ที่ถูกต้อง</Check>
-<Check>มีแมนิเฟสต์ **openclaw.plugin.json** และถูกต้อง</Check>
-<Check>จุดเข้าใช้งานใช้ `defineChannelPluginEntry` หรือ `definePluginEntry`</Check>
+<Check>มีไฟล์ manifest **openclaw.plugin.json** และไฟล์ถูกต้อง</Check>
+<Check>จุดเริ่มต้นใช้ `defineChannelPluginEntry` หรือ `definePluginEntry`</Check>
 <Check>การนำเข้าทั้งหมดใช้พาธ `plugin-sdk/<subpath>` ที่เจาะจง</Check>
-<Check>การนำเข้าภายในใช้โมดูลภายในเครื่อง ไม่ใช่การนำเข้าตัวเองผ่าน SDK</Check>
+<Check>การนำเข้าภายในใช้โมดูลภายในเครื่อง ไม่ใช่การนำเข้า SDK ของตนเอง</Check>
 <Check>การทดสอบผ่าน (`pnpm test <bundled-plugin-root>/my-plugin/`)</Check>
 <Check>`pnpm check` ผ่าน (Plugin ภายในรีโพซิทอรี)</Check>
 
 ## ทดสอบกับรุ่นเบตา
 
-1. ติดตามรีลีสของ [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) (`Watch` > `Releases`) แท็กเบต้ามีรูปแบบเช่น `v2026.3.N-beta.1` นอกจากนี้ยังติดตาม [@openclaw](https://x.com/openclaw) บน X เพื่อรับประกาศรีลีสได้อีกด้วย
-2. ทดสอบ Plugin ของคุณกับแท็กเบต้าทันทีที่ปรากฏ โดยทั่วไปช่วงเวลาก่อนออกเวอร์ชันเสถียรมีเพียงไม่กี่ชั่วโมง
-3. หลังจากทดสอบแล้ว ให้โพสต์ในเธรดของ Plugin คุณในช่อง Discord `plugin-forum` ([discord.gg/clawd](https://discord.gg/clawd)) โดยระบุ `all good` หรือสิ่งที่ใช้งานไม่ได้ หากยังไม่มีเธรด ให้สร้างขึ้นมา
-4. หากมีสิ่งใดใช้งานไม่ได้ ให้เปิดหรืออัปเดต issue ชื่อ `Beta blocker: <plugin-name> - <summary>` และติดป้ายกำกับ `beta-blocker` จากนั้นลิงก์ issue ไว้ในเธรดของคุณ
-5. เปิด PR ไปยัง `main` โดยตั้งชื่อว่า `fix(<plugin-id>): beta blocker - <summary>` และลิงก์ issue ไว้ทั้งใน PR และเธรด Discord ของคุณ ผู้ร่วมพัฒนาไม่สามารถติดป้ายกำกับ PR ได้ ดังนั้นชื่อจึงเป็นสัญญาณฝั่ง PR สำหรับผู้ดูแลและระบบอัตโนมัติ ปัญหาที่ขัดขวางการรีลีสและมี PR จะได้รับการผสาน ส่วนปัญหาที่ไม่มี PR อาจถูกปล่อยไปพร้อมกับรีลีสอยู่ดี
-6. การไม่มีเสียงตอบกลับหมายความว่าทุกอย่างผ่าน การพลาดช่วงเวลานี้มักหมายความว่าการแก้ไขของคุณจะรวมอยู่ในรอบถัดไป
+1. ติดตามรุ่นเผยแพร่ของ [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) (`Watch` > `Releases`) แท็กเบตามีรูปแบบเช่น `v2026.3.N-beta.1` นอกจากนี้ยังติดตาม [@openclaw](https://x.com/openclaw) บน X เพื่อรับประกาศรุ่นเผยแพร่ได้
+2. ทดสอบ Plugin กับแท็กเบตาทันทีที่แท็กปรากฏ โดยทั่วไปช่วงเวลาก่อนออกรุ่นเสถียรมีเพียงไม่กี่ชั่วโมง
+3. หลังทดสอบแล้ว ให้โพสต์ในเธรดของ Plugin ในช่อง Discord `plugin-forum` ([discord.gg/clawd](https://discord.gg/clawd)) โดยระบุ `all good` หรือสิ่งที่ขัดข้อง หากยังไม่มีเธรด ให้สร้างเธรดใหม่
+4. หากมีสิ่งใดขัดข้อง ให้เปิดหรืออัปเดต issue ชื่อ `Beta blocker: <plugin-name> - <summary>` และใช้ป้ายกำกับ `beta-blocker` จากนั้นลิงก์ issue ไว้ในเธรด
+5. เปิด PR ไปยัง `main` โดยตั้งชื่อว่า `fix(<plugin-id>): beta blocker - <summary>` และลิงก์ issue ทั้งใน PR และเธรด Discord ผู้มีส่วนร่วมไม่สามารถติดป้ายกำกับ PR ได้ ดังนั้นชื่อจึงเป็นสัญญาณฝั่ง PR สำหรับผู้ดูแลและระบบอัตโนมัติ ตัวขัดขวางที่มี PR จะได้รับการผสาน ส่วนตัวขัดขวางที่ไม่มี PR อาจยังถูกเผยแพร่ออกไป
+6. การไม่มีการตอบกลับหมายความว่าทุกอย่างผ่าน หากพลาดช่วงเวลานี้ โดยทั่วไปการแก้ไขจะรวมอยู่ในรอบถัดไป
 
 ## ขั้นตอนถัดไป
 
 <CardGroup cols={2}>
   <Card title="Plugin ช่องทาง" icon="messages-square" href="/th/plugins/sdk-channel-plugins">
-    สร้าง Plugin ช่องทางรับส่งข้อความ
+    สร้าง Plugin ช่องทางการรับส่งข้อความ
   </Card>
   <Card title="Plugin ผู้ให้บริการ" icon="cpu" href="/th/plugins/sdk-provider-plugins">
     สร้าง Plugin ผู้ให้บริการโมเดล
   </Card>
   <Card title="Plugin แบ็กเอนด์ CLI" icon="terminal" href="/th/plugins/cli-backend-plugins">
-    ลงทะเบียนแบ็กเอนด์ CLI สำหรับ AI ภายในเครื่อง
+    ลงทะเบียนแบ็กเอนด์ CLI ของ AI ภายในเครื่อง
   </Card>
   <Card title="ภาพรวม SDK" icon="book-open" href="/th/plugins/sdk-overview">
-    เอกสารอ้างอิงแผนผังการนำเข้าและ API การลงทะเบียน
+    เอกสารอ้างอิงผังการนำเข้าและ API การลงทะเบียน
   </Card>
   <Card title="ตัวช่วยรันไทม์" icon="settings" href="/th/plugins/sdk-runtime">
     TTS การค้นหา และเอเจนต์ย่อยผ่าน api.runtime
   </Card>
   <Card title="การทดสอบ" icon="test-tubes" href="/th/plugins/sdk-testing">
-    ยูทิลิตีและรูปแบบสำหรับการทดสอบ
+    ยูทิลิตีและรูปแบบการทดสอบ
   </Card>
-  <Card title="ไฟล์ Manifest ของ Plugin" icon="file-json" href="/th/plugins/manifest">
-    เอกสารอ้างอิงสคีมา Manifest ฉบับสมบูรณ์
+  <Card title="Manifest ของ Plugin" icon="file-json" href="/th/plugins/manifest">
+    เอกสารอ้างอิงสคีมา manifest ฉบับเต็ม
   </Card>
 </CardGroup>
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [ฮุกของ Plugin](/th/plugins/hooks)
 - [สถาปัตยกรรม Plugin](/th/plugins/architecture)

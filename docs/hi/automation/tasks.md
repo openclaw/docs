@@ -1,94 +1,91 @@
 ---
 read_when:
-    - प्रगति में चल रहे या हाल ही में पूर्ण हुए पृष्ठभूमि कार्य का निरीक्षण करना
-    - अलग किए गए एजेंट रन के लिए डिलीवरी विफलताओं की डिबगिंग
-    - यह समझना कि बैकग्राउंड रन, सेशन, Cron और Heartbeat से कैसे संबंधित हैं
+    - प्रगति पर चल रहे या हाल ही में पूरे हुए बैकग्राउंड कार्य का निरीक्षण करना
+    - अलग किए गए एजेंट रन की डिलीवरी विफलताओं की डीबगिंग
+    - यह समझना कि बैकग्राउंड रन सत्रों, Cron और Heartbeat से कैसे संबंधित हैं
 sidebarTitle: Background tasks
-summary: ACP रन, उप-एजेंटों, पृथक Cron जॉब्स, और CLI ऑपरेशनों के लिए पृष्ठभूमि कार्य ट्रैकिंग
+summary: ACP रन, सबएजेंट, Cron निष्पादन और CLI संचालन के लिए बैकग्राउंड कार्य ट्रैकिंग
 title: पृष्ठभूमि कार्य
 x-i18n:
-    generated_at: "2026-06-28T22:33:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T07:58:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4a630a52d0d6bfd387a37415dd63fc4bfbce23f99eaa8cb780c3d6f8913675fd
+    source_hash: dbdc5ced133764fec0c8b9ae7b1957e24272dc9c1c86099de81f6923955d6b5a
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-शेड्यूलिंग खोज रहे हैं? सही तंत्र चुनने के लिए [Automation](/hi/automation) देखें। यह पेज पृष्ठभूमि के काम के लिए गतिविधि लेजर है, शेड्यूलर नहीं।
+शेड्यूलिंग खोज रहे हैं? सही तंत्र चुनने के लिए [ऑटोमेशन](/hi/automation) देखें। यह पृष्ठ पृष्ठभूमि के कार्य की गतिविधि बही है, शेड्यूलर नहीं।
 </Note>
 
-पृष्ठभूमि कार्य उस काम को ट्रैक करते हैं जो **आपके मुख्य बातचीत सत्र के बाहर** चलता है: ACP रन, सबएजेंट स्पॉन, आइसोलेटेड Cron जॉब निष्पादन, और CLI द्वारा शुरू किए गए ऑपरेशन।
+पृष्ठभूमि कार्य उस काम को ट्रैक करते हैं जो **आपके मुख्य वार्तालाप सत्र के बाहर** चलता है: ACP रन, सबएजेंट स्पॉन, Cron जॉब निष्पादन और CLI से शुरू किए गए ऑपरेशन।
 
-कार्य सत्रों, Cron जॉब, या Heartbeat को प्रतिस्थापित **नहीं** करते - वे **गतिविधि लेजर** हैं जो रिकॉर्ड करता है कि कौन-सा अलग किया गया काम हुआ, कब हुआ, और क्या वह सफल हुआ।
+कार्य सत्रों, Cron जॉब या Heartbeat को **प्रतिस्थापित नहीं** करते—वे ऐसी **गतिविधि बही** हैं जो दर्ज करती है कि कौन-सा अलग किया गया काम हुआ, कब हुआ और वह सफल रहा या नहीं।
 
 <Note>
-हर एजेंट रन कार्य नहीं बनाता। Heartbeat टर्न और सामान्य इंटरैक्टिव चैट ऐसा नहीं करते। सभी Cron निष्पादन, ACP स्पॉन, सबएजेंट स्पॉन, और CLI एजेंट कमांड ऐसा करते हैं।
+हर एजेंट रन कोई कार्य नहीं बनाता। Heartbeat टर्न और सामान्य इंटरैक्टिव चैट ऐसा नहीं करते। सभी Cron निष्पादन, ACP स्पॉन, सबएजेंट स्पॉन, Gateway द्वारा प्रेषित CLI एजेंट कमांड और एजेंट द्वारा शुरू किए गए पृष्ठभूमि `exec` कमांड ऐसा करते हैं।
 </Note>
 
 ## संक्षेप में
 
-- कार्य **रिकॉर्ड** हैं, शेड्यूलर नहीं - Cron और Heartbeat तय करते हैं कि काम _कब_ चलेगा, कार्य ट्रैक करते हैं कि _क्या हुआ_।
-- ACP, सबएजेंट, सभी Cron जॉब, और CLI ऑपरेशन कार्य बनाते हैं। Heartbeat टर्न ऐसा नहीं करते।
-- हर कार्य `queued → running → terminal` से गुजरता है (succeeded, failed, timed_out, cancelled, या lost)।
-- Cron कार्य तब तक लाइव रहते हैं जब तक Cron रनटाइम अभी भी जॉब का मालिक है; अगर
-  इन-मेमोरी रनटाइम स्थिति जा चुकी है, तो कार्य रखरखाव किसी कार्य को lost चिह्नित करने से पहले टिकाऊ Cron
-  रन इतिहास जांचता है।
-- पूर्णता पुश-चालित होती है: अलग किया गया काम सीधे सूचित कर सकता है या समाप्त होने पर
-  अनुरोधकर्ता सत्र/Heartbeat को जगा सकता है, इसलिए स्थिति पोलिंग लूप
-  आमतौर पर गलत आकार होते हैं।
-- आइसोलेटेड Cron रन और सबएजेंट पूर्णताएं अंतिम सफाई बहीखाते से पहले अपने चाइल्ड सत्र के लिए ट्रैक किए गए ब्राउज़र टैब/प्रोसेस को सर्वश्रेष्ठ प्रयास से साफ करती हैं।
-- आइसोलेटेड Cron डिलीवरी पुराने अंतरिम पैरेंट उत्तरों को दबाती है जबकि वंशज सबएजेंट काम अभी भी ड्रेन हो रहा हो, और डिलीवरी से पहले आने पर अंतिम वंशज आउटपुट को प्राथमिकता देती है।
-- पूर्णता सूचनाएं सीधे किसी चैनल को डिलीवर की जाती हैं या अगले Heartbeat के लिए कतारबद्ध की जाती हैं।
-- `openclaw tasks list` सभी कार्य दिखाता है; `openclaw tasks audit` समस्याएं सामने लाता है।
-- टर्मिनल रिकॉर्ड 7 दिनों तक रखे जाते हैं, फिर अपने-आप हटा दिए जाते हैं।
+- कार्य **रिकॉर्ड** हैं, शेड्यूलर नहीं—Cron और Heartbeat तय करते हैं कि काम _कब_ चलेगा, जबकि कार्य ट्रैक करते हैं कि _क्या हुआ_।
+- ACP, सबएजेंट, सभी Cron जॉब और CLI ऑपरेशन कार्य बनाते हैं। Heartbeat टर्न ऐसा नहीं करते।
+- प्रत्येक कार्य `queued → running → terminal` से होकर आगे बढ़ता है (सफल, विफल, समय-सीमा समाप्त, रद्द या लापता)।
+- जब तक Cron रनटाइम जॉब का स्वामी रहता है, Cron कार्य सक्रिय रहते हैं; यदि इन-मेमोरी रनटाइम स्थिति समाप्त हो गई हो, तो कार्य को लापता चिह्नित करने से पहले कार्य रखरखाव स्थायी Cron रन इतिहास की जाँच करता है।
+- पूर्णता पुश-आधारित है: अलग किया गया काम पूरा होने पर सीधे सूचित कर सकता है या अनुरोधकर्ता सत्र/Heartbeat को जगा सकता है, इसलिए स्थिति पोलिंग लूप आम तौर पर गलत संरचना हैं।
+- अलग-थलग Cron रन और सबएजेंट पूर्णताएँ अंतिम क्लीनअप लेखांकन से पहले अपने चाइल्ड सत्र के ट्रैक किए गए ब्राउज़र टैब/प्रोसेस को यथासंभव साफ़ करते हैं।
+- जब वंशज सबएजेंट का काम अभी समाप्त हो रहा हो, तब अलग-थलग Cron डिलीवरी पुराने अंतरिम पैरेंट उत्तरों को दबा देती है और डिलीवरी से पहले आने पर अंतिम वंशज आउटपुट को प्राथमिकता देती है।
+- पूर्णता सूचनाएँ सीधे किसी चैनल पर पहुँचाई जाती हैं या अगले Heartbeat के लिए कतारबद्ध की जाती हैं।
+- `openclaw tasks list` सभी कार्य दिखाता है; `openclaw tasks audit` समस्याएँ सामने लाता है।
+- टर्मिनल रिकॉर्ड 7 दिनों तक (`lost` रिकॉर्ड 24 घंटों तक) रखे जाते हैं, फिर स्वतः हटा दिए जाते हैं।
 
 ## त्वरित शुरुआत
 
 <Tabs>
-  <Tab title="List and filter">
+  <Tab title="सूची और फ़िल्टर">
     ```bash
-    # List all tasks (newest first)
+    # सभी कार्य सूचीबद्ध करें (नवीनतम पहले)
     openclaw tasks list
 
-    # Filter by runtime or status
+    # रनटाइम या स्थिति के अनुसार फ़िल्टर करें
     openclaw tasks list --runtime acp
     openclaw tasks list --status running
     ```
 
   </Tab>
-  <Tab title="Inspect">
+  <Tab title="निरीक्षण">
     ```bash
-    # Show details for a specific task (by ID, run ID, or session key)
+    # किसी विशिष्ट कार्य का विवरण दिखाएँ (कार्य ID, रन ID या सत्र कुंजी द्वारा)
     openclaw tasks show <lookup>
     ```
   </Tab>
-  <Tab title="Cancel and notify">
+  <Tab title="रद्द करें और सूचित करें">
     ```bash
-    # Cancel a running task (kills the child session)
+    # चल रहे कार्य को रद्द करें (चाइल्ड सत्र को समाप्त करता है)
     openclaw tasks cancel <lookup>
 
-    # Change notification policy for a task
+    # किसी कार्य की सूचना नीति बदलें
     openclaw tasks notify <lookup> state_changes
     ```
 
   </Tab>
-  <Tab title="Audit and maintenance">
+  <Tab title="ऑडिट और रखरखाव">
     ```bash
-    # Run a health audit
+    # स्वास्थ्य ऑडिट चलाएँ
     openclaw tasks audit
 
-    # Preview or apply maintenance
+    # रखरखाव का पूर्वावलोकन करें या लागू करें
     openclaw tasks maintenance
     openclaw tasks maintenance --apply
     ```
 
   </Tab>
-  <Tab title="Task flow">
+  <Tab title="TaskFlow">
     ```bash
-    # Inspect TaskFlow state
+    # TaskFlow स्थिति का निरीक्षण करें
     openclaw tasks flow list
     openclaw tasks flow show <lookup>
     openclaw tasks flow cancel <lookup>
@@ -96,30 +93,30 @@ x-i18n:
   </Tab>
 </Tabs>
 
-## क्या कार्य बनाता है
+## कार्य किससे बनता है
 
-| स्रोत                 | रनटाइम प्रकार | कार्य रिकॉर्ड कब बनाया जाता है                                          | डिफ़ॉल्ट सूचना नीति |
+| स्रोत                  | रनटाइम प्रकार | कार्य रिकॉर्ड कब बनाया जाता है                                         | डिफ़ॉल्ट सूचना नीति |
 | ---------------------- | ------------ | ---------------------------------------------------------------------- | --------------------- |
-| ACP पृष्ठभूमि रन    | `acp`        | चाइल्ड ACP सत्र स्पॉन करना                                           | `done_only`           |
-| सबएजेंट ऑर्केस्ट्रेशन | `subagent`   | `sessions_spawn` के जरिए सबएजेंट स्पॉन करना                               | `done_only`           |
-| Cron जॉब (सभी प्रकार)  | `cron`       | हर Cron निष्पादन (मुख्य-सत्र और आइसोलेटेड)                       | `silent`              |
-| CLI ऑपरेशन         | `cli`        | `openclaw agent` कमांड जो Gateway से होकर चलते हैं                 | `silent`              |
-| एजेंट मीडिया जॉब       | `cli`        | सत्र-समर्थित `image_generate`/`music_generate`/`video_generate` रन | `silent`              |
+| ACP पृष्ठभूमि रन       | `acp`        | चाइल्ड ACP सत्र स्पॉन करते समय                                         | `done_only`           |
+| सबएजेंट ऑर्केस्ट्रेशन | `subagent`   | `sessions_spawn` के माध्यम से सबएजेंट स्पॉन करते समय                   | `done_only`           |
+| Cron जॉब (सभी प्रकार) | `cron`       | प्रत्येक Cron निष्पादन (मुख्य सत्र और अलग-थलग)                         | `silent`              |
+| CLI ऑपरेशन            | `cli`        | Gateway से होकर चलने वाले `openclaw agent` कमांड                      | `silent`              |
+| एजेंट मीडिया जॉब      | `cli`        | सत्र-समर्थित `image_generate`/`music_generate`/`video_generate` रन | `silent`              |
 
 <AccordionGroup>
-  <Accordion title="Notify defaults for cron and media">
-    मुख्य-सत्र Cron कार्य डिफ़ॉल्ट रूप से `silent` सूचना नीति का उपयोग करते हैं - वे ट्रैकिंग के लिए रिकॉर्ड बनाते हैं लेकिन सूचनाएं उत्पन्न नहीं करते। आइसोलेटेड Cron कार्य भी डिफ़ॉल्ट रूप से `silent` होते हैं, लेकिन वे अधिक दिखाई देते हैं क्योंकि वे अपने अलग सत्र में चलते हैं।
+  <Accordion title="Cron और मीडिया के लिए सूचना डिफ़ॉल्ट">
+    Cron कार्य (मुख्य सत्र और अलग-थलग) `silent` सूचना नीति का उपयोग करते हैं—वे ट्रैकिंग के लिए रिकॉर्ड बनाते हैं, लेकिन अपनी ओर से कार्य सूचनाएँ उत्पन्न नहीं करते; Cron अपने डिलीवरी पथ का स्वामी है।
 
-    सत्र-समर्थित `image_generate`, `music_generate`, और `video_generate` रन भी `silent` सूचना नीति का उपयोग करते हैं। वे फिर भी कार्य रिकॉर्ड बनाते हैं, लेकिन पूर्णता मूल एजेंट सत्र को आंतरिक वेक के रूप में वापस दी जाती है ताकि एजेंट फॉलो-अप संदेश लिख सके और तैयार मीडिया खुद संलग्न कर सके। अनुरोधकर्ता एजेंट अपने सामान्य दृश्य-उत्तर अनुबंध का पालन करता है: कॉन्फ़िगर होने पर स्वचालित अंतिम उत्तर, या जब सत्र को संदेश-टूल उत्तर चाहिए तब `message(action="send")` और `NO_REPLY`। अगर अनुरोधकर्ता सत्र अब सक्रिय नहीं है या उसका सक्रिय वेक विफल हो जाता है, और पूर्णता एजेंट कुछ या पूरा जेनरेट किया गया मीडिया मिस कर देता है, तो OpenClaw मूल चैनल लक्ष्य को केवल छूटे हुए मीडिया के साथ एक idempotent प्रत्यक्ष fallback भेजता है।
+    सत्र-समर्थित `image_generate`, `music_generate` और `video_generate` रन भी `silent` सूचना नीति का उपयोग करते हैं। वे फिर भी कार्य रिकॉर्ड बनाते हैं, लेकिन पूर्णता को आंतरिक वेक के रूप में मूल एजेंट सत्र को वापस सौंप दिया जाता है, ताकि एजेंट फ़ॉलो-अप संदेश लिख सके और तैयार मीडिया स्वयं संलग्न कर सके। अनुरोधकर्ता एजेंट अपने सामान्य दृश्यमान-उत्तर अनुबंध का पालन करता है: कॉन्फ़िगर होने पर स्वचालित अंतिम उत्तर, या जब सत्र के लिए संदेश-टूल उत्तर आवश्यक हों तब `message(action="send")` और `NO_REPLY`। यदि अनुरोधकर्ता सत्र अब सक्रिय नहीं है या उसका सक्रिय वेक विफल हो जाता है, और पूर्णता एजेंट से कुछ या सभी जनरेट किए गए मीडिया छूट जाते हैं, तो OpenClaw केवल छूटे हुए मीडिया के साथ मूल चैनल लक्ष्य को आइडेम्पोटेंट प्रत्यक्ष फ़ॉलबैक भेजता है।
 
   </Accordion>
-  <Accordion title="Concurrent media-generation guardrail">
-    जब सत्र-समर्थित मीडिया-जनरेशन कार्य अभी भी सक्रिय हो, मीडिया टूल आकस्मिक retries के लिए guardrails की तरह भी काम करते हैं। उसी prompt के लिए बार-बार `image_generate` कॉल मेल खाते सक्रिय कार्य की स्थिति लौटाते हैं, जबकि अलग image prompt अपना खुद का कार्य शुरू कर सकता है। `music_generate` और `video_generate` कॉल दूसरा समवर्ती generation शुरू करने के बजाय अभी भी उस सत्र के लिए सक्रिय कार्य स्थिति लौटाते हैं। जब आप एजेंट पक्ष से स्पष्ट प्रगति/स्थिति lookup चाहते हों, तो `action: "status"` का उपयोग करें।
+  <Accordion title="समवर्ती मीडिया जनरेशन की सुरक्षा सीमा">
+    जब तक सत्र-समर्थित मीडिया-जनरेशन कार्य सक्रिय है, `image_generate`, `music_generate` और `video_generate` आकस्मिक पुनः प्रयासों से बचाते हैं: समान प्रॉम्प्ट/अनुरोध के लिए कॉल दोहराने पर डुप्लिकेट शुरू करने के बजाय मेल खाते सक्रिय कार्य की स्थिति लौटती है, जबकि भिन्न प्रॉम्प्ट अपना अलग कार्य शुरू कर सकता है। एजेंट की ओर से स्पष्ट प्रगति/स्थिति लुकअप चाहिए तो `action: "status"` का उपयोग करें।
   </Accordion>
-  <Accordion title="What does not create tasks">
-    - Heartbeat टर्न - मुख्य-सत्र; [Heartbeat](/hi/gateway/heartbeat) देखें
+  <Accordion title="किनसे कार्य नहीं बनते">
+    - Heartbeat टर्न—मुख्य सत्र; [Heartbeat](/hi/gateway/heartbeat) देखें
     - सामान्य इंटरैक्टिव चैट टर्न
-    - प्रत्यक्ष `/command` प्रतिक्रियाएं
+    - प्रत्यक्ष `/command` प्रतिक्रियाएँ
 
   </Accordion>
 </AccordionGroup>
@@ -129,68 +126,62 @@ x-i18n:
 ```mermaid
 stateDiagram-v2
     [*] --> queued
-    queued --> running : agent starts
-    running --> succeeded : completes ok
-    running --> failed : error
-    running --> timed_out : timeout exceeded
-    running --> cancelled : operator cancels
-    queued --> lost : session gone > 5 min
-    running --> lost : session gone > 5 min
+    queued --> running : एजेंट शुरू होता है
+    running --> succeeded : सफलतापूर्वक पूर्ण
+    running --> failed : त्रुटि
+    running --> timed_out : समय-सीमा पार
+    queued --> cancelled : ऑपरेटर रद्द करता है
+    running --> cancelled : ऑपरेटर रद्द करता है
+    queued --> lost : आधार स्थिति > 5 मिनट से समाप्त
+    running --> lost : आधार स्थिति > 5 मिनट से समाप्त
 ```
 
-| स्थिति      | इसका क्या अर्थ है                                                              |
-| ----------- | -------------------------------------------------------------------------- |
-| `queued`    | बनाया गया, एजेंट शुरू होने की प्रतीक्षा में                                    |
-| `running`   | एजेंट टर्न सक्रिय रूप से निष्पादित हो रहा है                                           |
-| `succeeded` | सफलतापूर्वक पूरा हुआ                                                     |
-| `failed`    | त्रुटि के साथ पूरा हुआ                                                    |
-| `timed_out` | कॉन्फ़िगर किए गए timeout से अधिक हो गया                                            |
-| `cancelled` | ऑपरेटर ने `openclaw tasks cancel` के जरिए रोक दिया                        |
-| `lost`      | रनटाइम ने 5-मिनट की grace period के बाद अधिकृत backing state खो दी |
+| स्थिति      | इसका अर्थ                                                                  |
+| ----------- | --------------------------------------------------------------------------- |
+| `queued`    | बनाया गया, एजेंट के शुरू होने की प्रतीक्षा में                              |
+| `running`   | एजेंट टर्न सक्रिय रूप से निष्पादित हो रहा है                                |
+| `succeeded` | सफलतापूर्वक पूर्ण                                                           |
+| `failed`    | त्रुटि के साथ पूर्ण                                                         |
+| `timed_out` | कॉन्फ़िगर की गई समय-सीमा पार हुई                                            |
+| `cancelled` | ऑपरेटर ने `openclaw tasks cancel` के माध्यम से रोका, या रन निरस्त किया गया |
+| `lost`      | 5-मिनट की ग्रेस अवधि के बाद रनटाइम ने आधिकारिक आधार स्थिति खो दी           |
 
-ट्रांज़िशन अपने-आप होते हैं - जब संबंधित एजेंट रन समाप्त होता है, तो कार्य की स्थिति मेल खाने के लिए अपडेट होती है।
+संक्रमण स्वतः होते हैं—एजेंट रन जीवनचक्र घटनाएँ (आरंभ, समाप्ति, त्रुटि) कार्य की स्थिति अपडेट करती हैं; आप इसे मैन्युअल रूप से प्रबंधित नहीं करते।
 
-सक्रिय कार्य रिकॉर्ड के लिए एजेंट रन पूर्णता अधिकृत है। सफल detached रन `succeeded` के रूप में अंतिम होता है, सामान्य रन त्रुटियां `failed` के रूप में अंतिम होती हैं, और timeout या abort परिणाम `timed_out` के रूप में अंतिम होते हैं। अगर ऑपरेटर ने पहले ही कार्य रद्द कर दिया है, या रनटाइम ने पहले ही `failed`, `timed_out`, या `lost` जैसी मजबूत टर्मिनल स्थिति रिकॉर्ड कर दी है, तो बाद का success signal उस terminal status को downgrade नहीं करता।
+सक्रिय कार्य रिकॉर्ड के लिए एजेंट रन की पूर्णता आधिकारिक होती है। सफल अलग किया गया रन `succeeded` के रूप में अंतिम होता है, सामान्य रन त्रुटियाँ `failed` के रूप में, समय-सीमाएँ `timed_out` के रूप में और रद्द/निरस्त परिणाम `cancelled` के रूप में अंतिम होते हैं। कार्य के टर्मिनल होने के बाद बाद के जीवनचक्र संकेत उसकी स्थिति को निम्नतर नहीं करते—ऑपरेटर द्वारा रद्द या पहले से `failed`/`timed_out`/`lost` कार्य वैसा ही रहता है, भले ही बाद में सफलता संकेत आ जाए।
 
 `lost` रनटाइम-सचेत है:
 
-- ACP कार्य: backing ACP child session metadata गायब हो गया।
-- सबएजेंट कार्य: backing child session target agent store से गायब हो गया।
-- Cron कार्य: Cron रनटाइम अब job को active के रूप में track नहीं करता और durable
-  Cron run history उस run के लिए terminal result नहीं दिखाता। Offline CLI
-  audit अपनी खाली in-process Cron runtime state को authority नहीं मानता।
-- CLI कार्य: run id/source id वाले कार्य live run context का उपयोग करते हैं, इसलिए
-  lingering child-session या chat-session rows उन्हें
-  gateway-owned run गायब होने के बाद alive नहीं रखते। run identity के बिना legacy CLI tasks अभी भी
-  child session पर fallback करते हैं। Gateway-backed `openclaw agent` रन भी
-  अपने run result से finalize होते हैं, इसलिए completed runs तब तक active नहीं बैठे रहते जब तक sweeper
-  उन्हें `lost` चिह्नित करे।
+- ACP कार्य: केवल Gateway में सक्रिय इन-प्रोसेस ACP टर्न ही सिद्ध करता है कि रन सक्रिय है; केवल स्थायी सत्र मेटाडेटा ऐसा नहीं करता। ऑफ़लाइन CLI ऑडिट सतर्क रहता है और ACP कार्यों को कभी पुनः प्राप्त नहीं करता।
+- सबएजेंट कार्य: आधार चाइल्ड सत्र लक्ष्य एजेंट स्टोर से गायब हो गया है (या उसमें पुनरारंभ-पुनर्प्राप्ति टूम्बस्टोन है)।
+- Cron कार्य: Cron रनटाइम अब जॉब को सक्रिय रूप से ट्रैक नहीं करता और स्थायी Cron रन इतिहास उस रन के लिए कोई टर्मिनल परिणाम नहीं दिखाता। ऑफ़लाइन CLI ऑडिट अपनी खाली इन-प्रोसेस Cron रनटाइम स्थिति को आधिकारिक नहीं मानता।
+- CLI कार्य: रन ID/स्रोत ID वाले कार्य लाइव रन संदर्भ का उपयोग करते हैं, इसलिए Gateway-स्वामित्व वाला रन गायब होने के बाद शेष चाइल्ड-सत्र या चैट-सत्र पंक्तियाँ उन्हें सक्रिय नहीं रखतीं। रन पहचान के बिना पुराने CLI कार्य अब भी चाइल्ड सत्र पर फ़ॉलबैक करते हैं। Gateway-समर्थित `openclaw agent` रन भी अपने रन परिणाम से अंतिम होते हैं, इसलिए पूर्ण रन स्वीपर द्वारा `lost` चिह्नित किए जाने तक सक्रिय नहीं रहते।
 
-## डिलीवरी और सूचनाएं
+## डिलीवरी और सूचनाएँ
 
-जब कोई कार्य terminal state तक पहुंचता है, OpenClaw आपको सूचित करता है। दो delivery paths हैं:
+जब कोई कार्य टर्मिनल स्थिति में पहुँचता है, OpenClaw आपको सूचित करता है। डिलीवरी के दो पथ हैं:
 
-**प्रत्यक्ष डिलीवरी** - अगर कार्य के पास channel target (`requesterOrigin`) है, तो completion message सीधे उस channel (Telegram, Discord, Slack, आदि) पर जाता है। Group और channel task completions इसके बजाय requester session के जरिए route होते हैं ताकि parent agent visible reply लिख सके। subagent completions के लिए, OpenClaw उपलब्ध होने पर bound thread/topic routing भी preserve करता है और direct delivery छोड़ने से पहले requester session के stored route (`lastChannel` / `lastTo` / `lastAccountId`) से missing `to` / account भर सकता है।
+**प्रत्यक्ष डिलीवरी**—यदि कार्य का कोई चैनल लक्ष्य (`requesterOrigin`) है, तो पूर्णता संदेश सीधे उस चैनल (Discord, Slack, Telegram आदि) पर जाता है। इसके बजाय समूह और चैनल कार्य पूर्णताओं को अनुरोधकर्ता सत्र के माध्यम से रूट किया जाता है, ताकि पैरेंट एजेंट दृश्यमान उत्तर लिख सके। सबएजेंट पूर्णताओं के लिए उपलब्ध होने पर OpenClaw बाउंड थ्रेड/टॉपिक रूटिंग भी बनाए रखता है और प्रत्यक्ष डिलीवरी छोड़ने से पहले अनुरोधकर्ता सत्र के संग्रहीत रूट (`lastChannel` / `lastTo` / `lastAccountId`) से अनुपलब्ध `to` / खाते को भर सकता है।
 
-**सत्र-queued डिलीवरी** - अगर direct delivery fail हो जाती है या कोई origin set नहीं है, तो update requester के session में system event के रूप में queued होता है और अगले Heartbeat पर सामने आता है।
+**सत्र-कतारबद्ध डिलीवरी**—यदि प्रत्यक्ष डिलीवरी विफल हो जाए या कोई मूल सेट न हो, तो अपडेट अनुरोधकर्ता के सत्र में सिस्टम इवेंट के रूप में कतारबद्ध होता है और अगले Heartbeat पर दिखाई देता है।
 
 <Tip>
-कार्य पूर्णता immediate Heartbeat wake trigger करती है ताकि आप परिणाम जल्दी देखें - आपको अगले scheduled Heartbeat tick का इंतजार नहीं करना पड़ता।
+सत्र-कतारबद्ध कार्य पूर्णताएँ तुरंत Heartbeat वेक ट्रिगर करती हैं, इसलिए परिणाम शीघ्र दिखाई देता है—अगले निर्धारित Heartbeat टिक की प्रतीक्षा नहीं करनी पड़ती।
 </Tip>
 
-इसका मतलब है कि सामान्य workflow push-based है: detached work एक बार शुरू करें, फिर runtime को completion पर आपको wake या notify करने दें। Task state poll केवल तब करें जब आपको debugging, intervention, या explicit audit चाहिए।
+इसका अर्थ है कि सामान्य वर्कफ़्लो पुश-आधारित है: अलग किया गया काम एक बार शुरू करें, फिर पूर्णता पर रनटाइम को आपको जगाने या सूचित करने दें। कार्य स्थिति को केवल तब पोल करें जब डीबगिंग, हस्तक्षेप या स्पष्ट ऑडिट की आवश्यकता हो।
 
-### सूचना नीतियां
+### सूचना नीतियाँ
 
-नियंत्रित करें कि आप हर कार्य के बारे में कितना सुनते हैं:
+नियंत्रित करें कि प्रत्येक कार्य के बारे में आपको कितना सुनाई दे:
 
-| नीति                | क्या डिलीवर किया जाता है                                                       |
-| --------------------- | ----------------------------------------------------------------------- |
-| `done_only` (default) | केवल terminal state (succeeded, failed, आदि) - **यही default है** |
-| `state_changes`       | हर state transition और progress update                              |
-| `silent`              | कुछ भी नहीं                                                          |
+| नीति                  | क्या डिलीवर किया जाता है                                  |
+| --------------------- | --------------------------------------------------------- |
+| `done_only` (डिफ़ॉल्ट) | केवल टर्मिनल स्थिति (सफल, विफल आदि)                       |
+| `state_changes`       | प्रत्येक स्थिति संक्रमण और प्रगति अपडेट                   |
+| `silent`              | बिल्कुल कुछ नहीं (Cron, CLI और मीडिया कार्यों के लिए डिफ़ॉल्ट) |
 
-कार्य चलते समय policy बदलें:
+कार्य के चलते समय नीति बदलें:
 
 ```bash
 openclaw tasks notify <lookup> state_changes
@@ -204,15 +195,15 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    आउटपुट कॉलम: Task ID, Kind, Status, Delivery, Run ID, Child Session, Summary.
+    आउटपुट कॉलम: कार्य, प्रकार, स्थिति, डिलीवरी, रन, चाइल्ड सत्र, सारांश। केवल `openclaw tasks`, `openclaw tasks list` की तरह व्यवहार करता है।
 
   </Accordion>
   <Accordion title="tasks show">
     ```bash
-    openclaw tasks show <lookup>
+    openclaw tasks show <lookup> [--json]
     ```
 
-    lookup token task ID, run ID, या session key स्वीकार करता है। timing, delivery state, error, और terminal summary सहित पूरा record दिखाता है।
+    लुकअप टोकन कार्य ID, रन ID या सत्र कुंजी स्वीकार करता है। समय, डिलीवरी स्थिति, त्रुटि और टर्मिनल सारांश सहित पूरा रिकॉर्ड दिखाता है।
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -220,162 +211,181 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    ACP और subagent कार्यों के लिए, यह child session को kill करता है। CLI-tracked कार्यों के लिए, cancellation task registry में recorded होती है (अलग child runtime handle नहीं होता)। Status `cancelled` में transition करता है और लागू होने पर delivery notification भेजी जाती है।
+    ACP और सबएजेंट कार्यों के लिए, यह चाइल्ड सेशन को समाप्त कर देता है; ACP और Cron रद्दीकरण चालू Gateway (`tasks.cancel`) के माध्यम से रूट होते हैं। CLI द्वारा ट्रैक किए गए कार्यों के लिए, रद्दीकरण कार्य रजिस्ट्री में दर्ज किया जाता है (कोई अलग चाइल्ड रनटाइम हैंडल नहीं होता)। स्थिति `cancelled` में बदल जाती है और लागू होने पर डिलीवरी सूचना भेजी जाती है।
 
   </Accordion>
-  <Accordion title="tasks notify">
+  <Accordion title="कार्य सूचित करें">
     ```bash
     openclaw tasks notify <lookup> <done_only|state_changes|silent>
     ```
   </Accordion>
-  <Accordion title="tasks audit">
+  <Accordion title="कार्य ऑडिट">
     ```bash
-    openclaw tasks audit [--json]
+    openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
     ```
 
-    operational issues सामने लाता है। issues detect होने पर findings `openclaw status` में भी दिखाई देती हैं।
+    एक ही रिपोर्ट में कार्यों **और** TaskFlows की परिचालन संबंधी समस्याएँ सामने लाता है। समस्याएँ मिलने पर निष्कर्ष `openclaw status` में भी दिखाई देते हैं।
+
+    कार्य संबंधी निष्कर्ष:
 
     | निष्कर्ष                   | गंभीरता   | ट्रिगर                                                                                                      |
     | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
-    | `stale_queued`            | चेतावनी       | 10 मिनट से अधिक समय तक कतार में                                                                              |
-    | `stale_running`           | त्रुटि      | 30 मिनट से अधिक समय तक चल रहा                                                                             |
-    | `lost`                    | चेतावनी/त्रुटि | Runtime-समर्थित कार्य स्वामित्व गायब हो गया; बनाए रखे गए खोए हुए कार्य `cleanupAfter` तक चेतावनी देते हैं, फिर त्रुटियां बन जाते हैं |
+    | `stale_queued`            | चेतावनी       | 10 मिनट से अधिक समय से कतार में                                                                              |
+    | `stale_running`           | त्रुटि      | 30 मिनट से अधिक समय से चल रहा                                                                             |
+    | `lost`                    | चेतावनी/त्रुटि | रनटाइम-समर्थित कार्य का स्वामित्व गायब हो गया; बनाए रखे गए खोए कार्य `cleanupAfter` तक चेतावनी देते हैं, फिर त्रुटियाँ बन जाते हैं |
     | `delivery_failed`         | चेतावनी       | डिलीवरी विफल हुई और सूचना नीति `silent` नहीं है                                                            |
-    | `missing_cleanup`         | चेतावनी       | बिना cleanup timestamp वाला टर्मिनल कार्य                                                                      |
-    | `inconsistent_timestamps` | चेतावनी       | टाइमलाइन उल्लंघन (उदाहरण के लिए, शुरू होने से पहले समाप्त हुआ)                                                        |
+    | `missing_cleanup`         | चेतावनी       | बिना क्लीनअप टाइमस्टैम्प वाला टर्मिनल कार्य                                                                      |
+    | `inconsistent_timestamps` | चेतावनी       | टाइमलाइन उल्लंघन (उदाहरण के लिए शुरू होने से पहले समाप्त हुआ)                                                        |
+
+    TaskFlow संबंधी निष्कर्ष:
+
+    | निष्कर्ष                | गंभीरता   | ट्रिगर                                                                    |
+    | ---------------------- | ---------- | --------------------------------------------------------------------------- |
+    | `restore_failed`       | त्रुटि      | SQLite से प्रवाह रजिस्ट्री पुनर्स्थापन विफल रहा                                    |
+    | `stale_running`        | त्रुटि      | चल रहा प्रवाह 30 मिनट से अधिक समय से आगे नहीं बढ़ा                      |
+    | `stale_waiting`        | चेतावनी       | प्रतीक्षारत प्रवाह 30 मिनट से अधिक समय से आगे नहीं बढ़ा                      |
+    | `stale_blocked`        | चेतावनी       | अवरुद्ध प्रवाह 30 मिनट से अधिक समय से आगे नहीं बढ़ा                      |
+    | `cancel_stuck`         | चेतावनी       | 5 मिनट से अधिक पहले रद्दीकरण का अनुरोध किया गया, कोई सक्रिय चाइल्ड कार्य नहीं, फिर भी गैर-टर्मिनल |
+    | `missing_linked_tasks` | चेतावनी/त्रुटि | बिना लिंक किए गए कार्यों या प्रतीक्षा स्थिति वाला पुराना प्रबंधित प्रवाह                       |
+    | `blocked_task_missing` | चेतावनी       | अवरुद्ध प्रवाह ऐसे कार्य आईडी की ओर इंगित करता है जो अब मौजूद नहीं है                      |
 
   </Accordion>
-  <Accordion title="tasks maintenance">
+  <Accordion title="कार्य रखरखाव">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    कार्यों, कार्य प्रवाह स्थिति, और पुराने cron run session registry rows के लिए reconciliation, cleanup stamping, और pruning का पूर्वावलोकन करने या लागू करने के लिए इसका उपयोग करें।
+    इसका उपयोग कार्यों, TaskFlow स्थिति और पुराने Cron रन सेशन रजिस्ट्री पंक्तियों के लिए सामंजस्य, क्लीनअप स्टैम्पिंग और छँटाई का पूर्वावलोकन करने या उन्हें लागू करने के लिए करें।
 
-    Reconciliation runtime-सचेत है:
+    सामंजस्य रनटाइम-सजग है:
 
-    - ACP/subagent कार्य अपने backing child session की जांच करते हैं।
-    - जिन subagent कार्यों के child session में restart-recovery tombstone है, उन्हें recoverable backing sessions माने जाने के बजाय lost चिह्नित किया जाता है।
-    - Cron कार्य जांचते हैं कि cron runtime अभी भी job का स्वामी है या नहीं, फिर `lost` पर fallback करने से पहले persisted cron run logs/job state से terminal status recover करते हैं। केवल Gateway process in-memory cron active-job set के लिए authoritative है; offline CLI audit durable history का उपयोग करता है, लेकिन किसी cron task को केवल इसलिए lost चिह्नित नहीं करता क्योंकि वह local Set खाली है।
-    - run identity वाले CLI कार्य केवल child-session या chat-session rows नहीं, बल्कि owning live run context जांचते हैं।
+    - ACP कार्यों के लिए Gateway में एक सक्रिय इन-प्रोसेस टर्न आवश्यक है; सबएजेंट कार्य अपने सहायक चाइल्ड सेशन की जाँच करते हैं।
+    - जिन सबएजेंट कार्यों के चाइल्ड सेशन में पुनरारंभ-पुनर्प्राप्ति टूम्बस्टोन होता है, उन्हें पुनर्प्राप्त करने योग्य सहायक सेशन मानने के बजाय खोया हुआ चिह्नित किया जाता है।
+    - Cron कार्य जाँचते हैं कि Cron रनटाइम अभी भी जॉब का स्वामी है या नहीं, फिर `lost` पर लौटने से पहले स्थायी Cron रन लॉग/जॉब स्थिति से टर्मिनल स्थिति पुनर्प्राप्त करते हैं। इन-मेमोरी Cron सक्रिय-जॉब सेट के लिए केवल Gateway प्रक्रिया प्रामाणिक है; ऑफलाइन CLI ऑडिट टिकाऊ इतिहास का उपयोग करता है, लेकिन केवल स्थानीय सेट खाली होने के कारण किसी Cron कार्य को खोया हुआ चिह्नित नहीं करता।
+    - रन पहचान वाले CLI कार्य केवल चाइल्ड-सेशन या चैट-सेशन पंक्तियों की नहीं, बल्कि स्वामित्व रखने वाले सक्रिय रन संदर्भ की जाँच करते हैं।
 
-    Completion cleanup भी runtime-सचेत है:
+    पूर्णता क्लीनअप भी रनटाइम-सजग है:
 
-    - Subagent completion, announce cleanup जारी रहने से पहले child session के tracked browser tabs/processes को best-effort बंद करता है।
-    - Isolated cron completion, run के पूरी तरह tear down होने से पहले cron session के tracked browser tabs/processes को best-effort बंद करता है।
-    - Isolated cron delivery जरूरत पड़ने पर descendant subagent follow-up का इंतजार करती है और उसे announce करने के बजाय stale parent acknowledgement text को suppress करती है।
-    - Subagent completion delivery केवल child के latest visible assistant text का उपयोग करती है। Tool/toolResult output को child result text में promote नहीं किया जाता। Terminal failed runs captured reply text को replay किए बिना failure status announce करते हैं।
-    - Cleanup failures वास्तविक task outcome को mask नहीं करतीं।
+    - सबएजेंट पूर्णता, घोषणा क्लीनअप जारी रहने से पहले चाइल्ड सेशन के लिए ट्रैक किए गए ब्राउज़र टैब/प्रक्रियाओं को यथासंभव बंद करती है।
+    - अलग-थलग Cron पूर्णता, रन पूरी तरह समाप्त होने से पहले Cron सेशन के लिए ट्रैक किए गए ब्राउज़र टैब/प्रक्रियाओं को यथासंभव बंद करती है।
+    - अलग-थलग Cron डिलीवरी आवश्यकता होने पर वंशज सबएजेंट के अनुवर्ती कार्य की प्रतीक्षा करती है और पुराने पैरेंट अभिस्वीकृति टेक्स्ट की घोषणा करने के बजाय उसे दबा देती है।
+    - सबएजेंट पूर्णता डिलीवरी केवल चाइल्ड के नवीनतम दृश्यमान असिस्टेंट टेक्स्ट का उपयोग करती है। Tool/toolResult आउटपुट को चाइल्ड परिणाम टेक्स्ट में पदोन्नत नहीं किया जाता। टर्मिनल विफल रन कैप्चर किए गए उत्तर टेक्स्ट को दोबारा चलाए बिना विफलता स्थिति की घोषणा करते हैं।
+    - क्लीनअप विफलताएँ वास्तविक कार्य परिणाम को छिपाती नहीं हैं।
 
-    maintenance लागू करते समय, OpenClaw 7 दिनों से पुराने stale `cron:<jobId>:run:<uuid>` session registry rows भी हटाता है, जबकि currently running cron jobs के rows को सुरक्षित रखता है और non-cron session rows को untouched छोड़ता है।
+    रखरखाव लागू करते समय, OpenClaw 7 दिनों से अधिक पुरानी `cron:<jobId>:run:<runId>` सेशन रजिस्ट्री पंक्तियाँ भी हटा देता है, जबकि वर्तमान में चल रहे Cron जॉब की पंक्तियाँ सुरक्षित रखता है और गैर-Cron सेशन पंक्तियों को अछूता छोड़ता है।
 
   </Accordion>
-  <Accordion title="tasks flow list | show | cancel">
+  <Accordion title="कार्य प्रवाह सूची | दिखाएँ | रद्द करें">
     ```bash
     openclaw tasks flow list [--status <status>] [--json]
     openclaw tasks flow show <lookup> [--json]
     openclaw tasks flow cancel <lookup>
     ```
 
-    इनका उपयोग तब करें जब आपकी रुचि किसी एक individual background task record के बजाय orchestrating कार्य प्रवाह में हो।
+    प्रवाह लुकअप टोकन एक प्रवाह आईडी या स्वामी कुंजी स्वीकार करता है। जब आप किसी एक पृष्ठभूमि कार्य रिकॉर्ड के बजाय समन्वय करने वाले [कार्य प्रवाह](/hi/automation/taskflow) की परवाह करते हैं, तब इनका उपयोग करें।
 
   </Accordion>
 </AccordionGroup>
 
-## Chat task board (`/tasks`)
+## चैट कार्य बोर्ड (`/tasks`)
 
-किसी भी chat session में उस session से जुड़े background tasks देखने के लिए `/tasks` का उपयोग करें। board active और हाल ही में completed tasks को runtime, status, timing, और progress या error detail के साथ दिखाता है।
+उस सेशन से लिंक किए गए पृष्ठभूमि कार्य देखने के लिए किसी भी चैट सेशन में `/tasks` का उपयोग करें। बोर्ड रनटाइम, स्थिति, समय और प्रगति या त्रुटि विवरण के साथ अधिकतम पाँच सक्रिय और हाल ही में पूर्ण हुए कार्य दिखाता है।
 
-जब current session में कोई visible linked tasks नहीं होते, तो `/tasks` agent-local task counts पर fallback करता है ताकि आपको other-session details leak किए बिना भी overview मिल सके।
+जब वर्तमान सेशन में कोई दृश्यमान लिंक किया गया कार्य नहीं होता, तो `/tasks` एजेंट-स्थानीय कार्य गणनाओं का उपयोग करता है, ताकि अन्य सेशन के विवरण उजागर किए बिना भी आपको अवलोकन मिल सके।
 
-पूर्ण operator ledger के लिए CLI का उपयोग करें: `openclaw tasks list`.
+पूर्ण ऑपरेटर लेजर के लिए CLI का उपयोग करें: `openclaw tasks list`।
 
-## Status integration (task pressure)
+### Control UI
 
-`openclaw status` में एक नजर में दिखने वाला task summary शामिल है:
+वेब Control UI के साइडबार में लाइव सक्रिय और हाल के पृष्ठभूमि कार्यों वाला **कार्य** पेज है। इसका उपयोग प्रगति का निरीक्षण करने, लिंक किए गए सेशन खोलने, लेजर रीफ़्रेश करने या कतारबद्ध और चल रहे कार्यों को रद्द करने के लिए करें।
 
-```
-Tasks: 3 queued · 2 running · 1 issues
-```
+चैट पेन में पेन के एजेंट तक सीमित एक संक्षिप्त किए जा सकने वाला **पृष्ठभूमि कार्य** रेल भी होता है: रोकने के नियंत्रण के साथ चल रहे कार्य और सबएजेंट, एक समाप्त अनुभाग और प्रत्येक कार्य के चाइल्ड सेशन में जाने वाले ट्रांसक्रिप्ट देखें लिंक। इसे पेन हेडर के गतिविधि टॉगल से खोलें (या एकल-पेन चैट में फ़्लोटिंग गतिविधि बटन से)।
 
-summary रिपोर्ट करता है:
+किसी कार्य के सीमित इनपुट प्रॉम्प्ट और नवीनतम आउटपुट या त्रुटि सारांश का निरीक्षण करने के लिए रेल में उसे चुनें। चल रहा कार्य समाप्त कार्य से अलग रहता है और समाप्त पंक्तियाँ दिखाती हैं कि कार्य पूर्ण हुआ या विफल। iOS पर **Chat actions → Background Tasks** खोलें; Android पर Chat ओवरफ़्लो मेनू खोलें और **Background tasks** चुनें। दोनों मोबाइल दृश्य समान Running और Finished समूहीकरण का उपयोग करते हैं और चयन करने पर कार्य विवरण खोलते हैं।
 
-- **active** - `queued` + `running` की संख्या
-- **failures** - `failed` + `timed_out` + `lost` की संख्या
-- **byRuntime** - `acp`, `subagent`, `cron`, `cli` के अनुसार breakdown
+## स्थिति एकीकरण (कार्य दबाव)
 
-`/status` और `session_status` tool दोनों cleanup-aware task snapshot का उपयोग करते हैं: active tasks को प्राथमिकता दी जाती है, stale completed rows छिपाए जाते हैं, और recent failures केवल तब surface होते हैं जब कोई active work नहीं बचता। इससे status card अभी महत्वपूर्ण चीजों पर केंद्रित रहता है।
-
-## Storage और maintenance
-
-### कार्य कहां रहते हैं
-
-Task records SQLite में यहां persist होते हैं:
+`openclaw status` में एक नज़र में समझ आने वाली कार्य पंक्ति शामिल है:
 
 ```
-$OPENCLAW_STATE_DIR/tasks/runs.sqlite
+कार्य    2 सक्रिय · 1 कतारबद्ध · 1 चल रहा · 1 समस्या · ऑडिट स्वच्छ · 6 ट्रैक किए गए
 ```
 
-registry gateway start पर memory में load होती है और restarts के बीच durability के लिए writes को SQLite में sync करती है।
-Gateway SQLite's default autocheckpoint threshold और periodic `PASSIVE` checkpoints का उपयोग करके SQLite write-ahead log को bounded रखता है। Shutdown और explicit maintenance checkpoints अभी भी `TRUNCATE` का उपयोग करते हैं ताकि normal closes background sweeper को active readers पर wait कराए बिना WAL space reclaim कर सकें।
+सारांश सक्रिय कार्य (`queued` + `running`), विफलताओं (`failed` + `timed_out` + `lost`), ऑडिट निष्कर्षों और कुल ट्रैक किए गए रिकॉर्ड की गणना करता है; JSON पेलोड रनटाइम (`acp`, `subagent`, `cron`, `cli`) के अनुसार गणनाओं का विभाजन भी करता है।
 
-### Automatic maintenance
+`/status` और `session_status` टूल दोनों क्लीनअप-सजग कार्य स्नैपशॉट का उपयोग करते हैं: सक्रिय कार्यों को प्राथमिकता दी जाती है, समाप्त हो चुकी पंक्तियाँ छिपी रहती हैं और टर्मिनल कार्य केवल हाल की छोटी अवधि (5 मिनट) तक दिखाई देते हैं; जब कोई सक्रिय कार्य शेष नहीं रहता, तो विफलताओं पर ध्यान केंद्रित किया जाता है। इससे स्थिति कार्ड अभी महत्वपूर्ण चीज़ों पर केंद्रित रहता है।
 
-एक sweeper हर **60 seconds** में चलता है और चार चीजों को संभालता है:
+## भंडारण और रखरखाव
+
+### कार्य कहाँ रहते हैं
+
+कार्य रिकॉर्ड और डिलीवरी स्थिति साझा OpenClaw SQLite स्थिति डेटाबेस में बनी रहती है:
+
+```
+~/.openclaw/state/openclaw.sqlite   (तालिकाएँ: task_runs, task_delivery_state, flow_runs)
+```
+
+संपूर्ण स्थिति रूट (डिफ़ॉल्ट `~/.openclaw`) को कहीं और ले जाने के लिए `OPENCLAW_STATE_DIR` सेट करें; साझा डेटाबेस पथ भी उसके साथ स्थानांतरित होता है।
+
+रजिस्ट्री पहले उपयोग पर मेमोरी में लोड होती है और हर लेखन को SQLite में वापस स्थायी करती है, इसलिए रिकॉर्ड Gateway के पुनरारंभ के बाद भी बने रहते हैं। WAL की वृद्धि SQLite की डिफ़ॉल्ट ऑटोचेकपॉइंट सीमा और आवधिक `PASSIVE` चेकपॉइंट के माध्यम से सीमित रहती है; शटडाउन और स्पष्ट रखरखाव चेकपॉइंट `TRUNCATE` का उपयोग करते हैं, ताकि सामान्य समापन सक्रिय रीडर पर पृष्ठभूमि स्वीपर को प्रतीक्षा कराए बिना WAL स्थान पुनः प्राप्त कर सकें।
+
+पुराने इंस्टॉलेशन के लीगेसी साइडकार स्टोर (`tasks/runs.sqlite`, `flows/registry.sqlite`) को `openclaw doctor` द्वारा साझा डेटाबेस में आयात किया जाता है।
+
+### स्वचालित रखरखाव
+
+एक स्वीपर हर **60 सेकंड** में चलता है (पहला पास Gateway शुरू होने के लगभग 5 सेकंड बाद) और चार चीज़ें संभालता है:
 
 <Steps>
-  <Step title="Reconciliation">
-    जांचता है कि active tasks के पास अभी भी authoritative runtime backing है या नहीं। ACP/subagent tasks child-session state का उपयोग करते हैं, cron tasks active-job ownership का उपयोग करते हैं, और run identity वाले CLI tasks owning run context का उपयोग करते हैं। अगर वह backing state 5 मिनट से अधिक समय के लिए gone है, तो task को `lost` चिह्नित किया जाता है।
+  <Step title="सामंजस्य">
+    जाँचता है कि सक्रिय कार्यों के पास अभी भी प्रामाणिक रनटाइम समर्थन है या नहीं। ACP कार्यों के लिए सक्रिय इन-प्रोसेस टर्न आवश्यक है, सबएजेंट कार्य चाइल्ड-सेशन स्थिति का उपयोग करते हैं, Cron कार्य सक्रिय-जॉब स्वामित्व और टिकाऊ रन इतिहास का उपयोग करते हैं तथा रन पहचान वाले CLI कार्य स्वामित्व रखने वाले रन संदर्भ का उपयोग करते हैं। यदि समर्थन स्थिति 5 मिनट से अधिक समय से गायब है (चाइल्ड-रहित नेटिव सबएजेंट कार्यों के लिए 30 मिनट), तो कार्य को `lost` चिह्नित किया जाता है।
   </Step>
-  <Step title="ACP session repair">
-    terminal या orphaned parent-owned one-shot ACP sessions को बंद करता है, और stale terminal या orphaned persistent ACP sessions को केवल तब बंद करता है जब कोई active conversation binding शेष नहीं रहती।
+  <Step title="ACP सेशन मरम्मत">
+    टर्मिनल या अनाथ पैरेंट-स्वामित्व वाले वन-शॉट ACP सेशन बंद करता है और पुराने टर्मिनल या अनाथ स्थायी ACP सेशन केवल तभी बंद करता है, जब कोई सक्रिय वार्तालाप बाइंडिंग शेष न हो।
   </Step>
-  <Step title="Cleanup stamping">
-    terminal tasks पर `cleanupAfter` timestamp set करता है (endedAt + 7 days)। retention के दौरान, lost tasks अभी भी audit में warnings के रूप में दिखाई देते हैं; `cleanupAfter` expire होने के बाद या cleanup metadata missing होने पर, वे errors होते हैं।
+  <Step title="क्लीनअप स्टैम्पिंग">
+    टर्मिनल कार्यों पर `cleanupAfter` टाइमस्टैम्प सेट करता है (टर्मिनल समय + प्रतिधारण अवधि)। प्रतिधारण के दौरान खोए हुए कार्य ऑडिट में चेतावनी के रूप में दिखाई देते रहते हैं; `cleanupAfter` की अवधि समाप्त होने के बाद या क्लीनअप मेटाडेटा गायब होने पर, वे त्रुटियाँ बन जाते हैं।
   </Step>
-  <Step title="Pruning">
-    उन records को delete करता है जिनकी `cleanupAfter` date निकल चुकी है।
+  <Step title="छँटाई">
+    अपनी `cleanupAfter` तारीख पार कर चुके रिकॉर्ड हटाता है।
   </Step>
 </Steps>
 
 <Note>
-**Retention:** terminal task records **7 days** तक रखे जाते हैं, फिर automatically pruned होते हैं। कोई configuration आवश्यक नहीं।
+**प्रतिधारण:** टर्मिनल कार्य रिकॉर्ड **7 दिनों** तक रखे जाते हैं (`lost` रिकॉर्ड **24 घंटों** तक), फिर स्वचालित रूप से हटा दिए जाते हैं। किसी कॉन्फ़िगरेशन की आवश्यकता नहीं है।
 </Note>
 
-## कार्य अन्य systems से कैसे संबंधित हैं
+## कार्य अन्य प्रणालियों से कैसे संबंधित हैं
 
 <AccordionGroup>
-  <Accordion title="Tasks and Task Flow">
-    [कार्य प्रवाह](/hi/automation/taskflow) background tasks के ऊपर flow orchestration layer है। एक single flow अपने lifetime में managed या mirrored sync modes का उपयोग करके कई tasks coordinate कर सकता है। individual task records inspect करने के लिए `openclaw tasks` और orchestrating flow inspect करने के लिए `openclaw tasks flow` का उपयोग करें।
-
-    विवरण के लिए [कार्य प्रवाह](/hi/automation/taskflow) देखें।
+  <Accordion title="कार्य और कार्य प्रवाह">
+    [कार्य प्रवाह](/hi/automation/taskflow) पृष्ठभूमि कार्यों के ऊपर की प्रवाह समन्वयन परत है। एक प्रवाह अपने जीवनकाल में प्रबंधित या प्रतिबिंबित सिंक मोड का उपयोग करके कई कार्यों का समन्वय कर सकता है। व्यक्तिगत कार्य रिकॉर्ड का निरीक्षण करने के लिए `openclaw tasks` और समन्वय करने वाले प्रवाह का निरीक्षण करने के लिए `openclaw tasks flow` का उपयोग करें।
 
   </Accordion>
-  <Accordion title="Tasks and cron">
-    Cron job definitions, runtime execution state, और run history OpenClaw के shared SQLite state database में रहते हैं। **हर** cron execution एक task record बनाता है - main-session और isolated दोनों। Main-session cron tasks default रूप से `silent` notify policy का उपयोग करते हैं ताकि वे notifications generate किए बिना track करें।
+  <Accordion title="कार्य और Cron">
+    Cron जॉब परिभाषाएँ, रनटाइम निष्पादन स्थिति और रन इतिहास OpenClaw के साझा SQLite स्थिति डेटाबेस में रहते हैं। **प्रत्येक** Cron निष्पादन—मुख्य-सेशन और अलग-थलग दोनों—`silent` सूचना नीति के साथ एक कार्य रिकॉर्ड बनाता है, इसलिए Cron रन स्वयं अपनी कार्य सूचनाएँ उत्पन्न किए बिना ट्रैक किए जाते हैं।
 
-    [Cron Jobs](/hi/automation/cron-jobs) देखें।
+    [Cron जॉब](/hi/automation/cron-jobs) देखें।
 
   </Accordion>
-  <Accordion title="Tasks and heartbeat">
-    Heartbeat runs main-session turns हैं - वे task records नहीं बनाते। जब कोई task complete होता है, तो वह heartbeat wake trigger कर सकता है ताकि आपको result तुरंत दिखे।
+  <Accordion title="कार्य और Heartbeat">
+    Heartbeat रन मुख्य-सेशन टर्न होते हैं—वे कार्य रिकॉर्ड नहीं बनाते। जब कोई कार्य पूर्ण होता है, तो यह Heartbeat वेक ट्रिगर कर सकता है, ताकि आपको परिणाम तुरंत दिखाई दे।
 
     [Heartbeat](/hi/gateway/heartbeat) देखें।
 
   </Accordion>
-  <Accordion title="Tasks and sessions">
-    कोई task `childSessionKey` (जहां work चलता है) और `requesterSessionKey` (जिसने इसे शुरू किया) को reference कर सकता है। इसका `agentId` work execute करने वाले agent की पहचान करता है, जबकि requester और owner fields launch और control context को preserve करते हैं। Sessions conversation context हैं; tasks उसके ऊपर activity tracking हैं।
+  <Accordion title="कार्य और सत्र">
+    कोई कार्य एक `childSessionKey` (जहाँ कार्य चलता है) और एक `requesterSessionKey` (जिसने इसे शुरू किया) का संदर्भ दे सकता है। इसका `agentId` कार्य निष्पादित करने वाले एजेंट की पहचान करता है, जबकि अनुरोधकर्ता और स्वामी फ़ील्ड आरंभ और नियंत्रण का संदर्भ सुरक्षित रखते हैं। सत्र संवाद का संदर्भ हैं; कार्य उसके ऊपर गतिविधि को ट्रैक करते हैं।
   </Accordion>
-  <Accordion title="Tasks and agent runs">
-    किसी task का `runId` work कर रहे agent run से link करता है। Agent lifecycle events (start, end, error) automatically task status update करते हैं - आपको lifecycle manually manage करने की जरूरत नहीं है।
+  <Accordion title="कार्य और एजेंट रन">
+    किसी कार्य का `runId` कार्य करने वाले एजेंट रन से जुड़ता है। एजेंट जीवनचक्र की घटनाएँ (आरंभ, समाप्ति, त्रुटि) कार्य की स्थिति को अपने-आप अपडेट करती हैं - आपको जीवनचक्र को मैन्युअल रूप से प्रबंधित करने की आवश्यकता नहीं है।
   </Accordion>
 </AccordionGroup>
 
 ## संबंधित
 
-- [Automation](/hi/automation) - सभी automation mechanisms एक नजर में
-- [CLI: Tasks](/hi/cli/tasks) - CLI command reference
-- [Heartbeat](/hi/gateway/heartbeat) - periodic main-session turns
-- [Scheduled Tasks](/hi/automation/cron-jobs) - background work scheduling
-- [कार्य प्रवाह](/hi/automation/taskflow) - tasks के ऊपर flow orchestration
+- [स्वचालन](/hi/automation) - सभी स्वचालन तंत्रों का एक नज़र में अवलोकन
+- [CLI: कार्य](/hi/cli/tasks) - CLI कमांड संदर्भ
+- [Heartbeat](/hi/gateway/heartbeat) - मुख्य सत्र के आवधिक टर्न
+- [निर्धारित कार्य](/hi/automation/cron-jobs) - पृष्ठभूमि कार्य का शेड्यूल निर्धारण
+- [कार्य प्रवाह](/hi/automation/taskflow) - कार्यों के ऊपर प्रवाह ऑर्केस्ट्रेशन
