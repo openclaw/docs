@@ -494,6 +494,7 @@ Cờ:
     - **Chẩn đoán Plugin**: hiển thị mọi cảnh báo hoặc lỗi trong thời gian tải do sổ đăng ký plugin phát ra.
     - **Khôi phục TaskFlow**: hiển thị các TaskFlow được quản lý đáng ngờ cần kiểm tra hoặc hủy thủ công.
     - **Claude CLI**: chỉ báo cáo sự cố về tệp nhị phân, xác thực, hồ sơ, không gian làm việc hoặc thư mục dự án; chi tiết thăm dò khỏe mạnh được lược bỏ.
+
   </Accordion>
   <Accordion title="11b. Kích thước tệp bootstrap">
     Doctor kiểm tra xem các tệp bootstrap của không gian làm việc (ví dụ `AGENTS.md`, `CLAUDE.md` hoặc các tệp ngữ cảnh được chèn khác) có gần hoặc vượt quá ngân sách ký tự đã cấu hình hay không. Công cụ báo cáo số ký tự thô so với số ký tự được chèn theo từng tệp, tỷ lệ phần trăm bị cắt ngắn, nguyên nhân cắt ngắn (`max/file` hoặc `max/total`) và tổng số ký tự được chèn dưới dạng một phần của tổng ngân sách. Khi tệp bị cắt ngắn hoặc gần đạt giới hạn, doctor in các mẹo để điều chỉnh `agents.defaults.bootstrapMaxChars` và `agents.defaults.bootstrapTotalMaxChars`.
