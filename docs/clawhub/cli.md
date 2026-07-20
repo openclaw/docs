@@ -125,8 +125,8 @@ Stores your API token + cached registry URL.
 - `--versions`: list version history (first page).
 - `--limit <n>`: max versions to list (1-200).
 - `--files`: list files for the selected version.
-- `--file <path>`: fetch raw file content (text files only; 200KB limit).
-- `--json`: machine-readable output.
+- `--file <path>`: fetch raw file bytes (10MB limit).
+- `--json`: machine-readable output; `--file` includes exact bytes as base64 and UTF-8 text when available.
 
 ### `install @owner/slug`
 
@@ -269,7 +269,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/3ff331925b34e050cf5e7c1de7a91da3ae9a84d4/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/3097319ef6dc58e7735478dcc47dd03d944ffb4d/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -407,7 +407,7 @@ clawhub package explore episodic-claw --family code-plugin
 - `--versions`: list version history (first page).
 - `--limit <n>`: max versions to list (1-100).
 - `--files`: list files for the selected version.
-- `--file <path>`: fetch raw file content (text files only; 200KB limit).
+- `--file <path>`: fetch a bounded UTF-8 text preview (200KB limit).
 - `--json`: machine-readable output.
 
 ### `package download <name>`
@@ -711,7 +711,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/3ff331925b34e050cf5e7c1de7a91da3ae9a84d4/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/3097319ef6dc58e7735478dcc47dd03d944ffb4d/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
