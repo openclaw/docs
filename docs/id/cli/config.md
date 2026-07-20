@@ -5,20 +5,20 @@ sidebarTitle: Config
 summary: Referensi CLI untuk `openclaw config` (get/set/patch/unset/file/schema/validate)
 title: Konfigurasi
 x-i18n:
-    generated_at: "2026-07-19T04:59:58Z"
+    generated_at: "2026-07-20T14:06:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: b6339649c229aaf121b753111bd3a7e3bd6837ed133bc38b77e4ff975cc64be0
+    source_hash: 8dafc3a8e8c6d27fc86ab6c417593bd753f4326a65768b1cb073bfa6fffceaea
     source_path: cli/config.md
     workflow: 16
 ---
 
-Pembantu noninteraktif untuk `openclaw.json`: mendapatkan/menetapkan/menambal/menghapus penetapan nilai berdasarkan jalur, mencetak skema, memvalidasi, atau mencetak jalur file aktif. Jalankan `openclaw config` tanpa subperintah untuk membuka wizard terpandu yang sama dengan `openclaw configure`.
+Pembantu non-interaktif untuk `openclaw.json`: mendapatkan/menetapkan/menambal/menghapus penetapan nilai berdasarkan jalur, mencetak skema, memvalidasi, atau mencetak jalur file aktif. Jalankan `openclaw config` tanpa subperintah untuk membuka wisaya terpandu yang sama seperti `openclaw configure`.
 
 <Note>
-Saat `OPENCLAW_NIX_MODE=1`, OpenClaw memperlakukan `openclaw.json` sebagai tidak dapat diubah. Perintah hanya-baca (`config get`, `config file`, `config schema`, `config validate`) tetap berfungsi; penulis konfigurasi menolak. Sebagai gantinya, edit sumber Nix untuk instalasi tersebut; untuk distribusi nix-openclaw pihak pertama, gunakan [Mulai Cepat nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) dan tetapkan nilai di bawah `programs.openclaw.config` atau `instances.<name>.config`.
+Saat `OPENCLAW_NIX_MODE=1`, OpenClaw memperlakukan `openclaw.json` sebagai tidak dapat diubah. Perintah hanya-baca (`config get`, `config file`, `config schema`, `config validate`) tetap berfungsi; penulis konfigurasi akan menolak. Sebagai gantinya, edit sumber Nix untuk instalasi tersebut; untuk distribusi nix-openclaw pihak pertama, gunakan [Panduan Mulai Cepat nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) dan tetapkan nilai di bawah `programs.openclaw.config` atau `instances.<name>.config`.
 </Note>
 
 ## Opsi root
@@ -53,7 +53,7 @@ openclaw config validate --json
 
 ### Jalur
 
-Notasi titik atau kurung siku. Apit jalur berkurung siku dengan tanda kutip dalam contoh shell agar zsh tidak memperluas glob `[0]`:
+Notasi titik atau tanda kurung. Kutip jalur bertanda kurung dalam contoh shell agar zsh tidak memperluas pola glob `[0]`:
 
 ```bash
 openclaw config get agents.defaults.workspace
@@ -64,9 +64,9 @@ openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
 
 ### `config get`
 
-Membaca nilai dari snapshot konfigurasi yang telah disunting (rahasia tidak pernah dicetak). `--json` mencetak nilai mentah sebagai JSON; jika tidak, string/angka/boolean dicetak tanpa pembungkus dan objek/larik dicetak sebagai JSON berformat.
+Membaca nilai dari snapshot konfigurasi yang telah disunting (rahasia tidak pernah dicetak). `--json` mencetak nilai mentah sebagai JSON; jika tidak, string/angka/boolean dicetak apa adanya dan objek/larik dicetak sebagai JSON berformat.
 
-Saat jalur tidak ada, `--json` menulis `{ "error": "Config path not found: <path>" }` ke stdout dan keluar dengan status 1. Tanpa `--json`, diagnostik tetap berada di stderr.
+Saat jalur tidak ditemukan, `--json` menulis `{ "error": "Config path not found: <path>" }` ke stdout dan keluar dengan status 1. Tanpa `--json`, diagnostik tetap berada di stderr.
 
 ```bash
 openclaw config get browser.executablePath
@@ -75,7 +75,7 @@ openclaw config get agents.defaults.model --json
 
 ### `config file`
 
-Mencetak jalur file konfigurasi aktif, yang diselesaikan dari `OPENCLAW_CONFIG_PATH` atau lokasi default. Jalur tersebut menunjuk file biasa, bukan symlink; lihat [Keamanan penulisan](#write-safety).
+Mencetak jalur file konfigurasi aktif, yang diselesaikan dari `OPENCLAW_CONFIG_PATH` atau lokasi default. Jalur tersebut menunjuk ke file biasa, bukan symlink; lihat [Keamanan penulisan](#write-safety).
 
 ### `config schema`
 
@@ -85,14 +85,14 @@ Mencetak skema JSON yang dihasilkan untuk `openclaw.json` ke stdout.
   <Accordion title="Yang disertakan">
     - Skema konfigurasi root saat ini, ditambah bidang string root `$schema` untuk alat editor.
     - Metadata dokumentasi bidang `title` / `description` yang digunakan oleh UI Kontrol.
-    - Node objek bersarang, wildcard (`*`), dan item larik (`[]`) mewarisi metadata `title` / `description` yang sama jika dokumentasi bidang yang cocok tersedia.
+    - Node objek bersarang, wildcard (`*`), dan item larik (`[]`) mewarisi metadata `title` / `description` yang sama ketika dokumentasi bidang yang cocok tersedia.
     - Cabang `anyOf` / `oneOf` / `allOf` juga mewarisi metadata dokumentasi yang sama.
-    - Metadata skema Plugin + saluran langsung dengan upaya terbaik saat manifes runtime dapat dimuat.
-    - Skema fallback yang bersih bahkan saat konfigurasi saat ini tidak valid.
+    - Metadata skema plugin + saluran langsung dengan upaya terbaik saat manifes runtime dapat dimuat.
+    - Skema cadangan yang bersih bahkan ketika konfigurasi saat ini tidak valid.
 
   </Accordion>
   <Accordion title="RPC runtime terkait">
-    `config.schema.lookup` mengembalikan satu jalur konfigurasi ternormalisasi dengan node skema dangkal (`title`, `description`, `type`, `enum`, `const`, batas umum), metadata petunjuk UI yang cocok, dan ringkasan anak langsung. Gunakan untuk penelusuran mendalam berbasis jalur di UI Kontrol atau klien khusus.
+    `config.schema.lookup` mengembalikan satu jalur konfigurasi yang dinormalisasi dengan node skema dangkal (`title`, `description`, `type`, `enum`, `const`, batas umum), metadata petunjuk UI yang cocok, dan ringkasan turunan langsung. Gunakan untuk penelusuran mendalam dalam cakupan jalur di UI Kontrol atau klien khusus.
   </Accordion>
 </AccordionGroup>
 
@@ -116,7 +116,7 @@ Jika validasi sudah gagal, mulai dengan `openclaw configure` atau `openclaw doct
 
 ## Nilai
 
-Nilai diurai sebagai JSON5 jika memungkinkan; jika tidak, nilai diperlakukan sebagai string mentah. Gunakan `--strict-json` untuk mewajibkan JSON standar tanpa fallback string (sintaks khusus JSON5 seperti komentar, koma di akhir, atau kunci tanpa tanda kutip kemudian ditolak). `--json` adalah alias lama untuk `--strict-json` pada `config set`.
+Nilai diuraikan sebagai JSON5 jika memungkinkan; jika tidak, nilai diperlakukan sebagai string mentah. Gunakan `--strict-json` untuk mewajibkan JSON standar tanpa fallback string (sintaks khusus JSON5 seperti komentar, koma di akhir, atau kunci tanpa tanda kutip kemudian ditolak). `--json` adalah alias lama untuk `--strict-json` pada `config set`.
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -124,10 +124,12 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-`config get <path> --json` mencetak nilai mentah sebagai JSON, bukan teks berformat terminal.
+`config get <path> --json` mencetak nilai mentah sebagai JSON, bukan teks yang diformat untuk terminal.
+
+Saat penulisan mengubah `agents.defaults.model` atau `agents.list[].model` per agen, OpenClaw menyelesaikan setiap pilihan utama atau fallback yang berubah melalui katalog penyedia yang dikonfigurasi sebelum menulis. Referensi model yang tidak dikenal ditolak tanpa mengubah konfigurasi aktif; jalankan `openclaw models list` untuk melihat model yang tersedia.
 
 <Note>
-Penetapan objek menggantikan jalur target secara default. Jalur terlindungi yang biasanya berisi entri tambahan pengguna menolak penggantian yang akan menghapus entri yang ada, kecuali Anda meneruskan `--replace`: `agents.defaults.models`, `agents.list`, `models.providers`, `models.providers.<id>`, `models.providers.<id>.models`, `plugins.entries`, dan `auth.profiles`.
+Penetapan objek mengganti jalur target secara default. Jalur terlindungi yang biasanya menampung entri tambahan pengguna menolak penggantian yang akan menghapus entri yang ada kecuali Anda meneruskan `--replace`: `agents.defaults.models`, `agents.list`, `models.providers`, `models.providers.<id>`, `models.providers.<id>.models`, `plugins.entries`, dan `auth.profiles`.
 </Note>
 
 Gunakan `--merge` saat menambahkan entri ke peta tersebut:
@@ -137,7 +139,7 @@ openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-Gunakan `--replace` hanya jika nilai yang diberikan memang dimaksudkan menjadi nilai target lengkap.
+Gunakan `--replace` hanya ketika nilai yang diberikan memang dimaksudkan menjadi nilai target lengkap.
 
 ## Mode `config set`
 
@@ -230,7 +232,7 @@ Target pembuat penyedia harus menggunakan `secrets.providers.<alias>` sebagai ja
     - `--provider-allow-insecure-path`
 
   </Accordion>
-  <Accordion title="Penyedia eksekusi (--provider-source exec)">
+  <Accordion title="Penyedia exec (--provider-source exec)">
     - `--provider-command <path>` (wajib)
     - `--provider-arg <arg>` (dapat diulang)
     - `--provider-no-output-timeout-ms <ms>`
@@ -245,7 +247,7 @@ Target pembuat penyedia harus menggunakan `secrets.providers.<alias>` sebagai ja
   </Accordion>
 </AccordionGroup>
 
-Contoh penyedia eksekusi yang diperkeras:
+Contoh penyedia exec yang diperkuat:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -261,23 +263,23 @@ openclaw config set secrets.providers.vault \
 
 ## `config patch`
 
-Tempel atau salurkan patch JSON5 berbentuk konfigurasi alih-alih menjalankan banyak perintah `config set` berbasis jalur. Objek digabungkan secara rekursif; larik dan nilai skalar menggantikan target; `null` menghapus jalur target.
+Tempelkan atau salurkan tambalan JSON5 berbentuk konfigurasi alih-alih menjalankan banyak perintah `config set` berbasis jalur. Objek digabungkan secara rekursif; larik dan nilai skalar mengganti target; `null` menghapus jalur target.
 
 ```bash
 openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config patch --file ./openclaw.patch.json5
 ```
 
-File patch dibatasi hingga 8 MiB. Patch `--stdin` yang disalurkan dibatasi hingga 1 MiB.
+File tambalan dibatasi hingga 8 MiB. Tambalan `--stdin` yang disalurkan dibatasi hingga 1 MiB.
 
-Salurkan patch melalui stdin untuk skrip penyiapan jarak jauh:
+Salurkan tambalan melalui stdin untuk skrip penyiapan jarak jauh:
 
 ```bash
 ssh user@gateway-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
 ssh user@gateway-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 ```
 
-Contoh patch:
+Contoh tambalan:
 
 ```json5
 {
@@ -309,13 +311,13 @@ Contoh patch:
 }
 ```
 
-Gunakan `--replace-path <path>` jika satu objek atau larik harus menjadi persis nilai yang diberikan, alih-alih ditambal secara rekursif:
+Gunakan `--replace-path <path>` ketika satu objek atau larik harus menjadi persis nilai yang diberikan, alih-alih ditambal secara rekursif:
 
 ```bash
 openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
 ```
 
-`--dry-run` menjalankan pemeriksaan skema dan keteruraian SecretRef tanpa menulis. SecretRef yang didukung eksekusi dilewati secara default selama uji coba; tambahkan `--allow-exec` jika Anda memang ingin uji coba menjalankan perintah penyedia.
+`--dry-run` menjalankan pemeriksaan skema dan kemampuan resolusi SecretRef tanpa menulis. SecretRef berbasis exec dilewati secara default selama uji coba; tambahkan `--allow-exec` jika Anda memang ingin uji coba menjalankan perintah penyedia.
 
 ## Uji coba
 
@@ -339,20 +341,20 @@ openclaw config set channels.discord.token \
 
 <AccordionGroup>
   <Accordion title="Perilaku uji coba">
-    - Mode builder: menjalankan pemeriksaan keteruraian SecretRef untuk referensi/penyedia yang diubah.
-    - Mode JSON (`--strict-json`, `--json`, atau mode batch): menjalankan validasi skema beserta pemeriksaan keteruraian SecretRef.
+    - Mode builder: menjalankan pemeriksaan kemampuan resolusi SecretRef untuk referensi/penyedia yang diubah.
+    - Mode JSON (`--strict-json`, `--json`, atau mode batch): menjalankan validasi skema beserta pemeriksaan kemampuan resolusi SecretRef.
     - Validasi kebijakan dijalankan terhadap konfigurasi lengkap setelah perubahan, sehingga penulisan objek induk (misalnya menetapkan `hooks` sebagai objek) tidak dapat melewati validasi permukaan yang tidak didukung.
-    - Pemeriksaan SecretRef exec dilewati secara default untuk menghindari efek samping perintah; teruskan `--allow-exec` untuk mengaktifkannya (ini dapat menjalankan perintah penyedia). `--allow-exec` hanya untuk uji coba dan menghasilkan galat tanpa `--dry-run`.
+    - Pemeriksaan SecretRef exec dilewati secara default untuk menghindari efek samping perintah; teruskan `--allow-exec` untuk mengaktifkannya (ini dapat menjalankan perintah penyedia). `--allow-exec` hanya untuk uji coba dan menghasilkan kesalahan tanpa `--dry-run`.
 
   </Accordion>
   <Accordion title="Kolom --dry-run --json">
     - `ok`: apakah uji coba berhasil
     - `operations`: jumlah penetapan yang dievaluasi
-    - `checks`: apakah pemeriksaan skema/keteruraian dijalankan
-    - `checks.resolvabilityComplete`: apakah pemeriksaan keteruraian dijalankan hingga selesai (false saat referensi exec dilewati)
-    - `refsChecked`: jumlah referensi yang benar-benar diuraikan selama uji coba
+    - `checks`: apakah pemeriksaan skema/kemampuan resolusi dijalankan
+    - `checks.resolvabilityComplete`: apakah pemeriksaan kemampuan resolusi dijalankan hingga selesai (false ketika referensi exec dilewati)
+    - `refsChecked`: jumlah referensi yang benar-benar diresolusi selama uji coba
     - `skippedExecRefs`: jumlah referensi exec yang dilewati karena `--allow-exec` tidak ditetapkan
-    - `errors`: kegagalan jalur yang hilang, skema, atau keteruraian terstruktur saat `ok=false`
+    - `errors`: kegagalan jalur yang hilang, skema, atau kemampuan resolusi yang terstruktur ketika `ok=false`
 
   </Accordion>
 </AccordionGroup>
@@ -374,9 +376,9 @@ openclaw config set channels.discord.token \
   skippedExecRefs: number,
   errors?: [
     {
-      kind: "missing-path" | "schema" | "resolvability",
+      kind: "missing-path" | "schema" | "resolvability" | "model",
       message: string,
-      ref?: string, // tersedia untuk galat keteruraian
+      ref?: string, // tersedia untuk kesalahan kemampuan resolusi
     },
   ],
 }
@@ -400,7 +402,7 @@ openclaw config set channels.discord.token \
     }
     ```
   </Tab>
-  <Tab title="Contoh gagal">
+  <Tab title="Contoh kegagalan">
     ```json
     {
       "ok": false,
@@ -417,7 +419,7 @@ openclaw config set channels.discord.token \
       "errors": [
         {
           "kind": "resolvability",
-          "message": "Galat: Variabel lingkungan \"MISSING_TEST_SECRET\" tidak ditetapkan.",
+          "message": "Kesalahan: Variabel lingkungan \"MISSING_TEST_SECRET\" tidak ditetapkan.",
           "ref": "env:default:MISSING_TEST_SECRET"
         }
       ]
@@ -430,33 +432,34 @@ openclaw config set channels.discord.token \
   <Accordion title="Jika uji coba gagal">
     - `config schema validation failed`: bentuk konfigurasi setelah perubahan tidak valid; perbaiki jalur/nilai atau bentuk objek penyedia/referensi.
     - `Config policy validation failed: unsupported SecretRef usage`: pindahkan kredensial tersebut kembali ke masukan teks biasa/string; gunakan SecretRef hanya pada permukaan yang didukung.
-    - `SecretRef assignment(s) could not be resolved`: penyedia/referensi yang dirujuk saat ini tidak dapat diuraikan (variabel lingkungan tidak ada, penunjuk berkas tidak valid, kegagalan penyedia exec, atau ketidakcocokan penyedia/sumber).
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: jalankan kembali dengan `--allow-exec` jika Anda memerlukan validasi keteruraian exec.
-    - Untuk mode batch, perbaiki entri yang gagal dan jalankan kembali `--dry-run` sebelum menulis.
+    - `SecretRef assignment(s) could not be resolved`: penyedia/referensi yang dirujuk saat ini tidak dapat diresolusi (variabel lingkungan tidak ada, penunjuk berkas tidak valid, kegagalan penyedia exec, atau ketidakcocokan penyedia/sumber).
+    - `model reference validation failed`: model teks utama atau cadangan yang diubah tidak dikenali; jalankan `openclaw models list` dan pilih model yang tersedia.
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: jalankan ulang dengan `--allow-exec` jika Anda memerlukan validasi kemampuan resolusi exec.
+    - Untuk mode batch, perbaiki entri yang gagal dan jalankan ulang `--dry-run` sebelum menulis.
 
   </Accordion>
 </AccordionGroup>
 
 ## Menerapkan perubahan
 
-Setelah setiap `config set` / `config patch` / `config unset` yang berhasil, CLI mencetak salah satu dari tiga petunjuk agar Anda mengetahui apakah gateway perlu dimulai ulang:
+Setelah setiap `config set` / `config patch` / `config unset` berhasil, CLI mencetak salah satu dari tiga petunjuk agar Anda mengetahui apakah Gateway perlu dimulai ulang:
 
-| Petunjuk                                            | Arti                                              |
-| --------------------------------------------------- | ------------------------------------------------- |
-| `Restart the gateway to apply.`                     | Jalur yang diubah memerlukan mulai ulang penuh.   |
-| `Change will apply without restarting the gateway.` | Muat ulang langsung menerapkannya secara otomatis. |
-| `No gateway restart needed.`                        | Tidak ada perubahan yang relevan dengan runtime.  |
+| Petunjuk                                            | Arti                                           |
+| --------------------------------------------------- | ---------------------------------------------- |
+| `Restart the gateway to apply.`                     | Jalur yang diubah memerlukan mulai ulang penuh. |
+| `Change will apply without restarting the gateway.` | Pemuatan ulang langsung menerapkannya otomatis. |
+| `No gateway restart needed.`                        | Tidak ada perubahan yang relevan bagi runtime. |
 
-Penulisan ke `plugins.entries` (atau subjalur mana pun) selalu memerlukan mulai ulang karena CLI tidak dapat membuktikan bahwa metadata muat ulang setiap plugin telah dimuat.
+Penulisan ke `plugins.entries` (atau subjalur apa pun) selalu memerlukan mulai ulang karena CLI tidak dapat membuktikan bahwa metadata pemuatan ulang setiap plugin telah dimuat.
 
 ## Keamanan penulisan
 
-`openclaw config set` dan penulis konfigurasi lain milik OpenClaw memvalidasi konfigurasi lengkap setelah perubahan sebelum menyimpannya ke disk. Jika muatan baru gagal dalam validasi skema atau tampak seperti penimpaan destruktif, konfigurasi aktif dibiarkan tanpa perubahan dan muatan yang ditolak disimpan di sebelahnya sebagai `openclaw.json.rejected.*`.
+`openclaw config set` dan penulis konfigurasi lain yang dimiliki OpenClaw memvalidasi konfigurasi lengkap setelah perubahan sebelum menyimpannya ke disk. Jika muatan baru gagal dalam validasi skema atau tampak seperti penimpaan destruktif, konfigurasi aktif tidak diubah dan muatan yang ditolak disimpan di sebelahnya sebagai `openclaw.json.rejected.*`.
 
-Penulisan milik OpenClaw menserialisasi ulang JSON5 sebagai JSON standar. Jika sumber berisi komentar, penulis langsung memberikan peringatan sebelum menghapusnya; gunakan editor langsung jika komentar perlu dipertahankan.
+Penulisan yang dimiliki OpenClaw melakukan serialisasi ulang JSON5 sebagai JSON standar. Jika sumber berisi komentar, penulis akan langsung memperingatkan sebelum menghapusnya; gunakan editor langsung jika komentar perlu dipertahankan.
 
 <Warning>
-Jalur konfigurasi aktif harus berupa berkas biasa. Tata letak `openclaw.json` yang menggunakan tautan simbolis tidak didukung untuk penulisan; gunakan `OPENCLAW_CONFIG_PATH` untuk menunjuk langsung ke berkas sebenarnya.
+Jalur konfigurasi aktif harus berupa berkas biasa. Tata letak `openclaw.json` yang menggunakan symlink tidak didukung untuk penulisan; sebagai gantinya, gunakan `OPENCLAW_CONFIG_PATH` untuk menunjuk langsung ke berkas sebenarnya.
 </Warning>
 
 Utamakan penulisan melalui CLI untuk pengeditan kecil:
@@ -475,19 +478,19 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-Penulisan langsung melalui editor tetap diizinkan, tetapi Gateway yang sedang berjalan memperlakukannya sebagai tidak tepercaya sampai berhasil divalidasi. Pengeditan langsung yang tidak valid menyebabkan kegagalan saat memulai atau dilewati oleh muat ulang langsung; Gateway tidak menulis ulang `openclaw.json`. Jalankan `openclaw doctor --fix` untuk memperbaiki konfigurasi dengan prefiks/yang tertimpa atau memulihkan salinan terakhir yang diketahui valid. Lihat [Pemecahan masalah Gateway](/id/gateway/troubleshooting#gateway-rejected-invalid-config).
+Penulisan melalui editor langsung tetap diizinkan, tetapi Gateway yang sedang berjalan menganggapnya tidak tepercaya hingga berhasil divalidasi. Pengeditan langsung yang tidak valid menyebabkan kegagalan saat memulai atau dilewati oleh pemuatan ulang langsung; Gateway tidak menulis ulang `openclaw.json`. Jalankan `openclaw doctor --fix` untuk memperbaiki konfigurasi yang memiliki prefiks/tertimpa atau memulihkan salinan terakhir yang diketahui valid. Lihat [Pemecahan masalah Gateway](/id/gateway/troubleshooting#gateway-rejected-invalid-config).
 
-Pemulihan seluruh berkas dikhususkan untuk perbaikan oleh doctor. Perubahan skema plugin atau penyimpangan `minHostVersion` tetap menghasilkan kesalahan yang jelas alih-alih mengembalikan pengaturan pengguna lain yang tidak terkait, seperti konfigurasi model, penyedia, profil autentikasi, saluran, eksposur gateway, alat, memori, peramban, atau cron.
+Pemulihan seluruh berkas hanya diperuntukkan bagi perbaikan oleh doctor. Perubahan skema plugin atau ketidakselarasan `minHostVersion` tetap menghasilkan kegagalan yang jelas alih-alih mengembalikan pengaturan pengguna lain yang tidak terkait, seperti konfigurasi model, penyedia, profil autentikasi, saluran, eksposur Gateway, alat, memori, browser, atau cron.
 
 ## Siklus perbaikan
 
-Setelah `openclaw config validate` berhasil, gunakan TUI lokal agar agen tertanam membandingkan konfigurasi aktif dengan dokumentasi sementara Anda memvalidasi setiap perubahan dari terminal yang sama:
+Setelah `openclaw config validate` berhasil, gunakan TUI lokal agar agen tertanam membandingkan konfigurasi aktif dengan dokumentasi sembari Anda memvalidasi setiap perubahan dari terminal yang sama:
 
 ```bash
 openclaw chat
 ```
 
-Di dalam TUI, awalan `!` menjalankan perintah shell lokal secara harfiah (setelah permintaan konfirmasi satu kali per sesi):
+Di dalam TUI, awalan `!` menjalankan perintah shell lokal secara literal (setelah permintaan konfirmasi satu kali per sesi):
 
 ```text
 !openclaw config file
@@ -500,14 +503,14 @@ Di dalam TUI, awalan `!` menjalankan perintah shell lokal secara harfiah (setela
   <Step title="Bandingkan dengan dokumentasi">
     Minta agen membandingkan konfigurasi Anda saat ini dengan halaman dokumentasi yang relevan dan menyarankan perbaikan terkecil.
   </Step>
-  <Step title="Terapkan pengeditan yang ditargetkan">
-    Terapkan pengeditan yang ditargetkan dengan `openclaw config set` atau `openclaw configure`.
+  <Step title="Terapkan pengeditan tertarget">
+    Terapkan pengeditan tertarget dengan `openclaw config set` atau `openclaw configure`.
   </Step>
   <Step title="Validasi ulang">
-    Jalankan kembali `openclaw config validate` setelah setiap perubahan.
+    Jalankan ulang `openclaw config validate` setelah setiap perubahan.
   </Step>
   <Step title="Gunakan doctor untuk masalah runtime">
-    Jika validasi berhasil tetapi runtime masih bermasalah, jalankan `openclaw doctor` atau `openclaw doctor --fix` untuk bantuan migrasi dan perbaikan.
+    Jika validasi berhasil tetapi runtime masih bermasalah, jalankan `openclaw doctor` atau `openclaw doctor --fix` untuk mendapatkan bantuan migrasi dan perbaikan.
   </Step>
 </Steps>
 
