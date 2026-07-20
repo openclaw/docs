@@ -1686,6 +1686,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "gateway/protocol",
+                      "gateway/clients",
+                      "gateway/embedding",
                       "gateway/bridge-protocol",
                       "gateway/openai-http-api",
                       "gateway/openresponses-http-api",
@@ -3294,6 +3296,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "zh-TW/gateway/protocol",
+                      "zh-TW/gateway/clients",
+                      "zh-TW/gateway/embedding",
                       "zh-TW/gateway/bridge-protocol",
                       "zh-TW/gateway/openai-http-api",
                       "zh-TW/gateway/openresponses-http-api",
@@ -4279,6 +4283,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ja-JP/gateway/protocol",
+                      "ja-JP/gateway/clients",
+                      "ja-JP/gateway/embedding",
                       "ja-JP/gateway/bridge-protocol",
                       "ja-JP/gateway/openai-http-api",
                       "ja-JP/gateway/openresponses-http-api",
@@ -5264,6 +5270,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "es/gateway/protocol",
+                      "es/gateway/clients",
+                      "es/gateway/embedding",
                       "es/gateway/bridge-protocol",
                       "es/gateway/openai-http-api",
                       "es/gateway/openresponses-http-api",
@@ -6249,6 +6257,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "pt-BR/gateway/protocol",
+                      "pt-BR/gateway/clients",
+                      "pt-BR/gateway/embedding",
                       "pt-BR/gateway/bridge-protocol",
                       "pt-BR/gateway/openai-http-api",
                       "pt-BR/gateway/openresponses-http-api",
@@ -7234,6 +7244,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ko/gateway/protocol",
+                      "ko/gateway/clients",
+                      "ko/gateway/embedding",
                       "ko/gateway/bridge-protocol",
                       "ko/gateway/openai-http-api",
                       "ko/gateway/openresponses-http-api",
@@ -8219,6 +8231,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "de/gateway/protocol",
+                      "de/gateway/clients",
+                      "de/gateway/embedding",
                       "de/gateway/bridge-protocol",
                       "de/gateway/openai-http-api",
                       "de/gateway/openresponses-http-api",
@@ -9204,6 +9218,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "fr/gateway/protocol",
+                      "fr/gateway/clients",
+                      "fr/gateway/embedding",
                       "fr/gateway/bridge-protocol",
                       "fr/gateway/openai-http-api",
                       "fr/gateway/openresponses-http-api",
@@ -10189,6 +10205,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "hi/gateway/protocol",
+                      "hi/gateway/clients",
+                      "hi/gateway/embedding",
                       "hi/gateway/bridge-protocol",
                       "hi/gateway/openai-http-api",
                       "hi/gateway/openresponses-http-api",
@@ -11174,6 +11192,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ar/gateway/protocol",
+                      "ar/gateway/clients",
+                      "ar/gateway/embedding",
                       "ar/gateway/bridge-protocol",
                       "ar/gateway/openai-http-api",
                       "ar/gateway/openresponses-http-api",
@@ -12159,6 +12179,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "it/gateway/protocol",
+                      "it/gateway/clients",
+                      "it/gateway/embedding",
                       "it/gateway/bridge-protocol",
                       "it/gateway/openai-http-api",
                       "it/gateway/openresponses-http-api",
@@ -13144,6 +13166,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "vi/gateway/protocol",
+                      "vi/gateway/clients",
+                      "vi/gateway/embedding",
                       "vi/gateway/bridge-protocol",
                       "vi/gateway/openai-http-api",
                       "vi/gateway/openresponses-http-api",
@@ -14129,6 +14153,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "nl/gateway/protocol",
+                      "nl/gateway/clients",
+                      "nl/gateway/embedding",
                       "nl/gateway/bridge-protocol",
                       "nl/gateway/openai-http-api",
                       "nl/gateway/openresponses-http-api",
@@ -15114,6 +15140,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "tr/gateway/protocol",
+                      "tr/gateway/clients",
+                      "tr/gateway/embedding",
                       "tr/gateway/bridge-protocol",
                       "tr/gateway/openai-http-api",
                       "tr/gateway/openresponses-http-api",
@@ -16099,6 +16127,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "uk/gateway/protocol",
+                      "uk/gateway/clients",
+                      "uk/gateway/embedding",
                       "uk/gateway/bridge-protocol",
                       "uk/gateway/openai-http-api",
                       "uk/gateway/openresponses-http-api",
@@ -17084,6 +17114,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "id/gateway/protocol",
+                      "id/gateway/clients",
+                      "id/gateway/embedding",
                       "id/gateway/bridge-protocol",
                       "id/gateway/openai-http-api",
                       "id/gateway/openresponses-http-api",
@@ -18069,6 +18101,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "pl/gateway/protocol",
+                      "pl/gateway/clients",
+                      "pl/gateway/embedding",
                       "pl/gateway/bridge-protocol",
                       "pl/gateway/openai-http-api",
                       "pl/gateway/openresponses-http-api",
@@ -19054,6 +19088,8 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ru/gateway/protocol",
+                      "ru/gateway/clients",
+                      "ru/gateway/embedding",
                       "ru/gateway/bridge-protocol",
                       "ru/gateway/openai-http-api",
                       "ru/gateway/openresponses-http-api",
