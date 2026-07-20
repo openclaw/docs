@@ -1,15 +1,15 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin clickclack
-summary: Menambahkan antarmuka saluran Clickclack untuk mengirim dan menerima pesan OpenClaw.
+summary: Menambahkan permukaan channel Clickclack untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-07-16T18:30:54Z"
+    generated_at: "2026-07-20T03:52:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7dcb6958564f9a26d8e8ef43d1810805417c69bf05632e7d64bd2acedea5c82f
+    source_hash: e59a11826dfc14a7c6945930547804b10e9cb5144d9cdb75657be9f8f4e9129f
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
@@ -26,6 +26,12 @@ Menambahkan permukaan channel Clickclack untuk mengirim dan menerima pesan OpenC
 ## Permukaan
 
 channel: `clickclack`
+
+Plugin dapat secara opsional membuat channel ClickClack yang disinkronkan dengan siklus hidup
+untuk setiap sesi OpenClaw. Channel diskusi terkelola menggunakan sesi samping dari agen yang sama
+untuk observasi dan relai, sedangkan sesi utama yang terhubung menerima
+alat khusus penarikan `discussion`. Lihat [Diskusi sesi ClickClack](/id/channels/clickclack#session-discussions)
+untuk persyaratan konfigurasi dan visibilitas alat sesi.
 
 ## Dokumentasi terkait
 

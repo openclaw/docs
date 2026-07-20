@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Anda ingin menggunakan Kimi untuk `web_search`
+    - Anda ingin menggunakan Kimi untuk web_search
     - Anda memerlukan KIMI_API_KEY atau MOONSHOT_API_KEY
 summary: Pencarian web Kimi melalui pencarian web Moonshot
 title: Pencarian Kimi
 x-i18n:
-    generated_at: "2026-07-12T14:46:49Z"
+    generated_at: "2026-07-20T03:55:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 42ee67c14c979298c296b20cc3f10e8c1d0f93defadc1ce2aa25ac9411aba036
+    source_hash: 65e5f8c9f3b607dbcc3256c51a6a083864e31f65ed2a751d2d500abeb35ba844
     source_path: tools/kimi-search.md
     workflow: 16
 ---
 
 Kimi adalah penyedia `web_search` yang didukung oleh pencarian web native Moonshot. Moonshot
-menyintesis satu jawaban dengan kutipan sebaris, mirip dengan penyedia respons
-berbasis grounding milik Gemini dan Grok, alih-alih mengembalikan daftar hasil berperingkat.
+menyintesis satu jawaban dengan sitasi sebaris, serupa dengan penyedia
+respons berbasis grounding Gemini dan Grok, alih-alih mengembalikan daftar hasil berperingkat.
 
 ## Penyiapan
 
@@ -25,8 +26,8 @@ berbasis grounding milik Gemini dan Grok, alih-alih mengembalikan daftar hasil b
     Dapatkan kunci API dari [Moonshot AI](https://platform.moonshot.cn/).
   </Step>
   <Step title="Simpan kunci">
-    Tetapkan `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di lingkungan Gateway (untuk
-    instalasi Gateway, tambahkan ke `~/.openclaw/.env`), atau konfigurasikan melalui:
+    Atur `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di lingkungan Gateway (untuk
+    instalasi gateway, tambahkan ke `~/.openclaw/.env`), atau konfigurasikan melalui:
 
     ```bash
     openclaw configure --section web
@@ -35,7 +36,7 @@ berbasis grounding milik Gemini dan Grok, alih-alih mengembalikan daftar hasil b
   </Step>
 </Steps>
 
-Memilih **Kimi** selama `openclaw onboard` atau `openclaw configure --section web`
+Memilih **Kimi** saat menjalankan `openclaw onboard` atau `openclaw configure --section web`
 juga akan meminta:
 
 - wilayah API Moonshot: `https://api.moonshot.ai/v1` atau `https://api.moonshot.cn/v1`
@@ -71,15 +72,15 @@ juga akan meminta:
 `tools.web.search.provider` dideteksi secara otomatis dari kunci API yang tersedia jika dihilangkan;
 tetapkan secara eksplisit ke `kimi` jika beberapa kredensial pencarian dikonfigurasi.
 
-Bentuk tercakup yang setara di bawah `tools.web.search.kimi` (`apiKey`, `baseUrl`, `model`)
-juga dapat digunakan; kedua bentuk digabungkan ke dalam konfigurasi terselesaikan yang sama.
+Konfigurasikan nilai `apiKey`, `baseUrl`, dan `model` khusus Kimi di bawah
+`plugins.entries.moonshot.config.webSearch`.
 
-Nilai default: `baseUrl` menggunakan `https://api.moonshot.ai/v1` secara default jika dihilangkan, sedangkan `model`
+Nilai default: `baseUrl` menggunakan `https://api.moonshot.ai/v1` secara default jika dihilangkan, `model`
 menggunakan `kimi-k2.6` secara default.
 
-Jika lalu lintas percakapan menggunakan host Tiongkok (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), `web_search` Kimi akan otomatis menggunakan kembali host tersebut
-ketika `baseUrl` miliknya tidak ditetapkan, sehingga kunci `.cn` tidak secara tidak sengaja mengakses
+Jika lalu lintas obrolan menggunakan host Tiongkok (`models.providers.moonshot.baseUrl`:
+`https://api.moonshot.cn/v1`), `web_search` Kimi secara otomatis menggunakan kembali host tersebut
+saat `baseUrl` miliknya belum ditetapkan, sehingga kunci `.cn` tidak secara tidak sengaja mengakses
 endpoint internasional (yang mengembalikan HTTP 401 untuk kunci tersebut). Tetapkan
 `baseUrl` Kimi secara eksplisit untuk mengganti pewarisan ini.
 
@@ -87,23 +88,23 @@ endpoint internasional (yang mengembalikan HTTP 401 untuk kunci tersebut). Tetap
 
 OpenClaw hanya mengembalikan hasil `web_search` Kimi setelah respons Moonshot
 menyertakan bukti grounding pencarian web native, seperti pemutaran ulang pemanggilan alat
-`$web_search`, `search_results`, atau URL kutipan. Jika Kimi menjawab langsung tanpa
-grounding (misalnya, "Saya tidak dapat menjelajahi internet"), OpenClaw akan mengembalikan
-galat `kimi_web_search_ungrounded`, alih-alih memperlakukan teks tersebut sebagai hasil
+`$web_search`, `search_results`, atau URL sitasi. Jika Kimi menjawab langsung tanpa
+grounding (misalnya "Saya tidak dapat menjelajahi internet"), OpenClaw akan mengembalikan
+kesalahan `kimi_web_search_ungrounded`, alih-alih memperlakukan teks tersebut sebagai hasil
 pencarian. Coba ulang kueri, beralihlah ke penyedia terstruktur seperti Brave, atau gunakan
-`web_fetch` / alat peramban jika Anda sudah memiliki URL tujuan.
+`web_fetch` / alat browser jika Anda sudah memiliki URL tujuan.
 
 ## Parameter alat
 
-| Parameter                                                       | Didukung                                                                                                                       |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `query`                                                         | Ya                                                                                                                             |
-| `count`                                                         | Diterima untuk kompatibilitas lintas penyedia, tetapi diabaikan: Kimi selalu mengembalikan satu jawaban tersintesis, bukan daftar N hasil |
-| `country`, `language`, `freshness`, `date_after`, `date_before` | Tidak                                                                                                                          |
+| Parameter                                                       | Didukung                                                                                                                |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `query`                                                         | Ya                                                                                                                      |
+| `count`                                                         | Diterima untuk kompatibilitas lintas penyedia, tetapi diabaikan: Kimi selalu mengembalikan satu jawaban hasil sintesis, bukan daftar N hasil |
+| `country`, `language`, `freshness`, `date_after`, `date_before` | Tidak                                                                                                                       |
 
 ## Terkait
 
 - [Ikhtisar Pencarian Web](/id/tools/web) - semua penyedia dan deteksi otomatis
 - [Moonshot AI](/id/providers/moonshot) - dokumentasi model Moonshot + penyedia Kimi Coding
-- [Pencarian Gemini](/id/tools/gemini-search) - jawaban tersintesis AI melalui grounding Google
-- [Pencarian Grok](/id/tools/grok-search) - jawaban tersintesis AI melalui grounding xAI
+- [Pencarian Gemini](/id/tools/gemini-search) - jawaban hasil sintesis AI melalui grounding Google
+- [Pencarian Grok](/id/tools/grok-search) - jawaban hasil sintesis AI melalui grounding xAI

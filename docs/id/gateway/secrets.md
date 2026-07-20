@@ -1,18 +1,18 @@
 ---
 read_when:
-    - Mengonfigurasi SecretRefs untuk kredensial penyedia dan ref `auth-profiles.json`
-    - Mengoperasikan pemuatan ulang, audit, konfigurasi, dan penerapan rahasia secara aman dalam produksi
-    - Memahami penghentian cepat saat startup, pemfilteran permukaan tidak aktif, dan perilaku konfigurasi terakhir yang diketahui berfungsi baik
+    - Mengonfigurasi SecretRefs untuk kredensial penyedia dan referensi `auth-profiles.json`
+    - Mengoperasikan pemuatan ulang, audit, konfigurasi, dan penerapan rahasia secara aman di produksi
+    - Memahami kegagalan cepat saat startup, pemfilteran permukaan yang tidak aktif, dan perilaku konfigurasi terakhir yang diketahui berfungsi baik
 sidebarTitle: Secrets management
-summary: 'Manajemen rahasia: kontrak SecretRef, perilaku snapshot runtime, dan penghapusan aman satu arah'
+summary: 'Pengelolaan rahasia: kontrak SecretRef, perilaku snapshot runtime, dan penghapusan satu arah yang aman'
 title: Manajemen rahasia
 x-i18n:
-    generated_at: "2026-07-19T04:56:16Z"
+    generated_at: "2026-07-20T03:48:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 17076666f1b26c379436792704575a171e183343a62a9a6b4e2ece17ec8d10d0
+    source_hash: bbc7d006384ab6518daadc9f9283e15954a76f95307a09b73b053017a53b112c
     source_path: gateway/secrets.md
     workflow: 16
 ---
@@ -29,67 +29,67 @@ Kredensial teks biasa tetap dapat dibaca agen jika berada dalam file yang dapat 
 
 ## Model runtime
 
-- Rahasia diresolusikan ke dalam snapshot runtime di memori, secara langsung selama aktivasi, bukan secara tertunda pada jalur permintaan.
-- Startup dingin Gateway mengisolasi kegagalan SecretRef yang dapat dicoba ulang ke pemilik non-Gateway yang diketahui jika pemilik tersebut mendukung isolasi. Kelas pemilik yang dipetakan mencakup penyedia model dan Skills, penyedia media/TTS/Cron, profil autentikasi yang memenuhi syarat, memori per agen, SSH sandbox, akun saluran, dan rute Plugin yang dideklarasikan dalam manifes. Gateway dimulai, mencatat pemilik sebagai telah dikonfigurasi tetapi tidak tersedia, dan mengeluarkan peringatan degradasi yang telah disamarkan. Autentikasi ingress Gateway, referensi atau nilai hasil resolusi yang secara struktural tidak valid, pemilik yang gagal secara tertutup, dan referensi yang pemilik runtimenya tidak dipetakan tetap menggagalkan startup.
-- Pemuatan ulang memvalidasi setiap pemilik yang dipetakan secara independen, lalu menerbitkan satu snapshot atomik. Pemilik yang sehat diperbarui. Pemilik gagal yang memenuhi syarat mempertahankan nilai terakhir yang diketahui baik dan menjadi kedaluwarsa hanya jika identitas referensinya, definisi penyedia, dan kontrak lengkap pemilik non-rahasia tidak berubah; pemilik gagal yang berubah atau baru menjadi dingin. Kegagalan ketat menolak pemuatan ulang dan mempertahankan snapshot aktif.
+- Rahasia diresolusikan ke dalam snapshot runtime di memori secara langsung selama aktivasi, bukan secara lambat pada jalur permintaan.
+- Startup dingin Gateway mengisolasi kegagalan SecretRef yang dapat dicoba ulang ke pemilik non-Gateway yang diketahui jika pemilik tersebut mendukung isolasi. Kelas pemilik yang dipetakan mencakup penyedia model dan Skills, penyedia media/TTS/cron, profil autentikasi yang memenuhi syarat, memori per agen, SSH sandbox, akun saluran, dan rute Plugin yang dideklarasikan dalam manifes. Gateway dimulai, mencatat pemilik sebagai dikonfigurasi tetapi tidak tersedia, dan mengeluarkan peringatan degradasi yang telah disunting. Autentikasi ingress Gateway, referensi atau nilai hasil resolusi yang secara struktural tidak valid, pemilik yang gagal secara tertutup, dan referensi yang pemilik runtime-nya tidak dipetakan tetap menggagalkan startup.
+- Pemuatan ulang memvalidasi setiap pemilik yang dipetakan secara independen, lalu memublikasikan satu snapshot atomik. Pemilik yang sehat diperbarui. Pemilik yang memenuhi syarat tetapi gagal mempertahankan nilai terakhir yang diketahui baik dan menjadi usang hanya jika identitas referensinya, definisi penyedia, dan kontrak lengkap pemilik yang bukan rahasia tidak berubah; pemilik baru atau yang berubah tetapi gagal menjadi dingin. Kegagalan ketat menolak pemuatan ulang dan mempertahankan snapshot aktif.
 - Pelanggaran kebijakan (misalnya profil autentikasi mode OAuth yang digabungkan dengan input SecretRef) menggagalkan aktivasi sebelum pertukaran runtime.
-- Permintaan runtime hanya membaca snapshot aktif di memori. Kredensial SecretRef penyedia model diteruskan melalui penyimpanan autentikasi dan opsi streaming sebagai sentinel lokal proses hingga egress. Jalur pengiriman keluar (pengiriman balasan/utas Discord, pengiriman tindakan Telegram) juga membaca snapshot tersebut dan tidak meresolusikan ulang referensi untuk setiap pengiriman.
+- Permintaan runtime hanya membaca snapshot aktif dalam memori. Kredensial SecretRef penyedia model melewati penyimpanan autentikasi dan opsi stream sebagai sentinel lokal proses hingga egress. Jalur pengiriman keluar (pengiriman balasan/utas Discord, pengiriman tindakan Telegram) juga membaca snapshot tersebut dan tidak meresolusikan ulang referensi pada setiap pengiriman.
 
-Hal ini mencegah gangguan penyedia rahasia memengaruhi jalur permintaan sibuk.
+Hal ini mencegah gangguan penyedia rahasia memengaruhi jalur permintaan aktif.
 
-Perlindungan ingress Gateway, konfigurasi atau nilai hasil resolusi yang secara struktural tidak valid, pelanggaran kebijakan, dan kepemilikan yang tidak diketahui tetap gagal secara tertutup. Pemilik yang diisolasi tidak pernah beralih ke sumber kredensial berprioritas lebih rendah.
+Perlindungan ingress Gateway, konfigurasi atau nilai hasil resolusi yang secara struktural tidak valid, pelanggaran kebijakan, dan kepemilikan yang tidak diketahui tetap gagal secara tertutup. Pemilik yang diisolasi tidak pernah beralih ke sumber kredensial dengan prioritas lebih rendah.
 
 ## Injeksi saat egress (sentinel)
 
-Untuk kredensial penyedia model yang didukung oleh SecretRef, OpenClaw membuat sentinel buram lokal proses selama resolusi autentikasi model. Karena itu, penyimpanan autentikasi, opsi streaming, konfigurasi SDK, log, objek kesalahan, dan sebagian besar introspeksi runtime melihat nilai seperti `oc-sent-v1-...`, bukan kredensial penyedia. Fetch model yang dilindungi dan probe kesehatan penyedia lokal terkelola mengganti sentinel yang diketahui dalam nilai URL dan header tepat sebelum setiap permintaan meninggalkan proses.
+Untuk kredensial penyedia model yang didukung oleh SecretRef, OpenClaw membuat sentinel buram yang bersifat lokal bagi proses selama resolusi autentikasi model. Oleh karena itu, penyimpanan autentikasi, opsi stream, konfigurasi SDK, log, objek kesalahan, dan sebagian besar introspeksi runtime melihat nilai seperti `oc-sent-v1-...`, bukan kredensial penyedia. Fetch model yang dijaga dan probe kesehatan penyedia lokal terkelola mengganti sentinel yang diketahui dalam nilai URL dan header tepat sebelum setiap permintaan meninggalkan proses.
 
-Nilai berbentuk sentinel yang tidak diketahui gagal secara tertutup sebelum aktivitas jaringan. OpenClaw menolak mengirim permintaan alih-alih meneruskan sentinel yang belum diresolusikan ke penyedia. Nilai rahasia yang telah diresolusikan juga didaftarkan untuk penyamaran log berdasarkan kecocokan nilai persis sebagai langkah pertahanan berlapis.
+Nilai berbentuk sentinel yang tidak diketahui gagal secara tertutup sebelum aktivitas jaringan. OpenClaw menolak mengirim permintaan alih-alih meneruskan sentinel yang belum diresolusikan kepada penyedia. Nilai rahasia yang telah diresolusikan juga didaftarkan untuk penyuntingan log berdasarkan kecocokan nilai persis sebagai langkah pertahanan berlapis.
 
-Adaptor penyedia menggunakan titik injeksi paling akhir yang didukung SDK-nya:
+Adaptor penyedia menggunakan titik injeksi terbaru yang didukung SDK-nya:
 
-- SDK dengan opsi fetch kustom menerima fetch terlindungi milik OpenClaw sehingga SDK tetap mempertahankan sentinel.
-- SDK tanpa opsi fetch kustom membuka sentinel tepat sebelum pembuatan klien. Streaming penyedia milik Plugin dan harness agen membuka sentinel pada serah-terima terakhir yang dimiliki inti karena transportasi tersebut tidak menggunakan fetch terlindungi milik OpenClaw.
+- SDK dengan opsi fetch khusus menerima fetch terjaga milik OpenClaw, sehingga SDK mempertahankan sentinel.
+- SDK tanpa opsi fetch khusus membuka sentinel tepat sebelum pembuatan klien. Stream penyedia milik Plugin dan harness agen membuka sentinel pada serah terima terakhir yang dimiliki inti karena transportasi tersebut tidak menggunakan fetch terjaga milik OpenClaw.
 
-Sentinel mengurangi paparan teks biasa di sepanjang rantai pemanggilan model, tetapi bukan merupakan isolasi proses. Nilai sebenarnya tetap ada dalam memori proses yang sama dan muncul pada batas adaptor terakhir. Kredensial lingkungan biasa yang tidak dikonfigurasi melalui SecretRef tetap berupa teks biasa dan berada di luar mekanisme ini.
+Sentinel mengurangi paparan teks biasa di seluruh rantai pemanggilan model, tetapi bukan isolasi proses. Nilai sebenarnya tetap ada dalam memori proses yang sama dan muncul pada batas adaptor terakhir. Kredensial lingkungan biasa yang tidak dikonfigurasi melalui SecretRef tetap berupa teks biasa dan berada di luar mekanisme ini.
 
-Atur `OPENCLAW_SECRET_SENTINELS=off` (juga menerima `0` atau `false`, tanpa membedakan huruf besar-kecil) untuk menonaktifkan pembuatan sentinel selama respons insiden atau pemecahan masalah kompatibilitas. Sakelar penghenti ini tidak menonaktifkan pendaftaran penyamaran berdasarkan kecocokan nilai persis.
+Tetapkan `OPENCLAW_SECRET_SENTINELS=off` (juga menerima `0` atau `false`, tanpa membedakan huruf besar-kecil) untuk menonaktifkan pembuatan sentinel selama respons insiden atau pemecahan masalah kompatibilitas. Sakelar penghenti ini tidak menonaktifkan pendaftaran penyuntingan berdasarkan kecocokan nilai persis.
 
 ## Batas akses agen
 
-SecretRef mencegah kredensial dipersistenkan dalam konfigurasi dan file model yang dihasilkan, tetapi bukan merupakan batas isolasi proses. Kredensial teks biasa yang dibiarkan tersimpan pada disk di jalur yang dapat dibaca agen tetap dapat dibaca melalui alat file atau shell, sehingga melewati penyamaran tingkat API.
+SecretRef mencegah kredensial dipersistenkan dalam konfigurasi dan file model yang dihasilkan, tetapi bukan batas isolasi proses. Kredensial teks biasa yang dibiarkan di disk pada jalur yang dapat dibaca agen tetap dapat dibaca melalui alat file atau shell, sehingga melewati penyuntingan tingkat API.
 
-Untuk penerapan produksi yang mencakup file yang dapat diakses agen, anggap migrasi selesai hanya jika semua kondisi berikut terpenuhi:
+Untuk deployment produksi yang mencakup file yang dapat diakses agen, anggap migrasi selesai hanya jika semua hal berikut terpenuhi:
 
-- Kredensial yang didukung menggunakan SecretRef, bukan nilai teks biasa.
-- Sisa teks biasa lama telah dibersihkan dari `openclaw.json`, `auth-profiles.json`, `.env`, dan file `models.json` yang dihasilkan.
+- Kredensial yang didukung menggunakan SecretRef alih-alih nilai teks biasa.
+- Sisa teks biasa lama dibersihkan dari `openclaw.json`, `auth-profiles.json`, `.env`, dan file `models.json` yang dihasilkan.
 - `openclaw secrets audit --check` bersih setelah migrasi.
-- Semua kredensial yang belum didukung atau yang dirotasi dilindungi oleh isolasi OS, isolasi kontainer, atau proksi kredensial eksternal.
+- Setiap kredensial yang belum didukung atau dirotasi dilindungi oleh isolasi OS, isolasi kontainer, atau proksi kredensial eksternal.
 
-Inilah sebabnya alur audit/konfigurasi/penerapan merupakan gerbang migrasi keamanan, bukan sekadar alat bantu praktis.
+Inilah alasan alur audit/konfigurasi/penerapan merupakan gerbang migrasi keamanan, bukan sekadar alat bantu praktis.
 
 <Warning>
-SecretRef tidak membuat sembarang file yang dapat dibaca menjadi aman. Cadangan, salinan konfigurasi, katalog model lama yang dihasilkan, dan kelas kredensial yang belum didukung tetap merupakan rahasia produksi sampai dihapus, dipindahkan ke luar batas kepercayaan agen, atau diisolasi secara terpisah.
+SecretRef tidak membuat sembarang file yang dapat dibaca menjadi aman. Cadangan, konfigurasi yang disalin, katalog model lama yang dihasilkan, dan kelas kredensial yang belum didukung tetap menjadi rahasia produksi hingga dihapus, dipindahkan ke luar batas kepercayaan agen, atau diisolasi secara terpisah.
 </Warning>
 
 ## Pemfilteran permukaan aktif
 
-SecretRef hanya divalidasi pada permukaan yang secara efektif aktif:
+SecretRef divalidasi hanya pada permukaan yang benar-benar aktif:
 
-- **Permukaan yang diaktifkan**: kegagalan yang dapat dicoba ulang untuk pemilik yang dipetakan dan dapat diisolasi memasuki degradasi dingin atau kedaluwarsa. Kegagalan yang ketat, gagal secara tertutup, diperlukan Gateway, atau tidak dipetakan akan memblokir startup/pemuatan ulang.
+- **Permukaan yang diaktifkan**: kegagalan yang dapat dicoba ulang untuk pemilik yang dipetakan dan dapat diisolasi memasuki degradasi dingin atau usang. Kegagalan yang ketat, gagal secara tertutup, diwajibkan Gateway, atau tidak dipetakan memblokir startup/pemuatan ulang.
 - **Permukaan tidak aktif**: referensi yang belum diresolusikan tidak memblokir startup/pemuatan ulang; referensi tersebut mengeluarkan diagnostik `SECRETS_REF_IGNORED_INACTIVE_SURFACE` yang tidak fatal.
 
 <Accordion title="Contoh permukaan tidak aktif">
 - Entri saluran/akun yang dinonaktifkan.
-- Kredensial saluran tingkat atas yang tidak diwarisi oleh akun aktif mana pun.
+- Kredensial saluran tingkat atas yang tidak diwarisi akun aktif mana pun.
 - Permukaan alat/fitur yang dinonaktifkan.
 - Kunci khusus penyedia pencarian web yang tidak dipilih oleh `tools.web.search.provider`. Dalam mode otomatis (penyedia tidak ditetapkan), kunci diperiksa berdasarkan prioritas untuk deteksi otomatis hingga salah satunya berhasil diresolusikan; setelah pemilihan, kunci penyedia yang tidak dipilih menjadi tidak aktif.
-- Materi autentikasi SSH sandbox (`agents.defaults.sandbox.ssh.identityData`, `certificateData`, `knownHostsData`, serta penggantian per agen) hanya aktif ketika backend sandbox efektif adalah `ssh` dan mode sandbox bukan `off`, untuk agen default atau agen yang diaktifkan.
+- Materi autentikasi SSH sandbox (`agents.defaults.sandbox.ssh.identityData`, `certificateData`, `knownHostsData`, beserta penggantian per agen) hanya aktif ketika backend sandbox efektif adalah `ssh` dan mode sandbox bukan `off`, untuk agen default atau agen yang diaktifkan.
 - SecretRef `gateway.remote.token` / `gateway.remote.password` aktif jika salah satu kondisi berikut terpenuhi:
   - `gateway.mode=remote`
   - `gateway.remote.url` dikonfigurasi
   - `gateway.tailscale.mode` adalah `serve` atau `funnel`
-  - Dalam mode lokal tanpa permukaan jarak jauh tersebut: `gateway.remote.token` aktif ketika autentikasi token dapat diprioritaskan dan tidak ada token lingkungan/autentikasi yang dikonfigurasi; `gateway.remote.password` hanya aktif ketika autentikasi kata sandi dapat diprioritaskan dan tidak ada kata sandi lingkungan/autentikasi yang dikonfigurasi.
-- SecretRef `gateway.auth.token` tidak aktif untuk resolusi autentikasi startup ketika `OPENCLAW_GATEWAY_TOKEN` ditetapkan karena input token lingkungan diprioritaskan untuk runtime tersebut.
+  - Dalam mode lokal tanpa permukaan jarak jauh tersebut: `gateway.remote.token` aktif ketika autentikasi token dapat menang dan tidak ada token lingkungan/autentikasi yang dikonfigurasi; `gateway.remote.password` hanya aktif ketika autentikasi kata sandi dapat menang dan tidak ada kata sandi lingkungan/autentikasi yang dikonfigurasi.
+- SecretRef `gateway.auth.token` tidak aktif untuk resolusi autentikasi startup ketika `OPENCLAW_GATEWAY_TOKEN` ditetapkan, karena input token lingkungan menang untuk runtime tersebut.
 
 </Accordion>
 
@@ -98,23 +98,23 @@ SecretRef hanya divalidasi pada permukaan yang secara efektif aktif:
 Ketika SecretRef ditetapkan pada `gateway.auth.token`, `gateway.auth.password`, `gateway.remote.token`, atau `gateway.remote.password`, startup/pemuatan ulang Gateway mencatat status permukaan dengan kode `SECRETS_GATEWAY_AUTH_SURFACE`:
 
 - `active`: SecretRef merupakan bagian dari permukaan autentikasi efektif dan harus diresolusikan.
-- `inactive`: permukaan autentikasi lain diprioritaskan, atau autentikasi jarak jauh dinonaktifkan/tidak aktif.
+- `inactive`: permukaan autentikasi lain menang, atau autentikasi jarak jauh dinonaktifkan/tidak aktif.
 
-Entri log mencakup alasan yang digunakan oleh kebijakan permukaan aktif.
+Entri log menyertakan alasan yang digunakan kebijakan permukaan aktif.
 
-## Prapemeriksaan referensi saat onboarding
+## Prapemeriksaan referensi saat orientasi awal
 
-Dalam onboarding interaktif, memilih penyimpanan SecretRef menjalankan validasi prapemeriksaan sebelum menyimpan:
+Dalam orientasi awal interaktif, memilih penyimpanan SecretRef menjalankan validasi prapemeriksaan sebelum menyimpan:
 
-- Referensi lingkungan: memvalidasi nama variabel lingkungan dan memastikan nilai yang tidak kosong terlihat selama penyiapan.
-- Referensi penyedia (`file` atau `exec`): memvalidasi pemilihan penyedia, meresolusikan `id`, dan memeriksa jenis nilai hasil resolusi.
-- Alur mulai cepat: ketika `gateway.auth.token` sudah berupa SecretRef, onboarding meresolusikannya sebelum bootstrap probe/dasbor (untuk referensi `env`, `file`, dan `exec`) menggunakan gerbang gagal-cepat yang sama.
+- Referensi lingkungan: memvalidasi nama variabel lingkungan dan mengonfirmasi bahwa nilai yang tidak kosong terlihat selama penyiapan.
+- Referensi penyedia (`file` atau `exec`): memvalidasi pemilihan penyedia, meresolusikan `id`, dan memeriksa tipe nilai hasil resolusi.
+- Alur mulai cepat: ketika `gateway.auth.token` sudah berupa SecretRef, orientasi awal meresolusikannya sebelum bootstrap probe/dasbor (untuk referensi `env`, `file`, dan `exec`) menggunakan gerbang gagal-cepat yang sama.
 
 Kegagalan validasi menampilkan kesalahan dan memungkinkan Anda mencoba kembali.
 
 ## Kontrak SecretRef
 
-Satu bentuk objek di mana pun:
+Satu bentuk objek di mana-mana:
 
 ```json5
 { source: "env" | "file" | "exec", provider: "default", id: "..." }
@@ -147,8 +147,8 @@ Satu bentuk objek di mana pun:
     Validasi:
 
     - `provider` harus cocok dengan `^[a-z][a-z0-9_-]{0,63}$`
-    - `id` harus berupa penunjuk JSON absolut (`/...`), atau literal `value` untuk penyedia `singleValue`
-    - Escape RFC 6901 dalam segmen: `~` menjadi `~0`, `/` menjadi `~1`
+    - `id` harus berupa pointer JSON absolut (`/...`), atau literal `value` untuk penyedia `singleValue`
+    - Peng-escape-an RFC 6901 dalam segmen: `~` menjadi `~0`, `/` menjadi `~1`
 
   </Tab>
   <Tab title="exec">
@@ -159,7 +159,7 @@ Satu bentuk objek di mana pun:
     Validasi:
 
     - `provider` harus cocok dengan `^[a-z][a-z0-9_-]{0,63}$`
-    - `id` harus cocok dengan `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (mendukung selektor seperti `secret#json_key`)
+    - `id` harus cocok dengan `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (mendukung pemilih seperti `secret#json_key`)
     - `id` tidak boleh memuat `.` atau `..` sebagai segmen jalur yang dipisahkan garis miring (misalnya `a/../b` ditolak)
 
   </Tab>
@@ -167,7 +167,7 @@ Satu bentuk objek di mana pun:
 
 ## Konfigurasi penyedia
 
-Tentukan penyedia di bawah `secrets.providers`:
+Definisikan penyedia di bawah `secrets.providers`:
 
 ```json5
 {
@@ -199,37 +199,32 @@ Tentukan penyedia di bawah `secrets.providers`:
       file: "filemain",
       exec: "vault",
     },
-    resolution: {
-      maxProviderConcurrency: 4,
-      maxRefsPerProvider: 512,
-      maxBatchBytes: 262144,
-    },
   },
 }
 ```
 
 <Accordion title="Penyedia lingkungan">
-- Daftar izin nama persis opsional melalui `allowlist`.
+- Daftar yang diizinkan berdasarkan nama persis dan bersifat opsional melalui `allowlist`.
 - Nilai lingkungan yang tidak ada atau kosong menggagalkan resolusi.
 
 </Accordion>
 
 <Accordion title="Penyedia file">
 - Membaca file lokal di `path`.
-- `mode: "json"` (default) mengharapkan payload objek JSON dan menguraikan `id` sebagai pointer JSON.
-- `mode: "singleValue"` mengharapkan id referensi `"value"` dan mengembalikan isi file mentah (baris baru di akhir dihapus).
+- `mode: "json"` (default) mengharapkan payload objek JSON dan meresolusikan `id` sebagai pointer JSON.
+- `mode: "singleValue"` mengharapkan id referensi `"value"` dan mengembalikan isi mentah file (baris baru di akhir dihapus).
 - Jalur harus lolos pemeriksaan kepemilikan/izin; `timeoutMs` (default 5000) dan `maxBytes` (default 1 MiB) membatasi pembacaan.
-- Windows gagal secara tertutup: jika verifikasi ACL tidak tersedia untuk jalur tersebut, penguraian gagal. Khusus untuk jalur tepercaya, tetapkan `allowInsecurePath: true` pada penyedia tersebut untuk melewati pemeriksaan.
+- Gagal secara tertutup di Windows: jika verifikasi ACL tidak tersedia untuk jalur tersebut, resolusi gagal. Hanya untuk jalur tepercaya, tetapkan `allowInsecurePath: true` pada penyedia tersebut untuk melewati pemeriksaan.
 
 </Accordion>
 
-<Accordion title="Penyedia eksekusi">
-- Menjalankan jalur absolut biner yang dikonfigurasi secara langsung, tanpa shell.
-- Secara default, `command` harus berupa file biasa, bukan symlink. Tetapkan `allowSymlinkCommand: true` untuk mengizinkan jalur perintah symlink (misalnya shim Homebrew), dan pasangkan dengan `trustedDirs` (misalnya `["/opt/homebrew"]`) agar hanya jalur pengelola paket yang memenuhi syarat.
-- Mendukung `timeoutMs` (default 5000), `noOutputTimeoutMs` (default sama dengan `timeoutMs`), `maxOutputBytes` (default 1 MiB), daftar izin `env`/`passEnv`, dan `trustedDirs`.
-- `jsonOnly` secara default bernilai `true`. Dengan `jsonOnly: false` dan satu id yang diminta, stdout biasa non-JSON diterima sebagai nilai id tersebut.
-- Windows gagal secara tertutup: jika verifikasi ACL tidak tersedia untuk jalur perintah, penguraian gagal. Khusus untuk jalur tepercaya, tetapkan `allowInsecurePath: true` pada penyedia tersebut untuk melewati pemeriksaan.
-- Penyedia eksekusi yang dikelola Plugin dapat menggunakan `pluginIntegration` sebagai pengganti `command`/`args` yang disalin. OpenClaw menguraikan detail perintah saat ini dari manifes plugin yang terinstal selama proses mulai/muat ulang; jika plugin dinonaktifkan, dihapus, tidak tepercaya, atau tidak lagi mendeklarasikan integrasi tersebut, SecretRef aktif pada penyedia itu gagal secara tertutup.
+<Accordion title="Penyedia exec">
+- Menjalankan jalur biner absolut yang dikonfigurasi secara langsung, tanpa shell.
+- Secara default, `command` harus berupa berkas biasa, bukan symlink. Atur `allowSymlinkCommand: true` untuk mengizinkan jalur perintah symlink (misalnya shim Homebrew), dan pasangkan dengan `trustedDirs` (misalnya `["/opt/homebrew"]`) agar hanya jalur pengelola paket yang memenuhi syarat.
+- Mendukung `timeoutMs` (default 5000), `noOutputTimeoutMs` (default sama dengan `timeoutMs`), `maxOutputBytes` (default 1 MiB), daftar yang diizinkan `env`/`passEnv`, dan `trustedDirs`.
+- `jsonOnly` secara default adalah `true`. Dengan `jsonOnly: false` dan satu id yang diminta, stdout biasa non-JSON diterima sebagai nilai id tersebut.
+- Windows gagal secara tertutup: jika verifikasi ACL tidak tersedia untuk jalur perintah, resolusi gagal. Hanya untuk jalur tepercaya, atur `allowInsecurePath: true` pada penyedia tersebut untuk melewati pemeriksaan.
+- Penyedia exec yang dikelola Plugin dapat menggunakan `pluginIntegration` alih-alih `command`/`args` yang disalin. OpenClaw menyelesaikan detail perintah saat ini dari manifes Plugin yang terpasang selama startup/pemuatan ulang; jika Plugin dinonaktifkan, dihapus, tidak tepercaya, atau tidak lagi mendeklarasikan integrasi tersebut, SecretRef aktif pada penyedia itu gagal secara tertutup.
 
 Payload permintaan (stdin):
 
@@ -243,7 +238,7 @@ Payload respons (stdout):
 { "protocolVersion": 1, "values": { "providers/openai/apiKey": "<openai-api-key>" } } // pragma: allowlist secret
 ```
 
-Kesalahan per id opsional:
+Kesalahan opsional per id:
 
 ```json
 {
@@ -255,16 +250,16 @@ Kesalahan per id opsional:
 
 `code` adalah diagnostik opsional yang dapat dibaca mesin. OpenClaw menampilkan
 kode yang dikenali, yaitu `NOT_FOUND` dan `AMBIGUOUS_DUPLICATE_KEY`, bersama penyedia dan id referensi. Kode lain
-dan bidang berformat bebas seperti `message` diterima untuk kompatibilitas protocol-v1,
-tetapi tidak ditampilkan karena keluaran pengurai dapat memuat materi kredensial.
+dan bidang berbentuk bebas seperti `message` diterima untuk kompatibilitas protocol-v1,
+tetapi tidak ditampilkan karena keluaran resolver dapat berisi materi kredensial.
 
 </Accordion>
 
-## Kunci API berbasis file
+## Kunci API berbasis berkas
 
-Jangan masukkan string `file:...` ke dalam blok `env` konfigurasi. Blok tersebut bersifat literal dan tidak dapat ditimpa, sehingga `file:...` tidak pernah diuraikan di sana.
+Jangan letakkan string `file:...` dalam blok konfigurasi `env`. Blok tersebut bersifat literal dan tidak dapat ditimpa, sehingga `file:...` tidak pernah diselesaikan di sana.
 
-Sebagai gantinya, gunakan SecretRef file pada bidang kredensial yang didukung:
+Gunakan SecretRef berkas pada bidang kredensial yang didukung sebagai gantinya:
 
 ```json5
 {
@@ -291,9 +286,9 @@ Untuk `mode: "singleValue"`, `id` SecretRef adalah `"value"`. Untuk `mode: "json
 
 Lihat [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface) untuk bidang yang menerima SecretRef.
 
-## Contoh integrasi eksekusi
+## Contoh integrasi exec
 
-Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, dan pemecahan masalah, lihat [1Password](/id/gateway/1password).
+Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen yang disertakan, dan pemecahan masalah, lihat [1Password](/id/gateway/1password).
 
 <AccordionGroup>
   <Accordion title="CLI 1Password">
@@ -304,7 +299,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
           onepassword_openai: {
             source: "exec",
             command: "/opt/homebrew/bin/op",
-            allowSymlinkCommand: true, // diperlukan untuk biner yang di-symlink oleh Homebrew
+            allowSymlinkCommand: true, // diperlukan untuk biner bersymlink Homebrew
             trustedDirs: ["/opt/homebrew"],
             args: ["read", "op://Personal/OpenClaw QA API Key/password"],
             passEnv: ["HOME"],
@@ -325,14 +320,14 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
     ```
   </Accordion>
   <Accordion title="Bitwarden Secrets Manager (`bws`)">
-    Gunakan pembungkus pengurai untuk memetakan id SecretRef ke kunci item Bitwarden Secrets Manager. Repositori menyertakan `scripts/secrets/openclaw-bws-resolver.mjs`; instal atau salin ke jalur tepercaya absolut pada host yang menjalankan Gateway.
+    Gunakan pembungkus resolver untuk memetakan id SecretRef ke kunci item Bitwarden Secrets Manager. Repositori menyertakan `scripts/secrets/openclaw-bws-resolver.mjs`; pasang atau salin ke jalur tepercaya absolut pada host yang menjalankan Gateway.
 
     Persyaratan:
 
-    - CLI Bitwarden Secrets Manager (`bws`) terinstal pada host Gateway.
-    - `BWS_ACCESS_TOKEN` tersedia bagi layanan Gateway.
-    - `PATH` diteruskan ke pengurai, atau `BWS_BIN` ditetapkan ke jalur absolut biner `bws`.
-    - `BWS_SERVER_URL` ditetapkan dalam lingkungan saat menggunakan instans Bitwarden yang dihosting sendiri.
+    - CLI Bitwarden Secrets Manager (`bws`) terpasang pada host Gateway.
+    - `BWS_ACCESS_TOKEN` tersedia untuk layanan Gateway.
+    - `PATH` diteruskan ke resolver, atau `BWS_BIN` diatur ke jalur biner `bws` absolut.
+    - `BWS_SERVER_URL` diatur dalam lingkungan saat menggunakan instans Bitwarden yang dihosting sendiri.
 
     ```json5
     {
@@ -362,7 +357,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
     }
     ```
 
-    Pengurai mengelompokkan id yang diminta, menjalankan `bws secret list`, dan mengembalikan nilai untuk bidang `key` rahasia yang cocok. Gunakan kunci yang memenuhi kontrak id SecretRef eksekusi, seperti `openclaw/providers/openai/apiKey`; kunci bergaya variabel lingkungan dengan garis bawah ditolak sebelum pengurai dijalankan. Jika lebih dari satu rahasia Bitwarden yang terlihat menggunakan kunci yang diminta, pengurai menggagalkan id tersebut sebagai ambigu alih-alih menebak. Setelah memperbarui konfigurasi, verifikasi jalur pengurai:
+    Resolver mengelompokkan id yang diminta, menjalankan `bws secret list`, dan mengembalikan nilai untuk bidang `key` rahasia yang cocok. Gunakan kunci yang memenuhi kontrak id SecretRef exec, seperti `openclaw/providers/openai/apiKey`; kunci bergaya variabel lingkungan dengan garis bawah ditolak sebelum resolver dijalankan. Jika lebih dari satu rahasia Bitwarden yang terlihat memiliki kunci yang diminta, resolver menggagalkan id tersebut sebagai ambigu alih-alih menebak. Setelah memperbarui konfigurasi, verifikasi jalur resolver:
 
     ```bash
     openclaw secrets audit --allow-exec
@@ -377,7 +372,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
           vault_openai: {
             source: "exec",
             command: "/opt/homebrew/bin/vault",
-            allowSymlinkCommand: true, // diperlukan untuk biner yang di-symlink oleh Homebrew
+            allowSymlinkCommand: true, // diperlukan untuk biner bersymlink Homebrew
             trustedDirs: ["/opt/homebrew"],
             args: ["kv", "get", "-field=OPENAI_API_KEY", "secret/openclaw"],
             passEnv: ["VAULT_ADDR", "VAULT_TOKEN"],
@@ -398,7 +393,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
     ```
   </Accordion>
   <Accordion title="password-store (`pass`)">
-    Gunakan pembungkus pengurai kecil untuk memetakan id SecretRef secara langsung ke entri `pass`. Simpan ini sebagai berkas yang dapat dieksekusi pada jalur absolut yang lolos pemeriksaan jalur penyedia eksekusi Anda, misalnya `/usr/local/bin/openclaw-pass-resolver`. Shebang `#!/usr/bin/env node` menguraikan `node` dari `PATH` proses pengurai, jadi sertakan `PATH` dalam `passEnv`. Jika `pass` tidak berada di `PATH` tersebut, tetapkan `PASS_BIN` di lingkungan induk dan sertakan juga dalam `passEnv`:
+    Gunakan pembungkus resolver kecil untuk memetakan id SecretRef langsung ke entri `pass`. Simpan ini sebagai berkas yang dapat dieksekusi pada jalur absolut yang lolos pemeriksaan jalur penyedia exec Anda, misalnya `/usr/local/bin/openclaw-pass-resolver`. Shebang `#!/usr/bin/env node` menyelesaikan `node` dari `PATH` proses resolver, jadi sertakan `PATH` dalam `passEnv`. Jika `pass` tidak berada pada `PATH` tersebut, atur `PASS_BIN` dalam lingkungan induk dan sertakan juga dalam `passEnv`:
 
     ```js
     #!/usr/bin/env node
@@ -439,7 +434,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
     });
     ```
 
-    Kemudian konfigurasikan penyedia eksekusi dan arahkan `apiKey` ke jalur entri `pass`:
+    Kemudian konfigurasikan penyedia exec dan arahkan `apiKey` ke jalur entri `pass`:
 
     ```json5
     {
@@ -469,7 +464,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
     }
     ```
 
-    Simpan rahasia pada baris pertama entri `pass`, atau sesuaikan pembungkus untuk mengembalikan seluruh keluaran `pass show`. Setelah memperbarui konfigurasi, verifikasi audit statis dan jalur pengurai eksekusi:
+    Simpan rahasia pada baris pertama entri `pass`, atau sesuaikan pembungkus agar mengembalikan keluaran lengkap `pass show`. Setelah memperbarui konfigurasi, verifikasi audit statis dan jalur resolver exec:
 
     ```bash
     openclaw secrets audit --check
@@ -485,7 +480,7 @@ Untuk panduan khusus 1Password yang mencakup akun layanan, skill agen bawaan, da
           sops_openai: {
             source: "exec",
             command: "/opt/homebrew/bin/sops",
-            allowSymlinkCommand: true, // diperlukan untuk biner yang di-symlink oleh Homebrew
+            allowSymlinkCommand: true, // diperlukan untuk biner bersymlink Homebrew
             trustedDirs: ["/opt/homebrew"],
             args: ["-d", "--extract", '["providers"]["openai"]["apiKey"]', "/path/to/secrets.enc.json"],
             passEnv: ["SOPS_AGE_KEY_FILE"],
@@ -538,7 +533,7 @@ Variabel lingkungan server MCP yang dikonfigurasi melalui `plugins.entries.acpx.
 }
 ```
 
-Nilai string teks biasa tetap berfungsi. Referensi templat env seperti `${MCP_SERVER_API_KEY}` dan objek SecretRef diresolusi selama aktivasi gateway, sebelum proses server MCP dimulai. Seperti pada permukaan SecretRef lainnya, referensi yang tidak dapat diresolusi hanya memblokir aktivasi ketika plugin `acpx` secara efektif aktif.
+Nilai string teks biasa tetap berfungsi. Referensi templat lingkungan seperti `${MCP_SERVER_API_KEY}` dan objek SecretRef diselesaikan selama aktivasi gateway, sebelum proses server MCP dimulai. Seperti permukaan SecretRef lainnya, referensi yang tidak terselesaikan hanya memblokir aktivasi ketika Plugin `acpx` benar-benar aktif.
 
 ## Materi autentikasi SSH sandbox
 
@@ -565,90 +560,90 @@ Backend sandbox inti `ssh` juga mendukung SecretRef untuk materi autentikasi SSH
 
 Perilaku runtime:
 
-- OpenClaw meresolusi referensi ini selama aktivasi sandbox, bukan secara malas pada setiap panggilan SSH.
-- Nilai yang telah diresolusi ditulis ke direktori sementara dengan izin berkas yang ketat (`0o600`) dan digunakan dalam konfigurasi SSH yang dihasilkan.
-- Jika backend sandbox efektif bukan `ssh` (atau mode sandbox adalah `off`), referensi ini tetap tidak aktif dan tidak memblokir proses mulai.
+- OpenClaw me-resolve referensi ini selama aktivasi sandbox, bukan secara malas pada setiap panggilan SSH.
+- Nilai yang telah di-resolve ditulis ke direktori sementara dengan izin file yang ketat (`0o600`) dan digunakan dalam konfigurasi SSH yang dihasilkan.
+- Jika backend sandbox efektif bukan `ssh` (atau mode sandbox adalah `off`), referensi ini tetap tidak aktif dan tidak menghalangi startup.
 
 ## Permukaan kredensial yang didukung
 
-Kredensial kanonis yang didukung dan tidak didukung tercantum dalam [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface).
+Kredensial kanonis yang didukung dan tidak didukung tercantum di [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface).
 
 <Note>
-Kredensial yang dibuat saat runtime atau berotasi serta materi penyegaran OAuth sengaja dikecualikan dari resolusi SecretRef hanya-baca.
+Kredensial yang diterbitkan saat runtime atau berotasi dan materi penyegaran OAuth sengaja dikecualikan dari resolusi SecretRef hanya-baca.
 </Note>
 
-## Perilaku dan urutan prioritas yang diwajibkan
+## Perilaku wajib dan prioritas
 
 - Kolom tanpa referensi: tidak berubah.
 - Kolom dengan referensi: wajib pada permukaan aktif selama aktivasi.
-- Jika teks biasa dan referensi sama-sama tersedia, referensi lebih diprioritaskan pada jalur prioritas yang didukung.
+- Jika teks biasa dan referensi sama-sama ada, referensi diprioritaskan pada jalur prioritas yang didukung.
 - Sentinel redaksi `__OPENCLAW_REDACTED__` dicadangkan untuk redaksi/pemulihan konfigurasi internal dan ditolak sebagai data konfigurasi literal yang dikirimkan.
 
 Sinyal peringatan dan audit:
 
 - `SECRETS_REF_OVERRIDES_PLAINTEXT` (peringatan runtime)
-- `REF_SHADOWED` (temuan audit ketika kredensial `auth-profiles.json` lebih diprioritaskan daripada referensi `openclaw.json`)
+- `REF_SHADOWED` (temuan audit ketika kredensial `auth-profiles.json` diprioritaskan daripada referensi `openclaw.json`)
 
-Kompatibilitas Google Chat: `serviceAccountRef` lebih diprioritaskan daripada `serviceAccount` dalam teks biasa; nilai teks biasa diabaikan setelah referensi yang sejajar ditetapkan.
+Kompatibilitas Google Chat: `serviceAccountRef` diprioritaskan daripada `serviceAccount` dalam teks biasa; nilai teks biasa diabaikan setelah referensi yang berdampingan ditetapkan.
 
 ## Pemicu aktivasi
 
 Aktivasi rahasia berjalan saat:
 
-- Proses mulai (prapemeriksaan serta aktivasi akhir)
+- Startup (pra-pemeriksaan ditambah aktivasi akhir)
 - Jalur penerapan langsung pemuatan ulang konfigurasi
 - Jalur pemeriksaan mulai ulang pemuatan ulang konfigurasi
 - Pemuatan ulang manual melalui `secrets.reload`
-- Prapemeriksaan RPC penulisan konfigurasi Gateway (`config.set` / `config.apply` / `config.patch`), yang memvalidasi SecretRef permukaan aktif dalam muatan konfigurasi yang dikirimkan sebelum menyimpan pengeditan
+- Pra-pemeriksaan RPC penulisan konfigurasi Gateway (`config.set` / `config.apply` / `config.patch`), yang memvalidasi SecretRef permukaan aktif dalam payload konfigurasi yang dikirimkan sebelum menyimpan hasil edit
 
 Kontrak aktivasi:
 
-- Keberhasilan menukar snapshot secara atomik.
-- Kegagalan proses mulai yang ketat membatalkan proses mulai Gateway.
-- Selama proses mulai dingin, kegagalan resolusi yang dapat dicoba ulang untuk pemilik non-Gateway yang dipetakan dan dapat diisolasi dapat memublikasikan snapshot dengan pemilik tersebut dikonfigurasi sebagai tidak tersedia. Permintaan untuk pemilik tersebut gagal dengan `SECRET_SURFACE_UNAVAILABLE`; pemilik penyedia model tidak beralih ke kredensial lingkungan atau profil autentikasi setelah referensi eksplisit gagal.
-- Pemuatan ulang dan pemeriksaan mulai ulang mengisolasi pemilik terpetakan yang memenuhi syarat. Identitas referensi yang tidak berubah, dengan definisi penyedia yang tidak berubah dan kontrak pemilik non-rahasia lengkap yang tidak berubah, mempertahankan nilai tepat terakhir yang diketahui baik sebagai usang; referensi yang berubah atau baru dikonfigurasi tetapi tidak dapat diresolusi dipublikasikan dalam kondisi dingin hanya untuk pemilik tersebut. Kegagalan pemuatan ulang yang ketat mempertahankan snapshot yang sebelumnya aktif.
-- `config.set`, `config.apply`, dan `config.patch` menerima referensi yang tidak dapat diresolusi tetapi valid secara sintaksis untuk pemilik yang dapat diisolasi dan mengembalikan laporan `degradedSecretOwners` yang telah disunting. Autentikasi ingress Gateway, konfigurasi atau nilai hasil resolusi yang secara struktural tidak valid, pelanggaran kebijakan, dan pemilik yang tidak dikenal tetap ditolak sebelum mutasi disk.
-- Pemilik sejawat yang sehat diresolusi dan dipublikasikan secara normal meskipun pemilik lain dalam kondisi dingin atau usang.
-- Memberikan token kanal eksplisit per panggilan kepada panggilan pembantu/alat keluar tidak memicu aktivasi SecretRef; titik aktivasi tetap pada proses mulai, pemuatan ulang, dan `secrets.reload` eksplisit.
+- Keberhasilan mengganti snapshot secara atomik.
+- Kegagalan startup yang ketat membatalkan startup Gateway.
+- Selama startup dingin, kegagalan resolusi yang dapat dicoba ulang untuk pemilik non-Gateway yang dipetakan dan dapat diisolasi dapat menerbitkan snapshot dengan pemilik tersebut dikonfigurasi sebagai tidak tersedia. Permintaan untuk pemilik tersebut gagal dengan `SECRET_SURFACE_UNAVAILABLE`; pemilik penyedia model tidak beralih kembali ke kredensial lingkungan atau profil autentikasi setelah referensi eksplisit gagal.
+- Pemuatan ulang dan pemeriksaan mulai ulang mengisolasi pemilik terpetakan yang memenuhi syarat. Identitas referensi yang tidak berubah, dengan definisi penyedia yang tidak berubah dan kontrak pemilik non-rahasia lengkap yang tidak berubah, mempertahankan nilai persis terakhir yang diketahui baik sebagai usang; referensi yang diubah atau baru dikonfigurasi tetapi belum di-resolve diterbitkan dalam keadaan dingin hanya untuk pemilik tersebut. Kegagalan pemuatan ulang yang ketat mempertahankan snapshot yang sebelumnya aktif.
+- `config.set`, `config.apply`, dan `config.patch` menerima referensi yang valid secara sintaksis tetapi belum di-resolve untuk pemilik yang dapat diisolasi dan mengembalikan laporan `degradedSecretOwners` yang telah disunting. Autentikasi ingress Gateway, konfigurasi atau nilai hasil resolusi yang tidak valid secara struktural, pelanggaran kebijakan, dan pemilik yang tidak dikenal tetap ditolak sebelum mutasi disk.
+- Pemilik lain yang sehat di-resolve dan diterbitkan secara normal meskipun pemilik lain berada dalam keadaan dingin atau usang.
+- Memberikan token kanal eksplisit per panggilan kepada panggilan pembantu/alat keluar tidak memicu aktivasi SecretRef; titik aktivasi tetap pada startup, pemuatan ulang, dan `secrets.reload` eksplisit.
 
 ## Sinyal terdegradasi dan pulih
 
-Ketika aktivasi saat pemuatan ulang gagal setelah keadaan sehat, OpenClaw memasuki keadaan rahasia terdegradasi, dengan memancarkan peristiwa sistem satu kali dan kode log:
+Ketika aktivasi saat pemuatan ulang gagal setelah keadaan sehat, OpenClaw memasuki keadaan rahasia terdegradasi dan mengeluarkan peristiwa sistem satu kali serta kode log:
 
 - `SECRETS_RELOADER_DEGRADED`
 - `SECRETS_RELOADER_RECOVERED`
 
 Perilaku:
 
-- Terdegradasi: pemilik yang sehat disegarkan, pemilik usang mempertahankan nilai terakhir yang diketahui baik, dan pemilik dingin tetap tidak tersedia.
-- Pulih: dipancarkan sekali setelah aktivasi berikutnya berhasil.
-- Kegagalan berulang saat sudah terdegradasi mencatat peringatan, tetapi tidak memancarkan ulang peristiwa tersebut.
-- Kegagalan proses mulai yang ketat tidak pernah memancarkan peristiwa terdegradasi karena runtime tidak pernah menjadi aktif. Proses mulai yang berhasil dengan pemilik dingin mencatat degradasi pemilik, tetapi tidak memancarkan peristiwa pemuat ulang.
-- Kegagalan proses mulai dan pemuatan ulang yang dibatasi pada referensi memancarkan peringatan terstruktur `SECRETS_DEGRADED` untuk setiap pemilik yang terpengaruh. Gangguan pada cakupan penyedia memancarkan satu peringatan `SECRETS_PROVIDER_DEGRADED` berisi penyedia dan daftar lengkap pemilik yang terpengaruh, alih-alih mengulangi kegagalan penyedia untuk setiap pemilik. Peringatan mencakup alasan yang telah disunting, keadaan pemilik `cold` atau `stale`, dan petunjuk mencoba ulang `openclaw secrets reload`. Peringatan tidak pernah menyertakan nilai hasil resolusi atau ID SecretRef.
-- `openclaw doctor` mencantumkan pemilik dingin dan usang beserta jalur konfigurasi yang terpengaruh, alasan yang telah disunting, dan panduan mencoba ulang.
+- Terdegradasi: pemilik sehat disegarkan, pemilik usang mempertahankan nilai terakhir yang diketahui baik, dan pemilik dingin tetap tidak tersedia.
+- Pulih: dikeluarkan satu kali setelah aktivasi berhasil berikutnya.
+- Kegagalan berulang saat sudah terdegradasi mencatat peringatan tetapi tidak mengeluarkan ulang peristiwa.
+- Kegagalan startup yang ketat tidak pernah mengeluarkan peristiwa terdegradasi karena runtime tidak pernah menjadi aktif. Startup yang berhasil dengan pemilik dingin mencatat degradasi pemilik, tetapi tidak mengeluarkan peristiwa pemuat ulang.
+- Kegagalan startup dan pemuatan ulang yang tercakup pada referensi mengeluarkan peringatan `SECRETS_DEGRADED` terstruktur untuk setiap pemilik yang terdampak. Gangguan yang tercakup pada penyedia mengeluarkan satu peringatan `SECRETS_PROVIDER_DEGRADED` dengan penyedia dan daftar lengkap pemilik yang terdampak, alih-alih mengulang kegagalan penyedia untuk setiap pemilik. Peringatan mencakup alasan yang telah disunting, keadaan pemilik `cold` atau `stale`, dan petunjuk percobaan ulang `openclaw secrets reload`. Peringatan tidak pernah menyertakan nilai hasil resolusi atau id SecretRef.
+- `openclaw doctor` mencantumkan pemilik dingin dan usang beserta jalur konfigurasi yang terdampak, alasan yang telah disunting, dan panduan percobaan ulang.
 
 ## Resolusi jalur perintah
 
-Jalur perintah dapat memilih untuk menggunakan resolusi SecretRef yang didukung melalui RPC snapshot gateway. Dua perilaku umum berlaku:
+Jalur perintah dapat memilih untuk menggunakan resolusi SecretRef yang didukung melalui RPC snapshot Gateway. Dua perilaku umum berlaku:
 
 <Tabs>
   <Tab title="Jalur perintah ketat">
-    Misalnya jalur memori jarak jauh `openclaw memory` dan `openclaw qr --remote` ketika memerlukan referensi rahasia bersama jarak jauh. Jalur ini membaca dari snapshot aktif dan segera gagal ketika SecretRef yang diwajibkan tidak tersedia.
+    Misalnya jalur memori jarak jauh `openclaw memory` dan `openclaw qr --remote` ketika memerlukan referensi rahasia bersama jarak jauh. Jalur tersebut membaca dari snapshot aktif dan langsung gagal ketika SecretRef wajib tidak tersedia.
   </Tab>
   <Tab title="Jalur perintah hanya-baca">
-    Misalnya `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit`, serta alur perbaikan doctor/konfigurasi hanya-baca. Jalur ini juga mengutamakan snapshot aktif, tetapi mengalami degradasi alih-alih membatalkan ketika SecretRef yang ditargetkan tidak tersedia.
+    Misalnya `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit`, serta alur perbaikan doctor/konfigurasi hanya-baca. Jalur tersebut juga mengutamakan snapshot aktif, tetapi mengalami degradasi alih-alih membatalkan ketika SecretRef yang ditargetkan tidak tersedia.
 
     Perilaku hanya-baca:
 
-    - Ketika gateway berjalan, perintah ini terlebih dahulu membaca dari snapshot aktif.
-    - Jika resolusi gateway tidak lengkap atau gateway tidak tersedia, perintah ini mencoba fallback lokal yang ditargetkan untuk permukaan perintah tersebut.
-    - Jika SecretRef yang ditargetkan masih tidak tersedia, perintah dilanjutkan dengan keluaran hanya-baca yang terdegradasi dan diagnostik eksplisit bahwa referensi telah dikonfigurasi tetapi tidak tersedia dalam jalur perintah ini.
-    - Perilaku terdegradasi ini hanya berlaku secara lokal pada perintah; perilaku ini tidak memperlemah proses mulai runtime, pemuatan ulang, atau jalur pengiriman/autentikasi.
+    - Ketika Gateway berjalan, perintah ini terlebih dahulu membaca dari snapshot aktif.
+    - Jika resolusi Gateway tidak lengkap atau Gateway tidak tersedia, perintah tersebut mencoba fallback lokal yang ditargetkan untuk permukaan perintah tersebut.
+    - Jika SecretRef yang ditargetkan masih tidak tersedia, perintah berlanjut dengan keluaran hanya-baca yang terdegradasi dan diagnostik eksplisit bahwa referensi telah dikonfigurasi tetapi tidak tersedia dalam jalur perintah ini.
+    - Perilaku terdegradasi ini hanya bersifat lokal pada perintah; perilaku ini tidak melemahkan jalur startup, pemuatan ulang, atau pengiriman/autentikasi runtime.
 
   </Tab>
 </Tabs>
 
-Catatan lainnya:
+Catatan lain:
 
 - Penyegaran snapshot setelah rotasi rahasia backend ditangani oleh `openclaw secrets reload`.
 - Metode RPC Gateway yang digunakan oleh jalur perintah ini: `secrets.resolve`.
@@ -685,25 +680,25 @@ Jika Anda menyimpan rencana alih-alih menerapkannya selama `configure`, terapkan
 
     - Nilai teks biasa yang tersimpan (`openclaw.json`, `auth-profiles.json`, `.env`, dan `agents/*/agent/models.json` yang dihasilkan).
     - Residu header penyedia sensitif dalam teks biasa pada entri `models.json` yang dihasilkan.
-    - Referensi yang tidak dapat diresolusi.
-    - Pembayangan prioritas (`auth-profiles.json` lebih diprioritaskan daripada referensi `openclaw.json`).
+    - Referensi yang belum di-resolve.
+    - Pembayangan prioritas (`auth-profiles.json` diprioritaskan daripada referensi `openclaw.json`).
     - Residu lama (`auth.json`, pengingat OAuth).
 
-    Catatan exec: secara default, audit melewati pemeriksaan kemampuan resolusi SecretRef exec untuk menghindari efek samping perintah. Gunakan `openclaw secrets audit --allow-exec` untuk mengeksekusi penyedia exec selama audit.
+    Catatan exec: secara default, audit melewati pemeriksaan keter-resolve-an SecretRef exec untuk menghindari efek samping perintah. Gunakan `openclaw secrets audit --allow-exec` untuk menjalankan penyedia exec selama audit.
 
-    Catatan residu header: deteksi header penyedia sensitif berbasis heuristik nama (nama header autentikasi/kredensial umum dan fragmen seperti `authorization`, `x-api-key`, `token`, `secret`, `password`, dan `credential`).
+    Catatan residu header: deteksi header penyedia sensitif didasarkan pada heuristik nama (nama header autentikasi/kredensial umum dan fragmen seperti `authorization`, `x-api-key`, `token`, `secret`, `password`, dan `credential`).
 
   </Accordion>
   <Accordion title="konfigurasi rahasia">
     Pembantu interaktif yang:
 
     - Mengonfigurasi `secrets.providers` terlebih dahulu (`env`/`file`/`exec`, tambah/edit/hapus).
-    - Memungkinkan Anda memilih kolom yang didukung dan mengandung rahasia dalam `openclaw.json`, beserta `auth-profiles.json` untuk satu cakupan agen.
-    - Dapat membuat pemetaan `auth-profiles.json` baru secara langsung dalam pemilih target.
+    - Memungkinkan Anda memilih kolom yang memuat rahasia dan didukung di `openclaw.json` ditambah `auth-profiles.json` untuk satu cakupan agen.
+    - Dapat membuat pemetaan `auth-profiles.json` baru langsung di pemilih target.
     - Mengambil detail SecretRef (`source`, `provider`, `id`).
-    - Menjalankan resolusi prapemeriksaan dan dapat langsung menerapkannya.
+    - Menjalankan resolusi pra-pemeriksaan dan dapat langsung menerapkannya.
 
-    Catatan exec: prapemeriksaan melewati pemeriksaan SecretRef exec kecuali `--allow-exec` ditetapkan. Jika Anda menerapkan langsung dari `configure --apply` dan rencana mencakup referensi/penyedia exec, pertahankan `--allow-exec` tetap ditetapkan untuk langkah penerapan juga.
+    Catatan exec: pra-pemeriksaan melewati pemeriksaan SecretRef exec kecuali `--allow-exec` ditetapkan. Jika Anda menerapkan langsung dari `configure --apply` dan rencana menyertakan referensi/penyedia exec, pertahankan `--allow-exec` tetap ditetapkan untuk langkah penerapan juga.
 
     Mode yang berguna:
 
@@ -714,8 +709,8 @@ Jika Anda menyimpan rencana alih-alih menerapkannya selama `configure`, terapkan
     Default penerapan `configure`:
 
     - Menghapus kredensial statis yang cocok dari `auth-profiles.json` untuk penyedia yang ditargetkan.
-    - Menghapus entri statis lama `api_key` dari `auth.json`.
-    - Menghapus baris rahasia yang diketahui dan cocok dari berkas `.env` pada keadaan efektif dan konfigurasi aktif (dideduplikasi ketika kedua jalur cocok).
+    - Menghapus entri `api_key` statis lama dari `auth.json`.
+    - Menghapus baris rahasia yang diketahui dan cocok dari file `.env` pada keadaan efektif dan konfigurasi aktif (dideduplikasi ketika kedua jalur cocok).
 
   </Accordion>
   <Accordion title="penerapan rahasia">
@@ -728,7 +723,7 @@ Jika Anda menyimpan rencana alih-alih menerapkannya selama `configure`, terapkan
     openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
     ```
 
-    Catatan exec: uji coba melewati pemeriksaan exec kecuali `--allow-exec` ditetapkan; mode tulis menolak rencana yang berisi SecretRef/penyedia exec kecuali `--allow-exec` ditetapkan.
+    Catatan exec: uji coba melewati pemeriksaan exec kecuali `--allow-exec` ditetapkan; mode tulis menolak rencana yang memuat SecretRef/penyedia exec kecuali `--allow-exec` ditetapkan.
 
     Untuk detail kontrak target/jalur yang ketat dan aturan penolakan yang tepat, lihat [Kontrak Rencana Penerapan Rahasia](/id/gateway/secrets-plan-contract).
 
@@ -738,24 +733,24 @@ Jika Anda menyimpan rencana alih-alih menerapkannya selama `configure`, terapkan
 ## Kebijakan keamanan satu arah
 
 <Warning>
-OpenClaw sengaja tidak menulis cadangan rollback yang berisi nilai rahasia teks biasa historis.
+OpenClaw sengaja tidak menulis cadangan rollback yang memuat nilai rahasia teks biasa historis.
 </Warning>
 
 Model keamanan:
 
-- Prapemeriksaan harus berhasil sebelum mode tulis.
+- Pra-pemeriksaan harus berhasil sebelum mode tulis.
 - Aktivasi runtime divalidasi sebelum commit.
-- Penerapan memperbarui berkas menggunakan penggantian berkas atomik dan upaya pemulihan terbaik jika terjadi kegagalan.
+- Penerapan memperbarui file menggunakan penggantian file atomik dan pemulihan upaya terbaik jika terjadi kegagalan.
 
 ## Catatan kompatibilitas autentikasi lama
 
 Untuk kredensial statis, runtime tidak lagi bergantung pada penyimpanan autentikasi lama dalam teks biasa.
 
 - Sumber kredensial runtime adalah snapshot dalam memori yang telah di-resolve.
-- Entri statis lama `api_key` dibersihkan saat ditemukan.
+- Entri `api_key` statis lama dihapus ketika ditemukan.
 - Perilaku kompatibilitas terkait OAuth tetap terpisah.
 
-## Catatan UI web
+## Catatan UI Web
 
 Beberapa union SecretInput lebih mudah dikonfigurasi dalam mode editor mentah daripada dalam mode formulir.
 
@@ -764,7 +759,7 @@ Beberapa union SecretInput lebih mudah dikonfigurasi dalam mode editor mentah da
 - [Autentikasi](/id/gateway/authentication) - penyiapan autentikasi
 - [CLI: rahasia](/id/cli/secrets) - perintah CLI
 - [SecretRef Vault](/id/plugins/vault) - penyiapan penyedia HashiCorp Vault
-- [Variabel Lingkungan](/id/help/environment) - prioritas lingkungan
+- [Variabel Lingkungan](/id/help/environment) - urutan prioritas lingkungan
 - [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface) - permukaan kredensial
 - [Kontrak Rencana Penerapan Rahasia](/id/gateway/secrets-plan-contract) - detail kontrak rencana
 - [Keamanan](/id/gateway/security) - postur keamanan

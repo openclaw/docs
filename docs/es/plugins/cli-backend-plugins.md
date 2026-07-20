@@ -1,45 +1,45 @@
 ---
 read_when:
-    - Está creando un Plugin de backend de CLI de IA local
-    - Quiere registrar un backend para referencias de modelos como acme-cli/model
-    - Necesita integrar una CLI de terceros en el ejecutor alternativo de texto de OpenClaw
+    - Está creando un plugin de backend local para una CLI de IA
+    - Se desea registrar un backend para referencias de modelos como acme-cli/model
+    - Necesita integrar una CLI de terceros en el ejecutor de respaldo de texto de OpenClaw
 sidebarTitle: CLI backend plugins
 summary: Crea un plugin que registre un backend local de CLI de IA
 title: Creación de plugins de backend para la CLI
 x-i18n:
-    generated_at: "2026-07-19T02:00:06Z"
+    generated_at: "2026-07-20T00:53:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: e5bce682ad5ea64c11e4447f51c0f6cb083a0f6f4b88864792b82d8ef89fa64f
+    source_hash: 08edceae9afd133684094b6febc6ca9b0ab89ce1168474f0a4fabd15b5ac4200
     source_path: plugins/cli-backend-plugins.md
     workflow: 16
 ---
 
-Los plugins de backend de CLI permiten que OpenClaw invoque una CLI de IA local como backend de inferencia de texto. El backend aparece como un prefijo de proveedor en las referencias de modelos:
+Los plugins de backend de CLI permiten que OpenClaw invoque una CLI de IA local como backend de inferencia de texto. El backend aparece como prefijo de proveedor en las referencias de modelos:
 
 ```text
 acme-cli/acme-large
 ```
 
-Use un backend de CLI cuando la integración ascendente ya se exponga como un comando local, cuando la CLI gestione el estado de inicio de sesión local o como alternativa cuando los proveedores de API no estén disponibles.
+Se debe usar un backend de CLI cuando la integración ascendente ya esté disponible como comando local, cuando la CLI gestione el estado de inicio de sesión local o como alternativa cuando los proveedores de API no estén disponibles.
 
 <Info>
-  Si el servicio ascendente expone una API de modelos HTTP normal, escriba en su lugar un
+  Si el servicio ascendente ofrece una API de modelos HTTP normal, se debe crear en su lugar un
   [plugin de proveedor](/es/plugins/sdk-provider-plugins). Si el entorno de ejecución ascendente
   gestiona sesiones completas de agentes, eventos de herramientas, Compaction o el estado de
-  tareas en segundo plano, use un [arnés de agente](/es/plugins/sdk-agent-harness).
+  tareas en segundo plano, se debe usar un [arnés de agente](/es/plugins/sdk-agent-harness).
 </Info>
 
 ## Responsabilidades del plugin
 
 Un plugin de backend de CLI tiene tres contratos:
 
-| Contrato             | Archivo                | Propósito                                                        |
-| -------------------- | ---------------------- | ---------------------------------------------------------------- |
-| Entrada del paquete  | `package.json`     | Dirige OpenClaw al módulo de entorno de ejecución del plugin     |
-| Propiedad del manifiesto | `openclaw.plugin.json` | Declara el id del backend antes de cargar el entorno de ejecución |
+| Contrato               | Archivo                | Propósito                                                       |
+| ---------------------- | ---------------------- | --------------------------------------------------------------- |
+| Entrada del paquete    | `package.json`     | Indica a OpenClaw el módulo de entorno de ejecución del plugin  |
+| Propiedad del manifiesto | `openclaw.plugin.json`   | Declara el id del backend antes de cargar el entorno de ejecución |
 | Registro en tiempo de ejecución | `index.ts` | Invoca `api.registerCliBackend(...)` con los valores predeterminados del comando |
 
 El manifiesto contiene metadatos de descubrimiento: no ejecuta la CLI ni registra el comportamiento en tiempo de ejecución. El comportamiento en tiempo de ejecución comienza cuando la entrada del plugin invoca `api.registerCliBackend(...)`.
@@ -73,7 +73,7 @@ El manifiesto contiene metadatos de descubrimiento: no ejecuta la CLI ni registr
     }
     ```
 
-    Los paquetes publicados deben incluir archivos JavaScript compilados para el entorno de ejecución. Si la entrada de origen es `./src/index.ts`, añada `openclaw.runtimeExtensions` que apunte al archivo JavaScript compilado correspondiente. Consulte [Puntos de entrada](/es/plugins/sdk-entrypoints).
+    Los paquetes publicados deben incluir archivos de JavaScript compilados para el entorno de ejecución. Si la entrada del código fuente es `./src/index.ts`, se debe añadir `openclaw.runtimeExtensions` que apunte al archivo JavaScript compilado correspondiente. Consulte [Puntos de entrada](/es/plugins/sdk-entrypoints).
 
   </Step>
 
@@ -98,9 +98,9 @@ El manifiesto contiene metadatos de descubrimiento: no ejecuta la CLI ni registr
     }
     ```
 
-    `cliBackends` es la lista de propiedad del entorno de ejecución; permite que OpenClaw cargue automáticamente el plugin cuando la configuración o la selección del modelo mencione `acme-cli/...`.
+    `cliBackends` es la lista de propiedad del entorno de ejecución; permite que OpenClaw cargue automáticamente el plugin cuando la configuración o la selección de modelos menciona `acme-cli/...`.
 
-    `setup.cliBackends` es la superficie de configuración basada primero en descriptores. Añádala cuando el descubrimiento de modelos, la incorporación o el estado deban reconocer el backend sin cargar el entorno de ejecución del plugin. Use `requiresRuntime: false` únicamente cuando esos descriptores estáticos sean suficientes para la configuración.
+    `setup.cliBackends` es la superficie de configuración basada primero en descriptores. Se debe añadir cuando el descubrimiento de modelos, la incorporación o el estado deban reconocer el backend sin cargar el entorno de ejecución del plugin. Se debe usar `requiresRuntime: false` solo cuando esos descriptores estáticos sean suficientes para la configuración.
 
   </Step>
 
@@ -159,7 +159,7 @@ El manifiesto contiene metadatos de descubrimiento: no ejecuta la CLI ni registr
     });
     ```
 
-    El id del backend debe coincidir con la entrada `cliBackends` del manifiesto. La configuración `config` registrada es solo el valor predeterminado; la configuración del usuario en `agents.defaults.cliBackends.acme-cli` se combina con ella en tiempo de ejecución.
+    El id del backend debe coincidir con la entrada `cliBackends` del manifiesto. El valor `config` registrado es solo el predeterminado; la configuración del usuario en `agents.defaults.cliBackends.acme-cli` se combina con él en tiempo de ejecución.
 
   </Step>
 </Steps>
@@ -170,115 +170,114 @@ El manifiesto contiene metadatos de descubrimiento: no ejecuta la CLI ni registr
 
 | Campo                                                     | Uso                                                                               |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `command`                                        | Nombre del binario o ruta absoluta del comando                                    |
-| `args`                                        | Argumentos base para ejecuciones nuevas                                           |
-| `resumeArgs`                                        | Argumentos alternativos para sesiones reanudadas; admite `{sessionId}`       |
-| `output` / `resumeOutput`                   | Analizador: `json`, `jsonl` o `text`           |
-| `jsonlDialect`                                        | Dialecto de eventos JSONL: `claude-stream-json` o `gemini-stream-json`                |
-| `liveSession`                                        | Modo de proceso de CLI de larga duración (`claude-stdio`)                     |
-| `input`                                        | Transporte de la indicación: `arg` o `stdin`             |
-| `maxPromptArgChars`                                        | Longitud máxima de la indicación para el modo `arg` antes de recurrir a la entrada estándar |
-| `env` / `clearEnv`                   | Variables de entorno adicionales que se insertarán o nombres que se eliminarán antes del inicio |
-| `modelArg`                                        | Opción utilizada antes del id del modelo                                          |
-| `modelAliases`                                        | Asigna los ids de modelo de OpenClaw a ids nativos de la CLI                      |
-| `sessionArg` / `sessionArgs`                   | Cómo pasar un id de sesión                                                        |
-| `sessionMode`                                        | `always`, `existing` o `none`                       |
-| `sessionIdFields`                                        | Campos JSON que OpenClaw lee de la salida de la CLI                               |
-| `systemPromptArg` / `systemPromptFileArg`                   | Transporte de la indicación del sistema                                           |
-| `systemPromptFileConfigArg` / `systemPromptFileConfigKey`                   | Transporte de reemplazo de configuración para un archivo de indicación del sistema (por ejemplo, `-c`) |
-| `systemPromptMode`                                        | `append` o `replace`                                           |
-| `systemPromptWhen`                                        | `first`, `always` o `never`                       |
-| `imageArg` / `imageMode`                   | Opción de ruta de imagen y cómo pasar varias imágenes (`repeat` o `list`) |
-| `imagePathScope`                                        | Dónde se almacenan los archivos de imagen preparados antes de la entrega: `temp` o `workspace` |
-| `serialize`                                        | Mantiene ordenadas las ejecuciones del mismo backend                              |
-| `reseedFromRawTranscriptWhenUncompacted`                                        | Habilita explícitamente la reinicialización acotada mediante la transcripción sin procesar antes de Compaction para restablecer sesiones de forma segura |
-| `reliability.outputLimits`                                        | Máximo de caracteres/líneas JSONL sin procesar que se conservan para un turno activo de la CLI (backends de sesiones activas) |
-| `reliability.watchdog`                                        | Ajuste del tiempo de espera sin salida, por separado para ejecuciones nuevas y reanudadas |
+| `command`                                       | Nombre del binario o ruta absoluta del comando                                    |
+| `args`                                       | Argumentos base para ejecuciones nuevas                                           |
+| `resumeArgs`                                       | Argumentos alternativos para sesiones reanudadas; admite `{sessionId}`       |
+| `output` / `resumeOutput`                  | Analizador: `json`, `jsonl` o `text`           |
+| `jsonlDialect`                                       | Dialecto de eventos JSONL: `claude-stream-json` o `gemini-stream-json`                |
+| `liveSession`                                       | Modo de proceso de CLI de larga duración (`claude-stdio`)                     |
+| `input`                                       | Transporte del prompt: `arg` o `stdin`                    |
+| `maxPromptArgChars`                                       | Longitud máxima del prompt para el modo `arg` antes de usar la entrada estándar como alternativa |
+| `env` / `clearEnv`                  | Variables de entorno adicionales que se insertarán o nombres que se eliminarán antes del inicio |
+| `modelArg`                                       | Indicador utilizado antes del id del modelo                                       |
+| `modelAliases`                                       | Asigna los id de modelos de OpenClaw a los id nativos de la CLI                   |
+| `sessionArg` / `sessionArgs`                  | Cómo pasar un id de sesión                                                        |
+| `sessionMode`                                       | `always`, `existing` o `none`                       |
+| `sessionIdFields`                                       | Campos JSON que OpenClaw lee de la salida de la CLI                               |
+| `systemPromptArg` / `systemPromptFileArg`                  | Transporte del prompt del sistema                                                 |
+| `systemPromptFileConfigArg` / `systemPromptFileConfigKey`                  | Transporte de anulación de configuración para un archivo de prompt del sistema (por ejemplo, `-c`) |
+| `systemPromptMode`                                       | `append` o `replace`                                           |
+| `systemPromptWhen`                                       | `first`, `always` o `never`                       |
+| `imageArg` / `imageMode`                  | Indicador de ruta de imagen y forma de pasar varias imágenes (`repeat` o `list`) |
+| `imagePathScope`                                       | Ubicación de los archivos de imagen preparados antes de la entrega: `temp` o `workspace` |
+| `serialize`                                       | Mantiene ordenadas las ejecuciones del mismo backend                              |
+| `reseedFromRawTranscriptWhenUncompacted`                                       | Habilita de forma explícita una reinicialización acotada mediante la transcripción sin procesar antes de Compaction para restablecer sesiones de forma segura |
+| `reliability.watchdog`                                       | Ajuste del tiempo de espera sin salida, independiente para ejecuciones nuevas y reanudadas |
 
-Prefiera la configuración estática más pequeña que se ajuste a la CLI. Añada devoluciones de llamada del plugin únicamente para el comportamiento que realmente pertenezca al backend.
+Se debe preferir la configuración estática mínima que coincida con la CLI. Se deben añadir devoluciones de llamada del plugin solo para comportamientos que realmente pertenezcan al backend.
 
-## Enlaces avanzados del backend
+## Hooks avanzados del backend
 
 `CliBackendPlugin` también puede definir:
 
-| Enlace                             | Uso                                                                         |
+| Hook                               | Uso                                                                         |
 | ---------------------------------- | --------------------------------------------------------------------------- |
-| `normalizeConfig(config, context)`                 | Reescribe la configuración de usuario heredada después de combinarla        |
-| `resolveExecutionArgs(ctx)`                 | Añade opciones específicas de la solicitud, como el esfuerzo de razonamiento o el aislamiento de preguntas secundarias |
+| `normalizeConfig(config, context)`                 | Reescribe la configuración heredada del usuario después de combinarla       |
+| `resolveExecutionArgs(ctx)`                 | Añade indicadores específicos de la solicitud, como el esfuerzo de razonamiento o el aislamiento de preguntas secundarias |
 | `prepareExecution(ctx)`                 | Crea puentes temporales de autenticación, configuración o entorno antes del inicio |
-| `transformSystemPrompt(ctx)`                 | Aplica una transformación final de la indicación del sistema específica de la CLI |
-| `textTransforms`                 | Sustituciones bidireccionales de indicaciones y salidas                      |
-| `defaultAuthProfileId`                 | Da preferencia a un perfil de autenticación específico de OpenClaw           |
+| `transformSystemPrompt(ctx)`                 | Aplica una transformación final del prompt del sistema específica de la CLI |
+| `textTransforms`                 | Sustituciones bidireccionales de prompts y salidas                           |
+| `defaultAuthProfileId`                 | Da preferencia a un perfil de autenticación específico de OpenClaw          |
 | `authEpochMode`                 | Decide cómo los cambios de autenticación invalidan las sesiones de CLI almacenadas |
-| `nativeToolMode`                 | Declara si las herramientas nativas están ausentes, siempre activas o pueden seleccionarse desde el host |
-| `sideQuestionToolMode`                 | Declara las herramientas nativas deshabilitadas para las preguntas secundarias de `/btw` |
-| `bundleMcp` / `bundleMcpMode` | Habilita explícitamente el puente de herramientas MCP de bucle invertido de OpenClaw |
+| `nativeToolMode`                 | Declara si las herramientas nativas están ausentes, siempre activadas o son seleccionables por el host |
+| `sideQuestionToolMode`                 | Declara las herramientas nativas desactivadas para las preguntas secundarias de `/btw` |
+| `bundleMcp` / `bundleMcpMode` | Habilita de forma explícita el puente de herramientas MCP de bucle invertido de OpenClaw |
 | `ownsNativeCompaction`                 | El backend gestiona su propia Compaction; OpenClaw la delega                 |
-| `subscriptionAuthDispatch`                 | Las ejecuciones integradas habilitadas explícitamente con credenciales de suscripción se realizan mediante este backend |
-| `runtimeArtifact`                 | Vincula un iniciador de scripts a todo el árbol de su paquete incluido       |
+| `subscriptionAuthDispatch`                 | Las ejecuciones integradas habilitadas explícitamente con credenciales de suscripción se ejecutan mediante este backend |
+| `runtimeArtifact`                 | Limita un iniciador de scripts al árbol completo de su paquete incluido      |
 
-Mantenga estos enlaces bajo la responsabilidad del proveedor. No añada ramas específicas de la CLI al núcleo cuando un enlace del backend pueda expresar el comportamiento.
+Estos hooks deben permanecer bajo la responsabilidad del proveedor. No se deben añadir ramas específicas de la CLI al núcleo cuando un hook del backend pueda expresar el comportamiento.
 
-`prepareExecution(ctx)` recibe `ctx.contextTokenBudget`, el límite efectivo de tokens seleccionado para la ejecución. Los backends que gestionan la Compaction nativa pueden asignar ese presupuesto a su contrato de inicio específico de la CLI.
+`prepareExecution(ctx)` recibe `ctx.contextTokenBudget`, el límite efectivo de tokens seleccionado para la ejecución. Los backends que gestionen la Compaction nativa pueden asignar ese presupuesto a su contrato de inicio específico de la CLI.
 
 `runtimeArtifact` pertenece al plugin y el usuario no puede sobrescribirlo. Se consulta
-solo cuando un turno de inferencia en vivo emite o revalida una autorización de configuración verificada;
+solo cuando un turno de inferencia activo acuña o revalida una autoridad de configuración verificada;
 las ejecuciones normales de la CLI no lo requieren. Un backend sin esta declaración no puede
-emitir una autorización de configuración verificada de la CLI. Una declaración `bundled-package-tree` nombra
-al propietario exacto de `package.json` y requiere que el punto de entrada del paquete sea el
+acuñar una autoridad de configuración verificada de la CLI. Una declaración `bundled-package-tree` nombra
+al propietario exacto de `package.json` y exige que el punto de entrada del paquete sea el
 comando. OpenClaw calcula el hash del árbol completo y acotado del paquete instalado, incluidas
-las dependencias anidadas, y aplica un cierre seguro ante enlaces simbólicos que redirigen,
-lanzadores fuera del paquete declarado, declaraciones de dependencias externas
+las dependencias anidadas, y adopta una política de cierre seguro ante enlaces simbólicos que redirigen,
+lanzadores externos al paquete declarado, declaraciones de dependencias externas
 obligatorias, árboles sobredimensionados y scripts desconocidos. Declárelo solo cuando ese
 árbol contenga la implementación de inferencia completa; las integraciones opcionales de herramientas
 no hacen que un grafo de implementación externo sea seguro.
 
-Si el mismo backend también distribuye un ejecutable nativo autocontenido, enumere sus
+Si el mismo backend también incluye un ejecutable nativo autocontenido, enumere sus
 nombres base canónicos en `nativeExecutableNames`. Los demás comandos nativos permanecen
 sin verificar incluso cuando un usuario sobrescribe el comando del backend.
 
 `ctx.executionMode` es `"agent"` para los turnos normales y `"side-question"` para
-las llamadas efímeras `/btw`. Úselo cuando la CLI necesite indicadores de ejecución única diferentes,
-como desactivar las herramientas nativas, la persistencia de sesiones o el comportamiento de reanudación para
-BTW. Si un backend normalmente tiene `nativeToolMode: "always-on"`, pero sus
-argumentos argv para preguntas secundarias desactivan esas herramientas de forma fiable, establezca también
-`sideQuestionToolMode: "disabled"`; de lo contrario, OpenClaw aplica un cierre seguro cuando BTW
+las llamadas efímeras `/btw`. Úselo cuando la CLI necesite indicadores distintos para una sola ejecución,
+como deshabilitar las herramientas nativas, la persistencia de sesiones o el comportamiento de reanudación para
+BTW. Si un backend normalmente tiene `nativeToolMode: "always-on"` pero sus
+argumentos argv para preguntas secundarias deshabilitan esas herramientas de forma fiable, establezca también
+`sideQuestionToolMode: "disabled"`; de lo contrario, OpenClaw adopta una política de cierre seguro cuando BTW
 requiere una ejecución de la CLI sin herramientas.
 
-Establezca `nativeToolMode: "selectable"` solo cuando `resolveExecutionArgs` pueda desactivar
+Establezca `nativeToolMode: "selectable"` solo cuando `resolveExecutionArgs` pueda deshabilitar
 todas las herramientas nativas del backend para una ejecución individual. Para esas ejecuciones restringidas,
 `ctx.toolAvailability.native` es una tupla vacía y
-`ctx.toolAvailability.mcp` es la lista de permitidos MCP exacta y aislada por el host. El hook
-debe reemplazar los indicadores de herramientas en conflicto y devolver argumentos argv que apliquen ambos valores;
-OpenClaw lo llama una vez con los argumentos argv finales de inicio o reanudación y aplica un cierre seguro cuando
-el backend no puede imponer la restricción. Los nombres MCP en este contexto son seguros
-para aprobarse automáticamente solo porque el host ya ha limitado la configuración MCP
-generada a esos servidores y herramientas.
+`ctx.toolAvailability.mcp` es la lista de permitidos de MCP exacta y aislada por el host. El hook
+debe sustituir los indicadores de herramientas en conflicto y devolver argumentos argv que apliquen ambos valores;
+OpenClaw lo llama una vez con los argumentos argv finales, ya sean nuevos o de reanudación, y adopta una política de cierre seguro cuando
+el backend no puede aplicar la restricción. En este contexto, es seguro aprobar automáticamente los nombres de MCP
+solo porque el host ya ha limitado la configuración de MCP generada
+a esos servidores y herramientas.
 
-### `ownsNativeCompaction`: exclusión de la Compaction de OpenClaw
+### `ownsNativeCompaction`: excluirse de la Compaction de OpenClaw
 
 Si el backend ejecuta un agente que compacta su **propia** transcripción, establezca
 `ownsNativeCompaction: true` para que el resumidor de protección de OpenClaw nunca se ejecute
 sobre sus sesiones: el ciclo de vida de Compaction de la CLI no realiza ninguna operación y el
-turno continúa. `claude-cli` lo declara porque Claude Code realiza la Compaction
-internamente sin un endpoint del arnés. En cambio, las sesiones de arnés nativo, como Codex,
+turno continúa. `claude-cli` lo declara porque Claude Code compacta
+internamente sin un endpoint del arnés. En cambio, las sesiones con arnés nativo, como Codex,
 siguen dirigiéndose a su endpoint de Compaction del arnés.
 
-**Declárelo únicamente cuando se cumplan todas las condiciones siguientes**; de lo contrario, una sesión aplazada
-que supere el presupuesto puede continuar por encima del presupuesto o quedar obsoleta (OpenClaw ya no
-la rescata):
+**Declárelo solo cuando se cumpla todo lo siguiente**; de lo contrario, una sesión aplazada
+que supere el presupuesto puede seguir superándolo o quedar obsoleta (OpenClaw deja de
+rescatarla):
 
 - el backend compacta o limita de forma fiable su propia transcripción cuando se aproxima a su
   ventana;
-- conserva una sesión reanudable para que el estado compactado persista entre turnos
+- mantiene una sesión reanudable para que el estado compactado persista entre turnos
   (por ejemplo, `--resume` / `--session-id`);
-- no es una sesión de Compaction de arnés nativo; las sesiones que coincidan con `agentHarnessId`
-  se dirigen en su lugar al endpoint del arnés.
+- no es una sesión de Compaction con arnés nativo: las sesiones que coinciden con `agentHarnessId`
+  se dirigen en cambio al endpoint del arnés.
 
 ## Puente de herramientas MCP
 
 Los backends de CLI no reciben herramientas de OpenClaw de forma predeterminada. Si la CLI puede consumir
-una configuración MCP, habilítela explícitamente:
+una configuración de MCP, habilítela explícitamente:
 
 ```typescript
 return {
@@ -295,16 +294,16 @@ return {
 
 Modos de puente compatibles:
 
-| Modo                     | Uso                                                               |
-| ------------------------ | ----------------------------------------------------------------- |
-| `claude-config-file`     | CLI que aceptan un archivo de configuración MCP                   |
-| `codex-config-overrides` | CLI que aceptan sobrescrituras de configuración en argv           |
-| `gemini-system-settings` | CLI que leen la configuración MCP desde su directorio de configuración del sistema |
+| Modo                     | Uso                                                              |
+| ------------------------ | ---------------------------------------------------------------- |
+| `claude-config-file`     | CLI que aceptan un archivo de configuración de MCP                              |
+| `codex-config-overrides` | CLI que aceptan sobrescrituras de configuración en los argumentos argv                        |
+| `gemini-system-settings` | CLI que leen la configuración de MCP desde su directorio de configuración del sistema |
 
 Habilite el puente solo cuando la CLI pueda consumirlo realmente. Si la CLI tiene
-su propia capa integrada de herramientas que no puede desactivarse, establezca `nativeToolMode:
-"always-on"` para que OpenClaw pueda aplicar un cierre seguro cuando un invocador requiera que no haya herramientas
-nativas. Si puede desactivar todas las herramientas nativas en cada ejecución, use `"selectable"` con el
+su propia capa de herramientas integrada que no puede deshabilitarse, establezca `nativeToolMode:
+"always-on"` para que OpenClaw pueda adoptar una política de cierre seguro cuando un llamador exija que no haya herramientas
+nativas. Si puede deshabilitar todas las herramientas nativas en cada ejecución, use `"selectable"` con el
 contrato `resolveExecutionArgs` anterior.
 
 ## Configuración del usuario
@@ -334,12 +333,12 @@ Los usuarios pueden sobrescribir cualquier valor predeterminado del backend:
 ```
 
 Documente la sobrescritura mínima que probablemente necesiten los usuarios, normalmente solo
-`command` cuando el binario esté fuera de `PATH`.
+`command` cuando el binario está fuera de `PATH`.
 
 ## Verificación
 
-Para los plugins incluidos, añada una prueba específica en torno al constructor y al registro
-de configuración; después, ejecute el conjunto de pruebas específico del plugin:
+Para los plugins incluidos, añada una prueba específica del constructor y del registro
+de configuración y, después, ejecute el conjunto de pruebas específico del plugin:
 
 ```bash
 pnpm test extensions/acme-cli
@@ -349,27 +348,27 @@ Para plugins locales o instalados, verifique el descubrimiento y una ejecución 
 
 ```bash
 openclaw plugins inspect acme-cli --runtime --json
-openclaw agent --message "reply exactly: backend ok" --model acme-cli/acme-large
+openclaw agent --message "responde exactamente: backend correcto" --model acme-cli/acme-large
 ```
 
 Si el backend admite imágenes o MCP, añada una prueba de humo en vivo que demuestre esas
-rutas con la CLI real. No dependa de una inspección estática para el prompt, las imágenes,
-MCP ni el comportamiento de reanudación de sesiones.
+rutas con la CLI real. No se base en una inspección estática para comprobar el comportamiento del prompt, las imágenes,
+MCP o la reanudación de sesiones.
 
 ## Lista de comprobación
 
-<Check>`package.json` tiene `openclaw.extensions` y entradas de tiempo de ejecución compiladas para los paquetes publicados</Check>
+<Check>`package.json` tiene `openclaw.extensions` y entradas de entorno de ejecución compiladas para los paquetes publicados</Check>
 <Check>`openclaw.plugin.json` declara `cliBackends` y `activation.onStartup` intencional</Check>
-<Check>`setup.cliBackends` está presente cuando la configuración o el descubrimiento de modelos debe detectar el backend en frío</Check>
+<Check>`setup.cliBackends` está presente cuando la configuración o el descubrimiento de modelos deben detectar el backend en frío</Check>
 <Check>`api.registerCliBackend(...)` usa el mismo identificador de backend que el manifiesto</Check>
 <Check>Las sobrescrituras del usuario en `agents.defaults.cliBackends.<id>` siguen teniendo prioridad</Check>
 <Check>La configuración de sesión, prompt del sistema, imágenes y analizador de salida coincide con el contrato real de la CLI</Check>
 <Check>Las pruebas específicas y al menos una prueba de humo en vivo de la CLI demuestran la ruta del backend</Check>
 
-## Contenido relacionado
+## Relacionado
 
-- [Backends de CLI](/es/gateway/cli-backends) - configuración del usuario y comportamiento en tiempo de ejecución
+- [Backends de CLI](/es/gateway/cli-backends) - configuración del usuario y comportamiento del entorno de ejecución
 - [Creación de plugins](/es/plugins/building-plugins) - fundamentos de paquetes y manifiestos
 - [Descripción general del SDK de plugins](/es/plugins/sdk-overview) - referencia de la API de registro
 - [Manifiesto del plugin](/es/plugins/manifest) - `cliBackends` y descriptores de configuración
-- [Arnés del agente](/es/plugins/sdk-agent-harness) - tiempos de ejecución completos de agentes externos
+- [Arnés del agente](/es/plugins/sdk-agent-harness) - entornos de ejecución completos para agentes externos

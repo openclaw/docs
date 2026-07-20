@@ -1,57 +1,58 @@
 ---
 read_when:
-    - Menjalankan OpenClaw di belakang proksi berbasis identitas
+    - Menjalankan OpenClaw di balik proksi berbasis identitas
     - Menyiapkan Pomerium, Caddy, atau nginx dengan OAuth di depan OpenClaw
-    - Memperbaiki galat WebSocket 1008 tidak terotorisasi pada konfigurasi proksi balik
-    - Menentukan tempat menetapkan HSTS dan header penguatan HTTP lainnya
+    - Memperbaiki error WebSocket 1008 tidak terotorisasi pada konfigurasi proksi terbalik
+    - Menentukan tempat untuk menetapkan HSTS dan header penguatan HTTP lainnya
 sidebarTitle: Trusted proxy auth
 summary: Delegasikan autentikasi Gateway ke proksi terbalik tepercaya (Pomerium, Caddy, nginx + OAuth)
 title: Autentikasi proksi tepercaya
 x-i18n:
-    generated_at: "2026-07-12T14:16:53Z"
+    generated_at: "2026-07-20T03:54:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 612070e4872af23c2ac41b529c8b2fa8513bf18fccc053783f55ad00b44e1a5f
+    source_hash: 849824b53e518391d1a81f8a9a17320df3f42749f37d0c49b0e8b662f82b27cb
     source_path: gateway/trusted-proxy-auth.md
     workflow: 16
 ---
 
 <Warning>
-**Fitur yang sensitif terhadap keamanan.** Mode ini mendelegasikan autentikasi sepenuhnya kepada proksi terbalik Anda. Kesalahan konfigurasi dapat mengekspos Gateway Anda terhadap akses tanpa izin. Baca halaman ini dengan saksama sebelum mengaktifkannya.
+**Fitur yang sensitif terhadap keamanan.** Mode ini mendelegasikan autentikasi sepenuhnya kepada proksi balik Anda. Kesalahan konfigurasi dapat membuat Gateway Anda dapat diakses tanpa izin. Baca halaman ini dengan saksama sebelum mengaktifkannya.
 </Warning>
 
 ## Kapan digunakan
 
-- Anda menjalankan OpenClaw di belakang **proksi berbasis identitas** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + autentikasi yang diteruskan).
+- Anda menjalankan OpenClaw di belakang **proksi sadar identitas** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
 - Proksi Anda menangani seluruh autentikasi dan meneruskan identitas pengguna melalui header.
-- Anda berada dalam lingkungan Kubernetes atau kontainer tempat proksi merupakan satu-satunya jalur menuju Gateway.
-- Anda mengalami galat WebSocket `1008 unauthorized` karena peramban tidak dapat meneruskan token dalam payload WS.
+- Anda berada dalam lingkungan Kubernetes atau kontainer tempat proksi menjadi satu-satunya jalur menuju Gateway.
+- Anda mengalami kesalahan WebSocket `1008 unauthorized` karena browser tidak dapat meneruskan token dalam payload WS.
 
-## Kapan JANGAN digunakan
+## Kapan TIDAK digunakan
 
-- Proksi Anda tidak mengautentikasi pengguna (hanya sebagai terminator TLS atau penyeimbang beban).
-- Ada jalur apa pun menuju Gateway yang melewati proksi (celah firewall, akses jaringan internal).
-- Anda tidak yakin apakah proksi Anda menghapus/menimpa header yang diteruskan dengan benar.
-- Anda hanya memerlukan akses pribadi untuk satu pengguna (pertimbangkan Tailscale Serve + local loopback sebagai gantinya).
+- Proksi Anda tidak mengautentikasi pengguna (hanya terminator TLS atau penyeimbang beban).
+- Terdapat jalur apa pun menuju Gateway yang melewati proksi (celah firewall, akses jaringan internal).
+- Anda tidak yakin apakah proksi Anda menghapus atau menimpa header yang diteruskan dengan benar.
+- Anda hanya memerlukan akses pribadi untuk satu pengguna (pertimbangkan Tailscale Serve + loopback sebagai gantinya).
 
 ## Cara kerjanya
 
 <Steps>
   <Step title="Proksi mengautentikasi pengguna">
-    Proksi terbalik Anda mengautentikasi pengguna (OAuth, OIDC, SAML, dan sebagainya).
+    Proksi balik Anda mengautentikasi pengguna (OAuth, OIDC, SAML, dan sebagainya).
   </Step>
   <Step title="Proksi menambahkan header identitas">
-    Proksi menambahkan header yang berisi identitas pengguna yang telah diautentikasi (misalnya, `x-forwarded-user: nick@example.com`).
+    Proksi menambahkan header yang berisi identitas pengguna terautentikasi (misalnya, `x-forwarded-user: nick@example.com`).
   </Step>
   <Step title="Gateway memverifikasi sumber tepercaya">
-    OpenClaw memeriksa bahwa permintaan berasal dari **IP proksi tepercaya** (`gateway.trustedProxies`) dan bukan dari local loopback milik Gateway atau alamat antarmuka lokalnya.
+    OpenClaw memeriksa bahwa permintaan berasal dari **IP proksi tepercaya** (`gateway.trustedProxies`) dan bukan alamat loopback atau antarmuka lokal milik Gateway sendiri.
   </Step>
   <Step title="Gateway mengekstrak identitas">
     OpenClaw membaca header yang diwajibkan, lalu identitas pengguna dari header yang dikonfigurasi.
   </Step>
-  <Step title="Memberikan otorisasi">
-    Jika semua pemeriksaan berhasil dan pengguna lolos `allowUsers` (jika ditetapkan), permintaan diberi otorisasi.
+  <Step title="Otorisasi">
+    Jika semua pemeriksaan berhasil dan pengguna lolos `allowUsers` (jika ditetapkan), permintaan diotorisasi.
   </Step>
 </Steps>
 
@@ -63,7 +64,7 @@ x-i18n:
     // Autentikasi proksi tepercaya secara default mengharapkan IP sumber proksi bukan loopback
     bind: "lan",
 
-    // KRITIS: Hanya tambahkan IP proksi Anda di sini
+    // KRITIS: Tambahkan hanya IP proksi Anda di sini
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
@@ -80,6 +81,12 @@ x-i18n:
 
         // Opsional: izinkan proksi loopback pada host yang sama setelah persetujuan eksplisit
         allowLoopback: false,
+
+        // Opsional: izinkan pengguna proksi terautentikasi mendaftarkan perangkat browser baru
+        deviceAutoApprove: {
+          enabled: false,
+          scopes: ["operator.read", "operator.write", "operator.approvals"],
+        },
       },
     },
   },
@@ -87,25 +94,25 @@ x-i18n:
 ```
 
 <Warning>
-**Aturan waktu proses, sesuai urutan evaluasi**
+**Aturan runtime, berdasarkan urutan evaluasi**
 
 1. IP sumber permintaan harus cocok dengan `gateway.trustedProxies` (mendukung CIDR), atau permintaan ditolak (`trusted_proxy_untrusted_source`).
-2. Permintaan dari sumber loopback (`127.0.0.1`, `::1`) ditolak kecuali `gateway.auth.trustedProxy.allowLoopback = true` dan alamat loopback juga tercantum dalam `trustedProxies` (`trusted_proxy_loopback_source`). Pemeriksaan ini dijalankan sebelum pemeriksaan header, sehingga sumber loopback gagal dengan cara ini meskipun header yang diwajibkan juga tidak ada.
+2. Permintaan yang bersumber dari loopback (`127.0.0.1`, `::1`) ditolak kecuali `gateway.auth.trustedProxy.allowLoopback = true` dan alamat loopback juga tercantum dalam `trustedProxies` (`trusted_proxy_loopback_source`). Pemeriksaan ini dijalankan sebelum pemeriksaan header, sehingga sumber loopback gagal dengan cara ini meskipun header yang diwajibkan juga tidak ada.
 3. Sumber non-loopback yang cocok dengan salah satu alamat antarmuka jaringan lokal milik host Gateway ditolak sebagai perlindungan terhadap pemalsuan (`trusted_proxy_local_interface_source`). Jika penemuan antarmuka itu sendiri gagal, permintaan juga ditolak (`trusted_proxy_local_interface_check_failed`).
 4. `requiredHeaders` dan `userHeader` harus ada dan tidak boleh kosong.
-5. `allowUsers`, jika tidak kosong, harus mencakup pengguna yang diekstrak.
+5. `allowUsers`, jika tidak kosong, harus menyertakan pengguna yang diekstrak.
 
-**Bukti header yang diteruskan mengesampingkan sifat lokal loopback untuk fallback lokal langsung.** Jika permintaan tiba melalui loopback tetapi membawa header `Forwarded`, `X-Forwarded-*` apa pun, atau `X-Real-IP`, bukti tersebut membuatnya tidak memenuhi syarat untuk fallback kata sandi lokal langsung dan pembatasan identitas perangkat, meskipun autentikasi proksi tepercaya tetap gagal karena berasal dari loopback.
+**Bukti header yang diteruskan mengesampingkan sifat lokal loopback untuk fallback lokal langsung.** Jika permintaan tiba melalui loopback tetapi membawa header `Forwarded`, `X-Forwarded-*` apa pun, atau `X-Real-IP`, bukti tersebut membuat permintaan tidak memenuhi syarat untuk fallback kata sandi lokal langsung dan pembatasan identitas perangkat, meskipun autentikasi proksi tepercaya tetap gagal karena loopback.
 
-`allowLoopback` memercayai proses lokal pada host Gateway hingga tingkat yang sama dengan proksi terbalik. Aktifkan hanya jika Gateway masih dilindungi firewall dari akses jarak jauh langsung dan proksi lokal menghapus atau menimpa header identitas yang diberikan klien.
+`allowLoopback` memercayai proses lokal pada host Gateway hingga tingkat yang sama dengan proksi balik. Aktifkan hanya jika Gateway tetap dilindungi firewall dari akses jarak jauh langsung dan proksi lokal menghapus atau menimpa header identitas yang diberikan klien.
 
-Klien internal Gateway yang tidak melewati proksi terbalik harus menggunakan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, bukan header identitas proksi tepercaya. Penerapan Control UI non-loopback tetap memerlukan `gateway.controlUi.allowedOrigins` secara eksplisit.
+Klien Gateway internal yang tidak melewati proksi balik harus menggunakan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, bukan header identitas proksi tepercaya. Deployment Control UI non-loopback tetap memerlukan `gateway.controlUi.allowedOrigins` secara eksplisit.
 </Warning>
 
 ### Referensi konfigurasi
 
 <ParamField path="gateway.trustedProxies" type="string[]" required>
-  Larik alamat IP proksi (atau CIDR) yang akan dipercaya. Permintaan dari IP lain ditolak.
+  Larik alamat IP proksi (atau CIDR) yang dipercaya. Permintaan dari IP lain ditolak.
 </ParamField>
 <ParamField path="gateway.auth.mode" type="string" required>
   Harus berupa `"trusted-proxy"`.
@@ -114,17 +121,56 @@ Klien internal Gateway yang tidak melewati proksi terbalik harus menggunakan `ga
   Nama header yang berisi identitas pengguna terautentikasi.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
-  Header tambahan yang harus ada agar permintaan dapat dipercaya.
+  Header tambahan yang harus ada agar permintaan dipercaya.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
-  Daftar izin identitas pengguna. Kosong berarti mengizinkan semua pengguna terautentikasi.
+  Daftar pengguna yang diizinkan berdasarkan identitas pengguna. Kosong berarti mengizinkan semua pengguna terautentikasi.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.allowLoopback" type="boolean" default="false">
-  Dukungan dengan persetujuan eksplisit untuk proksi terbalik loopback pada host yang sama.
+  Dukungan berbasis persetujuan eksplisit untuk proksi balik loopback pada host yang sama.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.deviceAutoApprove.enabled" type="boolean" default="false">
+  Setujui secara otomatis identitas perangkat Control UI dan WebChat baru setelah autentikasi proksi tepercaya.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.deviceAutoApprove.scopes" type="string[]" default='["operator.read", "operator.write", "operator.approvals"]'>
+  Cakupan maksimum yang diberikan kepada perangkat browser yang disetujui secara otomatis. Mencantumkan `operator.admin` secara eksplisit memungkinkan setiap pengguna yang diautentikasi proksi meminta pemberian perangkat dengan akses admin penuh secara otomatis, membuat permintaan tanpa cakupan menerima akses admin penuh secara otomatis, dan memicu temuan audit keamanan KRITIS `gateway.trusted_proxy_device_auto_approve_admin` serta peringatan saat Gateway dimulai.
 </ParamField>
 
 <Warning>
-Aktifkan `allowLoopback` hanya jika proksi terbalik lokal merupakan batas kepercayaan yang dimaksudkan. Setiap proses lokal yang dapat terhubung ke Gateway dapat mencoba mengirim header identitas proksi, jadi jaga agar akses langsung ke Gateway tetap bersifat privat pada host dan wajibkan header milik proksi seperti `x-forwarded-proto`, atau header pernyataan bertanda tangan jika proksi Anda mendukungnya.
+Aktifkan `allowLoopback` hanya jika proksi balik lokal merupakan batas kepercayaan yang dimaksudkan. Setiap proses lokal yang dapat terhubung ke Gateway dapat mencoba mengirim header identitas proksi, jadi jaga agar akses langsung ke Gateway tetap bersifat privat bagi host dan wajibkan header milik proksi seperti `x-forwarded-proto`, atau header pernyataan bertanda tangan jika proksi Anda mendukungnya.
+</Warning>
+
+## Persetujuan perangkat otomatis
+
+Autentikasi proksi tepercaya dapat secara opsional menggunakan identitas proksi sebagai batas persetujuan untuk perangkat browser baru:
+
+```json5
+{
+  gateway: {
+    auth: {
+      mode: "trusted-proxy",
+      trustedProxy: {
+        userHeader: "x-forwarded-user",
+        allowUsers: ["operator@example.com"],
+        deviceAutoApprove: {
+          enabled: true,
+          scopes: ["operator.read", "operator.write", "operator.approvals"],
+        },
+      },
+    },
+  },
+}
+```
+
+Nilai default-nya adalah `enabled: false`. Saat diaktifkan, semua aturan berikut berlaku:
+
+1. WebSocket harus telah diautentikasi melalui metode `trusted-proxy` dengan identitas pengguna yang tidak kosong dan lolos `allowUsers` ketika daftar pengguna yang diizinkan dikonfigurasi. Koneksi token, kata sandi, Tailscale, dan tanpa autentikasi tidak pernah menggunakan kebijakan ini.
+2. Hanya perangkat browser Control UI atau WebChat baru yang dapat disetujui secara otomatis. Setiap permintaan untuk perangkat yang sudah ada, termasuk peningkatan cakupan, tetap menunggu persetujuan manual dengan `openclaw devices approve <requestId>`.
+3. Perangkat disetujui dengan peran `operator`. Jika permintaan koneksi menyertakan cakupan, pemberiannya merupakan irisan tepat antara cakupan yang diminta dan `deviceAutoApprove.scopes`. Jika permintaan tidak menyertakan cakupan, daftar yang dikonfigurasi diberikan; jika daftar tersebut tidak dicantumkan, nilai default-nya adalah `operator.read`, `operator.write`, dan `operator.approvals`. Pemberian yang dihasilkan kemudian dibatasi lebih lanjut oleh header proksi [`x-openclaw-scopes`](#control-ui-pairing-behavior) milik koneksi jika ada, sehingga proksi yang mempersempit cakupan pengguna juga membatasi pemberian perangkat **persisten**, bukan hanya sesi — header yang ada tetapi kosong menghasilkan tanpa cakupan. Batas ini berlaku meskipun klien tidak menyertakan daftar cakupannya sendiri.
+4. `operator.admin` hanya diizinkan melalui pencantuman eksplisit dalam `deviceAutoApprove.scopes`. Jika dicantumkan, setiap pengguna yang diautentikasi proksi dapat meminta dan secara otomatis menerima akses admin penuh pada perangkat browser baru; permintaan tanpa cakupan menerima akses admin penuh secara otomatis. `openclaw security audit` melaporkan temuan KRITIS `gateway.trusted_proxy_device_auto_approve_admin`, dan Gateway mencatat peringatan satu kali saat dimulai. Utamakan persetujuan admin manual dengan `openclaw devices approve` atau `openclaw devices rotate` hingga peran per identitas tersedia.
+
+<Warning>
+Mengaktifkan opsi ini mendelegasikan pendaftaran perangkat browser baru sepenuhnya kepada identitas proksi balik. Akun proksi yang disusupi dapat mendaftarkan perangkat persisten dengan setiap cakupan yang dikonfigurasi. Mencantumkan `operator.admin` menjadikan perangkat tersebut administrator penuh tanpa persetujuan manual. Pastikan Gateway hanya dapat dijangkau melalui proksi, wajibkan autentikasi proksi yang kuat, timpa header identitas, dan gunakan daftar `allowUsers` yang terbatas.
 </Warning>
 
 ## Perilaku pemasangan Control UI
@@ -133,25 +179,25 @@ Saat `gateway.auth.mode = "trusted-proxy"` aktif dan permintaan lolos pemeriksaa
 
 Implikasi cakupan:
 
-- Sesi WebSocket Control UI tanpa perangkat dapat terhubung, tetapi secara default tidak menerima cakupan operator. OpenClaw mengosongkan daftar cakupan yang diminta menjadi `[]` agar sesi yang tidak terikat pada perangkat/token terpasang yang telah disetujui tidak dapat mendeklarasikan izinnya sendiri.
-- Jika metode gagal dengan `missing scope` setelah koneksi WebSocket berhasil, gunakan HTTPS agar peramban dapat membuat identitas perangkat dan menyelesaikan pemasangan. Lihat [HTTP Control UI yang tidak aman](/id/web/control-ui#insecure-http).
-- Hanya untuk kondisi darurat: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` mempertahankan cakupan yang diminta bahkan tanpa identitas perangkat. Ini merupakan penurunan keamanan yang parah; segera kembalikan pengaturan tersebut. Lihat [HTTP Control UI yang tidak aman](/id/web/control-ui#insecure-http).
+- Sesi WebSocket Control UI tanpa perangkat dapat terhubung, tetapi secara default tidak menerima cakupan operator. OpenClaw mengosongkan daftar cakupan yang diminta menjadi `[]` agar sesi yang tidak terikat pada perangkat/token terpasang yang disetujui tidak dapat mendeklarasikan izinnya sendiri.
+- Jika metode gagal dengan `missing scope` setelah koneksi WebSocket berhasil, gunakan HTTPS agar browser dapat menghasilkan identitas perangkat dan menyelesaikan pemasangan. Lihat [HTTP Control UI yang tidak aman](/id/web/control-ui#insecure-http).
+- Hanya untuk keadaan darurat: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` mempertahankan cakupan yang diminta bahkan tanpa identitas perangkat. Ini merupakan penurunan keamanan yang parah; segera kembalikan pengaturan. Lihat [HTTP Control UI yang tidak aman](/id/web/control-ui#insecure-http).
 
-Pembatasan cakupan oleh proksi terbalik: jika proksi Anda mengirim `x-openclaw-scopes` pada permintaan peningkatan WebSocket Control UI, OpenClaw membatasi cakupan sesi menjadi irisan antara cakupan yang diminta dan cakupan yang dideklarasikan. Header ini tidak memberikan cakupan; header ini hanya mempersempit cakupan yang dapat dimiliki sesi.
+Pembatasan cakupan oleh proksi balik: jika proksi Anda mengirim `x-openclaw-scopes` pada permintaan peningkatan WebSocket Control UI, OpenClaw membatasi cakupan sesi menjadi irisan antara cakupan yang diminta dan cakupan yang dideklarasikan. Header ini tidak memberikan cakupan; header ini hanya mempersempit cakupan yang dapat dimiliki sesi. Saat `deviceAutoApprove.enabled` bernilai true, batas yang sama juga berlaku pada pemberian perangkat persisten yang ditulis oleh [persetujuan perangkat otomatis](#automatic-device-approval), sehingga perangkat yang disetujui secara otomatis tidak pernah memiliki lebih banyak cakupan daripada yang dideklarasikan proksi.
 
 Implikasi:
 
-- Pemasangan tidak lagi menjadi pembatas utama untuk akses Control UI dalam mode ini.
-- Kebijakan autentikasi proksi terbalik dan `allowUsers` Anda menjadi kontrol akses yang efektif.
-- Pastikan lalu lintas masuk Gateway dikunci hanya untuk IP proksi tepercaya (`gateway.trustedProxies` + firewall).
+- Pemasangan tidak lagi menjadi gerbang utama untuk akses Control UI tanpa perangkat. Saat `deviceAutoApprove.enabled` bernilai true, identitas proksi juga menjadi gerbang persetujuan untuk pendaftaran perangkat browser baru.
+- Kebijakan autentikasi proksi Anda dan `allowUsers` menjadi kontrol akses yang efektif.
+- Pastikan ingress Gateway hanya terbuka untuk IP proksi tepercaya (`gateway.trustedProxies` + firewall).
 
-Klien WebSocket khusus bukanlah sesi Control UI. `gateway.controlUi.dangerouslyDisableDeviceAuth` tidak memberikan cakupan kepada klien arbitrer berbentuk `client.mode: "backend"` atau CLI. Otomatisasi khusus harus menggunakan identitas/pemasangan perangkat, jalur pembantu backend lokal langsung yang dicadangkan dengan `client.id: "gateway-client"`, atau [Plugin RPC HTTP admin](/id/plugins/admin-http-rpc) jika antarmuka permintaan/respons HTTP lebih sesuai.
+Klien WebSocket kustom bukanlah sesi Control UI. `gateway.controlUi.dangerouslyDisableDeviceAuth` tidak memberikan cakupan kepada klien `client.mode: "backend"` arbitrer atau klien berbentuk CLI. Otomatisasi kustom sebaiknya menggunakan identitas/pemasangan perangkat, jalur helper backend lokal langsung yang dicadangkan `client.id: "gateway-client"`, atau [Plugin RPC HTTP admin](/id/plugins/admin-http-rpc) jika antarmuka permintaan/respons HTTP lebih sesuai.
 
 ## Header cakupan operator
 
-Autentikasi proksi tepercaya adalah mode HTTP yang **membawa identitas**, sehingga pemanggil dapat secara opsional mendeklarasikan cakupan operator dengan `x-openclaw-scopes` pada permintaan API HTTP.
+Autentikasi trusted-proxy adalah mode HTTP **yang membawa identitas**, sehingga pemanggil dapat secara opsional mendeklarasikan cakupan operator dengan `x-openclaw-scopes` pada permintaan API HTTP.
 
-Catatan: Cakupan WebSocket ditentukan oleh jabat tangan protokol Gateway dan pengikatan identitas perangkat. Pada permintaan peningkatan WebSocket Control UI, `x-openclaw-scopes` hanya membatasi cakupan sesi yang dinegosiasikan, bukan memberikannya. Lihat [Perilaku pemasangan Control UI](#control-ui-pairing-behavior).
+Catatan: Cakupan WebSocket ditentukan oleh handshake protokol Gateway dan pengikatan identitas perangkat. Pada permintaan upgrade WebSocket Control UI, `x-openclaw-scopes` hanya membatasi cakupan sesi yang dinegosiasikan, bukan memberikan cakupan. Lihat [perilaku pemasangan Control UI](#control-ui-pairing-behavior).
 
 Contoh:
 
@@ -161,25 +207,25 @@ Contoh:
 
 Perilaku:
 
-- Saat header ada, OpenClaw mematuhi kumpulan cakupan yang dideklarasikan.
-- Saat header ada tetapi kosong, permintaan mendeklarasikan **tidak ada** cakupan operator.
-- Saat header tidak ada, API HTTP normal yang membawa identitas kembali menggunakan kumpulan cakupan operator standar bawaan (`operator.admin`, `operator.read`, `operator.write`, `operator.approvals`, `operator.pairing`, `operator.talk.secrets`).
-- **Rute HTTP Plugin** dengan autentikasi Gateway secara default memiliki cakupan yang lebih sempit: saat `x-openclaw-scopes` tidak ada, cakupan waktu prosesnya kembali hanya ke `operator.write`.
-- Permintaan HTTP yang berasal dari peramban tetap harus lolos `gateway.controlUi.allowedOrigins` (atau mode fallback header Host yang disengaja), bahkan setelah autentikasi proksi tepercaya berhasil.
+- Ketika header tersedia, OpenClaw mengikuti kumpulan cakupan yang dideklarasikan.
+- Ketika header tersedia tetapi kosong, permintaan mendeklarasikan **tidak ada** cakupan operator.
+- Ketika header tidak tersedia, API HTTP normal yang membawa identitas kembali menggunakan kumpulan cakupan operator default standar (`operator.admin`, `operator.read`, `operator.write`, `operator.approvals`, `operator.pairing`, `operator.talk.secrets`).
+- **Rute HTTP plugin** dengan autentikasi Gateway memiliki default yang lebih sempit: ketika `x-openclaw-scopes` tidak tersedia, cakupan runtime-nya kembali hanya menggunakan `operator.write`.
+- Permintaan HTTP yang berasal dari browser tetap harus lolos `gateway.controlUi.allowedOrigins` (atau mode fallback header Host yang disengaja), bahkan setelah autentikasi trusted-proxy berhasil.
 
-Aturan praktis: kirim `x-openclaw-scopes` secara eksplisit jika Anda ingin permintaan proksi tepercaya lebih sempit daripada nilai bawaan, atau saat rute Plugin dengan autentikasi Gateway memerlukan cakupan yang lebih kuat daripada cakupan tulis.
+Aturan praktis: kirim `x-openclaw-scopes` secara eksplisit ketika Anda ingin permintaan trusted-proxy lebih sempit daripada default, atau ketika rute plugin dengan autentikasi Gateway memerlukan sesuatu yang lebih kuat daripada cakupan tulis.
 
 ## Terminasi TLS dan HSTS
 
 Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
 
 <Tabs>
-  <Tab title="Terminasi TLS pada proksi (direkomendasikan)">
-    Saat proksi terbalik menangani HTTPS untuk `https://control.example.com`, tetapkan `Strict-Transport-Security` pada proksi untuk domain tersebut.
+  <Tab title="Terminasi TLS proxy (direkomendasikan)">
+    Ketika reverse proxy Anda menangani HTTPS untuk `https://control.example.com`, tetapkan `Strict-Transport-Security` pada proxy untuk domain tersebut.
 
-    - Cocok untuk penerapan yang terhubung ke internet.
-    - Menyatukan kebijakan sertifikat + penguatan HTTP di satu tempat.
-    - OpenClaw dapat tetap menggunakan HTTP loopback di belakang proksi.
+    - Cocok untuk penerapan yang menghadap internet.
+    - Menempatkan kebijakan sertifikat + penguatan HTTP di satu tempat.
+    - OpenClaw dapat tetap menggunakan HTTP loopback di belakang proxy.
 
     Contoh nilai header:
 
@@ -188,8 +234,8 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
     ```
 
   </Tab>
-  <Tab title="Terminasi TLS pada Gateway">
-    Jika OpenClaw sendiri menyajikan HTTPS secara langsung (tanpa proksi yang melakukan terminasi TLS), tetapkan:
+  <Tab title="Terminasi TLS Gateway">
+    Jika OpenClaw sendiri menyajikan HTTPS secara langsung (tanpa proxy yang melakukan terminasi TLS), tetapkan:
 
     ```json5
     {
@@ -211,13 +257,13 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
 
 ### Panduan peluncuran
 
-- Mulailah dengan usia maksimum yang singkat terlebih dahulu (misalnya `max-age=300`) sambil memvalidasi lalu lintas.
-- Tingkatkan ke nilai berumur panjang (misalnya `max-age=31536000`) hanya setelah tingkat keyakinan tinggi.
+- Mulailah dengan usia maksimum yang singkat terlebih dahulu (misalnya `max-age=300`) saat memvalidasi lalu lintas.
+- Tingkatkan ke nilai berjangka panjang (misalnya `max-age=31536000`) hanya setelah tingkat keyakinan tinggi.
 - Tambahkan `includeSubDomains` hanya jika setiap subdomain siap menggunakan HTTPS.
-- Gunakan pramuat hanya jika Anda sengaja memenuhi persyaratan pramuat untuk seluruh kumpulan domain Anda.
+- Gunakan preload hanya jika Anda sengaja memenuhi persyaratan preload untuk seluruh kumpulan domain Anda.
 - Pengembangan lokal khusus loopback tidak memperoleh manfaat dari HSTS.
 
-## Contoh penyiapan proksi
+## Contoh penyiapan proxy
 
 <AccordionGroup>
   <Accordion title="Pomerium">
@@ -255,13 +301,13 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
 
   </Accordion>
   <Accordion title="Caddy dengan OAuth">
-    Caddy dengan Plugin `caddy-security` dapat mengautentikasi pengguna dan meneruskan header identitas.
+    Caddy dengan plugin `caddy-security` dapat mengautentikasi pengguna dan meneruskan header identitas.
 
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP
+        trustedProxies: ["10.0.0.1"], // IP proxy Caddy/sidecar
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -293,7 +339,7 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
+        trustedProxies: ["10.0.0.1"], // IP nginx/oauth2-proxy
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -320,12 +366,12 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
     ```
 
   </Accordion>
-  <Accordion title="Traefik with forward auth">
+  <Accordion title="Traefik dengan autentikasi penerusan">
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["172.17.0.1"], // Traefik container IP
+        trustedProxies: ["172.17.0.1"], // IP kontainer Traefik
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -340,52 +386,54 @@ Gunakan satu titik terminasi TLS dan terapkan HSTS di sana.
 
 ## Konfigurasi token campuran
 
-Saat dimulai, Gateway menolak autentikasi trusted-proxy jika token bersama juga dikonfigurasi (`gateway.auth.token` atau `OPENCLAW_GATEWAY_TOKEN`). Keduanya saling eksklusif karena token bersama akan memungkinkan pemanggil pada host yang sama melakukan autentikasi melalui jalur yang sepenuhnya berbeda dari identitas terverifikasi proxy yang seharusnya diberlakukan oleh mode ini.
+Saat memulai, Gateway menolak autentikasi trusted-proxy jika token bersama juga dikonfigurasi (`gateway.auth.token` atau `OPENCLAW_GATEWAY_TOKEN`). Keduanya saling eksklusif karena token bersama akan memungkinkan pemanggil pada host yang sama mengautentikasi melalui jalur yang sepenuhnya berbeda dari identitas terverifikasi proxy yang hendak diberlakukan oleh mode ini.
 
-Jika proses awal gagal dengan galat seperti `gateway auth mode is trusted-proxy, but a shared token is also configured`:
+Jika proses mulai gagal dengan kesalahan seperti `gateway auth mode is trusted-proxy, but a shared token is also configured`:
 
 - Hapus token bersama saat menggunakan mode trusted-proxy, atau
 - Ubah `gateway.auth.mode` menjadi `"token"` jika Anda bermaksud menggunakan autentikasi berbasis token.
 
-Header identitas trusted-proxy loopback tetap gagal secara tertutup: pemanggil pada host yang sama tidak diautentikasi secara diam-diam sebagai pengguna proxy. Pemanggil internal OpenClaw yang melewati proxy dapat melakukan autentikasi menggunakan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Fallback token tetap sengaja tidak didukung dalam mode trusted-proxy.
+Header identitas trusted-proxy loopback tetap gagal secara tertutup: pemanggil pada host yang sama tidak diautentikasi secara diam-diam sebagai pengguna proxy. Pemanggil internal OpenClaw yang melewati proxy dapat mengautentikasi dengan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` sebagai gantinya. Fallback token tetap sengaja tidak didukung dalam mode trusted-proxy.
 
 ## Daftar periksa keamanan
 
 Sebelum mengaktifkan autentikasi trusted-proxy, verifikasi:
 
-- [ ] **Proxy adalah satu-satunya jalur**: Porta Gateway dibatasi oleh firewall dari semua pihak kecuali proxy Anda.
-- [ ] **trustedProxies dibuat seminimal mungkin**: Hanya alamat IP proxy Anda yang sebenarnya, bukan seluruh subnet.
-- [ ] **Sumber proxy loopback digunakan secara sengaja**: Autentikasi trusted-proxy gagal secara tertutup untuk permintaan yang bersumber dari loopback kecuali `gateway.auth.trustedProxy.allowLoopback` diaktifkan secara eksplisit untuk proxy pada host yang sama.
+- [ ] **Proxy adalah satu-satunya jalur**: Port Gateway dilindungi firewall dari semua pihak kecuali proxy Anda.
+- [ ] **trustedProxies minimal**: Hanya IP proxy Anda yang sebenarnya, bukan seluruh subnet.
+- [ ] **Sumber proxy loopback disengaja**: Autentikasi trusted-proxy gagal secara tertutup untuk permintaan bersumber dari loopback kecuali `gateway.auth.trustedProxy.allowLoopback` diaktifkan secara eksplisit untuk proxy pada host yang sama.
 - [ ] **Proxy menghapus header**: Proxy Anda menimpa (bukan menambahkan) header `x-forwarded-*` dari klien.
 - [ ] **Terminasi TLS**: Proxy Anda menangani TLS; pengguna terhubung melalui HTTPS.
-- [ ] **allowedOrigins ditentukan secara eksplisit**: UI Kontrol non-loopback menggunakan `gateway.controlUi.allowedOrigins` yang ditentukan secara eksplisit.
-- [ ] **allowUsers ditetapkan** (disarankan): Batasi akses ke pengguna yang dikenal, bukan mengizinkan siapa pun yang terautentikasi.
-- [ ] **Tidak ada konfigurasi token campuran**: Jangan menetapkan `gateway.auth.token` dan `gateway.auth.mode: "trusted-proxy"` secara bersamaan.
-- [ ] **Fallback kata sandi lokal bersifat privat**: Jika Anda mengonfigurasi `gateway.auth.password` untuk pemanggil langsung internal, lindungi porta Gateway dengan firewall agar klien jarak jauh non-proxy tidak dapat mengaksesnya secara langsung.
+- [ ] **allowedOrigins bersifat eksplisit**: Control UI non-loopback menggunakan `gateway.controlUi.allowedOrigins` yang eksplisit.
+- [ ] **allowUsers ditetapkan** (direkomendasikan): Batasi ke pengguna yang dikenal alih-alih mengizinkan siapa pun yang terautentikasi.
+- [ ] **Tidak ada konfigurasi token campuran**: Jangan tetapkan `gateway.auth.token` dan `gateway.auth.mode: "trusted-proxy"` sekaligus.
+- [ ] **Fallback kata sandi lokal bersifat privat**: Jika Anda mengonfigurasi `gateway.auth.password` untuk pemanggil internal langsung, lindungi port Gateway dengan firewall agar klien jarak jauh non-proxy tidak dapat mengaksesnya secara langsung.
+- [ ] **Persetujuan perangkat otomatis disengaja**: Jika `deviceAutoApprove.enabled` bernilai true, perlakukan keamanan akun reverse-proxy sebagai batas pendaftaran perangkat serta pertahankan daftar cakupan yang diberikan agar tidak bersifat admin dan tetap minimal.
 
 ## Audit keamanan
 
-`openclaw security audit` menandai autentikasi trusted-proxy dengan temuan berkeparahan **kritis**. Hal ini disengaja; ini merupakan pengingat bahwa Anda mendelegasikan keamanan kepada penyiapan proxy Anda.
+`openclaw security audit` menandai autentikasi trusted-proxy dengan temuan berkeparahan **kritis**. Ini disengaja; temuan tersebut merupakan pengingat bahwa Anda mendelegasikan keamanan ke penyiapan proxy Anda.
 
-Audit memeriksa hal-hal berikut:
+Audit memeriksa:
 
-- Peringatan/pengingat kritis dasar `gateway.trusted_proxy_auth`.
-- Konfigurasi `trustedProxies` yang tidak ada.
-- Konfigurasi `userHeader` yang tidak ada.
-- `allowUsers` kosong (mengizinkan semua pengguna yang terautentikasi).
+- Peringatan/pengingat kritis `gateway.trusted_proxy_auth` dasar.
+- Konfigurasi `trustedProxies` tidak tersedia.
+- Konfigurasi `userHeader` tidak tersedia.
+- `allowUsers` kosong (mengizinkan setiap pengguna yang terautentikasi).
 - `allowLoopback` diaktifkan untuk sumber proxy pada host yang sama.
+- Persetujuan perangkat browser otomatis diaktifkan (mendelegasikan pemasangan perangkat baru kepada identitas proxy).
 
-Temuan terpisah yang tidak khusus untuk trusted-proxy juga berlaku setiap kali UI Kontrol diekspos: `gateway.controlUi.allowedOrigins` yang menggunakan wildcard atau tidak ada, serta fallback asal berdasarkan header Host.
+Temuan terpisah yang tidak khusus untuk trusted-proxy juga berlaku setiap kali Control UI diekspos: `gateway.controlUi.allowedOrigins` wildcard atau tidak tersedia, serta fallback asal header Host.
 
 ## Pemecahan masalah
 
 <AccordionGroup>
   <Accordion title="trusted_proxy_untrusted_source">
-    Permintaan tidak berasal dari alamat IP dalam `gateway.trustedProxies`. Periksa:
+    Permintaan tidak berasal dari IP dalam `gateway.trustedProxies`. Periksa:
 
-    - Apakah alamat IP proxy sudah benar? (Alamat IP kontainer Docker dapat berubah.)
-    - Apakah terdapat penyeimbang beban di depan proxy Anda?
-    - Gunakan `docker inspect` atau `kubectl get pods -o wide` untuk menemukan alamat IP yang sebenarnya.
+    - Apakah IP proxy sudah benar? (IP kontainer Docker dapat berubah.)
+    - Apakah ada load balancer di depan proxy Anda?
+    - Gunakan `docker inspect` atau `kubectl get pods -o wide` untuk menemukan IP yang sebenarnya.
 
   </Accordion>
   <Accordion title="trusted_proxy_loopback_source">
@@ -398,28 +446,28 @@ Temuan terpisah yang tidak khusus untuk trusted-proxy juga berlaku setiap kali U
 
     Perbaikan:
 
-    - Utamakan autentikasi token/kata sandi untuk klien internal pada host yang sama yang tidak melalui proxy, atau
-    - Rutekan melalui alamat proxy tepercaya non-loopback dan pertahankan alamat IP tersebut dalam `gateway.trustedProxies`, atau
-    - Untuk reverse proxy yang sengaja dijalankan pada host yang sama, tetapkan `gateway.auth.trustedProxy.allowLoopback = true`, pertahankan alamat loopback dalam `gateway.trustedProxies`, dan pastikan proxy menghapus atau menimpa header identitas.
+    - Utamakan autentikasi token/kata sandi untuk klien internal pada host yang sama yang tidak melewati proxy, atau
+    - Rutekan melalui alamat proxy tepercaya non-loopback dan pertahankan IP tersebut dalam `gateway.trustedProxies`, atau
+    - Untuk reverse proxy pada host yang sama yang disengaja, tetapkan `gateway.auth.trustedProxy.allowLoopback = true`, pertahankan alamat loopback dalam `gateway.trustedProxies`, dan pastikan proxy menghapus atau menimpa header identitas.
 
   </Accordion>
   <Accordion title="trusted_proxy_local_interface_source / trusted_proxy_local_interface_check_failed">
-    Alamat IP sumber permintaan cocok dengan salah satu alamat antarmuka jaringan non-loopback milik host Gateway sendiri (bukan proxy), sebagai perlindungan terhadap lalu lintas host yang sama yang dipalsukan pada tailnet atau jaringan bridge Docker. `..._check_failed` berarti penemuan antarmuka itu sendiri mengalami galat, sehingga OpenClaw gagal secara tertutup.
+    IP sumber permintaan cocok dengan salah satu alamat antarmuka jaringan non-loopback milik host Gateway sendiri (bukan proxy), sebagai perlindungan terhadap lalu lintas palsu dari host yang sama pada tailnet atau jaringan bridge Docker. `..._check_failed` berarti penemuan antarmuka itu sendiri mengalami kesalahan, sehingga OpenClaw gagal secara tertutup.
 
     Periksa:
 
-    - Apakah suatu proses pada host Gateway mengirimkan header identitas secara langsung dan melewati proxy?
-    - Apakah proxy berjalan dalam namespace jaringan yang sama dengan Gateway, menggunakan alamat IP yang juga muncul sebagai antarmuka lokal?
+    - Apakah suatu proses pada host Gateway itu sendiri mengirimkan header identitas secara langsung dan melewati proxy?
+    - Apakah proxy berjalan dalam namespace jaringan yang sama dengan Gateway, dengan IP yang juga muncul sebagai antarmuka lokal?
 
-    Perbaikan: rutekan lalu lintas proxy melalui alamat yang tidak turut terikat secara lokal oleh host Gateway, atau gunakan `allowLoopback` hanya untuk penyiapan proxy pada host yang sama yang sebenarnya.
+    Perbaikan: rutekan lalu lintas proxy melalui alamat yang tidak juga terikat secara lokal oleh host Gateway, atau gunakan `allowLoopback` hanya untuk penyiapan proxy pada host yang sama yang sebenarnya.
 
   </Accordion>
   <Accordion title="trusted_proxy_user_missing">
-    Header pengguna kosong atau tidak ada. Periksa:
+    Header pengguna kosong atau tidak tersedia. Periksa:
 
     - Apakah proxy Anda dikonfigurasi untuk meneruskan header identitas?
     - Apakah nama header sudah benar? (tidak peka huruf besar-kecil, tetapi ejaannya harus tepat)
-    - Apakah pengguna benar-benar telah diautentikasi pada proxy?
+    - Apakah pengguna benar-benar terautentikasi pada proxy?
 
   </Accordion>
   <Accordion title="trusted_proxy_missing_header_*">
@@ -433,37 +481,37 @@ Temuan terpisah yang tidak khusus untuk trusted-proxy juga berlaku setiap kali U
     Pengguna telah diautentikasi tetapi tidak tercantum dalam `allowUsers`. Tambahkan pengguna tersebut atau hapus daftar izin.
   </Accordion>
   <Accordion title="trusted_proxy_no_proxies_configured / trusted_proxy_config_missing">
-    `gateway.auth.mode` bernilai `"trusted-proxy"`, tetapi `gateway.trustedProxies` kosong, atau `gateway.auth.trustedProxy` itu sendiri tidak ada. Setiap permintaan ditolak hingga keduanya ditetapkan.
+    `gateway.auth.mode` adalah `"trusted-proxy"`, tetapi `gateway.trustedProxies` kosong, atau `gateway.auth.trustedProxy` tidak ada. Setiap permintaan ditolak hingga keduanya ditetapkan.
   </Accordion>
   <Accordion title="trusted_proxy_origin_not_allowed">
-    Autentikasi trusted-proxy berhasil, tetapi header `Origin` browser tidak lolos pemeriksaan asal UI Kontrol.
+    Autentikasi proksi tepercaya berhasil, tetapi header `Origin` browser tidak lolos pemeriksaan asal Control UI.
 
     Periksa:
 
-    - `gateway.controlUi.allowedOrigins` mencakup asal browser yang persis sama.
-    - Anda tidak mengandalkan asal wildcard kecuali memang sengaja menginginkan perilaku izinkan semua.
-    - Jika Anda sengaja menggunakan mode fallback berdasarkan header Host, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` ditetapkan secara sengaja.
+    - `gateway.controlUi.allowedOrigins` menyertakan asal browser yang tepat.
+    - Anda tidak mengandalkan asal wildcard kecuali memang sengaja menginginkan perilaku izinkan-semua.
+    - Jika sengaja menggunakan mode fallback header Host, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` ditetapkan secara disengaja.
 
   </Accordion>
-  <Accordion title="Connection succeeds but methods report missing scope">
-    WebSocket berhasil terhubung, tetapi `chat.history`, `sessions.list`, atau
+  <Accordion title="Koneksi berhasil tetapi metode melaporkan cakupan tidak ada">
+    WebSocket terhubung, tetapi `chat.history`, `sessions.list`, atau
     `models.list` gagal dengan `missing scope: operator.read`.
 
     Penyebab umum:
 
-    - Sesi UI Kontrol tanpa perangkat: autentikasi trusted-proxy dapat menerima koneksi WebSocket tanpa identitas perangkat, tetapi OpenClaw sengaja menghapus cakupan pada sesi tanpa perangkat.
-    - Klien backend khusus: `gateway.controlUi.dangerouslyDisableDeviceAuth` hanya berlaku untuk UI Kontrol dan tidak memberikan cakupan kepada klien backend arbitrer atau klien WebSocket berbentuk CLI.
-    - `x-openclaw-scopes` terlalu sempit: jika proxy Anda menyisipkan header ini pada permintaan peningkatan WebSocket UI Kontrol, cakupan sesi dibatasi pada kumpulan tersebut. Nilai header kosong menghasilkan tanpa cakupan.
+    - Sesi Control UI tanpa perangkat: autentikasi proksi tepercaya dapat mengizinkan koneksi WebSocket tanpa identitas perangkat, tetapi OpenClaw menghapus cakupan pada sesi tanpa perangkat sesuai rancangan.
+    - Klien backend khusus: `gateway.controlUi.dangerouslyDisableDeviceAuth` dicakup untuk Control UI dan tidak memberikan cakupan kepada klien WebSocket backend arbitrer atau yang menyerupai CLI.
+    - `x-openclaw-scopes` terlalu sempit: jika proksi menyisipkan header ini pada permintaan peningkatan WebSocket Control UI, cakupan sesi dibatasi pada kumpulan tersebut. Nilai header kosong tidak menghasilkan cakupan apa pun.
 
     Perbaikan:
 
-    - Untuk UI Kontrol, gunakan HTTPS agar browser dapat menghasilkan identitas perangkat dan menyelesaikan pemasangan.
-    - Untuk otomatisasi khusus, gunakan identitas/pemasangan perangkat, jalur bantuan backend langsung-lokal `gateway-client` yang dicadangkan, atau [RPC HTTP admin](/id/plugins/admin-http-rpc).
-    - Gunakan `gateway.controlUi.dangerouslyDisableDeviceAuth: true` hanya sebagai jalur darurat sementara untuk UI Kontrol.
+    - Untuk Control UI, gunakan HTTPS agar browser dapat menghasilkan identitas perangkat dan menyelesaikan pemasangan.
+    - Untuk otomatisasi khusus, gunakan identitas perangkat/pemasangan, jalur bantuan backend `gateway-client` lokal-langsung yang dicadangkan, atau [RPC HTTP admin](/id/plugins/admin-http-rpc).
+    - Gunakan `gateway.controlUi.dangerouslyDisableDeviceAuth: true` hanya sebagai jalur darurat sementara untuk Control UI.
 
   </Accordion>
-  <Accordion title="WebSocket still failing">
-    Pastikan proxy Anda:
+  <Accordion title="WebSocket masih gagal">
+    Pastikan proksi Anda:
 
     - Mendukung peningkatan WebSocket (`Upgrade: websocket`, `Connection: upgrade`).
     - Meneruskan header identitas pada permintaan peningkatan WebSocket (bukan hanya HTTP).
@@ -475,23 +523,23 @@ Temuan terpisah yang tidak khusus untuk trusted-proxy juga berlaku setiap kali U
 ## Migrasi dari autentikasi token
 
 <Steps>
-  <Step title="Configure the proxy">
-    Konfigurasikan proxy Anda untuk mengautentikasi pengguna dan meneruskan header.
+  <Step title="Konfigurasikan proksi">
+    Konfigurasikan proksi untuk mengautentikasi pengguna dan meneruskan header.
   </Step>
-  <Step title="Test the proxy independently">
-    Uji penyiapan proxy secara independen (curl dengan header).
+  <Step title="Uji proksi secara terpisah">
+    Uji penyiapan proksi secara terpisah (curl dengan header).
   </Step>
-  <Step title="Update OpenClaw config">
-    Perbarui konfigurasi OpenClaw dengan autentikasi trusted-proxy.
+  <Step title="Perbarui konfigurasi OpenClaw">
+    Perbarui konfigurasi OpenClaw dengan autentikasi proksi tepercaya.
   </Step>
-  <Step title="Restart the Gateway">
+  <Step title="Mulai ulang Gateway">
     Mulai ulang Gateway.
   </Step>
-  <Step title="Test WebSocket">
-    Uji koneksi WebSocket dari UI Kontrol.
+  <Step title="Uji WebSocket">
+    Uji koneksi WebSocket dari Control UI.
   </Step>
   <Step title="Audit">
-    Jalankan `openclaw security audit` dan tinjau temuannya.
+    Jalankan `openclaw security audit` dan tinjau temuan.
   </Step>
 </Steps>
 

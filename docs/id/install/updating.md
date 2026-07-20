@@ -1,26 +1,26 @@
 ---
 read_when:
     - Memperbarui OpenClaw
-    - Ada yang rusak setelah pembaruan
-summary: Memperbarui OpenClaw dengan aman (instalasi global atau dari sumber), beserta strategi pengembalian versi
+    - Ada sesuatu yang bermasalah setelah pembaruan
+summary: Memperbarui OpenClaw dengan aman (instalasi global atau dari sumber), beserta strategi rollback
 title: Memperbarui
 x-i18n:
-    generated_at: "2026-07-16T18:17:21Z"
+    generated_at: "2026-07-20T03:51:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: baf849d27fd1132833832734ff5b1648b7401d53925a624176832bca614d1160
+    source_hash: b337c3c4c845e054eebb5a7eb018900f9e22b695a59e14c0a6f0cb67d2e4780a
     source_path: install/updating.md
     workflow: 16
 ---
 
-Jaga OpenClaw tetap mutakhir.
+Tetap perbarui OpenClaw.
 
 Untuk penggantian image Docker, Podman, dan Kubernetes, lihat
-[Memutakhirkan image kontainer](/id/install/docker#upgrading-container-images). Gateway
-menjalankan pekerjaan pemutakhiran yang aman saat startup sebelum siap dan berhenti jika state
-yang dipasang memerlukan perbaikan manual.
+[Memperbarui image kontainer](/id/install/docker#upgrading-container-images). Gateway
+menjalankan pekerjaan peningkatan yang aman saat startup sebelum siap dan keluar jika state
+yang di-mount memerlukan perbaikan manual.
 
 ## Direkomendasikan: `openclaw update`
 
@@ -41,45 +41,45 @@ openclaw update --dry-run   # pratinjau tanpa menerapkan
 
 `openclaw update` tidak memiliki flag `--verbose` (penginstal memilikinya). Untuk diagnostik, gunakan
 `--dry-run` guna melihat pratinjau tindakan yang direncanakan, `--json` untuk hasil terstruktur, atau
-`openclaw update status --json` guna memeriksa status channel dan ketersediaan.
+`openclaw update status --json` guna memeriksa state channel dan ketersediaan.
 
 `--channel beta` mengutamakan dist-tag npm beta, tetapi beralih ke stable/latest
-ketika tag beta tidak tersedia atau versinya lebih lama daripada rilis stabil
-terbaru. Gunakan `--tag beta` untuk pemutakhiran paket satu kali yang disematkan ke dist-tag
-beta npm mentah sebagai gantinya.
+jika tag beta tidak tersedia atau versinya lebih lama daripada rilis stabil terbaru.
+Sebagai gantinya, gunakan `--tag beta` untuk pembaruan paket satu kali yang disematkan ke
+dist-tag beta npm mentah.
 
 `--channel extended-stable` hanya untuk paket, dan instalasi tetap
 hanya berjalan di latar depan. OpenClaw membaca pemilih `extended-stable` npm publik,
-memverifikasi paket persis yang dipilih, dan menginstal versi persis tersebut. Data
-registri yang tidak tersedia atau tidak konsisten akan menyebabkan kegagalan tertutup; proses ini tidak pernah beralih ke `latest`.
+memverifikasi paket persis yang dipilih, dan menginstal versi tersebut secara persis. Data
+registri yang tidak tersedia atau tidak konsisten menyebabkan proses gagal secara tertutup; proses tidak pernah beralih ke `latest`.
 Jika versi yang dipilih lebih lama daripada versi yang terinstal, konfirmasi
 penurunan versi normal tetap berlaku. CLI menyimpan channel setelah
-pemutakhiran inti berhasil; `npm install -g openclaw@extended-stable` langsung
+pembaruan inti berhasil; `npm install -g openclaw@extended-stable` langsung
 tidak memperbarui `update.channel`.
-Setelah penggantian inti, Plugin npm resmi yang memenuhi syarat dengan intent bare/default atau
-`latest` akan diselaraskan ke versi inti persis tersebut. Sematan persis dan tag eksplisit
-selain `latest`, Plugin pihak ketiga, serta sumber non-npm tetap tidak berubah.
+Setelah penggantian inti, Plugin npm resmi yang memenuhi syarat dengan intent kosong/default atau
+`latest` diselaraskan ke versi inti persis tersebut. Penyematan persis dan tag eksplisit
+selain `latest`, Plugin pihak ketiga, serta sumber selain npm tetap tidak berubah.
 Instalasi katalog yang dibuat oleh versi OpenClaw saat ini mempertahankan intent
 default tersebut. Catatan lama yang hanya berisi versi persis tetap disematkan karena
-OpenClaw tidak dapat membedakan secara aman sematan otomatis lama dari sematan pengguna; jalankan
+OpenClaw tidak dapat membedakan penyematan otomatis lama dari penyematan pengguna dengan aman; jalankan
 `openclaw plugins update @openclaw/name` satu kali pada channel extended-stable
-untuk mengikutsertakan kembali Plugin tersebut dalam pelacakan persis inti.
+untuk mengikutsertakan kembali Plugin tersebut dalam pelacakan versi inti persis.
 
-`--channel dev` menyediakan checkout `main` GitHub bergerak yang persisten. Untuk pemutakhiran
-paket satu kali, `--tag main` dipetakan ke spesifikasi paket
-`github:openclaw/openclaw#main` dan menginstalnya secara langsung melalui manajer paket target (npm/pnpm/bun).
+`--channel dev` menyediakan checkout `main` GitHub bergerak yang persisten. Untuk
+pembaruan paket satu kali, `--tag main` dipetakan ke spesifikasi paket
+`github:openclaw/openclaw#main` dan menginstalnya secara langsung melalui pengelola paket target (npm/pnpm/bun).
 
-Untuk Plugin terkelola, tidak adanya rilis beta merupakan peringatan, bukan kegagalan:
-pemutakhiran inti tetap dapat berhasil sementara Plugin beralih ke rilis
-default/latest yang tercatat.
+Untuk Plugin terkelola, ketiadaan rilis beta merupakan peringatan, bukan kegagalan:
+pembaruan inti tetap dapat berhasil sementara Plugin beralih ke
+rilis default/latest yang tercatat.
 
 Lihat [Channel rilis](/id/install/development-channels) untuk semantik channel.
 
 ## Beralih antara instalasi npm dan git
 
-Gunakan channel untuk mengubah jenis instalasi. Pemutakhir mempertahankan state, konfigurasi,
-kredensial, dan ruang kerja Anda di `~/.openclaw`; pemutakhir hanya mengubah instalasi kode OpenClaw
-yang digunakan CLI dan Gateway.
+Gunakan channel untuk mengubah jenis instalasi. Pembaru mempertahankan state, konfigurasi,
+kredensial, dan workspace Anda di `~/.openclaw`; pembaru hanya mengubah instalasi kode
+OpenClaw yang digunakan oleh CLI dan Gateway.
 
 ```bash
 # instalasi paket npm -> checkout git yang dapat diedit
@@ -96,15 +96,15 @@ openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` memastikan keberadaan checkout git, membangunnya, dan menginstal CLI global dari
+`dev` memastikan checkout git tersedia, membangunnya, dan menginstal CLI global dari
 checkout tersebut. Channel `stable`, `extended-stable`, dan `beta` menggunakan instalasi
 paket. Extended-stable ditolak pada checkout git tanpa mengubah atau
 mengonversinya. Jika Gateway sudah terinstal, `openclaw update` menyegarkan
-metadata layanan dan memulai ulang layanan kecuali Anda meneruskan `--no-restart`.
+metadata layanan dan memulai ulang layanan tersebut kecuali Anda meneruskan `--no-restart`.
 
 Untuk instalasi paket dengan layanan Gateway terkelola, `openclaw update` menargetkan
-root paket yang digunakan layanan tersebut. Jika perintah shell `openclaw` berasal
-dari instalasi yang berbeda, pemutakhir mencetak kedua root dan path Node milik layanan
+root paket yang digunakan oleh layanan tersebut. Jika perintah shell `openclaw` berasal
+dari instalasi yang berbeda, pembaru mencetak kedua root dan path Node milik layanan
 terkelola, serta memeriksa versi Node tersebut terhadap persyaratan
 `engines.node` rilis target sebelum mengganti paket.
 
@@ -118,8 +118,8 @@ Tambahkan `--no-onboard` untuk melewati onboarding. Untuk memaksakan jenis insta
 `--install-method git --no-onboard` atau `--install-method npm --no-onboard`.
 
 Jika `openclaw update` gagal setelah fase instalasi paket npm, jalankan kembali
-penginstal sebagai gantinya. Penginstal tidak memanggil pemutakhir; penginstal menjalankan instalasi paket
-global secara langsung dan dapat memulihkan instalasi npm yang baru diperbarui sebagian.
+penginstal. Penginstal tidak memanggil pembaru; penginstal menjalankan instalasi paket
+global secara langsung dan dapat memulihkan instalasi npm yang diperbarui sebagian.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
@@ -131,22 +131,22 @@ Sematkan pemulihan ke versi atau dist-tag tertentu dengan `--version`:
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
 ```
 
-## Alternatif: npm, pnpm, atau bun manual
+## Alternatif: npm, pnpm, atau bun secara manual
 
 ```bash
 npm i -g openclaw@latest
 ```
 
-Utamakan `openclaw update` untuk instalasi yang diawasi: perintah ini dapat mengoordinasikan penggantian
-paket dengan layanan Gateway yang sedang berjalan. Jika Anda memperbarui instalasi yang diawasi
-secara manual, hentikan Gateway terkelola terlebih dahulu. Manajer paket mengganti berkas di
-tempat, dan Gateway yang sedang berjalan dapat mencoba memuat berkas inti atau Plugin
-di tengah proses penggantian. Mulai ulang Gateway setelah manajer paket selesai agar Gateway menggunakan
-instalasi baru.
+Utamakan `openclaw update` untuk instalasi yang diawasi: perintah tersebut dapat mengoordinasikan penggantian
+paket dengan layanan Gateway yang sedang berjalan. Jika Anda memperbarui secara manual pada instalasi
+yang diawasi, hentikan Gateway terkelola terlebih dahulu. Pengelola paket mengganti file
+di tempatnya, dan Gateway yang sedang berjalan dapat mencoba memuat file inti atau Plugin
+di tengah penggantian. Mulai ulang Gateway setelah pengelola paket selesai agar Gateway
+menggunakan instalasi baru.
 
-Untuk instalasi global tingkat sistem Linux yang dimiliki root, jika `openclaw update` gagal dengan
-`EACCES`, lakukan pemulihan menggunakan npm sistem sambil tetap menghentikan Gateway selama
-penggantian manual. Gunakan flag profil/lingkungan yang sama dengan yang biasanya digunakan untuk
+Untuk instalasi global sistem Linux milik root, jika `openclaw update` gagal dengan
+`EACCES`, lakukan pemulihan menggunakan npm sistem sambil mempertahankan Gateway dalam keadaan berhenti selama
+penggantian manual. Gunakan flag profil/lingkungan yang sama seperti yang biasanya Anda gunakan untuk
 Gateway tersebut. Ganti `/usr/bin/npm` dengan npm sistem yang memiliki
 prefiks global milik root pada host Anda:
 
@@ -167,39 +167,39 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-Saat `openclaw update` mengelola instalasi npm global, perintah ini terlebih dahulu menginstal target
-ke prefiks npm sementara. Paket kandidat memvalidasi versi Node
-host selama `preinstall`; hanya setelah itu OpenClaw memverifikasi inventaris
-`dist` yang dikemas dan menukar pohon paket bersih ke prefiks global sebenarnya. Penjaga
+Saat `openclaw update` mengelola instalasi npm global, perintah tersebut terlebih dahulu menginstal target
+ke prefiks npm sementara. Paket kandidat memvalidasi versi Node host
+selama `preinstall`; hanya setelah itu OpenClaw memverifikasi inventaris
+`dist` dalam paket dan menukar pohon paket bersih ke prefiks global sebenarnya. Penjaga
 penyelesaian yang dikemas tidak disertakan dalam inventaris yang diharapkan dan hanya dihapus
 setelah `preinstall` berhasil, sehingga skrip siklus hidup yang dilewati juga menyebabkan kegagalan sebelum
-penggantian. Pada npm 12 dan yang lebih baru, pemutakhir hanya menyetujui siklus hidup OpenClaw
+penggantian. Pada npm 12 dan yang lebih baru, pembaru hanya menyetujui siklus hidup OpenClaw
 kandidat; skrip dependensi transitif tetap diblokir. Hal ini mencegah npm
-menumpuk paket baru di atas berkas usang dari paket lama. Jika perintah
-instalasi gagal, OpenClaw mencoba lagi satu kali dengan `--omit=optional`, yang membantu host
-tempat dependensi opsional native tidak dapat dikompilasi.
+menimpa paket baru di atas file usang dari paket lama. Jika perintah
+instalasi gagal, OpenClaw mencoba kembali satu kali dengan `--omit=optional`, yang membantu host
+ketika dependensi opsional native tidak dapat dikompilasi.
 
-Perintah pemutakhiran npm dan pemutakhiran Plugin yang dikelola OpenClaw juga menghapus
-karantina rantai pasok `min-release-age` milik npm (atau kunci konfigurasi `before` yang lebih lama)
-untuk proses npm anak. Kebijakan tersebut tersedia untuk perlindungan umum, tetapi
-pemutakhiran OpenClaw eksplisit berarti "instal rilis yang dipilih sekarang."
+Perintah pembaruan npm dan pembaruan Plugin yang dikelola OpenClaw juga menghapus karantina
+rantai pasokan `min-release-age` milik npm (atau kunci konfigurasi `before` yang lebih lama)
+untuk proses anak npm. Kebijakan tersebut ada untuk perlindungan umum, tetapi pembaruan
+OpenClaw eksplisit berarti "instal rilis yang dipilih sekarang."
 
 ```bash
 pnpm add -g openclaw@latest
 ```
 
 Jika pnpm 11 menginstal OpenClaw 2026.7.1, jalankan perintah manual tersebut satu kali. Rilis
-itu ada sebelum tata letak paket global terisolasi pnpm 11, sehingga pemutakhirnya dapat
-salah mengenali instalasi npm lain sebagai CLI yang sedang berjalan. Rilis yang lebih baru mempertahankan
-kepemilikan pnpm dan mengikuti root paket pengganti selama pemutakhiran. Rilis tersebut
-juga menggunakan direktori bin global yang dilaporkan oleh manajer pemilik dan berhenti sebelum
-perubahan ketika perintah pnpm yang tersedia melaporkan root atau versi mayor global lain,
-atau ketika paket pemanggil menjadi yatim atau bukan satu-satunya instalasi OpenClaw
-aktif di sana.
+tersebut mendahului tata letak paket global terisolasi pnpm 11, sehingga pembarunya dapat
+salah mengira instalasi npm lain sebagai CLI yang sedang berjalan. Rilis yang lebih baru mempertahankan
+kepemilikan pnpm dan mengikuti root paket pengganti selama pembaruan. Rilis tersebut
+juga menggunakan direktori bin global yang dilaporkan oleh pengelola pemilik dan berhenti sebelum
+perubahan ketika perintah pnpm yang tersedia melaporkan root global atau versi mayor yang berbeda,
+atau ketika paket pemanggil menjadi yatim atau bukan satu-satunya instalasi OpenClaw aktif
+di sana.
 
 Jika OpenClaw berbagi grup instalasi global pnpm 11 dengan paket lain,
-pemutakhir otomatis berhenti sebelum mengubah grup tersebut. Perbarui grup asli
-yang dipisahkan koma secara manual agar paket saudaranya dan kebijakan build tetap
+pembaru otomatis berhenti sebelum mengubah grup tersebut. Perbarui grup asal
+yang dipisahkan koma secara manual agar paket saudara dan kebijakan build-nya tetap
 utuh.
 
 ```bash
@@ -210,13 +210,13 @@ bun add -g openclaw@latest
 
 <AccordionGroup>
   <Accordion title="Pohon paket hanya-baca">
-    OpenClaw memperlakukan instalasi global yang dikemas sebagai hanya-baca saat runtime, bahkan ketika direktori paket global dapat ditulis oleh pengguna saat ini. Instalasi paket Plugin berada dalam root npm/git milik OpenClaw di bawah direktori konfigurasi pengguna, dan startup Gateway tidak mengubah pohon paket OpenClaw.
+    OpenClaw memperlakukan instalasi global dalam paket sebagai hanya-baca saat runtime, meskipun direktori paket global dapat ditulis oleh pengguna saat ini. Instalasi paket Plugin berada di root npm/git milik OpenClaw di bawah direktori konfigurasi pengguna, dan startup Gateway tidak mengubah pohon paket OpenClaw.
 
-    Beberapa penyiapan npm Linux menginstal paket global di bawah direktori milik root seperti `/usr/lib/node_modules/openclaw`. OpenClaw mendukung tata letak tersebut karena perintah instalasi/pemutakhiran Plugin menulis di luar direktori paket global tersebut.
+    Beberapa konfigurasi npm Linux menginstal paket global di bawah direktori milik root seperti `/usr/lib/node_modules/openclaw`. OpenClaw mendukung tata letak tersebut karena perintah instalasi/pembaruan Plugin menulis di luar direktori paket global tersebut.
 
   </Accordion>
-  <Accordion title="Unit systemd yang diperkuat">
-    Berikan akses tulis kepada OpenClaw ke root konfigurasi/state-nya agar instalasi Plugin eksplisit, pemutakhiran Plugin, dan pembersihan oleh doctor dapat menyimpan perubahannya:
+  <Accordion title="Unit systemd yang diperketat">
+    Berikan OpenClaw akses tulis ke root konfigurasi/state-nya agar instalasi Plugin eksplisit, pembaruan Plugin, dan pembersihan oleh doctor dapat menyimpan perubahannya:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
@@ -224,13 +224,13 @@ bun add -g openclaw@latest
 
   </Accordion>
   <Accordion title="Pemeriksaan awal ruang disk">
-    Sebelum pemutakhiran paket dan instalasi Plugin eksplisit, OpenClaw mencoba melakukan pemeriksaan ruang disk upaya terbaik untuk volume target. Ruang yang sedikit menghasilkan peringatan beserta path yang diperiksa, tetapi tidak memblokir pemutakhiran karena kuota sistem berkas, snapshot, dan volume jaringan dapat berubah setelah pemeriksaan. Instalasi manajer paket aktual dan verifikasi pascainstalasi tetap menjadi sumber otoritatif.
+    Sebelum pembaruan paket dan instalasi Plugin eksplisit, OpenClaw mencoba pemeriksaan ruang disk upaya terbaik untuk volume target. Ruang yang sedikit menghasilkan peringatan dengan path yang diperiksa, tetapi tidak memblokir pembaruan karena kuota sistem file, snapshot, dan volume jaringan dapat berubah setelah pemeriksaan. Instalasi pengelola paket yang sebenarnya dan verifikasi pascainstalasi tetap menjadi acuan utama.
   </Accordion>
 </AccordionGroup>
 
-## Pemutakhir otomatis
+## Pembaru otomatis
 
-Dinonaktifkan secara default. Aktifkan di `~/.openclaw/openclaw.json`:
+Nonaktif secara default. Aktifkan di `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -238,54 +238,51 @@ Dinonaktifkan secara default. Aktifkan di `~/.openclaw/openclaw.json`:
     channel: "stable",
     auto: {
       enabled: true,
-      stableDelayHours: 6,
-      stableJitterHours: 12,
-      betaCheckIntervalHours: 1,
     },
   },
 }
 ```
 
-| Channel           | Perilaku                                                                                                                                     |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `stable`          | Menunggu `stableDelayHours` (default: 6), lalu menerapkan dengan jitter deterministik sepanjang `stableJitterHours` (default: 12) untuk peluncuran bertahap yang tersebar. |
-| `extended-stable` | Memeriksa petunjuk pemutakhiran hanya-baca saat startup dan setiap 24 jam ketika `checkOnStart` diaktifkan. Tidak pernah menerapkannya secara otomatis.                |
-| `beta`            | Memeriksa setiap `betaCheckIntervalHours` (default: 1) dan langsung menerapkannya.                                                                  |
-| `dev`             | Tidak ada penerapan otomatis. Gunakan `openclaw update` secara manual.                                                                                          |
+| Channel           | Perilaku                                                                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | Diterapkan setelah penundaan bawaan dengan jitter deterministik untuk peluncuran bertahap.                                                |
+| `extended-stable` | Memeriksa petunjuk pembaruan hanya-baca saat startup dan setiap 24 jam ketika `checkOnStart` diaktifkan. Tidak pernah menerapkannya secara otomatis. |
+| `beta`            | Memeriksa pada interval bawaan dan langsung menerapkannya.                                                                        |
+| `dev`             | Tidak ada penerapan otomatis. Gunakan `openclaw update` secara manual.                                                                           |
 
-Gateway juga mencatat petunjuk pemutakhiran saat startup (nonaktifkan dengan
+Gateway juga mencatat petunjuk pembaruan saat startup (nonaktifkan dengan
 `update.checkOnStart: false`). Pilihan extended-stable yang tersimpan menggunakan
-jalur petunjuk hanya-baca ini dan interval petunjuk 24 jam yang sudah ada, tetapi tidak pernah menjalankan
-instalasi otomatis, serah terima, mulai ulang, penundaan/jitter stabil, atau polling beta.
-Untuk penurunan versi atau pemulihan insiden, atur `OPENCLAW_NO_AUTO_UPDATE=1` di lingkungan Gateway guna memblokir penerapan otomatis meskipun `update.auto.enabled` dikonfigurasi. Petunjuk pemutakhiran saat startup tetap dapat berjalan kecuali `update.checkOnStart` juga dinonaktifkan.
+jalur petunjuk hanya-baca ini dan interval petunjuk 24 jam yang ada, tetapi tidak pernah menjalankan
+instalasi otomatis, handoff, mulai ulang, penundaan/jitter stable, atau polling beta.
+Untuk penurunan versi atau pemulihan insiden, atur `OPENCLAW_NO_AUTO_UPDATE=1` di lingkungan Gateway guna memblokir penerapan otomatis meskipun `update.auto.enabled` dikonfigurasi. Petunjuk pembaruan saat startup tetap dapat berjalan kecuali `update.checkOnStart` juga dinonaktifkan.
 
-Pemutakhiran manajer paket yang diminta melalui bidang kontrol Gateway aktif
-(`update.run`) tidak mengganti pohon paket di dalam proses Gateway yang sedang berjalan.
-Pada instalasi layanan terkelola, Gateway memulai serah terima terpisah,
-berhenti, dan membiarkan jalur CLI `openclaw update --yes --json` normal menghentikan
+Pembaruan pengelola paket yang diminta melalui bidang kontrol Gateway langsung
+(`update.run`) tidak mengganti pohon paket di dalam proses Gateway
+yang sedang berjalan. Pada instalasi layanan terkelola, Gateway memulai handoff terlepas,
+keluar, dan membiarkan jalur CLI `openclaw update --yes --json` normal menghentikan
 layanan, mengganti paket, menyegarkan metadata layanan, memulai ulang, memverifikasi
-versi dan keterjangkauan Gateway, serta memulihkan LaunchAgent macOS yang terinstal
-tetapi belum dimuat jika memungkinkan. Jika Gateway tidak dapat melakukan serah terima tersebut dengan aman,
-`update.run` melaporkan perintah shell yang aman alih-alih menjalankan manajer
+versi dan keterjangkauan Gateway, serta memulihkan LaunchAgent macOS yang terinstal tetapi tidak dimuat
+jika memungkinkan. Jika Gateway tidak dapat melakukan handoff tersebut dengan aman,
+`update.run` melaporkan perintah shell yang aman alih-alih menjalankan pengelola
 paket di dalam proses.
 
-Kartu pembaruan di bilah sisi Control UI menampilkan **Perbarui Gateway** ketika kartu tersebut akan memulai
-alur `update.run` ini secara langsung. Ini mencakup Control UI yang dihosting di browser, Gateway
+Kartu pembaruan bilah sisi Control UI menampilkan **Perbarui Gateway** saat kartu tersebut akan langsung memulai
+alur `update.run` ini. Hal ini mencakup Control UI yang di-host di browser, Gateway
 jarak jauh, dan Gateway lokal yang dikelola secara manual.
 
-Di aplikasi macOS yang ditandatangani, Gateway lokal milik aplikasi mengubah kartu tersebut menjadi
+Dalam aplikasi macOS yang ditandatangani, Gateway lokal milik aplikasi mengubah kartu tersebut menjadi
 **Perbarui aplikasi Mac + Gateway**. Sparkle memperbarui aplikasi terlebih dahulu; setelah diluncurkan ulang,
 aplikasi menjalankan `openclaw update --tag <app-version> --json`, memulai ulang Gateway-nya,
-dan memverifikasi kesehatan dalam jendela progres bergaya penyiapan. Jendela hanya muncul
-ketika Gateway terkelola tersebut perlu diperbarui, diperbaiki, atau diinstal; pembaruan khusus aplikasi meluncurkan ulang
-langsung ke aplikasi. Detail kegagalan tetap terlihat beserta tindakan Coba Lagi, [Panduan pembaruan](/id/install/updating), dan
+dan memverifikasi kondisi dalam jendela progres bergaya penyiapan. Jendela tersebut hanya muncul
+ketika Gateway terkelola itu perlu diperbarui, diperbaiki, atau diinstal; pembaruan khusus aplikasi diluncurkan ulang
+langsung ke aplikasi. Detail kegagalan tetap terlihat dengan tindakan Coba Lagi, [Panduan pembaruan](/id/install/updating), dan
 [Discord](https://discord.gg/clawd). Aplikasi tidak pernah menggunakan jalur terkoordinasi ini
 untuk Gateway jarak jauh atau yang dikelola secara eksternal, tidak pernah menurunkan versi Gateway
-yang lebih baru, dan tidak pernah menimpa pin saluran `extended-stable`.
+yang lebih baru, dan tidak pernah mengesampingkan pin saluran `extended-stable`.
 
 Ketika pembaruan berhasil, aplikasi mengantrekan peristiwa sambutan satu kali untuk sesi langsung
 tingkat teratas terbaru yang memiliki interaksi pengguna/saluran nyata. Proses Cron,
-heartbeat, dan pembaruan sesi yang hanya berjalan di latar belakang tidak mengubah pilihan tersebut. Dalam
+heartbeat, dan pembaruan sesi khusus latar belakang tidak mengubah pilihan tersebut. Dalam
 mode jarak jauh, aplikasi hanya memperbarui runtime node Mac lokalnya dan mengirimkan peristiwa
 hanya ketika Gateway jarak jauh yang terhubung setidaknya sama barunya dengan aplikasi.
 
@@ -299,9 +296,9 @@ hanya ketika Gateway jarak jauh yang terhubung setidaknya sama barunya dengan ap
 openclaw doctor
 ```
 
-Memigrasikan konfigurasi, mengaudit kebijakan DM, dan memeriksa kesehatan gateway. Detail: [Doctor](/id/gateway/doctor)
+Memigrasikan konfigurasi, mengaudit kebijakan DM, dan memeriksa kondisi Gateway. Detail: [Doctor](/id/gateway/doctor)
 
-### Mulai ulang gateway
+### Mulai ulang Gateway
 
 ```bash
 openclaw gateway restart
@@ -315,21 +312,21 @@ openclaw health
 
 </Steps>
 
-## Rollback
+## Pemulihan versi
 
-Rollback memiliki dua lapisan:
+Pemulihan versi memiliki dua lapisan:
 
 1. Instal ulang kode OpenClaw yang lebih lama sambil mempertahankan status saat ini.
-2. Pulihkan status sebelum pembaruan hanya ketika kode yang lebih lama tidak dapat menggunakan konfigurasi
-   atau basis data yang telah dimigrasikan.
+2. Pulihkan status sebelum pembaruan hanya ketika kode yang lebih lama tidak dapat menggunakan konfigurasi atau basis data
+   yang telah dimigrasikan.
 
-Mulailah dengan rollback khusus kode. Memulihkan status akan membuang perubahan yang dibuat setelah
+Mulailah dengan pemulihan versi kode saja. Memulihkan status akan menghapus perubahan yang dibuat setelah
 pencadangan.
 
 ### Sebelum memperbarui: buat cadangan terverifikasi
 
 `openclaw update` mempertahankan salinan konfigurasi otomatis sebelum pembaruan, tetapi tidak
-membuat titik pemulihan status lengkap. Sebelum pembaruan signifikan, buat satu
+membuat titik pemulihan status lengkap. Sebelum pembaruan yang signifikan, buat satu
 secara eksplisit:
 
 ```bash
@@ -340,16 +337,16 @@ openclaw backup create --output ~/Backups/openclaw --verify
 Manifes arsip mencatat versi OpenClaw dan jalur sumber yang disertakan
 dalam cadangan. Arsip dapat berisi kredensial, profil autentikasi, dan status
 saluran, jadi simpan dengan izin khusus pemilik dan perlindungan yang sama seperti
-direktori status aktif. Lihat [Cadangan](/id/cli/backup) untuk berkas yang disertakan dan sengaja
-dikecualikan.
+direktori status aktif. Lihat [Pencadangan](/id/cli/backup) untuk berkas yang disertakan dan sengaja
+dihilangkan.
 
-Untuk titik pemulihan byte demi byte yang menyertakan artefak volatil yang dikecualikan dari
+Untuk titik pemulihan byte demi byte yang menyertakan artefak volatil yang dihilangkan dari
 arsip portabel, hentikan Gateway dan gunakan snapshot sistem berkas, volume, atau VM
 yang disediakan oleh platform Anda.
 
-### Rollback instalasi paket
+### Pulihkan versi instalasi paket
 
-Cantumkan versi yang dipublikasikan, lalu pratinjau dan instal versi yang diketahui berfungsi baik:
+Cantumkan versi yang dipublikasikan, lalu pratinjau dan instal versi yang diketahui berfungsi dengan baik:
 
 ```bash
 npm view openclaw versions --json
@@ -362,17 +359,17 @@ mendeteksi penurunan versi, meminta konfirmasi, menjalankan konvergensi Plugin t
 dan pemeriksaan kompatibilitas terhadap target yang diinstal, menyegarkan metadata
 layanan, memulai ulang Gateway, dan memverifikasi versi yang berjalan. Jika saluran yang tersimpan
 adalah `extended-stable`, gunakan
-`--channel stable --tag <known-good-version>` karena tag persis satu kali tidak dapat
+`--channel stable --tag <known-good-version>` karena tag satu kali yang persis tidak dapat
 digabungkan dengan pemilih `extended-stable`.
 
 Pembaruan paket menyiapkan dan memverifikasi kandidat sebelum aktivasi. Jika
 pertukaran sistem berkas atau penggantian shim perintah gagal, OpenClaw memulihkan paket lama
-secara otomatis. Setelah pertukaran berhasil, kegagalan kesehatan Gateway berikutnya
-melaporkan versi sebelumnya dan petunjuk rollback manual alih-alih
-mengganti paket lagi secara otomatis.
+secara otomatis. Setelah pertukaran berhasil, kegagalan kondisi Gateway berikutnya
+melaporkan versi sebelumnya dan petunjuk pemulihan versi manual alih-alih
+mengganti paket kembali secara otomatis.
 
-Jika jalur pembaruan CLI tidak tersedia, gunakan pengelola paket dan cakupan instalasi
-yang sama dengan yang memiliki Gateway saat ini:
+Jika jalur pembaruan CLI tidak tersedia, gunakan pengelola paket dan cakupan
+instalasi yang sama dengan yang memiliki Gateway saat ini:
 
 ```bash
 openclaw gateway stop
@@ -382,12 +379,12 @@ openclaw gateway restart
 ```
 
 Ganti `npm` dengan `pnpm` atau `bun` ketika pengelola tersebut memiliki instalasi. Selama
-pemulihan insiden, cegah pembaru otomatis yang diaktifkan agar tidak langsung menerapkan
+pemulihan insiden, cegah pembaru otomatis yang diaktifkan agar tidak segera menerapkan
 rilis yang lebih baru dengan menetapkan `OPENCLAW_NO_AUTO_UPDATE=1` di lingkungan Gateway.
 
-### Rollback checkout sumber
+### Pulihkan versi checkout sumber
 
-Gunakan checkout bersih dan pilih tag atau commit yang diketahui berfungsi baik:
+Gunakan checkout yang bersih dan pilih tag atau commit yang diketahui berfungsi dengan baik:
 
 ```bash
 git fetch --all --tags
@@ -399,13 +396,13 @@ openclaw gateway restart
 Untuk kembali ke versi terbaru: `git checkout main && git pull`.
 
 Pembaru secara otomatis mengembalikan checkout git ke cabang dan
-SHA sebelumnya ketika instalasi dependensi, build, build UI, atau doctor gagal setelah pembaruan git
-dimulai. Checkout manual tetap diperlukan ketika Anda sengaja memilih
+SHA sebelumnya ketika instalasi dependensi, build, build UI, atau doctor gagal setelah
+pembaruan git dimulai. Checkout manual tetap diperlukan ketika Anda sengaja memilih
 commit yang lebih lama.
 
-### Menurunkan versi melintasi migrasi SQLite sesi
+### Menurunkan versi melewati migrasi SQLite sesi
 
-Sebelum memulai rilis OpenClaw lama berbasis berkas, gunakan CLI saat ini untuk
+Sebelum memulai rilis OpenClaw berbasis berkas yang lebih lama, gunakan CLI saat ini untuk
 memulihkan artefak transkrip lama yang diarsipkan:
 
 ```bash
@@ -413,25 +410,25 @@ openclaw gateway stop
 openclaw doctor --session-sqlite restore --session-sqlite-all-agents
 ```
 
-Ini tidak menghapus data SQLite. Sesi yang dibuat setelah migrasi SQLite
+Tindakan ini tidak menghapus data SQLite. Sesi yang dibuat setelah migrasi SQLite
 hanya ada di SQLite dan tidak akan muncul pada runtime yang lebih lama. Lihat
 [Menurunkan versi setelah migrasi SQLite sesi](/id/cli/doctor#downgrading-after-session-sqlite-migration).
 
 ### Pulihkan status hanya jika diperlukan
 
 Jika kode yang lebih lama tidak dapat membaca konfigurasi atau skema basis data yang lebih baru, hentikan
-Gateway dan pulihkan snapshot sistem berkas, volume, atau VM terverifikasi sebelum pembaruan.
+Gateway dan pulihkan snapshot sistem berkas, volume, atau VM sebelum pembaruan yang telah diverifikasi.
 Pertahankan status saat ini secara terpisah sebelum memulihkan karena tindakan ini menghapus
 perubahan yang dibuat setelah snapshot.
 
 Arsip `openclaw backup create` yang luas mendukung pembuatan dan verifikasi, tetapi
-tidak mendukung aktivasi seluruh arsip secara langsung di lokasi. Ekstrak arsip luas ke direktori
-staging dan gunakan pemetaan sumber-ke-arsip `manifest.json` untuk pemulihan
-offline. `openclaw backup sqlite restore` juga menulis basis data terverifikasi
-ke target baru; mengaktifkan target tersebut tetap merupakan langkah operator offline
-yang eksplisit.
+tidak mendukung aktivasi seluruh arsip secara langsung di tempat. Ekstrak arsip yang luas ke direktori
+penyiapan dan gunakan pemetaan sumber-ke-arsip `manifest.json` untuk pemulihan
+luring. `openclaw backup sqlite restore` juga menulis basis data terverifikasi
+ke target baru; pengaktifan target tersebut tetap menjadi langkah operator luring yang
+eksplisit.
 
-### Verifikasi rollback
+### Verifikasi pemulihan versi
 
 ```bash
 openclaw --version
@@ -443,13 +440,13 @@ openclaw doctor --lint --json
 
 ## Jika Anda mengalami kendala
 
-- Jalankan `openclaw doctor` lagi dan baca output dengan cermat.
-- Untuk `openclaw update --channel dev` pada checkout sumber, pembaru secara otomatis melakukan bootstrap `pnpm` saat diperlukan. Jika Anda melihat kesalahan bootstrap pnpm/corepack, instal `pnpm` secara manual (atau aktifkan kembali `corepack`) dan jalankan ulang pembaruan.
+- Jalankan kembali `openclaw doctor` dan baca keluarannya dengan saksama.
+- Untuk `openclaw update --channel dev` pada checkout sumber, pembaru melakukan bootstrap otomatis terhadap `pnpm` saat diperlukan. Jika Anda melihat galat bootstrap pnpm/corepack, instal `pnpm` secara manual (atau aktifkan kembali `corepack`) dan jalankan ulang pembaruan.
 - Periksa: [Pemecahan masalah](/id/gateway/troubleshooting)
 - Tanyakan di Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Terkait
 
-- [Ikhtisar instalasi](/id/install): semua metode instalasi.
-- [Doctor](/id/gateway/doctor): pemeriksaan kesehatan setelah pembaruan.
+- [Ringkasan instalasi](/id/install): semua metode instalasi.
+- [Doctor](/id/gateway/doctor): pemeriksaan kondisi setelah pembaruan.
 - [Migrasi](/id/install/migrating): panduan migrasi versi mayor.

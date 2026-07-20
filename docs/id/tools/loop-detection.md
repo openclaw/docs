@@ -1,37 +1,38 @@
 ---
 read_when:
-    - Seorang pengguna melaporkan bahwa agen terus terjebak mengulangi pemanggilan alat
-    - Anda perlu menyesuaikan perlindungan terhadap panggilan berulang
-    - Anda sedang menyunting kebijakan alat/runtime agen
-    - Anda mengalami penghentian `compaction_loop_persisted` setelah percobaan ulang akibat konteks meluap
-summary: Cara mengaktifkan dan menyesuaikan pembatas yang mendeteksi perulangan pemanggilan alat secara repetitif
+    - Seorang pengguna melaporkan bahwa agen terjebak mengulangi pemanggilan alat
+    - Anda perlu mengendalikan perlindungan terhadap panggilan berulang
+    - Anda sedang mengedit kebijakan alat/runtime agen
+    - Anda mengalami pembatalan `compaction_loop_persisted` setelah percobaan ulang akibat luapan konteks
+summary: Cara mengaktifkan mekanisme pengaman yang mendeteksi perulangan pemanggilan alat secara repetitif
 title: Deteksi perulangan alat
 x-i18n:
-    generated_at: "2026-07-12T14:47:14Z"
+    generated_at: "2026-07-20T04:02:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fccbb81281b6c6921e6dad50d15295c1be3f59c664f2caed900bf3dce14bc40a
+    source_hash: e03691eaa2148b2843003d8a6d04f21b6552a8d058b95df8cfa95938a3922c56
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw memiliki dua pagar pengaman yang bekerja sama untuk mencegah pola pemanggilan alat yang berulang,
+OpenClaw memiliki dua pagar pengaman yang bekerja sama untuk mencegah pola pemanggilan alat berulang,
 keduanya dikonfigurasi di bawah `tools.loopDetection`:
 
 1. **Deteksi loop** (`enabled`) - dinonaktifkan secara default. Memantau riwayat
-   pemanggilan alat berjalan untuk mendeteksi pola berulang dan percobaan ulang alat yang tidak dikenal.
-2. **Pengaman pasca-compaction** (`postCompactionGuard`) - diaktifkan setiap kali
-   `enabled` tidak secara eksplisit bernilai `false`. Diaktifkan setelah setiap percobaan ulang compaction dan
-   membatalkan proses jika agen mengulangi tripel `(tool, args, result)` yang sama
+   pemanggilan alat bergulir untuk mendeteksi pola berulang dan percobaan ulang alat yang tidak dikenal.
+2. **Pengaman pasca-compaction** - diaktifkan setiap kali
+   `enabled` tidak ditetapkan secara eksplisit ke `false`. Diaktifkan setelah setiap percobaan ulang compaction dan
+   membatalkan proses jika agen mengulangi tiga serangkai `(tool, args, result)` yang sama
    dalam jendela tersebut.
 
-Atur `tools.loopDetection.enabled: false` untuk menonaktifkan kedua pagar pengaman.
+Tetapkan `tools.loopDetection.enabled: false` untuk menonaktifkan kedua pagar pengaman.
 
 ## Alasan fitur ini tersedia
 
 - Mendeteksi urutan berulang yang tidak menghasilkan kemajuan.
-- Mendeteksi loop tanpa hasil berfrekuensi tinggi (alat yang sama, masukan yang sama, galat
+- Mendeteksi loop tanpa hasil berfrekuensi tinggi (alat yang sama, input yang sama, kesalahan
   berulang).
 - Mendeteksi pola pemanggilan berulang tertentu untuk alat polling yang dikenal.
 - Memutus siklus luapan konteks -> compaction -> loop yang sama, alih-alih membiarkannya
@@ -39,32 +40,19 @@ Atur `tools.loopDetection.enabled: false` untuk menonaktifkan kedua pagar pengam
 
 ## Blok konfigurasi
 
-Nilai default global, dengan semua bidang yang didokumentasikan ditampilkan:
+Pengaturan global:
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: false, // sakelar utama untuk detektor riwayat berjalan
-      historySize: 30,
-      warningThreshold: 10,
-      criticalThreshold: 20,
-      unknownToolThreshold: 10,
-      globalCircuitBreakerThreshold: 30,
-      detectors: {
-        genericRepeat: true,
-        knownPollNoProgress: true,
-        pingPong: true,
-      },
-      postCompactionGuard: {
-        windowSize: 3, // diaktifkan setelah percobaan ulang compaction; berjalan kecuali enabled secara eksplisit bernilai false
-      },
+      enabled: false, // sakelar utama untuk detektor riwayat bergulir
     },
   },
 }
 ```
 
-Penimpaan per agen (opsional, di `agents.list[].tools.loopDetection`):
+Penggantian per agen (opsional, di `agents.list[].tools.loopDetection`):
 
 ```json5
 {
@@ -75,8 +63,6 @@ Penimpaan per agen (opsional, di `agents.list[].tools.loopDetection`):
         tools: {
           loopDetection: {
             enabled: true,
-            warningThreshold: 8,
-            criticalThreshold: 16,
           },
         },
       },
@@ -85,63 +71,41 @@ Penimpaan per agen (opsional, di `agents.list[].tools.loopDetection`):
 }
 ```
 
-Pengaturan per agen menimpa blok global bidang demi bidang (termasuk
-`detectors` dan `postCompactionGuard` bertingkat), sehingga agen hanya perlu mengatur
-bidang yang ingin diubah.
+Pengaturan per agen menggantikan pengaturan global.
 
 ### Perilaku bidang
 
-| Bidang                           | Default | Efek                                                                                                                                     |
-| -------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                        | `false` | Sakelar utama untuk detektor riwayat berjalan. `false` juga menonaktifkan pengaman pasca-compaction.                                      |
-| `historySize`                    | `30`    | Jumlah pemanggilan alat terbaru yang disimpan untuk analisis.                                                                             |
-| `warningThreshold`               | `10`    | Jumlah pengulangan sebelum pola diklasifikasikan sebagai peringatan saja.                                                                 |
-| `criticalThreshold`              | `20`    | Jumlah pengulangan untuk memblokir pola loop tanpa kemajuan. Runtime membatasinya agar berada di atas `warningThreshold` jika salah dikonfigurasi. |
-| `unknownToolThreshold`           | `10`    | Memblokir pemanggilan berulang ke alat yang sama dan tidak tersedia setelah kegagalan sebanyak ini. Tidak dikendalikan oleh `detectors`. |
-| `globalCircuitBreakerThreshold`  | `30`    | Pemutus tanpa kemajuan global di seluruh detektor. Runtime membatasinya agar berada di atas `criticalThreshold` jika salah dikonfigurasi. Tidak dikendalikan oleh `detectors`. |
-| `detectors.genericRepeat`        | `true`  | Memperingatkan pemanggilan alat yang sama + argumen yang sama secara berulang; memblokir setelah pemanggilan tersebut juga menghasilkan keluaran identik. |
-| `detectors.knownPollNoProgress`  | `true`  | Mendeteksi pola polling tanpa kemajuan yang dikenal (`process` dengan `action: "poll"`/`"log"`, `command_status`).                        |
-| `detectors.pingPong`             | `true`  | Mendeteksi pola ping-pong tanpa kemajuan yang bergantian di antara dua pemanggilan.                                                       |
-| `postCompactionGuard.windowSize` | `3`     | Jumlah percobaan pengaman tetap aktif setelah compaction, sekaligus jumlah tripel identik yang membatalkan proses.                        |
+| Bidang     | Default | Efek                                                                                            |
+| --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `enabled` | `false` | Sakelar utama untuk detektor riwayat bergulir. `false` juga menonaktifkan pengaman pasca-compaction. |
 
 Untuk `exec`, hashing tanpa kemajuan membandingkan hasil perintah yang stabil (status,
-kode keluar, penanda batas waktu terlampaui, keluaran) dan mengabaikan metadata runtime yang berubah-ubah seperti
+kode keluar, tanda batas waktu terlampaui, output) dan mengabaikan metadata runtime yang berubah-ubah seperti
 durasi, PID, ID sesi, dan direktori kerja. Hasil pengiriman pesan keluar
-di-hash dengan menghapus ID yang berubah-ubah pada setiap pemanggilan (ID pesan, ID berkas, stempel waktu),
-sehingga hasil "terkirim" tidak tampak identik dengan hasil "terkirim" lainnya.
-Saat ID proses tersedia, riwayat dievaluasi hanya dalam proses tersebut,
-sehingga siklus Heartbeat terjadwal dan proses baru tidak mewarisi jumlah loop lama
+di-hash setelah ID per pemanggilan yang berubah-ubah (ID pesan, ID file, stempel waktu)
+dihapus, sehingga hasil "terkirim" tidak terlihat identik dengan hasil "terkirim"
+yang berbeda. Ketika ID proses tersedia, riwayat hanya dievaluasi dalam proses tersebut,
+sehingga siklus Heartbeat terjadwal dan proses baru tidak mewarisi jumlah loop usang
 dari proses sebelumnya.
 
 ## Penyiapan yang disarankan
 
-- Untuk model yang lebih kecil, atur `enabled: true` dan biarkan ambang pada nilai
-  defaultnya. Model unggulan jarang memerlukan deteksi riwayat berjalan dan dapat
-  membiarkan sakelar utama bernilai `false` sambil tetap memperoleh manfaat dari
+- Untuk model yang lebih kecil, tetapkan `enabled: true`. Model unggulan jarang memerlukan deteksi riwayat bergulir dan dapat
+  membiarkan sakelar utama `false` sambil tetap memperoleh manfaat dari
   pengaman pasca-compaction.
-- Pertahankan urutan ambang `warningThreshold < criticalThreshold <
-globalCircuitBreakerThreshold`; runtime menaikkan `criticalThreshold` dan
-  `globalCircuitBreakerThreshold` jika Anda mengaturnya sama dengan atau di bawah
-  ambang yang harus dilampauinya.
-- Jika terjadi positif palsu:
-  - Naikkan `warningThreshold` dan/atau `criticalThreshold`.
-  - Secara opsional, naikkan `globalCircuitBreakerThreshold`.
-  - Nonaktifkan hanya detektor tertentu yang menyebabkan masalah (`detectors.<name>: false`).
-  - Kurangi `historySize` untuk jendela riwayat yang lebih pendek.
-- Untuk menonaktifkan semuanya, termasuk pengaman pasca-compaction, atur
+- Untuk menonaktifkan semuanya, termasuk pengaman pasca-compaction, tetapkan
   `tools.loopDetection.enabled: false` secara eksplisit.
 
 ## Pengaman pasca-compaction
 
-Setelah percobaan ulang compaction akibat luapan konteks, pelaksana mengaktifkan
-pengaman berjendela pendek untuk beberapa pemanggilan alat berikutnya. Jika agen menghasilkan tripel
-`(toolName, argsHash, resultHash)` yang sama sebanyak `postCompactionGuard.windowSize`
-kali dalam jendela tersebut, pengaman menyimpulkan bahwa compaction tidak memutus
-loop dan membatalkan proses dengan galat `compaction_loop_persisted`.
+Setelah percobaan ulang compaction yang mengikuti luapan konteks, runner mengaktifkan
+pengaman berjendela pendek pada beberapa pemanggilan alat berikutnya. Jika agen menghasilkan
+tiga serangkai `(toolName, argsHash, resultHash)` yang sama cukup banyak kali dalam jendela tersebut, pengaman menyimpulkan bahwa compaction tidak memutus
+loop dan membatalkan proses dengan kesalahan `compaction_loop_persisted`.
 
-Pengaman dikendalikan oleh penanda utama `tools.loopDetection.enabled` dengan satu
-pengecualian: pengaman tetap **aktif saat penanda tidak ditetapkan atau bernilai `true`**, dan hanya
-dinonaktifkan ketika penanda secara eksplisit bernilai `false`. Hal ini disengaja - pengaman
+Pengaman dikendalikan oleh tanda utama `tools.loopDetection.enabled` dengan satu
+pengecualian: pengaman tetap **diaktifkan ketika tanda tidak ditetapkan atau `true`**, dan hanya
+dinonaktifkan ketika tanda secara eksplisit bernilai `false`. Hal ini disengaja - pengaman
 tersedia untuk keluar dari loop compaction yang jika tidak ditangani akan menghabiskan token tanpa batas,
 sehingga pengguna tanpa konfigurasi tetap mendapatkan perlindungan.
 
@@ -149,44 +113,39 @@ sehingga pengguna tanpa konfigurasi tetap mendapatkan perlindungan.
 {
   tools: {
     loopDetection: {
-      // sakelar utama; atur false untuk menonaktifkan pengaman beserta detektor berjalan
+      // sakelar utama; tetapkan false untuk menonaktifkan pengaman beserta detektor bergulir
       enabled: true,
-      postCompactionGuard: {
-        windowSize: 3, // default
-      },
     },
   },
 }
 ```
 
-- `windowSize` yang lebih rendah bersifat lebih ketat (lebih sedikit percobaan sebelum pembatalan).
-- `windowSize` yang lebih tinggi memberi agen lebih banyak percobaan pemulihan.
-- Pengaman tidak pernah membatalkan selama hasil terus berubah; hanya hasil yang identik
-  per bita di seluruh jendela yang memicunya.
-- Pengaman hanya diaktifkan segera setelah percobaan ulang compaction, bukan pada titik
-  lain dalam suatu proses.
+- Pengaman tidak pernah membatalkan proses selama hasil masih berubah; hanya hasil yang
+  identik byte demi byte di seluruh jendela yang memicunya.
+- Pengaman hanya diaktifkan segera setelah percobaan ulang compaction, bukan pada titik lain
+  dalam suatu proses.
 
 <Note>
-  Pengaman pasca-compaction berjalan setiap kali penanda utama tidak secara eksplisit bernilai `false`, bahkan jika Anda tidak pernah menulis blok `tools.loopDetection`. Untuk memverifikasinya, cari `post-compaction guard armed for N attempts` dalam log Gateway segera setelah peristiwa compaction.
+  Pengaman pasca-compaction berjalan setiap kali tanda utama tidak ditetapkan secara eksplisit ke `false`, meskipun Anda tidak pernah menulis blok `tools.loopDetection`. Untuk memverifikasinya, cari `post-compaction guard armed for N attempts` dalam log Gateway segera setelah peristiwa compaction.
 </Note>
 
 ## Log dan perilaku yang diharapkan
 
-Saat loop terdeteksi, OpenClaw mencatat peristiwa loop dan memperingatkan atau memblokir
-siklus alat berikutnya berdasarkan tingkat keparahan, sehingga melindungi dari pengeluaran token
-tak terkendali dan kebuntuan sambil mempertahankan akses alat normal.
+Ketika loop terdeteksi, OpenClaw mencatat peristiwa loop dan memberikan peringatan atau memblokir
+siklus alat berikutnya bergantung pada tingkat keparahannya, sehingga melindungi dari penggunaan token
+tak terkendali dan kebuntuan sekaligus mempertahankan akses alat normal.
 
 - Peringatan diberikan terlebih dahulu.
-- Pemblokiran menyusul setelah pola bertahan melewati ambang peringatan.
+- Pemblokiran dilakukan setelah pola berlanjut melewati ambang peringatan.
 - Ambang kritis memblokir siklus alat berikutnya dan menampilkan alasan
   deteksi loop yang jelas dalam catatan proses.
-- Pengaman pasca-compaction menghasilkan galat `compaction_loop_persisted` yang menyebutkan
+- Pengaman pasca-compaction menghasilkan kesalahan `compaction_loop_persisted` yang menyebutkan
   alat penyebab dan jumlah pemanggilan identik.
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Persetujuan Exec" href="/id/tools/exec-approvals" icon="shield">
+  <Card title="Persetujuan eksekusi" href="/id/tools/exec-approvals" icon="shield">
     Kebijakan izinkan/tolak untuk eksekusi shell.
   </Card>
   <Card title="Tingkat pemikiran" href="/id/tools/thinking" icon="brain">
@@ -196,6 +155,6 @@ tak terkendali dan kebuntuan sambil mempertahankan akses alat normal.
     Membuat agen terisolasi untuk membatasi perilaku tak terkendali.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/config-tools#toolsloopdetection" icon="gear">
-    Skema lengkap `tools.loopDetection` dan semantik penggabungannya.
+    Skema lengkap `tools.loopDetection` dan semantik penggabungan.
   </Card>
 </CardGroup>

@@ -1,29 +1,29 @@
 ---
 read_when:
     - Memverifikasi cakupan kredensial SecretRef
-    - Mengaudit apakah kredensial memenuhi syarat untuk `secrets configure` atau `secrets apply`
+    - Mengaudit apakah suatu kredensial memenuhi syarat untuk `secrets configure` atau `secrets apply`
     - Memverifikasi alasan kredensial berada di luar cakupan yang didukung
 summary: Permukaan kredensial SecretRef kanonis yang didukung vs tidak didukung
 title: Permukaan kredensial SecretRef
 x-i18n:
-    generated_at: "2026-07-19T05:19:18Z"
+    generated_at: "2026-07-20T03:57:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 396336826e6ac16440a26630a34030b70f3c4e2d75c699c743f07821c035ad72
+    source_hash: 8409060dd08d8cdb9bde59bc1857da7e2c6273d10e148a3de35b23bd3cd3b1ab
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Halaman ini mendefinisikan permukaan kredensial SecretRef kanonis: bidang kredensial mana yang menerima `SecretRef` (referensi yang didukung env/file/exec) alih-alih nilai rahasia mentah.
+Halaman ini mendefinisikan permukaan kredensial SecretRef kanonis: bidang kredensial mana yang menerima `SecretRef` (referensi yang didukung env/file/exec) sebagai pengganti nilai rahasia mentah.
 
 Cakupan:
 
-- Termasuk dalam cakupan: hanya kredensial yang disediakan pengguna dan tidak diterbitkan atau dirotasi oleh OpenClaw.
-- Di luar cakupan: kredensial yang diterbitkan atau dirotasi saat runtime, materi penyegaran OAuth, dan artefak serupa sesi.
+- Termasuk dalam cakupan: hanya kredensial yang diberikan pengguna dan tidak dibuat atau dirotasi oleh OpenClaw.
+- Di luar cakupan: kredensial yang dibuat atau dirotasi saat runtime, materi penyegaran OAuth, dan artefak menyerupai sesi.
 
-Daftar di bawah dihasilkan dari registri target sumber dan diperiksa terhadap `docs/reference/secretref-user-supplied-credentials-matrix.json` dalam CI; jangan mengedit entri secara manual.
+Daftar di bawah dibuat dari registri target sumber dan diperiksa terhadap `docs/reference/secretref-user-supplied-credentials-matrix.json` dalam CI; jangan mengedit entri secara manual.
 
 ## Kredensial yang didukung
 
@@ -51,12 +51,12 @@ Daftar di bawah dihasilkan dari registri target sumber dan diperiksa terhadap `d
 - `talk.providers.*.apiKey`
 - `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
-- `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
 - `plugins.entries.codex.config.appServer.authToken`
 - `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.firecrawl.config.webFetch.apiKey`
 - `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -71,8 +71,6 @@ Daftar di bawah dihasilkan dari registri target sumber dan diperiksa terhadap `d
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `plugins.entries.webhooks.config.routes.*.secret`
-- `tools.web.search.*.apiKey`
-- `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
 - `gateway.remote.token`
@@ -143,15 +141,15 @@ Catatan:
 
 - Target rencana profil autentikasi memerlukan `agentId`; entri rencana menargetkan `profiles.*.key` / `profiles.*.token` dan menulis referensi saudara (`keyRef` / `tokenRef`). Referensi profil autentikasi disertakan dalam resolusi runtime dan cakupan audit.
 - Dalam `openclaw.json`, SecretRef harus menggunakan objek terstruktur seperti `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. String penanda `secretref-env:<ENV_VAR>` lama ditolak pada jalur kredensial SecretRef; jalankan `openclaw doctor --fix` untuk memigrasikan penanda yang valid.
-- Pengaman kebijakan OAuth: `auth.profiles.<id>.mode = "oauth"` tidak dapat digabungkan dengan masukan SecretRef untuk profil tersebut. Resolusi startup/muat ulang dan profil autentikasi langsung gagal ketika kebijakan ini dilanggar.
-- Untuk penyedia model yang dikelola SecretRef, entri `agents/*/agent/models.json` yang dihasilkan menyimpan penanda nonrahasia (bukan nilai rahasia yang telah diresolusi) untuk permukaan `apiKey`/header. Persistensi penanda bersifat otoritatif berdasarkan sumber: OpenClaw menulis penanda dari snapshot konfigurasi sumber aktif (sebelum resolusi), bukan dari nilai rahasia runtime yang telah diresolusi.
-- Startup dingin Gateway dapat mengisolasi kegagalan resolusi yang dapat dicoba ulang untuk pemilik terpetakan non-Gateway. Kelas terpetakan saat ini mencakup penyedia model dan skill, penyedia media/TTS/cron, profil autentikasi yang memenuhi syarat, memori per agen, SSH sandbox, akun saluran, dan rute plugin yang dideklarasikan dalam manifes. Startup mempertahankan referensi eksplisit setiap pemilik yang gagal dalam snapshot runtime, melaporkan pemilik melalui status dan doctor, serta menolak permintaan untuk pemilik tersebut tanpa mencoba kredensial dengan prioritas lebih rendah. Pra-pemeriksaan muat ulang dan penulisan konfigurasi menggunakan kebijakan berbasis pemilik yang sama: pemilik yang sehat diperbarui; pemilik gagal yang memenuhi syarat tetap menggunakan keadaan lama hanya ketika identitas referensinya, definisi penyedia, dan kontrak lengkap pemilik nonrahasia tidak berubah; kegagalan baru atau yang berubah menjadi dingin. Autentikasi ingress Gateway, referensi atau nilai yang secara struktural tidak valid, pemilik yang gagal secara tertutup, dan pemilik yang saat ini belum terpetakan tetap ketat.
-- Untuk pencarian web: dalam mode penyedia eksplisit (`tools.web.search.provider` ditetapkan), hanya kunci penyedia yang dipilih yang aktif. Dalam mode otomatis (`tools.web.search.provider` tidak ditetapkan), hanya kunci penyedia pertama yang diresolusi berdasarkan prioritas yang aktif, dan referensi penyedia yang tidak dipilih diperlakukan sebagai tidak aktif hingga dipilih. Jalur penyedia `tools.web.search.*` lama masih diresolusi selama periode kompatibilitas, tetapi permukaan SecretRef kanonis adalah `plugins.entries.<plugin>.config.webSearch.*`.
-- Slack `identity: "user"` menggunakan `channels.slack.userToken` dengan `channels.slack.appToken` untuk Socket Mode atau `channels.slack.signingSecret` untuk mode HTTP. Pasangan yang sama berlaku di bawah `channels.slack.accounts.*`; token bot tidak diperlukan untuk identitas ini.
+- Pengaman kebijakan OAuth: `auth.profiles.<id>.mode = "oauth"` tidak dapat digabungkan dengan input SecretRef untuk profil tersebut. Startup/muat ulang dan resolusi profil autentikasi langsung gagal ketika kebijakan ini dilanggar.
+- Untuk penyedia model yang dikelola SecretRef, entri `agents/*/agent/models.json` yang dihasilkan mempertahankan penanda nonrahasia (bukan nilai rahasia yang telah diresolusi) untuk permukaan `apiKey`/header. Persistensi penanda mengikuti sumber sebagai otoritas: OpenClaw menulis penanda dari snapshot konfigurasi sumber aktif (sebelum resolusi), bukan dari nilai rahasia runtime yang telah diresolusi.
+- Startup dingin Gateway dapat mengisolasi kegagalan resolusi yang dapat dicoba ulang untuk pemilik yang dipetakan dan bukan Gateway. Kelas yang saat ini dipetakan mencakup penyedia model dan Skills, penyedia media/TTS/cron, profil autentikasi yang memenuhi syarat, memori per agen, SSH sandbox, akun kanal, dan rute plugin yang dideklarasikan dalam manifes. Startup mempertahankan referensi eksplisit setiap pemilik yang gagal dalam snapshot runtime, melaporkan pemilik melalui status dan doctor, serta menolak permintaan untuk pemilik tersebut tanpa mencoba kredensial dengan prioritas lebih rendah. Pemeriksaan awal muat ulang dan penulisan konfigurasi menggunakan kebijakan sadar pemilik yang sama: pemilik yang sehat disegarkan; pemilik gagal yang memenuhi syarat tetap menggunakan kondisi lama hanya ketika identitas referensi, definisi penyedia, dan kontrak lengkap pemilik nonrahasia tidak berubah; kegagalan baru atau yang berubah menjadi dingin. Autentikasi ingress Gateway, referensi atau nilai yang secara struktural tidak valid, pemilik fail-closed, dan pemilik yang saat ini belum dipetakan tetap ketat.
+- Untuk pencarian web: dalam mode penyedia eksplisit (`tools.web.search.provider` ditetapkan), hanya kunci penyedia yang dipilih yang aktif. Dalam mode otomatis (`tools.web.search.provider` tidak ditetapkan), hanya kunci penyedia pertama yang diresolusi berdasarkan urutan prioritas yang aktif, dan referensi penyedia yang tidak dipilih dianggap tidak aktif hingga dipilih. Kredensial penyedia menggunakan `plugins.entries.<plugin>.config.webSearch.*`.
+- Slack `identity: "user"` menggunakan `channels.slack.userToken` bersama `channels.slack.appToken` untuk Socket Mode atau `channels.slack.signingSecret` untuk mode HTTP. Pemasangan yang sama berlaku di bawah `channels.slack.accounts.*`; token bot tidak diperlukan untuk identitas ini.
 
 ## Kredensial yang tidak didukung
 
-Kredensial ini merupakan kelas yang diterbitkan, dirotasi, memuat sesi, atau persisten untuk OAuth dan tidak sesuai dengan resolusi SecretRef eksternal hanya-baca:
+Kredensial ini termasuk kelas yang dibuat, dirotasi, memuat sesi, atau persisten untuk OAuth dan tidak sesuai dengan resolusi SecretRef eksternal hanya-baca:
 
 [//]: # "secretref-unsupported-list-start"
 

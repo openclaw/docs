@@ -6,22 +6,22 @@ read_when:
 summary: Cara ask_user menjeda giliran agen untuk keputusan manusia yang terstruktur
 title: Tanyakan kepada pengguna
 x-i18n:
-    generated_at: "2026-07-19T05:13:25Z"
+    generated_at: "2026-07-20T03:57:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: f8753f5b164a3656774c2f6133022eaaedb12b2e2d513d9c84279c6ba0e6f870
+    source_hash: 32556314a34c26054c3aabfdd8ecc474cf85196e5cc71adb833face596edbd24
     source_path: tools/ask-user.md
     workflow: 16
 ---
 
 `ask_user` memungkinkan agen mengajukan satu hingga tiga pertanyaan terstruktur kepada manusia dan
-menunggu jawabannya. Alat ini ditujukan untuk keputusan yang benar-benar menjadi kewenangan pengguna,
+menunggu jawabannya. Fitur ini ditujukan untuk keputusan yang benar-benar berada di tangan pengguna,
 bukan konfirmasi rutin atau informasi yang dapat disimpulkan agen dari permintaan,
-kode, atau pilihan default yang wajar.
+kode, atau nilai default yang masuk akal.
 
-Alat ini hanya tersedia dalam sesi utama. Subagen dan proses non-utama
+Alat ini hanya tersedia dalam sesi utama. Subagen dan proses nonutama
 lainnya tidak menerimanya.
 
 ## Menjawab pertanyaan
@@ -29,12 +29,12 @@ lainnya tidak menerimanya.
 Anda dapat menjawab dari permukaan percakapan apa pun yang didukung:
 
 - Control UI web menambatkan panel pertanyaan tepat di atas penyusun pesan. Untuk
-  prompt dengan beberapa pertanyaan, panel menampilkan satu pertanyaan pada satu waktu dan berlanjut
-  melalui stepper singkat. Setelah diselesaikan, panel ditutup dan percakapan
+  prompt dengan beberapa pertanyaan, panel menampilkan satu pertanyaan pada satu waktu dan bergerak maju
+  melalui indikator langkah singkat. Setelah selesai, panel ditutup dan percakapan
   hanya menyimpan ringkasan jawaban yang ringkas.
-- Telegram, Discord, dan Slack merender tombol native untuk prompt satu pertanyaan
+- Telegram, Discord, dan Slack merender tombol bawaan untuk prompt satu pertanyaan
   dengan satu pilihan.
-- Balasan teks biasa dapat digunakan di saluran apa pun. Balas dengan angka, label opsi,
+- Balasan teks biasa dapat digunakan di kanal apa pun. Balas dengan angka, label opsi,
   atau jawaban Anda sendiri.
 
 OpenClaw selalu mengaktifkan jawaban teks bebas **Lainnya**. Agen tidak boleh menambahkan opsi
@@ -43,24 +43,24 @@ OpenClaw selalu mengaktifkan jawaban teks bebas **Lainnya**. Agen tidak boleh me
 ## Perilaku platform
 
 Jawaban dapat digunakan pada setiap permukaan percakapan yang didukung. Control UI web menggunakan
-stepper tertambat yang menggantikan penyusun pesan saat diperluas; menciutkannya akan memulihkan
-penyusun pesan lengkap di bawah bilah pertanyaan tipis. iOS, macOS, dan Android menampilkan
-kartu sebaris; beberapa pertanyaan tetap ditumpuk sebagai pola yang sengaja dirancang agar ramah
-sentuhan. Setiap platform mempertahankan ringkasan pertanyaan dan jawaban di linimasa
-percakapan aktif tanpa penghapusan berbasis waktu, dan **Lewati** tersedia di mana saja.
+indikator langkah tertambat yang menggantikan penyusun pesan saat diperluas; menciutkannya akan memulihkan
+penyusun pesan lengkap di bawah bilah pertanyaan ramping. iOS, macOS, dan Android menampilkan
+kartu sebaris; beberapa pertanyaan tetap ditumpuk sebagai pola yang sengaja dibuat ramah sentuhan.
+Setiap platform mempertahankan ringkasan pertanyaan dan jawaban dalam linimasa percakapan aktif
+tanpa penghapusan berbasis waktu, dan **Lewati** tersedia di mana saja.
 
-Prompt yang tidak dapat menggunakan tombol native, termasuk prompt dengan beberapa pertanyaan dan
-beberapa pilihan, diturunkan menjadi teks yang mudah dibaca di saluran. Control UI
-mempertahankan stepper terstruktur lengkap.
+Prompt yang tidak dapat menggunakan tombol bawaan, termasuk prompt dengan beberapa pertanyaan dan
+beberapa pilihan, diturunkan menjadi teks yang mudah dibaca di kanal. Control UI
+mempertahankan indikator langkah terstruktur lengkap.
 
 ## Batas waktu dan tanpa jawaban
 
-Batas waktu default adalah 900 detik. `timeoutSeconds` dibatasi dalam rentang
+Batas waktu default adalah 900 detik. `timeoutSeconds` dibatasi pada rentang
 30 hingga 3600 detik.
 
 Jika pertanyaan kedaluwarsa atau dibatalkan sebelum jawaban diterima, alat
-mengembalikan `status: "no_answer"`. Agen kemudian melanjutkan berdasarkan pertimbangan terbaiknya.
-Proses agen yang dihentikan akan membatalkan pertanyaan Gateway yang tertunda.
+mengembalikan `status: "no_answer"`. Agen kemudian melanjutkan dengan pertimbangan terbaiknya.
+Proses agen yang dihentikan membatalkan pertanyaan Gateway yang tertunda.
 
 ## Skema alat
 
@@ -76,23 +76,21 @@ Proses agen yang dihentikan akan membatalkan pertanyaan Gateway yang tertunda.
     }>; // 2-4 opsi
     multiSelect?: boolean;
   }>; // 1-3 pertanyaan
-  timeoutSeconds?: number; // bilangan bulat; default 900, dibatasi ke 30-3600
+  timeoutSeconds?: number; // bilangan bulat; default 900, dibatasi pada 30-3600
 }
 ```
 
 Dengan `multiSelect: true`, pengguna dapat memilih lebih dari satu opsi. Nilai
-jawaban dikembalikan sebagai array untuk setiap pertanyaan.
+jawaban dikembalikan sebagai larik untuk setiap pertanyaan.
 
-Contoh hasil yang dijawab:
+Contoh hasil yang telah dijawab:
 
 ```json
 {
   "status": "answered",
   "answers": {
     "answers": {
-      "deploy_target": {
-        "answers": ["Staging (Recommended)"]
-      }
+      "deploy_target": ["Staging (Recommended)"]
     }
   }
 }
@@ -102,11 +100,11 @@ Contoh hasil yang dijawab:
 
 Kontrak yang ditujukan kepada model menginstruksikan agen untuk:
 
-- hanya bertanya ketika terhambat oleh keputusan yang benar-benar menjadi kewenangan pengguna;
+- bertanya hanya ketika terhambat oleh keputusan yang benar-benar berada di tangan pengguna;
 - mengutamakan satu pertanyaan dan tidak menggunakan lebih dari tiga;
 - menempatkan opsi yang direkomendasikan terlebih dahulu dan menambahkan `(Recommended)` pada akhir labelnya;
 - tidak menyertakan opsi `Other` yang dibuat karena teks bebas ditambahkan secara otomatis;
-- melanjutkan berdasarkan pertimbangan terbaik setelah `no_answer`.
+- melanjutkan dengan pertimbangan terbaik setelah `no_answer`.
 
-Agen tidak boleh menggunakan `ask_user` untuk menanyakan apakah agen boleh melanjutkan atau untuk mengonfirmasi
+Agen tidak boleh menggunakan `ask_user` untuk menanyakan apakah boleh melanjutkan atau untuk mengonfirmasi
 rencananya sendiri.

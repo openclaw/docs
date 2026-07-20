@@ -2,204 +2,161 @@
 read_when:
     - Bạn duy trì một plugin OpenClaw
     - Bạn thấy cảnh báo về khả năng tương thích của plugin
-    - Bạn đang lên kế hoạch di chuyển SDK Plugin hoặc tệp kê khai
-summary: Hợp đồng tương thích của Plugin, siêu dữ liệu ngừng hỗ trợ và các yêu cầu về di chuyển
+    - Bạn đang lập kế hoạch di chuyển SDK Plugin hoặc manifest
+summary: Các hợp đồng tương thích của Plugin, siêu dữ liệu ngừng hỗ trợ và kỳ vọng về quá trình di chuyển
 title: Khả năng tương thích của Plugin
 x-i18n:
-    generated_at: "2026-07-12T08:10:49Z"
+    generated_at: "2026-07-20T04:29:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 26f737e40175652cb24327c91d2af9dbf72b1b254011115f5b512a309707711c
+    source_hash: 1554105e3499dd608237d638174b167d9a78c227fe05668ce1159d466a1f8c10
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw duy trì các hợp đồng Plugin cũ thông qua các bộ điều hợp tương thích
-có tên trước khi loại bỏ chúng. Điều này bảo vệ các Plugin đi kèm và bên ngoài
-hiện có trong khi các hợp đồng SDK, manifest, thiết lập, cấu hình và môi trường
-chạy tác tử phát triển.
+OpenClaw duy trì kết nối các hợp đồng plugin cũ thông qua các bộ điều hợp tương thích
+có tên trước khi loại bỏ chúng. Điều này bảo vệ các plugin đi kèm và bên ngoài hiện có
+trong khi các hợp đồng SDK, manifest, thiết lập, cấu hình và môi trường chạy agent
+phát triển.
 
-## Sổ đăng ký tương thích
+## Registry tương thích
 
-Các hợp đồng tương thích Plugin được theo dõi trong sổ đăng ký lõi tại
+Các hợp đồng tương thích plugin được theo dõi trong registry lõi tại
 `src/plugins/compat/registry.ts`. Mỗi bản ghi có:
 
 - một mã tương thích ổn định
-- trạng thái: `active`, `deprecated`, `removal-pending` hoặc `removed`
+- trạng thái: `active`, `deprecated`, `removal-pending`, hoặc `removed`
 - chủ sở hữu: `sdk`, `config`, `setup`, `channel`, `provider`, `plugin-execution`,
-  `agent-runtime` hoặc `core`
-- ngày giới thiệu và ngày ngừng hỗ trợ khi áp dụng
+  `agent-runtime`, hoặc `core`
+- ngày giới thiệu và ngừng hỗ trợ khi áp dụng
 - hướng dẫn thay thế
 - tài liệu, chẩn đoán và kiểm thử bao quát hành vi cũ và mới
 
-Sổ đăng ký là nguồn phục vụ việc lập kế hoạch của người bảo trì và các bước
-kiểm tra Plugin trong tương lai. Nếu một hành vi hướng tới Plugin thay đổi,
-hãy thêm hoặc cập nhật bản ghi tương thích trong cùng thay đổi bổ sung bộ
-điều hợp.
+Registry là nguồn phục vụ việc lập kế hoạch của người bảo trì và các bước kiểm tra
+trình kiểm tra plugin trong tương lai. Nếu một hành vi dành cho plugin thay đổi, hãy
+thêm hoặc cập nhật bản ghi tương thích trong cùng thay đổi bổ sung bộ điều hợp.
 
-Khả năng tương thích của việc sửa chữa và di chuyển bằng doctor được theo dõi
-riêng tại `src/commands/doctor/shared/deprecation-compat.ts`. Các bản ghi đó
-bao quát các hình dạng cấu hình cũ, bố cục sổ cái cài đặt và các lớp trung gian
-sửa chữa có thể cần tiếp tục khả dụng sau khi đường dẫn tương thích trong môi
-trường chạy bị loại bỏ.
+Khả năng tương thích của việc sửa chữa và di chuyển bằng Doctor được theo dõi riêng tại
+`src/commands/doctor/shared/deprecation-compat.ts`. Các bản ghi đó bao quát các
+cấu trúc cấu hình cũ, bố cục sổ cái cài đặt và các shim sửa chữa có thể cần
+tiếp tục khả dụng sau khi đường dẫn tương thích của môi trường chạy bị loại bỏ.
 
-Các đợt rà soát bản phát hành nên kiểm tra cả hai sổ đăng ký. Không xóa một
-quy trình di chuyển của doctor chỉ vì bản ghi tương thích môi trường chạy hoặc
-cấu hình tương ứng đã hết hạn; trước tiên hãy xác minh rằng không còn đường
-dẫn nâng cấp được hỗ trợ nào vẫn cần việc sửa chữa đó. Đồng thời, hãy xác thực
-lại từng chú thích thay thế trong quá trình lập kế hoạch phát hành, vì quyền
-sở hữu Plugin và phạm vi cấu hình có thể thay đổi khi các nhà cung cấp và kênh
-được chuyển ra khỏi lõi.
+Các đợt rà soát bản phát hành nên kiểm tra cả hai registry. Không xóa một bản di chuyển
+của Doctor chỉ vì bản ghi tương thích môi trường chạy hoặc cấu hình tương ứng
+đã hết hạn; trước tiên hãy xác minh rằng không có đường dẫn nâng cấp được hỗ trợ nào vẫn
+cần việc sửa chữa đó. Đồng thời xác thực lại từng chú thích thay thế trong quá trình lập kế hoạch
+bản phát hành, vì quyền sở hữu plugin và phạm vi cấu hình có thể thay đổi khi các nhà cung cấp
+và kênh được chuyển ra khỏi lõi.
 
 ## Chính sách ngừng hỗ trợ
 
-OpenClaw không nên loại bỏ một hợp đồng Plugin đã được lập tài liệu trong cùng
-bản phát hành giới thiệu phương án thay thế của hợp đồng đó. Trình tự di chuyển:
+OpenClaw không nên loại bỏ một hợp đồng plugin đã được ghi trong tài liệu trong cùng bản phát hành
+giới thiệu hợp đồng thay thế. Trình tự di chuyển:
 
 1. Thêm hợp đồng mới.
-2. Duy trì hành vi cũ thông qua một bộ điều hợp tương thích có tên.
-3. Phát chẩn đoán hoặc cảnh báo khi tác giả Plugin có thể thực hiện hành động.
-4. Lập tài liệu về phương án thay thế và tiến trình thời gian.
+2. Duy trì kết nối hành vi cũ thông qua một bộ điều hợp tương thích có tên.
+3. Phát chẩn đoán hoặc cảnh báo khi tác giả plugin có thể xử lý.
+4. Ghi tài liệu về giải pháp thay thế và tiến trình thời gian.
 5. Kiểm thử cả đường dẫn cũ và mới.
 6. Chờ hết khoảng thời gian di chuyển đã công bố.
-7. Chỉ loại bỏ khi có phê duyệt rõ ràng cho bản phát hành có thay đổi phá vỡ tương thích.
+7. Chỉ loại bỏ khi có phê duyệt rõ ràng cho bản phát hành phá vỡ tương thích.
 
-Các bản ghi đã ngừng hỗ trợ phải bao gồm ngày bắt đầu cảnh báo, phương án thay
-thế, liên kết tài liệu và ngày loại bỏ cuối cùng không quá ba tháng sau khi
-cảnh báo bắt đầu. Không thêm một đường dẫn tương thích đã ngừng hỗ trợ với
-khoảng thời gian loại bỏ không xác định, trừ khi người bảo trì quyết định rõ
-ràng rằng đó là khả năng tương thích vĩnh viễn và thay vào đó đánh dấu nó là
-`active`.
+Các bản ghi đã ngừng hỗ trợ phải bao gồm ngày bắt đầu cảnh báo, giải pháp thay thế, liên kết
+tài liệu và ngày loại bỏ cuối cùng không quá ba tháng sau khi cảnh báo
+bắt đầu. Không thêm đường dẫn tương thích đã ngừng hỗ trợ với khoảng thời gian
+loại bỏ không xác định, trừ khi người bảo trì quyết định rõ ràng rằng đó là khả năng tương thích
+vĩnh viễn và đánh dấu là `active`.
 
 ## Các khu vực tương thích hiện tại
 
-Sổ đăng ký hiện theo dõi khoảng 70 mã tương thích trong các khu vực sau. Mã
-Plugin mới nên sử dụng phương án thay thế trong từng khu vực và trong hướng
-dẫn di chuyển cụ thể; các Plugin hiện có có thể tiếp tục sử dụng một đường
-dẫn tương thích cho đến khi tài liệu, chẩn đoán và ghi chú phát hành công bố
-khoảng thời gian loại bỏ.
+Đợt rà soát tháng 7 năm 2026 đã loại bỏ các bí danh SDK gốc, manifest, nhà cung cấp, môi trường chạy,
+cờ registry và cấu hình web thuộc sở hữu plugin đã hết hạn. Các bản di chuyển của Doctor vẫn được
+theo dõi riêng để các đường dẫn nâng cấp được hỗ trợ vẫn có thể sửa cấu hình cũ.
 
-- các lệnh nhập SDK rộng cũ như `openclaw/plugin-sdk/compat`
-- các hình dạng Plugin cũ chỉ có hook và `before_agent_start`
-- tên hook dọn dẹp cũ `api.on("deactivate", ...)` trong khi các Plugin
-  di chuyển sang `gateway_stop`
-- điểm vào Plugin cũ `activate(api)` trong khi các Plugin di chuyển sang
-  `register(api)`
-- các bí danh SDK cũ như `openclaw/extension-api`,
-  `openclaw/plugin-sdk/channel-runtime`, các trình dựng trạng thái
-  `openclaw/plugin-sdk/command-auth`, `openclaw/plugin-sdk/test-utils` (được
-  thay thế bằng các đường dẫn con kiểm thử `openclaw/plugin-sdk/*` chuyên biệt)
-  và các bí danh kiểu `ClawdbotConfig` / `OpenClawSchemaType`
-- danh sách cho phép và hành vi kích hoạt Plugin đi kèm
-- siêu dữ liệu manifest biến môi trường cũ của nhà cung cấp/kênh
-- các hook và bí danh kiểu cũ của Plugin nhà cung cấp trong khi các nhà cung
-  cấp chuyển sang các hook danh mục, xác thực, suy luận, phát lại và truyền tải
-  tường minh
-- các bí danh môi trường chạy cũ như `api.runtime.taskFlow`,
-  `api.runtime.subagent.getSession`, `api.runtime.stt` và
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-  đã ngừng hỗ trợ
-- các trường callback phẳng `WebInboundMessage` của WhatsApp (xem bên dưới)
-- các trường tiếp nhận cấp cao nhất của `WebInboundMessage` trên WhatsApp
-  (xem bên dưới)
-- đăng ký tách biệt cũ của Plugin bộ nhớ trong khi các Plugin bộ nhớ chuyển
-  sang `registerMemoryCapability`
-- đăng ký nhà cung cấp embedding dành riêng cho bộ nhớ kiểu cũ trong khi các
-  nhà cung cấp embedding chuyển sang `api.registerEmbeddingProvider(...)` và
-  `contracts.embeddingProviders`
-- các trình trợ giúp SDK kênh cũ cho lược đồ tin nhắn gốc, kiểm soát lượt đề
-  cập, định dạng phong bì đầu vào và cấu trúc lồng nhau của khả năng phê duyệt
-- các bí danh cũ cho khóa định tuyến kênh và trình trợ giúp mục tiêu có thể so
-  sánh trong khi các Plugin chuyển sang `openclaw/plugin-sdk/channel-route`
-- các gợi ý kích hoạt được thay thế bằng quyền sở hữu phần đóng góp manifest
-- cơ chế dự phòng môi trường chạy `setup-api` trong khi các bộ mô tả thiết lập
-  chuyển sang siêu dữ liệu tĩnh `setup.requiresRuntime: false`
-- các hook `discovery` của nhà cung cấp trong khi các hook danh mục nhà cung
-  cấp chuyển sang `catalog.run(...)`
-- siêu dữ liệu `showConfigured` / `showInSetup` của kênh trong khi các gói kênh
-  chuyển sang `openclaw.channel.exposure`
-- các khóa cấu hình chính sách môi trường chạy cũ trong khi doctor di chuyển
-  người vận hành sang `agentRuntime`
-- cơ chế dự phòng siêu dữ liệu cấu hình kênh đi kèm được tạo trong khi siêu dữ
-  liệu `channelConfigs` ưu tiên sổ đăng ký được triển khai
-- các cờ môi trường vô hiệu hóa sổ đăng ký Plugin được lưu bền và di chuyển cài
-  đặt trong khi các luồng sửa chữa di chuyển người vận hành sang
-  `openclaw plugins registry --refresh` và `openclaw doctor --fix`
-- các đường dẫn cấu hình cũ do Plugin sở hữu cho tìm kiếm web, truy xuất web và
-  x_search trong khi doctor di chuyển chúng sang
-  `plugins.entries.<plugin>.config`
-- cấu hình `plugins.installs` cũ do người dùng tạo và các bí danh đường dẫn tải
-  Plugin đi kèm trong khi siêu dữ liệu cài đặt chuyển vào sổ cái Plugin do trạng
-  thái quản lý
+Các khu vực tương thích còn lại có ngày cụ thể là:
+
+- các khoảng thời gian đường dẫn con SDK trong tháng 8 và tháng 9 được liệt kê trong hướng dẫn di chuyển
+- các bí danh hook `api.on("deactivate", ...)` và `api.on("subagent_spawning", ...)`
+- đăng ký embedding dành riêng cho bộ nhớ và cầu nối kho phiên beta.5
+- các bí danh callback đầu vào WhatsApp được mô tả bên dưới
+- phân tích đích kênh rõ ràng và `openclaw/plugin-sdk/messaging-targets`
+- các bí danh agent Pi nhúng
+- các bí danh SDK bộ khung agent đã phát hành, việc loại bỏ chúng đang chờ một quyết định
+  di chuyển mới được ghi tài liệu bên ngoài
+
+Các bản ghi registry đang hoạt động, không có ngày cụ thể bao quát hành vi được hỗ trợ thay vì khoản nợ
+loại bỏ, bao gồm gợi ý kích hoạt, thu nhận plugin, bật plugin đi kèm
+và cơ chế dự phòng cấu hình kênh được tạo.
 
 ### Các bí danh phẳng của callback đầu vào WhatsApp
 
-Các callback môi trường chạy WhatsApp cung cấp `WebInboundMessage`: các ngữ
-cảnh `event`, `payload`, `quote`, `group` và `platform` lồng nhau chính tắc,
-cùng các bí danh phẳng đã ngừng hỗ trợ cho những trường callback đã phát hành.
-Mã callback mới nên đọc các ngữ cảnh lồng nhau. Mã tạo thông điệp callback lồng
-nhau sạch có thể sử dụng `WebInboundCallbackMessage`; các trình lắng nghe tương
-thích vẫn chèn thông điệp kiểm thử hoặc Plugin phẳng cũ nên sử dụng
+Các callback môi trường chạy WhatsApp cung cấp `WebInboundMessage`: các ngữ cảnh
+lồng nhau chuẩn tắc `event`, `payload`, `quote`, `group` và `platform`, cùng
+các bí danh phẳng đã ngừng hỗ trợ cho những trường callback đã phát hành. Mã callback mới
+nên đọc các ngữ cảnh lồng nhau. Mã tạo thông điệp callback lồng nhau sạch
+có thể dùng `WebInboundCallbackMessage`; các trình lắng nghe tương thích vẫn
+chèn thông điệp kiểm thử hoặc plugin phẳng cũ nên dùng
 `LegacyFlatWebInboundMessage` hoặc `WebInboundMessageInput`.
 
-Các bí danh phẳng tiếp tục khả dụng đến **2026-08-30**; khoảng thời gian đó chỉ
-áp dụng cho việc truy cập bí danh phẳng, không áp dụng cho hình dạng lồng nhau,
-vốn là hợp đồng môi trường chạy chính tắc. Chú thích TypeScript `@deprecated`
-của mỗi bí danh phẳng nêu rõ phương án thay thế lồng nhau chính xác. Các ví dụ
-phổ biến:
+Các bí danh phẳng vẫn khả dụng đến **2026-08-30**; khoảng thời gian này chỉ áp dụng
+cho việc truy cập bí danh phẳng, không áp dụng cho cấu trúc lồng nhau, vốn là hợp đồng
+môi trường chạy chuẩn tắc. Chú thích TypeScript `@deprecated` của từng bí danh phẳng
+nêu rõ mục thay thế lồng nhau chính xác. Các ví dụ phổ biến:
 
 - `id`, `timestamp` và `isBatched` chuyển vào `event`.
 - `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location`
   và `untrustedStructuredContext` chuyển vào `payload`.
-- `to`, `chatId`, các trường người gửi/bản thân, `sendComposing`, `reply(...)`
-  và `sendMedia(...)` chuyển vào `platform`.
-- các trường `replyTo*` chuyển vào `quote`; các trường chủ đề/thành viên/lượt
-  đề cập của nhóm chuyển vào `group`.
+- `to`, `chatId`, các trường người gửi/bản thân, `sendComposing`, `reply(...)` và
+  `sendMedia(...)` chuyển vào `platform`.
+- các trường `replyTo*` chuyển vào `quote`; các trường chủ đề nhóm/người tham gia/lượt đề cập
+  chuyển vào `group`.
 
-`payload.untrustedStructuredContext` được trích xuất từ các tải trọng đầu vào
-của nhà cung cấp. Các Plugin nên kiểm tra `label`, `source` và `type` trước khi
-coi `payload` của nó là nguồn có thẩm quyền.
+`payload.untrustedStructuredContext` được trích xuất từ các tải trọng đầu vào của nhà cung cấp.
+Plugin nên kiểm tra `label`, `source` và `type` trước khi
+coi `payload` của nó là có thẩm quyền.
 
-### Các trường tiếp nhận đầu vào WhatsApp
+### Các trường chấp nhận đầu vào WhatsApp
 
-Các thông điệp callback WhatsApp được chấp nhận mang theo `admission`, một
-phong bì an toàn để công khai cho quyết định kiểm soát truy cập đã cho phép
-thông điệp. Mã callback mới nên đọc các dữ kiện tiếp nhận từ `msg.admission`
-thay vì các trường tiếp nhận cấp cao nhất cũ.
+Các thông điệp callback WhatsApp được chấp nhận mang theo `admission`, một phong bì
+an toàn để công khai cho quyết định kiểm soát truy cập đã chấp nhận thông điệp. Mã
+callback mới nên đọc các dữ kiện chấp nhận từ `msg.admission` thay vì
+các trường chấp nhận cấp cao nhất cũ hơn.
 
-Các trường cấp cao nhất tiếp tục khả dụng đến **2026-08-30**. Chú thích
-TypeScript `@deprecated` của mỗi trường nêu rõ phương án thay thế:
+Các trường cấp cao nhất vẫn khả dụng đến **2026-08-30**. Chú thích
+TypeScript `@deprecated` của từng trường nêu rõ mục thay thế:
 
-- `from` và `conversationId` chuyển sang `admission.conversation.id`.
-- `accountId` chuyển sang `admission.accountId`.
-- `accessControlPassed` là một chế độ xem tương thích được suy ra từ
-  `admission.ingress.decision === "allow"`; trên các thông điệp đã mang
-  `admission`, việc ghi giá trị boolean cũ không ghi lại đồ thị đầu vào.
-- `chatType` chuyển sang `admission.conversation.kind`.
+- `from` và `conversationId` chuyển đến `admission.conversation.id`.
+- `accountId` chuyển đến `admission.accountId`.
+- `accessControlPassed` là một dạng xem tương thích được suy ra từ
+  `admission.ingress.decision === "allow"`; trên các thông điệp đã mang theo
+  `admission`, việc ghi giá trị boolean cũ không viết lại đồ thị
+  đầu vào.
+- `chatType` chuyển đến `admission.conversation.kind`.
 
-## Gói trình kiểm tra Plugin
+## Gói trình kiểm tra plugin
 
-Trình kiểm tra Plugin nên nằm ngoài kho lưu trữ lõi OpenClaw dưới dạng một
-gói/kho lưu trữ riêng, dựa trên các hợp đồng tương thích và manifest có phiên
-bản. CLI cho ngày đầu tiên nên là:
+Trình kiểm tra plugin nên nằm ngoài repo OpenClaw lõi dưới dạng một
+gói/repository riêng biệt, dựa trên các hợp đồng tương thích và
+manifest có phiên bản. CLI ban đầu nên là:
 
 ```sh
 openclaw-plugin-inspector ./my-plugin
 ```
 
-Nó nên xuất kết quả xác thực manifest/lược đồ, phiên bản tương thích hợp đồng
-đang được kiểm tra, các bước kiểm tra siêu dữ liệu cài đặt/nguồn, kiểm tra nhập
-trên đường dẫn tĩnh và các cảnh báo ngừng hỗ trợ/tương thích. Sử dụng `--json`
-để có đầu ra ổn định mà máy có thể đọc trong các chú thích CI. Lõi OpenClaw
-nên cung cấp các hợp đồng và fixture mà trình kiểm tra có thể sử dụng, nhưng
-không nên phát hành tệp nhị phân của trình kiểm tra từ gói `openclaw` chính.
+Nó nên xuất kết quả xác thực manifest/schema, phiên bản tương thích hợp đồng
+đang được kiểm tra, các bước kiểm tra siêu dữ liệu cài đặt/nguồn, các bước kiểm tra nhập
+đường dẫn nguội và cảnh báo ngừng hỗ trợ/tương thích. Dùng `--json` để có đầu ra
+ổn định mà máy có thể đọc trong các chú thích CI. Lõi OpenClaw nên công khai
+các hợp đồng và fixture mà trình kiểm tra có thể sử dụng, nhưng không nên phát hành
+tệp nhị phân của trình kiểm tra từ gói `openclaw` chính.
 
-### Luồng nghiệm thu dành cho người bảo trì
+### Làn nghiệm thu dành cho người bảo trì
 
-Sử dụng Blacksmith Testbox dựa trên Crabbox cho luồng nghiệm thu gói có thể cài
-đặt khi xác thực trình kiểm tra bên ngoài với các gói Plugin OpenClaw. Chạy nó
-từ một bản checkout OpenClaw sạch sau khi gói được dựng:
+Dùng Blacksmith Testbox dựa trên Crabbox cho làn nghiệm thu gói có thể cài đặt
+khi xác thực trình kiểm tra bên ngoài đối với các gói plugin OpenClaw.
+Chạy làn này từ một bản checkout OpenClaw sạch sau khi gói được dựng:
 
 ```sh
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
@@ -207,15 +164,15 @@ pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm 
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-Giữ luồng này ở chế độ người bảo trì chủ động chọn dùng, vì nó cài đặt một gói
-npm bên ngoài và có thể kiểm tra các gói Plugin được sao chép bên ngoài kho lưu
-trữ. Các biện pháp bảo vệ của kho lưu trữ cục bộ bao quát ánh xạ xuất SDK, siêu
-dữ liệu sổ đăng ký tương thích, việc loại bỏ dần các lệnh nhập SDK đã ngừng hỗ
-trợ và các ranh giới nhập của tiện ích mở rộng đi kèm; bằng chứng từ trình kiểm
-tra Testbox bao quát gói theo cách các tác giả Plugin bên ngoài sử dụng nó.
+Giữ làn này ở chế độ tùy chọn tham gia dành cho người bảo trì, vì nó cài đặt một gói npm
+bên ngoài và có thể kiểm tra các gói plugin được sao chép bên ngoài repo. Các biện pháp bảo vệ
+repo cục bộ bao quát sơ đồ xuất SDK, siêu dữ liệu registry tương thích,
+việc loại bỏ dần các lệnh nhập SDK đã ngừng hỗ trợ và các ranh giới nhập của tiện ích mở rộng đi kèm;
+bằng chứng từ trình kiểm tra trên Testbox bao quát gói theo cách các tác giả plugin bên ngoài
+sử dụng nó.
 
 ## Ghi chú phát hành
 
-Ghi chú phát hành nên bao gồm các đợt ngừng hỗ trợ Plugin sắp tới cùng ngày mục
-tiêu và liên kết đến tài liệu di chuyển, trước khi một đường dẫn tương thích
-chuyển sang `removal-pending` hoặc `removed`.
+Ghi chú phát hành nên bao gồm các đợt ngừng hỗ trợ plugin sắp tới cùng ngày mục tiêu
+và liên kết đến tài liệu di chuyển, trước khi một đường dẫn tương thích chuyển sang
+`removal-pending` hoặc `removed`.

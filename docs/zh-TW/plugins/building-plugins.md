@@ -3,42 +3,42 @@ doc-schema-version: 1
 read_when:
     - 你想要建立新的 OpenClaw 外掛
     - 你需要外掛開發的快速入門指南
-    - 你正在選擇頻道、供應商、命令列介面後端、工具或鉤子的文件
+    - 你正在選擇頻道、提供者、命令列介面後端、工具或鉤子的文件
 sidebarTitle: Getting Started
 summary: 幾分鐘內建立你的第一個 OpenClaw 外掛
 title: 建置外掛
 x-i18n:
-    generated_at: "2026-07-14T13:50:58Z"
+    generated_at: "2026-07-20T00:51:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 25
+    prompt_version: 32
     provider: openai
-    source_hash: 0d64d455c260f4aa85affc6160233a91c45237f17a6a87cb35e2c2a77f2e3cc1
+    source_hash: b2dbf37b2b1c62dd0079ad1db5f8a09b1572b5a6fcc61ae798a7f053dcc1aff1
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-外掛可擴充 OpenClaw，而無須變更核心。外掛可新增訊息
-頻道、模型提供者、本機命令列介面後端、代理程式工具、掛鉤、媒體提供者，
+外掛可擴充 OpenClaw，而不需變更核心。外掛可以新增訊息
+頻道、模型供應商、本機命令列介面後端、代理工具、鉤子、媒體供應商，
 或其他由外掛擁有的功能。
 
 你不需要將外部外掛新增至 OpenClaw 儲存庫。將
-套件發布至 [ClawHub](/clawhub)，使用者即可使用以下指令安裝：
+套件發佈至 [ClawHub](/zh-TW/clawhub)，使用者即可使用以下指令安裝：
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-在推出切換期間，裸套件規格仍會從 npm 安裝。當你要使用 ClawHub 解析時，請使用
-`clawhub:` 前綴。
+在啟動切換期間，不含前綴的套件規格仍會從 npm 安裝。需要透過 ClawHub
+解析時，請使用 `clawhub:` 前綴。
 
 ## 需求
 
 - Node 22.22.3+、Node 24.15+ 或 Node 25.9+，以及 `npm` 或 `pnpm`。
 - TypeScript ESM 模組。
-- 若要在儲存庫內開發隨附外掛，請複製儲存庫並執行 `pnpm install`。
-  來源簽出中的外掛開發僅支援 pnpm，因為 OpenClaw 會從
-  `extensions/*` 工作區套件探索隨附外掛。
+- 若要開發儲存庫內隨附的外掛，請複製儲存庫並執行 `pnpm install`。
+  原始碼簽出環境中的外掛開發僅支援 pnpm，因為 OpenClaw 會從
+  `extensions/*` 工作區套件探索隨附的外掛。
 
 ## 選擇外掛形式
 
@@ -46,22 +46,21 @@ openclaw plugins install clawhub:<package-name>
   <Card title="頻道外掛" icon="messages-square" href="/zh-TW/plugins/sdk-channel-plugins">
     將 OpenClaw 連接至訊息平台。
   </Card>
-  <Card title="提供者外掛" icon="cpu" href="/zh-TW/plugins/sdk-provider-plugins">
-    新增模型、媒體、搜尋、擷取、語音或即時提供者。
+  <Card title="供應商外掛" icon="cpu" href="/zh-TW/plugins/sdk-provider-plugins">
+    新增模型、媒體、搜尋、擷取、語音或即時供應商。
   </Card>
   <Card title="命令列介面後端外掛" icon="terminal" href="/zh-TW/plugins/cli-backend-plugins">
     透過 OpenClaw 模型備援執行本機 AI 命令列介面。
   </Card>
   <Card title="工具外掛" icon="wrench" href="/zh-TW/plugins/tool-plugins">
-    註冊代理程式工具。
+    註冊代理工具。
   </Card>
 </CardGroup>
 
-## 快速入門
+## 快速開始
 
-註冊一個必要的代理程式工具，以建置最小化的工具外掛。這是
-最精簡且實用的外掛形式，涵蓋套件、中繼資料清單、進入點和
-本機驗證。
+註冊一個必要的代理工具，即可建置最小型工具外掛。這是最精簡且實用的
+外掛形式，涵蓋套件、中繼資料清單、進入點與本機驗證。
 
 <Steps>
   <Step title="建立套件中繼資料">
@@ -112,22 +111,22 @@ openclaw plugins install clawhub:<package-name>
 
     </CodeGroup>
 
-    已發布的外部外掛應讓執行階段進入點指向已建置的 JavaScript
-    檔案。完整的進入點契約請參閱 [SDK 進入點](/zh-TW/plugins/sdk-entrypoints)。
+    已發佈的外部外掛應將執行階段進入點指向建置後的 JavaScript
+    檔案。完整的進入點合約請參閱 [SDK 進入點](/zh-TW/plugins/sdk-entrypoints)。
 
     每個外掛都需要中繼資料清單，即使沒有設定也一樣。執行階段工具必須
-    出現在 `contracts.tools` 中，讓 OpenClaw 無須
-    預先載入每個外掛執行階段，即可探索擁有權。請刻意設定 `activation.onStartup`；
+    出現在 `contracts.tools` 中，讓 OpenClaw 無須急切載入每個外掛的執行階段，
+    即可探索擁有權。請有意識地設定 `activation.onStartup`；
     此範例會在閘道啟動時載入。
 
-    主機信任的外掛介面也受中繼資料清單控管，且已安裝的外掛必須
-    明確宣告：`api.registerAgentToolResultMiddleware(...)`
-    要求在 `contracts.agentToolResultMiddleware` 中列出每個目標執行階段，
-    而 `api.registerTrustedToolPolicy(...)` 則要求在
-    `contracts.trustedToolPolicies` 中列出每個原則 ID。這些宣告可使安裝時的
+    主機信任的外掛介面也受中繼資料清單控管，且已安裝的外掛必須明確
+    宣告：`api.registerAgentToolResultMiddleware(...)`
+    需要在 `contracts.agentToolResultMiddleware` 中列出每個目標執行階段，
+    而 `api.registerTrustedToolPolicy(...)` 則需要在
+    `contracts.trustedToolPolicies` 中列出每個原則 ID。這些宣告可讓安裝時
     檢查與執行階段註冊保持一致。
 
-    如需所有中繼資料清單欄位的資訊，請參閱[外掛中繼資料清單](/zh-TW/plugins/manifest)。
+    所有中繼資料清單欄位請參閱[外掛中繼資料清單](/zh-TW/plugins/manifest)。
 
   </Step>
 
@@ -145,9 +144,15 @@ openclaw plugins install clawhub:<package-name>
           name: "my_tool",
           description: "Echo one input value",
           parameters: Type.Object({ input: Type.String() }),
+          outputSchema: Type.Object(
+            { input: Type.String() },
+            { additionalProperties: false },
+          ),
           async execute(_id, params) {
+            const details = { input: params.input };
             return {
               content: [{ type: "text", text: `Got: ${params.input}` }],
+              details,
             };
           },
         });
@@ -161,17 +166,17 @@ openclaw plugins install clawhub:<package-name>
   </Step>
 
   <Step title="測試執行階段">
-    對於已安裝或外部外掛，請檢查已載入的執行階段：
+    對於已安裝或外部外掛，請檢查載入的執行階段：
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    如果外掛註冊了命令列介面指令，也請執行該指令並確認
+    如果外掛註冊了命令列介面命令，也請執行該命令並確認
     輸出，例如 `openclaw demo-plugin ping`。
 
-    對於此儲存庫中的隨附外掛，OpenClaw 會從 `extensions/*`
-    工作區探索來源簽出的外掛套件。請執行最接近的針對性
+    對於此儲存庫中的隨附外掛，OpenClaw 會從 `extensions/*` 工作區
+    探索原始碼簽出環境中的外掛套件。請執行最接近的目標
     測試：
 
     ```bash
@@ -182,11 +187,11 @@ openclaw plugins install clawhub:<package-name>
   </Step>
 
   <Step title="測試套件安裝">
-    發布準備就緒的套件外掛之前，請測試使用者將取得的相同安裝形式。
-    請先新增建置步驟，讓 `openclaw.extensions` 等執行階段進入點
-    指向 `./dist/index.js` 等已建置的 JavaScript，並確保
+    在發佈可封裝的外掛之前，請測試使用者實際取得的相同安裝形式。
+    首先新增建置步驟，將 `openclaw.extensions` 等執行階段進入點指向
+    `./dist/index.js` 等建置後的 JavaScript，並確保
     `npm pack` 包含該 `dist/` 輸出。TypeScript 原始碼進入點
-    僅適用於來源簽出和本機開發路徑。
+    僅適用於原始碼簽出環境與本機開發路徑。
 
     接著封裝外掛，並使用 `npm-pack:` 安裝 tarball：
 
@@ -197,24 +202,23 @@ openclaw plugins install clawhub:<package-name>
     ```
 
     `npm-pack:` 使用 OpenClaw 管理的個別外掛 npm 專案，因此能找出
-    來源簽出測試可能隱藏的執行階段相依性錯誤。它可驗證
-    套件及相依性形式，但無法驗證連結目錄的官方信任狀態。
+    原始碼簽出測試可能掩蓋的執行階段相依性錯誤。它驗證的是
+    套件與相依性形式，而非與目錄連結的官方信任狀態。
     執行階段匯入項目必須位於 `dependencies` 或 `optionalDependencies`；
     僅留在 `devDependencies` 中的相依性不會安裝至
     受管理的執行階段專案。
 
-    請勿使用原始封存檔／路徑安裝，作為官方或
-    特權外掛行為的最終驗證。原始來源適合用於本機偵錯，但
-    無法驗證與 npm 或 ClawHub 安裝相同的相依性路徑。如果
-    你的外掛依賴受信任的官方外掛狀態，請透過目錄支援的官方安裝，
-    或會記錄官方信任狀態的已發布套件路徑，新增第二項驗證。關於
-    安裝根目錄和相依性擁有權的詳細資訊，請參閱
+    不要將原始封存檔／路徑安裝用作官方或高權限外掛行為的最終驗證。
+    原始來源適合用於本機偵錯，但無法驗證與 npm 或 ClawHub 安裝相同的
+    相依性路徑。如果你的外掛依賴受信任的官方外掛狀態，請新增第二項
+    驗證，透過目錄支援的官方安裝，或會記錄官方信任狀態的已發佈套件
+    路徑進行驗證。安裝根目錄與相依性擁有權的詳細資訊，請參閱
     [外掛相依性解析](/zh-TW/plugins/dependency-resolution)。
 
   </Step>
 
-  <Step title="發布">
-    發布前請驗證套件：
+  <Step title="發佈">
+    發佈前請驗證套件：
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -226,7 +230,7 @@ openclaw plugins install clawhub:<package-name>
   </Step>
 
   <Step title="安裝">
-    透過 ClawHub 安裝已發布的套件：
+    透過 ClawHub 安裝已發佈的套件：
 
     ```bash
     openclaw plugins install clawhub:your-org/your-plugin
@@ -239,11 +243,11 @@ openclaw plugins install clawhub:<package-name>
 
 ## 註冊工具
 
-工具可以是必要或選用。外掛啟用時，必要工具一律可用。選用工具
-需要使用者明確選擇加入，OpenClaw 才會載入擁有該工具的外掛執行階段。
+工具可以是必要或選用。啟用外掛時，必要工具一律可用。選用工具則需要
+使用者明確選擇加入，OpenClaw 才會載入擁有該工具的外掛執行階段。
 
-工具工廠會接收受信任的執行階段情境，包括 `deliveryContext`、
-可用時目前平台對話的 `nativeChannelId`，以及
+工具工廠函式會收到受信任的執行階段內容，包括 `deliveryContext`、
+可用時代表目前平台對話的 `nativeChannelId`，以及
 `requesterSenderId`。
 
 ```typescript
@@ -253,8 +257,15 @@ register(api) {
       name: "workflow_tool",
       description: "Run a workflow",
       parameters: Type.Object({ pipeline: Type.String() }),
+      outputSchema: Type.Object(
+        { pipeline: Type.String() },
+        { additionalProperties: false },
+      ),
       async execute(_id, params) {
-        return { content: [{ type: "text", text: params.pipeline }] };
+        return {
+          content: [{ type: "text", text: params.pipeline }],
+          details: { pipeline: params.pipeline },
+        };
       },
     },
     { optional: true },
@@ -262,7 +273,13 @@ register(api) {
 }
 ```
 
-每個使用 `api.registerTool(...)` 註冊的工具，也必須在
+`outputSchema` 為選用。它描述 [程式碼模式](/zh-TW/tools/code-mode)與
+[工具搜尋](/zh-TW/tools/tool-search)使用的結構化 `details` 值。目錄
+呼叫會在執行前拒絕無效的結構描述，並在工具鉤子執行後驗證最終值。
+若工具沒有穩定的 JSON 結果，請省略此項。完整合約請參閱
+[工具外掛](/zh-TW/plugins/tool-plugins#output-contracts)。
+
+使用 `api.registerTool(...)` 註冊的每個工具也必須在
 外掛中繼資料清單中宣告：
 
 ```json
@@ -278,84 +295,76 @@ register(api) {
 }
 ```
 
-使用者可透過 `tools.allow` 選擇加入：
+使用者透過 `tools.allow` 選擇加入：
 
 ```json5
 {
-  tools: { allow: ["workflow_tool"] }, // 或使用 ["my-plugin"] 允許單一外掛中的所有工具
+  tools: { allow: ["workflow_tool"] }, // 或使用 ["my-plugin"] 允許某個外掛的所有工具
 }
 ```
 
-選用工具會控制工具是否向模型公開。若工具
-或掛鉤應在模型選取後、動作執行前要求核准，請使用
+選用工具可控制是否向模型公開工具。當工具或鉤子應在模型選取後、
+動作執行前要求核准時，請使用
 [外掛權限要求](/zh-TW/plugins/plugin-permission-requests)。
 
-對於具有副作用、使用罕見二進位檔，或預設不應公開的功能，
-請使用選用工具。工具名稱不得與核心工具名稱衝突；衝突項目會被略過，
-並在外掛診斷中回報。格式錯誤的註冊也會以相同方式略過並回報：
-缺少非空的 `name`、`execute` 不是函式，
-或工具描述元缺少 `parameters` 物件。
+選用工具適合用於具有副作用、使用罕見二進位檔，或預設不應公開的功能。
+工具名稱不得與核心工具名稱衝突；衝突項目會被略過，並回報於外掛診斷中。
+格式錯誤的註冊也會以相同方式略過並回報：缺少非空白的
+`name`、`execute` 並非函式，或工具描述元缺少
+`parameters` 物件。
 
-工具工廠會接收由執行階段提供的情境物件。如果工具需要針對目前回合的
-作用中模型進行記錄、顯示或調整，請使用 `ctx.activeModel`；
-其中可包含 `provider`、`modelId` 和 `modelRef`。請將其視為
-資訊性執行階段中繼資料，而不是用來防範本機操作者、已安裝外掛程式碼，
-或經修改 OpenClaw 執行階段的安全界線。敏感的本機工具仍應要求
-外掛或操作者明確選擇加入，且當作用中模型中繼資料遺失或不適用時，
-必須採取封閉式失敗。
+工具工廠函式會收到由執行階段提供的內容物件。當工具需要記錄、顯示
+或配合目前回合的作用中模型進行調整時，請使用 `ctx.activeModel`；
+其中可能包含 `provider`、`modelId` 和 `modelRef`。
+請將其視為資訊性執行階段中繼資料，而非防範本機操作員、已安裝外掛程式碼
+或經修改 OpenClaw 執行階段的安全界線。敏感的本機工具仍應要求明確的
+外掛或操作員選擇加入，且在作用中模型中繼資料遺失或不適用時採取拒絕執行。
 
-中繼資料清單宣告擁有權和探索資訊；執行時仍會呼叫即時
-註冊的工具實作。請保持 `toolMetadata.<tool>.optional: true`
-與 `api.registerTool(..., { optional: true })` 一致，讓 OpenClaw 能避免
-載入該外掛執行階段，直到工具明確加入允許清單為止。
+中繼資料清單會宣告擁有權與探索資訊；執行時仍會呼叫即時註冊的
+工具實作。請讓 `toolMetadata.<tool>.optional: true` 與 `api.registerTool(..., { optional: true })` 保持一致，
+如此 OpenClaw 才能避免在工具被明確加入允許清單之前載入該外掛執行階段。
 
 ## 匯入慣例
 
-從特定用途的 SDK 子路徑匯入：
+從聚焦的 SDK 子路徑匯入：
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 ```
 
-請勿從已棄用的根 barrel 匯入：
+在你的外掛套件內，請使用 `api.ts` 和
+`runtime-api.ts` 等本機統一匯出檔案進行內部匯入。不要透過 SDK
+路徑匯入你自己的外掛。除非介面確實具有通用性，否則供應商專用的
+輔助函式應留在供應商套件中。
 
-```typescript
-import { definePluginEntry } from "openclaw/plugin-sdk";
-```
-
-在你的外掛套件中，內部匯入請使用 `api.ts` 和
-`runtime-api.ts` 等本機 barrel 檔案。請勿透過 SDK 路徑匯入你自己的
-外掛。提供者專用的輔助程式應留在提供者套件中，除非
-該介面確實具備通用性。
-
-自訂閘道 RPC 方法是進階進入點。請使用
-外掛專用前綴；`config.*`、
-`exec.approvals.*`、`operator.admin.*`、`wizard.*` 和 `update.*` 等核心管理命名空間仍為保留，
-並解析為 `operator.admin`。
+自訂閘道 RPC 方法是進階進入點。請使用外掛專屬前綴；核心管理命名空間
+`config.*`、`exec.approvals.*`、`operator.admin.*`、
+`wizard.*` 和 `update.*` 保留供核心使用，
+並會解析為 `operator.admin`。
 `openclaw/plugin-sdk/gateway-method-runtime` 橋接器保留給宣告
-`contracts.gatewayMethodDispatch: ["authenticated-request"]` 的外掛 HTTP 路由。
+`contracts.gatewayMethodDispatch: ["authenticated-request"]` 的外掛 HTTP 路由使用。
 
-完整的匯入對應表請參閱[外掛 SDK 概觀](/zh-TW/plugins/sdk-overview)。
+完整匯入對照表請參閱[外掛 SDK 概觀](/zh-TW/plugins/sdk-overview)。
 
 ## 提交前檢查清單
 
 <Check>**package.json** 具有正確的 `openclaw` 中繼資料</Check>
 <Check>**openclaw.plugin.json** 中繼資料清單存在且有效</Check>
 <Check>進入點使用 `defineChannelPluginEntry` 或 `definePluginEntry`</Check>
-<Check>所有匯入均使用特定用途的 `plugin-sdk/<subpath>` 路徑</Check>
+<Check>所有匯入均使用聚焦的 `plugin-sdk/<subpath>` 路徑</Check>
 <Check>內部匯入使用本機模組，而非 SDK 自我匯入</Check>
 <Check>測試通過（`pnpm test <bundled-plugin-root>/my-plugin/`）</Check>
 <Check>`pnpm check` 通過（儲存庫內外掛）</Check>
 
 ## 針對 Beta 版本進行測試
 
-1. 關注 [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) 的版本發布（`Watch` > `Releases`）。Beta 標籤的格式類似 `v2026.3.N-beta.1`。你也可以在 X 上追蹤 [@openclaw](https://x.com/openclaw)，以取得版本發布公告。
-2. Beta 標籤一出現，請立即使用它測試你的外掛。距離穩定版發布通常只有幾個小時的時間。
-3. 測試完成後，請在 `plugin-forum` Discord 頻道（[discord.gg/clawd](https://discord.gg/clawd)）中你的外掛討論串發文，內容註明 `all good` 或說明發生了哪些問題。如果你還沒有討論串，請建立一個。
-4. 如果發生問題，請建立或更新標題為 `Beta blocker: <plugin-name> - <summary>` 的議題，並套用 `beta-blocker` 標籤。在你的討論串中附上該議題的連結。
-5. 向 `main` 提交標題為 `fix(<plugin-id>): beta blocker - <summary>` 的 PR，並在 PR 和你的 Discord 討論串中都附上該議題的連結。貢獻者無法為 PR 加上標籤，因此標題是提供給維護者和自動化系統的 PR 端訊號。有 PR 的阻擋問題會合併修正；沒有 PR 的阻擋問題仍可能隨版本發布。
-6. 沒有消息就代表一切正常。錯過這段時間通常表示你的修正會在下一個週期納入。
+1. 關注 [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) 版本發布（`Watch` > `Releases`）。Beta 標籤的格式如 `v2026.3.N-beta.1`。你也可以在 X 上追蹤 [@openclaw](https://x.com/openclaw)，以取得版本發布公告。
+2. Beta 標籤出現後，請儘快使用該標籤測試你的外掛。距離穩定版發布通常只有幾個小時。
+3. 測試後，請在 `plugin-forum` Discord 頻道（[discord.gg/clawd](https://discord.gg/clawd)）中你的外掛討論串內發文，註明 `all good` 或說明發生的問題。如果尚未建立討論串，請建立一個。
+4. 如果發生問題，請建立或更新標題為 `Beta blocker: <plugin-name> - <summary>` 的議題，並套用 `beta-blocker` 標籤。在你的討論串中連結該議題。
+5. 向 `main` 提交標題為 `fix(<plugin-id>): beta blocker - <summary>` 的 PR，並在 PR 和你的 Discord 討論串中連結該議題。貢獻者無法為 PR 加上標籤，因此標題是提供給維護者和自動化機制的 PR 端訊號。有 PR 的阻礙問題會被合併；沒有 PR 的阻礙問題仍可能隨版本發布。
+6. 沒有回報就代表一切正常。錯過時限通常表示你的修正會在下一個週期合併。
 
 ## 後續步驟
 
@@ -385,5 +394,5 @@ import { definePluginEntry } from "openclaw/plugin-sdk";
 
 ## 相關內容
 
-- [外掛鉤點](/zh-TW/plugins/hooks)
+- [外掛掛鉤](/zh-TW/plugins/hooks)
 - [外掛架構](/zh-TW/plugins/architecture)
