@@ -1801,6 +1801,7 @@
                     "pages": [
                       "cli/agent",
                       "cli/agents",
+                      "cli/claws",
                       "cli/audit",
                       "cli/hooks",
                       "cli/infer",
@@ -3412,6 +3413,7 @@
                     "pages": [
                       "zh-TW/cli/agent",
                       "zh-TW/cli/agents",
+                      "zh-TW/cli/claws",
                       "zh-TW/cli/audit",
                       "zh-TW/cli/hooks",
                       "zh-TW/cli/infer",
@@ -4400,6 +4402,7 @@
                     "pages": [
                       "ja-JP/cli/agent",
                       "ja-JP/cli/agents",
+                      "ja-JP/cli/claws",
                       "ja-JP/cli/audit",
                       "ja-JP/cli/hooks",
                       "ja-JP/cli/infer",
@@ -5388,6 +5391,7 @@
                     "pages": [
                       "es/cli/agent",
                       "es/cli/agents",
+                      "es/cli/claws",
                       "es/cli/audit",
                       "es/cli/hooks",
                       "es/cli/infer",
@@ -6376,6 +6380,7 @@
                     "pages": [
                       "pt-BR/cli/agent",
                       "pt-BR/cli/agents",
+                      "pt-BR/cli/claws",
                       "pt-BR/cli/audit",
                       "pt-BR/cli/hooks",
                       "pt-BR/cli/infer",
@@ -7364,6 +7369,7 @@
                     "pages": [
                       "ko/cli/agent",
                       "ko/cli/agents",
+                      "ko/cli/claws",
                       "ko/cli/audit",
                       "ko/cli/hooks",
                       "ko/cli/infer",
@@ -8352,6 +8358,7 @@
                     "pages": [
                       "de/cli/agent",
                       "de/cli/agents",
+                      "de/cli/claws",
                       "de/cli/audit",
                       "de/cli/hooks",
                       "de/cli/infer",
@@ -9340,6 +9347,7 @@
                     "pages": [
                       "fr/cli/agent",
                       "fr/cli/agents",
+                      "fr/cli/claws",
                       "fr/cli/audit",
                       "fr/cli/hooks",
                       "fr/cli/infer",
@@ -10328,6 +10336,7 @@
                     "pages": [
                       "hi/cli/agent",
                       "hi/cli/agents",
+                      "hi/cli/claws",
                       "hi/cli/audit",
                       "hi/cli/hooks",
                       "hi/cli/infer",
@@ -11316,6 +11325,7 @@
                     "pages": [
                       "ar/cli/agent",
                       "ar/cli/agents",
+                      "ar/cli/claws",
                       "ar/cli/audit",
                       "ar/cli/hooks",
                       "ar/cli/infer",
@@ -12304,6 +12314,7 @@
                     "pages": [
                       "it/cli/agent",
                       "it/cli/agents",
+                      "it/cli/claws",
                       "it/cli/audit",
                       "it/cli/hooks",
                       "it/cli/infer",
@@ -13292,6 +13303,7 @@
                     "pages": [
                       "vi/cli/agent",
                       "vi/cli/agents",
+                      "vi/cli/claws",
                       "vi/cli/audit",
                       "vi/cli/hooks",
                       "vi/cli/infer",
@@ -14280,6 +14292,7 @@
                     "pages": [
                       "nl/cli/agent",
                       "nl/cli/agents",
+                      "nl/cli/claws",
                       "nl/cli/audit",
                       "nl/cli/hooks",
                       "nl/cli/infer",
@@ -15268,6 +15281,7 @@
                     "pages": [
                       "tr/cli/agent",
                       "tr/cli/agents",
+                      "tr/cli/claws",
                       "tr/cli/audit",
                       "tr/cli/hooks",
                       "tr/cli/infer",
@@ -16256,6 +16270,7 @@
                     "pages": [
                       "uk/cli/agent",
                       "uk/cli/agents",
+                      "uk/cli/claws",
                       "uk/cli/audit",
                       "uk/cli/hooks",
                       "uk/cli/infer",
@@ -17244,6 +17259,7 @@
                     "pages": [
                       "id/cli/agent",
                       "id/cli/agents",
+                      "id/cli/claws",
                       "id/cli/audit",
                       "id/cli/hooks",
                       "id/cli/infer",
@@ -18232,6 +18248,7 @@
                     "pages": [
                       "pl/cli/agent",
                       "pl/cli/agents",
+                      "pl/cli/claws",
                       "pl/cli/audit",
                       "pl/cli/hooks",
                       "pl/cli/infer",
@@ -19220,6 +19237,7 @@
                     "pages": [
                       "ru/cli/agent",
                       "ru/cli/agents",
+                      "ru/cli/claws",
                       "ru/cli/audit",
                       "ru/cli/hooks",
                       "ru/cli/infer",
