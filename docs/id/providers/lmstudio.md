@@ -5,12 +5,12 @@ read_when:
 summary: Jalankan OpenClaw dengan LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-07-16T18:32:10Z"
+    generated_at: "2026-07-21T12:36:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 21129dad2f1bf53fcf9474db2393fce7642b82f4f22e1770d9788547f08eca7f
+    source_hash: f43b4d04aad6e5edfdf224747083834ebd441aa7f91ccbf2d61de990443fc414
     source_path: providers/lmstudio.md
     workflow: 16
 ---
@@ -21,8 +21,8 @@ tanpa antarmuka. Untuk dokumentasi instalasi dan produk, lihat [lmstudio.ai](htt
 ## Mulai cepat
 
 <Steps>
-  <Step title="Instal dan jalankan server">
-    Instal LM Studio (desktop) atau `llmster` (tanpa antarmuka), lalu jalankan server:
+  <Step title="Instal dan mulai server">
+    Instal LM Studio (desktop) atau `llmster` (tanpa antarmuka), lalu mulai server:
 
     ```bash
     lms server start --port 1234
@@ -54,11 +54,13 @@ tanpa antarmuka. Untuk dokumentasi instalasi dan produk, lihat [lmstudio.ai](htt
 
     Pilih `LM Studio`, lalu pilih model pada prompt `Default model`.
 
-    Pada penyiapan terpandu baru, OpenClaw terlebih dahulu mengueri `/api/v1/models` pada
-    host LM Studio bawaan atau yang dikonfigurasi. LLM yang sudah ada ditawarkan melalui
-    alur penyiapan CLI/macOS yang sama dan diverifikasi dengan penyelesaian nyata sebelum
-    konfigurasinya disimpan. Pemeriksaan otomatis tidak pernah mengunduh model dan
-    mengabaikan entri katalog yang hanya menyediakan embedding.
+    Pada penyiapan terpandu baru, OpenClaw terlebih dahulu melakukan kueri ke `/api/v1/models` pada
+    host LM Studio bawaan atau yang dikonfigurasi. LLM yang sudah ada ditawarkan secara otomatis
+    hanya ketika LM Studio melaporkan pelatihan penggunaan alat dan setidaknya 16K konteks
+    efektif. Untuk model yang dimuat, konteks instans yang dimuat lebih diutamakan daripada
+    nilai maksimum lebih besar yang diumumkan. Urutan penyiapan CLI/macOS yang sama memverifikasi
+    rute dengan penyelesaian nyata sebelum menyimpannya. Pemeriksaan otomatis tidak pernah
+    mengunduh model dan mengabaikan entri katalog khusus embedding.
 
   </Step>
 </Steps>
@@ -71,7 +73,7 @@ openclaw models set lmstudio/qwen/qwen3.5-9b
 
 Kunci model LM Studio menggunakan format `author/model-name` (misalnya `qwen/qwen3.5-9b`); referensi model OpenClaw
 menambahkan penyedia di awal: `lmstudio/qwen/qwen3.5-9b`. Temukan kunci yang tepat untuk suatu model dengan menjalankan
-perintah di bawah dan melihat kolom `key`:
+perintah berikut dan melihat bidang `key`:
 
 ```bash
 curl http://localhost:1234/api/v1/models
@@ -96,33 +98,33 @@ openclaw onboard \
 ```
 
 `--custom-model-id` menerima kunci model sebagaimana dikembalikan oleh LM Studio (misalnya `qwen/qwen3.5-9b`), tanpa
-prefiks penyedia `lmstudio/`. Berikan `--lmstudio-api-key` (atau tetapkan `LM_API_TOKEN`) untuk server yang diautentikasi;
-hilangkan untuk server tanpa autentikasi, lalu OpenClaw akan menyimpan penanda lokal nonrahasia.
+prefiks penyedia `lmstudio/`. Teruskan `--lmstudio-api-key` (atau tetapkan `LM_API_TOKEN`) untuk server yang
+diautentikasi; hilangkan untuk server tanpa autentikasi, dan OpenClaw akan menyimpan penanda lokal nonrahasia sebagai gantinya.
 `--custom-api-key` masih diterima untuk kompatibilitas, tetapi `--lmstudio-api-key` lebih disarankan.
 
 Tindakan ini menulis `models.providers.lmstudio` dan menetapkan model bawaan ke `lmstudio/<custom-model-id>`.
-Memberikan kunci API juga akan menulis profil autentikasi `lmstudio:default`.
+Memberikan kunci API juga menulis profil autentikasi `lmstudio:default`.
 
 Penyiapan interaktif juga dapat meminta panjang konteks pemuatan yang diinginkan dan menerapkannya ke seluruh
-model yang ditemukan dan disimpan ke konfigurasi.
+model yang ditemukan serta disimpan ke konfigurasi.
 
 ## Konfigurasi
 
 ### Kompatibilitas penggunaan streaming
 
-LM Studio tidak selalu menghasilkan objek `usage` berbentuk OpenAI pada respons streaming. OpenClaw
+LM Studio tidak selalu memancarkan objek `usage` berbentuk OpenAI pada respons streaming. OpenClaw
 memulihkan jumlah token dari metadata bergaya llama.cpp `timings.prompt_n` / `timings.predicted_n`
-sebagai gantinya. Setiap endpoint yang kompatibel dengan OpenAI dan ditetapkan sebagai endpoint lokal (host loopback) mendapatkan
+sebagai gantinya. Setiap endpoint yang kompatibel dengan OpenAI dan diidentifikasi sebagai endpoint lokal (host loopback) mendapatkan
 fallback yang sama, yang mencakup backend lokal lain seperti vLLM, SGLang, llama.cpp, LocalAI, Jan, TabbyAPI,
 dan text-generation-webui.
 
-### Kompatibilitas proses berpikir
+### Kompatibilitas pemikiran
 
-Saat penemuan `/api/v1/models` LM Studio melaporkan opsi penalaran khusus model, OpenClaw
-menyediakan nilai `reasoning_effort` yang sesuai (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`) dalam
-metadata kompatibilitas model. Beberapa versi LM Studio menampilkan opsi UI biner (`allowed_options: ["off",
-"on"]`) tetapi menolak nilai literal tersebut pada `/v1/chat/completions`; OpenClaw menormalisasi
-bentuk biner tersebut ke skala enam tingkat sebelum mengirim permintaan, termasuk untuk konfigurasi lama tersimpan yang
+Ketika penemuan `/api/v1/models` LM Studio melaporkan opsi penalaran khusus model, OpenClaw
+menampilkan nilai `reasoning_effort` yang sesuai (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`) dalam
+metadata kompatibilitas model. Beberapa build LM Studio mengumumkan opsi UI biner (`allowed_options: ["off",
+"on"]`) tetapi menolak nilai literal tersebut pada `/v1/chat/completions`; OpenClaw menormalkan
+bentuk biner itu menjadi skala enam tingkat sebelum mengirim permintaan, termasuk untuk konfigurasi tersimpan lama yang
 masih memiliki peta penalaran `off`/`on`.
 
 ### Konfigurasi eksplisit
@@ -155,7 +157,7 @@ masih memiliki peta penalaran `off`/`on`.
 ### Menonaktifkan pramuat
 
 LM Studio mendukung pemuatan model just-in-time (JIT), yaitu memuat model pada permintaan pertama. Secara bawaan, OpenClaw
-memuat model terlebih dahulu melalui endpoint pemuatan native LM Studio, yang membantu saat JIT
+melakukan pramuat model melalui endpoint pemuatan native LM Studio, yang membantu ketika JIT
 dinonaktifkan. Agar JIT, TTL saat tidak aktif, dan perilaku pengeluaran otomatis LM Studio mengelola siklus hidup model,
 nonaktifkan langkah pramuat OpenClaw:
 
@@ -195,9 +197,9 @@ loopback pada mesin tersebut:
 ```
 
 `lmstudio` secara otomatis memercayai endpoint yang dikonfigurasi untuk permintaan model, termasuk host loopback,
-LAN, dan tailnet (kecuali asal metadata/link-local). Setiap entri penyedia khusus/lokal yang kompatibel dengan OpenAI
-mendapatkan kepercayaan asal persis yang sama. Permintaan ke host privat atau port yang berbeda tetap
-memerlukan `models.providers.<id>.request.allowPrivateNetwork: true`; tetapkan ke `false` untuk memilih keluar dari
+LAN, dan tailnet (kecuali asal metadata/link-local). Setiap entri penyedia kustom/lokal yang kompatibel dengan OpenAI
+mendapatkan kepercayaan asal-persis yang sama. Permintaan ke host atau port privat lain tetap
+memerlukan `models.providers.<id>.request.allowPrivateNetwork: true`; tetapkan ke `false` untuk menonaktifkan
 kepercayaan bawaan.
 
 ## Pemecahan masalah

@@ -1,22 +1,22 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin workboard
-summary: Bảng công việc tổng quan dành cho các vấn đề và phiên do tác tử phụ trách.
+summary: Bảng công việc trên dashboard dành cho các vấn đề và phiên do agent phụ trách.
 title: Plugin bảng công việc
 x-i18n:
-    generated_at: "2026-07-16T15:02:25Z"
+    generated_at: "2026-07-21T13:43:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
+    source_hash: 4be96893d46c009a127ed3dca5047f8ee4c33fe3c243f8e6867d64976b50b783
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
 # Plugin Workboard
 
-Bảng công việc dạng bảng điều khiển dành cho các vấn đề và phiên do tác nhân sở hữu.
+Bảng công việc trên dashboard dành cho các vấn đề và phiên do agent sở hữu.
 
 ## Phân phối
 
@@ -25,8 +25,8 @@ Bảng công việc dạng bảng điều khiển dành cho các vấn đề và
 
 ## Bề mặt
 
-hợp đồng: `tools`
+hợp đồng: `tools`; liên kết dữ liệu dashboard: `workboard.cards.list`, `workboard.stats`, `workboard.boards.list`; động từ hành động trên dashboard: `workboard.dispatch`
 
 ## Tài liệu liên quan
 
-- [bảng công việc](/vi/plugins/workboard)
+- [workboard](/vi/plugins/workboard)

@@ -1,80 +1,87 @@
 ---
 read_when:
-    - Anda menginginkan pengetahuan persisten yang melampaui catatan biasa di MEMORY.md
+    - Anda menginginkan pengetahuan persisten yang melampaui catatan MEMORY.md biasa
     - Anda sedang mengonfigurasi plugin memory-wiki bawaan
     - Anda memerlukan vault wiki terpisah untuk agen dalam satu Gateway
     - Anda ingin memahami wiki_search, wiki_get, atau mode bridge
 summary: 'memory-wiki: brankas pengetahuan terkompilasi dengan asal-usul, klaim, dasbor, dan mode jembatan'
 title: Wiki memori
 x-i18n:
-    generated_at: "2026-07-19T05:05:14Z"
+    generated_at: "2026-07-21T12:20:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: cba1a17dc6a6021df51ebc8028663034bb82909aafd9e8e5716fca3a8ea3d03a
+    source_hash: fda3c801ae39b529a3f1fcaf8791b6dcb1d8116ba2e73e99cca62dca6c64140a
     source_path: plugins/memory-wiki.md
     workflow: 16
 ---
 
-`memory-wiki` adalah plugin terbundel yang mengompilasi pengetahuan persisten menjadi
+`memory-wiki` adalah plugin bawaan yang mengompilasi pengetahuan tahan lama menjadi
 wiki yang dapat dinavigasi: halaman deterministik, klaim terstruktur dengan bukti,
 asal-usul, dasbor, dan ringkasan yang dapat dibaca mesin.
 
-Plugin ini tidak menggantikan plugin Active Memory. Pengingatan, promosi, pengindeksan, dan
+Plugin ini tidak menggantikan plugin Active Memory. Pemanggilan kembali, promosi, pengindeksan, dan
 Dreaming tetap dikelola oleh backend memori mana pun yang dikonfigurasi
-(`memory-core`, QMD, Honcho, dll.). `memory-wiki` berada di sampingnya dan mengompilasi
-pengetahuan menjadi lapisan wiki yang dipelihara.
+(`memory-core`, QMD, Honcho, dll.). `memory-wiki` berjalan berdampingan dengannya dan mengompilasi
+pengetahuan menjadi lapisan wiki yang terpelihara.
+
+Aktifkan plugin sebelum menggunakan CLI, alat, atau integrasi runtime-nya:
+
+```bash
+openclaw plugins enable memory-wiki
+openclaw gateway restart
+```
 
 | Lapisan              | Mengelola                                                                          |
 | -------------------- | --------------------------------------------------------------------------------- |
-| Plugin Active Memory | Pengingatan, pencarian semantik, promosi, Dreaming, runtime memori                 |
-| `memory-wiki`        | Halaman wiki terkompilasi, sintesis kaya asal-usul, dasbor, pencarian/pengambilan/penerapan wiki |
+| Plugin Active Memory | Pemanggilan kembali, pencarian semantik, promosi, Dreaming, runtime memori        |
+| `memory-wiki`        | Halaman wiki terkompilasi, sintesis kaya asal-usul, dasbor, pencarian/ambil/terapkan wiki |
 
 Aturan praktis:
 
-- `memory_search` untuk satu kali pengingatan luas di seluruh korpus yang dikonfigurasi
+- `memory_search` untuk satu pemanggilan kembali luas di seluruh korpus yang dikonfigurasi
 - `wiki_search` / `wiki_get` saat Anda menginginkan pemeringkatan khusus wiki, asal-usul, atau struktur keyakinan tingkat halaman
-- `memory_search corpus=all` untuk mencakup kedua lapisan dalam satu panggilan, saat plugin Active Memory mendukung pemilihan korpus
+- `memory_search corpus=all` untuk mencakup kedua lapisan dalam satu panggilan, ketika plugin Active Memory mendukung pemilihan korpus
 
-Penyiapan umum yang mengutamakan penggunaan lokal: QMD sebagai backend Active Memory untuk pengingatan, dan
-`memory-wiki` dalam mode `bridge` untuk halaman hasil sintesis yang persisten. Lihat
-contoh QMD + mode jembatan di bagian [Konfigurasi](#configuration).
+Penyiapan lokal-utama yang umum: QMD sebagai backend Active Memory untuk pemanggilan kembali, dan
+`memory-wiki` dalam mode `bridge` untuk halaman sintesis yang tahan lama. Lihat
+contoh mode QMD + bridge di bagian [Konfigurasi](#configuration).
 
-Jika mode jembatan melaporkan nol artefak yang diekspor, plugin Active Memory
-saat ini tidak mengekspos masukan jembatan publik. Jalankan `openclaw wiki doctor` terlebih dahulu,
+Jika mode bridge melaporkan nol artefak yang diekspor, plugin Active Memory
+saat ini tidak mengekspos input bridge publik. Jalankan `openclaw wiki doctor` terlebih dahulu,
 lalu pastikan plugin Active Memory mendukung artefak publik.
 
 ## Mode vault
 
 - `isolated` (default): vault sendiri, sumber sendiri, tanpa dependensi pada plugin Active Memory. Gunakan ini untuk penyimpanan pengetahuan terkurasi yang mandiri.
-- `bridge`: membaca artefak memori publik dan log peristiwa dari plugin Active Memory melalui sambungan SDK plugin publik. Gunakan ini untuk mengompilasi artefak yang diekspor plugin memori tanpa mengakses bagian internal privat plugin.
-- `unsafe-local`: jalur keluar eksplisit pada mesin yang sama untuk path lokal privat. Sengaja bersifat eksperimental dan tidak portabel; gunakan hanya saat Anda memahami batas kepercayaan dan secara khusus memerlukan akses sistem berkas lokal yang tidak dapat disediakan mode jembatan.
+- `bridge`: membaca artefak memori publik dan log peristiwa dari plugin Active Memory melalui antarmuka SDK plugin publik. Gunakan ini untuk mengompilasi artefak yang diekspor oleh plugin memori tanpa mengakses internal plugin privat.
+- `unsafe-local`: jalur keluar eksplisit pada mesin yang sama untuk jalur lokal privat. Sengaja bersifat eksperimental dan tidak portabel; gunakan hanya jika Anda memahami batas kepercayaan dan secara khusus memerlukan akses sistem berkas lokal yang tidak dapat disediakan oleh mode bridge.
 
-Mode vault dan cakupan vault merupakan pilihan yang terpisah:
+Mode vault dan cakupan vault adalah pilihan yang terpisah:
 
-- `vaultMode` memilih dari mana masukan wiki berasal.
+- `vaultMode` memilih dari mana input wiki berasal.
 - `vault.scope` memilih apakah semua agen menggunakan satu vault atau setiap agen mendapatkan vault turunan.
 
-`vault.scope: "global"` adalah default dan mempertahankan perilaku satu vault yang sudah ada.
-Gunakan `vault.scope: "agent"` dengan mode `isolated` atau `bridge` saat
+`vault.scope: "global"` adalah default dan mempertahankan perilaku satu vault
+yang ada. Gunakan `vault.scope: "agent"` dengan mode `isolated` atau `bridge` ketika
 agen tidak boleh berbagi halaman wiki, ringkasan terkompilasi, hasil pencarian, atau penulisan.
-Cakupan agen tidak dapat digabungkan dengan mode `unsafe-local` karena path privat
-yang dikonfigurasi tersebut bukan masukan milik agen. Validasi konfigurasi menolak
+Cakupan agen tidak dapat digabungkan dengan mode `unsafe-local` karena jalur privat
+yang dikonfigurasi tersebut bukan input milik agen. Validasi konfigurasi menolak
 kombinasi ini.
 
-Mode jembatan dapat mengindeks, sesuai pengalih konfigurasi `bridge.*`:
+Mode bridge dapat mengindeks, sesuai toggle konfigurasi `bridge.*`:
 
 - artefak memori yang diekspor (`indexMemoryRoot`)
 - catatan harian (`indexDailyNotes`)
 - laporan Dreaming (`indexDreamReports`)
 - log peristiwa memori (`followMemoryEvents`)
 
-Saat mode jembatan aktif dan `bridge.readMemoryArtifacts` diaktifkan,
+Saat mode bridge aktif dan `bridge.readMemoryArtifacts` diaktifkan,
 `openclaw wiki status`, `openclaw wiki doctor`, dan `openclaw wiki bridge
-import` dirutekan melalui Gateway yang sedang berjalan agar melihat konteks plugin Active Memory yang sama
-seperti memori agen/runtime. Jika jembatan dinonaktifkan atau pembacaan artefak
-dimatikan, perintah tersebut mempertahankan perilaku lokal/luring.
+import` dirutekan melalui Gateway yang berjalan agar melihat konteks plugin Active Memory
+yang sama dengan memori agen/runtime. Jika bridge dinonaktifkan atau pembacaan
+artefak dimatikan, perintah tersebut mempertahankan perilaku lokal/luring.
 
 ## Tata letak vault
 
@@ -97,10 +104,10 @@ dimatikan, perintah tersebut mempertahankan perilaku lokal/luring.
 Konten terkelola tetap berada di dalam blok yang dihasilkan; blok catatan manusia
 dipertahankan selama regenerasi.
 
-- `sources/`: materi mentah yang diimpor dan halaman yang didukung jembatan/lokal-tidak-aman
-- `entities/`: hal, orang, sistem, proyek, dan objek yang persisten
-- `concepts/`: gagasan, abstraksi, pola, kebijakan (juga menjadi lokasi tujuan impor OKF)
-- `syntheses/`: ringkasan terkompilasi dan rangkuman yang dipelihara
+- `sources/`: materi mentah yang diimpor dan halaman yang didukung bridge/unsafe-local
+- `entities/`: hal, orang, sistem, proyek, dan objek yang tahan lama
+- `concepts/`: gagasan, abstraksi, pola, kebijakan (juga menjadi tujuan impor OKF)
+- `syntheses/`: ringkasan terkompilasi dan rekapitulasi yang terpelihara
 - `reports/`: dasbor yang dihasilkan
 
 ## Impor Open Knowledge Format
@@ -110,32 +117,32 @@ openclaw wiki okf import ./bundles/ga4
 ```
 
 Impor bundel Open Knowledge Format yang telah diekstrak ke halaman konsep wiki. Sangat
-cocok saat katalog data, perayap dokumentasi, atau agen pengayaan sudah
+cocok ketika katalog data, perayap dokumentasi, atau agen pengayaan telah
 menghasilkan OKF: pertahankan OKF sebagai artefak pertukaran portabel, lalu biarkan `memory-wiki`
 mengubahnya menjadi halaman konsep asli OpenClaw dan ringkasan terkompilasi.
 
-- berkas `.md` yang tidak dicadangkan merupakan dokumen konsep
-- setiap konsep yang diimpor memerlukan kolom frontmatter `type` yang tidak kosong; `type` yang tidak ada menghasilkan peringatan `missing-type` dan berkas dilewati
+- berkas `.md` yang tidak dicadangkan adalah dokumen konsep
+- setiap konsep yang diimpor memerlukan bidang frontmatter `type` yang tidak kosong; `type` yang tidak ada menghasilkan peringatan `missing-type` dan berkas dilewati
 - nilai `type` yang tidak dikenal diterima sebagai konsep generik
 - `index.md` dan `log.md` dicadangkan dan tidak pernah diimpor sebagai konsep
 - tautan markdown yang rusak atau eksternal dibiarkan tidak berubah
 
 Halaman yang diimpor diratakan di bawah `concepts/` agar alur kompilasi, pencarian, pengambilan, dan
-dasbor yang sudah ada dapat melihatnya tanpa pohon wiki kedua. Setiap halaman mempertahankan
-ID konsep OKF asli, path sumber, `type`, `resource`, `tags`, stempel waktu,
-dan seluruh frontmatter produsen. Tautan internal OKF ditulis ulang ke halaman
-konsep wiki yang dihasilkan dan juga memancarkan entri `relationships` terstruktur dengan
+dasbor yang ada dapat melihatnya tanpa pohon wiki kedua. Setiap halaman mempertahankan
+ID konsep OKF asli, jalur sumber, `type`, `resource`, `tags`, stempel waktu,
+dan seluruh frontmatter produsen. Tautan OKF internal ditulis ulang ke halaman
+konsep wiki yang dihasilkan dan juga menghasilkan entri `relationships` terstruktur dengan
 `kind: okf-link`.
 
 ## Klaim dan bukti terstruktur
 
 Halaman membawa frontmatter `claims` terstruktur, bukan hanya teks bebas. Setiap
-klaim dapat menyertakan `id`, `text`, `status`, `confidence`, `evidence[]`, dan
-`updatedAt`. Setiap entri bukti dapat menyertakan `kind`, `sourceId`, `path`,
+klaim dapat mencakup `id`, `text`, `status`, `confidence`, `evidence[]`, dan
+`updatedAt`. Setiap entri bukti dapat mencakup `kind`, `sourceId`, `path`,
 `lines`, `weight`, `confidence`, `privacyTier`, `note`, dan `updatedAt`.
 
-Hal ini membuat wiki berfungsi sebagai lapisan keyakinan, bukan sekadar tempat pembuangan catatan pasif.
-Klaim dapat dilacak, dinilai, diperdebatkan, dan ditelusuri kembali ke sumbernya.
+Hal ini membuat wiki berperilaku seperti lapisan keyakinan, bukan tempat pembuangan catatan pasif.
+Klaim dapat dilacak, dinilai, disanggah, dan ditelusuri kembali ke sumbernya untuk diselesaikan.
 
 ## Metadata entitas untuk agen
 
@@ -145,11 +152,11 @@ sistem, proyek, atau jenis entitas lainnya:
 - `entityType`: misalnya `person`, `team`, `system`, `project`
 - `canonicalId`: kunci identitas stabil di seluruh alias dan impor
 - `aliases`: nama, handle, atau label yang mengarah ke halaman yang sama
-- `privacyTier`: string berformat bebas; `public` diperlakukan sebagai tidak perlu ditinjau, nilai lainnya (misalnya `local-private`, `sensitive`, `confirm-before-use`) ditandai dalam `reports/privacy-review.md`
+- `privacyTier`: string bebas; `public` dianggap tidak memerlukan review, nilai lainnya (misalnya `local-private`, `sensitive`, `confirm-before-use`) ditandai dalam `reports/privacy-review.md`
 - `bestUsedFor` / `notEnoughFor`: petunjuk perutean ringkas
-- `lastRefreshedAt`: stempel waktu penyegaran sumber, terpisah dari waktu penyuntingan halaman
-- `personCard`: kartu perutean khusus orang yang opsional (handle, media sosial, email, zona waktu, jalur, hal yang dapat ditanyakan, hal yang perlu dihindari untuk ditanyakan, keyakinan, tingkat privasi)
-- `relationships`: sisi bertipe ke halaman terkait (target, jenis, bobot, keyakinan, jenis bukti, tingkat privasi, catatan)
+- `lastRefreshedAt`: stempel waktu penyegaran sumber, terpisah dari waktu pengeditan halaman
+- `personCard`: kartu perutean opsional khusus orang (handle, media sosial, email, zona waktu, jalur, hal yang dapat diminta, hal yang sebaiknya tidak diminta, tingkat keyakinan, tingkat privasi)
+- `relationships`: edge bertipe ke halaman terkait (target, jenis, bobot, tingkat keyakinan, jenis bukti, tingkat privasi, catatan)
 
 Untuk wiki orang, mulai dengan `reports/person-agent-directory.md`, lalu buka
 halaman orang tersebut dengan `wiki_get` sebelum menggunakan detail kontak atau fakta
@@ -205,25 +212,25 @@ claims:
 
 ## Pipeline kompilasi
 
-Kompilasi membaca halaman wiki, menormalisasi ringkasan, dan mempertahankan snapshot untuk mesin
+Kompilasi membaca halaman wiki, menormalisasi ringkasan, dan menyimpan snapshot untuk mesin
 dalam status plugin SQLite bersama milik OpenClaw. Kode runtime menggunakan
-snapshot pemilik yang dikelola siklus hidup untuk memuat SQLite selama penyiapan prompt asinkron;
-perakitan prompt sinkron tidak pernah mengikis Markdown atau membaca berkas cache.
-Keluaran terkompilasi juga mendukung pengindeksan wiki tahap pertama untuk pencarian/pengambilan, pencarian ID
-klaim kembali ke halaman pemiliknya, pelengkap prompt ringkas, dan pembuatan
+snapshot pemilik yang dikelola siklus hidup untuk memuat SQLite selama persiapan prompt asinkron;
+perakitan prompt sinkron tidak pernah mengeruk Markdown atau membaca berkas cache.
+Output terkompilasi juga mendukung pengindeksan wiki tahap pertama untuk pencarian/pengambilan, pencarian
+ID klaim kembali ke halaman pemiliknya, pelengkap prompt ringkas, dan pembuatan
 laporan.
 
-Penyuntingan sumber dan pemulihan vault tersedia bagi mesin hanya setelah
-kompilasi berikutnya. Memulai ulang atau menyegarkan siklus hidup plugin akan membandingkan publikasi
+Pengeditan sumber dan pemulihan vault baru tersedia untuk mesin setelah
+kompilasi berikutnya. Memulai ulang atau menyegarkan siklus hidup plugin membandingkan publikasi
 kompilasi vault yang dirantai secara kausal dengan SQLite dan menolak snapshot dari
-status lebih baru yang telah di-rollback. Kompiler yang dimulai sebelum rollback tidak dapat
-menerbitkan terhadap pendahulu yang dipulihkan. Penyiapan prompt tidak melakukan polling pada
+status lebih baru yang telah di-roll back. Kompilator yang dimulai sebelum rollback tidak dapat
+menerbitkan terhadap pendahulu yang dipulihkan. Persiapan prompt tidak melakukan polling terhadap
 vault atau memasang pemantau berkas.
-Setelah karantina rollback, kompilasi dalam proses yang berjalan langsung menghapus pemilik;
-proses kompiler terpisah memerlukan penyegaran siklus hidup plugin agar
-daemon dapat mengonfirmasi publikasi persisten yang baru.
+Setelah karantina rollback, kompilasi dalam proses yang sedang berjalan segera menghapus pemilik;
+proses kompilator terpisah memerlukan penyegaran siklus hidup plugin agar
+daemon dapat mengonfirmasi publikasi tahan lama yang baru.
 Cache terkompilasi dapat dibangun ulang: baris cache dari sebelum epoch publikasi
-diperlakukan sebagai miss dan digantikan oleh kompilasi berikutnya; baris tersebut tidak dimigrasikan.
+dianggap sebagai cache miss dan diganti oleh kompilasi berikutnya; baris tersebut tidak dimigrasikan.
 
 ## Dasbor dan laporan kesehatan
 
@@ -234,13 +241,13 @@ Saat `render.createDashboards` diaktifkan, kompilasi memelihara dasbor di bawah
 | ----------------------------------- | -------------------------------------------------- |
 | `reports/open-questions.md`         | halaman dengan pertanyaan yang belum terselesaikan |
 | `reports/contradictions.md`         | klaster catatan kontradiksi                        |
-| `reports/low-confidence.md`         | halaman dan klaim berkeyakinan rendah              |
+| `reports/low-confidence.md`         | halaman dan klaim dengan tingkat keyakinan rendah  |
 | `reports/claim-health.md`           | klaim tanpa bukti terstruktur                      |
-| `reports/stale-pages.md`            | kesegaran yang kedaluwarsa atau tidak diketahui    |
+| `reports/stale-pages.md`            | kesegaran yang usang atau tidak diketahui          |
 | `reports/person-agent-directory.md` | kartu perutean orang/entitas                       |
-| `reports/relationship-graph.md`     | sisi hubungan terstruktur                          |
+| `reports/relationship-graph.md`     | edge hubungan terstruktur                          |
 | `reports/provenance-coverage.md`    | cakupan kelas bukti                                |
-| `reports/privacy-review.md`         | tingkat privasi nonpublik yang perlu ditinjau sebelum digunakan |
+| `reports/privacy-review.md`         | tingkat privasi nonpublik yang perlu direview sebelum digunakan |
 
 ## Pencarian dan pengambilan
 
@@ -253,7 +260,7 @@ Tiga korpus: `wiki`, `memory`, `all`.
 
 - `wiki_search` / `wiki_get` menggunakan ringkasan terkompilasi sebagai tahap pertama jika memungkinkan
 - ID klaim mengarah kembali ke halaman pemiliknya
-- klaim yang diperdebatkan/kedaluwarsa/segar memengaruhi pemeringkatan
+- klaim yang disengketakan/usang/segar memengaruhi pemeringkatan
 - label asal-usul tetap dipertahankan dalam hasil
 
 Mode pencarian (parameter `--mode` / alat `mode`):
@@ -261,12 +268,12 @@ Mode pencarian (parameter `--mode` / alat `mode`):
 | Mode              | Peningkatan                                                    |
 | ----------------- | -------------------------------------------------------------- |
 | `auto`            | default seimbang                                               |
-| `find-person`     | entitas menyerupai orang, alias, handle, media sosial, ID kanonis |
-| `route-question`  | kartu agen, petunjuk untuk ditanyakan/paling cocok digunakan untuk, konteks hubungan |
+| `find-person`     | entitas mirip manusia, alias, nama pengguna, media sosial, ID kanonis |
+| `route-question`  | kartu agen, petunjuk kapan perlu ditanyakan/paling cocok digunakan, konteks hubungan |
 | `source-evidence` | halaman sumber dan metadata bukti terstruktur                  |
-| `raw-claim`       | klaim terstruktur yang cocok; mengembalikan metadata klaim/bukti |
+| `raw-claim`       | pencocokan klaim terstruktur; mengembalikan metadata klaim/bukti |
 
-Ketika hasil cocok dengan klaim terstruktur, `wiki_search` mengembalikan
+Saat hasil cocok dengan klaim terstruktur, `wiki_search` mengembalikan
 `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`,
 `evidenceKinds`, dan `evidenceSourceIds` dalam payload detailnya. Output teks
 menyertakan baris ringkas `Claim:` dan `Evidence:` jika tersedia.
@@ -275,24 +282,24 @@ menyertakan baris ringkas `Claim:` dan `Evidence:` jika tersedia.
 
 | Alat          | Tujuan                                                                                                                                                       |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `wiki_status` | mode dan cakupan vault saat ini, agen yang telah diresolusi, kesehatan, ketersediaan CLI Obsidian                                                                               |
+| `wiki_status` | mode dan cakupan vault saat ini, agen yang ditetapkan, kesehatan, ketersediaan CLI Obsidian                                                                    |
 | `wiki_search` | mencari halaman wiki dan, jika dikonfigurasi, korpus memori bersama; menerima `mode` untuk pencarian orang, perutean pertanyaan, bukti sumber, atau penelusuran mendalam klaim mentah |
-| `wiki_get`    | membaca halaman wiki berdasarkan id/path, dengan fallback ke korpus memori bersama ketika pencarian bersama diaktifkan dan pencarian tidak menemukan hasil                                     |
-| `wiki_apply`  | mutasi sintesis/metadata terbatas tanpa pembedahan halaman bebas                                                                                             |
-| `wiki_lint`   | pemeriksaan struktural, kesenjangan asal-usul, kontradiksi, pertanyaan terbuka                                                                                            |
+| `wiki_get`    | membaca halaman wiki berdasarkan id/jalur, beralih ke korpus memori bersama jika pencarian bersama diaktifkan dan pencarian tidak menemukan hasil             |
+| `wiki_apply`  | mutasi sintesis/metadata terbatas tanpa operasi bebas pada halaman                                                                                            |
+| `wiki_lint`   | pemeriksaan struktural, kesenjangan asal-usul, kontradiksi, pertanyaan terbuka                                                                                 |
 
-Plugin ini juga mendaftarkan pelengkap korpus memori non-eksklusif, sehingga
-`memory_search` dan `memory_get` bersama dapat menjangkau wiki ketika Plugin memori aktif
-mendukung pemilihan korpus.
+Plugin juga mendaftarkan suplemen korpus memori non-eksklusif, sehingga
+`memory_search` dan `memory_get` bersama dapat menjangkau wiki saat Plugin
+memori aktif mendukung pemilihan korpus.
 
 ## Perilaku prompt dan konteks
 
-Ketika `context.includeCompiledDigestPrompt` diaktifkan, bagian prompt memori
-menambahkan cuplikan terkompilasi ringkas dari status Plugin: hanya halaman teratas,
-hanya klaim teratas, jumlah kontradiksi, jumlah pertanyaan, serta penanda keyakinan/keterkinian.
-Fitur ini bersifat opsional karena mengubah bentuk prompt; fitur ini terutama relevan
-untuk mesin konteks atau penyusunan prompt yang secara eksplisit menggunakan
-pelengkap memori.
+Saat `context.includeCompiledDigestPrompt` diaktifkan, bagian prompt memori
+menambahkan snapshot terkompilasi yang ringkas dari status Plugin: hanya halaman
+teratas, hanya klaim teratas, jumlah kontradiksi, jumlah pertanyaan, serta
+kualifikasi keyakinan/kebaruan. Fitur ini bersifat opt-in karena mengubah bentuk
+prompt; terutama relevan untuk mesin konteks atau perakitan prompt yang secara
+eksplisit menggunakan suplemen memori.
 
 ## Konfigurasi
 
@@ -357,24 +364,24 @@ Pengaturan utama:
 
 | Kunci                                      | Nilai / default                                | Catatan                                                                       |
 | ------------------------------------------ | ---------------------------------------------- | ----------------------------------------------------------------------------- |
-| `vaultMode`                                | `isolated` (default), `bridge`, `unsafe-local` | memilih perilaku input dan integrasi                                           |
-| `vault.scope`                              | `global` (default), `agent`                    | satu vault bersama atau satu vault turunan per agen                            |
-| `vault.path`                               | default global `~/.openclaw/wiki/main`         | vault persis secara global; induk cakupan agen menggunakan default `~/.openclaw/wiki` |
+| `vaultMode`                                | `isolated` (default), `bridge`, `unsafe-local` | memilih perilaku input dan integrasi                                          |
+| `vault.scope`                              | `global` (default), `agent`                    | satu vault bersama atau satu vault anak per agen                              |
+| `vault.path`                               | default global `~/.openclaw/wiki/main`         | vault yang tepat secara global; induk cakupan agen secara default adalah `~/.openclaw/wiki` |
 | `vault.renderMode`                         | `native` (default), `obsidian`                 |                                                                               |
-| `bridge.readMemoryArtifacts`               | default `true`                                 | mengimpor artefak publik Plugin memori aktif                                   |
-| `bridge.followMemoryEvents`                | default `true`                                 | menyertakan log peristiwa dalam mode jembatan                                  |
-| `unsafeLocal.allowPrivateMemoryCoreAccess` | default `false`                                | diperlukan untuk menjalankan impor `unsafe-local`                              |
-| `unsafeLocal.paths`                        | default `[]`                                   | path lokal eksplisit untuk diimpor dalam mode `unsafe-local`                  |
+| `bridge.readMemoryArtifacts`               | default `true`                                 | mengimpor artefak publik Plugin memori aktif                                  |
+| `bridge.followMemoryEvents`                | default `true`                                 | menyertakan log peristiwa dalam mode bridge                                   |
+| `unsafeLocal.allowPrivateMemoryCoreAccess` | default `false`                                | diperlukan untuk menjalankan impor `unsafe-local`                             |
+| `unsafeLocal.paths`                        | default `[]`                                   | jalur lokal eksplisit untuk diimpor dalam mode `unsafe-local`                 |
 | `search.backend`                           | `shared` (default), `local`                    |                                                                               |
 | `search.corpus`                            | `wiki` (default), `memory`, `all`              |                                                                               |
-| `context.includeCompiledDigestPrompt`      | default `false`                                | menambahkan cuplikan ringkasan ringkas agen yang dipilih ke bagian prompt memori |
-| `render.createBacklinks`                   | default `true`                                 | menghasilkan blok terkait yang deterministik                                  |
+| `context.includeCompiledDigestPrompt`      | default `false`                                | menambahkan snapshot ringkas agen yang dipilih ke bagian prompt memori        |
+| `render.createBacklinks`                   | default `true`                                 | menghasilkan blok terkait yang deterministik                                 |
 | `render.createDashboards`                  | default `true`                                 | menghasilkan halaman dasbor                                                   |
 
 ### Vault per agen
 
 Atur `vault.scope` ke `agent` untuk memberikan wiki terpisah kepada setiap agen yang dikonfigurasi.
-Dalam cakupan ini, `vault.path` merupakan direktori induk dan OpenClaw menambahkan
+Dalam cakupan ini, `vault.path` adalah direktori induk dan OpenClaw menambahkan
 id agen yang telah dinormalisasi:
 
 ```json5
@@ -403,41 +410,41 @@ id agen yang telah dinormalisasi:
 }
 ```
 
-Ini diresolusi menjadi `~/.openclaw/wiki/support` dan
+Ini ditetapkan menjadi `~/.openclaw/wiki/support` dan
 `~/.openclaw/wiki/marketing`. Jika `vault.path` dihilangkan dalam cakupan agen,
-induk menggunakan default `~/.openclaw/wiki`. Oleh karena itu, agen `main` default tetap
-menggunakan path `~/.openclaw/wiki/main` yang sudah ada.
+induk secara default menjadi `~/.openclaw/wiki`. Oleh karena itu, agen `main` default tetap
+menggunakan jalur `~/.openclaw/wiki/main` yang ada.
 
-Alat agen, ringkasan prompt terkompilasi, dan pelengkap wiki yang diekspos melalui
-`memory_search` / `memory_get` meresolusi vault dari konteks agen aktif.
-Untuk panggilan CLI dan Gateway dalam penyiapan dengan beberapa agen yang dikonfigurasi, berikan
-agen secara eksplisit dengan `openclaw wiki --agent <agentId> ...` atau
-`agentId` milik permintaan Gateway. Satu agen yang dikonfigurasi tetap menjadi default ketika tidak ada id yang
+Alat agen, ringkasan prompt terkompilasi, dan suplemen wiki yang diekspos melalui
+`memory_search` / `memory_get` menetapkan vault dari konteks agen aktif.
+Untuk panggilan CLI dan Gateway dalam pengaturan dengan beberapa agen yang dikonfigurasi, berikan
+agen secara eksplisit dengan `openclaw wiki --agent <agentId> ...` atau `agentId` milik permintaan
+Gateway. Satu agen yang dikonfigurasi tetap menjadi default jika tidak ada id yang
 diberikan.
 
-Dalam mode jembatan, impor dengan cakupan agen menerima artefak memori publik hanya ketika
-`agentIds`-nya menyertakan agen yang dipilih. Artefak milik agen lain,
+Dalam mode bridge, impor dengan cakupan agen hanya menerima artefak memori publik jika
+`agentIds`-nya menyertakan agen yang dipilih. Artefak yang dimiliki agen lain,
 tanpa metadata kepemilikan, atau dengan pemilik yang tidak diketahui akan dilewati. Cakupan global
-mempertahankan perilaku artefak bersama yang sudah ada.
+mempertahankan perilaku artefak bersama yang ada.
 
 <Warning>
-Mengubah `vault.scope` tidak menyalin atau membagi vault yang sudah ada. Dalam cakupan agen,
+Mengubah `vault.scope` tidak menyalin atau memisahkan vault yang ada. Dalam cakupan agen,
 `vault.path` yang dikonfigurasi secara eksplisit menjadi direktori induk, jadi pindahkan atau
-impor halaman yang sudah ada secara sengaja sebelum mengalihkan agen produksi. Cadangkan
+impor halaman yang ada secara sengaja sebelum mengganti agen produksi. Cadangkan
 vault terlebih dahulu.
 
-Vault per agen merupakan batas pengetahuan dalam proses yang sama, bukan batas keamanan
+Vault per agen adalah batas pengetahuan dalam proses yang sama, bukan batas keamanan
 sistem operasi. Plugin dan alat tanpa sandbox yang memiliki akses ke sistem berkas host
 masih dapat membaca direktori agen lain. Gunakan [sandboxing](/id/gateway/sandboxing) atau
-[profil Gateway terpisah](/id/gateway/multiple-gateways) ketika agen tidak saling
+[profil Gateway terpisah](/id/gateway/multiple-gateways) jika agen tidak saling
 memercayai.
 </Warning>
 
-### Contoh: QMD + mode jembatan
+### Contoh: QMD + mode bridge
 
-Gunakan ini ketika Anda menginginkan QMD untuk pengingatan dan `memory-wiki` untuk lapisan
-pengetahuan yang terpelihara. Setiap lapisan tetap berfokus: QMD menjaga catatan mentah, ekspor
-sesi, dan koleksi tambahan tetap dapat dicari, sementara `memory-wiki` mengompilasi
+Gunakan ini saat Anda menginginkan QMD untuk pengingatan dan `memory-wiki` untuk lapisan
+pengetahuan yang dipelihara. Setiap lapisan tetap terfokus: QMD menjaga agar catatan mentah, ekspor
+sesi, dan koleksi tambahan dapat dicari, sedangkan `memory-wiki` mengompilasi
 entitas stabil, klaim, dasbor, dan halaman sumber.
 
 ```json5
@@ -473,8 +480,8 @@ entitas stabil, klaim, dasbor, dan halaman sumber.
 }
 ```
 
-Ini mempertahankan QMD sebagai pengelola pengingatan memori aktif, `memory-wiki` berfokus pada
-halaman terkompilasi dan dasbor, serta bentuk prompt tetap tidak berubah hingga Anda
+Ini membuat QMD tetap menangani pengingatan memori aktif, `memory-wiki` berfokus pada
+halaman terkompilasi dan dasbor, serta mempertahankan bentuk prompt tanpa perubahan hingga Anda
 secara sengaja mengaktifkan prompt ringkasan terkompilasi.
 
 ## CLI
@@ -495,42 +502,42 @@ openclaw wiki obsidian status
 
 Lihat [CLI: wiki](/id/cli/wiki) untuk referensi perintah lengkap, termasuk
 `wiki okf import`, `wiki apply metadata`, `wiki unsafe-local import`,
-`wiki chatgpt import` / `wiki chatgpt rollback`, dan rangkaian subperintah `wiki obsidian`
-secara lengkap.
+`wiki chatgpt import` / `wiki chatgpt rollback`, dan rangkaian lengkap subperintah
+`wiki obsidian`.
 
 ## Dukungan Obsidian
 
-Ketika `vault.renderMode` adalah `obsidian`, Plugin menulis Markdown yang ramah Obsidian
-dan dapat secara opsional menggunakan CLI `obsidian` resmi untuk pemeriksaan
-status, pencarian vault, membuka halaman, menjalankan perintah, dan berpindah ke
-catatan harian. Ini bersifat opsional; wiki tetap berfungsi dalam mode native tanpa
+Saat `vault.renderMode` bernilai `obsidian`, Plugin menulis Markdown yang ramah
+Obsidian dan dapat secara opsional menggunakan CLI resmi `obsidian` untuk pemeriksaan
+status, pencarian vault, membuka halaman, menjalankan perintah, dan beralih ke
+catatan harian. Fitur ini opsional; wiki tetap berfungsi dalam mode asli tanpa
 Obsidian.
 
 Vault dengan cakupan agen tetap dapat menggunakan Markdown yang ramah Obsidian, tetapi validasi
-konfigurasi menolak `obsidian.useOfficialCli: true` bersama `vault.scope: "agent"`.
+konfigurasi menolak `obsidian.useOfficialCli: true` dengan `vault.scope: "agent"`.
 Pengaturan `obsidian.vaultName` saat ini bersifat global dan tidak dapat memilih vault
-Obsidian yang berbeda untuk setiap agen. Gunakan alat wiki dan operasi CLI sebagai gantinya,
+Obsidian yang berbeda untuk setiap agen. Sebagai gantinya, gunakan alat wiki dan operasi CLI,
 atau pertahankan wiki yang dioperasikan Obsidian dalam cakupan global.
 
-## Alur kerja yang disarankan
+## Alur kerja yang direkomendasikan
 
 <Steps>
-<Step title="Pertahankan plugin memori aktif untuk pemanggilan kembali">
-Pemanggilan kembali, promosi, dan dreaming tetap dikelola oleh backend memori yang dikonfigurasi.
+<Step title="Pertahankan plugin memori aktif untuk mengingat kembali">
+Proses mengingat kembali, promosi, dan Dreaming tetap dikelola oleh backend memori yang dikonfigurasi.
 </Step>
 <Step title="Aktifkan memory-wiki">
-Mulai dengan mode `isolated`, kecuali jika Anda secara eksplisit menginginkan mode jembatan.
+Mulai dengan mode `isolated` kecuali jika Anda secara eksplisit menginginkan mode jembatan.
 </Step>
-<Step title="Gunakan wiki_search / wiki_get ketika asal-usul informasi penting">
-Utamakan ini daripada `memory_search` jika Anda menginginkan pemeringkatan khusus wiki atau struktur keyakinan tingkat halaman.
+<Step title="Gunakan wiki_search / wiki_get saat asal-usul informasi penting">
+Utamakan alat ini daripada `memory_search` jika Anda menginginkan pemeringkatan khusus wiki atau struktur keyakinan tingkat halaman.
 </Step>
 <Step title="Gunakan wiki_apply untuk sintesis terbatas atau pembaruan metadata">
-Hindari mengedit secara manual blok terkelola yang dihasilkan.
+Hindari mengedit blok terkelola yang dihasilkan secara manual.
 </Step>
-<Step title="Jalankan wiki_lint setelah perubahan penting">
+<Step title="Jalankan wiki_lint setelah perubahan yang bermakna">
 Mendeteksi kontradiksi, pertanyaan terbuka, dan kesenjangan asal-usul informasi.
 </Step>
-<Step title="Aktifkan dasbor untuk visibilitas informasi usang/kontradiksi">
+<Step title="Aktifkan dasbor untuk melihat informasi usang/kontradiksi">
 Tetapkan `render.createDashboards: true` (default).
 </Step>
 </Steps>

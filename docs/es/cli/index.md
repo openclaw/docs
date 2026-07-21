@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Encontrar el subcomando `openclaw` adecuado
+    - Cómo encontrar el subcomando `openclaw` adecuado
     - Consulta de opciones globales o reglas de estilo de salida
 summary: 'Índice de la CLI de OpenClaw: lista de comandos, opciones globales y enlaces a las páginas de cada comando'
 title: Referencia de la CLI
 x-i18n:
-    generated_at: "2026-07-16T11:33:45Z"
+    generated_at: "2026-07-21T08:57:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 22a2e85d4ba33aff3ad369eb3c73b07b4cbe4401c9c5c294180e2629dd2cbaa2
+    source_hash: 0f9694ac6a50a646862edda79d218786808a2e6008eaf9abdac0e634d373c1f7
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` es el punto de entrada principal de la CLI. Cada comando principal tiene una página de
-referencia específica o está documentado junto con el comando del que es alias; este índice enumera
+`openclaw` es el punto de entrada principal de la CLI. Cada comando principal tiene una
+página de referencia específica o se documenta junto con el comando del que es alias; este índice enumera
 los comandos, las opciones globales y las reglas de estilo de salida que se aplican en toda la CLI.
 
 Comandos de configuración según la finalidad:
 
-- `openclaw setup` y `openclaw onboard` verifican primero la inferencia y, a continuación, inician OpenClaw para configurar el Gateway, el espacio de trabajo, los canales, las Skills y el estado.
-- `openclaw setup --baseline` crea la configuración y el espacio de trabajo básicos sin recorrer el flujo guiado de incorporación.
+- `openclaw setup` y `openclaw onboard` verifican primero la inferencia y, después, inician OpenClaw para configurar el Gateway, el espacio de trabajo, los canales, las Skills y el estado del sistema.
+- `openclaw setup --baseline` crea la configuración básica y el espacio de trabajo sin recorrer el flujo guiado de incorporación.
 - `openclaw configure` modifica partes específicas de una configuración existente: autenticación del modelo, Gateway, canales, plugins o Skills.
-- `openclaw channels add` configura las cuentas de los canales una vez que existe la configuración básica; se ejecuta sin opciones para la configuración guiada o con opciones específicas de cada canal para scripts.
+- `openclaw channels add` configura las cuentas de los canales una vez que existe la configuración básica; la selección de un canal por sí sola utiliza la configuración guiada, mientras que las opciones de cuenta, credenciales o configuración del canal utilizan la ruta directa para scripts.
 
 ## Páginas de comandos
 
@@ -39,10 +39,10 @@ Comandos de configuración según la finalidad:
 | Red y nodos            | [`directory`](/es/cli/directory) · [`nodes`](/es/cli/nodes) · [`devices`](/es/cli/devices) · [`node`](/es/cli/node) · [`worker`](/es/cli/worker)                                                                                                     |
 | Entorno de ejecución y entorno aislado          | [`approvals`](/es/cli/approvals) · `exec-policy` (véase [`approvals`](/es/cli/approvals)) · [`sandbox`](/es/cli/sandbox) · [`tui`](/es/cli/tui) · `chat`/`terminal` (alias de [`tui --local`](/es/cli/tui)) · [`browser`](/es/cli/browser)             |
 | Automatización                   | [`cron`](/es/cli/cron) · [`tasks`](/es/cli/tasks) · [`hooks`](/es/cli/hooks) · [`webhooks`](/es/cli/webhooks) · [`transcripts`](/es/cli/transcripts)                                                                                                 |
-| Detección y documentación           | [`dns`](/es/cli/dns) · [`docs`](/es/cli/docs)                                                                                                                                                                                               |
+| Descubrimiento y documentación           | [`dns`](/es/cli/dns) · [`docs`](/es/cli/docs)                                                                                                                                                                                               |
 | Vinculación y canales         | [`pairing`](/es/cli/pairing) · [`qr`](/es/cli/qr) · [`channels`](/es/cli/channels)                                                                                                                                                             |
 | Seguridad y plugins         | [`security`](/es/cli/security) · [`secrets`](/es/cli/secrets) · [`skills`](/es/cli/skills) · [`plugins`](/es/cli/plugins) · [`proxy`](/es/cli/proxy)                                                                                                 |
-| Alias heredados               | [`daemon`](/es/cli/daemon) (servicio de Gateway) · [`clawbot`](/es/cli/clawbot) (espacio de nombres)                                                                                                                                                     |
+| Alias heredados               | [`daemon`](/es/cli/daemon) (servicio del Gateway) · [`clawbot`](/es/cli/clawbot) (espacio de nombres)                                                                                                                                                     |
 | Plugins (opcionales)           | [`path`](/es/cli/path) · [`policy`](/es/cli/policy) · [`voicecall`](/es/cli/voicecall) · [`workboard`](/es/cli/workboard) (si está instalado)                                                                                                          |
 
 ## Opciones globales
@@ -52,7 +52,7 @@ Comandos de configuración según la finalidad:
 | `--dev`                 | Aísla el estado en `~/.openclaw-dev`, establece 19001 como puerto predeterminado del Gateway y desplaza los puertos derivados              |
 | `--profile <name>`      | Aísla el estado en `~/.openclaw-<name>` (`OPENCLAW_STATE_DIR`/`OPENCLAW_CONFIG_PATH`)                  |
 | `--container <name>`    | Ejecuta la CLI dentro de un contenedor Podman/Docker en ejecución denominado `<name>` (valor predeterminado: variable de entorno `OPENCLAW_CONTAINER`) |
-| `--log-level <level>`   | Sustituye el nivel de registro global para la salida en archivo y consola                                                 |
+| `--log-level <level>`   | Sustituye el nivel de registro global para la salida en archivos y en la consola                                                 |
 | `--no-color`            | Desactiva los colores ANSI (también se respeta `NO_COLOR=1`)                                                    |
 | `--update`              | Forma abreviada de [`openclaw update`](/es/cli/update); funciona tanto para repositorios de código fuente como para instalaciones de paquetes    |
 | `-V`, `--version`, `-v` | Muestra la versión y finaliza                                                                                  |
@@ -60,35 +60,35 @@ Comandos de configuración según la finalidad:
 ## Modos de salida
 
 - Los colores ANSI y los indicadores de progreso solo se muestran en sesiones TTY.
-- Los hipervínculos OSC-8 se muestran como enlaces seleccionables cuando son compatibles; de lo contrario, la
+- Los hipervínculos OSC-8 se muestran como enlaces en los que se puede hacer clic cuando son compatibles; de lo contrario, la
   CLI recurre a URL de texto sin formato.
-- `--json` (y `--plain` cuando es compatible) desactiva los estilos para obtener una salida limpia.
-- Los comandos de larga duración muestran un indicador de progreso (OSC 9;4 cuando es compatible).
+- `--json` (y `--plain` cuando sea compatible) desactiva los estilos para obtener una salida limpia.
+- Los comandos de larga duración muestran un indicador de progreso (OSC 9;4 cuando sea compatible).
 
 ## Paleta de colores
 
-OpenClaw utiliza una paleta inspirada en la langosta para la salida de la CLI:
+OpenClaw utiliza una paleta de langosta para la salida de la CLI:
 
-| Token          | Hexadecimal       | Uso                             |
+| Token          | Hex       | Se utiliza para                      |
 | -------------- | --------- | ------------------------------------ |
-| `accent`       | `#FF5A2D` | Encabezados, etiquetas y elementos destacados principales |
-| `accentBright` | `#FF7A3D` | Nombres de comandos y énfasis              |
-| `accentDim`    | `#D14A22` | Texto destacado secundario             |
+| `accent`       | `#FF5A2D` | Encabezados, etiquetas y resaltados principales |
+| `accentBright` | `#FF7A3D` | Nombres de comandos y énfasis        |
+| `accentDim`    | `#D14A22` | Texto de resaltado secundario        |
 | `info`         | `#FF8A5B` | Valores informativos                 |
-| `success`      | `#2FBF71` | Estados de éxito                       |
-| `warn`         | `#FFB020` | Advertencias, opciones y alternativas    |
+| `success`      | `#2FBF71` | Estados correctos                    |
+| `warn`         | `#FFB020` | Advertencias, indicadores de opciones y alternativas |
 | `error`        | `#E23D2D` | Errores y fallos                     |
-| `muted`        | `#8B7F77` | Atenuación y metadatos                |
+| `muted`        | `#8B7F77` | Atenuación y metadatos               |
 
-Fuente de referencia de la paleta: `packages/terminal-core/src/palette.ts`.
+Fuente canónica de la paleta: `packages/terminal-core/src/palette.ts`.
 
 ## Árbol de comandos
 
 <Accordion title="Árbol de comandos completo">
 
-Este mapa abarca los comandos principales y sus subcomandos principales. Los subcomandos añadidos por plugins
-(por ejemplo, en `skills`, `plugins` y `wiki`) evolucionan
-de forma independiente; ejecute `<command> --help` para obtener la lista actual y oficial.
+Este mapa abarca los comandos principales y sus subcomandos principales. Los subcomandos añadidos por
+plugins (por ejemplo, en `skills`, `plugins` y `wiki`) evolucionan
+de forma independiente; ejecute `<command> --help` para obtener la lista actual y canónica.
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -428,29 +428,29 @@ Los Plugins pueden añadir comandos adicionales de nivel superior, como
 
 </Accordion>
 
-## Comandos de barra diagonal del chat
+## Comandos de barra del chat
 
-Los mensajes de chat admiten comandos `/...`. Consulte [comandos de barra diagonal](/es/tools/slash-commands).
+Los mensajes de chat admiten comandos `/...`. Consulte [comandos de barra](/es/tools/slash-commands).
 
 Aspectos destacados:
 
-- `/status` - diagnóstico rápido.
-- `/trace` - líneas de seguimiento y depuración del Plugin limitadas a la sesión.
+- `/status` - diagnósticos rápidos.
+- `/trace` - líneas de seguimiento y depuración de Plugins limitadas a la sesión.
 - `/config` - cambios de configuración persistentes.
-- `/debug` - anulaciones de configuración solo en tiempo de ejecución (en memoria, no en disco; requiere `commands.debug: true`).
+- `/debug` - anulaciones de configuración solo durante la ejecución (en memoria, no en disco; requiere `commands.debug: true`).
 
 ## Seguimiento del uso
 
-`openclaw status --usage` y la interfaz de Control UI muestran el uso y la cuota del proveedor cuando
-hay credenciales de OAuth/API disponibles. Los datos proceden directamente de los endpoints de uso
-de los proveedores y se normalizan a `X% left`. Proveedores con ventanas de uso actuales:
-Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
+`openclaw status --usage` y la interfaz de control muestran el uso y la cuota del proveedor cuando
+hay credenciales de OAuth/API disponibles. Los datos proceden directamente de los endpoints
+de uso de los proveedores y se normalizan a `X% left`. Proveedores con períodos de uso
+actuales: Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
 Xiaomi y z.ai.
 
 Consulte [Seguimiento del uso](/es/concepts/usage-tracking) para obtener más información.
 
 ## Contenido relacionado
 
-- [Comandos de barra diagonal](/es/tools/slash-commands)
+- [Comandos de barra](/es/tools/slash-commands)
 - [Configuración](/es/gateway/configuration)
 - [Entorno](/es/help/environment)

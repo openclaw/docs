@@ -4,19 +4,19 @@ read_when:
     - Men-debug permintaan CLI ↔ registri
 summary: Referensi API HTTP (endpoint publik + CLI + autentikasi).
 x-i18n:
-    generated_at: "2026-07-19T04:58:43Z"
+    generated_at: "2026-07-21T12:49:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 8926327c9d81d535c5683dad55b8e0aff704261f17c2b17c95bd7026bb31887d
+    source_hash: d9b3e64cbb9dce522b3c112a8082a5df32eb118c1ce0c97a28d2c397d1cdfbe3
     source_path: clawhub/http-api.md
     workflow: 16
 ---
 
 # API HTTP
 
-URL dasar: `https://clawhub.ai` (default).
+URL dasar: `https://clawhub.ai` (bawaan).
 
 Semua jalur v1 berada di bawah `/api/v1/...`.
 `/api/...` dan `/api/cli/...` lama tetap tersedia untuk kompatibilitas (lihat `DEPRECATIONS.md`).
@@ -24,23 +24,23 @@ OpenAPI: `/api/v1/openapi.json`.
 
 ## Penggunaan ulang katalog publik
 
-Direktori pihak ketiga dapat menggunakan endpoint baca publik untuk mencantumkan atau mencari Skills ClawHub. Harap cache hasil, patuhi `429`/`Retry-After`, arahkan pengguna kembali ke daftar ClawHub kanonis (`https://clawhub.ai/<owner>/skills/<slug>`), dan hindari memberikan kesan bahwa ClawHub mendukung situs pihak ketiga tersebut. Jangan mencoba mencerminkan konten tersembunyi, privat, atau diblokir oleh moderasi di luar permukaan API publik.
+Direktori pihak ketiga dapat menggunakan endpoint baca publik untuk mencantumkan atau mencari Skills ClawHub. Harap simpan hasil dalam cache, patuhi `429`/`Retry-After`, arahkan pengguna kembali ke daftar kanonis ClawHub (`https://clawhub.ai/<owner>/skills/<slug>`), dan hindari menyiratkan bahwa ClawHub mendukung situs pihak ketiga tersebut. Jangan mencoba mencerminkan konten tersembunyi, privat, atau yang diblokir moderasi di luar permukaan API publik.
 
-Pintasan slug web diresolusi di seluruh keluarga registri, tetapi klien API sebaiknya menggunakan
-URL kanonis yang dikembalikan oleh endpoint baca, alih-alih merekonstruksi
-prioritas rute.
+Pintasan slug web diselesaikan di seluruh keluarga registry, tetapi klien API sebaiknya menggunakan
+URL kanonis yang dikembalikan oleh endpoint baca alih-alih merekonstruksi prioritas
+rute.
 
 ## Batas laju
 
-Model penegakan:
+Model penerapan:
 
 - Permintaan anonim: diterapkan per IP.
-- Permintaan terautentikasi (token Bearer yang valid): diterapkan per kelompok pengguna.
-- Jika token tidak ada/tidak valid, perilaku kembali ke penegakan berbasis IP.
-- Endpoint tulis terautentikasi tidak boleh mengembalikan `Unauthorized` kosong ketika
+- Permintaan terautentikasi (token Bearer valid): diterapkan per kelompok pengguna.
+- Jika token tidak ada/tidak valid, perilaku kembali ke penerapan berbasis IP.
+- Endpoint tulis terautentikasi tidak seharusnya mengembalikan `Unauthorized` polos ketika
   server mengetahui alasannya. Token yang tidak ada, token yang tidak valid/dicabut, serta
-  akun yang dihapus/dilarang/dinonaktifkan masing-masing harus menerima teks yang dapat ditindaklanjuti agar klien
-  CLI dapat memberi tahu pengguna mengenai penyebab pemblokiran.
+  akun yang dihapus/diblokir/dinonaktifkan masing-masing harus menerima teks yang dapat ditindaklanjuti agar klien
+  CLI dapat memberi tahu pengguna apa yang menghalangi mereka.
 
 - Baca: 3000/menit per IP, 12000/menit per kunci
 - Tulis: 300/menit per IP, 3000/menit per kunci
@@ -49,17 +49,17 @@ Model penegakan:
 Header:
 
 - Kompatibilitas lama: `X-RateLimit-Limit`, `X-RateLimit-Reset`
-- Terstandarisasi: `RateLimit-Limit`, `RateLimit-Reset`
+- Terstandardisasi: `RateLimit-Limit`, `RateLimit-Reset`
 - Pada `429`: `X-RateLimit-Remaining: 0` dan `RateLimit-Remaining: 0`
 - Pada `429`: `Retry-After`
 
 Semantik header:
 
 - `X-RateLimit-Reset`: detik epoch Unix absolut
-- `RateLimit-Reset`: detik hingga reset (penundaan)
-- `X-RateLimit-Remaining` / `RateLimit-Remaining`: kuota tersisa yang tepat jika tersedia.
-  Permintaan terbagi yang berhasil tidak menyertakan header ini, alih-alih mengembalikan nilai global perkiraan.
-- `Retry-After`: jumlah detik yang harus ditunggu sebelum mencoba kembali (penundaan) pada `429`
+- `RateLimit-Reset`: detik hingga pengaturan ulang (jeda)
+- `X-RateLimit-Remaining` / `RateLimit-Remaining`: anggaran tersisa yang persis jika tersedia.
+  Permintaan terdistribusi yang berhasil tidak menyertakan header ini alih-alih mengembalikan perkiraan nilai global.
+- `Retry-After`: jumlah detik yang harus ditunggu sebelum mencoba kembali (jeda) pada `429`
 
 Contoh respons `429`:
 
@@ -81,14 +81,14 @@ Panduan klien:
 
 - Jika `Retry-After` tersedia, tunggu selama jumlah detik tersebut sebelum mencoba kembali.
 - Gunakan backoff dengan jitter untuk menghindari percobaan ulang yang tersinkronisasi.
-- Jika `Retry-After` tidak ada, kembali gunakan `RateLimit-Reset` (atau hitung dari `X-RateLimit-Reset`).
+- Jika `Retry-After` tidak tersedia, gunakan `RateLimit-Reset` sebagai cadangan (atau hitung dari `X-RateLimit-Reset`).
 
 Sumber IP:
 
 - Menggunakan header IP klien tepercaya, termasuk `cf-connecting-ip`, hanya ketika
   deployment secara eksplisit mengaktifkan header penerusan tepercaya.
 - ClawHub menggunakan header penerusan tepercaya untuk mengidentifikasi IP klien di edge.
-- Jika IP klien tepercaya tidak tersedia, permintaan anonim menggunakan kelompok cadangan
+- Jika tidak ada IP klien tepercaya yang tersedia, permintaan anonim menggunakan kelompok cadangan
   yang cakupannya hanya berdasarkan jenis batas laju. Kelompok cadangan ini tidak menyertakan
   jalur, slug, nama paket, versi, string kueri, atau parameter artefak lain
   yang diberikan pemanggil.
@@ -97,7 +97,7 @@ Sumber IP:
 
 Respons kesalahan v1 publik berupa teks biasa dengan `content-type: text/plain; charset=utf-8`.
 Ini mencakup kegagalan validasi (`400`), sumber daya publik yang tidak ditemukan (`404`), kegagalan autentikasi dan
-izin (`401`/`403`), batas laju (`429`), dan unduhan yang diblokir. Klien
+izin (`401`/`403`), batas laju (`429`), serta unduhan yang diblokir. Klien
 harus membaca isi respons sebagai string yang dapat dibaca manusia. Parameter kueri yang tidak dikenal
 diabaikan untuk kompatibilitas, tetapi parameter kueri yang dikenali dengan nilai tidak valid mengembalikan
 `400`.
@@ -111,7 +111,7 @@ Parameter kueri:
 - `q` (wajib): string kueri
 - `limit` (opsional): bilangan bulat
 - `highlightedOnly` (opsional): `true` untuk memfilter hanya Skills yang disorot
-- `nonSuspiciousOnly` (opsional): `true` untuk menyembunyikan Skills mencurigakan (`flagged.suspicious`)
+- `nonSuspiciousOnly` (opsional): `true` untuk menyembunyikan Skills yang mencurigakan (`flagged.suspicious`)
 - `nonSuspicious` (opsional): alias lama untuk `nonSuspiciousOnly`
 
 Respons:
@@ -139,18 +139,18 @@ Respons:
 
 Catatan:
 
-- Hasil dikembalikan berdasarkan urutan relevansi (kemiripan embedding + peningkatan token slug/nama yang sama persis + sedikit prioritas popularitas).
-- Relevansi lebih kuat daripada popularitas. Kecocokan tepat pada token slug atau nama tampilan dapat mengungguli kecocokan yang lebih longgar dengan interaksi yang jauh lebih tinggi.
-- Teks ASCII ditokenisasi pada batas kata dan tanda baca. Misalnya, `personal-map` berisi token `map` mandiri, sedangkan `amap-jsapi-skill` berisi `amap`, `jsapi`, dan `skill`; karena itu, pencarian `map` memberikan `personal-map` kecocokan leksikal yang lebih kuat daripada `amap-jsapi-skill`.
-- Popularitas menggunakan skala logaritmik dan dibatasi. Skills dengan interaksi tinggi dapat memperoleh peringkat lebih rendah ketika teks kueri memiliki kecocokan yang lebih lemah.
-- Status moderasi mencurigakan atau tersembunyi dapat menghapus Skills dari pencarian publik, tergantung pada filter pemanggil dan status moderasi saat ini.
+- Hasil dikembalikan dalam urutan relevansi (kemiripan embedding + peningkatan token slug/nama yang sama persis + sedikit prioritas popularitas).
+- Relevansi lebih kuat daripada popularitas. Kecocokan token slug atau nama tampilan yang tepat dapat mengungguli kecocokan yang lebih longgar dengan interaksi yang jauh lebih tinggi.
+- Teks ASCII ditokenisasi pada batas kata dan tanda baca. Misalnya, `personal-map` berisi token `map` yang berdiri sendiri, sedangkan `amap-jsapi-skill` berisi `amap`, `jsapi`, dan `skill`; karena itu, pencarian untuk `map` memberikan `personal-map` kecocokan leksikal yang lebih kuat daripada `amap-jsapi-skill`.
+- Popularitas diskalakan secara logaritmik dan dibatasi. Skills dengan interaksi tinggi dapat memiliki peringkat lebih rendah ketika teks kueri memiliki kecocokan yang lebih lemah.
+- Status moderasi mencurigakan atau tersembunyi dapat menghapus suatu Skill dari pencarian publik, bergantung pada filter pemanggil dan status moderasi saat ini.
 
-Panduan kemudahan ditemukan bagi penerbit:
+Panduan keterlihatan penerbit:
 
-- Tempatkan istilah yang akan dicari pengguna secara harfiah dalam nama tampilan, ringkasan, dan tag. Gunakan token slug mandiri hanya jika token tersebut juga merupakan identitas stabil yang ingin dipertahankan.
-- Jangan mengganti nama slug hanya untuk mengejar satu kueri, kecuali slug baru tersebut merupakan nama kanonis jangka panjang yang lebih baik. Slug lama menjadi alias pengalihan, tetapi URL kanonis, slug yang ditampilkan, dan digest pencarian mendatang menggunakan slug baru.
-- Alias penggantian nama mempertahankan resolusi bagi URL lama dan penginstalan yang diresolusi melalui registri, tetapi peringkat pencarian didasarkan pada metadata Skills kanonis setelah penggantian nama selesai diindeks. Statistik yang ada tetap melekat pada Skills tersebut.
-- Jika Skills tiba-tiba tidak terlihat, periksa status moderasi terlebih dahulu dengan `clawhub inspect @owner/slug` saat sudah masuk sebelum mengubah metadata terkait peringkat.
+- Cantumkan istilah yang benar-benar akan dicari pengguna dalam nama tampilan, ringkasan, dan tag. Gunakan token slug yang berdiri sendiri hanya jika token tersebut juga merupakan identitas stabil yang ingin dipertahankan.
+- Jangan mengganti nama slug hanya untuk mengejar satu kueri, kecuali slug baru merupakan nama kanonis jangka panjang yang lebih baik. Slug lama menjadi alias pengalihan, tetapi URL kanonis, slug yang ditampilkan, dan ringkasan pencarian mendatang menggunakan slug baru.
+- Alias penggantian nama mempertahankan resolusi untuk URL lama dan instalasi yang diselesaikan melalui registry, tetapi peringkat pencarian didasarkan pada metadata Skill kanonis setelah penggantian nama diindeks. Statistik yang ada tetap melekat pada Skill tersebut.
+- Jika suatu Skill tiba-tiba tidak terlihat, periksa dahulu status moderasi dengan `clawhub inspect @owner/slug` saat masuk sebelum mengubah metadata terkait peringkat.
 
 ### `GET /api/v1/skills`
 
@@ -158,8 +158,8 @@ Parameter kueri:
 
 - `limit` (opsional): bilangan bulat (1–200)
 - `cursor` (opsional): kursor paginasi untuk pengurutan selain `trending`
-- `sort` (opsional): `updated` (default), `recommended` (alias: `default`), `createdAt` (alias: `newest`), `downloads`, `stars` (alias: `rating`), alias penginstalan lama `installsCurrent`/`installs`/`installsAllTime` dipetakan ke `downloads`, `trending`
-- `nonSuspiciousOnly` (opsional): `true` untuk menyembunyikan Skills mencurigakan (`flagged.suspicious`)
+- `sort` (opsional): `updated` (bawaan), `recommended` (alias: `default`), `createdAt` (alias: `newest`), `downloads`, `stars` (alias: `rating`), alias instalasi lama `installsCurrent`/`installs`/`installsAllTime` dipetakan ke `downloads`, `trending`
+- `nonSuspiciousOnly` (opsional): `true` untuk menyembunyikan Skills yang mencurigakan (`flagged.suspicious`)
 - `nonSuspicious` (opsional): alias lama untuk `nonSuspiciousOnly`
 
 Nilai `sort` yang tidak valid mengembalikan `400`.
@@ -167,10 +167,10 @@ Nilai `sort` yang tidak valid mengembalikan `400`.
 Catatan:
 
 - `recommended` menggunakan sinyal interaksi dan kebaruan.
-- `trending` mengurutkan berdasarkan penginstalan dalam 7 hari terakhir (berbasis telemetri).
-- `createdAt` stabil untuk crawl Skills baru; `updated` berubah ketika Skills yang sudah ada diterbitkan ulang.
-- Ketika `nonSuspiciousOnly=true`, pengurutan berbasis kursor dapat mengembalikan kurang dari `limit` item pada suatu halaman karena Skills mencurigakan difilter setelah pengambilan halaman.
-- Gunakan `nextCursor` untuk melanjutkan paginasi jika tersedia. Halaman pendek tidak dengan sendirinya berarti akhir hasil.
+- `trending` memberi peringkat berdasarkan instalasi dalam 7 hari terakhir (berbasis telemetri).
+- `createdAt` stabil untuk perayapan Skill baru; `updated` berubah ketika Skills yang ada diterbitkan ulang.
+- Ketika `nonSuspiciousOnly=true`, pengurutan berbasis kursor dapat mengembalikan kurang dari `limit` item pada satu halaman karena Skills yang mencurigakan difilter setelah pengambilan halaman.
+- Gunakan `nextCursor` untuk melanjutkan paginasi jika tersedia. Halaman pendek saja tidak berarti hasil telah berakhir.
 
 Respons:
 
@@ -227,11 +227,11 @@ Respons:
 
 Catatan:
 
-- Slug lama yang dibuat oleh alur penggantian nama/penggabungan pemilik diresolusi ke Skills kanonis.
-- `metadata.os`: Batasan OS yang dinyatakan dalam frontmatter Skills (misalnya `["macos"]`, `["linux"]`). `null` jika tidak dinyatakan.
-- `metadata.systems`: Target sistem Nix (misalnya `["aarch64-darwin", "x86_64-linux"]`). `null` jika tidak dinyatakan.
-- `metadata` adalah `null` jika Skills tidak memiliki metadata platform.
-- `moderation` hanya disertakan ketika Skills ditandai atau sedang dilihat oleh pemiliknya.
+- Slug lama yang dibuat melalui alur penggantian nama/penggabungan oleh pemilik diselesaikan ke Skill kanonis.
+- `metadata.os`: pembatasan OS yang dideklarasikan dalam frontmatter Skill (misalnya `["macos"]`, `["linux"]`). `null` jika tidak dideklarasikan.
+- `metadata.systems`: target sistem Nix (misalnya `["aarch64-darwin", "x86_64-linux"]`). `null` jika tidak dideklarasikan.
+- `metadata` adalah `null` jika Skill tidak memiliki metadata platform.
+- `moderation` disertakan hanya ketika Skill ditandai atau pemilik sedang melihatnya.
 
 ### `GET /api/v1/skills/{slug}/moderation`
 
@@ -267,13 +267,13 @@ Respons:
 Catatan:
 
 - Pemilik dan moderator dapat mengakses detail moderasi untuk Skills tersembunyi.
-- Pemanggil publik hanya mendapatkan `200` untuk Skills terlihat yang sudah ditandai.
-- Bukti disunting bagi pemanggil publik dan hanya menyertakan cuplikan mentah bagi pemilik/moderator.
+- Pemanggil publik hanya memperoleh `200` untuk Skills terlihat yang sudah ditandai.
+- Bukti disunting untuk pemanggil publik dan hanya menyertakan cuplikan mentah bagi pemilik/moderator.
 
 ### `POST /api/v1/skills/{slug}/report`
 
-Laporkan Skills untuk ditinjau moderator. Laporan berada pada tingkat Skills, dapat ditautkan secara opsional
-ke sebuah versi, dan dimasukkan ke antrean laporan Skills.
+Laporkan suatu Skill untuk ditinjau moderator. Laporan berlaku pada tingkat Skill, secara opsional ditautkan
+ke sebuah versi, dan dimasukkan ke antrean laporan Skill.
 
 Autentikasi:
 
@@ -282,7 +282,7 @@ Autentikasi:
 Permintaan:
 
 ```json
-{ "reason": "Langkah penginstalan mencurigakan", "version": "1.2.3" }
+{ "reason": "Suspicious install step", "version": "1.2.3" }
 ```
 
 Respons:
@@ -300,11 +300,11 @@ Respons:
 
 ### `GET /api/v1/skills/-/reports`
 
-Endpoint moderator/admin untuk penerimaan laporan Skills.
+Endpoint moderator/admin untuk penerimaan laporan Skill.
 
 Parameter kueri:
 
-- `status` (opsional): `open` (default), `confirmed`, `dismissed`, atau `all`
+- `status` (opsional): `open` (bawaan), `confirmed`, `dismissed`, atau `all`
 - `limit` (opsional): bilangan bulat (1-200)
 - `cursor` (opsional): kursor paginasi
 
@@ -320,13 +320,13 @@ Respons:
       "slug": "gifgrep",
       "displayName": "GifGrep",
       "version": "1.2.3",
-      "reason": "Langkah instalasi mencurigakan",
+      "reason": "Langkah penginstalan mencurigakan",
       "status": "open",
       "createdAt": 1730000000000,
       "reporter": {
         "userId": "users:...",
         "handle": "reporter",
-        "displayName": "Reporter"
+        "displayName": "Pelapor"
       },
       "triagedAt": null,
       "triagedBy": null,
@@ -348,8 +348,8 @@ Permintaan:
 { "status": "confirmed", "note": "Ditinjau dan versi yang terdampak disembunyikan.", "finalAction": "hide" }
 ```
 
-`note` wajib untuk `confirmed` dan `dismissed`; ini dapat dihilangkan saat
-mengatur `status` kembali ke `open`. Teruskan `finalAction: "hide"` bersama laporan yang
+`note` diperlukan untuk `confirmed` dan `dismissed`; ini dapat dihilangkan saat
+mengatur `status` kembali ke `open`. Teruskan `finalAction: "hide"` dengan laporan yang
 telah ditriase untuk menyembunyikan skill dalam alur kerja yang sama dan dapat diaudit.
 
 ### `GET /api/v1/skills/{slug}/versions`
@@ -361,31 +361,31 @@ Parameter kueri:
 
 ### `GET /api/v1/skills/{slug}/versions/{version}`
 
-Mengembalikan metadata versi + daftar file.
+Mengembalikan metadata versi + daftar berkas.
 
 - `version.security` menyertakan status verifikasi pemindaian yang dinormalisasi dan detail pemindai
   (VirusTotal + LLM), jika tersedia.
 
 ### `GET /api/v1/skills/{slug}/scan`
 
-Mengembalikan detail verifikasi pemindaian keamanan untuk suatu versi skill.
+Mengembalikan detail verifikasi pemindaian keamanan untuk versi skill.
 
 Parameter kueri:
 
 - `version` (opsional): string versi tertentu.
-- `tag` (opsional): menyelesaikan versi bertag (misalnya `latest`).
+- `tag` (opsional): menguraikan versi bertag (misalnya `latest`).
 
 Catatan:
 
-- Jika `version` maupun `tag` tidak diberikan, versi terbaru akan digunakan.
+- Jika `version` maupun `tag` tidak diberikan, menggunakan versi terbaru.
 - Menyertakan status verifikasi yang dinormalisasi beserta detail khusus pemindai.
-- `security.hasScanResult` bernilai `true` hanya ketika pemindai menghasilkan keputusan definitif (`clean`, `suspicious`, atau `malicious`).
-- `moderation` adalah snapshot moderasi tingkat skill saat ini yang berasal dari versi terbaru.
-- Saat meminta versi historis, periksa `moderation.matchesRequestedVersion` dan `moderation.sourceVersion` sebelum memperlakukan `moderation` dan `security` sebagai konteks versi yang sama.
+- `security.hasScanResult` bernilai `true` hanya ketika pemindai menghasilkan putusan definitif (`clean`, `suspicious`, atau `malicious`).
+- `moderation` adalah cuplikan moderasi tingkat skill saat ini yang berasal dari versi terbaru.
+- Saat mengkueri versi historis, periksa `moderation.matchesRequestedVersion` dan `moderation.sourceVersion` sebelum menganggap `moderation` dan `security` sebagai konteks versi yang sama.
 
 ### `POST /api/v1/skills/-/scan`
 
-Endpoint pengiriman terautentikasi untuk tugas ClawScan baru.
+Endpoint pengajuan terautentikasi untuk tugas ClawScan baru.
 
 Pemindaian unggahan lokal tidak lagi didukung. Permintaan yang menggunakan
 `multipart/form-data` atau `{ "source": { "kind": "upload" } }` mengembalikan `410`.
@@ -401,18 +401,18 @@ Pemindaian yang dipublikasikan menggunakan JSON:
 
 Catatan:
 
-- Payload permintaan pemindaian dan laporan yang dapat diunduh kedaluwarsa dari penyimpanan permintaan pemindaian setelah jendela retensi.
+- Payload permintaan pemindaian dan laporan yang dapat diunduh kedaluwarsa dari penyimpanan permintaan pemindaian setelah periode retensi.
 - Pemindaian yang dipublikasikan memerlukan akses pengelolaan pemilik/penerbit, atau wewenang moderator/admin platform.
-- Pemindaian yang dipublikasikan menulis balik hanya ketika `update: true` dan pemindaian selesai dengan sukses.
+- Pemindaian yang dipublikasikan hanya menulis balik ketika `update: true` dan pemindaian selesai dengan sukses.
 - Responsnya adalah `202` dengan `{ "ok": true, "scanId": "...", "jobId": "...", "status": "queued", "sourceKind": "published", "update": false, "queue": { "queuedAhead": 0, "queuedAheadIsEstimate": false, "position": 1, "running": 0, "runningIsEstimate": false, "note": "Scans are asynchronous and may take time to complete." } }`.
-- Tugas pemindaian bersifat asinkron. Permintaan pemindaian manual diprioritaskan di atas pekerjaan publikasi/pengisian balik normal, tetapi penyelesaiannya tetap bergantung pada ketersediaan worker.
+- Tugas pemindaian bersifat asinkron. Permintaan pemindaian manual diprioritaskan sebelum pekerjaan publikasi/pengisian ulang normal, tetapi penyelesaiannya tetap bergantung pada ketersediaan pekerja.
 
 ### `GET /api/v1/skills/-/scan/{scanId}`
 
-Endpoint polling terautentikasi untuk pemindaian yang dikirimkan.
+Endpoint jajak pendapat terautentikasi untuk pemindaian yang diajukan.
 
 - Mengembalikan status dalam antrean/berjalan/berhasil/gagal.
-- Mengembalikan `queue.queuedAhead` dan `queue.position` selama masih dalam antrean agar klien dapat menampilkan jumlah pemindaian manual berprioritas yang mendahului permintaan tersebut. Antrean yang sangat besar dibatasi dan dilaporkan dengan `queuedAheadIsEstimate: true`.
+- Mengembalikan `queue.queuedAhead` dan `queue.position` selama berada dalam antrean agar klien dapat menampilkan jumlah pemindaian manual berprioritas yang mendahului permintaan tersebut. Antrean yang sangat besar dibatasi dan dilaporkan dengan `queuedAheadIsEstimate: true`.
 - Jika tersedia, `report` berisi bagian `clawscan`, `skillspector`, `staticAnalysis`, dan `virustotal`.
 - Tugas pemindaian yang gagal mengembalikan `status: "failed"` dengan `lastError`.
 
@@ -420,49 +420,49 @@ Endpoint polling terautentikasi untuk pemindaian yang dikirimkan.
 
 Endpoint arsip laporan terautentikasi.
 
-- Memerlukan pemindaian yang berhasil; pemindaian yang belum mencapai status terminal mengembalikan `409`.
-- Mengembalikan ZIP berisi `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, dan `README.md`.
+- Memerlukan pemindaian yang berhasil; pemindaian nonterminal mengembalikan `409`.
+- Mengembalikan ZIP dengan `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, dan `README.md`.
 
 ### `GET /api/v1/skills/-/scan/download/{name}?version=<version>&kind=skill|plugin`
 
-Endpoint arsip laporan tersimpan yang terautentikasi untuk versi yang dikirimkan.
+Endpoint arsip laporan tersimpan yang terautentikasi untuk versi yang diajukan.
 
 - Memerlukan akses pengelolaan pemilik/penerbit ke skill atau plugin, atau wewenang moderator/admin platform.
-- Mengembalikan hasil pemindaian tersimpan untuk versi persis yang dikirimkan, termasuk versi yang diblokir atau disembunyikan.
-- `kind` secara default menggunakan `skill`; gunakan `kind=plugin` untuk pemindaian plugin/paket.
-- Mengembalikan struktur ZIP yang sama seperti unduhan permintaan pemindaian.
+- Mengembalikan hasil pemindaian tersimpan untuk versi persis yang diajukan, termasuk versi yang diblokir atau disembunyikan.
+- `kind` secara default bernilai `skill`; gunakan `kind=plugin` untuk pemindaian plugin/paket.
+- Mengembalikan struktur ZIP yang sama dengan unduhan permintaan pemindaian.
 
 ### `POST /api/v1/skills/-/scan/batch`
 
-Rute pemindaian ulang batch kanonis khusus admin. Rute ini menerima struktur payload yang sama seperti `POST /api/v1/skills/-/rescan-batch` lama.
+Rute pemindaian ulang batch kanonis khusus admin. Rute ini menerima bentuk payload yang sama dengan `POST /api/v1/skills/-/rescan-batch` lama.
 
 ### `POST /api/v1/skills/-/scan/batch/status`
 
-Rute status batch kanonis khusus admin. Rute ini menerima `{ "jobIds": ["..."] }` dan mengembalikan penghitung agregat yang sama seperti `POST /api/v1/skills/-/rescan-batch/status` lama.
+Rute status batch kanonis khusus admin. Rute ini menerima `{ "jobIds": ["..."] }` dan mengembalikan penghitung agregat yang sama dengan `POST /api/v1/skills/-/rescan-batch/status` lama.
 
 ### `GET /api/v1/skills/{slug}/verify`
 
-Mengembalikan envelope verifikasi Kartu Skill yang digunakan oleh `clawhub skill verify`.
+Mengembalikan amplop verifikasi Kartu Skill yang digunakan oleh `clawhub skill verify`.
 
 Parameter kueri:
 
 - `version` (opsional): string versi tertentu.
-- `tag` (opsional): menyelesaikan versi bertag (misalnya `latest`).
+- `tag` (opsional): menguraikan versi bertag (misalnya `latest`).
 
 Catatan:
 
-- `ok` bernilai `true` hanya ketika versi yang dipilih memiliki Kartu Skill yang telah dihasilkan, tidak diblokir oleh moderasi karena malware, dan verifikasi ClawScan bersih.
-- Identitas skill, identitas penerbit, dan metadata versi yang dipilih merupakan bidang envelope tingkat atas (`slug`, `displayName`, `publisherHandle`, `version`, `resolvedFrom`, `tag`, `createdAt`) sehingga otomatisasi shell dapat membacanya tanpa membongkar wrapper bertingkat.
-- `security` adalah keputusan ClawScan/keamanan tingkat atas. Otomatisasi harus menggunakan `ok`, `decision`, `reasons`, dan `security.status` sebagai dasar.
-- `security.signals` berisi bukti pendukung dari pemindai seperti `staticScan`, `virusTotal`, dan `skillSpector`.
+- `ok` bernilai `true` hanya ketika versi yang dipilih memiliki Kartu Skill yang dihasilkan, tidak diblokir sebagai malware oleh moderasi, dan verifikasi ClawScan bersih.
+- Identitas skill, identitas penerbit, dan metadata versi yang dipilih adalah bidang amplop tingkat atas (`slug`, `displayName`, `publisherHandle`, `version`, `resolvedFrom`, `tag`, `createdAt`) sehingga otomatisasi shell dapat membacanya tanpa membongkar pembungkus bertingkat.
+- `security` adalah putusan ClawScan/keamanan tingkat atas. Otomatisasi harus berpatokan pada `ok`, `decision`, `reasons`, dan `security.status`.
+- `security.signals` berisi bukti pendukung pemindai seperti `staticScan`, `virusTotal`, dan `skillSpector`.
 - `security.signals.dependencyRegistry` dipertahankan untuk kompatibilitas respons v1, tetapi pemindai keberadaan registri dependensi telah dihentikan dan kunci ini selalu bernilai `null`.
-- `provenance` bernilai `server-resolved-github-import` hanya ketika ClawHub menyelesaikan dan menyimpan repo/ref/commit/path GitHub selama publikasi atau impor; jika tidak, nilainya adalah `unavailable`.
+- `provenance` bernilai `server-resolved-github-import` hanya ketika ClawHub menguraikan dan menyimpan repo/ref/commit/path GitHub selama publikasi atau impor; jika tidak, nilainya adalah `unavailable`.
 
 ### `POST /api/v1/skills/-/security-verdicts`
 
-Mengembalikan keputusan keamanan ringkas saat ini untuk versi skill yang persis. Endpoint
-koleksi ini ditujukan bagi klien yang telah mengetahui versi skill
-ClawHub terinstal yang perlu ditampilkan, seperti UI Kontrol OpenClaw.
+Mengembalikan putusan keamanan ringkas saat ini untuk versi skill tertentu. Endpoint
+koleksi ini ditujukan bagi klien yang sudah mengetahui versi skill ClawHub terinstal
+mana yang perlu ditampilkan, seperti UI Kontrol OpenClaw.
 
 Permintaan:
 
@@ -474,13 +474,13 @@ Permintaan:
 
 Catatan:
 
-- `items` harus berisi 1-100 pasangan `{ slug, version }` yang unik.
+- `items` harus berisi 1-100 pasangan `{ slug, version }` unik.
 - Hasil diberikan per item; satu skill atau versi yang tidak ditemukan tidak menggagalkan seluruh respons.
-- Respons hanya mencakup keamanan. Respons ini tidak menyertakan data Kartu Skill, status kartu yang dihasilkan, daftar file artefak, atau payload pemindai terperinci.
-- `security.signals` hanya berisi bukti pendukung tingkat status; gunakan `/scan` atau halaman audit keamanan ClawHub untuk detail pemindai lengkap.
+- Respons hanya berisi keamanan. Respons tidak menyertakan data Kartu Skill, status kartu yang dihasilkan, daftar berkas artefak, atau payload pemindai terperinci.
+- `security.signals` hanya berisi bukti pendukung tingkat status; gunakan `/scan` atau halaman audit keamanan ClawHub untuk detail lengkap pemindai.
 - `security.signals.dependencyRegistry` dipertahankan untuk kompatibilitas respons v1, tetapi pemindai keberadaan registri dependensi telah dihentikan dan kunci ini selalu bernilai `null`.
-- Ketiadaan Kartu Skill tidak memengaruhi `ok`, `decision`, atau `reasons` pada endpoint ini; klien harus membaca `skill-card.md` yang terinstal secara lokal saat memerlukan konten kartu.
-- Gunakan `/verify` saat memerlukan envelope verifikasi Kartu Skill untuk satu skill, `/card` saat memerlukan markdown kartu yang dihasilkan, dan `/scan` saat memerlukan data pemindai terperinci.
+- Ketiadaan Kartu Skill tidak memengaruhi `ok`, `decision`, atau `reasons` endpoint ini; klien harus membaca `skill-card.md` yang terinstal secara lokal ketika memerlukan konten kartu.
+- Gunakan `/verify` ketika memerlukan amplop verifikasi Kartu Skill untuk satu skill, `/card` ketika memerlukan markdown kartu yang dihasilkan, dan `/scan` ketika memerlukan data pemindai terperinci.
 
 Respons:
 
@@ -529,18 +529,22 @@ Respons:
 
 ### `GET /api/v1/skills/{slug}/file`
 
-Mengembalikan konten teks mentah.
+Mengembalikan byte berkas tersimpan yang persis sebagai unduhan. Tambahkan `preview=1` untuk meminta pratinjau
+teks ter-escape yang dibatasi; setiap berkas dengan byte UTF-8 yang valid dapat dipratinjau, terlepas dari ekstensi atau metadata
+MIME-nya.
 
 Parameter kueri:
 
 - `path` (wajib)
 - `version` (opsional)
 - `tag` (opsional)
+- `preview=1` (opsional; mengembalikan `text/plain` atau `415` ketika byte bukan UTF-8 yang valid)
 
 Catatan:
 
 - Secara default menggunakan versi terbaru.
-- Batas ukuran file: 200KB.
+- Batas unduhan mentah: 10MB.
+- Batas pratinjau teks: 200KB.
 
 ### `GET /api/v1/packages`
 
@@ -559,10 +563,10 @@ Parameter kueri:
 - `isOfficial` (opsional): `true` atau `false`
 - `sort` (opsional): `updated` (default), `recommended`, `trending`, `downloads`, alias lama `installs`
 - `category` (opsional): filter kategori plugin. Hanya didukung ketika
-  permintaan dibatasi ke paket plugin (`/api/v1/plugins`,
+  permintaan dibatasi pada paket plugin (`/api/v1/plugins`,
   `/api/v1/code-plugins`, `/api/v1/bundle-plugins`, atau endpoint paket dengan
-  `family=code-plugin`/`family=bundle-plugin`). Kategori yang dikontrol dan
-  alias filter v1 lama didokumentasikan pada `GET /api/v1/plugins`.
+  `family=code-plugin`/`family=bundle-plugin`). Kategori terkontrol dan
+  alias filter v1 lama didokumentasikan di bawah `GET /api/v1/plugins`.
 
 Catatan:
 
@@ -570,7 +574,7 @@ Catatan:
   `highlightedOnly`, atau `sort` mengembalikan `400`. Parameter kueri yang tidak dikenal diabaikan.
 - `GET /api/v1/code-plugins` dan `GET /api/v1/bundle-plugins` tetap menjadi alias keluarga tetap.
 - Entri skill tetap didukung oleh registri skill dan masih hanya dapat dipublikasikan melalui `POST /api/v1/skills`.
-- `POST /api/v1/packages` masih hanya digunakan untuk rilis plugin kode dan plugin bundel.
+- `POST /api/v1/packages` tetap hanya untuk rilis plugin kode dan plugin bundel.
 - Pemanggil anonim hanya dapat melihat kanal paket publik.
 - Pemanggil terautentikasi dapat melihat paket privat milik penerbit yang mereka ikuti dalam hasil daftar/pencarian.
 - `channel=private` hanya mengembalikan paket yang dapat dibaca oleh pemanggil terautentikasi.
@@ -586,21 +590,21 @@ Parameter kueri:
 - `family` (opsional): `skill`, `code-plugin`, atau `bundle-plugin`
 - `channel` (opsional): `official`, `community`, atau `private`
 - `isOfficial` (opsional): `true` atau `false`
-- `category` (opsional): filter kategori plugin. Hanya didukung jika
-  permintaan dibatasi ke paket plugin. Kategori terkontrol dan alias filter v1
-  lama didokumentasikan di bagian `GET /api/v1/plugins`.
+- `category` (opsional): filter kategori plugin. Hanya didukung ketika
+  permintaan dibatasi pada paket plugin. Kategori terkontrol dan alias filter
+  v1 lama didokumentasikan di bagian `GET /api/v1/plugins`.
 
 Catatan:
 
 - Nilai yang tidak valid untuk `family`, `channel`, `isOfficial`, `featured`, atau
   `highlightedOnly` mengembalikan `400`. Parameter kueri yang tidak dikenal diabaikan.
-- Pemanggil anonim hanya melihat kanal paket publik.
-- Pemanggil terautentikasi dapat mencari paket privat milik penerbit tempat mereka tergabung.
-- `channel=private` hanya mengembalikan paket yang dapat dibaca oleh pemanggil terautentikasi.
+- Pemanggil anonim hanya dapat melihat saluran paket publik.
+- Pemanggil yang terautentikasi dapat mencari paket privat milik penerbit yang mereka ikuti.
+- `channel=private` hanya mengembalikan paket yang dapat dibaca oleh pemanggil yang terautentikasi.
 
 ### `GET /api/v1/plugins`
 
-Penelusuran katalog khusus plugin di seluruh paket plugin kode dan plugin bundel.
+Penelusuran katalog khusus plugin pada paket code-plugin dan bundle-plugin.
 
 Parameter kueri:
 
@@ -619,10 +623,10 @@ Alias filter v1 lama tetap diterima pada endpoint baca:
 - `dev-tools` diubah menjadi `runtime`.
 
 `trending` adalah papan peringkat instalasi/unduhan tujuh hari dan tidak menggunakan total sepanjang waktu.
-Pada endpoint terpadu `/api/v1/packages`, fitur ini hanya untuk plugin; gunakan
+Pada endpoint terpadu `/api/v1/packages`, ini hanya berlaku untuk plugin; gunakan
 `/api/v1/skills?sort=trending` untuk katalog skill.
 
-Alias lama tidak diterima sebagai nilai kategori yang disimpan atau dideklarasikan oleh penulis.
+Alias lama tidak diterima sebagai nilai kategori yang disimpan atau dideklarasikan oleh pembuat.
 
 ### `GET /api/v1/skills/export`
 
@@ -643,14 +647,14 @@ Respons:
 
 - Isi: arsip ZIP.
 - Setiap skill yang diekspor berakar di `{publisher}/{slug}/`.
-- Skill yang dihosting menyertakan berkas versi tersimpan terbaru dan dicantumkan dalam
+- Skill yang dihosting menyertakan berkas versi tersimpan terbaru dan tercantum di
   `_manifest.json` dengan `sourceRef: "public-clawhub"`.
 - Skill berbasis GitHub saat ini dengan pemindaian `clean` atau `suspicious` menyertakan
   `_source_handoff.json` dengan `sourceRef: "public-github"`, repositori, commit, path,
   hash konten, dan URL arsip. Skill tersebut tidak menyertakan berkas sumber yang dihosting ClawHub.
 - Setiap skill menyertakan `_export_skill_meta.json`.
 - `_manifest.json` selalu disertakan di root ZIP.
-- `_errors.json` disertakan jika skill atau berkas individual tidak dapat
+- `_errors.json` disertakan ketika skill atau berkas individual tidak dapat
   diekspor.
 
 Header:
@@ -675,7 +679,7 @@ Parameter kueri:
 - `endDate` (wajib): batas atas milidetik Unix untuk `updatedAt` plugin.
 - `limit` (opsional): bilangan bulat (1-250), default `250`.
 - `cursor` (opsional): kursor paginasi dari respons sebelumnya.
-- `family` (opsional): `code-plugin` atau `bundle-plugin`. Jika dihilangkan, berarti kedua
+- `family` (opsional): `code-plugin` atau `bundle-plugin`. Jika dihilangkan, artinya kedua
   keluarga plugin.
 
 Respons:
@@ -686,7 +690,7 @@ Respons:
 - Metadata ekspor per plugin disimpan di
   `__clawhub_export/{family}/{packageName}/plugin_meta.json`.
 - `_manifest.json` selalu disertakan di root ZIP.
-- `_errors.json` disertakan jika plugin atau berkas individual tidak dapat
+- `_errors.json` disertakan ketika plugin atau berkas individual tidak dapat
   diekspor.
 
 Header:
@@ -699,7 +703,7 @@ Header:
 
 ### `GET /api/v1/plugins/search`
 
-Pencarian khusus plugin di seluruh paket plugin kode dan plugin bundel.
+Pencarian khusus plugin pada paket code-plugin dan bundle-plugin.
 
 Parameter kueri:
 
@@ -714,10 +718,10 @@ Catatan:
 
 - Alias filter v1 lama yang didokumentasikan di bagian `GET /api/v1/plugins` juga
   diterima.
-- Pemfilteran kategori adalah filter API nyata yang didukung oleh baris digest kategori plugin,
-  bukan penulisan ulang kueri pencarian.
-- Hasil dikembalikan dalam urutan relevansi dan saat ini tidak menggunakan paginasi.
-- Kontrol pengurutan UI browser untuk pencarian plugin mengurutkan ulang hasil relevansi yang telah dimuat,
+- Pemfilteran kategori merupakan filter API nyata yang didukung oleh baris digest kategori
+  plugin, bukan penulisan ulang kueri pencarian.
+- Hasil dikembalikan menurut urutan relevansi dan saat ini tidak dipaginasi.
+- Kontrol pengurutan UI browser untuk pencarian plugin mengurutkan ulang hasil relevansi yang dimuat,
   sesuai dengan perilaku penelusuran `/skills` saat ini.
 
 ### `GET /api/v1/packages/{name}`
@@ -731,11 +735,11 @@ Catatan:
 
 ### `DELETE /api/v1/packages/{name}`
 
-Menghapus secara lunak sebuah paket dan semua rilisnya.
+Menghapus sementara paket dan semua rilis.
 
 Catatan:
 
-- Memerlukan token API untuk pemilik paket, pemilik/admin penerbit organisasi,
+- Memerlukan token API untuk pemilik paket, pemilik/admin organisasi penerbit,
   moderator platform, atau admin platform.
 
 ### `GET /api/v1/packages/{name}/versions`
@@ -760,20 +764,20 @@ Catatan:
 
 - `version.artifact.kind` adalah `legacy-zip` untuk arsip paket model lama atau
   `npm-pack` untuk rilis berbasis ClawPack.
-- Rilis ClawPack menyertakan bidang `npmIntegrity`, `npmShasum`, dan
+- Rilis ClawPack menyertakan kolom `npmIntegrity`, `npmShasum`, dan
   `npmTarballName` yang kompatibel dengan npm.
-- `version.sha256hash` adalah metadata kompatibilitas yang tidak digunakan lagi untuk klien lama. Nilai ini
+- `version.sha256hash` adalah metadata kompatibilitas yang tidak digunakan lagi untuk klien lama. Metadata ini
   membuat hash dari byte ZIP persis yang dikembalikan oleh `/api/v1/packages/{name}/download`.
-  Klien modern harus menggunakan `version.artifact.sha256`, yang mengidentifikasi
+  Klien modern sebaiknya menggunakan `version.artifact.sha256`, yang mengidentifikasi
   artefak rilis kanonis.
 - `version.vtAnalysis`, `version.llmAnalysis`, dan `version.staticScan`
-  disertakan jika data pemindaian tersedia.
+  disertakan ketika data pemindaian tersedia.
 - Paket privat mengembalikan `404` kecuali pemanggil dapat membaca penerbit pemiliknya.
 
 ### `GET /api/v1/packages/{name}/versions/{version}/security`
 
-Mengembalikan ringkasan keamanan dan kepercayaan rilis paket yang tepat untuk klien
-instalasi. Ini adalah permukaan konsumsi publik OpenClaw untuk memutuskan apakah
+Mengembalikan ringkasan keamanan dan kepercayaan artefak yang tepat untuk rilis paket bagi
+klien instalasi. Ini adalah permukaan konsumsi OpenClaw publik untuk menentukan apakah
 rilis yang diresolusikan dapat diinstal.
 
 Autentikasi:
@@ -811,7 +815,7 @@ Respons:
 }
 ```
 
-Bidang respons:
+Kolom respons:
 
 - `package.name`, `package.displayName`, dan `package.family` mengidentifikasi
   paket registry yang diresolusikan.
@@ -822,26 +826,26 @@ Bidang respons:
   artefak rilis.
 - `trust.scanStatus` adalah status kepercayaan efektif yang berasal dari masukan pemindai
   dan moderasi rilis manual.
-- `trust.moderationState` dapat bernilai null. Nilainya adalah `null` jika tidak ada moderasi rilis
-  manual.
+- `trust.moderationState` dapat bernilai null. Nilainya adalah `null` jika tidak ada moderasi
+  rilis manual.
 - `trust.blockedFromDownload` adalah sinyal pemblokiran instalasi. OpenClaw dan klien
   instalasi lainnya harus memblokir instalasi ketika nilai ini adalah `true`, alih-alih
-  menurunkan ulang aturan pemblokiran dari bidang pemindai atau moderasi.
+  menurunkan ulang aturan pemblokiran dari kolom pemindai atau moderasi.
 - `trust.reasons` adalah daftar penjelasan untuk pengguna dan audit. Kode alasan
-  adalah string ringkas dan stabil seperti `manual:quarantined`, `scan:malicious`,
+  berupa string ringkas dan stabil seperti `manual:quarantined`, `scan:malicious`,
   dan `package:malicious`.
 - `trust.pending` berarti satu atau beberapa masukan kepercayaan masih menunggu penyelesaian.
-- `trust.stale` berarti ringkasan kepercayaan dihitung dari masukan usang dan
-  harus dianggap memerlukan penyegaran sebelum keputusan mengizinkan dengan keyakinan tinggi.
+- `trust.stale` berarti ringkasan kepercayaan dihitung dari masukan yang sudah usang dan
+  harus diperlakukan sebagai memerlukan penyegaran sebelum keputusan mengizinkan dengan keyakinan tinggi.
 
 Catatan:
 
-- Endpoint ini tepat untuk versi tertentu. Klien harus memanggilnya setelah meresolusikan
+- Endpoint ini spesifik untuk versi yang tepat. Klien sebaiknya memanggilnya setelah meresolusikan
   versi paket yang hendak diinstal, bukan hanya setelah membaca metadata paket
   terbaru.
 - Paket privat mengembalikan `404` kecuali pemanggil dapat membaca penerbit pemiliknya.
-- Endpoint ini sengaja lebih terbatas daripada endpoint moderasi pemilik/moderator.
-  Endpoint ini mengekspos keputusan instalasi dan penjelasan publik, bukan
+- Endpoint ini sengaja lebih sempit daripada endpoint moderasi
+  pemilik/moderator. Endpoint ini mengekspos keputusan instalasi dan penjelasan publik, bukan
   identitas pelapor, isi laporan, bukti privat, atau linimasa peninjauan
   internal.
 
@@ -851,9 +855,9 @@ Mengembalikan metadata resolver artefak eksplisit untuk suatu versi paket.
 
 Catatan:
 
-- Versi paket lama mengembalikan artefak `legacy-zip` dan ZIP lama
-  `downloadUrl`.
-- Versi ClawPack mengembalikan artefak `npm-pack`, bidang integritas npm,
+- Versi paket lama mengembalikan artefak `legacy-zip` dan
+  `downloadUrl` ZIP lama.
+- Versi ClawPack mengembalikan artefak `npm-pack`, kolom integritas npm,
   `tarballUrl`, dan URL kompatibilitas ZIP lama.
 - Ini adalah permukaan resolver OpenClaw; permukaan ini menghindari penerkaan format arsip dari
   URL bersama.
@@ -865,12 +869,12 @@ Mengunduh artefak versi melalui jalur resolver eksplisit.
 Catatan:
 
 - Versi ClawPack mengalirkan byte npm-pack `.tgz` yang diunggah secara persis.
-- Versi ZIP lama dialihkan ke `/api/v1/packages/{name}/download?version=`.
+- Versi ZIP lama mengalihkan ke `/api/v1/packages/{name}/download?version=`.
 - Menggunakan bucket batas laju unduhan.
 
 ### `GET /api/v1/packages/{name}/readiness`
 
-Mengembalikan kesiapan yang dihitung untuk penggunaan OpenClaw di masa mendatang.
+Mengembalikan kesiapan yang dihitung untuk konsumsi OpenClaw di masa mendatang.
 
 Pemeriksaan kesiapan mencakup:
 
@@ -878,7 +882,7 @@ Pemeriksaan kesiapan mencakup:
 - ketersediaan versi terbaru
 - ketersediaan artefak npm-pack ClawPack
 - digest artefak
-- asal repositori sumber dan commit
+- asal-usul repositori sumber dan commit
 - metadata kompatibilitas OpenClaw
 - target host
 - status pemindaian
@@ -909,7 +913,7 @@ Respons:
 
 ### `GET /api/v1/packages/migrations`
 
-Endpoint moderator untuk mencantumkan baris migrasi plugin resmi OpenClaw.
+Endpoint moderator untuk mencantumkan baris migrasi Plugin OpenClaw resmi.
 
 Autentikasi:
 
@@ -955,7 +959,7 @@ Respons:
 
 ### `POST /api/v1/packages/migrations`
 
-Endpoint admin untuk membuat atau memperbarui baris migrasi plugin resmi.
+Endpoint admin untuk membuat atau memperbarui baris migrasi Plugin resmi.
 
 Autentikasi:
 
@@ -984,14 +988,14 @@ Isi permintaan:
 Catatan:
 
 - `bundledPluginId` dinormalisasi menjadi huruf kecil dan merupakan kunci upsert yang stabil.
-- `packageName` dinormalisasi sebagai nama npm; paket boleh tidak tersedia untuk migrasi
+- `packageName` dinormalisasi sebagai nama npm; paket boleh belum tersedia untuk migrasi
   yang direncanakan.
 - Ini hanya melacak kesiapan migrasi. Ini tidak mengubah OpenClaw atau menghasilkan
   ClawPack.
 
 ### `GET /api/v1/packages/moderation/queue`
 
-Endpoint moderator/admin untuk antrean peninjauan rilis paket.
+Endpoint moderator/admin untuk antrean review rilis paket.
 
 Autentikasi:
 
@@ -1005,10 +1009,10 @@ Parameter kueri:
 
 Arti status:
 
-- `open`: rilis yang mencurigakan, berbahaya, tertunda, dikarantina, dicabut, atau dilaporkan.
+- `open`: rilis mencurigakan, berbahaya, tertunda, dikarantina, dicabut, atau dilaporkan.
 - `blocked`: rilis yang dikarantina, dicabut, atau berbahaya.
-- `manual`: rilis apa pun dengan penggantian manual oleh moderasi.
-- `all`: rilis apa pun dengan penggantian manual, status pemindaian yang tidak bersih, atau laporan paket.
+- `manual`: setiap rilis dengan penggantian moderasi manual.
+- `all`: setiap rilis dengan penggantian manual, status pemindaian yang tidak bersih, atau laporan paket.
 
 Respons:
 
@@ -1028,7 +1032,7 @@ Respons:
       "artifactKind": "npm-pack",
       "scanStatus": "malicious",
       "moderationState": "quarantined",
-      "moderationReason": "peninjauan manual",
+      "moderationReason": "review manual",
       "sourceRepo": "openclaw/example-plugin",
       "sourceCommit": "abc123",
       "reportCount": 2,
@@ -1043,7 +1047,7 @@ Respons:
 
 ### `POST /api/v1/packages/{name}/report`
 
-Laporkan paket untuk ditinjau moderator. Laporan berlaku pada tingkat paket dan secara opsional
+Laporkan paket untuk review moderator. Laporan berlaku pada tingkat paket dan secara opsional
 ditautkan ke suatu versi. Laporan masuk ke antrean moderasi, tetapi tidak secara otomatis menyembunyikan atau
 memblokir unduhan; moderator harus menggunakan moderasi rilis untuk
 menyetujui, mengarantina, atau mencabut artefak.
@@ -1055,7 +1059,7 @@ Autentikasi:
 Permintaan:
 
 ```json
-{ "reason": "Biner native yang mencurigakan", "version": "1.2.3" }
+{ "reason": "Biner native mencurigakan", "version": "1.2.3" }
 ```
 
 Respons:
@@ -1098,7 +1102,7 @@ Respons:
       "displayName": "Plugin Contoh",
       "family": "code-plugin",
       "version": "1.2.3",
-      "reason": "Biner native yang mencurigakan",
+      "reason": "Biner native mencurigakan",
       "status": "open",
       "createdAt": 1730000000000,
       "reporter": {
@@ -1146,7 +1150,7 @@ Respons:
     "artifactKind": "npm-pack",
     "scanStatus": "malicious",
     "moderationState": "quarantined",
-    "moderationReason": "peninjauan manual",
+    "moderationReason": "review manual",
     "blockedFromDownload": true,
     "reasons": ["manual:quarantined", "scan:malicious", "reports:2"],
     "createdAt": 1730000000000
@@ -1163,14 +1167,14 @@ Permintaan:
 ```json
 {
   "status": "confirmed",
-  "note": "Rilis yang terdampak telah ditinjau dan dikarantina.",
+  "note": "Telah direview dan rilis yang terdampak dikarantina.",
   "finalAction": "quarantine"
 }
 ```
 
-`note` wajib untuk `confirmed` dan `dismissed`; ini boleh dihilangkan saat
+`note` diperlukan untuk `confirmed` dan `dismissed`; ini dapat dihilangkan saat
 mengatur `status` kembali ke `open`. Berikan `finalAction: "quarantine"` atau
-`finalAction: "revoke"` bersama laporan yang dikonfirmasi untuk menerapkan moderasi rilis dalam
+`finalAction: "revoke"` bersama laporan yang telah dikonfirmasi untuk menerapkan moderasi rilis dalam
 alur kerja yang sama dan dapat diaudit.
 
 Respons:
@@ -1187,17 +1191,17 @@ Respons:
 
 ### `POST /api/v1/packages/{name}/versions/{version}/moderation`
 
-Endpoint moderator/admin untuk peninjauan rilis paket.
+Endpoint moderator/admin untuk review rilis paket.
 
 Permintaan:
 
 ```json
-{ "state": "quarantined", "reason": "Payload native yang mencurigakan." }
+{ "state": "quarantined", "reason": "Payload native mencurigakan." }
 ```
 
 Status yang didukung:
 
-- `approved`: ditinjau secara manual dan diizinkan.
+- `approved`: direview secara manual dan diizinkan.
 - `quarantined`: diblokir sambil menunggu tindak lanjut.
 - `revoked`: diblokir setelah rilis sebelumnya dipercaya.
 
@@ -1206,21 +1210,23 @@ Setiap perubahan menulis entri log audit.
 
 ### `GET /api/v1/packages/{name}/file`
 
-Mengembalikan konten teks mentah untuk berkas paket.
+Mengembalikan byte berkas paket yang tersimpan secara persis sebagai unduhan. Tambahkan `preview=1` untuk meminta pratinjau
+teks UTF-8 terbatas yang sama seperti yang digunakan untuk berkas skill.
 
 Parameter kueri:
 
 - `path` (wajib)
 - `version` (opsional)
 - `tag` (opsional)
+- `preview=1` (opsional; mengembalikan `text/plain` atau `415` jika byte bukan UTF-8 yang valid)
 
 Catatan:
 
 - Secara bawaan menggunakan rilis terbaru.
 - Menggunakan bucket batas laju baca, bukan bucket unduhan.
-- Berkas biner mengembalikan `415`.
-- Batas ukuran berkas: 200KB.
-- Pemindaian VirusTotal yang tertunda tidak memblokir pembacaan; rilis berbahaya mungkin tetap ditahan di tempat lain.
+- Batas unduhan mentah: 10MB.
+- Batas pratinjau teks: 200KB; berkas opak mengembalikan `415` hanya untuk permintaan pratinjau.
+- Pemindaian VirusTotal yang tertunda tidak memblokir pembacaan; rilis berbahaya mungkin masih ditahan di tempat lain.
 - Paket privat mengembalikan `404` kecuali pemanggil dapat membaca penerbit pemiliknya.
 
 ### `GET /api/v1/packages/{name}/download`
@@ -1235,10 +1241,10 @@ Parameter kueri:
 Catatan:
 
 - Secara bawaan menggunakan rilis terbaru.
-- Skills dialihkan ke `GET /api/v1/download`.
-- Arsip plugin/paket adalah berkas zip dengan root `package/` agar klien OpenClaw
+- Skills mengalihkan ke `GET /api/v1/download`.
+- Arsip Plugin/paket adalah berkas zip dengan root `package/` agar klien OpenClaw
   lama tetap berfungsi.
-- Rute ini tetap khusus ZIP. Rute ini tidak mengalirkan berkas ClawPack `.tgz`.
+- Rute ini tetap hanya mendukung ZIP. Rute ini tidak mengalirkan berkas ClawPack `.tgz`.
 - Respons menyertakan header `ETag`, `Digest`, `X-ClawHub-Artifact-Type`, dan
   `X-ClawHub-Artifact-Sha256` untuk pemeriksaan integritas resolver.
 - Metadata khusus registri tidak disisipkan ke dalam arsip yang diunduh.
@@ -1247,15 +1253,15 @@ Catatan:
 
 ### `GET /api/npm/{package}`
 
-Mengembalikan packument yang kompatibel dengan npm untuk versi paket yang didukung ClawPack.
+Mengembalikan packument yang kompatibel dengan npm untuk versi paket berbasis ClawPack.
 
 Catatan:
 
 - Hanya versi dengan tarball npm-pack ClawPack yang telah diunggah yang dicantumkan.
 - Versi yang hanya tersedia sebagai ZIP lama sengaja dihilangkan.
-- `dist.tarball`, `dist.integrity`, dan `dist.shasum` menggunakan field yang kompatibel dengan
-  npm sehingga pengguna dapat mengarahkan npm ke mirror jika diinginkan.
-- Packument paket bercakupan mendukung `/api/npm/@scope/name` dan jalur permintaan
+- `dist.tarball`, `dist.integrity`, dan `dist.shasum` menggunakan bidang yang kompatibel dengan npm
+  sehingga pengguna dapat mengarahkan npm ke mirror jika diinginkan.
+- Packument paket berscope mendukung jalur permintaan `/api/npm/@scope/name` dan
   `/api/npm/@scope%2Fname` yang dienkode oleh npm.
 
 ### `GET /api/npm/{package}/-/{tarball}.tgz`
@@ -1270,7 +1276,7 @@ Catatan:
 
 ### `GET /api/v1/resolve`
 
-Digunakan oleh CLI untuk memetakan sidik jari lokal ke versi yang dikenal.
+Digunakan oleh CLI untuk memetakan sidik jari lokal ke versi yang diketahui.
 
 Parameter kueri:
 
@@ -1285,9 +1291,9 @@ Respons:
 
 ### `GET /api/v1/download`
 
-Mengunduh ZIP versi skill yang di-host, atau mengembalikan penyerahan sumber GitHub untuk
+Mengunduh ZIP versi skill yang dihosting, atau mengembalikan serah-terima sumber GitHub untuk
 skill berbasis GitHub saat ini dengan pemindaian `clean` atau `suspicious` dan tanpa versi
-yang di-host.
+yang dihosting.
 
 Parameter kueri:
 
@@ -1297,13 +1303,13 @@ Parameter kueri:
 
 Catatan:
 
-- Jika `version` maupun `tag` tidak diberikan, versi terbaru akan digunakan.
+- Jika `version` maupun `tag` tidak diberikan, versi terbaru digunakan.
 - Versi yang dihapus secara lunak mengembalikan `410`.
-- Serah terima skill yang didukung GitHub tidak memproksikan atau mencerminkan byte. Respons JSON
+- Serah-terima skill berbasis GitHub tidak memproksi atau mencerminkan byte. Respons JSON
   mencakup `sourceRef: "public-github"`, `repo`, `commit`, `path`, `contentHash`,
-  dan `archiveUrl`; status pemindaian/saat ini merupakan gerbang dan tidak disertakan sebagai metadata
+  dan `archiveUrl`; status pemindaian/terkini berfungsi sebagai gerbang dan tidak disertakan sebagai metadata
   payload keberhasilan.
-- Statistik unduhan dihitung sebagai identitas unik per hari UTC (`userId` jika token API valid, jika tidak, IP).
+- Statistik unduhan dihitung sebagai identitas unik per hari UTC (`userId` saat token API valid, jika tidak, IP).
 
 ## Endpoint autentikasi (token Bearer)
 
@@ -1323,11 +1329,11 @@ Menerbitkan versi baru.
 
 - Disarankan: `multipart/form-data` dengan JSON `payload` + blob `files[]`.
 - Isi JSON dengan `files` (berbasis storageId) juga diterima.
-- Kolom payload opsional: `ownerHandle`. Jika ada, API menyelesaikan
+- Kolom payload opsional: `ownerHandle`. Jika ada, API menentukan
   penerbit tersebut di sisi server dan mengharuskan pelaku memiliki akses penerbit.
-- Kolom payload opsional: `migrateOwner`. Ketika `true` dengan `ownerHandle`, sebuah
-  skill yang ada dapat dipindahkan ke pemilik tersebut jika pelaku adalah admin/pemilik pada
-  penerbit saat ini dan penerbit target. Tanpa pilihan eksplisit ini, perubahan pemilik akan
+- Kolom payload opsional: `migrateOwner`. Jika `true` dengan `ownerHandle`, sebuah
+  skill yang sudah ada dapat dipindahkan ke pemilik tersebut jika pelaku adalah admin/pemilik pada penerbit
+  saat ini dan penerbit target. Tanpa persetujuan eksplisit ini, perubahan pemilik
   ditolak.
 
 ### `POST /api/v1/packages`
@@ -1337,12 +1343,12 @@ Menerbitkan rilis plugin kode atau plugin bundel.
 - Memerlukan autentikasi token Bearer.
 - Memerlukan `multipart/form-data`.
 - Kolom formulir yang diizinkan adalah `payload`, blob `files` berulang, atau satu referensi tarball `clawpack`.
-  `clawpack` dapat berupa blob `.tgz` atau ID penyimpanan yang dikembalikan oleh
-  alur URL unggahan. Penerbitan ID penyimpanan bertahap juga harus menyertakan
+  `clawpack` dapat berupa blob `.tgz` atau id penyimpanan yang dikembalikan oleh
+  alur URL unggahan. Penerbitan id penyimpanan bertahap juga harus menyertakan
   `clawpackUploadTicket` yang dikembalikan bersama URL unggahan tersebut.
 - Gunakan `files` atau `clawpack`, jangan pernah keduanya dalam permintaan yang sama.
 - Isi JSON dan metadata `payload.files` / `payload.artifact` yang diberikan pemanggil
-  akan ditolak.
+  ditolak.
 - Permintaan penerbitan multipart langsung dibatasi hingga 18MB. Tarball ClawPack dapat
   menggunakan alur URL unggahan hingga batas tarball 120MB.
 - Kolom payload opsional: `ownerHandle`. Jika ada, hanya admin yang dapat menerbitkan atas nama pemilik tersebut.
@@ -1355,10 +1361,10 @@ Sorotan validasi:
 - Plugin kode memerlukan `package.json`, metadata repositori sumber, metadata commit
   sumber, metadata skema konfigurasi, `openclaw.compat.pluginApi`, dan
   `openclaw.build.openclawVersion`.
-- `openclaw.hostTargets` dan `openclaw.environment` adalah metadata opsional.
-- Hanya penerbit organisasi `openclaw` dan penerbit pribadi milik anggota organisasi `openclaw` saat ini
-  yang dapat menerbitkan ke saluran `official`.
-- Penerbitan atas nama pihak lain tetap memvalidasi kelayakan saluran resmi terhadap akun pemilik target.
+- `openclaw.hostTargets` dan `openclaw.environment` merupakan metadata opsional.
+- Hanya penerbit organisasi `openclaw` dan penerbit pribadi milik anggota organisasi `openclaw`
+  saat ini yang dapat menerbitkan ke kanal `official`.
+- Penerbitan atas nama pihak lain tetap memvalidasi kelayakan kanal resmi terhadap akun pemilik target.
 
 ### `DELETE /api/v1/skills/{slug}` / `POST /api/v1/skills/{slug}/undelete`
 
@@ -1367,12 +1373,12 @@ Menghapus secara lunak / memulihkan skill (pemilik, moderator, atau admin).
 Isi JSON opsional:
 
 ```json
-{ "reason": "Ditahan untuk moderasi sambil menunggu tinjauan hukum." }
+{ "reason": "Ditahan untuk moderasi sambil menunggu peninjauan hukum." }
 ```
 
 Jika ada, `reason` disimpan sebagai catatan moderasi skill dan disalin ke log audit.
-Penghapusan lunak yang dimulai oleh pemilik mencadangkan slug selama 30 hari, setelah itu slug dapat diklaim oleh
-penerbit lain. Respons penghapusan mencakup `slugReservedUntil` jika masa berlaku ini diterapkan.
+Penghapusan lunak yang dimulai oleh pemilik mencadangkan slug selama 30 hari, kemudian slug dapat diklaim oleh
+penerbit lain. Respons penghapusan menyertakan `slugReservedUntil` saat masa berlaku ini diterapkan.
 Penyembunyian oleh moderator/admin dan penghapusan keamanan tidak kedaluwarsa dengan cara ini.
 
 Respons penghapusan:
@@ -1391,8 +1397,8 @@ Kode status:
 
 ### `POST /api/v1/users/publisher`
 
-Khusus admin. Memastikan penerbit organisasi tersedia untuk sebuah handle. Jika handle masih menunjuk ke
-penerbit pengguna/pribadi bersama lama, endpoint terlebih dahulu memigrasikannya menjadi penerbit organisasi.
+Khusus admin. Memastikan penerbit organisasi tersedia untuk suatu handle. Jika handle masih menunjuk ke
+pengguna bersama/penerbit pribadi lama, endpoint terlebih dahulu memigrasikannya menjadi penerbit organisasi.
 Untuk organisasi yang baru dibuat, berikan `memberHandle`; admin yang bertindak tidak ditambahkan sebagai anggota.
 Nilai default `memberRole` adalah `owner`.
 
@@ -1401,9 +1407,9 @@ Nilai default `memberRole` adalah `owner`.
 
 ### `POST /api/v1/publishers`
 
-Pembuatan penerbit organisasi secara mandiri dengan autentikasi. Membuat penerbit organisasi baru dan menambahkan
-pemanggil sebagai pemilik. Endpoint ini tidak memigrasikan handle pengguna/pribadi yang ada dan tidak
-menandai penerbit sebagai tepercaya/resmi.
+Pembuatan penerbit organisasi mandiri dengan autentikasi. Membuat penerbit organisasi baru dan menambahkan
+pemanggil sebagai pemilik. Endpoint ini tidak memigrasikan handle pengguna/pribadi yang sudah ada dan
+tidak menandai penerbit sebagai tepercaya/resmi.
 
 - Isi: `{ "handle": "opik", "displayName": "Opik" }`
 - Respons: `{ "ok": true, "publisherId": "...", "handle": "opik", "created": true, "trusted": false }`
@@ -1411,7 +1417,7 @@ menandai penerbit sebagai tepercaya/resmi.
 
 ### `POST /api/v1/users/reserve`
 
-Khusus admin. Mencadangkan slug root dan nama paket bagi pemilik yang berhak tanpa menerbitkan
+Khusus admin. Mencadangkan slug akar dan nama paket bagi pemilik yang sah tanpa menerbitkan
 rilis. Nama paket menjadi paket placeholder privat tanpa baris rilis, sehingga pemilik yang sama
 nantinya dapat menerbitkan rilis plugin kode atau plugin bundel yang sebenarnya dengan nama tersebut.
 
@@ -1421,20 +1427,20 @@ nantinya dapat menerbitkan rilis plugin kode atau plugin bundel yang sebenarnya 
 ### `POST /api/v1/users/publisher-recovery`
 
 Khusus admin. Memulihkan penerbit pribadi untuk prinsipal OAuth GitHub pengganti yang telah diverifikasi
-tanpa mengedit baris akun Convex Auth. Permintaan harus menyebutkan kedua ID akun penyedia GitHub
+tanpa mengedit baris akun Convex Auth. Permintaan harus menyebutkan kedua id akun penyedia GitHub
 yang tidak dapat diubah; handle yang dapat diubah hanya digunakan sebagai pengaman bagi operator.
 
-Secara default, endpoint menjalankan simulasi. Penerapan pemulihan memerlukan `dryRun: false` dan
-`confirmIdentityVerified: true` setelah staf memverifikasi secara independen kesinambungan antara kedua
-prinsipal GitHub. Pemulihan akan gagal secara tertutup jika penerbit pribadi pengguna tujuan saat ini
+Secara default, endpoint melakukan uji coba. Penerapan pemulihan memerlukan `dryRun: false` dan
+`confirmIdentityVerified: true` setelah staf secara independen memverifikasi kesinambungan antara kedua
+prinsipal GitHub. Pemulihan gagal secara tertutup jika penerbit pribadi pengguna tujuan saat ini
 memiliki skill, paket, atau sumber skill GitHub.
 Pemulihan juga memigrasikan kolom `ownerUserId` lama untuk skill milik penerbit yang dipulihkan,
 alias slug skill, paket, peringatan pemeriksa paket, dan baris digest pencarian turunan agar
-jalur pemilik langsung sesuai dengan otoritas penerbit baru. Pencadangan handle terlindungi yang aktif
-untuk handle yang dipulihkan juga dialihkan kepada pengguna pengganti agar sinkronisasi profil berikutnya
-tidak dapat memulihkan otoritas pesaing milik pengguna sebelumnya. Setiap tabel utama dibatasi hingga
+jalur pemilik langsung sesuai dengan otoritas penerbit baru. Reservasi handle terlindungi yang aktif
+untuk handle yang dipulihkan juga dialihkan kepada pengguna pengganti agar sinkronisasi profil
+berikutnya tidak dapat memulihkan otoritas pesaing milik pengguna sebelumnya. Setiap tabel utama dibatasi hingga
 100 baris per transaksi penerapan; pemulihan yang lebih besar harus terlebih dahulu menggunakan migrasi pemilik yang dapat dilanjutkan.
-Sumber skill GitHub memiliki cakupan penerbit dan dilaporkan sebagai telah diperiksa, bukan ditulis ulang.
+Sumber skill GitHub memiliki cakupan per penerbit dan dilaporkan sebagai telah diperiksa, bukan ditulis ulang.
 
 - Isi: `{ "handle": "gingiris", "nextUserHandle": "gingiris-1031", "previousGitHubProviderAccountId": "123", "nextGitHubProviderAccountId": "456", "reason": "Verified account continuity for issue #2555", "confirmIdentityVerified": true, "dryRun": false }`
 - Respons: `{ "ok": true, "dryRun": false, "recovered": true, "publisherId": "...", "handle": "gingiris", "previousUser": { "userId": "...", "handle": "gingiris", "nextHandle": "gingiris-recovered", "githubProviderAccountId": "123", "authAccountCount": 1 }, "nextUser": { "userId": "...", "handle": "gingiris-1031", "nextHandle": "gingiris", "githubProviderAccountId": "456", "authAccountCount": 1 }, "retiredPersonalPublisher": null, "resourceOwnerMigration": { "limitPerTable": 100, "skills": 1, "skillSlugAliases": 1, "packages": 0, "packageInspectorWarnings": 0, "githubSourcesChecked": 1, "handleReservations": 1 }, "identityVerified": true, "reason": "Verified account continuity for issue #2555" }`
@@ -1450,11 +1456,11 @@ Sumber skill GitHub memiliki cakupan penerbit dan dilaporkan sebagai telah diper
 
 Catatan:
 
-- Kedua endpoint memerlukan autentikasi token API dan hanya berfungsi untuk pemilik skill.
+- Kedua endpoint memerlukan autentikasi token API dan hanya berfungsi bagi pemilik skill.
 - `rename` mempertahankan slug sebelumnya sebagai alias pengalihan.
 - `merge` menyembunyikan daftar sumber dan mengalihkan slug sumber ke daftar target.
 
-### Endpoint transfer kepemilikan
+### Endpoint pengalihan kepemilikan
 
 - `POST /api/v1/skills/{slug}/transfer`
   - Isi: `{ "toUserHandle": "target_handle", "message": "optional" }`
@@ -1513,8 +1519,8 @@ Respons:
 
 ### `POST /api/v1/users/reclassify-ban`
 
-Mengubah alasan tersimpan untuk pemblokiran yang ada tanpa membatalkan pemblokiran atau memulihkan
-konten (khusus admin). Secara default menjalankan simulasi kecuali `dryRun` adalah `false`.
+Mengubah alasan yang tersimpan untuk pemblokiran yang sudah ada tanpa membatalkan pemblokiran atau memulihkan
+konten (khusus admin). Secara default melakukan uji coba kecuali `dryRun` bernilai `false`.
 
 Isi:
 
@@ -1536,7 +1542,7 @@ Respons:
   "dryRun": false,
   "userId": "users_...",
   "handle": "user_handle",
-  "previousReason": "pemblokiran otomatis karena malware",
+  "previousReason": "pemblokiran otomatis malware",
   "nextReason": "spam penerbitan massal",
   "changed": true
 }
@@ -1566,7 +1572,7 @@ Respons:
 
 ### `GET /api/v1/users`
 
-Menampilkan daftar atau mencari pengguna (khusus admin).
+Mencantumkan atau mencari pengguna (khusus admin).
 
 Parameter kueri:
 
@@ -1607,7 +1613,7 @@ Respons:
 
 ## Endpoint CLI lama (tidak digunakan lagi)
 
-Masih didukung untuk versi CLI lama:
+Masih didukung untuk versi CLI yang lebih lama:
 
 - `GET /api/cli/whoami`
 - `POST /api/cli/upload-url`
@@ -1619,12 +1625,12 @@ Masih didukung untuk versi CLI lama:
 Lihat `DEPRECATIONS.md` untuk rencana penghapusan.
 
 `POST /api/cli/upload-url` mengembalikan `uploadUrl` dan `uploadTicket`. Penerbitan paket
-yang menyiapkan tarball ClawPack harus mengirim ID penyimpanan yang dihasilkan sebagai
+yang menahapkan tarball ClawPack harus mengirimkan id penyimpanan yang dihasilkan sebagai
 `clawpack` dan tiket yang dikembalikan sebagai `clawpackUploadTicket`.
 
-## Penemuan registry (`/.well-known/clawhub.json`)
+## Penemuan registri (`/.well-known/clawhub.json`)
 
-CLI dapat menemukan pengaturan registry/autentikasi dari situs:
+CLI dapat menemukan pengaturan registri/autentikasi dari situs:
 
 - `/.well-known/clawhub.json` (JSON, disarankan)
 - `/.well-known/clawdhub.json` (lama)
@@ -1635,4 +1641,4 @@ Skema:
 { "apiBase": "https://clawhub.ai", "authBase": "https://clawhub.ai", "minCliVersion": "0.0.5" }
 ```
 
-Jika Anda melakukan hosting sendiri, sajikan file ini (atau tetapkan `CLAWHUB_REGISTRY` secara eksplisit; `CLAWDHUB_REGISTRY` lama).
+Jika Anda menghosting sendiri, sajikan berkas ini (atau tetapkan `CLAWHUB_REGISTRY` secara eksplisit; `CLAWDHUB_REGISTRY` lama).

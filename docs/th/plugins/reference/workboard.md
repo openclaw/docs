@@ -1,32 +1,32 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin กระดานงาน
-summary: กระดานงานแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
+summary: กระดานงานแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นผู้ดูแลเอง
 title: Plugin กระดานงาน
 x-i18n:
-    generated_at: "2026-07-16T19:35:12Z"
+    generated_at: "2026-07-21T15:23:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
+    source_hash: 4be96893d46c009a127ed3dca5047f8ee4c33fe3c243f8e6867d64976b50b783
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
-# Plugin เวิร์กบอร์ด
+# Plugin กระดานงาน
 
-แดชบอร์ดเวิร์กบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
+กระดานงานบนแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/workboard`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนติดต่อ
+## พื้นผิว
 
-สัญญา: `tools`
+สัญญา: `tools`; การเชื่อมโยงข้อมูลแดชบอร์ด: `workboard.cards.list`, `workboard.stats`, `workboard.boards.list`; คำกริยาสำหรับการดำเนินการบนแดชบอร์ด: `workboard.dispatch`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [เวิร์กบอร์ด](/th/plugins/workboard)
+- [กระดานงาน](/th/plugins/workboard)
