@@ -32,7 +32,7 @@ jobs:
       # The artifact commit targets latest main, while the workflow control
       # scripts stay pinned to the workflow ref under test.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -48,7 +48,7 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Check out latest main
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 

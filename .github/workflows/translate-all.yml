@@ -76,7 +76,7 @@ jobs:
       source_sha: ${{ steps.prepare.outputs.source_sha }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
@@ -119,7 +119,7 @@ jobs:
       batch_6: ${{ steps.plan.outputs.batch_6 }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Build full locale plan
         id: plan
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Validate OpenAI key and model
         env:
@@ -393,7 +393,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Download full locale artifacts
         continue-on-error: true
