@@ -62,7 +62,7 @@ jobs:
       source_sha: ${{ steps.prepare.outputs.source_sha }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
@@ -93,7 +93,7 @@ jobs:
       # The planner runs workflow-control scripts from the workflow ref under
       # test, while sizing shards from the debounced publish ref.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -109,7 +109,7 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Check out publish ref
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ needs.prepare.outputs.publish_ref }}
           persist-credentials: false
@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Validate OpenAI key and model
         env:
