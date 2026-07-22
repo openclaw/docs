@@ -42,6 +42,7 @@ from pathlib import Path
 
 CANONICAL_I18N_MARKER_RE = re.compile(r"__OC_I18N_\d+__")
 I18N_MARKER_PREFIX_RE = re.compile(r"__oc_i18n_", re.IGNORECASE)
+MDX_PROTECTED_ATTRIBUTE_CHECKER = Path(__file__).with_name("check_mdx_protected_attributes.mjs")
 
 
 def git_lines(args: list[str]) -> list[str]:
@@ -126,6 +127,57 @@ def leaked_i18n_protocol_paths(workspace: Path, locale: str, changed: list[str])
     return leaked
 
 
+def drifted_mdx_protected_attribute_paths(workspace: Path, locale: str, changed: list[str]) -> list[str]:
+    documents: list[dict[str, str]] = []
+    drifted: list[str] = []
+    locale_prefix = f"docs/{locale}/"
+    for file_name in changed:
+        if not file_name.startswith(locale_prefix) or not file_name.endswith((".md", ".mdx")):
+            continue
+        translated_path = workspace / file_name
+        source_path = workspace / "docs" / file_name.removeprefix(locale_prefix)
+        if not translated_path.is_file():
+            continue
+        if not source_path.is_file():
+            drifted.append(file_name)
+            continue
+        source = source_path.read_text(encoding="utf-8")
+        translated = translated_path.read_text(encoding="utf-8")
+        documents.append(
+            {
+                "path": file_name,
+                "source": source,
+                "translated": translated,
+            }
+        )
+    if not documents:
+        return drifted
+    module_root = workspace
+    if not (module_root / "node_modules/@mdx-js/mdx/package.json").is_file():
+        repository_root = Path(__file__).resolve().parents[3]
+        if (repository_root / "node_modules/@mdx-js/mdx/package.json").is_file():
+            module_root = repository_root
+    result = subprocess.run(
+        ["node", str(MDX_PROTECTED_ATTRIBUTE_CHECKER)],
+        check=False,
+        text=True,
+        input=json.dumps({"moduleRoot": str(module_root), "documents": documents}),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "unknown error"
+        raise SystemExit(f"mdx protected attribute check failed: {detail}")
+    try:
+        output = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"mdx protected attribute check returned invalid JSON: {exc}") from exc
+    parsed_drifted = output.get("drifted")
+    if not isinstance(parsed_drifted, list) or not all(isinstance(path, str) for path in parsed_drifted):
+        raise SystemExit("mdx protected attribute check returned invalid drifted paths")
+    return drifted + parsed_drifted
+
+
 def append_outputs(metadata: dict[str, object]) -> None:
     output = os.environ.get("GITHUB_OUTPUT")
     if not output:
@@ -184,8 +236,13 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         # payload file, so allowed-but-missing TM paths must not be advertised.
         shard_changed = [line for line in changed if line in allowed and (workspace / line).is_file()]
         leaked_paths = leaked_i18n_protocol_paths(workspace, locale, shard_changed)
+        protected_attribute_drift = drifted_mdx_protected_attribute_paths(workspace, locale, shard_changed)
         if leaked_paths:
             failed_reason = "i18n protocol marker leaked"
+            shard_changed = []
+            deleted = []
+        elif protected_attribute_drift:
+            failed_reason = "mdx protected attribute drift"
             shard_changed = []
             deleted = []
         if os.environ.get("ARTIFACT_ROLE") == "canary":

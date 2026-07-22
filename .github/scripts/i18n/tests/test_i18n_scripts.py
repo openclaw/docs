@@ -972,6 +972,206 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
             self.assertFalse((artifact / "payload/docs/fr/index.md").exists())
 
+    def test_package_artifact_fails_closed_on_mdx_protected_attribute_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr/tools").mkdir(parents=True)
+            (repo / "docs/tools").mkdir(parents=True)
+            (repo / "docs/tools/pdf.md").write_text(
+                '<ParamField path="prompt" type="string" default="Analyze this PDF document.">\n',
+                encoding="utf-8",
+            )
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/tools/pdf.md").write_text(
+                '<ParamField path="prompt" type="string" default="Analysez ce document PDF.">\n',
+                encoding="utf-8",
+            )
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(
+                str(repo / "docs/tools/pdf.md") + "\n",
+                encoding="utf-8",
+            )
+
+            with (
+                chdir(repo),
+                patch.object(package_artifact, "drifted_mdx_protected_attribute_paths", return_value=["docs/fr/tools/pdf.md"]),
+                env(
+                    {
+                        "GITHUB_WORKSPACE": str(repo),
+                        "LOCALE": "fr",
+                        "LOCALE_SLUG": "fr",
+                        "SOURCE_SHA": "source-a",
+                        "MODE": "full",
+                        "SHARD_INDEX": "0",
+                        "SHARD_TOTAL": "1",
+                        "WORKER_PARALLEL": "3",
+                        "THINKING_EFFORT": "xhigh",
+                        "PENDING_COUNT": "1",
+                        "TOTAL_PENDING_COUNT": "1",
+                        "ALL_COUNT": "1",
+                        "TRANSLATE_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "success",
+                        "MDX_REPAIR_OUTCOME": "skipped",
+                        "MDX_SCOPE_OUTCOME": "skipped",
+                        "MDX_RECHECK_OUTCOME": "skipped",
+                    }
+                ),
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual("mdx protected attribute drift", metadata["failed_reason"])
+            self.assertEqual(0, metadata["changed_count"])
+            self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
+            self.assertFalse((artifact / "payload/docs/fr/tools/pdf.md").exists())
+
+    def test_mdx_protected_attribute_signatures_use_parsed_element_ownership(self) -> None:
+        script = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
+        program = f"""
+          import {{ protectedAttributeSignatures }} from {json.dumps(script.as_uri())};
+          const tree = {{type: "root", children: [
+            {{type: "mdxFlowExpression", value: "/* <X id=comment /> */"}},
+            {{type: "inlineCode", value: "<X id=code />"}},
+            {{type: "mdxJsxFlowElement", name: "_ParamField", attributes: [
+              {{type: "mdxJsxAttribute", name: "aria-hidden", value: null}},
+              {{type: "mdxJsxAttribute", name: "path", value: {{type: "mdxJsxAttributeValueExpression", value: "/\\\\{{/.source"}}}},
+              {{type: "mdxJsxAttribute", name: "data-id", value: "ignored"}}
+            ], children: []}},
+            {{type: "mdxJsxFlowElement", name: "_ParamField", attributes: [
+              {{type: "mdxJsxAttribute", name: "default", value: "Don't use A"}}
+            ], children: []}}
+          ]}};
+          process.stdout.write(JSON.stringify(protectedAttributeSignatures(tree)));
+        """
+        result = subprocess.run(["node", "--input-type=module", "-e", program], check=True, text=True, stdout=subprocess.PIPE)
+        self.assertEqual(
+            [
+                ["_ParamField", 0, [["aria-hidden", "boolean", True], ["path", "expression", r"/\{/.source"]]],
+                ["_ParamField", 1, [["default", "string", "Don't use A"]]],
+            ],
+            json.loads(result.stdout),
+        )
+
+    def test_mdx_protected_attribute_checker_parses_nested_expression_jsx(self) -> None:
+        script = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
+        payload = {
+            "moduleRoot": str(REPO_ROOT),
+            "documents": [
+                {
+                    "path": "nested-expression.mdx",
+                    "source": '| Limit | <=100 |\n| --- | --- |\n{ready && <Link rel="noopener" id="docs" />}\n',
+                    "translated": '| Limit | <=100 |\n| --- | --- |\n{ready && <Link rel="noopener" id="translated" />}\n',
+                },
+                {
+                    "path": "non-rendered.mdx",
+                    "source": '<!-- unmatched { ` <X id="html-comment-a" /> -->\n{/* <X id="comment-a" /> */}`<X\nid="code-a" />`\n```mdx\n<X id="fence-a" />\n```\n<_X aria-hidden path={/\\{/.source} />\n',
+                    "translated": '<!-- unmatched { ` <X id="html-comment-b" /> -->\n{/* <X id="comment-b" /> */}`<X\nid="code-b" />`\n```mdx\n<X id="fence-b" />\n```\n<_X path={/\\{/.source} aria-hidden />\n',
+                },
+                {
+                    "path": "operator-expression.mdx",
+                    "source": '<X id={n < 2 ? "a" : "b"} />\n',
+                    "translated": '<X id={n < 2 ? "a" : "b"} />\n',
+                },
+                {
+                    "path": "expression-order.mdx",
+                    "source": '<X id={next()} type={next()} />\n',
+                    "translated": '<X type={next()} id={next()} />\n',
+                },
+                {
+                    "path": "spread-expression.mdx",
+                    "source": '{ready && <X {...{id: "source"}} />}\n',
+                    "translated": '{ready && <X {...{id: "translated"}} />}\n',
+                },
+                {
+                    "path": "spread-precedence.mdx",
+                    "source": '<X id="fixed" {...props} />\n',
+                    "translated": '<X {...props} id="fixed" />\n',
+                },
+                {
+                    "path": "escaped-backtick.mdx",
+                    "source": 'Literal \\` then <X id="source" />\n',
+                    "translated": 'Literal \\` then <X id="translated" />\n',
+                },
+                {
+                    "path": "quoted-comment.mdx",
+                    "source": '<Label text="<!--" /><X id="source" /><!-- note -->\n',
+                    "translated": '<Label text="<!--" /><X id="translated" /><!-- note -->\n',
+                },
+                {
+                    "path": "bigint-expression.mdx",
+                    "source": '<X default={1n} />\n',
+                    "translated": '<X default={2n} />\n',
+                },
+                {
+                    "path": "tagged-template.mdx",
+                    "source": '<X id={String.raw`\\n`} />\n',
+                    "translated": '<X id={String.raw`\n`} />\n',
+                },
+                {
+                    "path": "autolink.mdx",
+                    "source": '<user@example.com> <X id="same" />\n',
+                    "translated": '<user@example.com> <X id="same" />\n',
+                },
+            ],
+        }
+        result = subprocess.run(
+            ["node", str(script)],
+            check=True,
+            text=True,
+            input=json.dumps(payload),
+            stdout=subprocess.PIPE,
+        )
+        self.assertEqual(
+            {
+                "drifted": [
+                    "nested-expression.mdx",
+                    "expression-order.mdx",
+                    "spread-expression.mdx",
+                    "spread-precedence.mdx",
+                    "escaped-backtick.mdx",
+                    "quoted-comment.mdx",
+                    "bigint-expression.mdx",
+                    "tagged-template.mdx",
+                ]
+            },
+            json.loads(result.stdout),
+        )
+
+    def test_mdx_protected_attribute_check_includes_spread_only_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "docs/tools").mkdir(parents=True)
+            (workspace / "docs/fr/tools").mkdir(parents=True)
+            (workspace / "docs/tools/spread.md").write_text('{ready && <X {...{id: "source"}} />}\n', encoding="utf-8")
+            (workspace / "docs/fr/tools/spread.md").write_text('{ready && <X {...{id: "translated"}} />}\n', encoding="utf-8")
+
+            self.assertEqual(
+                ["docs/fr/tools/spread.md"],
+                package_artifact.drifted_mdx_protected_attribute_paths(
+                    workspace,
+                    "fr",
+                    ["docs/fr/tools/spread.md"],
+                ),
+            )
+
+    def test_mdx_protected_attribute_check_fails_closed_without_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "docs/fr/tools").mkdir(parents=True)
+            (workspace / "docs/fr/tools/orphan.md").write_text('<X id="orphan" />\n', encoding="utf-8")
+
+            self.assertEqual(
+                ["docs/fr/tools/orphan.md"],
+                package_artifact.drifted_mdx_protected_attribute_paths(
+                    workspace,
+                    "fr",
+                    ["docs/fr/tools/orphan.md"],
+                ),
+            )
+
     def test_package_artifact_carries_translation_memory_only_on_first_shard(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
