@@ -1387,6 +1387,46 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotEqual(dispatches[0], dispatches[1])
         self.assertEqual([("https://docs.openclaw.ai/zh-TW/channels/line", "LINE")], verified)
 
+    def test_dispatch_r2_pages_does_not_retry_cancelled_run(self) -> None:
+        dispatches: list[str] = []
+
+        def fake_dispatch(
+            workflow: str,
+            ref: str,
+            repo: str,
+            artifact_scope: str,
+            force_upload: bool,
+            locale: str = "",
+            page_path: str = "",
+            request_id: str = "",
+        ) -> str:
+            dispatches.append(request_id)
+            return "123"
+
+        def fake_wait(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int) -> None:
+            raise dispatch_r2_pages.R2RunConclusionError(run_id, "cancelled")
+
+        argv = [
+            "dispatch_r2_pages.py",
+            "--repo",
+            "openclaw/docs",
+            "--dispatch-attempts",
+            "3",
+            "--poll-seconds",
+            "1",
+        ]
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(dispatch_r2_pages, "known_workflow_dispatch_run_ids", lambda workflow, ref, repo: set()),
+            patch.object(dispatch_r2_pages, "dispatch", fake_dispatch),
+            patch.object(dispatch_r2_pages, "wait_for_run", fake_wait),
+            patch.object(dispatch_r2_pages.time, "sleep", lambda _: None),
+        ):
+            with self.assertRaisesRegex(SystemExit, "conclusion=cancelled"):
+                dispatch_r2_pages.main()
+
+        self.assertEqual(1, len(dispatches))
+
     def test_dispatch_r2_pages_no_wait_skips_strict_publish_gate(self) -> None:
         waited: list[str] = []
         verified: list[tuple[str, str]] = []

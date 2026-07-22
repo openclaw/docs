@@ -53,6 +53,13 @@ RUN_URL_RE = re.compile(r"/actions/runs/([0-9]+)")
 H1_RE = re.compile(r"<h1\b[^>]*>(.*?)</h1>", re.I | re.S)
 
 
+class R2RunConclusionError(SystemExit):
+    def __init__(self, run_id: str, conclusion: str) -> None:
+        self.run_id = run_id
+        self.conclusion = conclusion
+        super().__init__(f"R2 Pages run {run_id} finished with conclusion={conclusion}")
+
+
 def run(args: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
     result = subprocess.run(args, check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if check and result.returncode != 0:
@@ -192,7 +199,7 @@ def wait_for_run(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int
         if status == "completed":
             if conclusion == "success":
                 return
-            raise SystemExit(f"R2 Pages run {run_id} finished with conclusion={conclusion}")
+            raise R2RunConclusionError(run_id, conclusion)
         if time.monotonic() >= deadline:
             raise SystemExit(f"timed out waiting for R2 Pages run {run_id}")
         time.sleep(poll_seconds)
@@ -304,6 +311,8 @@ def main() -> None:
             wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)
             break
         except SystemExit as exc:
+            if isinstance(exc, R2RunConclusionError) and exc.conclusion == "cancelled":
+                raise
             if attempt >= args.dispatch_attempts:
                 raise
             print(f"R2 Pages dispatch attempt {attempt}/{args.dispatch_attempts} failed: {exc}; retrying.")
