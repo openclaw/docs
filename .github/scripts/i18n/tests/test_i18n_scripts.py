@@ -169,6 +169,12 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn('echo "__GITHUB_EXPR__"', scripts[0].read_text(encoding="utf-8"))
             workflow_shell_check.check_bash_syntax(scripts)
 
+    def test_shell_check_installs_mdx_dependency_before_regressions(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-shell-check-reusable.yml").read_text(encoding="utf-8")
+        install = "npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1"
+        self.assertIn(install, text)
+        self.assertLess(text.index(install), text.index("Run i18n control-plane regressions"))
+
     def test_budget_check_accepts_current_full_batches_and_rejects_worker_over_budget(self) -> None:
         budget = budget_check.validate_budget(REPO_ROOT / ".github/workflows/translate-all.yml")
         self.assertEqual(6, budget.batch_count)
