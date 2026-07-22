@@ -1,67 +1,68 @@
 ---
 read_when:
-    - Refactorización del ciclo de vida de las sesiones ACP o de la limpieza de procesos ACPX
-    - Depuración de procesos huérfanos de ACPX, reutilización de PID o seguridad de limpieza con múltiples Gateway
-    - Cambiar la visibilidad de sessions_list para las sesiones de ACP o de subagentes generadas
-    - Diseño de metadatos de propiedad para tareas en segundo plano, sesiones ACP o concesiones de procesos
+    - Refactorización del ciclo de vida de las sesiones de ACP o de la limpieza de procesos de ACPX
+    - Depuración de procesos huérfanos de ACPX, reutilización de PID o seguridad de la limpieza con múltiples gateways
+    - Cambiar la visibilidad de sessions_list para sesiones de ACP o de subagentes generadas
+    - Diseño de metadatos de propiedad para tareas en segundo plano, sesiones ACP o arrendamientos de procesos
 sidebarTitle: ACP lifecycle refactor
-summary: Plan de migración para explicitar la propiedad de la sesión ACP y del proceso ACPX
+summary: Plan de migración para explicitar la propiedad de las sesiones ACP y los procesos ACPX
 title: Refactorización del ciclo de vida de ACP
 x-i18n:
-    generated_at: "2026-07-11T23:29:05Z"
+    generated_at: "2026-07-22T10:48:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
+    source_hash: bda66f0acc93216c3d9386ca3ebf7f544efd306cd7f53386391f0c48e5dc8f06
     source_path: refactor/acp.md
     workflow: 16
 ---
 
 El ciclo de vida de ACP funciona actualmente, pero una parte excesiva se infiere a posteriori.
-La limpieza de procesos reconstruye la propiedad a partir de los PID, las cadenas de comandos, las rutas de los wrappers
-y la tabla de procesos activos. La visibilidad de las sesiones reconstruye la propiedad
-a partir de las cadenas de claves de sesión más consultas secundarias `sessions.list({ spawnedBy })`.
-Esto permite correcciones específicas, pero también facilita que se omitan casos límite:
-la reutilización de PID, los comandos entrecomillados, los procesos nietos del adaptador, las raíces de estado de varios Gateway,
-`cancel` frente a `close`, y la visibilidad `tree` frente a `all` se convierten en lugares distintos
-donde redescubrir las mismas reglas de propiedad.
+La limpieza de procesos reconstruye la propiedad a partir de PID, cadenas de comandos, rutas de
+wrappers y la tabla de procesos activos. La visibilidad de las sesiones reconstruye la propiedad
+a partir de cadenas de claves de sesión y consultas secundarias de `sessions.list({ spawnedBy })`.
+Esto permite realizar correcciones específicas, pero también facilita que se omitan casos extremos:
+la reutilización de PID, los comandos entrecomillados, los procesos nietos del adaptador, las raíces de estado
+con varios Gateway, `cancel` frente a `close` y la visibilidad de `tree` frente a `all` se convierten en lugares
+independientes donde redescubrir las mismas reglas de propiedad.
 
-Esta refactorización convierte la propiedad en un concepto de primer nivel. El objetivo no es una nueva superficie de producto ACP,
-sino un contrato interno más seguro para el comportamiento existente de ACP y ACPX.
+Esta refactorización convierte la propiedad en un concepto de primera clase. El objetivo no es una nueva
+superficie de producto de ACP, sino un contrato interno más seguro para el comportamiento existente de ACP y ACPX.
 
 ## Objetivos
 
-- La limpieza nunca envía señales a un proceso salvo que la evidencia activa actual coincida con un
+- La limpieza nunca envía señales a un proceso, salvo que la evidencia activa actual coincida con un
   arrendamiento propiedad de OpenClaw.
-- `cancel`, `close` y la recolección al inicio tienen intenciones de ciclo de vida distintas.
-- `sessions_list`, `sessions_history`, `sessions_send` y las comprobaciones de estado usan
+- `cancel`, `close` y la recolección al iniciar tienen intenciones de ciclo de vida distintas.
+- `sessions_list`, `sessions_history`, `sessions_send` y las comprobaciones de estado utilizan
   el mismo modelo de sesiones propiedad del solicitante.
-- Las instalaciones con varios Gateway no pueden recolectar los wrappers ACPX de las demás.
+- Las instalaciones con varios Gateway no pueden recolectar los wrappers de ACPX de otras instalaciones.
 - Los registros antiguos de sesiones ACPX siguen funcionando durante la migración.
-- El entorno de ejecución sigue siendo propiedad del Plugin; el núcleo no conoce los detalles del paquete ACPX.
+- El entorno de ejecución sigue siendo propiedad del plugin; el núcleo no conoce los detalles del paquete ACPX.
 
 ## Fuera de alcance
 
 - Sustituir ACPX o cambiar la superficie pública del comando `/acp`.
-- Mover al núcleo el comportamiento del adaptador ACP específico del proveedor.
+- Trasladar al núcleo el comportamiento de los adaptadores ACP específico de proveedores.
 - Exigir que los usuarios limpien manualmente el estado antes de actualizar.
 - Hacer que `cancel` cierre sesiones ACP reutilizables.
 
 ## Modelo objetivo
 
-### Identidad de la instancia de Gateway
+### Identidad de instancia del Gateway
 
-Cada proceso de Gateway debe tener un identificador estable de instancia del entorno de ejecución:
+Cada proceso del Gateway debe tener un identificador estable de instancia del entorno de ejecución:
 
 ```ts
 type GatewayInstanceId = string;
 ```
 
-Puede generarse al iniciar Gateway y persistirse en el estado durante la vida de
-esa instalación. No es un secreto de seguridad; es un discriminador de propiedad que se usa
-para evitar confundir los procesos ACP de un Gateway con los de otro.
+Puede generarse al iniciar el Gateway y persistirse en el estado durante la vida útil de
+esa instalación. No es un secreto de seguridad; es un discriminador de propiedad utilizado
+para evitar confundir los procesos ACP de un Gateway con los procesos de otro Gateway.
 
-### Propiedad de sesiones ACP
+### Propiedad de las sesiones ACP
 
 Cada sesión ACP iniciada debe tener metadatos de propiedad normalizados:
 
@@ -78,7 +79,7 @@ type AcpSessionOwner = {
 };
 ```
 
-Gateway debe devolver estos campos en las filas de sesión cuando se conozcan.
+El Gateway debe devolver estos campos en las filas de sesión donde se conozcan.
 El filtrado de visibilidad debe ser una comprobación pura sobre los metadatos de la fila:
 
 ```ts
@@ -90,13 +91,13 @@ canSeeSessionRow({
 });
 ```
 
-Esto elimina de las comprobaciones de visibilidad las llamadas secundarias ocultas a `sessions.list({ spawnedBy })`.
-Una sesión ACP secundaria iniciada entre agentes es propiedad del solicitante porque
-la fila así lo indica, no porque una segunda consulta resulte encontrarla.
+Esto elimina las llamadas secundarias ocultas a `sessions.list({ spawnedBy })` de
+las comprobaciones de visibilidad. Una sesión ACP hija entre agentes iniciada pertenece al solicitante porque
+así lo indica la fila, no porque una segunda consulta consiga encontrarla.
 
 ### Arrendamientos de procesos ACPX
 
-Cada inicio de wrapper generado debe crear un registro de arrendamiento:
+Cada ejecución de un wrapper generado debe crear un registro de arrendamiento:
 
 ```ts
 type AcpxProcessLease = {
@@ -113,21 +114,20 @@ type AcpxProcessLease = {
 };
 ```
 
-El proceso del wrapper debe recibir el identificador del arrendamiento y el identificador de la instancia de Gateway en su
-entorno:
+El proceso del wrapper recibe el identificador del arrendamiento y el identificador de instancia del Gateway como
+argumentos portables:
 
 ```sh
-OPENCLAW_ACPX_LEASE_ID=...
-OPENCLAW_GATEWAY_INSTANCE_ID=...
+--openclaw-acpx-lease-id ... --openclaw-gateway-instance-id ...
 ```
 
 Cuando la plataforma lo permita, la verificación debe priorizar metadatos del proceso activo
-que no puedan confundirse por el entrecomillado de comandos:
+que no puedan confundirse debido al entrecomillado de comandos:
 
-- el PID raíz sigue existiendo
-- la ruta activa del wrapper está bajo `wrapperRoot`
+- el PID raíz todavía existe
+- la ruta activa del wrapper se encuentra bajo `wrapperRoot`
 - el grupo de procesos coincide con el arrendamiento cuando está disponible
-- el entorno contiene el identificador de arrendamiento esperado cuando se puede leer
+- los argumentos contienen el identificador de arrendamiento esperado
 - el hash del comando o la ruta del ejecutable coincide con el arrendamiento
 
 Si no se puede verificar el proceso activo, la limpieza falla de forma segura.
@@ -151,16 +151,16 @@ interface AcpxLifecycleController {
 }
 ```
 
-`cancelTurn` solo solicita la cancelación del turno. No debe recolectar procesos de wrappers
-ni de adaptadores reutilizables.
+`cancelTurn` solo solicita la cancelación del turno. Nunca debe recolectar procesos reutilizables del wrapper
+ni del adaptador.
 
-`closeSession` puede recolectarlos, pero solo después de cargar el registro de la sesión,
-cargar el arrendamiento y verificar que el árbol de procesos activo sigue perteneciendo a ese
+`closeSession` puede realizar la recolección, pero solo después de cargar el registro de sesión,
+cargar el arrendamiento y verificar que el árbol de procesos activo sigue perteneciendo a dicho
 arrendamiento.
 
-`reapStartupOrphans` parte de los arrendamientos abiertos del estado. Puede usar la tabla de procesos
-para encontrar descendientes, pero no debe buscar primero comandos arbitrarios
-que parezcan de ACP y luego decidir que probablemente son nuestros.
+`reapStartupOrphans` parte de los arrendamientos abiertos en el estado. Puede utilizar la tabla de
+procesos para encontrar descendientes, pero no debe examinar primero comandos arbitrarios que parezcan de ACP
+y decidir después que probablemente sean propios.
 
 ## Contrato del wrapper
 
@@ -169,17 +169,17 @@ Los wrappers generados deben seguir siendo pequeños. Deben:
 - iniciar el adaptador en un grupo de procesos cuando sea compatible
 - reenviar las señales normales de terminación al grupo de procesos
 - detectar la muerte del proceso padre
-- cuando muera el padre, enviar SIGTERM y mantener después el wrapper activo hasta que se ejecute
-  el mecanismo alternativo con SIGKILL
+- cuando muera el proceso padre, enviar SIGTERM y mantener activo el wrapper hasta que se ejecute
+  el mecanismo alternativo SIGKILL
 - comunicar el PID raíz y el identificador del grupo de procesos al controlador del ciclo de vida cuando
   estén disponibles
 
-Los wrappers no deben decidir la política de las sesiones. Solo aplican la limpieza local del árbol de procesos
-para su propio grupo de adaptadores.
+Los wrappers no deben decidir la política de sesiones. Solo aplican la limpieza local del árbol de
+procesos para su propio grupo de adaptadores.
 
 ## Contrato de visibilidad de sesiones
 
-La visibilidad debe usar la propiedad normalizada de las filas:
+La visibilidad debe utilizar la propiedad normalizada de las filas:
 
 ```ts
 type SessionVisibilityInput = {
@@ -199,73 +199,73 @@ type SessionVisibilityInput = {
 Reglas:
 
 - `self`: solo la sesión del solicitante.
-- `tree`: la sesión del solicitante más las filas que son propiedad del solicitante o se iniciaron desde ella.
-- `all`: todas las filas del mismo agente, las filas entre agentes permitidas por a2a y las filas iniciadas entre agentes
-  que sean propiedad del solicitante, incluso cuando a2a general esté deshabilitado.
-- `agent`: solo el mismo agente, salvo que una relación de propiedad explícita indique que la fila
+- `tree`: la sesión del solicitante y las filas que le pertenecen o que se iniciaron desde ella.
+- `all`: todas las filas del mismo agente, las filas entre agentes permitidas por a2a y las filas
+  entre agentes iniciadas que pertenecen al solicitante, incluso cuando a2a general está deshabilitado.
+- `agent`: solo el mismo agente, salvo que una relación explícita de propiedad indique que la fila
   pertenece al solicitante.
 
-Esto hace que `tree` y `all` sean monótonos: `all` no debe ocultar una sesión secundaria propia que
+Esto hace que `tree` y `all` sean monótonos: `all` no debe ocultar una sesión hija propia que
 `tree` mostraría.
 
 ## Plan de migración
 
 ### Fase 1: añadir identidad y arrendamientos
 
-- Añadir `gatewayInstanceId` al estado de Gateway.
-- Añadir un almacén de arrendamientos ACPX bajo el directorio de estado de ACPX.
+- Añadir `gatewayInstanceId` al estado del Gateway.
+- Añadir un almacén de arrendamientos de ACPX bajo el directorio de estado de ACPX.
 - Escribir un arrendamiento antes de iniciar un wrapper generado.
 - Almacenar `leaseId` en los nuevos registros de sesiones ACPX.
 - Conservar los campos existentes de PID y comando para los registros antiguos.
 
-### Fase 2: limpieza que prioriza los arrendamientos
+### Fase 2: limpieza basada primero en arrendamientos
 
-- Cambiar la limpieza al cerrar para cargar primero `leaseId`.
-- Verificar la propiedad del proceso activo respecto al arrendamiento antes de enviar señales.
-- Conservar el mecanismo alternativo actual basado en el PID raíz y la raíz del wrapper solo para registros heredados.
+- Cambiar la limpieza de cierre para cargar primero `leaseId`.
+- Verificar la propiedad del proceso activo con respecto al arrendamiento antes de enviar señales.
+- Conservar el mecanismo alternativo actual de PID raíz y raíz del wrapper solo para los registros heredados.
 - Marcar los arrendamientos como `closed` después de una limpieza verificada.
 - Marcar los arrendamientos como `lost` cuando el proceso haya desaparecido antes de la limpieza.
 
-### Fase 3: recolección al inicio que prioriza los arrendamientos
+### Fase 3: recolección al iniciar basada primero en arrendamientos
 
-- La recolección al inicio examina los arrendamientos abiertos.
+- La recolección al iniciar examina los arrendamientos abiertos.
 - Para cada arrendamiento, verificar el proceso raíz y recopilar los descendientes.
-- Recolectar los árboles verificados empezando por los procesos secundarios.
-- Caducar los arrendamientos `closed` y `lost` antiguos con un periodo de retención limitado.
-- Conservar la búsqueda por marcadores de comandos solo como mecanismo alternativo heredado temporal, protegido por
-  la raíz del wrapper y la instancia de Gateway cuando sea posible.
+- Recolectar los árboles verificados comenzando por los procesos hijos.
+- Expirar los arrendamientos antiguos `closed` y `lost` con un periodo de retención limitado.
+- Conservar el análisis de marcadores de comandos solo como mecanismo alternativo heredado temporal, protegido por
+  la raíz del wrapper y la instancia del Gateway cuando sea posible.
 
 ### Fase 4: filas de propiedad de sesiones
 
-- Añadir metadatos de propiedad a las filas de sesiones de Gateway.
-- Hacer que ACPX, los subagentes, las tareas en segundo plano y los escritores del almacén de sesiones rellenen
+- Añadir metadatos de propiedad a las filas de sesiones del Gateway.
+- Adaptar los escritores de ACPX, subagentes, tareas en segundo plano y almacenes de sesiones para que rellenen
   `ownerSessionKey` o `spawnedBy`.
-- Convertir las comprobaciones de visibilidad de sesiones para que usen los metadatos de las filas.
-- Eliminar de las comprobaciones de visibilidad las consultas secundarias a `sessions.list({ spawnedBy })`.
+- Convertir las comprobaciones de visibilidad de sesiones para que utilicen los metadatos de las filas.
+- Eliminar las consultas secundarias a `sessions.list({ spawnedBy })` durante las comprobaciones de visibilidad.
 
 ### Fase 5: eliminar las heurísticas heredadas
 
-Después de un ciclo de publicación:
+Después de un ciclo de lanzamiento:
 
-- dejar de depender de las cadenas almacenadas del comando raíz para la limpieza de ACPX no heredada
-- eliminar las búsquedas de marcadores de comandos al inicio
-- eliminar las consultas de lista alternativas para la visibilidad
-- conservar el comportamiento defensivo de fallo seguro para arrendamientos ausentes o no verificables
+- dejar de depender de las cadenas almacenadas de comandos raíz para la limpieza de ACPX no heredada
+- eliminar los análisis de marcadores de comandos al iniciar
+- eliminar las consultas alternativas de listas durante las comprobaciones de visibilidad
+- conservar el comportamiento defensivo de fallo seguro para los arrendamientos ausentes o no verificables
 
 ## Pruebas
 
-Añadir dos conjuntos de pruebas basadas en tablas.
+Añadir dos conjuntos de pruebas basados en tablas.
 
 Simulador del ciclo de vida de procesos:
 
 - PID reutilizado por un proceso no relacionado
 - PID reutilizado por la raíz del wrapper de otro Gateway
 - el comando almacenado del wrapper está entrecomillado para el shell, pero el comando activo de `ps` no
-- el proceso secundario del adaptador termina, pero el proceso nieto permanece en el grupo de procesos
-- el mecanismo alternativo SIGTERM tras la muerte del padre llega a SIGKILL
+- el proceso hijo del adaptador termina, pero el nieto permanece en el grupo de procesos
+- el mecanismo alternativo SIGTERM por muerte del proceso padre llega hasta SIGKILL
 - el listado de procesos no está disponible
-- arrendamiento obsoleto cuyo proceso no existe
-- proceso huérfano al inicio con wrapper, proceso secundario del adaptador y proceso nieto
+- arrendamiento obsoleto con proceso ausente
+- proceso huérfano al iniciar con wrapper, proceso hijo del adaptador y nieto
 
 Matriz de visibilidad de sesiones:
 
@@ -273,34 +273,34 @@ Matriz de visibilidad de sesiones:
 - a2a habilitado y deshabilitado
 - fila del mismo agente
 - fila entre agentes
-- fila ACP iniciada entre agentes y propiedad del solicitante
+- fila ACP entre agentes iniciada y propiedad del solicitante
 - solicitante en entorno aislado limitado a `tree`
 - acciones de listado, historial, envío y estado
 
-La invariante importante: una sesión secundaria iniciada y propiedad del solicitante es visible siempre que
+La invariante importante: una sesión hija iniciada que pertenece al solicitante es visible siempre que
 la visibilidad configurada incluya el árbol de sesiones del solicitante, y `all` no tiene
 menos capacidades que `tree`.
 
 ## Notas de compatibilidad
 
-Es posible que los registros de sesiones antiguos no tengan `leaseId`. Deben usar la ruta de limpieza heredada
-de fallo seguro:
+Es posible que los registros antiguos de sesiones no tengan `leaseId`. Deben utilizar la ruta de limpieza
+heredada de fallo seguro:
 
 - exigir un proceso raíz activo
 - exigir la propiedad de la raíz del wrapper cuando se espere un wrapper generado
-- exigir que los comandos coincidan para las raíces que no sean wrappers
-- nunca enviar señales basándose únicamente en metadatos obsoletos del PID almacenado
+- exigir concordancia de comandos para raíces que no sean wrappers
+- nunca enviar señales basándose únicamente en metadatos obsoletos de PID almacenados
 
-Si no se puede verificar un registro heredado, no modificarlo. La limpieza de arrendamientos al inicio y
-el siguiente ciclo de publicación deberían retirar finalmente el mecanismo alternativo.
+Si no se puede verificar un registro heredado, debe dejarse intacto. La limpieza de arrendamientos al iniciar y
+el siguiente ciclo de lanzamiento deberían retirar finalmente el mecanismo alternativo.
 
 ## Criterios de éxito
 
 - Cerrar una sesión ACPX antigua u obsoleta no puede terminar el proceso de otro Gateway.
-- La muerte del padre no deja procesos nietos persistentes del adaptador en ejecución.
-- `cancel` anula el turno activo sin cerrar las sesiones reutilizables.
-- `sessions_list` puede mostrar sesiones ACP secundarias entre agentes y propiedad del solicitante tanto con
-  `tree` como con `all`.
-- La limpieza al inicio se basa en arrendamientos, no en búsquedas amplias de cadenas de comandos.
-- Las pruebas específicas de las matrices de procesos y visibilidad cubren todos los casos límite que
+- La muerte del proceso padre no deja en ejecución procesos nietos persistentes del adaptador.
+- `cancel` cancela el turno activo sin cerrar las sesiones reutilizables.
+- `sessions_list` puede mostrar sesiones ACP hijas entre agentes que pertenecen al solicitante tanto bajo
+  `tree` como bajo `all`.
+- La limpieza al iniciar se controla mediante arrendamientos, no mediante análisis amplios de cadenas de comandos.
+- Las pruebas específicas de la matriz de procesos y visibilidad cubren todos los casos extremos que
   anteriormente requerían correcciones puntuales durante la revisión.

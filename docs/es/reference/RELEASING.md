@@ -1,100 +1,109 @@
 ---
 read_when:
-    - Buscando definiciones de canales de versiones públicas
-    - Ejecución de la validación de la versión o de la aceptación del paquete
-    - Buscando información sobre la nomenclatura y la cadencia de las versiones
-summary: Canales de lanzamiento, lista de verificación del operador, cuadros de validación, nomenclatura de versiones y cadencia
+    - Buscando definiciones de canales de lanzamiento públicos
+    - Ejecución de la validación de versiones o la aceptación de paquetes
+    - Buscando la nomenclatura y la cadencia de las versiones
+summary: Canales de lanzamiento, lista de verificación del operador, entornos de validación, nomenclatura de versiones y cadencia
 title: Política de lanzamientos
 x-i18n:
-    generated_at: "2026-07-20T00:54:52Z"
+    generated_at: "2026-07-22T10:46:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7807f44029f8f5fd0d40499c0b1f2e731cd99780cf1f081bf62230a2146c49e4
+    source_hash: 347bbdefeca44d652d7222f0d80724c675c540b8f4ea5527475e3c4e2e7b4c4b
     source_path: reference/RELEASING.md
     workflow: 16
 ---
 
-OpenClaw ofrece actualmente tres canales de actualización orientados al usuario:
+OpenClaw expone actualmente tres canales de actualización orientados al usuario:
 
-- stable: el canal de versiones promocionadas existente, que todavía se resuelve mediante npm `latest` hasta que se alcance el hito independiente de CLI/canal
+- stable: el canal existente de versiones promovidas, que todavía se resuelve mediante npm `latest` hasta que se complete el hito independiente de la CLI y los canales
 - beta: etiquetas de versiones preliminares que se publican en npm `beta`
-- dev: la cabecera cambiante de `main`
+- dev: la cabecera móvil de `main`
 
-Por separado, los operadores de versiones pueden publicar el paquete principal del
-último mes completado en npm `extended-stable`, comenzando en el parche `33`. La línea
-final regular del mes actual continúa en npm `latest`; esta división de publicación
-del lado del operador no cambia por sí sola la resolución de los canales de actualización de la CLI.
+Por separado, los operadores de versiones pueden publicar el paquete principal
+del último mes completado en npm `extended-stable`, comenzando en el parche `33`. La línea
+final regular del mes actual continúa en npm `latest`; esta separación de publicaciones
+del lado del operador no cambia por sí misma la resolución de los canales de actualización de la CLI.
 
 Las compilaciones alfa de Tideclaw constituyen una vía interna independiente de versiones preliminares (dist-tag de npm `alpha`), descrita en [Entradas del flujo de trabajo de NPM](#npm-workflow-inputs) y [Entornos de prueba de versiones](#release-test-boxes).
 
 ## Nomenclatura de versiones
 
-- Versión mensual de la versión estable extendida de npm: `YYYY.M.PATCH`, con `PATCH >= 33`, etiqueta de git `vYYYY.M.PATCH`
+- Versión mensual de la publicación estable extendida de npm: `YYYY.M.PATCH`, con `PATCH >= 33`, etiqueta de git `vYYYY.M.PATCH`
 - Versión final diaria/regular: `YYYY.M.PATCH`, con `PATCH < 33`, etiqueta de git `vYYYY.M.PATCH`
-- Versión de corrección alternativa regular: `YYYY.M.PATCH-N`, etiqueta de git `vYYYY.M.PATCH-N`
+- Versión regular de corrección alternativa: `YYYY.M.PATCH-N`, etiqueta de git `vYYYY.M.PATCH-N`
 - Versión preliminar beta: `YYYY.M.PATCH-beta.N`, etiqueta de git `vYYYY.M.PATCH-beta.N`
 - Versión preliminar alfa: `YYYY.M.PATCH-alpha.N`, etiqueta de git `vYYYY.M.PATCH-alpha.N`
 - Nunca se deben rellenar con ceros el mes ni el parche
-- `PATCH` es un número secuencial del ciclo mensual de versiones, no un día del calendario. Las versiones finales regulares y beta hacen avanzar el ciclo actual; las etiquetas exclusivamente alfa nunca consumen ni hacen avanzar el número de parche beta/regular, por lo que deben ignorarse las etiquetas antiguas exclusivamente alfa con números de parche superiores al seleccionar un ciclo beta o regular.
-- Las compilaciones alfa/nocturnas usan el siguiente ciclo de parche aún no publicado e incrementan solo `alpha.N` para compilaciones repetidas. Cuando ese parche tiene una beta, las nuevas compilaciones alfa pasan al parche siguiente.
-- Las versiones de npm son inmutables: nunca se debe eliminar, volver a publicar ni reutilizar una etiqueta publicada. En su lugar, se debe crear el siguiente número de versión preliminar o el siguiente parche mensual.
-- `latest` sigue la línea regular/diaria actual de npm; `beta` es el destino actual de instalación beta
-- `extended-stable` representa el paquete de npm compatible del mes anterior, comenzando en el parche `33`; el parche `34` y los posteriores son versiones de mantenimiento de esa línea mensual
-- Las versiones finales regulares y las de corrección regular se publican de forma predeterminada en npm `beta`; los operadores de versiones pueden usar explícitamente `latest` como destino o promocionar posteriormente una compilación beta validada
-- La ruta mensual específica de estabilidad extendida publica el paquete principal de npm y todos los plugins oficiales publicables en npm con exactamente la misma versión. No publica plugins en ClawHub ni publica artefactos de macOS o Windows, una versión de GitHub, dist-tags de repositorios privados, imágenes de Docker, artefactos móviles ni descargas del sitio web.
-- Cada versión final regular publica conjuntamente el paquete de npm, la aplicación para macOS, el APK independiente firmado de Android y los instaladores firmados de Windows Hub. Las versiones beta normalmente validan y publican primero la ruta de npm/paquete, mientras que la compilación, firma, notarización y promoción de aplicaciones nativas se reservan para las versiones finales regulares, salvo que se soliciten explícitamente.
+- `PATCH` es un número secuencial del ciclo mensual de versiones, no un día del calendario. Las versiones finales regulares y beta hacen avanzar el ciclo actual; las etiquetas exclusivamente alfa nunca consumen ni hacen avanzar el número de parche beta/regular, por lo que deben ignorarse las etiquetas heredadas exclusivamente alfa con números de parche superiores al seleccionar un ciclo beta o regular.
+- Las compilaciones alfa/nocturnas usan el siguiente ciclo de parche no publicado e incrementan únicamente `alpha.N` para las compilaciones repetidas. Cuando ese parche ya tiene una beta, las nuevas compilaciones alfa pasan al parche siguiente.
+- Las versiones de npm son inmutables: nunca se debe eliminar, volver a publicar ni reutilizar una etiqueta publicada. Se debe crear el siguiente número de versión preliminar o el siguiente parche mensual.
+- `latest` continúa siguiendo la línea npm regular/diaria actual; `beta` es el destino actual de instalación de la beta
+- `extended-stable` representa el paquete npm compatible del último mes, comenzando en el parche `33`; el parche `34` y los posteriores son versiones de mantenimiento de esa línea mensual
+- Las versiones finales regulares y las correcciones regulares se publican de forma predeterminada en npm `beta`; los operadores de versiones pueden especificar explícitamente `latest` o promover posteriormente una compilación beta validada
+- La ruta mensual dedicada de estabilidad extendida publica el paquete principal de npm y todos los plugins oficiales publicables en npm con exactamente la misma versión. No publica plugins en ClawHub ni artefactos de macOS o Windows, una versión de GitHub, dist-tags de repositorios privados, imágenes de Docker, artefactos móviles o descargas del sitio web.
+- Cada versión final regular distribuye conjuntamente el paquete npm, la aplicación para macOS, el APK independiente firmado para Android y los instaladores firmados de Windows Hub. Las versiones beta normalmente validan y publican primero la ruta de npm/paquetes; la compilación, firma, notarización y promoción de aplicaciones nativas se reservan para la versión final regular, salvo que se soliciten explícitamente.
 
 ## Cadencia de versiones
 
-- Las versiones se publican primero como beta; stable solo llega después de validar la beta más reciente
-- Los mantenedores normalmente crean las versiones desde una rama `release/YYYY.M.PATCH` creada a partir de la versión actual de `main`, de modo que la validación y las correcciones de la versión no bloqueen el desarrollo nuevo en `main`
-- Si se ha enviado o publicado una etiqueta beta y necesita una corrección, los mantenedores crean la siguiente etiqueta `-beta.N` en lugar de eliminar o recrear la anterior
+- Las versiones avanzan primero por beta; stable solo llega después de validar la beta más reciente
+- Normalmente, los mantenedores crean las versiones desde una rama `release/YYYY.M.PATCH` creada a partir de la versión actual de `main`, para que la validación y las correcciones de la versión no bloqueen el nuevo desarrollo en `main`
+- Si se ha enviado o publicado una etiqueta beta y necesita una corrección, los mantenedores crean la siguiente etiqueta `-beta.N` en lugar de eliminar o volver a crear la anterior
 - El procedimiento detallado de publicación, las aprobaciones, las credenciales y las notas de recuperación son exclusivos de los mantenedores
 
 ## Publicación mensual de estabilidad extendida solo en npm
 
-Esta es una excepción específica al procedimiento regular de publicación que se
-describe a continuación. Para un mes completado `YYYY.M`, se debe crear `extended-stable/YYYY.M.33`; se deben publicar
-`vYYYY.M.33` y los parches de mantenimiento posteriores desde esa misma rama. La etiqueta
-de versión, la punta de la rama, el checkout, la versión del paquete, la comprobación previa de npm y la ejecución de la Validación
-completa de la versión deben identificar el mismo commit. La rama protegida `main` ya debe
+Esta es una excepción específica al procedimiento regular de publicación descrito a continuación. Para un
+mes completado `YYYY.M`, se crea `extended-stable/YYYY.M.33`; se publican
+`vYYYY.M.33` y los parches de mantenimiento posteriores desde esa misma rama. La etiqueta de
+versión, la punta de la rama, el checkout, la versión del paquete, la comprobación previa de npm y la ejecución de
+la Validación completa de la versión deben identificar el mismo commit. La rama protegida `main` ya debe
 contener la versión final de un mes natural estrictamente posterior por debajo del parche
 `33`; los parches de mantenimiento siguen siendo aptos después de que `main` avance más de un
 mes.
 
-En la rama exacta de estabilidad extendida, se debe cambiar la versión del paquete raíz a `YYYY.M.P`, ejecutar
-`pnpm release:prep` y verificar que todos los paquetes de extensiones publicables tengan la
-misma versión. Se deben confirmar y enviar todos los cambios generados, crear y enviar la
-etiqueta inmutable `vYYYY.M.P` en ese commit y registrar el SHA completo resultante.
-Los flujos de trabajo consumen este árbol preparado; no cambian ni sincronizan las
-versiones automáticamente.
+En la rama exacta de estabilidad extendida, se incrementa la versión del paquete raíz a `YYYY.M.P`, se ejecuta
+`pnpm release:prep` y se verifica que todos los paquetes de plugins publicables tengan la
+misma versión. Se confirman y envían todos los cambios generados y, a continuación, se congela y registra el
+SHA completo resultante. Los flujos de trabajo consumen este árbol preparado; no incrementan
+ni sincronizan las versiones automáticamente. No se debe crear la etiqueta final de un candidato.
 
-Se deben ejecutar la comprobación previa de npm y la Validación completa de la versión desde la punta exacta de esa
-rama preparada y, después, guardar los ID de ambas ejecuciones y el intento correcto de ejecución de la Validación completa de la versión:
+Se ejecutan la comprobación previa de npm y la Validación completa de la versión con ese SHA congelado y, a continuación,
+se guardan los dos identificadores de ejecución y el intento de ejecución correcto de la Validación completa de la versión:
 
 ```bash
+RELEASE_SHA="$(git rev-parse HEAD)"
+
 gh workflow run openclaw-npm-release.yml \
   --ref extended-stable/YYYY.M.33 \
-  -f tag=vYYYY.M.P \
+  -f tag="$RELEASE_SHA" \
   -f preflight_only=true \
   -f npm_dist_tag=extended-stable
 
-gh workflow run full-release-validation.yml \
-  --ref extended-stable/YYYY.M.33 \
-  -f ref=extended-stable/YYYY.M.33 \
-  -f release_profile=stable
+node scripts/full-release-validation-at-sha.mjs \
+  --sha "$RELEASE_SHA" \
+  --target-ref extended-stable/YYYY.M.33
 ```
 
-`release_profile=stable` es el perfil existente de profundidad de validación; es
-independiente del dist-tag `extended-stable` de npm y permanece
-intencionadamente sin cambios.
+La forma SHA solo es compatible con la comprobación previa de npm destinada exclusivamente a la validación. El asistente
+fija código de confianza del flujo de trabajo mientras registra el SHA exacto del producto y el contexto
+canónico de la rama. Su perfil de validación estable es independiente del dist-tag
+`extended-stable` de npm.
 
-Cuando ambas ejecuciones finalicen correctamente, se deben publicar todos los plugins oficiales publicables en npm desde la
-punta exacta de la misma rama. El parche `P` debe ser `33` o superior. Se debe pasar el SHA completo de la versión
-como `ref`, esperar a que finalicen la matriz completa y la lectura de verificación del registro y, después, guardar el
-ID de la ejecución correcta de publicación de plugins en NPM:
+Si falla alguna de las puertas del candidato o se necesita otro backport, se actualiza la rama,
+se congela un nuevo SHA y se vuelven a ejecutar las puertas afectadas del candidato. No se debe crear, eliminar
+ni mover una etiqueta final durante la validación del candidato. Cuando ambas puertas estén en verde,
+se vuelve a resolver la punta de la rama, se exige que siga siendo igual a `RELEASE_SHA` y, a continuación, se crea
+y envía la etiqueta inmutable `vYYYY.M.P` en ese SHA. Un cambio del código fuente posterior a la etiqueta exige una
+nueva versión de parche y un nuevo candidato; las etiquetas finales de estabilidad extendida nunca se mueven
+ni se eliminan.
+
+Cuando ambas ejecuciones finalicen correctamente, se publican todos los plugins oficiales publicables en npm desde la
+misma punta exacta de la rama. El parche `P` debe ser `33` o superior. Se pasa el SHA completo de la versión
+como `ref`, se espera a que finalicen la matriz completa y la relectura del registro y, a continuación, se guarda el
+identificador de la ejecución correcta de Publicación de plugins en NPM:
 
 ```bash
 RELEASE_SHA="$(git rev-parse HEAD)"
@@ -105,17 +114,17 @@ gh workflow run plugin-npm-release.yml \
   -f npm_dist_tag=extended-stable
 ```
 
-El flujo de trabajo usa el inventario habitual de paquetes `all-publishable` preparado,
-incluidos los paquetes cuyo código fuente no cambió. Antes de finalizar correctamente, verifica cada paquete exacto
-y cada etiqueta `extended-stable` de plugin. Si falla una ejecución
-parcial, se debe volver a ejecutar el mismo comando: se reutilizan los paquetes ya publicados, se
-reconcilian las etiquetas de plugin que falten o estén obsoletas en el entorno de publicación de npm y la
-lectura de verificación final sigue cubriendo el conjunto completo de paquetes.
+El flujo de trabajo utiliza el inventario regular preparado de paquetes `all-publishable`,
+incluidos los paquetes cuyo código fuente no haya cambiado. Verifica cada paquete exacto
+y cada etiqueta `extended-stable` de plugin antes de finalizar correctamente. Si una ejecución parcial
+falla, se vuelve a ejecutar el mismo comando: se reutilizan los paquetes ya publicados, se concilian
+las etiquetas de plugins ausentes u obsoletas en el entorno de publicación de npm y la
+relectura final sigue abarcando el conjunto completo de paquetes.
 
 Cuando el flujo de trabajo de plugins finalice correctamente y el entorno de publicación de npm esté listo,
-se debe publicar el tarball principal exacto de la comprobación previa. La publicación principal verifica que la
-ejecución de plugins referenciada sea `completed/success` en la misma rama canónica y con
-el SHA de origen exacto:
+se publica el tarball exacto de la comprobación previa del paquete principal. La publicación del paquete principal verifica que la
+ejecución de plugins indicada sea `completed/success` en la misma rama canónica y con el
+SHA exacto del código fuente:
 
 ```bash
 gh workflow run openclaw-npm-release.yml \
@@ -129,54 +138,54 @@ gh workflow run openclaw-npm-release.yml \
   -f plugin_npm_run_id=<plugin-npm-run-id>
 ```
 
-Para un fork o un ensayo que no sea de producción y que intencionadamente no pueda satisfacer la
-política mensual de `.33` o del mes de la rama protegida `main`, se debe añadir
+Para un ensayo en una bifurcación o en un entorno no productivo que intencionadamente no pueda cumplir la
+política mensual de `.33` o del mes de la rama protegida `main`, se añade
 `-f bypass_extended_stable_guard=true` tanto a la comprobación previa de npm como a los
 despachos de publicación. El valor predeterminado es `false`. La omisión solo se acepta con
-`npm_dist_tag=extended-stable` y queda registrada en el resumen del flujo de trabajo.
-No omite la referencia canónica `extended-stable/YYYY.M.33` del flujo de trabajo,
-la igualdad entre la punta de la rama, la etiqueta y el checkout, la sintaxis de la etiqueta final, la igualdad entre la versión del paquete y la de la etiqueta,
-la identidad de la ejecución y el manifiesto referenciados, la procedencia del tarball,
-la aprobación del entorno, la lectura de verificación del registro ni las pruebas de reparación del selector.
+`npm_dist_tag=extended-stable` y queda registrada en el resumen del flujo de trabajo. No
+omite la referencia canónica del flujo de trabajo `extended-stable/YYYY.M.33`,
+la igualdad entre la punta de la rama, la etiqueta y el checkout, la sintaxis de la etiqueta final, la igualdad
+entre las versiones del paquete y la etiqueta, la identidad de las ejecuciones y el manifiesto indicados, la procedencia del tarball,
+la aprobación del entorno, la relectura del registro ni las pruebas de reparación de selectores.
 
-El flujo de trabajo de publicación verifica las identidades de las ejecuciones de comprobación previa, validación y plugins
-referenciadas, el resumen criptográfico del tarball preparado y los selectores del registro principal.
-El resultado se debe confirmar de forma independiente cuando el flujo de trabajo finalice correctamente:
+El flujo de trabajo de publicación verifica las identidades de las ejecuciones indicadas de comprobación previa, validación y plugins,
+el resumen criptográfico del tarball preparado y los selectores del registro del paquete principal.
+Se confirma el resultado de forma independiente después de que el flujo de trabajo finalice correctamente:
 
 ```bash
 npm view openclaw@YYYY.M.P version --userconfig "$(mktemp)"
 npm view openclaw@extended-stable version --userconfig "$(mktemp)"
 ```
 
-Ambos comandos deben devolver `YYYY.M.P`. Si la publicación se completa correctamente, pero falla la
-lectura de verificación del selector, no se debe volver a publicar la versión inmutable del paquete. Se debe usar el
+Ambos comandos deben devolver `YYYY.M.P`. Si la publicación finaliza correctamente, pero falla la
+relectura de los selectores, no se debe volver a publicar la versión inmutable del paquete. Se utiliza el
 único comando de reparación `npm dist-tag add openclaw@YYYY.M.P extended-stable`
-mostrado en el resumen de ejecución permanente del flujo de trabajo fallido y, después, repetir ambas
-lecturas de verificación independientes. Revertir al selector anterior es una decisión independiente del operador,
-no la ruta de reparación de la lectura de verificación.
+impreso en el resumen de ejecución permanente del flujo de trabajo fallido y, a continuación, se repiten ambas
+relecturas independientes. La reversión al selector anterior es una decisión independiente del operador,
+no la ruta de reparación de la relectura.
 
-La documentación pública de soporte designa inicialmente Slack, Discord y Codex como
+Inicialmente, la documentación pública de soporte designa Slack, Discord y Codex como
 superficies de plugins cubiertas por la estabilidad extendida. Esa lista es una declaración de soporte, no
-una lista permitida del código de publicación: todos los plugins oficiales publicables en npm siguen la
+una lista de permitidos del código de publicación: todos los plugins oficiales publicables en npm siguen la
 misma ruta de publicación con la versión exacta.
 
-La lista de comprobación regular que aparece a continuación sigue rigiendo las publicaciones beta, `latest`, de versiones de GitHub,
-de plugins, de macOS, de Windows y de otras plataformas. No se deben ejecutar esos
+La lista de comprobación regular que aparece a continuación sigue rigiendo la publicación de versiones beta, `latest`, versiones de GitHub,
+plugins, macOS, Windows y otras plataformas. No se deben ejecutar esos
 pasos para esta ruta de estabilidad extendida exclusiva de npm.
 
 ## Lista de comprobación regular para operadores de versiones
 
-Esta lista de comprobación representa públicamente el flujo de publicación. Las credenciales privadas, la firma, la notarización, la recuperación de dist-tags y los detalles de reversión de emergencia permanecen en el manual de publicación exclusivo de los mantenedores.
+Esta lista de comprobación constituye la estructura pública del flujo de publicación. Las credenciales privadas, la firma, la notarización, la recuperación de dist-tags y los detalles de reversión de emergencia permanecen en el manual de publicación exclusivo para mantenedores.
 
-1. Se debe comenzar desde la versión actual de `main`: obtener los últimos cambios, confirmar que el commit de destino esté enviado y confirmar que el Pipeline de CI de `main` esté lo suficientemente estable como para crear una rama a partir de él.
-2. Se debe crear `release/YYYY.M.PATCH` a partir de ese commit. Los backports son opcionales; solo se debe aplicar el conjunto seleccionado por el operador. Se deben actualizar todas las ubicaciones de versión necesarias, ejecutar `pnpm release:prep`, completar las correcciones de la versión y los forward ports necesarios, y revisar `src/plugins/compat/registry.ts` junto con `src/commands/doctor/shared/deprecation-compat.ts`.
-3. Se debe inmovilizar el commit previo al registro de cambios que contiene el producto completo como **SHA del código**. Se debe ejecutar la comprobación previa determinista del código fuente y, después, usar `node scripts/full-release-validation-at-sha.mjs --sha <code-sha> --target-ref release/YYYY.M.PATCH`. Esto fija las herramientas de confianza del flujo de trabajo mientras la matriz completa de Vitest, Docker, QA, paquetes y rendimiento se ejecuta sobre el SHA exacto del código.
-4. Se deben clasificar los fallos antes de editar. Un fallo del producto o del código crea un SHA del código nuevo y exige una validación completa correcta para ese SHA. Un fallo del flujo de trabajo, del entorno de pruebas, de las credenciales, de la aprobación o de la infraestructura se corrige en la superficie que lo controla y se vuelve a ejecutar con el mismo SHA del código.
-5. Solo cuando el SHA del código se haya validado correctamente, se debe generar la sección superior de `CHANGELOG.md` a partir de los PR fusionados y los commits directos desde la última etiqueta de una versión publicada alcanzable. Las entradas deben estar orientadas al usuario y no contener duplicados. Cuando una etiqueta de versión publicada divergente o un forward port posterior vuelva a asociar PR ya publicados, se debe pasar explícitamente como `--shipped-ref`.
-6. Solo se debe confirmar `CHANGELOG.md`. Este commit es el **SHA de la versión**. La diferencia completa entre el SHA del código y el SHA de la versión debe ser exactamente `CHANGELOG.md`; cualquier otra ruta modificada devuelve la publicación al paso 2.
-7. Se debe ejecutar la Validación completa de la versión fijada por SHA para el SHA de la versión con la reutilización de pruebas habilitada. El proceso principal ligero debe registrar `changelog-only-release-v1`, apuntar al SHA del código validado y no despachar ningún proceso secundario del producto. Esto reutiliza las pruebas del producto; no reutiliza los bytes del paquete.
-8. Se debe ejecutar `OpenClaw NPM Release` con `preflight_only=true` sobre el SHA o la etiqueta de la versión. Se debe guardar el `preflight_run_id` correcto. Esto compila y comprueba los bytes exactos del paquete que incluyen el registro de cambios final.
-9. Se debe etiquetar el SHA de la versión y, después, ejecutar el asistente de candidatos con el proceso principal correcto de validación del SHA de la versión y la comprobación previa de npm, en lugar de volver a despachar cualquiera de ellos:
+1. Comience desde la versión actual de `main`: obtenga la versión más reciente, confirme que el commit de destino se haya enviado y confirme que la CI de `main` esté lo suficientemente en verde como para crear una rama a partir de ella.
+2. Cree `release/YYYY.M.PATCH` a partir de ese commit. Los backports son opcionales; aplique únicamente el conjunto seleccionado por el operador. Incremente la versión en todas las ubicaciones requeridas, ejecute `pnpm release:prep`, complete las correcciones de la versión y los forward-ports requeridos, y revise `src/plugins/compat/registry.ts` junto con `src/commands/doctor/shared/deprecation-compat.ts`.
+3. Congele el commit anterior al registro de cambios que contiene el producto completo como **Code SHA**. Ejecute la comprobación preliminar determinista del código fuente y, a continuación, use `node scripts/full-release-validation-at-sha.mjs --sha <code-sha> --target-ref release/YYYY.M.PATCH`. Esto fija las herramientas de confianza del flujo de trabajo mientras la matriz completa de Vitest, Docker, QA, paquetes y rendimiento se ejecuta sobre el Code SHA exacto.
+4. Clasifique los fallos antes de editar. Un fallo del producto o del código genera un nuevo Code SHA y requiere una validación completa en verde para ese SHA. Un fallo del flujo de trabajo, del arnés, de las credenciales, de la aprobación o de la infraestructura se corrige en la superficie que lo posee y se vuelve a ejecutar sobre el mismo Code SHA.
+5. Solo cuando el Code SHA esté en verde, genere la sección superior de `CHANGELOG.md` a partir de los pull requests fusionados y los commits directos desde la última etiqueta publicada alcanzable. Mantenga las entradas orientadas al usuario y sin duplicados. Cuando una etiqueta publicada divergente o un forward-port posterior vuelva a asociar pull requests ya publicados, pásela explícitamente como `--shipped-ref`.
+6. Confirme únicamente `CHANGELOG.md`. Este commit es el **Release SHA**. El diff completo entre el Code SHA y el Release SHA debe ser exactamente `CHANGELOG.md`; cualquier otra ruta modificada devuelve la publicación al paso 2.
+7. Ejecute la validación completa de la publicación fijada por SHA para el Release SHA con la reutilización de pruebas habilitada. El proceso principal ligero debe registrar `changelog-only-release-v1`, apuntar al Code SHA en verde y no despachar ningún flujo secundario del producto. Esto reutiliza las pruebas del producto, pero no reutiliza los bytes del paquete.
+8. Ejecute `OpenClaw NPM Release` con `preflight_only=true` sobre el Release SHA o la etiqueta. Guarde el `preflight_run_id` correcto. Esto compila y comprueba los bytes exactos del paquete que incluyen el registro de cambios final.
+9. Etiquete el Release SHA y, a continuación, ejecute el asistente de candidatos con el proceso principal de validación correcto del Release SHA y la comprobación preliminar de npm, en lugar de volver a despachar cualquiera de ellos:
 
    ```bash
    pnpm release:candidate -- \
@@ -186,45 +195,45 @@ Esta lista de comprobación representa públicamente el flujo de publicación. L
      --skip-dispatch
    ```
 
-   Para estable, pase también `--windows-node-tag vX.Y.Z`. El asistente verifica la procedencia de las notas de la versión, los bytes de la comprobación preliminar de npm, la prueba de instalación/actualización de Parallels, la prueba del paquete de Telegram y los planes de publicación de plugins; después, imprime el comando de publicación.
+   Para una publicación estable, pase también `--windows-node-tag vX.Y.Z`. El asistente verifica la procedencia de las notas de la versión, los bytes de la comprobación preliminar de npm, las pruebas de instalación y actualización de Parallels, las pruebas del paquete de Telegram y los planes de publicación de los plugins; después, muestra el comando de publicación.
 
-   `OpenClaw Release Publish` despacha los paquetes de plugins seleccionados o todos los publicables a npm y, en paralelo, el mismo conjunto a ClawHub; después, promociona el artefacto preparado de la comprobación preliminar de npm de OpenClaw con la dist-tag correspondiente una vez que la publicación de los plugins en npm se completa correctamente. El checkout de la versión sigue siendo la raíz del producto y los datos, mientras que la planificación y la verificación final se ejecutan desde el checkout exacto y de confianza del código fuente del workflow, de modo que un commit de versión anterior no pueda utilizar silenciosamente herramientas de publicación obsoletas. Antes de iniciar cualquier proceso hijo de publicación, renderiza y almacena en caché el cuerpo exacto de la versión de GitHub. Cuando la sección `CHANGELOG.md` completa correspondiente cabe dentro del límite de 125,000 caracteres de GitHub y del límite de seguridad correspondiente de 125,000 bytes del renderizador, la página contiene esa sección `## YYYY.M.PATCH` exacta, incluido su encabezado. Cuando la sección de origen no cabe, la página conserva las notas editoriales agrupadas exactas y sustituye el registro de contribuciones sobredimensionado por un enlace estable al registro completo en `CHANGELOG.md` fijado mediante la etiqueta; nunca se publican registros parciales ni viñetas truncadas. El workflow elige ese cuerpo completo o compacto antes de añadir `### Release verification`; si la cola de pruebas superara el límite, conserva el cuerpo canónico y utiliza en su lugar las pruebas adjuntas inmutables. Las versiones estables publicadas en npm `latest` se convierten en la versión más reciente de GitHub, mientras que las versiones estables de mantenimiento conservadas en npm `beta` se crean con `latest=false` de GitHub. El workflow también carga en la versión de GitHub las pruebas de dependencias de la comprobación preliminar, el manifiesto de validación completa y las pruebas de verificación del registro posteriores a la publicación para responder a incidentes posteriores a la versión. Imprime inmediatamente los identificadores de las ejecuciones hijas, aprueba automáticamente las puertas del entorno de publicación que el token del workflow tiene permiso para aprobar, resume los trabajos hijos fallidos con los finales de los registros, crea por adelantado la página de borrador de la versión de GitHub y promociona simultáneamente los recursos de Windows y Android con la publicación de OpenClaw en npm, finaliza la página de la versión y las pruebas de dependencias una vez que esas etapas se completan correctamente, espera a ClawHub siempre que se publique OpenClaw en npm, ejecuta después el verificador beta de la rama principal de confianza y carga pruebas posteriores a la publicación para la versión de GitHub, el paquete de npm, los paquetes de plugins de npm seleccionados, los paquetes de ClawHub seleccionados, los identificadores de ejecuciones de workflows hijos y el identificador opcional de la ejecución de Telegram en NPM. El verificador de arranque de ClawHub exige la ruta y el SHA exactos del workflow de la rama principal de confianza, los intentos de ejecución del productor y el terminal, el SHA de la versión, el conjunto de paquetes solicitado, la tupla inmutable del artefacto del paquete y el artefacto de lectura de confirmación del registro terminal; no se acepta una ejecución correcta heredada desde la referencia de la versión.
+   `OpenClaw Release Publish` despacha en paralelo los paquetes de plugins seleccionados o todos los publicables tanto a npm como a ClawHub y, una vez que la publicación de los plugins en npm se completa correctamente, promociona el artefacto preparado de la comprobación preliminar de npm de OpenClaw con la etiqueta de distribución correspondiente. El checkout de la publicación sigue siendo la raíz del producto y de los datos, mientras que la planificación y la verificación final se ejecutan desde el checkout exacto y de confianza del código fuente del flujo de trabajo, para que un commit de publicación anterior no pueda usar silenciosamente herramientas de publicación obsoletas. Antes de que se inicie cualquier flujo secundario de publicación, representa y almacena en caché el cuerpo exacto de la publicación de GitHub. Cuando la sección completa correspondiente de `CHANGELOG.md` cabe dentro del límite de 125,000 caracteres de GitHub y del límite de seguridad correspondiente de 125,000 bytes del representador, la página contiene esa sección exacta de `## YYYY.M.PATCH`, incluido su encabezado. Cuando la sección de origen no cabe, la página conserva las notas editoriales agrupadas exactas y sustituye el registro de contribuciones de tamaño excesivo por un enlace estable al registro completo del `CHANGELOG.md` fijado a la etiqueta; nunca se publican registros parciales ni viñetas truncadas. El flujo de trabajo elige ese cuerpo completo o compacto antes de añadir `### Release verification`; si el final de las pruebas superara el límite, conserva el cuerpo canónico y utiliza en su lugar las pruebas inmutables adjuntas. Las publicaciones estables publicadas en npm `latest` se convierten en la publicación más reciente de GitHub, mientras que las publicaciones estables de mantenimiento conservadas en npm `beta` se crean con `latest=false` de GitHub. El flujo de trabajo también carga en la publicación de GitHub las pruebas de dependencias de la comprobación preliminar, el manifiesto de la validación completa y las pruebas de verificación del registro posteriores a la publicación para responder a incidentes posteriores a la publicación. Muestra inmediatamente los identificadores de los procesos secundarios, aprueba automáticamente las puertas del entorno de publicación que el token del flujo de trabajo puede aprobar, resume los trabajos secundarios fallidos con los finales de sus registros, crea por adelantado la página de publicación de GitHub como borrador y promociona los recursos de Windows y Android simultáneamente con la publicación de OpenClaw en npm, completa la página de publicación y las pruebas de dependencias cuando esas etapas finalizan correctamente, espera a ClawHub siempre que se publique OpenClaw en npm y, a continuación, ejecuta el verificador beta de la rama principal de confianza y carga las pruebas posteriores a la publicación correspondientes a la publicación de GitHub, el paquete de npm, los paquetes de plugins de npm seleccionados, los paquetes de ClawHub seleccionados, los identificadores de los procesos secundarios del flujo de trabajo y el identificador opcional del proceso de Telegram en NPM. El verificador de arranque de ClawHub requiere la ruta y el SHA exactos del flujo de trabajo de la rama principal de confianza, los intentos de ejecución del productor y del proceso terminal, el Release SHA, el conjunto de paquetes solicitado, la tupla inmutable del artefacto del paquete y el artefacto terminal de lectura del registro; no se acepta una ejecución correcta heredada de la referencia de publicación.
 
-   Después, ejecute la aceptación del paquete posterior a la publicación con el paquete `openclaw@YYYY.M.PATCH-beta.N` o `openclaw@beta` publicado. Si una versión preliminar enviada o publicada necesita una corrección, cree el siguiente número de versión preliminar correspondiente; nunca elimine ni reescriba la anterior.
+   A continuación, ejecute la aceptación del paquete posterior a la publicación sobre el paquete `openclaw@YYYY.M.PATCH-beta.N` o `openclaw@beta` publicado. Si una versión preliminar enviada o publicada necesita una corrección, cree el siguiente número de versión preliminar correspondiente; nunca elimine ni reescriba el anterior.
 
-10. Tras un intento de publicación fallido, mantenga el SHA de la versión sin cambios, a menos que el fallo demuestre un defecto del producto o del registro de cambios. Reanude los procesos hijos y artefactos inmutables completados correctamente; nunca vuelva a compilar ni a publicar una versión de paquete que ya se haya completado correctamente.
-11. Para estable, continúe únicamente después de que la beta o la candidata a versión examinada cuente con las pruebas de validación requeridas. La publicación estable en npm también pasa por `OpenClaw Release Publish`, reutilizando el artefacto correcto de la comprobación preliminar mediante `preflight_run_id`. La preparación de la versión estable de macOS también requiere los elementos empaquetados `.zip`, `.dmg`, `.dSYM.zip` y el `appcast.xml` actualizado en `main`; el workflow de publicación de macOS publica automáticamente el appcast firmado en el `main` público después de verificar los recursos de la versión, o abre/actualiza un pull request del appcast si la protección de la rama bloquea el envío directo. La preparación estable de Windows Hub requiere los recursos firmados `OpenClawCompanion-Setup-x64.exe`, `OpenClawCompanion-Setup-arm64.exe` y `OpenClawCompanion-SHA256SUMS.txt` en la versión de GitHub de OpenClaw. Pase la etiqueta exacta de la versión firmada `openclaw/openclaw-windows-node` como `windows_node_tag` y su mapa de resúmenes de instaladores aprobado para la candidata como `windows_node_installer_digests`; `OpenClaw Release Publish` conserva el borrador de la versión, despacha `Windows Node Release` y verifica los tres recursos antes de la publicación.
-12. Después de la publicación, ejecute el verificador de npm posterior a la publicación, la prueba E2E independiente y opcional de Telegram con el paquete de npm publicado cuando se necesite una prueba del canal posterior a la publicación, la promoción de la dist-tag cuando sea necesaria, verifique la página generada de la versión de GitHub, ejecute los pasos del anuncio de la versión y, después, complete el [cierre estable de la rama principal](#stable-main-closeout) antes de considerar terminada una versión estable.
+10. Tras un intento de publicación fallido, mantenga el Release SHA sin cambios, salvo que el fallo demuestre un defecto del producto o del registro de cambios. Reanude los procesos secundarios y artefactos inmutables que se hayan completado correctamente; nunca vuelva a compilar ni publicar una versión de paquete que ya se haya completado correctamente.
+11. Para una publicación estable, continúe únicamente cuando la beta o la versión candidata aprobada disponga de las pruebas de validación requeridas. La publicación estable en npm también pasa por `OpenClaw Release Publish`, reutilizando el artefacto correcto de la comprobación preliminar mediante `preflight_run_id`. La preparación de la publicación estable para macOS también requiere los elementos empaquetados `.zip`, `.dmg`, `.dSYM.zip` y el `appcast.xml` actualizado en `main`; el flujo de trabajo de publicación de macOS publica automáticamente el appcast firmado en el `main` público después de verificar los recursos de la publicación, o abre o actualiza un pull request del appcast si la protección de la rama bloquea el envío directo. La preparación estable de Windows Hub requiere los recursos firmados `OpenClawCompanion-Setup-x64.exe`, `OpenClawCompanion-Setup-arm64.exe` y `OpenClawCompanion-SHA256SUMS.txt` en la publicación de GitHub de OpenClaw. Pase la etiqueta exacta de la publicación firmada `openclaw/openclaw-windows-node` como `windows_node_tag` y su mapa de resúmenes de instaladores aprobado por el candidato como `windows_node_installer_digests`; `OpenClaw Release Publish` conserva el borrador de la publicación, despacha `Windows Node Release` y verifica los tres recursos antes de la publicación.
+12. Después de publicar, ejecute el verificador posterior a la publicación de npm, la prueba E2E independiente y opcional de Telegram sobre el npm publicado cuando se requieran pruebas del canal posteriores a la publicación, la promoción de la etiqueta de distribución cuando sea necesaria, verifique la página generada de la publicación de GitHub, ejecute los pasos del anuncio de la publicación y, a continuación, complete el [cierre estable de la rama principal](#stable-main-closeout) antes de considerar finalizada una publicación estable.
 
 ## Cierre estable de la rama principal
 
 La publicación estable no está completa hasta que `main` contenga el estado real de la versión publicada.
 
-1. Parta de la última versión reciente de `main`. Audite `release/YYYY.M.PATCH` con respecto a ella y traslade hacia delante las correcciones reales ausentes de `main`. No fusione a ciegas adaptadores de compatibilidad, pruebas o validación exclusivos de la versión en el `main` más reciente.
-2. Para la ruta normal, establezca `main` en la versión estable publicada. Un cierre tardío puede utilizar `main` después de que haya avanzado a una versión CalVer estable posterior de OpenClaw; no revierta a una versión anterior un ciclo de publicación ya iniciado únicamente para cerrar la versión anterior. El validador sigue exigiendo la sección exacta del registro de cambios publicado y la entrada del appcast, y registra la versión y el SHA reales de `main`. Ejecute `pnpm release:prep` después de cualquier cambio de la versión raíz y, después, `pnpm deps:shrinkwrap:generate`.
-3. Haga que la sección `## YYYY.M.PATCH` de `CHANGELOG.md` en `main` coincida exactamente con la rama de la versión etiquetada. Incluya la actualización estable de `appcast.xml` cuando la versión de Mac haya publicado una.
-4. No añada `YYYY.M.PATCH+1`, una versión beta ni una sección futura vacía del registro de cambios a `main` hasta que el operador inicie explícitamente ese ciclo de publicación.
-5. Ejecute `pnpm release:generated:check`, `pnpm deps:shrinkwrap:check` y `OPENCLAW_TESTBOX=1 pnpm check:changed`. Envíe los cambios y, después, verifique que `origin/main` contiene la versión publicada y el registro de cambios antes de considerar terminada la versión estable.
+1. Comience desde la versión más reciente y actualizada de `main`. Audite `release/YYYY.M.PATCH` comparándolo con ella y aplique mediante forward-port las correcciones reales que falten en `main`. No fusione a ciegas en la versión más reciente de `main` los adaptadores de compatibilidad, pruebas o validación exclusivos de la publicación.
+2. Para la ruta normal, establezca `main` en la versión estable publicada. Un cierre tardío puede usar `main` después de que haya avanzado a una versión CalVer estable posterior de OpenClaw; no reduzca la versión de un ciclo de publicación ya iniciado únicamente para cerrar la publicación anterior. El validador sigue requiriendo la sección exacta del registro de cambios publicado y la entrada del appcast, y registra la versión y el SHA reales de `main`. Ejecute `pnpm release:prep` después de cualquier cambio de la versión raíz y, a continuación, `pnpm deps:shrinkwrap:generate`.
+3. Haga que la sección `## YYYY.M.PATCH` de `CHANGELOG.md` en `main` coincida exactamente con la rama de publicación etiquetada. Incluya la actualización estable de `appcast.xml` cuando la publicación de macOS haya publicado una.
+4. No añada `YYYY.M.PATCH+1`, una versión beta ni una sección vacía del registro de cambios futuro a `main` hasta que el operador inicie explícitamente ese ciclo de publicación.
+5. Ejecute `pnpm release:generated:check`, `pnpm deps:shrinkwrap:check` y `OPENCLAW_TESTBOX=1 pnpm check:changed`. Envíe los cambios y, a continuación, verifique que `origin/main` contenga la versión publicada y el registro de cambios antes de considerar terminada la publicación estable.
 6. Mantenga actualizadas las variables del repositorio `RELEASE_ROLLBACK_DRILL_ID` y `RELEASE_ROLLBACK_DRILL_DATE` después de cada simulacro privado de reversión.
 
-`OpenClaw Stable Main Closeout` comienza a partir del envío a `main` que contiene la versión publicada, el registro de cambios y el appcast después de la publicación estable. Lee las pruebas inmutables posteriores a la publicación para vincular la etiqueta publicada con sus ejecuciones de validación completa de la versión y publicación; después, verifica el estado estable de la rama principal, la versión, el periodo de observación estable obligatorio y las pruebas de rendimiento bloqueantes. Adjunta un manifiesto de cierre inmutable y una suma de comprobación a la versión de GitHub. El activador automático mediante envío omite las versiones heredadas anteriores a las pruebas inmutables posteriores a la publicación y nunca considera esa omisión como un cierre completado.
+`OpenClaw Stable Main Closeout` comienza a partir del envío de `main` que contiene la versión publicada, el registro de cambios y el appcast después de la publicación estable. Lee las pruebas inmutables posteriores a la publicación para vincular la etiqueta publicada con sus procesos de validación completa de la publicación y de publicación; a continuación, verifica el estado estable de la rama principal, la publicación, el periodo de observación estable obligatorio y las pruebas de rendimiento bloqueantes. Adjunta a la publicación de GitHub un manifiesto de cierre inmutable y su suma de comprobación. El desencadenador automático por envío omite las publicaciones heredadas anteriores a las pruebas inmutables posteriores a la publicación y nunca considera esa omisión como un cierre completado.
 
-Un cierre completo requiere ambos recursos y una suma de comprobación correspondiente. Un manifiesto parcial reproduce su SHA de `main` registrado y el simulacro de reversión para regenerar bytes idénticos; después, adjunta la suma de comprobación que falta. Un par no válido, o una suma de comprobación sin manifiesto, sigue siendo bloqueante. Una ejecución activada mediante envío sin las variables de repositorio del simulacro de reversión se omite sin completar el cierre; la ausencia de un registro del simulacro o uno con más de 90 días de antigüedad sigue bloqueando el cierre manual respaldado por pruebas. Los comandos de recuperación privados permanecen en el manual de operaciones exclusivo para responsables de mantenimiento. Utilice el despacho manual únicamente para reparar o reproducir un cierre estable respaldado por pruebas.
+Un cierre completo requiere tanto los recursos como una suma de comprobación coincidente. Un manifiesto parcial reproduce el SHA de `main` y el simulacro de reversión registrados para regenerar bytes idénticos y, a continuación, adjunta la suma de comprobación que falta; un par no válido, o una suma de comprobación sin manifiesto, sigue siendo bloqueante. Una ejecución desencadenada por un envío sin variables del repositorio para el simulacro de reversión se omite sin completar el cierre; la ausencia de un registro del simulacro, o uno con más de 90 días de antigüedad, sigue bloqueando el cierre manual respaldado por pruebas. Los comandos privados de recuperación permanecen en el manual exclusivo para responsables de mantenimiento. Use el despacho manual únicamente para reparar o reproducir un cierre estable respaldado por pruebas.
 
-Si el proceso principal de publicación de la versión falló solo después de adjuntar las pruebas inmutables de npm/plugins, repare y publique primero todos los recursos de plataformas estables. Después, un responsable de mantenimiento puede despachar manualmente el cierre con `allow_failed_publish_recovery=true`; ese modo solo acepta un proceso principal fallido y completado, y exige además los contratos exactos de los recursos de Android y Windows, los resúmenes SHA-256 de GitHub, la verificación de las sumas de comprobación, la procedencia de Android y una promoción correcta de Windows despachada por el proceso principal cuyas comprobaciones de Authenticode y resúmenes aprobados para la candidata coincidan con los instaladores publicados, junto con las comprobaciones normales de macOS/appcast. El cierre automático mediante envío nunca habilita este modo de recuperación.
+Si el proceso principal de publicación falló únicamente después de adjuntar las pruebas inmutables de npm o de los plugins, repare y publique primero todos los recursos de las plataformas estables. A continuación, un responsable de mantenimiento puede despachar manualmente el cierre con `allow_failed_publish_recovery=true`; este modo solo acepta un proceso principal fallido y completado, y además requiere los contratos exactos de los recursos de Android y Windows, los resúmenes SHA-256 de GitHub, la verificación de las sumas de comprobación, la procedencia de Android y una promoción correcta de Windows despachada por el proceso principal cuyas comprobaciones de Authenticode y resúmenes aprobados por el candidato coincidan con los instaladores publicados, junto con las comprobaciones habituales de macOS y del appcast. El cierre automático por envío nunca habilita este modo de recuperación.
 
-Una etiqueta heredada de corrección alternativa puede reutilizar las pruebas del paquete base únicamente cuando la etiqueta de corrección se resuelva en el mismo commit de origen que la etiqueta estable base. Su versión de Android reutiliza el APK verificado de la etiqueta base y añade la procedencia correspondiente a la etiqueta de corrección. Una corrección con un origen diferente debe publicar y verificar sus propias pruebas del paquete y utilizar un `versionCode` de Android superior.
+Una etiqueta heredada de corrección alternativa solo puede reutilizar las pruebas del paquete base cuando la etiqueta de corrección se resuelva al mismo commit de origen que la etiqueta estable base. Su publicación de Android reutiliza el APK verificado de la etiqueta base y añade la procedencia de la etiqueta de corrección. Una corrección con un origen diferente debe publicar y verificar sus propias pruebas del paquete y usar un `versionCode` de Android más alto.
 
-## Comprobación preliminar de la versión
+## Comprobación preliminar de la publicación
 
-- Ejecute `pnpm check:test-types` antes de la comprobación preliminar de la versión para que el TypeScript de las pruebas siga cubierto fuera de la puerta local más rápida `pnpm check`.
-- Ejecute `pnpm check:architecture` antes de la comprobación preliminar de la versión para que las comprobaciones más amplias de ciclos de importación y límites de arquitectura estén correctas fuera de la puerta local más rápida.
-- Ejecute `pnpm build && pnpm ui:build` antes de `pnpm release:check` para que existan los artefactos de versión `dist/*` esperados y el paquete de Control UI para el paso de validación del empaquetado.
-- Ejecute `pnpm release:prep` después de incrementar la versión raíz y antes de etiquetar. Ejecuta todos los generadores deterministas de la versión que suelen quedar desactualizados después de un cambio de versión/configuración/API: versiones de plugins, archivos shrinkwrap de npm, inventario de plugins, esquema de configuración base, metadatos de configuración de los canales incluidos, referencia de la documentación de configuración, exportaciones del SDK de plugins, manifiesto del contrato de la API del SDK de plugins y paquetes de configuraciones regionales de Control UI. También bloquea hasta que las traducciones de las aplicaciones nativas y los recursos de configuraciones regionales generados por las plataformas coincidan con el inventario de origen; si están retrasados, espere a `Native App Locale Refresh` o despáchelo antes de fijar el SHA del código. `pnpm release:check` vuelve a ejecutar esas protecciones en modo de comprobación (incluidas las puertas estrictas de configuraciones regionales y el presupuesto de la superficie del SDK de plugins) e informa en una sola pasada de todos los fallos por contenido generado desactualizado antes de ejecutar las comprobaciones de publicación de paquetes.
-- La sincronización de versiones de plugins actualiza de forma predeterminada el paquete de runtime publicable `@openclaw/ai`, las versiones de paquetes de plugins oficiales y los límites inferiores existentes de `openclaw.compat.pluginApi` a la versión de OpenClaw. Trate ese campo como el límite inferior de la API del SDK/runtime de plugins, no solo como una copia de la versión del paquete: para las versiones exclusivas de plugins que mantengan intencionadamente la compatibilidad con hosts de OpenClaw anteriores, conserve el límite inferior en la API del host compatible más antiguo y documente esa decisión en la prueba de publicación del plugin.
-- Ejecute el workflow manual `Full Release Validation` antes de aprobar la versión para iniciar todos los entornos de pruebas previas a la versión desde un único punto de entrada. Acepta una rama, una etiqueta o un SHA completo de commit, despacha manualmente `CI` y despacha `OpenClaw Release Checks` para las vías de pruebas rápidas de instalación, aceptación de paquetes, comprobaciones de paquetes entre sistemas operativos, paridad de QA Lab, Matrix y Telegram. Las ejecuciones estables y completas siempre incluyen pruebas exhaustivas en vivo/E2E y un periodo de observación de la ruta de publicación de Docker; `run_release_soak=true` se conserva para un periodo de observación beta explícito. La aceptación de paquetes proporciona la prueba E2E canónica de Telegram con el paquete durante la validación de la candidata, evitando un segundo sondeador en vivo simultáneo.
+- Ejecute `pnpm check:test-types` antes de la comprobación previa al lanzamiento para que el TypeScript de las pruebas siga cubierto fuera de la puerta local más rápida `pnpm check`.
+- Ejecute `pnpm check:architecture` antes de la comprobación previa al lanzamiento para que las comprobaciones más amplias de ciclos de importación y límites de arquitectura estén correctas fuera de la puerta local más rápida.
+- Ejecute `pnpm build && pnpm ui:build` antes de `pnpm release:check` para que los artefactos de lanzamiento `dist/*` esperados y el paquete de Control UI existan para el paso de validación del empaquetado.
+- Ejecute `pnpm release:prep` después de incrementar la versión raíz y antes de crear la etiqueta. Ejecuta todos los generadores deterministas de lanzamiento que suelen quedar desactualizados tras un cambio de versión, configuración o API: versiones de plugins, shrinkwraps de npm, inventario de plugins, esquema de configuración base, metadatos de configuración de canales incluidos, referencia de configuración de la documentación, exportaciones del SDK de plugins, manifiesto del contrato de API del SDK de plugins y paquetes de configuración regional de Control UI. También bloquea hasta que las traducciones de las aplicaciones nativas y los recursos de configuración regional generados por la plataforma coincidan con el inventario de origen; si están atrasados, espere a `Native App Locale Refresh` o ejecútelo antes de fijar el SHA del código. `pnpm release:check` vuelve a ejecutar esas protecciones en modo de comprobación (incluidas las puertas estrictas de configuración regional y el presupuesto de superficie del SDK de plugins) e informa de todos los fallos de desajuste generado en una sola pasada antes de ejecutar las comprobaciones de lanzamiento de paquetes.
+- La sincronización de versiones de plugins actualiza de forma predeterminada el paquete de tiempo de ejecución publicable `@openclaw/ai`, las versiones de los paquetes de plugins oficiales y los mínimos existentes de `openclaw.compat.pluginApi` a la versión de lanzamiento de OpenClaw. Trate ese campo como la versión mínima de la API del SDK o del tiempo de ejecución del plugin, no solo como una copia de la versión del paquete: para lanzamientos exclusivos de plugins que mantengan intencionadamente la compatibilidad con hosts de OpenClaw anteriores, conserve como mínimo la API de host compatible más antigua y documente esa decisión en la evidencia del lanzamiento del plugin.
+- Ejecute manualmente el flujo de trabajo `Full Release Validation` antes de aprobar el lanzamiento para iniciar todos los entornos de pruebas previas al lanzamiento desde un único punto de entrada. Acepta una rama, etiqueta o SHA de confirmación completo, ejecuta manualmente `CI` y ejecuta `OpenClaw Release Checks` para las vías de comprobación rápida de instalación, aceptación de paquetes, comprobaciones de paquetes entre sistemas operativos, paridad de QA Lab, Matrix y Telegram. Las ejecuciones estables y completas siempre incluyen pruebas exhaustivas en vivo/E2E y de resistencia de la ruta de lanzamiento de Docker; `run_release_soak=true` se conserva para una prueba de resistencia beta explícita. Package Acceptance proporciona la prueba E2E canónica de Telegram para el paquete durante la validación del candidato, lo que evita un segundo sondeador en vivo simultáneo.
 
-  Proporcione `release_package_spec` después de publicar una beta para reutilizar el paquete de npm publicado en las comprobaciones de la versión, la aceptación de paquetes y la prueba E2E de Telegram con el paquete sin volver a compilar el archivo tar de la versión. Proporcione `npm_telegram_package_spec` únicamente cuando Telegram deba utilizar un paquete publicado diferente al del resto de la validación de la versión. Proporcione `package_acceptance_package_spec` cuando la aceptación de paquetes deba utilizar un paquete publicado diferente de la especificación del paquete de la versión. Proporcione `evidence_package_spec` cuando el informe de pruebas de la versión deba demostrar que la validación coincide con un paquete de npm publicado sin imponer la prueba E2E de Telegram.
+  Proporcione `release_package_spec` después de publicar una beta para reutilizar el paquete npm distribuido en las comprobaciones de lanzamiento, Package Acceptance y las pruebas E2E de Telegram del paquete sin volver a compilar el tarball de lanzamiento. Proporcione `npm_telegram_package_spec` solo cuando Telegram deba utilizar un paquete publicado distinto del resto de la validación del lanzamiento. Proporcione `package_acceptance_package_spec` cuando Package Acceptance deba utilizar un paquete publicado distinto de la especificación del paquete de lanzamiento. Proporcione `evidence_package_spec` cuando el informe de evidencias del lanzamiento deba demostrar que la validación coincide con un paquete npm publicado sin forzar las pruebas E2E de Telegram.
 
   ```bash
   node scripts/full-release-validation-at-sha.mjs \
@@ -232,9 +241,9 @@ Una etiqueta heredada de corrección alternativa puede reutilizar las pruebas de
     --target-ref release/YYYY.M.PATCH
   ```
 
-- Ejecute el flujo de trabajo manual `Package Acceptance` cuando necesite una prueba por un canal secundario para un paquete candidato mientras continúa el trabajo de publicación. Use `source=npm` para `openclaw@beta`, `openclaw@latest` o una versión de publicación exacta; `source=ref` para empaquetar una rama/etiqueta/SHA de `package_ref` de confianza con el entorno de pruebas `workflow_ref` actual; `source=url` para un tarball HTTPS público con un SHA-256 obligatorio y una política estricta de URL públicas; `source=trusted-url` para una política de fuente de confianza con nombre que use `trusted_source_id` y SHA-256 obligatorios; o `source=artifact` para un tarball cargado por otra ejecución de GitHub Actions.
+- Ejecute manualmente el flujo de trabajo `Package Acceptance` cuando desee obtener evidencia por un canal secundario para un paquete candidato mientras continúa el trabajo de lanzamiento. Utilice `source=npm` para `openclaw@beta`, `openclaw@latest` o una versión de lanzamiento exacta; `source=ref` para empaquetar una rama, etiqueta o SHA de confianza de `package_ref` con el arnés actual `workflow_ref`; `source=url` para un tarball HTTPS público con un SHA-256 obligatorio y una política estricta de URL públicas; `source=trusted-url` para una política de origen de confianza con nombre que utilice obligatoriamente `trusted_source_id` y SHA-256; o `source=artifact` para un tarball cargado por otra ejecución de GitHub Actions.
 
-  El flujo de trabajo resuelve el candidato como `package-under-test`, reutiliza el programador de publicaciones E2E de Docker con ese tarball y puede ejecutar el control de calidad de Telegram con el mismo tarball mediante `telegram_mode=mock-openai` o `telegram_mode=live-frontier`. Cuando los carriles de Docker seleccionados incluyen `published-upgrade-survivor`, el artefacto del paquete es el candidato y `published_upgrade_survivor_baseline` selecciona la línea base publicada. `update-restart-auth` usa el paquete candidato tanto como CLI instalada como paquete sometido a prueba, por lo que ejercita la ruta de reinicio administrado del comando de actualización del candidato.
+  El flujo de trabajo resuelve el candidato como `package-under-test`, reutiliza el planificador de lanzamientos E2E de Docker con ese tarball y puede ejecutar el control de calidad de Telegram con el mismo tarball mediante `telegram_mode=mock-openai` o `telegram_mode=live-frontier`. Cuando las vías de Docker seleccionadas incluyen `published-upgrade-survivor`, el artefacto del paquete es el candidato y `published_upgrade_survivor_baseline` selecciona la referencia publicada. `update-restart-auth` utiliza el paquete candidato tanto como CLI instalada como paquete sometido a prueba, por lo que ejercita la ruta de reinicio administrado del comando de actualización del candidato.
 
   Ejemplo:
 
@@ -243,61 +252,61 @@ Una etiqueta heredada de corrección alternativa puede reutilizar las pruebas de
   ```
 
   Perfiles habituales:
-  - `smoke`: carriles de instalación/canal/agente, red del Gateway y recarga de configuración
-  - `package`: carriles nativos del artefacto para paquete/actualización/reinicio/plugins sin OpenWebUI ni ClawHub en vivo
-  - `product`: perfil de paquete más canales MCP, limpieza de Cron/subagentes, búsqueda web de OpenAI y OpenWebUI
-  - `full`: segmentos de la ruta de publicación de Docker con OpenWebUI
-  - `custom`: selección exacta de `docker_lanes` para una nueva ejecución específica
+  - `smoke`: vías de instalación/canal/agente, red del Gateway y recarga de configuración
+  - `package`: vías nativas de artefactos para paquetes/actualizaciones/reinicios/plugins sin OpenWebUI ni ClawHub en vivo
+  - `product`: perfil de paquete más canales MCP, limpieza de cron/subagentes, búsqueda web de OpenAI y OpenWebUI
+  - `full`: segmentos de la ruta de lanzamiento de Docker con OpenWebUI
+  - `custom`: selección exacta de `docker_lanes` para una repetición específica
 
-- Ejecute directamente el flujo de trabajo manual `CI` cuando solo necesite una cobertura de CI normal y determinista para el candidato de publicación. Las ejecuciones manuales de CI omiten la delimitación por cambios y fuerzan los fragmentos de Linux Node, los fragmentos de plugins incluidos, los fragmentos de contratos de plugins y canales, la compatibilidad con Node 22, `check-*`, `check-additional-*`, las comprobaciones rápidas del artefacto compilado, las comprobaciones de documentación, las Skills de Python, Windows, macOS y los carriles de internacionalización de Control UI. Las ejecuciones manuales independientes de CI solo ejecutan Android cuando se inician con `include_android=true`; `Full Release Validation` pasa esa entrada a su CI secundaria.
+- Ejecute manualmente y de forma directa el flujo de trabajo `CI` cuando solo necesite una cobertura determinista de CI normal para el candidato de lanzamiento. Las ejecuciones manuales de CI omiten la delimitación por cambios y fuerzan los segmentos de Linux con Node, los segmentos de plugins incluidos, los segmentos de contratos de plugins y canales, la compatibilidad con Node 22, `check-*`, `check-additional-*`, las comprobaciones rápidas de artefactos compilados, las comprobaciones de documentación, las Skills de Python y las vías de Windows, macOS e internacionalización de Control UI. Las ejecuciones manuales independientes de CI solo ejecutan Android cuando se inician con `include_android=true`; `Full Release Validation` pasa esa entrada a su ejecución secundaria de CI.
 
   ```bash
   gh workflow run ci.yml --ref release/YYYY.M.PATCH -f include_android=true
   ```
 
-- Ejecute `pnpm qa:otel:smoke` al validar la telemetría de publicación. Ejercita QA-lab mediante un receptor OTLP/HTTP local y verifica la exportación de trazas, métricas y registros, además de los atributos de traza delimitados y la ocultación de contenido e identificadores, sin requerir Opik, Langfuse ni otro recopilador externo.
-- Ejecute `pnpm qa:otel:collector-smoke` al validar la compatibilidad del recopilador. Enruta la misma exportación OTLP de QA-lab mediante un contenedor Docker real de OpenTelemetry Collector antes de las aserciones del receptor local.
-- Ejecute `pnpm qa:prometheus:smoke` al validar la extracción protegida de Prometheus. Ejercita QA-lab, rechaza las extracciones sin autenticar y verifica que las familias de métricas críticas para la publicación permanezcan libres de contenido de prompts, identificadores sin procesar, tokens de autenticación y rutas locales.
-- Ejecute `pnpm qa:observability:smoke` para ejecutar consecutivamente los carriles de comprobación rápida de OpenTelemetry y Prometheus desde el repositorio de código fuente.
-- Ejecute `pnpm release:check` antes de cada publicación etiquetada.
-- La comprobación previa `OpenClaw NPM Release` genera pruebas de publicación de las dependencias antes de empaquetar el tarball de npm. La puerta de vulnerabilidades de avisos de npm bloquea la publicación. Los informes de riesgo del manifiesto transitivo, de superficie de instalación y propiedad de dependencias, y de cambios en las dependencias son únicamente pruebas de publicación. El informe de cambios en las dependencias compara el candidato de publicación con la etiqueta de publicación accesible anterior. La comprobación previa carga las pruebas de dependencias como `openclaw-release-dependency-evidence-<tag>` y también las incorpora en `dependency-evidence/` dentro del artefacto preparado de comprobación previa de npm. La ruta de publicación real reutiliza ese artefacto de comprobación previa y después adjunta las mismas pruebas a la publicación de GitHub como `openclaw-<version>-dependency-evidence.zip`.
-- Ejecute `OpenClaw Release Publish` para la secuencia de publicación con cambios una vez que exista la etiqueta. Inicie las publicaciones beta y estables habituales desde `main` de confianza; la etiqueta de publicación sigue seleccionando el commit de destino exacto y puede apuntar a `release/YYYY.M.PATCH`. Las publicaciones alfa de Tideclaw permanecen en su rama alfa correspondiente. Pase el `preflight_run_id` de npm de OpenClaw correcto, el `full_release_validation_run_id` correcto y el `full_release_validation_run_attempt` exacto, y conserve el ámbito predeterminado de publicación de plugins `all-publishable` salvo que ejecute deliberadamente una reparación específica. El flujo de trabajo serializa la publicación de plugins en npm, la publicación de plugins en ClawHub y la publicación de OpenClaw en npm para que el paquete principal no se publique antes que sus plugins externalizados; la promoción de Windows y Android se ejecuta simultáneamente con la publicación principal en npm sobre la página de publicación en borrador. Las nuevas ejecuciones de publicación se pueden reanudar: una versión principal de npm ya publicada omite la ejecución principal después de que el flujo de trabajo demuestre que el tarball del registro coincide con el artefacto de comprobación previa de la etiqueta, y la promoción de Windows/Android se omite cuando la publicación ya contiene el contrato de artefactos verificado, por lo que un reintento solo repite las etapas fallidas. Las reparaciones específicas exclusivamente de plugins requieren `plugin_publish_scope=selected` y una lista de plugins no vacía. Las ejecuciones `all-publishable` exclusivamente de plugins requieren pruebas completas e inmutables de la comprobación previa y de la validación completa de la publicación; se rechazan las pruebas parciales.
-- La versión estable `OpenClaw Release Publish` requiere un `windows_node_tag` exacto después de que exista la publicación `openclaw/openclaw-windows-node` correspondiente que no sea una versión preliminar, además del mapa `windows_node_installer_digests` aprobado para el candidato. Antes de iniciar cualquier publicación secundaria, verifica que la publicación de origen esté publicada, no sea una versión preliminar, contenga los instaladores x64/ARM64 requeridos y siga coincidiendo con ese mapa aprobado. A continuación, inicia `Windows Node Release` mientras la publicación de OpenClaw todavía es un borrador y transfiere sin cambios el mapa fijado de resúmenes de los instaladores. El flujo de trabajo secundario descarga los instaladores firmados de Windows Hub desde esa etiqueta exacta, los coteja con los resúmenes fijados, verifica en un ejecutor de Windows que sus firmas Authenticode usen el firmante esperado de OpenClaw Foundation, crea un manifiesto SHA-256 y carga los instaladores y el manifiesto en la publicación canónica de OpenClaw en GitHub; después, vuelve a descargar los artefactos promocionados y verifica su pertenencia al manifiesto y sus hashes. El flujo principal verifica el contrato actual de artefactos x64, ARM64 y de sumas de comprobación antes de la publicación. La recuperación directa rechaza los nombres inesperados de artefactos `OpenClawCompanion-*` antes de sustituir los artefactos esperados del contrato por los bytes fijados del origen.
+- Ejecute `pnpm qa:otel:smoke` al validar la telemetría del lanzamiento. Ejercita QA Lab mediante un receptor OTLP/HTTP local y verifica la exportación de trazas, métricas y registros, además de los atributos de traza limitados y la ocultación de contenido e identificadores, sin requerir Opik, Langfuse ni otro recopilador externo.
+- Ejecute `pnpm qa:otel:collector-smoke` al validar la compatibilidad con recopiladores. Enruta la misma exportación OTLP de QA Lab mediante un contenedor Docker real de OpenTelemetry Collector antes de las aserciones del receptor local.
+- Ejecute `pnpm qa:prometheus:smoke` al validar la extracción protegida de Prometheus. Ejercita QA Lab, rechaza las extracciones no autenticadas y verifica que las familias de métricas críticas para el lanzamiento no contengan contenido de prompts, identificadores sin procesar, tokens de autenticación ni rutas locales.
+- Ejecute `pnpm qa:observability:smoke` para ejecutar consecutivamente las vías de comprobación rápida de OpenTelemetry y Prometheus desde el repositorio de código fuente.
+- Ejecute `pnpm release:check` antes de cada lanzamiento etiquetado.
+- La comprobación previa `OpenClaw NPM Release` genera evidencias de lanzamiento de dependencias antes de empaquetar el tarball de npm. La puerta de vulnerabilidades de avisos de npm bloquea el lanzamiento. Los informes de riesgo del manifiesto transitivo, de propiedad/superficie de instalación de dependencias y de cambios de dependencias sirven únicamente como evidencia del lanzamiento. El informe de cambios de dependencias compara el candidato de lanzamiento con la etiqueta de lanzamiento anterior accesible. La comprobación previa carga las evidencias de dependencias como `openclaw-release-dependency-evidence-<tag>` y también las incorpora en `dependency-evidence/` dentro del artefacto preparado de comprobación previa de npm. La ruta de publicación real reutiliza ese artefacto de comprobación previa y después adjunta las mismas evidencias al lanzamiento de GitHub como `openclaw-<version>-dependency-evidence.zip`.
+- Ejecute `OpenClaw Release Publish` para la secuencia de publicación con modificaciones después de que exista la etiqueta. Ejecute las publicaciones beta y estables habituales desde `main` de confianza; la etiqueta de lanzamiento sigue seleccionando la confirmación de destino exacta y puede apuntar a `release/YYYY.M.PATCH`. Las publicaciones alfa de Tideclaw permanecen en su rama alfa correspondiente. Proporcione el `preflight_run_id` de npm correcto de OpenClaw, el `full_release_validation_run_id` correcto y el `full_release_validation_run_attempt` exacto, y mantenga el ámbito predeterminado de publicación de plugins `all-publishable` salvo que ejecute deliberadamente una reparación específica. El flujo de trabajo serializa la publicación de plugins en npm, la publicación de plugins en ClawHub y la publicación de OpenClaw en npm para que el paquete central no se publique antes que sus plugins externalizados; la promoción de Windows y Android se ejecuta simultáneamente con la publicación del paquete central en npm sobre la página de lanzamiento en borrador. Las repeticiones de publicación pueden reanudarse: si ya se ha publicado una versión central en npm, se omite la ejecución del paquete central después de que el flujo de trabajo demuestre que el tarball del registro coincide con el artefacto de comprobación previa de la etiqueta; además, la promoción de Windows/Android se omite cuando el lanzamiento ya contiene el contrato de artefactos verificado, por lo que un nuevo intento solo repite las etapas fallidas. Las reparaciones específicas exclusivas de plugins requieren `plugin_publish_scope=selected` y una lista de plugins no vacía. Las ejecuciones `all-publishable` exclusivas de plugins requieren evidencias completas e inmutables de la comprobación previa y de Full Release Validation; se rechazan las evidencias parciales.
+- La versión estable `OpenClaw Release Publish` requiere un `windows_node_tag` exacto después de que exista el lanzamiento `openclaw/openclaw-windows-node` correspondiente que no sea preliminar, además del mapa `windows_node_installer_digests` aprobado para el candidato. Antes de ejecutar cualquier publicación secundaria, verifica que ese lanzamiento de origen esté publicado, no sea preliminar, contenga los instaladores x64/ARM64 requeridos y siga coincidiendo con el mapa aprobado. A continuación ejecuta `Windows Node Release` mientras el lanzamiento de OpenClaw todavía es un borrador y transmite sin cambios el mapa fijado de resúmenes de los instaladores. El flujo de trabajo secundario descarga desde esa etiqueta exacta los instaladores firmados de Windows Hub, los compara con los resúmenes fijados, verifica en un ejecutor de Windows que sus firmas Authenticode utilicen el firmante esperado de OpenClaw Foundation, escribe un manifiesto SHA-256 y carga los instaladores y el manifiesto en el lanzamiento canónico de OpenClaw en GitHub; después vuelve a descargar los artefactos promocionados y verifica su pertenencia al manifiesto y sus hashes. El flujo de trabajo principal verifica el contrato actual de artefactos x64, ARM64 y de suma de comprobación antes de la publicación. La recuperación directa rechaza nombres de artefactos `OpenClawCompanion-*` inesperados antes de sustituir los artefactos esperados del contrato por los bytes fijados del origen.
 
-  Inicie manualmente `Windows Node Release` solo para la recuperación y pase siempre una etiqueta exacta, nunca `latest`, además del mapa JSON `expected_installer_digests` explícito de la publicación de origen aprobada. Los enlaces de descarga del sitio web deben apuntar a las URL exactas de los artefactos de la publicación de OpenClaw para la versión estable actual, o a `releases/latest/download/...` solo después de verificar que la redirección a la versión más reciente de GitHub apunte a esa misma publicación; no enlace únicamente a la página de publicación del repositorio complementario.
+  Ejecute manualmente `Windows Node Release` solo para la recuperación y proporcione siempre una etiqueta exacta, nunca `latest`, además del mapa JSON explícito `expected_installer_digests` del lanzamiento de origen aprobado. Los enlaces de descarga del sitio web deben apuntar a las URL exactas de los artefactos del lanzamiento de OpenClaw para la versión estable actual, o a `releases/latest/download/...` solo después de verificar que la redirección a la versión más reciente de GitHub apunte a ese mismo lanzamiento; no enlace únicamente a la página de lanzamiento del repositorio complementario.
 
-- Las comprobaciones de publicación ahora se ejecutan en un flujo de trabajo manual independiente: `OpenClaw Release Checks`. También ejecuta el carril de paridad simulada de QA Lab, además del perfil de publicación de Matrix y el carril de QA de Telegram antes de aprobar la publicación. Los carriles en vivo usan el entorno `qa-live-shared`; Telegram también usa arrendamientos de credenciales de CI de Convex. Ejecute el flujo de trabajo manual `QA-Lab - All Lanes` con `matrix_profile=all` cuando se necesiten todos los escenarios de Matrix mantenidos; el flujo de trabajo distribuye esa selección entre los perfiles de transporte, medios y E2EE para mantener la prueba completa dentro de los tiempos de espera de cada trabajo.
-- La validación del entorno de ejecución de instalación y actualización entre sistemas operativos forma parte de los flujos públicos `OpenClaw Release Checks` y `Full Release Validation`, que invocan directamente el flujo de trabajo reutilizable `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`. Esta separación es intencional: mantiene la ruta real de publicación en npm breve, determinista y centrada en los artefactos, mientras que las comprobaciones en vivo más lentas permanecen en su propio carril para que no retrasen ni bloqueen la publicación.
-- Las comprobaciones de publicación que contienen secretos deben iniciarse mediante `Full Release Validation` o desde la referencia del flujo de trabajo `main`/release, para que la lógica del flujo de trabajo y los secretos permanezcan controlados.
-- `OpenClaw Release Checks` acepta una rama, una etiqueta o un SHA de commit completo, siempre que el commit resuelto sea accesible desde una rama o etiqueta de publicación de OpenClaw.
-- La comprobación preliminar exclusiva de validación `OpenClaw NPM Release` también acepta el SHA completo de 40 caracteres del commit actual de la rama del flujo de trabajo sin requerir una etiqueta enviada. Esa ruta de SHA es exclusiva para validación y no se puede promover a una publicación real. En el modo SHA, el flujo de trabajo sintetiza `v<package.json version>` solo para la comprobación de metadatos del paquete; la publicación real sigue requiriendo una etiqueta de publicación real.
-- Ambos flujos de trabajo mantienen la ruta real de publicación y promoción en ejecutores alojados en GitHub, mientras que la ruta de validación que no realiza cambios puede usar los ejecutores Linux de mayor capacidad de Blacksmith.
-- Ese flujo de trabajo ejecuta `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache` mediante los secretos de flujo de trabajo `OPENAI_API_KEY` y `ANTHROPIC_API_KEY`.
-- La comprobación preliminar de publicación en npm ya no espera al carril independiente de comprobaciones de publicación.
-- Antes de etiquetar localmente una versión candidata, ejecute `RELEASE_TAG=vYYYY.M.PATCH-beta.N pnpm release:fast-pretag-check`. El asistente ejecuta las protecciones rápidas de publicación, las comprobaciones de publicación de plugins en npm/ClawHub, la compilación, la compilación de la interfaz y `release:openclaw:npm:check`, en el orden que detecta los errores habituales que bloquean la aprobación antes de que se inicie el flujo de trabajo de publicación de GitHub.
-- Ejecute `RELEASE_TAG=vYYYY.M.PATCH node --import tsx scripts/openclaw-npm-release-check.ts` (o la etiqueta de prelanzamiento/corrección correspondiente) antes de la aprobación.
+- Las comprobaciones de lanzamiento ahora se ejecutan en un flujo de trabajo manual independiente: `OpenClaw Release Checks`. También ejecuta la vía de paridad simulada de QA Lab, además del perfil de lanzamiento de Matrix y la vía de QA de Telegram antes de aprobar el lanzamiento. Las vías en vivo usan el entorno `qa-live-shared`; Telegram también usa concesiones de credenciales de CI de Convex. Ejecute el flujo de trabajo manual `QA-Lab - All Lanes` con `matrix_profile=all` cuando quiera ejecutar todos los escenarios de Matrix mantenidos; el flujo de trabajo distribuye esa selección entre los perfiles de transporte, medios y E2EE para mantener la prueba completa dentro de los tiempos de espera de cada trabajo.
+- La validación del entorno de ejecución de instalación y actualización entre sistemas operativos forma parte de los flujos públicos `OpenClaw Release Checks` y `Full Release Validation`, que llaman directamente al flujo de trabajo reutilizable `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`. Esta separación es intencional: mantiene la ruta real de lanzamiento en npm breve, determinista y centrada en los artefactos, mientras que las comprobaciones en vivo más lentas permanecen en su propia vía para que no retrasen ni bloqueen la publicación.
+- Las comprobaciones de lanzamiento que contienen secretos deben iniciarse mediante `Full Release Validation` o desde la referencia del flujo de trabajo `main`/release para mantener bajo control la lógica del flujo de trabajo y los secretos.
+- `OpenClaw Release Checks` acepta una rama, una etiqueta o un SHA de commit completo, siempre que el commit resuelto sea accesible desde una rama o etiqueta de lanzamiento de OpenClaw.
+- La comprobación previa de solo validación `OpenClaw NPM Release` también acepta el SHA de commit completo actual de 40 caracteres de la rama del flujo de trabajo sin requerir una etiqueta enviada. Esa ruta de SHA es solo para validación y no puede promoverse a una publicación real. En el modo SHA, el flujo de trabajo sintetiza `v<package.json version>` únicamente para la comprobación de metadatos del paquete; una publicación real sigue requiriendo una etiqueta de lanzamiento real.
+- Ambos flujos de trabajo mantienen la ruta real de publicación y promoción en ejecutores alojados en GitHub, mientras que la ruta de validación que no realiza modificaciones puede usar los ejecutores Linux más grandes de Blacksmith.
+- Ese flujo de trabajo ejecuta `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache` usando los secretos de flujo de trabajo `OPENAI_API_KEY` y `ANTHROPIC_API_KEY`.
+- La comprobación previa del lanzamiento en npm ya no espera a la vía independiente de comprobaciones de lanzamiento.
+- Antes de etiquetar localmente una versión candidata, ejecute `RELEASE_TAG=vYYYY.M.PATCH-beta.N pnpm release:fast-pretag-check`. El asistente ejecuta las protecciones rápidas del lanzamiento, las comprobaciones de lanzamiento de plugins en npm/ClawHub, la compilación, la compilación de la interfaz de usuario y `release:openclaw:npm:check`, en el orden que permite detectar los errores habituales que bloquean la aprobación antes de que se inicie el flujo de trabajo de publicación de GitHub.
+- Ejecute `RELEASE_TAG=vYYYY.M.PATCH node --import tsx scripts/openclaw-npm-release-check.ts` (o la etiqueta correspondiente de prelanzamiento/corrección) antes de la aprobación.
 - Después de publicar en npm, ejecute `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.PATCH` (o la versión beta/de corrección correspondiente) para verificar la ruta de instalación desde el registro publicado en un prefijo temporal nuevo.
-- Después de una publicación beta, ejecute `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.PATCH-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live` para verificar la incorporación desde el paquete instalado, la configuración de Telegram y la E2E real de Telegram con el paquete de npm publicado mediante el grupo compartido de credenciales arrendadas de Telegram. Para ejecuciones locales puntuales de mantenimiento, se pueden omitir las variables de Convex y proporcionar directamente las tres credenciales de entorno `OPENCLAW_QA_TELEGRAM_*`.
-- Para ejecutar la prueba de humo beta completa posterior a la publicación desde un equipo de mantenimiento, use `pnpm release:beta-smoke -- --beta betaN`. El asistente ejecuta la validación de actualización de npm y de destino nuevo en Parallels, inicia `NPM Telegram Beta E2E`, consulta periódicamente la ejecución exacta del flujo de trabajo, descarga el artefacto e imprime el informe de Telegram.
-- Los responsables de mantenimiento pueden ejecutar la misma comprobación posterior a la publicación desde GitHub Actions mediante el flujo de trabajo manual `NPM Telegram Beta E2E`. Es deliberadamente solo manual y no se ejecuta con cada fusión.
-- La automatización de publicaciones para responsables de mantenimiento utiliza una comprobación preliminar seguida de una promoción:
-  - La publicación real en npm debe superar correctamente una ejecución de npm `preflight_run_id`.
-  - La orquestación y la comprobación preliminar habituales de publicaciones beta y estables usan el `main` de confianza con la etiqueta de destino exacta. La publicación y la comprobación preliminar alfa de Tideclaw usan la rama alfa correspondiente.
-  - Las publicaciones estables en npm usan `beta` de forma predeterminada; la publicación estable en npm puede dirigirse explícitamente a `latest` mediante una entrada del flujo de trabajo.
-  - La modificación basada en tokens de las etiquetas de distribución de npm reside en `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`, porque `npm dist-tag add` todavía necesita `NPM_TOKEN` mientras el repositorio de origen mantiene una publicación exclusiva mediante OIDC.
-  - El flujo público `macOS Release` es exclusivamente de validación; cuando una etiqueta existe solo en una rama de publicación, pero el flujo de trabajo se inicia desde `main`, establezca `public_release_branch=release/YYYY.M.PATCH`.
-  - La publicación real de macOS debe superar correctamente las ejecuciones de macOS `preflight_run_id` y `validate_run_id`.
-  - Las rutas de publicación reales promueven artefactos preparados en lugar de volver a compilarlos.
-- Para publicaciones estables de corrección como `YYYY.M.PATCH-N`, el verificador posterior a la publicación también comprueba la misma ruta de actualización con prefijo temporal desde `YYYY.M.PATCH` hasta `YYYY.M.PATCH-N`, para que las correcciones de publicación no puedan dejar silenciosamente instalaciones globales anteriores con la carga útil estable base.
-- La comprobación preliminar de publicación en npm falla de forma cerrada a menos que el archivo tar incluya tanto `dist/control-ui/index.html` como una carga útil `dist/control-ui/assets/` no vacía, para no volver a distribuir un panel web vacío.
-- La verificación posterior a la publicación también comprueba que los puntos de entrada de los plugins publicados y los metadatos del paquete estén presentes en la estructura del registro instalado. Una publicación a la que le falten cargas útiles del entorno de ejecución de plugins no supera el verificador posterior a la publicación y no se puede promover a `latest`.
-- `pnpm test:install:smoke` también aplica el presupuesto `unpackedSize` del empaquetado de npm al archivo tar de actualización candidato, para que la E2E del instalador detecte aumentos accidentales del tamaño del paquete antes de la ruta de publicación.
-- Si el trabajo de publicación modificó la planificación de CI, los manifiestos de tiempos de extensiones o las matrices de pruebas de extensiones, vuelva a generar y revisar las salidas de matriz `plugin-prerelease-extension-shard` gestionadas por el planificador desde `.github/workflows/plugin-prerelease.yml` antes de la aprobación, para que las notas de publicación no describan una estructura de CI obsoleta.
-- La preparación de una publicación estable de macOS también incluye las superficies del actualizador: la publicación de GitHub debe terminar con los archivos empaquetados `.zip`, `.dmg` y `.dSYM.zip`; `appcast.xml` en `main` debe apuntar al nuevo archivo zip estable después de la publicación (el flujo de trabajo de publicación de macOS lo confirma automáticamente o abre un pull request del appcast cuando se bloquea el envío directo); la aplicación empaquetada debe conservar un identificador de paquete que no sea de depuración, una URL de fuente de Sparkle no vacía y un `CFBundleVersion` igual o superior al mínimo canónico de compilación de Sparkle para esa versión de publicación.
+- Después de publicar una beta, ejecute `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.PATCH-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live` para verificar la incorporación del paquete instalado, la configuración de Telegram y la E2E real de Telegram con el paquete de npm publicado usando el conjunto compartido de credenciales de Telegram concedidas. Para ejecuciones puntuales locales, los mantenedores pueden omitir las variables de Convex y proporcionar directamente las tres credenciales de entorno `OPENCLAW_QA_TELEGRAM_*`.
+- Para ejecutar la prueba de humo beta completa posterior a la publicación desde el equipo de un mantenedor, use `pnpm release:beta-smoke -- --beta betaN`. El asistente ejecuta la validación de actualización de npm y de destino nuevo en Parallels, inicia `NPM Telegram Beta E2E`, consulta la ejecución exacta del flujo de trabajo, descarga el artefacto e imprime el informe de Telegram.
+- Los mantenedores pueden ejecutar la misma comprobación posterior a la publicación desde GitHub Actions mediante el flujo de trabajo manual `NPM Telegram Beta E2E`. Es intencionalmente solo manual y no se ejecuta con cada fusión.
+- La automatización de lanzamientos para mantenedores usa primero la comprobación previa y después la promoción:
+  - La publicación real en npm debe superar correctamente una `preflight_run_id` de npm.
+  - La orquestación y la comprobación previa de publicaciones beta y estables habituales usan `main` de confianza con la etiqueta de destino exacta. La publicación y comprobación previa alfa de Tideclaw usan la rama alfa correspondiente.
+  - Los lanzamientos estables de npm usan `beta` de forma predeterminada; la publicación estable en npm puede dirigirse explícitamente a `latest` mediante una entrada del flujo de trabajo.
+  - La modificación de etiquetas de distribución de npm basada en tokens reside en `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` porque `npm dist-tag add` todavía necesita `NPM_TOKEN`, mientras que el repositorio de origen mantiene la publicación solo mediante OIDC.
+  - El flujo público `macOS Release` es solo para validación; cuando una etiqueta solo existe en una rama de lanzamiento, pero el flujo de trabajo se inicia desde `main`, establezca `public_release_branch=release/YYYY.M.PATCH`.
+  - La publicación real para macOS debe superar correctamente `preflight_run_id` y `validate_run_id` de macOS.
+  - Las rutas reales de publicación promueven los artefactos preparados en lugar de volver a compilarlos.
+- Para lanzamientos estables de corrección como `YYYY.M.PATCH-N`, el verificador posterior a la publicación también comprueba la misma ruta de actualización con prefijo temporal desde `YYYY.M.PATCH` hasta `YYYY.M.PATCH-N`, de modo que las correcciones de lanzamiento no puedan dejar silenciosamente las instalaciones globales antiguas con la carga útil estable base.
+- La comprobación previa del lanzamiento en npm falla de forma segura salvo que el archivo tar incluya tanto `dist/control-ui/index.html` como una carga útil `dist/control-ui/assets/` no vacía, para que no volvamos a distribuir un panel de navegador vacío.
+- La verificación posterior a la publicación también comprueba que los puntos de entrada de los plugins publicados y los metadatos de los paquetes estén presentes en la disposición instalada del registro. Un lanzamiento al que le falten cargas útiles del entorno de ejecución de plugins no supera el verificador posterior a la publicación y no puede promoverse a `latest`.
+- `pnpm test:install:smoke` también aplica el presupuesto `unpackedSize` del empaquetado de npm al archivo tar de actualización candidato, de modo que la E2E del instalador detecte el aumento accidental del tamaño del paquete antes de la ruta de publicación del lanzamiento.
+- Si el trabajo de lanzamiento modificó la planificación de CI, los manifiestos de tiempos de las extensiones o las matrices de pruebas de extensiones, regenere y revise antes de la aprobación las salidas de matriz `plugin-prerelease-extension-shard`, propiedad del planificador, desde `.github/workflows/plugin-prerelease.yml`, para que las notas de la versión no describan una disposición de CI obsoleta.
+- La preparación de un lanzamiento estable para macOS también incluye las superficies del actualizador: el lanzamiento de GitHub debe terminar con los archivos empaquetados `.zip`, `.dmg` y `.dSYM.zip`; `appcast.xml` en `main` debe apuntar al nuevo archivo zip estable después de la publicación (el flujo de trabajo de publicación para macOS lo confirma automáticamente o abre un pull request del appcast cuando el envío directo está bloqueado); la aplicación empaquetada debe conservar un identificador de paquete que no sea de depuración, una URL no vacía del canal de Sparkle y un `CFBundleVersion` igual o superior al mínimo de compilación canónico de Sparkle para esa versión de lanzamiento.
 
-## Entornos de prueba de publicación
+## Máquinas de prueba de lanzamiento
 
-`Full Release Validation` es la forma en que los operadores inician la matriz completa del producto desde un único punto de entrada. Use el asistente para que cada flujo de trabajo secundario se ejecute desde una rama temporal fijada en un SHA de flujo de trabajo `main` de confianza, mientras el commit solicitado sigue siendo el candidato sometido a prueba:
+`Full Release Validation` permite que los operadores inicien la matriz completa del producto desde un único punto de entrada. Use el asistente para que cada flujo de trabajo secundario se ejecute desde una rama temporal fijada en un SHA de flujo de trabajo `main` de confianza, mientras el commit solicitado sigue siendo el candidato sometido a prueba:
 
 ```bash
 pnpm ci:full-release \
@@ -305,9 +314,9 @@ pnpm ci:full-release \
   --target-ref release/YYYY.M.PATCH
 ```
 
-El asistente obtiene el `origin/main` actual, envía `release-ci/<workflow-sha>-...` en ese commit de flujo de trabajo de confianza, deduce `beta` a partir de las versiones alfa/beta del paquete y `stable` en los demás casos, inicia `Full Release Validation` desde la rama temporal con `ref=<target-sha>`, verifica que el `headSha` de cada flujo de trabajo secundario coincida con el SHA fijado del flujo de trabajo principal y, a continuación, elimina la rama temporal. Proporcione `-f reuse_evidence=false` para forzar una ejecución nueva, `-f release_profile=full` para el barrido consultivo amplio o `--workflow-sha <trusted-main-sha>` para fijar un commit anterior que todavía sea accesible desde el `origin/main` actual. El propio flujo de trabajo nunca escribe referencias del repositorio. Esto mantiene disponibles las herramientas de publicación exclusivas de main sin añadir commits de herramientas al candidato y evita demostrar accidentalmente una ejecución secundaria más reciente de `main`.
+El asistente obtiene el `origin/main` actual, envía `release-ci/<workflow-sha>-...` en ese commit de flujo de trabajo de confianza, deduce `beta` a partir de las versiones alfa/beta de los paquetes y `stable` en los demás casos, inicia `Full Release Validation` desde la rama temporal con `ref=<target-sha>`, verifica que el `headSha` de cada flujo de trabajo secundario coincida con el SHA fijado del flujo de trabajo principal y, después, elimina la rama temporal. Proporcione `-f reuse_evidence=false` para forzar una ejecución nueva, `-f release_profile=full` para el análisis consultivo amplio o `--workflow-sha <trusted-main-sha>` para fijar un commit anterior que aún sea accesible desde el `origin/main` actual. El propio flujo de trabajo nunca escribe referencias del repositorio. Esto mantiene disponibles las herramientas de lanzamiento exclusivas de la rama principal sin añadir commits de herramientas al candidato y evita validar accidentalmente una ejecución secundaria `main` más reciente.
 
-Cuando el SHA del código esté correcto, confirme únicamente `CHANGELOG.md` y ejecute el mismo asistente con el SHA de publicación:
+Cuando el SHA del código esté en verde, confirme únicamente `CHANGELOG.md` y ejecute el mismo asistente con el SHA del lanzamiento:
 
 ```bash
 pnpm ci:full-release \
@@ -315,45 +324,45 @@ pnpm ci:full-release \
   --target-ref release/YYYY.M.PATCH
 ```
 
-El segundo flujo principal reutiliza la evidencia del producto solo cuando GitHub demuestra que el SHA de publicación desciende del SHA del código y que el conjunto completo de rutas modificadas es exactamente `CHANGELOG.md`. Registra `changelog-only-release-v1` y no inicia ningún flujo secundario del producto. La comprobación preliminar de npm y la aceptación de paquetes/instalaciones siguen ejecutándose con el SHA de publicación porque los bytes de su archivo tar cambiaron.
+El segundo flujo principal reutiliza las pruebas del producto únicamente cuando GitHub demuestra que el SHA del lanzamiento desciende del SHA del código y que el conjunto completo de rutas modificadas es exactamente `CHANGELOG.md`. Registra `changelog-only-release-v1` y no inicia ningún flujo secundario del producto. La comprobación previa de npm y la aceptación de paquetes/instalaciones siguen ejecutándose con el SHA del lanzamiento porque los bytes de su archivo tar han cambiado.
 
-Para un SHA de código nuevo, el flujo de trabajo resuelve el destino, inicia manualmente `CI` y, a continuación, inicia `OpenClaw Release Checks`. `OpenClaw Release Checks` distribuye la prueba de humo de instalación, las comprobaciones de publicación entre sistemas operativos, la cobertura en vivo/E2E mediante Docker de la ruta de publicación cuando está habilitada la ejecución prolongada, la aceptación de paquetes con la E2E canónica del paquete de Telegram, la paridad de QA Lab, Matrix en vivo y Telegram en vivo. Una ejecución completa/general solo es aceptable cuando el resumen de `Full Release Validation` muestra `normal_ci`, `plugin_prerelease` y `release_checks` como correctos, salvo que una repetición focalizada haya omitido intencionadamente el flujo secundario independiente `Plugin Prerelease`. Use el flujo secundario independiente `npm-telegram` solo para repetir de forma focalizada una prueba del paquete publicado con `release_package_spec` o `npm_telegram_package_spec`. El resumen final del verificador incluye tablas de los trabajos más lentos de cada ejecución secundaria, para que el responsable de la publicación pueda ver la ruta crítica actual sin descargar registros.
+Para un SHA de código nuevo, el flujo de trabajo resuelve el destino, inicia manualmente `CI` y, después, inicia `OpenClaw Release Checks`. `OpenClaw Release Checks` distribuye la prueba de humo de instalación, las comprobaciones de lanzamiento entre sistemas operativos, la cobertura en vivo/E2E de la ruta de lanzamiento con Docker cuando está habilitada la prueba prolongada, la aceptación de paquetes con la E2E canónica del paquete de Telegram, la paridad de QA Lab, Matrix en vivo y Telegram en vivo. Una ejecución completa/total solo es aceptable cuando el resumen de `Full Release Validation` muestra `normal_ci`, `plugin_prerelease` y `release_checks` como correctos, salvo que una repetición enfocada haya omitido intencionalmente el flujo secundario independiente `Plugin Prerelease`. Use el flujo secundario independiente `npm-telegram` únicamente para repetir de forma enfocada la comprobación del paquete publicado con `release_package_spec` o `npm_telegram_package_spec`. El resumen final del verificador incluye tablas de los trabajos más lentos de cada ejecución secundaria, para que el responsable del lanzamiento pueda ver la ruta crítica actual sin descargar los registros.
 
-El flujo secundario de rendimiento del producto solo genera artefactos en esta ruta de publicación. El
+El flujo secundario de rendimiento del producto solo genera artefactos en esta ruta de lanzamiento. El
 flujo general lo inicia con `publish_reports=false`, y la validación se rechaza
-a menos que su protección exclusiva de artefactos demuestre que el publicador de informes de Clawgrit permaneció
+salvo que su protección de solo artefactos demuestre que el publicador de informes de Clawgrit permaneció
 omitido.
 
-Consulte [Validación completa de la publicación](/es/reference/full-release-validation) para conocer la matriz completa de etapas, los nombres exactos de los trabajos del flujo de trabajo, las diferencias entre los perfiles estable y completo, los artefactos y los identificadores para repeticiones focalizadas.
+Consulte [Validación completa del lanzamiento](/es/reference/full-release-validation) para conocer la matriz completa de etapas, los nombres exactos de los trabajos de los flujos de trabajo, las diferencias entre los perfiles estable y completo, los artefactos y los identificadores de repetición enfocada.
 
-Los flujos de trabajo secundarios se inician desde la referencia de confianza fijada por SHA que ejecuta `Full Release Validation`. Cada ejecución secundaria debe usar el SHA exacto del flujo de trabajo principal. No use inicios directos de `--ref main -f ref=<sha>` como prueba de publicación; use `pnpm ci:full-release --sha <target-sha> --target-ref release/YYYY.M.PATCH`.
+Los flujos de trabajo secundarios se inician desde la referencia de confianza fijada por SHA que ejecuta `Full Release Validation`. Cada ejecución secundaria debe usar el SHA exacto del flujo de trabajo principal. No use inicios directos de `--ref main -f ref=<sha>` como prueba de lanzamiento; use `pnpm ci:full-release --sha <target-sha> --target-ref release/YYYY.M.PATCH`.
 
-Use `release_profile` para seleccionar la amplitud de proveedores/en vivo:
+Use `release_profile` para seleccionar la amplitud de proveedores y pruebas en vivo:
 
-- `beta`: ruta en vivo y de Docker más rápida y crítica para la publicación de OpenAI/núcleo
-- `stable`: cobertura beta y estable de proveedores/backends para aprobar la publicación
-- `full`: cobertura estable más una cobertura consultiva amplia de proveedores/medios
+- `beta`: ruta crítica de lanzamiento más rápida para OpenAI/núcleo en vivo y Docker
+- `stable`: cobertura de proveedores/backends de beta y estable para aprobar el lanzamiento
+- `full`: cobertura estable más cobertura consultiva amplia de proveedores/medios
 
-La validación estable y completa siempre ejecuta el barrido exhaustivo en vivo/E2E, la ruta de publicación mediante Docker y el barrido acotado de instalaciones actualizadas del paquete publicado que deben conservar su funcionamiento antes de la promoción. Use `run_release_soak=true` para solicitar el mismo barrido para una beta. Ese barrido cubre los cuatro paquetes estables más recientes, además de las líneas base fijadas `2026.4.23` y `2026.5.2` y la cobertura anterior de `2026.4.15`, elimina las líneas base duplicadas y distribuye cada línea base en su propio trabajo de ejecución de Docker.
+La validación estable y completa siempre ejecuta antes de la promoción el análisis exhaustivo en vivo/E2E, la ruta de lanzamiento con Docker y la comprobación acotada de supervivencia a actualizaciones publicadas. Use `run_release_soak=true` para solicitar el mismo análisis para una beta. Este análisis abarca los cuatro paquetes estables más recientes, además de las líneas base fijadas `2026.4.23` y `2026.5.2` y la cobertura anterior `2026.4.15`, elimina las líneas base duplicadas y divide cada línea base en su propio trabajo de ejecución de Docker.
 
-`OpenClaw Release Checks` usa la referencia del flujo de trabajo de confianza para resolver una vez la referencia de destino como `release-package-under-test` y reutiliza ese artefacto en las comprobaciones entre sistemas operativos, la aceptación de paquetes y las comprobaciones mediante Docker de la ruta de publicación cuando se ejecuta la prueba prolongada. Esto mantiene todos los entornos orientados a paquetes sobre los mismos bytes y evita compilaciones repetidas de paquetes. Cuando una beta ya esté disponible en npm, establezca `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` para que las comprobaciones de publicación descarguen una vez el paquete distribuido, extraigan el SHA de origen de su compilación desde `dist/build-info.json` y reutilicen ese artefacto para los carriles entre sistemas operativos, de aceptación de paquetes, de Docker de la ruta de publicación y de Telegram mediante paquetes.
+`OpenClaw Release Checks` usa la referencia de flujo de trabajo de confianza para resolver una sola vez la referencia de destino como `release-package-under-test` y reutiliza ese artefacto en las comprobaciones entre sistemas operativos, de aceptación de paquetes y de Docker para la ruta de lanzamiento cuando se ejecuta la prueba prolongada. Esto mantiene todas las máquinas orientadas a paquetes con los mismos bytes y evita compilaciones repetidas del paquete. Cuando una beta ya esté en npm, establezca `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` para que las comprobaciones de lanzamiento descarguen una vez el paquete distribuido, extraigan su SHA de origen de compilación de `dist/build-info.json` y reutilicen ese artefacto en las vías entre sistemas operativos, de aceptación de paquetes, de Docker para la ruta de lanzamiento y del paquete de Telegram.
 
-La prueba de humo de instalación de OpenAI entre sistemas operativos usa `OPENCLAW_CROSS_OS_OPENAI_MODEL` cuando está definida la variable del repositorio o de la organización; en caso contrario, usa `openai/gpt-5.6-luna`, porque este carril demuestra la instalación del paquete, la incorporación, el inicio del Gateway y un turno de agente en vivo, en lugar de evaluar comparativamente el modelo más capaz. La matriz más amplia de proveedores en vivo sigue siendo el lugar para la cobertura específica de cada modelo.
+La prueba de humo de instalación de OpenAI entre sistemas operativos usa `OPENCLAW_CROSS_OS_OPENAI_MODEL` cuando está definida la variable del repositorio o de la organización y, en caso contrario, `openai/gpt-5.6-luna`, porque esta vía valida la instalación del paquete, la incorporación, el inicio del Gateway y un turno de agente en vivo, en lugar de comparar el rendimiento del modelo más capaz. La matriz más amplia de proveedores en vivo sigue siendo el lugar para la cobertura específica de modelos.
 
-Use estas variantes según la etapa de publicación:
+Use estas variantes según la etapa del lanzamiento:
 
 ```bash
-# Validar el SHA del código con el producto completo.
+# Valida el SHA de código del producto completo.
 pnpm ci:full-release \
   --sha <code-sha> \
   --target-ref release/YYYY.M.PATCH
 
-# Validar el SHA de la versión solo con cambios en el registro de cambios reutilizando la evidencia del producto del SHA del código.
+# Valida el SHA de la versión que solo contiene el registro de cambios reutilizando la evidencia del producto del SHA de código.
 pnpm ci:full-release \
   --sha <release-sha> \
   --target-ref release/YYYY.M.PATCH
 
-# Después de publicar una beta, añadir el E2E de Telegram con el paquete publicado.
+# Después de publicar una beta, añade el E2E de Telegram del paquete publicado.
 pnpm ci:full-release \
   --sha <release-sha> \
   --target-ref release/YYYY.M.PATCH \
@@ -362,35 +371,24 @@ pnpm ci:full-release \
   -f npm_telegram_provider_mode=mock-openai
 ```
 
-No usar el conjunto completo como primera repetición tras una corrección específica. Si falla una caja, usar el flujo de trabajo secundario, trabajo, carril de Docker, perfil de paquete, proveedor de modelos o carril de QA que haya fallado para la siguiente prueba. Volver a ejecutar el conjunto completo únicamente cuando la corrección haya modificado la orquestación compartida de la versión o haya dejado obsoleta la evidencia anterior de todas las cajas. El verificador final del conjunto vuelve a comprobar los identificadores registrados de las ejecuciones de los flujos de trabajo secundarios, por lo que, tras repetir correctamente un flujo secundario, se debe repetir únicamente el trabajo principal `Verify full validation` que haya fallado.
+No utilice el conjunto completo como primera repetición tras una corrección específica. Si falla una instancia, utilice el flujo de trabajo secundario, trabajo, carril de Docker, perfil de paquete, proveedor de modelos o carril de QA que haya fallado para la siguiente prueba. Vuelva a ejecutar el conjunto completo únicamente cuando la corrección haya cambiado la orquestación compartida de la versión o haya dejado obsoleta la evidencia anterior de todas las instancias. El verificador final del conjunto vuelve a comprobar los identificadores registrados de las ejecuciones de los flujos de trabajo secundarios, por lo que, después de repetir correctamente un flujo de trabajo secundario, repita únicamente el trabajo principal `Verify full validation` que haya fallado.
 
-`rerun_group=all` puede reutilizar una ejecución correcta anterior del conjunto cuando coincidan el perfil de la versión,
-la configuración efectiva del periodo de observación y las entradas de validación, y el SHA de destino
-sea idéntico o el nuevo destino sea un descendiente cuyo conjunto completo de rutas modificadas
-sea exactamente `CHANGELOG.md`. La reutilización del destino exacto registra
-`exact-target-full-validation-v1`; el SHA de la versión posterior a la validación registra
-`changelog-only-release-v1`. Este último reutiliza únicamente la validación del producto. La comprobación
-preliminar de npm, los bytes del paquete, la procedencia de las notas de la versión y la aceptación
-de instalación/actualización aún deben ejecutarse con el SHA de la versión. Cualquier cambio de versión,
-fuente, contenido generado, dependencia, paquete o destino propiedad del flujo de trabajo requiere un nuevo
-SHA del código y una validación completa nueva. Las ejecuciones más recientes del conjunto para la misma referencia `release/*`
-y el mismo grupo de repetición sustituyen automáticamente a las que están en curso. Pasar
-`reuse_evidence=false` para forzar una ejecución completa nueva.
+`rerun_group=all` puede reutilizar una ejecución correcta anterior del conjunto cuando coincidan el perfil de la versión, la configuración de estabilización efectiva y las entradas de validación, y el SHA de destino sea idéntico o el nuevo destino sea un descendiente cuyo conjunto completo de rutas modificadas sea exactamente `CHANGELOG.md`. La reutilización del destino exacto registra `exact-target-full-validation-v1`; el SHA de la versión posterior a la validación registra `changelog-only-release-v1`. Este último reutiliza únicamente la validación del producto. La comprobación previa de npm, los bytes del paquete, la procedencia de las notas de la versión y la aceptación de instalación/actualización deben seguir ejecutándose con el SHA de la versión. Cualquier cambio de versión, fuente, contenido generado, dependencia, paquete o destino propiedad de un flujo de trabajo requiere un nuevo SHA de código y una validación completa nueva. Las ejecuciones más recientes del conjunto para la misma referencia `release/*` y el mismo grupo de repetición sustituyen automáticamente a las que están en curso. Pase `reuse_evidence=false` para forzar una ejecución completa nueva.
 
-Para una recuperación acotada, pasar `rerun_group` al conjunto. `all` es la ejecución real de la candidata a versión, `ci` ejecuta únicamente el flujo secundario de CI normal, `plugin-prerelease` ejecuta únicamente el flujo secundario de plugins exclusivo de la versión, `release-checks` ejecuta todas las cajas de la versión, y los grupos de versión más específicos son `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` y `npm-telegram`. Las repeticiones específicas de `npm-telegram` requieren `release_package_spec` o `npm_telegram_package_spec`; las ejecuciones completas/totales usan el E2E canónico de Telegram con paquetes dentro de Aceptación de paquetes. Las repeticiones específicas entre sistemas operativos pueden añadir `cross_os_suite_filter=windows/packaged-upgrade` u otro filtro de sistema operativo/conjunto. Los fallos de comprobación de la versión de QA bloquean la validación normal de la versión, incluida la desviación obligatoria de herramientas dinámicas de OpenClaw en el nivel estándar. Las ejecuciones alfa de Tideclaw aún pueden tratar como orientativos los carriles de comprobación de la versión que no estén relacionados con la seguridad de los paquetes. Con `release_profile=beta`, los conjuntos de proveedores en vivo `Run repo/live E2E validation` son orientativos (advertencias, no bloqueos); los perfiles estable y completo los mantienen como bloqueantes. Cuando `live_suite_filter` solicita explícitamente un carril de QA en vivo sujeto a puerta, como Discord, WhatsApp o Slack, debe estar habilitada la variable de repositorio `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` correspondiente; de lo contrario, la captura de entradas falla en lugar de omitir silenciosamente el carril.
+Para una recuperación acotada, pase `rerun_group` al conjunto. `all` es la ejecución real de la versión candidata, `ci` ejecuta únicamente el flujo secundario de CI normal, `plugin-prerelease` ejecuta únicamente el flujo secundario de plugins exclusivo de la versión, `release-checks` ejecuta todas las instancias de la versión y los grupos de versión más específicos son `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` y `npm-telegram`. Las repeticiones específicas de `npm-telegram` requieren `release_package_spec` o `npm_telegram_package_spec`; las ejecuciones completas o de todos los grupos utilizan el E2E canónico de Telegram del paquete dentro de Package Acceptance. Las repeticiones específicas entre sistemas operativos pueden añadir `cross_os_suite_filter=windows/packaged-upgrade` u otro filtro de sistema operativo/conjunto. Los fallos de las comprobaciones de versión de QA bloquean la validación normal de la versión, incluida la desviación obligatoria de herramientas dinámicas de OpenClaw en el nivel estándar. Las ejecuciones alfa de Tideclaw aún pueden tratar como consultivos los carriles de comprobación de versión no relacionados con la seguridad del paquete. Con `release_profile=beta`, los conjuntos de proveedores activos `Run repo/live E2E validation` son consultivos (advertencias, no bloqueos); los perfiles estable y completo siguen considerándolos bloqueantes. Cuando `live_suite_filter` solicite explícitamente un carril activo de QA sujeto a control, como Discord, WhatsApp o Slack, la variable de repositorio `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` correspondiente debe estar habilitada; de lo contrario, la captura de entradas falla en lugar de omitir silenciosamente el carril.
 
 ### Vitest
 
-La caja de Vitest es el flujo de trabajo secundario manual `CI`. La CI manual omite intencionadamente el alcance basado en cambios y fuerza el grafo normal de pruebas para la candidata a versión: fragmentos de Linux Node, fragmentos de plugins incluidos, fragmentos de contratos de plugins y canales, compatibilidad con Node 22, `check-*`, `check-additional-*`, comprobaciones rápidas de artefactos compilados, comprobaciones de documentación, Skills de Python, Windows, macOS e i18n de la interfaz de control. Android se incluye cuando `Full Release Validation` ejecuta la caja porque el conjunto pasa `include_android=true`; la CI manual independiente requiere `include_android=true` para cubrir Android.
+La instancia de Vitest es el flujo de trabajo secundario manual `CI`. La CI manual omite intencionadamente la delimitación por cambios y fuerza el grafo normal de pruebas para la versión candidata: fragmentos de Linux Node, fragmentos de plugins incluidos, fragmentos de contratos de plugins y canales, compatibilidad con Node 22, `check-*`, `check-additional-*`, comprobaciones rápidas de artefactos compilados, comprobaciones de documentación, Skills de Python, Windows, macOS e i18n de Control UI. Android se incluye cuando `Full Release Validation` ejecuta la instancia porque el conjunto pasa `include_android=true`; la CI manual independiente requiere `include_android=true` para cubrir Android.
 
-Usar esta caja para responder «¿el árbol de fuentes superó el conjunto completo de pruebas normales?». No es lo mismo que la validación del producto en la ruta de publicación. Evidencia que se debe conservar:
+Utilice esta instancia para responder «¿el árbol de fuentes superó el conjunto completo de pruebas normales?». No equivale a la validación del producto en la ruta de publicación. Evidencia que debe conservarse:
 
-- resumen de `Full Release Validation` que muestre la URL de la ejecución de `CI` iniciada
-- ejecución de `CI` correcta en el SHA de destino exacto
+- `Full Release Validation` resumen que muestra la URL de la ejecución `CI` iniciada
+- ejecución `CI` correcta en el SHA de destino exacto
 - nombres de fragmentos fallidos o lentos de los trabajos de CI al investigar regresiones
-- artefactos de tiempos de Vitest, como `.artifacts/vitest-shard-timings.json`, cuando una ejecución requiera un análisis de rendimiento
+- artefactos de tiempos de Vitest, como `.artifacts/vitest-shard-timings.json`, cuando una ejecución requiera análisis de rendimiento
 
-Ejecutar la CI manual directamente únicamente cuando la versión necesite una CI normal determinista, pero no las cajas de Docker, QA Lab, pruebas en vivo, varios sistemas operativos o paquetes. Usar el primer comando para una CI directa sin Android. Añadir `include_android=true` cuando la CI directa de la candidata a versión deba cubrir Android:
+Ejecute la CI manual directamente solo cuando la versión necesite una CI normal determinista, pero no las instancias de Docker, QA Lab, proveedores activos, varios sistemas operativos o paquetes. Utilice el primer comando para una CI directa sin Android. Añada `include_android=true` cuando la CI directa de la versión candidata deba cubrir Android:
 
 ```bash
 gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.PATCH
@@ -399,54 +397,54 @@ gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.PATCH -f include_
 
 ### Docker
 
-La caja de Docker se encuentra en `OpenClaw Release Checks` mediante `openclaw-live-and-e2e-checks-reusable.yml`, además del flujo de trabajo `install-smoke` en modo de versión. Valida la candidata a versión mediante entornos Docker empaquetados, en lugar de limitarse a pruebas en el nivel del código fuente.
+La instancia de Docker se encuentra en `OpenClaw Release Checks` mediante `openclaw-live-and-e2e-checks-reusable.yml`, además del flujo de trabajo en modo de versión `install-smoke`. Valida la versión candidata mediante entornos Docker empaquetados, en lugar de limitarse a pruebas en el nivel del código fuente.
 
 La cobertura de Docker para la versión incluye:
 
-- prueba rápida de instalación completa con la prueba rápida lenta de instalación global de Bun habilitada
-- preparación/reutilización de la imagen de prueba rápida del Dockerfile raíz por SHA de destino, con los trabajos de prueba rápida de QR, raíz/Gateway e instalador/Bun ejecutándose como fragmentos independientes de pruebas rápidas de instalación
+- comprobación rápida de instalación completa con la comprobación lenta de instalación global mediante Bun habilitada
+- preparación/reutilización de la imagen de comprobación rápida del Dockerfile raíz según el SHA de destino, con trabajos de comprobación de QR, raíz/Gateway e instalador/Bun ejecutados como fragmentos separados de comprobación de instalación
 - carriles E2E del repositorio
-- fragmentos de Docker de la ruta de publicación: `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services`, de `plugins-runtime-install-a` a `plugins-runtime-install-h` y `openwebui`
-- cobertura de OpenWebUI en un ejecutor dedicado con disco de gran tamaño cuando se solicite
+- segmentos de Docker de la ruta de publicación: `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services`, de `plugins-runtime-install-a` a `plugins-runtime-install-h` y `openwebui`
+- cobertura de OpenWebUI en un ejecutor dedicado con disco grande cuando se solicite
 - carriles divididos de instalación/desinstalación de plugins incluidos, de `bundled-plugin-install-uninstall-0` a `bundled-plugin-install-uninstall-23`
-- conjuntos de proveedores en vivo/E2E y cobertura de modelos en vivo de Docker cuando las comprobaciones de la versión incluyan conjuntos en vivo
+- conjuntos de proveedores activos/E2E y cobertura de modelos activos en Docker cuando las comprobaciones de la versión incluyan conjuntos activos
 
-Usar los artefactos de Docker antes de repetir una ejecución. El planificador de la ruta de publicación carga `.artifacts/docker-tests/` con registros de carriles, `summary.json`, `failures.json`, tiempos de las fases, el JSON del plan del planificador y comandos de repetición. Para una recuperación específica, usar `docker_lanes=<lane[,lane]>` en el flujo de trabajo reutilizable en vivo/E2E en lugar de volver a ejecutar todos los fragmentos de la versión. Los comandos de repetición generados incluyen las entradas anteriores de `package_artifact_run_id` y de las imágenes de Docker preparadas cuando estén disponibles, por lo que un carril fallido puede reutilizar el mismo tarball y las mismas imágenes de GHCR.
+Utilice los artefactos de Docker antes de repetir la ejecución. El planificador de la ruta de publicación carga `.artifacts/docker-tests/` con registros de los carriles, `summary.json`, `failures.json`, tiempos de las fases, el JSON del plan del planificador y comandos de repetición. Para una recuperación específica, utilice `docker_lanes=<lane[,lane]>` en el flujo de trabajo reutilizable de proveedores activos/E2E en lugar de repetir todos los segmentos de la versión. Los comandos de repetición generados incluyen las entradas anteriores de `package_artifact_run_id` y de las imágenes de Docker preparadas cuando están disponibles, para que un carril fallido pueda reutilizar el mismo archivo tar y las mismas imágenes de GHCR.
 
 ### QA Lab
 
-La caja de QA Lab también forma parte de `OpenClaw Release Checks`. Es la puerta de publicación para el comportamiento agéntico y en el nivel de los canales, separada de Vitest y de la mecánica de paquetes de Docker.
+La instancia de QA Lab también forma parte de `OpenClaw Release Checks`. Es la puerta de publicación del comportamiento agéntico y del nivel de canal, separada de Vitest y de la mecánica de paquetes de Docker.
 
 La cobertura de QA Lab para la versión incluye:
 
 - carril de paridad simulada que compara el carril candidato de OpenAI con la referencia `anthropic/claude-opus-4-8` mediante el paquete de paridad agéntica
-- perfil de publicación del adaptador en vivo de Matrix mediante el entorno `qa-live-shared`
-- carril de QA en vivo de Telegram mediante arrendamientos de credenciales de CI de Convex
-- `pnpm qa:otel:smoke`, `pnpm qa:otel:collector-smoke`, `pnpm qa:prometheus:smoke` o `pnpm qa:observability:smoke` cuando la telemetría de la versión necesite una prueba local explícita
+- perfil de publicación del adaptador activo de Matrix mediante el entorno `qa-live-shared`
+- carril activo de QA de Telegram mediante concesiones de credenciales de Convex CI
+- `pnpm qa:otel:smoke`, `pnpm qa:otel:collector-smoke`, `pnpm qa:prometheus:smoke` o `pnpm qa:observability:smoke` cuando la telemetría de la versión necesite pruebas locales explícitas
 
-Usar esta caja para responder «¿la versión se comporta correctamente en los escenarios de QA y en los flujos de canales en vivo?». Conservar las URL de los artefactos de los carriles de paridad, Matrix y Telegram al aprobar la versión. La cobertura completa de Matrix sigue disponible como una ejecución manual fragmentada de QA Lab, en lugar del carril crítico predeterminado para la versión.
+Utilice esta instancia para responder «¿la versión se comporta correctamente en los escenarios de QA y los flujos de canales activos?». Conserve las URL de los artefactos de los carriles de paridad, Matrix y Telegram cuando apruebe la versión. La cobertura completa de Matrix sigue estando disponible como ejecución manual fragmentada de QA Lab, en lugar de ser el carril crítico predeterminado de la versión.
 
 ### Paquete
 
-La caja de paquetes es la puerta del producto instalable. Está respaldada por `Package Acceptance` y el sistema de resolución `scripts/resolve-openclaw-package-candidate.mjs`. El sistema de resolución normaliza una candidata en el tarball `package-under-test` que consume Docker E2E, valida el inventario del paquete, registra la versión y el SHA-256 del paquete y mantiene separada la referencia del entorno del flujo de trabajo de la referencia de origen del paquete.
+La instancia de paquete es la puerta del producto instalable. Está respaldada por `Package Acceptance` y el solucionador `scripts/resolve-openclaw-package-candidate.mjs`. El solucionador normaliza un candidato en el archivo tar `package-under-test` consumido por el E2E de Docker, valida el inventario del paquete, registra la versión y el SHA-256 del paquete y mantiene la referencia del entorno del flujo de trabajo separada de la referencia de origen del paquete.
 
-Fuentes de candidatas compatibles:
+Fuentes de candidatos compatibles:
 
-- `source=npm`: `openclaw@beta`, `openclaw@latest` o una versión de publicación exacta de OpenClaw
-- `source=ref`: empaquetar una rama, etiqueta o SHA de confirmación completo de confianza de `package_ref` con el entorno `workflow_ref` seleccionado
-- `source=url`: descargar un `.tgz` HTTPS público con `package_sha256` obligatorio; se rechazan las credenciales en la URL, los puertos HTTPS no predeterminados, los nombres de host o direcciones resueltas privados/internos/de uso especial y las redirecciones no seguras
-- `source=trusted-url`: descargar un `.tgz` HTTPS con `package_sha256` y `trusted_source_id` obligatorios desde una política con nombre en `.github/package-trusted-sources.json`; usar esta opción para espejos empresariales propiedad de los mantenedores o repositorios privados de paquetes, en lugar de añadir a `source=url` una omisión de red privada en el nivel de las entradas
-- `source=artifact`: reutilizar un `.tgz` cargado por otra ejecución de GitHub Actions
+- `source=npm`: `openclaw@beta`, `openclaw@latest` o una versión exacta de OpenClaw
+- `source=ref`: empaqueta una rama, etiqueta o SHA de confirmación completo y de confianza de `package_ref` con el entorno `workflow_ref` seleccionado
+- `source=url`: descarga un `.tgz` HTTPS público con el `package_sha256` requerido; se rechazan las credenciales en URL, los puertos HTTPS no predeterminados, los nombres de host o las direcciones resueltas privados, internos o de uso especial, y las redirecciones no seguras
+- `source=trusted-url`: descarga un `.tgz` HTTPS con los valores requeridos `package_sha256` y `trusted_source_id` de una política con nombre en `.github/package-trusted-sources.json`; utilice esta opción para espejos empresariales propiedad de mantenedores o repositorios de paquetes privados, en lugar de añadir a `source=url` una omisión de red privada en el nivel de entrada
+- `source=artifact`: reutiliza un `.tgz` cargado por otra ejecución de GitHub Actions
 
-`OpenClaw Release Checks` ejecuta Aceptación de paquetes con `source=artifact`, el artefacto preparado del paquete de la versión, `suite_profile=custom`, `docker_lanes=doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape`, `telegram_mode=mock-openai`. Aceptación de paquetes mantiene la migración, la actualización, la actualización de VPS administrados desde la raíz, el reinicio de actualización con autenticación configurada, la instalación en vivo de Skills de ClawHub, la limpieza de dependencias obsoletas de plugins, los accesorios de plugins sin conexión, la actualización de plugins, el refuerzo contra escapes en la vinculación de comandos de plugins y la QA de paquetes de Telegram con el mismo tarball resuelto. Las comprobaciones bloqueantes de la versión usan como referencia predeterminada el último paquete publicado; el perfil beta con `run_release_soak=true`, `release_profile=stable` o `release_profile=full` amplía el barrido de supervivencia a actualizaciones publicadas a `last-stable-4`, además de las referencias fijadas `2026.4.23`, `2026.5.2` y `2026.4.15`, con escenarios `reported-issues`. Usar Aceptación de paquetes con `source=npm` para una candidata ya publicada, `source=ref` para un tarball npm local respaldado por un SHA antes de la publicación, `source=trusted-url` para un espejo empresarial/privado propiedad de los mantenedores o `source=artifact` para un tarball preparado y cargado por otra ejecución de GitHub Actions.
+`OpenClaw Release Checks` ejecuta Package Acceptance con `source=artifact`, el artefacto del paquete de la versión preparado, `suite_profile=custom`, `docker_lanes=doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape`, `telegram_mode=mock-openai`. Package Acceptance mantiene la migración, actualización, actualización de VPS administrado desde la raíz, reinicio tras actualización con autenticación configurada, instalación activa de Skills de ClawHub, limpieza de dependencias obsoletas de plugins, accesorios de plugins sin conexión, actualización de plugins, refuerzo del escape de enlaces de comandos de plugins y QA de Telegram del paquete con el mismo archivo tar resuelto. Las comprobaciones bloqueantes de la versión utilizan como referencia predeterminada el último paquete publicado; el perfil beta con `run_release_soak=true`, `release_profile=stable` o `release_profile=full` amplía el recorrido de supervivencia a la actualización publicada a `last-stable-4`, además de las referencias fijadas `2026.4.23`, `2026.5.2` y `2026.4.15`, con escenarios `reported-issues`. Utilice Package Acceptance con `source=npm` para un candidato ya publicado, `source=ref` para un archivo tar local de npm respaldado por un SHA antes de publicarlo, `source=trusted-url` para un espejo empresarial/privado propiedad de mantenedores o `source=artifact` para un archivo tar preparado y cargado por otra ejecución de GitHub Actions.
 
-Es el reemplazo nativo de GitHub para la mayor parte de la cobertura de paquetes/actualizaciones que antes requería Parallels. Las comprobaciones de publicación entre sistemas operativos siguen siendo importantes para la incorporación, el instalador y el comportamiento específico de cada plataforma, pero la validación del producto para paquetes/actualizaciones debe preferir Aceptación de paquetes.
+Es el sustituto nativo de GitHub para la mayor parte de la cobertura de paquetes/actualizaciones que anteriormente requería Parallels. Las comprobaciones de publicación entre sistemas operativos siguen siendo importantes para la incorporación, el instalador y el comportamiento específico de cada plataforma, pero la validación del producto en cuanto a paquetes/actualizaciones debe preferir Package Acceptance.
 
-La lista de comprobación canónica para validar actualizaciones y plugins es [Pruebas de actualizaciones y plugins](/es/help/testing-updates-plugins). Usarla al decidir qué carril local, de Docker, de Aceptación de paquetes o de comprobación de la versión demuestra un cambio en la instalación/actualización de un plugin, en la limpieza de doctor o en la migración de un paquete publicado. La migración exhaustiva de actualizaciones publicadas desde cada paquete estable `2026.4.23+` es un flujo de trabajo manual `Update Migration` independiente, no forma parte de la CI completa de la versión.
+La lista de comprobación canónica para validar actualizaciones y plugins es [Pruebas de actualizaciones y plugins](/es/help/testing-updates-plugins). Utilícela para decidir qué carril local, de Docker, Package Acceptance o comprobación de versión demuestra un cambio en la instalación/actualización de un plugin, la limpieza mediante doctor o la migración de un paquete publicado. La migración exhaustiva de actualizaciones publicadas desde cada paquete estable `2026.4.23+` es un flujo de trabajo manual `Update Migration` separado, no forma parte de la CI completa de la versión.
 
-La tolerancia heredada de Aceptación de paquetes tiene intencionadamente una duración limitada. Los paquetes hasta `2026.4.25` pueden usar la ruta de compatibilidad para las carencias de metadatos ya publicadas en npm: entradas del inventario privado de QA ausentes del tarball, ausencia de `gateway install --wrapper`, ausencia de archivos de parche en el accesorio de git derivado del tarball, ausencia del valor persistido `update.channel`, ubicaciones heredadas de registros de instalación de plugins, ausencia de persistencia de registros de instalación del mercado y migración de metadatos de configuración durante `plugins update`. El paquete publicado `2026.4.26` puede advertir sobre archivos de marca de metadatos de compilación local que ya se hayan distribuido. Los paquetes posteriores deben cumplir los contratos modernos de paquetes; esas mismas carencias hacen fallar la validación de la versión.
+La permisividad heredada de Package Acceptance tiene intencionadamente una duración limitada. Los paquetes hasta `2026.4.25` pueden utilizar la ruta de compatibilidad para carencias de metadatos ya publicadas en npm: entradas privadas del inventario de QA ausentes del archivo tar, ausencia de `gateway install --wrapper`, ausencia de archivos de parche en el accesorio de Git derivado del archivo tar, ausencia de `update.channel` persistido, ubicaciones heredadas de registros de instalación de plugins, ausencia de persistencia de registros de instalación del mercado y migración de metadatos de configuración durante `plugins update`. El paquete publicado `2026.4.26` puede emitir advertencias por archivos de sello de metadatos de compilación local que ya se hayan publicado. Los paquetes posteriores deben cumplir los contratos modernos de paquetes; esas mismas carencias hacen fallar la validación de la versión.
 
-Usar perfiles más amplios de Aceptación de paquetes cuando la cuestión de la versión se refiera a un paquete instalable real:
+Utilice perfiles más amplios de Package Acceptance cuando la cuestión de la versión se refiera a un paquete instalable real:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -458,31 +456,31 @@ gh workflow run package-acceptance.yml \
   -f published_upgrade_survivor_baseline=openclaw@2026.4.26
 ```
 
-Perfiles de paquetes habituales:
+Perfiles habituales de paquetes:
 
-- `smoke`: vías rápidas de instalación de paquetes/canales/agentes, red del Gateway y recarga de configuración
-- `package`: contratos de instalación/actualización/reinicio/paquetes de plugins, además de una prueba en vivo de instalación de Skills desde ClawHub; esta es la opción predeterminada para la comprobación de versiones
-- `product`: `package` más canales MCP, limpieza de cron/subagentes, búsqueda web de OpenAI y OpenWebUI
+- `smoke`: rutas rápidas de instalación de paquetes/canal/agente, red del Gateway y recarga de configuración
+- `package`: contratos de instalación/actualización/reinicio/paquetes de plugins, además de prueba en vivo de instalación de Skills de ClawHub; este es el valor predeterminado para la comprobación de versiones
+- `product`: `package` más canales MCP, limpieza de Cron/subagentes, búsqueda web de OpenAI y OpenWebUI
 - `full`: segmentos de la ruta de publicación de Docker con OpenWebUI
-- `custom`: lista exacta de `docker_lanes` para repeticiones enfocadas
+- `custom`: lista exacta de `docker_lanes` para repeticiones específicas
 
-Para la prueba de Telegram de un paquete candidato, habilite `telegram_mode=mock-openai` o `telegram_mode=live-frontier` en Package Acceptance. El flujo de trabajo pasa el tarball `package-under-test` resuelto a la vía de Telegram; el flujo de trabajo independiente de Telegram sigue aceptando una especificación npm publicada para las comprobaciones posteriores a la publicación.
+Para la prueba de Telegram del paquete candidato, habilite `telegram_mode=mock-openai` o `telegram_mode=live-frontier` en Package Acceptance. El flujo de trabajo pasa el tarball `package-under-test` resuelto a la ruta de Telegram; el flujo de trabajo independiente de Telegram sigue aceptando una especificación de npm publicada para las comprobaciones posteriores a la publicación.
 
-## Automatización de publicación de versiones regulares
+## Automatización habitual de publicación de versiones
 
 Para la publicación beta, de `latest`, plugins, GitHub Release y plataformas,
-`OpenClaw Release Publish` es el punto de entrada habitual con capacidad de modificación. La ruta mensual
-`.33+` de estabilidad extendida solo para npm no usa este orquestador. El
-flujo de trabajo regular orquesta los flujos de trabajo de publicadores de confianza en el orden que
+`OpenClaw Release Publish` es el punto de entrada habitual que realiza modificaciones. La ruta mensual
+de estabilidad extendida `.33+`, exclusiva de npm, no utiliza este orquestador. El
+flujo de trabajo habitual orquesta los flujos de trabajo de publicación de confianza en el orden que
 requiere la versión:
 
 1. Extraiga la etiqueta de la versión y resuelva el SHA de su commit.
 2. Verifique que se pueda acceder a la etiqueta desde `main` o `release/*` (o desde una rama alfa de Tideclaw para versiones preliminares alfa).
 3. Ejecute `pnpm plugins:sync:check`.
-4. Despache `Plugin NPM Release` con `publish_scope=all-publishable` y `ref=<release-sha>`.
-5. Despache `Plugin ClawHub Release` con el mismo alcance y SHA.
-6. Despache `OpenClaw NPM Release` con la etiqueta de versión, la etiqueta de distribución de npm y el `preflight_run_id` guardado tras verificar el `full_release_validation_run_id` guardado y el intento de ejecución exacto.
-7. Para versiones estables, cree o actualice la versión de GitHub como borrador, despache `Windows Node Release` con el `windows_node_tag` explícito y el `windows_node_installer_digests` aprobado para el candidato, y verifique los activos canónicos del instalador y las sumas de comprobación de Windows. Despache también `Android Release` para compilar el APK firmado de la etiqueta exacta, junto con su suma de comprobación y procedencia. Verifique ambos contratos de activos nativos antes de publicar el borrador.
+4. Ejecute `Plugin NPM Release` con `publish_scope=all-publishable` y `ref=<release-sha>`.
+5. Ejecute `Plugin ClawHub Release` con el mismo ámbito y SHA.
+6. Ejecute `OpenClaw NPM Release` con la etiqueta de versión, la etiqueta de distribución de npm y el `preflight_run_id` guardado después de verificar el `full_release_validation_run_id` guardado y el intento de ejecución exacto.
+7. Para versiones estables, cree o actualice la versión de GitHub como borrador, ejecute `Windows Node Release` con el `windows_node_tag` explícito y el `windows_node_installer_digests` aprobado para el candidato, y verifique los activos canónicos del instalador de Windows y sus sumas de comprobación. Ejecute también `Android Release` para compilar el APK firmado de la etiqueta exacta, junto con la suma de comprobación y la procedencia. Verifique ambos contratos de activos nativos antes de publicar el borrador.
 
 Ejemplo de publicación beta:
 
@@ -524,9 +522,9 @@ gh workflow run openclaw-release-publish.yml \
   -f npm_dist_tag=latest
 ```
 
-Use los flujos de trabajo de bajo nivel `Plugin NPM Release` y `Plugin ClawHub Release` únicamente para tareas específicas de reparación o republicación. `OpenClaw Release Publish` rechaza `plugin_publish_scope=selected` cuando `publish_openclaw_npm=true`, de modo que el paquete principal no pueda publicarse sin todos los plugins oficiales publicables, incluido `@openclaw/diffs-language-pack`. Para reparar un plugin seleccionado, establezca `publish_openclaw_npm=false` con `plugin_publish_scope=selected` y `plugins=@openclaw/name`, o despache directamente el flujo de trabajo secundario.
+Utilice los flujos de trabajo de nivel inferior `Plugin NPM Release` y `Plugin ClawHub Release` solo para trabajos específicos de reparación o republicación. `OpenClaw Release Publish` rechaza `plugin_publish_scope=selected` cuando `publish_openclaw_npm=true`, de modo que el paquete principal no pueda publicarse sin todos los plugins oficiales publicables, incluido `@openclaw/diffs-language-pack`. Para reparar un plugin seleccionado, establezca `publish_openclaw_npm=false` con `plugin_publish_scope=selected` y `plugins=@openclaw/name`, o ejecute directamente el flujo de trabajo secundario.
 
-La inicialización de ClawHub para una primera publicación es la excepción: despache `Plugin ClawHub New`
+La inicialización de ClawHub para la primera publicación es la excepción: ejecute `Plugin ClawHub New`
 desde el `main` de confianza y pase el SHA completo de la versión de destino mediante `ref`.
 Nunca ejecute el propio flujo de trabajo de inicialización desde la etiqueta o rama de la versión:
 
@@ -539,39 +537,39 @@ gh workflow run plugin-clawhub-new.yml \
   -f dry_run=true
 ```
 
-La validación previa a la etiqueta requiere `dry_run=true`, rechaza entradas de etiquetas de versión y de ejecuciones
-principales, y solo acepta un destino exacto accesible desde `main` o `release/*`.
-No carga credenciales de ClawHub, no publica bytes de paquetes ni cambia la configuración
-del publicador de confianza. El flujo de trabajo sigue resolviendo el plan del registro en vivo,
-extrae y empaqueta el destino solo en un trabajo sin secretos, materializa la
+La validación previa a la etiqueta requiere `dry_run=true`, rechaza las entradas de la etiqueta de versión
+y de la ejecución principal, y solo acepta un destino exacto al que se pueda acceder desde `main` o `release/*`.
+No carga credenciales de ClawHub, publica bytes de paquetes ni cambia la configuración
+de publicación de confianza. El flujo de trabajo sigue resolviendo el plan del registro en vivo,
+extrae y empaqueta el destino únicamente en un trabajo sin secretos, materializa la
 cadena de herramientas bloqueada de ClawHub y valida el artefacto inmutable y el
-slug/la identidad del paquete antes de que exista la etiqueta de la versión. Apruebe el entorno
+slug/la identidad del paquete antes de que exista la etiqueta de versión. Apruebe el entorno
 `clawhub-plugin-bootstrap` solo después de que finalicen los trabajos de empaquetado sin secretos;
 este trabajo de validación protegido no tiene credenciales ni comandos de modificación.
 
-Una ejecución de prueba aprobada o una inicialización real posterior al etiquetado debe incluir la
-etiqueta de versión exacta, además del id, el intento y la rama de la ejecución principal `OpenClaw Release Publish`.
-El proceso principal certifica el SHA de su propio flujo de trabajo y un SHA de confianza exacto
-`main` independiente para `Plugin ClawHub New`; la ejecución secundaria y cada aprobación de
-entorno protegido deben coincidir con ese SHA secundario aprobado. La etiqueta de la versión se
-vuelve a comprobar antes de cada intento de publicación y modificación del publicador de confianza.
+Una ejecución de prueba aprobada o una inicialización real después del etiquetado debe incluir la
+etiqueta de versión exacta, además del identificador, el intento y la rama de la ejecución principal
+`OpenClaw Release Publish`. La principal certifica el SHA de su propio flujo de trabajo y otro SHA de confianza
+`main` exacto para `Plugin ClawHub New`; la ejecución secundaria y cada aprobación de entorno
+protegido deben coincidir con ese SHA secundario aprobado. La etiqueta de versión se
+vuelve a comprobar antes de cada intento de publicación y modificación de la publicación de confianza.
 
 El trabajo de empaquetado
-carga un artefacto inmutable cuyo nombre, ID/resumen del artefacto de Actions,
-ejecución/intento productor, SHA de destino y SHA-256/tamaño del tarball de cada paquete
-se transmiten a los trabajos de validación y protegidos. El trabajo protegido extrae únicamente las herramientas
-`main` de confianza, valida la tupla del artefacto mediante la API de GitHub, descarga
-por el ID exacto del artefacto, vuelve a calcular el hash de cada tarball y valida las rutas TAR locales y
-la identidad del paquete con las reglas de canonicalización USTAR de la CLI fijada. Después,
-cada candidato supera la ejecución de prueba de publicación de la CLI fijada, que retorna antes de
-consultar el registro o realizar la autenticación. El prefiltro del trabajo con credenciales limita los ClawPacks
-comprimidos a 120 MiB, la carga total de archivos a 50 MiB, los datos TAR expandidos a 64 MiB y
-el número de entradas TAR a 10,000. La reparación del publicador de confianza de paquetes existentes
-sigue siendo solo de configuración, pero aun así empaqueta el destino y exige la etiqueta solicitada,
-así como la igualdad exacta de los bytes y metadatos del registro, antes de cambiar la configuración del publicador
-de confianza. La verificación posterior a la publicación descarga el artefacto de ClawHub y
-exige el mismo SHA-256 y tamaño. Una recuperación mediante la repetición de trabajos fallidos solo puede reutilizar
-el artefacto del paquete de un intento anterior cuando el trabajo productor exacto haya finalizado
+carga un artefacto inmutable cuyo nombre, identificador/resumen del artefacto de Actions,
+ejecución/intento del productor, SHA de destino y SHA-256/tamaño del tarball de cada paquete se
+transmiten a los trabajos de validación y protegidos. El trabajo protegido extrae únicamente las herramientas
+de confianza de `main`, valida la tupla del artefacto mediante la API de GitHub, realiza la descarga
+por el identificador exacto del artefacto, vuelve a calcular el hash de cada tarball y valida las rutas TAR locales y
+la identidad del paquete con las reglas de canonicalización USTAR de la CLI fijada. Cada
+candidato pasa después la ejecución de prueba de publicación de la CLI fijada, que finaliza antes
+de consultar el registro o autenticar. El prefiltro del trabajo con credenciales limita los ClawPacks comprimidos
+a 120 MiB, la carga útil total de archivos a 50 MiB, los datos TAR expandidos a 64 MiB y
+el número de entradas TAR a 10,000. La reparación de la publicación de confianza de paquetes existentes sigue
+limitada a la configuración, pero aun así empaqueta el destino y requiere que la etiqueta solicitada,
+los bytes exactos del registro y los metadatos coincidan antes de cambiar la configuración de publicación de confianza.
+La verificación posterior a la publicación descarga el artefacto de ClawHub y
+exige el mismo SHA-256 y tamaño. Una recuperación mediante la repetición de trabajos fallidos puede reutilizar el artefacto
+de paquete de un intento anterior solo cuando el trabajo productor exacto haya finalizado
 correctamente. La evidencia final también vincula la versión bloqueada de ClawHub, el
 SHA-256 del archivo de bloqueo y la integridad de npm. Una discrepancia requiere una nueva versión del paquete.
 
@@ -579,75 +577,74 @@ SHA-256 del archivo de bloqueo y la integridad de npm. Una discrepancia requiere
 
 `OpenClaw NPM Release` acepta estas entradas controladas por el operador:
 
-- `tag`: etiqueta de versión obligatoria, como `v2026.4.2`, `v2026.4.2-1`, `v2026.4.2-beta.1` o `v2026.4.2-alpha.1`; cuando `preflight_only=true`, también puede ser el SHA completo de 40 caracteres del commit actual de la rama del flujo de trabajo para una comprobación previa solo de validación
-- `preflight_only`: `true` solo para validación/compilación/empaquetado; `false` para la ruta de publicación real
-- `preflight_run_id`: id de una ejecución de comprobación previa existente y correcta, obligatorio en la ruta de publicación real para que el flujo de trabajo reutilice el tarball preparado en lugar de volver a compilarlo
-- `full_release_validation_run_id`: id de una ejecución correcta de `Full Release Validation` para esta etiqueta/SHA, obligatorio para una publicación real. Las publicaciones beta pueden continuar únicamente con la comprobación previa y una advertencia, pero la promoción estable/de `latest` continúa requiriéndolo.
-- `full_release_validation_run_attempt`: intento de ejecución positivo exacto asociado con `full_release_validation_run_id`; obligatorio siempre que se proporcione el id de ejecución, para impedir que las repeticiones cambien la evidencia de autorización durante la publicación.
-- `release_publish_run_id`: id de ejecución aprobado de `OpenClaw Release Publish`; obligatorio cuando este flujo de trabajo es despachado por ese proceso principal (llamadas de publicación real realizadas por un actor bot)
-- `plugin_npm_run_id`: id de ejecución correcta en la cabecera exacta de `Plugin NPM Release`; obligatorio para una publicación real del paquete principal `extended-stable`
-- `npm_dist_tag`: etiqueta de destino de npm para la ruta de publicación; acepta `alpha`, `beta`, `latest` o `extended-stable` y el valor predeterminado es `beta`. El parche final `33` y posteriores deben usar `extended-stable`; de forma predeterminada, `extended-stable` rechaza parches anteriores y siempre rechaza etiquetas no finales.
-- `bypass_extended_stable_guard`: booleano solo para pruebas, con valor predeterminado `false`; con `npm_dist_tag=extended-stable`, omite la comprobación de elegibilidad mensual para estabilidad extendida, pero conserva las comprobaciones de identidad de la versión, artefactos, aprobación y lectura posterior.
+- `tag`: etiqueta de versión obligatoria, como `v2026.4.2`, `v2026.4.2-1`, `v2026.4.2-beta.1` o `v2026.4.2-alpha.1`; cuando `preflight_only=true`, también puede ser el SHA de commit completo actual de 40 caracteres de la rama del flujo de trabajo para la comprobación previa solo de validación
+- `preflight_only`: `true` solo para validación/compilación/empaquetado, `false` para la ruta de publicación real
+- `preflight_run_id`: identificador de una ejecución previa correcta existente, obligatorio en la ruta de publicación real para que el flujo de trabajo reutilice el tarball preparado en lugar de volver a compilarlo
+- `full_release_validation_run_id`: identificador de una ejecución correcta de `Full Release Validation` para esta etiqueta/SHA, obligatorio para una publicación real. Las publicaciones beta pueden continuar solo con la comprobación previa y una advertencia, pero la promoción estable/`latest` sigue requiriéndolo.
+- `full_release_validation_run_attempt`: intento de ejecución positivo exacto asociado con `full_release_validation_run_id`; obligatorio siempre que se proporcione el identificador de ejecución para que las repeticiones no puedan cambiar la evidencia de autorización durante la publicación.
+- `release_publish_run_id`: identificador aprobado de la ejecución de `OpenClaw Release Publish`; obligatorio cuando este flujo de trabajo lo ejecuta esa principal (llamadas de publicación real del actor bot)
+- `plugin_npm_run_id`: identificador de una ejecución correcta de `Plugin NPM Release` con el encabezado exacto; obligatorio para una publicación principal real de `extended-stable`
+- `npm_dist_tag`: etiqueta de destino de npm para la ruta de publicación; acepta `alpha`, `beta`, `latest` o `extended-stable` y el valor predeterminado es `beta`. La versión final del parche `33` y posteriores deben utilizar `extended-stable`; de forma predeterminada, `extended-stable` rechaza los parches anteriores y siempre rechaza las etiquetas no finales.
+- `bypass_extended_stable_guard`: booleano solo para pruebas, valor predeterminado `false`; con `npm_dist_tag=extended-stable`, omite la elegibilidad mensual de estabilidad extendida y conserva las comprobaciones de identidad de la versión, artefactos, aprobación y lectura posterior.
 
 `Plugin NPM Release` acepta `npm_dist_tag=default` para el comportamiento de versiones
 existente o `npm_dist_tag=extended-stable` para la ruta mensual protegida. La
 opción de estabilidad extendida requiere `publish_scope=all-publishable`, una entrada
 `plugins` vacía, un parche final igual o superior a `33` y la rama canónica
-`extended-stable/YYYY.M.33` en su punta exacta. Nunca mueve `latest` ni
-`beta` de los plugins. Las nuevas versiones de paquetes reciben `extended-stable` de forma atómica
-mediante la publicación de confianza con OIDC (`npm publish --tag extended-stable`); este
-flujo de trabajo de origen no usa `npm dist-tag add` autenticado mediante token. Los reintentos
-omiten las versiones exactas que ya están presentes en npm y después adoptan un comportamiento cerrado ante fallos,
-salvo que una lectura posterior completa confirme que todos los paquetes exactos y la etiqueta
-`extended-stable` han convergido.
+`extended-stable/YYYY.M.33` en su punta exacta. Nunca mueve los plugins
+`latest` ni `beta`. Las nuevas versiones de paquetes reciben `extended-stable` de forma atómica
+mediante publicación de confianza con OIDC (`npm publish --tag extended-stable`); este
+flujo de trabajo de origen no utiliza `npm dist-tag add` autenticado mediante token. Los reintentos
+omiten las versiones exactas que ya estén presentes en npm y luego se cierran de forma segura, salvo que
+la lectura posterior completa confirme que cada paquete exacto y etiqueta `extended-stable` hayan convergido.
 
 `OpenClaw Release Publish` acepta estas entradas controladas por el operador:
 
 - `tag`: etiqueta de versión obligatoria; ya debe existir
-- `preflight_run_id`: id de ejecución correcta de la comprobación previa `OpenClaw NPM Release`; obligatorio cuando `publish_openclaw_npm=true` o `plugin_publish_scope=all-publishable`
-- `full_release_validation_run_id`: id de ejecución correcta de `Full Release Validation`; obligatorio cuando `publish_openclaw_npm=true` o `plugin_publish_scope=all-publishable`
-- `full_release_validation_run_attempt`: intento positivo exacto asociado con `full_release_validation_run_id`; obligatorio siempre que se proporcione el id de ejecución
-- `windows_node_tag`: etiqueta de versión exacta de `openclaw/openclaw-windows-node` que no sea de versión preliminar; obligatoria para la publicación estable de OpenClaw
-- `windows_node_installer_digests`: mapa JSON compacto aprobado para el candidato que asigna los nombres actuales de los instaladores de Windows a sus resúmenes `sha256:` fijados; obligatorio para la publicación estable de OpenClaw
-- `npm_telegram_run_id`: id opcional de una ejecución correcta de `NPM Telegram Beta E2E` para incluirlo en la evidencia final de la versión
+- `preflight_run_id`: identificador de una ejecución previa correcta de `OpenClaw NPM Release`; obligatorio cuando `publish_openclaw_npm=true` o `plugin_publish_scope=all-publishable`
+- `full_release_validation_run_id`: identificador de una ejecución correcta de `Full Release Validation`; obligatorio cuando `publish_openclaw_npm=true` o `plugin_publish_scope=all-publishable`
+- `full_release_validation_run_attempt`: intento positivo exacto asociado con `full_release_validation_run_id`; obligatorio siempre que se proporcione el identificador de ejecución
+- `windows_node_tag`: etiqueta de versión `openclaw/openclaw-windows-node` exacta que no sea preliminar; obligatoria para la publicación estable de OpenClaw
+- `windows_node_installer_digests`: mapa JSON compacto aprobado para el candidato, con los nombres actuales de los instaladores de Windows y sus resúmenes `sha256:` fijados; obligatorio para la publicación estable de OpenClaw
+- `npm_telegram_run_id`: identificador opcional de una ejecución correcta de `NPM Telegram Beta E2E` que se incluirá en la evidencia final de la versión
 - `npm_dist_tag`: etiqueta de destino de npm para el paquete OpenClaw, una de `alpha`, `beta` o `latest`
-- `plugin_publish_scope`: el valor predeterminado es `all-publishable`; use `selected` únicamente para trabajos específicos de reparación solo de plugins con `publish_openclaw_npm=false`
+- `plugin_publish_scope`: el valor predeterminado es `all-publishable`; utilice `selected` solo para trabajos específicos de reparación exclusiva de plugins con `publish_openclaw_npm=false`
 - `plugins`: nombres de paquetes `@openclaw/*` separados por comas cuando `plugin_publish_scope=selected`
-- `publish_openclaw_npm`: el valor predeterminado es `true`; establezca `false` únicamente cuando use el flujo de trabajo como orquestador de reparaciones solo de plugins
-- `release_profile`: perfil de cobertura de la versión utilizado para los resúmenes de evidencia de la versión; el valor predeterminado es `from-validation`, que lo lee del manifiesto de validación, o puede sustituirse por `beta`, `stable` o `full`
-- `wait_for_clawhub`: el valor predeterminado es `false` para que la disponibilidad en npm no quede bloqueada por el proceso auxiliar de ClawHub; establezca `true` únicamente cuando la finalización del flujo de trabajo deba incluir la finalización de ClawHub
+- `publish_openclaw_npm`: el valor predeterminado es `true`; establezca `false` solo cuando utilice el flujo de trabajo como orquestador de reparaciones exclusivas de plugins
+- `release_profile`: perfil de cobertura de la versión utilizado para los resúmenes de evidencias de la versión; el valor predeterminado es `from-validation`, que lo lee del manifiesto de validación, o se puede sustituir por `beta`, `stable` o `full`
+- `wait_for_clawhub`: el valor predeterminado es `false` para que la disponibilidad de npm no quede bloqueada por el proceso auxiliar de ClawHub; establezca `true` solo cuando la finalización del flujo de trabajo deba incluir la finalización de ClawHub
 
 `OpenClaw Release Checks` acepta estas entradas controladas por el operador:
 
-- `ref`: rama, etiqueta o SHA completo del commit que se va a validar. Las comprobaciones que utilizan secretos requieren que el commit resuelto sea accesible desde una rama de OpenClaw o una etiqueta de versión.
-- `run_release_soak`: habilita comprobaciones exhaustivas en vivo/E2E, la ruta de lanzamiento de Docker y las pruebas prolongadas de supervivencia a actualizaciones desde todas las versiones para las comprobaciones de versiones beta. Se activa obligatoriamente mediante `release_profile=stable` y `release_profile=full`.
+- `ref`: rama, etiqueta o SHA completo del commit que se validará. Las comprobaciones que utilizan secretos requieren que el commit resuelto sea accesible desde una rama o etiqueta de versión de OpenClaw.
+- `run_release_soak`: habilita las pruebas exhaustivas en vivo/E2E, la ruta de lanzamiento de Docker y las pruebas prolongadas de supervivencia a actualizaciones desde todas las versiones para las comprobaciones de versiones beta. Se habilita obligatoriamente mediante `release_profile=stable` y `release_profile=full`.
 
 Reglas:
 
 - Las versiones finales normales y de corrección inferiores al parche `33` pueden publicarse en `beta` o `latest`. Las versiones finales con el parche `33` o superior deben publicarse en `extended-stable`, y se rechazan las versiones con sufijo de corrección en ese límite.
 - Las etiquetas de prelanzamiento beta solo pueden publicarse en `beta`; las etiquetas de prelanzamiento alfa solo pueden publicarse en `alpha`
-- Para `OpenClaw NPM Release`, solo se permite proporcionar el SHA completo del commit cuando `preflight_only=true`
+- Para `OpenClaw NPM Release`, la entrada de un SHA completo del commit solo se permite cuando `preflight_only=true`
 - `OpenClaw Release Checks` y `Full Release Validation` son siempre exclusivamente para validación
 - La ruta de publicación real debe usar el mismo `npm_dist_tag` utilizado durante la comprobación previa; el flujo de trabajo verifica esos metadatos antes de continuar con la publicación
 
 ## Secuencia habitual de lanzamiento beta/estable más reciente
 
-Esta secuencia heredada corresponde al lanzamiento orquestado habitual, que también gestiona los plugins, la versión de GitHub, Windows y otras tareas específicas de plataformas. No es la ruta mensual de estabilidad extendida `.33+`, exclusiva de npm, documentada al principio de esta página.
+Esta secuencia heredada corresponde al lanzamiento orquestado habitual, que también gestiona los plugins, la versión de GitHub, Windows y el trabajo de otras plataformas. No es la ruta mensual `.33+` de estabilidad extendida exclusiva de npm que se documenta al principio de esta página.
 
 Al preparar un lanzamiento estable orquestado habitual:
 
-1. Ejecute `OpenClaw NPM Release` con `preflight_only=true`. Antes de que exista una etiqueta, puede usar el SHA completo del commit actual de la rama del flujo de trabajo para realizar una ejecución de prueba exclusivamente de validación del flujo de trabajo de comprobación previa.
-2. Elija `npm_dist_tag=beta` para el flujo normal que comienza con la beta, o `latest` únicamente cuando se desee publicar deliberadamente una versión estable de forma directa.
-3. Ejecute `Full Release Validation` en la rama de lanzamiento, la etiqueta de versión o el SHA completo del commit cuando se desee ejecutar la CI normal junto con la cobertura de caché de prompts en vivo, Docker, QA Lab, Matrix y Telegram desde un único flujo de trabajo manual. Si deliberadamente solo se necesita el grafo determinista de pruebas normales, ejecute en su lugar el flujo de trabajo manual `CI` en la referencia de lanzamiento.
-4. Seleccione la etiqueta de versión exacta de `openclaw/openclaw-windows-node`, que no sea de prelanzamiento, cuyos instaladores firmados para x64 y ARM64 deban distribuirse. Guárdela como `windows_node_tag` y guarde el mapa de resúmenes validado de ambos como `windows_node_installer_digests`. La herramienta auxiliar de la versión candidata registra ambos y los incluye en el comando de publicación que genera.
-5. Guarde los valores correctos de `preflight_run_id`, `full_release_validation_run_id` y el `full_release_validation_run_attempt` exacto.
-6. Ejecute `OpenClaw Release Publish` desde el entorno de confianza `main` con el mismo `tag`, el mismo `npm_dist_tag`, el `windows_node_tag` seleccionado, su `windows_node_installer_digests` guardado, el `preflight_run_id` guardado, `full_release_validation_run_id` y `full_release_validation_run_attempt`. Este proceso publica los plugins externalizados en npm y ClawHub antes de promover el paquete npm de OpenClaw.
-7. Si la versión se publicó en `beta`, use el flujo de trabajo `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` para promover esa versión estable de `beta` a `latest`.
-8. Si la versión se publicó deliberadamente de forma directa en `latest` y `beta` debe adoptar inmediatamente la misma compilación estable, use ese mismo flujo de trabajo de lanzamiento para hacer que ambas etiquetas de distribución apunten a la versión estable, o permita que su sincronización programada con autorreparación traslade `beta` posteriormente.
+1. Ejecute `OpenClaw NPM Release` con `preflight_only=true`. Antes de que exista una etiqueta, se puede usar el SHA completo del commit actual de la rama del flujo de trabajo para realizar una ejecución de prueba exclusivamente de validación del flujo de comprobación previa.
+2. Elija `npm_dist_tag=beta` para el flujo normal que comienza con la beta, o `latest` solo cuando se quiera realizar intencionadamente una publicación estable directa.
+3. Ejecute `Full Release Validation` en la rama de lanzamiento, la etiqueta de versión o el SHA completo del commit cuando se quiera obtener la cobertura de la CI normal junto con la caché de prompts en vivo, Docker, QA Lab, Matrix y Telegram desde un único flujo de trabajo manual. Si intencionadamente solo se necesita el grafo determinista de pruebas normales, ejecute en su lugar el flujo de trabajo manual `CI` en la referencia de lanzamiento.
+4. Seleccione la etiqueta de versión exacta que no sea de prelanzamiento `openclaw/openclaw-windows-node` cuyos instaladores firmados x64 y ARM64 deban distribuirse. Guárdela como `windows_node_tag` y guarde su mapa de resúmenes validado como `windows_node_installer_digests`. El asistente de la versión candidata registra ambos y los incluye en el comando de publicación que genera.
+5. Guarde los valores correctos de `preflight_run_id`, `full_release_validation_run_id` y el valor exacto de `full_release_validation_run_attempt`.
+6. Ejecute `OpenClaw Release Publish` desde el entorno de confianza `main` con el mismo `tag`, el mismo `npm_dist_tag`, el `windows_node_tag` seleccionado, su `windows_node_installer_digests` guardado, el `preflight_run_id` guardado, `full_release_validation_run_id` y `full_release_validation_run_attempt`. Este proceso publica los plugins externalizados en npm y ClawHub antes de promocionar el paquete npm de OpenClaw.
+7. Si el lanzamiento se publicó en `beta`, use el flujo de trabajo `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` para promocionar esa versión estable de `beta` a `latest`.
+8. Si el lanzamiento se publicó intencionadamente de forma directa en `latest` y `beta` debe adoptar de inmediato la misma compilación estable, use ese mismo flujo de trabajo de lanzamiento para hacer que ambas etiquetas de distribución apunten a la versión estable, o permita que su sincronización programada de autorreparación traslade `beta` más adelante.
 
-La modificación de las etiquetas de distribución reside en el repositorio del registro de lanzamientos porque todavía requiere `NPM_TOKEN`, mientras que el repositorio de código fuente mantiene la publicación exclusivamente mediante OIDC. De este modo, tanto la ruta de publicación directa como la ruta de promoción que comienza con la beta quedan documentadas y visibles para los operadores.
+La modificación de las etiquetas de distribución reside en el repositorio del registro de lanzamientos porque todavía requiere `NPM_TOKEN`, mientras que el repositorio de código fuente mantiene la publicación exclusiva mediante OIDC. De este modo, tanto la ruta de publicación directa como la ruta de promoción que comienza con la beta quedan documentadas y visibles para los operadores.
 
-Si una persona responsable del mantenimiento debe recurrir a la autenticación local de npm, ejecute todos los comandos de la CLI de 1Password (`op`) únicamente dentro de una sesión de tmux dedicada. No invoque `op` directamente desde el shell principal del agente; mantenerlo dentro de tmux permite observar las solicitudes, las alertas y la gestión de OTP, y evita alertas reiteradas del host.
+Si un mantenedor debe recurrir a la autenticación local de npm, ejecute cualquier comando de la CLI de 1Password (`op`) únicamente dentro de una sesión de tmux dedicada. No invoque `op` directamente desde el shell principal del agente; mantenerlo dentro de tmux permite observar las solicitudes, las alertas y la gestión de OTP, y evita que se repitan las alertas del host.
 
 ## Referencias públicas
 
@@ -661,7 +658,7 @@ Si una persona responsable del mantenimiento debe recurrir a la autenticación l
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
 
-Las personas responsables del mantenimiento utilizan la documentación privada de lanzamientos de [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md) como guía operativa real.
+Los mantenedores usan la documentación privada de lanzamientos de [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md) como guía operativa real.
 
 ## Contenido relacionado
 

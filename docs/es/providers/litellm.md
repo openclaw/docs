@@ -1,32 +1,33 @@
 ---
 read_when:
     - Quieres enrutar OpenClaw a través de un proxy LiteLLM
-    - Necesitas seguimiento de costes, registro o enrutamiento de modelos mediante LiteLLM
-summary: Ejecuta OpenClaw mediante LiteLLM Proxy para unificar el acceso a los modelos y realizar un seguimiento de los costes
+    - Necesita seguimiento de costes, registro o enrutamiento de modelos mediante LiteLLM
+summary: Ejecuta OpenClaw mediante LiteLLM Proxy para unificar el acceso a los modelos y el seguimiento de costes
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-07-11T23:26:37Z"
+    generated_at: "2026-07-22T10:44:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
+    source_hash: 22451f0eefcf991a602409701fc752f97600a67752c67304137c7f17f3dd1a16
     source_path: providers/litellm.md
     workflow: 16
 ---
 
 [LiteLLM](https://litellm.ai) es un gateway de LLM de código abierto con una API unificada para más de 100
-proveedores de modelos. Enrute OpenClaw a través de LiteLLM para centralizar el seguimiento de costos, el registro, las claves virtuales con
-límites de gasto y la conmutación por error entre backends sin cambiar la configuración de OpenClaw.
+proveedores de modelos. Enrute OpenClaw a través de LiteLLM para centralizar el seguimiento de costes, el registro, las claves virtuales con
+límites de gasto y la conmutación por error del backend sin cambiar la configuración de OpenClaw.
 
 ## Inicio rápido
 
 <Tabs>
-  <Tab title="Incorporación (recomendado)">
+  <Tab title="Incorporación (recomendada)">
     ```bash
     openclaw onboard --auth-choice litellm-api-key
     ```
 
-    Para realizar una configuración no interactiva con un proxy remoto, pase explícitamente la URL del proxy:
+    Para una configuración no interactiva con un proxy remoto, proporcione explícitamente la URL del proxy:
 
     ```bash
     openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
@@ -92,13 +93,13 @@ límites de gasto y la conmutación por error entre backends sin cambiar la conf
 }
 ```
 
-El modelo predeterminado que escribe el proceso de incorporación es `litellm/claude-opus-4-6`.
+El modelo predeterminado que escribe la incorporación es `litellm/claude-opus-4-6`.
 
 ## Generación de imágenes
 
-LiteLLM puede servir de backend para la herramienta `image_generate` mediante las rutas compatibles con OpenAI `/images/generations` y
-`/images/edits`. El modelo de imágenes predeterminado es `gpt-image-2`; configure otro en
-`agents.defaults.imageGenerationModel`:
+LiteLLM puede respaldar la herramienta `image_generate` mediante las rutas `/images/generations` y
+`/images/edits` compatibles con OpenAI. El modelo de imágenes predeterminado es `gpt-image-2`; configure otro en
+`agents.defaults.mediaModels.image`:
 
 ```json5
 {
@@ -121,9 +122,9 @@ LiteLLM puede servir de backend para la herramienta `image_generate` mediante la
 }
 ```
 
-Las URL de LiteLLM en local loopback (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) funcionan
+Las URL de bucle local de LiteLLM (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) funcionan
 sin una anulación global de la red privada. Para un proxy alojado en la LAN, establezca
-`models.providers.litellm.request.allowPrivateNetwork: true`, ya que la clave de API se envía a ese host.
+`models.providers.litellm.request.allowPrivateNetwork: true` porque la clave de API se envía a ese host.
 
 ## Opciones avanzadas
 
@@ -172,7 +173,7 @@ sin una anulación global de la red privada. Para un proxy alojado en la LAN, es
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Registros de gasto
+    # Registros de gastos
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
@@ -180,13 +181,13 @@ sin una anulación global de la red privada. Para un proxy alojado en la LAN, es
   </Accordion>
 
   <Accordion title="Notas sobre el comportamiento del proxy">
-    - LiteLLM se ejecuta de forma predeterminada en `http://localhost:4000`.
+    - LiteLLM se ejecuta en `http://localhost:4000` de forma predeterminada.
     - OpenClaw se conecta a través del endpoint `/v1` compatible con OpenAI y de tipo proxy de LiteLLM.
-    - La adaptación de solicitudes exclusiva de OpenAI nativo no se aplica a través de una URL base de LiteLLM configurada:
-      sin `service_tier`, sin `store` de Responses, sin indicaciones para la caché de prompts y sin adaptación de la carga útil
-      del esfuerzo de razonamiento de OpenAI.
+    - La adaptación de solicitudes exclusiva de OpenAI nativo no se aplica mediante una URL base de LiteLLM configurada:
+      no se usa `service_tier`, ni `store` de Responses, ni indicaciones para la caché de prompts, ni adaptación de la carga útil
+      del nivel de razonamiento de OpenAI.
     - Los encabezados ocultos de atribución de OpenClaw (`originator`, `version`, `User-Agent`) solo se envían a
-      endpoints nativos de OpenAI verificados, por lo que no se insertan al usar una URL base personalizada de LiteLLM.
+      endpoints nativos de OpenAI verificados, por lo que no se insertan en una URL base personalizada de LiteLLM.
   </Accordion>
 </AccordionGroup>
 
@@ -198,7 +199,7 @@ Para obtener información general sobre la configuración de proveedores y el co
 
 <CardGroup cols={2}>
   <Card title="Documentación de LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Documentación oficial de LiteLLM y referencia de la API.
+    Documentación oficial y referencia de la API de LiteLLM.
   </Card>
   <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
     Descripción general de todos los proveedores, las referencias de modelos y el comportamiento de conmutación por error.

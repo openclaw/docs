@@ -1,20 +1,23 @@
 ---
 read_when:
     - 你想要透過 LiteLLM Proxy 路由 OpenClaw
-    - 你需要透過 LiteLLM 進行成本追蹤、日誌記錄或模型路由。
+    - 你需要透過 LiteLLM 進行成本追蹤、記錄或模型路由
 summary: 透過 LiteLLM Proxy 執行 OpenClaw，以統一存取模型並追蹤成本
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-07-11T21:42:27Z"
+    generated_at: "2026-07-22T10:44:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
+    source_hash: 22451f0eefcf991a602409701fc752f97600a67752c67304137c7f17f3dd1a16
     source_path: providers/litellm.md
     workflow: 16
 ---
 
-[LiteLLM](https://litellm.ai) 是一個開源的大型語言模型閘道，提供統一 API，可連接 100 多個模型供應商。將 OpenClaw 經由 LiteLLM 路由，即可集中追蹤成本、記錄日誌、使用設有支出上限的虛擬金鑰，並在不變更 OpenClaw 設定的情況下進行後端容錯移轉。
+[LiteLLM](https://litellm.ai) 是一個開放原始碼的 LLM 閘道，提供統一 API，可連接 100 多個模型
+供應商。透過 LiteLLM 路由 OpenClaw，即可集中追蹤成本、記錄日誌、使用具消費上限的虛擬金鑰，
+並在不變更 OpenClaw 設定的情況下進行後端容錯移轉。
 
 ## 快速開始
 
@@ -24,7 +27,7 @@ x-i18n:
     openclaw onboard --auth-choice litellm-api-key
     ```
 
-    若要以非互動方式設定遠端代理，請明確傳入代理 URL：
+    若要以非互動方式設定遠端代理伺服器，請明確傳入代理伺服器 URL：
 
     ```bash
     openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
@@ -35,7 +38,7 @@ x-i18n:
 
   <Tab title="手動設定">
     <Steps>
-      <Step title="啟動 LiteLLM 代理">
+      <Step title="啟動 LiteLLM Proxy">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
@@ -90,11 +93,13 @@ x-i18n:
 }
 ```
 
-初始設定預設寫入的模型為 `litellm/claude-opus-4-6`。
+初始設定寫入的預設模型是 `litellm/claude-opus-4-6`。
 
-## 圖像生成
+## 圖片生成
 
-LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 路由，為 `image_generate` 工具提供後端支援。預設圖像模型為 `gpt-image-2`；若要使用其他模型，請在 `agents.defaults.imageGenerationModel` 下設定：
+LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和
+`/images/edits` 路由，為 `image_generate` 工具提供後端支援。預設圖片模型是 `gpt-image-2`；若要設定其他模型，請在
+`agents.defaults.mediaModels.image` 下設定：
 
 ```json5
 {
@@ -117,13 +122,15 @@ LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 
 }
 ```
 
-本機回送 LiteLLM URL（`http://localhost:4000`、`127.0.0.1`、`::1`、`host.docker.internal`）無須全域私人網路覆寫即可運作。若代理架設於區域網路，請設定 `models.providers.litellm.request.allowPrivateNetwork: true`，因為 API 金鑰會傳送至該主機。
+回送 LiteLLM URL（`http://localhost:4000`、`127.0.0.1`、`::1`、`host.docker.internal`）無須全域私人網路覆寫即可運作。
+若代理伺服器架設於區域網路中，請設定
+`models.providers.litellm.request.allowPrivateNetwork: true`，因為 API 金鑰會傳送至該主機。
 
-## 進階設定
+## 進階
 
 <AccordionGroup>
   <Accordion title="虛擬金鑰">
-    為 OpenClaw 建立設有支出上限的專用金鑰：
+    為 OpenClaw 建立具有消費上限的專用金鑰：
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -141,7 +148,7 @@ LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 
   </Accordion>
 
   <Accordion title="模型路由">
-    LiteLLM 可將模型請求路由至不同後端。請在 LiteLLM 的 `config.yaml` 中設定：
+    LiteLLM 可將模型要求路由至不同後端。請在 LiteLLM 的 `config.yaml` 中設定：
 
     ```yaml
     model_list:
@@ -156,7 +163,7 @@ LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw 會持續請求 `claude-opus-4-6`；路由則由 LiteLLM 處理。
+    OpenClaw 會持續要求 `claude-opus-4-6`；LiteLLM 會處理路由。
 
   </Accordion>
 
@@ -166,21 +173,21 @@ LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # 支出日誌
+    # 消費日誌
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="代理行為注意事項">
+  <Accordion title="代理伺服器行為注意事項">
     - LiteLLM 預設在 `http://localhost:4000` 上執行。
-    - OpenClaw 透過 LiteLLM 代理形式且與 OpenAI 相容的 `/v1` 端點連線。
-    - 透過已設定的 LiteLLM 基底 URL 時，不會套用僅限原生 OpenAI 的請求格式調整：
-      不包含 `service_tier`、Responses `store`、提示快取提示，也不會調整 OpenAI 推理強度的
-      承載資料格式。
+    - OpenClaw 透過 LiteLLM 代理伺服器形式、與 OpenAI 相容的 `/v1` 端點連線。
+    - 透過已設定的 LiteLLM 基礎 URL 時，不會套用僅供原生 OpenAI 使用的要求塑形：
+      沒有 `service_tier`、沒有 Responses `store`、沒有提示快取提示，也不會進行 OpenAI 推理強度
+      承載資料塑形。
     - 隱藏的 OpenClaw 歸屬標頭（`originator`、`version`、`User-Agent`）只會傳送至
-      經驗證的原生 OpenAI 端點，因此不會注入自訂的 LiteLLM 基底 URL。
+      經驗證的原生 OpenAI 端點，因此不會插入自訂 LiteLLM 基礎 URL 的要求中。
   </Accordion>
 </AccordionGroup>
 
@@ -188,19 +195,19 @@ LiteLLM 可透過與 OpenAI 相容的 `/images/generations` 和 `/images/edits` 
 如需一般供應商設定與容錯移轉行為的資訊，請參閱[模型供應商](/zh-TW/concepts/model-providers)。
 </Note>
 
-## 相關內容
+## 相關資源
 
 <CardGroup cols={2}>
   <Card title="LiteLLM 文件" href="https://docs.litellm.ai" icon="book">
     LiteLLM 官方文件與 API 參考資料。
   </Card>
   <Card title="模型選擇" href="/zh-TW/concepts/model-providers" icon="layers">
-    所有供應商、模型參照與容錯移轉行為的概覽。
+    所有供應商、模型參照與容錯移轉行為的概觀。
   </Card>
   <Card title="設定" href="/zh-TW/gateway/configuration" icon="gear">
     完整設定參考資料。
   </Card>
   <Card title="模型" href="/zh-TW/concepts/models" icon="brain">
-    如何選擇與設定模型。
+    如何選擇及設定模型。
   </Card>
 </CardGroup>

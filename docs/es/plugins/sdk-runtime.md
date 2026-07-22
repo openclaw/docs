@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Necesita llamar a funciones auxiliares del núcleo desde un plugin (TTS, STT, generación de imágenes, búsqueda web, Gateway, subagente, nodos)
-    - Quieres comprender qué expone api.runtime
-    - Se está accediendo a auxiliares de configuración, agente o contenido multimedia desde el código del plugin
+    - Necesitas llamar a funciones auxiliares del núcleo desde un plugin (TTS, STT, generación de imágenes, búsqueda web, Gateway, subagente, nodos)
+    - Quieres entender qué expone `api.runtime`
+    - Estás accediendo a utilidades de configuración, agente o contenido multimedia desde el código del plugin
 sidebarTitle: Runtime helpers
-summary: api.runtime -- los asistentes de runtime inyectados disponibles para los plugins
-title: Ayudantes de tiempo de ejecución del Plugin
+summary: api.runtime -- los auxiliares de runtime inyectados disponibles para los plugins
+title: Herramientas auxiliares del entorno de ejecución de Plugin
 x-i18n:
-    generated_at: "2026-07-20T00:55:06Z"
+    generated_at: "2026-07-22T11:04:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 197ccf047ccefddbd515ace9f1ce195e998f3fbafcb65ee80282bf67f0c6ab8d
+    source_hash: 165f8354a480dba8ff1127ed2f79f8bb8f41011ce585987854a9017671ca36cd
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-Referencia del objeto `api.runtime` inyectado en cada plugin durante el registro. Utilice estos auxiliares en lugar de importar directamente los componentes internos del host.
+Referencia del objeto `api.runtime` que se inyecta en cada plugin durante el registro. Utilice estos asistentes en lugar de importar directamente los componentes internos del host.
 
 <CardGroup cols={2}>
   <Card title="Plugins de canal" href="/es/plugins/sdk-channel-plugins">
-    Guía paso a paso que utiliza estos auxiliares en contexto para los plugins de canal.
+    Guía paso a paso que utiliza estos asistentes en contexto para los plugins de canal.
   </Card>
   <Card title="Plugins de proveedor" href="/es/plugins/sdk-provider-plugins">
-    Guía paso a paso que utiliza estos auxiliares en contexto para los plugins de proveedor.
+    Guía paso a paso que utiliza estos asistentes en contexto para los plugins de proveedor.
   </Card>
 </CardGroup>
 
@@ -34,38 +34,38 @@ register(api) {
 }
 ```
 
-`api.runtime.version` es la versión actual del producto OpenClaw, obtenida del solucionador de versiones compartido para que los plugins vean el mismo valor que indica la CLI.
+`api.runtime.version` es la versión actual del producto OpenClaw, obtenida del solucionador de versiones compartido para que los plugins vean el mismo valor que muestra la CLI.
 
 ## Carga y escritura de la configuración
 
-Dé preferencia a la configuración que ya se haya pasado a la ruta de llamada activa, por ejemplo, `api.config` durante el registro o un argumento `cfg` en las devoluciones de llamada de canales o proveedores. Esto permite que una única instantánea del proceso fluya por el trabajo, en lugar de volver a analizar la configuración en rutas críticas.
+Es preferible utilizar la configuración que ya se haya pasado a la ruta de llamada activa, por ejemplo, `api.config` durante el registro o un argumento `cfg` en las devoluciones de llamada de canales o proveedores. Esto permite que una única instantánea del proceso fluya por el trabajo, en lugar de volver a analizar la configuración en rutas críticas.
 
-Utilice `api.runtime.config.current()` únicamente cuando un controlador de larga duración necesite la instantánea actual del proceso y no se haya pasado ninguna configuración a esa función. El valor devuelto es de solo lectura; clónelo o utilice un auxiliar de mutación antes de editarlo.
+Utilice `api.runtime.config.current()` únicamente cuando un controlador de larga duración necesite la instantánea actual del proceso y no se haya pasado ninguna configuración a esa función. El valor devuelto es de solo lectura; clónelo o utilice un asistente de mutación antes de editarlo.
 
-Las fábricas de herramientas reciben `ctx.runtimeConfig` junto con `ctx.getRuntimeConfig()`. Utilice el captador dentro de la devolución de llamada `execute` de una herramienta de larga duración cuando la configuración pueda cambiar después de crear la definición de la herramienta.
+Las fábricas de herramientas reciben `ctx.runtimeConfig` junto con `ctx.getRuntimeConfig()`. Utilice el método de obtención dentro de la devolución de llamada `execute` de una herramienta de larga duración cuando la configuración pueda cambiar después de haberse creado la definición de la herramienta.
 
 Conserve los cambios mediante `api.runtime.config.mutateConfigFile(...)` o `api.runtime.config.replaceConfigFile(...)`. Cada escritura debe elegir una política `afterWrite` explícita:
 
 - `afterWrite: { mode: "auto" }` permite que el planificador de recarga del Gateway decida.
-- `afterWrite: { mode: "restart", reason: "..." }` fuerza un reinicio limpio cuando el responsable de la escritura sabe que la recarga en caliente no es segura.
-- `afterWrite: { mode: "none", reason: "..." }` suprime la recarga o el reinicio automáticos únicamente cuando quien realiza la llamada se encarga del seguimiento.
+- `afterWrite: { mode: "restart", reason: "..." }` fuerza un reinicio limpio cuando quien realiza la escritura sabe que la recarga en caliente no es segura.
+- `afterWrite: { mode: "none", reason: "..." }` suprime la recarga o el reinicio automáticos únicamente cuando el llamador se encarga del seguimiento.
 
-Los auxiliares de mutación devuelven `afterWrite` junto con un resumen `followUp` con tipos para que quienes realizan las llamadas puedan registrar o comprobar si solicitaron un reinicio. El Gateway sigue determinando cuándo se produce realmente ese reinicio.
+Los asistentes de mutación devuelven `afterWrite` junto con un resumen `followUp` tipado, de modo que los llamadores puedan registrar o comprobar si solicitaron un reinicio. El Gateway sigue controlando cuándo se produce realmente ese reinicio.
 
-Utilice `current()`, un `cfg` pasado como argumento, `mutateConfigFile(...)` o
+Utilice `current()`, un `cfg` proporcionado, `mutateConfigFile(...)` o
 `replaceConfigFile(...)` para acceder a la configuración en tiempo de ejecución y escribirla.
 
-Para las importaciones directas del SDK, dé preferencia a las rutas secundarias específicas de configuración frente al módulo de compatibilidad general `openclaw/plugin-sdk/config-runtime`: `config-contracts` para los tipos, `runtime-config-snapshot` para las instantáneas actuales del proceso y `config-mutation` para las escrituras. Lea los valores limitados a la entrada desde `api.pluginConfig`; utilice un contexto de herramienta suministrado únicamente para su instantánea de configuración de todo el entorno de ejecución y mantenga la combinación específica del plugin en ese límite. Las pruebas de plugins incluidos deben simular directamente estas rutas secundarias específicas en lugar de simular el módulo de compatibilidad general.
+Para las importaciones directas del SDK, prefiera las subrutas específicas de configuración al amplio módulo de compatibilidad `openclaw/plugin-sdk/config-runtime`: `config-contracts` para los tipos, `runtime-config-snapshot` para las instantáneas actuales del proceso y `config-mutation` para las escrituras. Lea los valores cuyo ámbito sea la entrada desde `api.pluginConfig`; utilice un contexto de herramienta proporcionado únicamente para su instantánea de configuración de todo el entorno de ejecución y mantenga la combinación específica del plugin en ese límite. Las pruebas de plugins incluidos deben simular directamente estas subrutas específicas en lugar de simular el amplio módulo de compatibilidad.
 
-El código interno del entorno de ejecución de OpenClaw sigue el mismo enfoque: carga la configuración una vez en el límite de la CLI, el Gateway o el proceso, y después pasa ese valor. Las escrituras de mutación correctas actualizan la instantánea del proceso en tiempo de ejecución y avanzan su revisión interna; las cachés de larga duración deben utilizar como clave la clave de caché propiedad del entorno de ejecución, en lugar de serializar localmente la configuración. Los módulos de larga duración del entorno de ejecución tienen un analizador de tolerancia cero para las llamadas ambientales a `loadConfig()`; utilice un `cfg` pasado como argumento, un `context.getRuntimeConfig()` de la solicitud o `getRuntimeConfig()` en un límite explícito del proceso.
+El código interno del entorno de ejecución de OpenClaw sigue el mismo enfoque: carga la configuración una vez en el límite de la CLI, del Gateway o del proceso y, a continuación, pasa ese valor. Las escrituras de mutación correctas actualizan la instantánea del entorno de ejecución del proceso y avanzan su revisión interna; las cachés de larga duración deben utilizar como clave la clave de caché propiedad del entorno de ejecución, en lugar de serializar la configuración localmente. Los módulos de entorno de ejecución de larga duración cuentan con un analizador de tolerancia cero para las llamadas ambientales a `loadConfig()`; utilice un `cfg` proporcionado, un `context.getRuntimeConfig()` de solicitud o `getRuntimeConfig()` en un límite explícito del proceso.
 
-Las rutas de ejecución de proveedores y canales deben utilizar la instantánea activa de la configuración en tiempo de ejecución, no una instantánea del archivo devuelta para consultar o editar la configuración. Las instantáneas de archivos conservan valores de origen, como los marcadores SecretRef, para la interfaz de usuario y las escrituras; las devoluciones de llamada de proveedores necesitan la vista resuelta del entorno de ejecución. Cuando se pueda llamar a un auxiliar con la instantánea activa del origen o con la instantánea activa del entorno de ejecución, pase por `selectApplicableRuntimeConfig()` antes de leer las credenciales.
+Las rutas de ejecución de proveedores y canales deben utilizar la instantánea activa de la configuración en tiempo de ejecución, no una instantánea del archivo devuelta para leer o editar la configuración. Las instantáneas del archivo conservan valores de origen, como los marcadores SecretRef, para la interfaz de usuario y las escrituras; las devoluciones de llamada de proveedores necesitan la vista resuelta del entorno de ejecución. Cuando un asistente pueda recibir la instantánea activa del origen o la instantánea activa del entorno de ejecución, canalice el acceso mediante `selectApplicableRuntimeConfig()` antes de leer las credenciales.
 
 ## Utilidades reutilizables del entorno de ejecución
 
-Utilice los datos `botLoopProtection` entrantes para los mensajes entrantes creados por bots. El núcleo aplica la protección compartida en memoria con ventana deslizante antes de registrar la sesión y despachar, sin vincular la política a un único canal. La protección realiza un seguimiento de las claves `(scopeId, conversationId, participant pair)`, cuenta conjuntamente ambas direcciones de un par, aplica un período de espera cuando se supera el presupuesto de la ventana y depura de forma oportunista las entradas inactivas.
+Utilice los datos `botLoopProtection` entrantes para los mensajes entrantes creados por bots. El núcleo aplica la protección compartida de ventana deslizante en memoria antes de registrar la sesión y realizar el envío, sin vincular la política a un canal concreto. La protección realiza el seguimiento de las claves `(scopeId, conversationId, participant pair)`, contabiliza conjuntamente ambas direcciones de un par, aplica un periodo de espera cuando se supera el límite de la ventana y elimina de manera oportunista las entradas inactivas.
 
-Los plugins de canal que expongan este comportamiento a los operadores deben dar preferencia a la estructura compartida `channels.defaults.botLoopProtection` para los presupuestos de referencia y, después, superponer las anulaciones específicas del canal o proveedor. La configuración compartida utiliza segundos porque está orientada al usuario:
+Los plugins de canal que expongan este comportamiento a los operadores deben utilizar preferentemente la estructura compartida `channels.defaults.botLoopProtection` para los límites de referencia y, a continuación, superponer las anulaciones específicas del canal o proveedor. La configuración compartida utiliza segundos porque está orientada al usuario:
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -105,7 +105,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
-    Identidad del agente, directorios y gestión de sesiones.
+    Identidad, directorios y gestión de sesiones del agente.
 
     ```typescript
     // Resolver el directorio de trabajo del agente (agentId es obligatorio)
@@ -134,35 +134,35 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     // Obtener el tiempo de espera del agente
     const timeoutMs = api.runtime.agent.resolveAgentTimeoutMs(cfg);
 
-    // Garantizar que exista el espacio de trabajo
+    // Asegurarse de que exista el espacio de trabajo
     await api.runtime.agent.ensureAgentWorkspace(cfg);
 
-    // Ejecutar un turno integrado del agente
+    // Ejecutar un turno de agente integrado
     const result = await api.runtime.agent.runEmbeddedAgent({
       sessionId: "my-plugin:task-1",
       runId: crypto.randomUUID(),
       workspaceDir: api.runtime.agent.resolveAgentWorkspaceDir(cfg, agentId),
-      prompt: "Resume los cambios más recientes",
+      prompt: "Resumir los cambios más recientes",
       timeoutMs: api.runtime.agent.resolveAgentTimeoutMs(cfg),
     });
     ```
 
-    `runEmbeddedAgent(...)` es el auxiliar neutral para iniciar un turno normal de un agente de OpenClaw desde el código de un plugin. Utiliza la misma resolución de proveedor y modelo, así como la misma selección del arnés del agente, que las respuestas activadas por canales.
+    `runEmbeddedAgent(...)` es el asistente neutral para iniciar un turno normal de un agente de OpenClaw desde el código de un plugin. Utiliza la misma resolución de proveedor y modelo, así como la misma selección del arnés del agente, que las respuestas activadas por canales.
 
-    `runEmbeddedPiAgent(...)` se mantiene como un alias de compatibilidad obsoleto para los plugins existentes. El código nuevo debe utilizar `runEmbeddedAgent(...)`.
+    `runEmbeddedPiAgent(...)` se mantiene como alias de compatibilidad obsoleto para los plugins existentes. El código nuevo debe utilizar `runEmbeddedAgent(...)`.
 
-    `resolveCliBackendDispatchEligibility({ provider, model, agentId, authProfileId, config, agentDir, workspaceDir })` comparte con quienes realizan llamadas y habilitan `cliBackendDispatch: "subscription-auth"` para las ejecuciones integradas la decisión de despacho del backend de la CLI del ejecutor integrado (la ruta, la capacidad `subscriptionAuthDispatch` declarada por el backend y el modo de credenciales almacenado, respetando un `authProfileId` fijado explícitamente). Devuelve `{ provider }` cuando la ejecución se realizaría mediante el backend de la CLI y `undefined` cuando permanece en el paso directo, para que quienes realizan las llamadas puedan asignar tiempos de espera a la ejecución que realmente se llevará a cabo.
+    `resolveCliBackendDispatchEligibility({ provider, model, agentId, authProfileId, config, agentDir, workspaceDir })` comparte con los llamadores que optan por incluir ejecuciones integradas en `cliBackendDispatch: "subscription-auth"` la decisión de envío al backend de la CLI del ejecutor integrado (la ruta, la capacidad `subscriptionAuthDispatch` declarada por el backend y el modo de credenciales almacenado, respetando un `authProfileId` fijado explícitamente). Devuelve `{ provider }` cuando la ejecución se realizaría mediante el backend de la CLI y `undefined` cuando permanece en el paso directo, de modo que los llamadores puedan asignar tiempos de espera a la ejecución que se realizará realmente.
 
-    `resolveThinkingPolicy(...)` devuelve los niveles de razonamiento compatibles con el proveedor o modelo y el valor predeterminado opcional. Los plugins de proveedor controlan el perfil específico del modelo mediante sus enlaces de razonamiento, por lo que los plugins de herramientas deben llamar a este auxiliar del entorno de ejecución en lugar de importar o duplicar listas de proveedores.
+    `resolveThinkingPolicy(...)` devuelve los niveles de razonamiento compatibles con el proveedor o modelo y un valor predeterminado opcional. Los plugins de proveedor controlan el perfil específico del modelo mediante sus enlaces de razonamiento, por lo que los plugins de herramientas deben llamar a este asistente del entorno de ejecución en lugar de importar o duplicar listas de proveedores.
 
     `normalizeThinkingLevel(...)` convierte texto del usuario como `on`, `x-high` o `extra high` al nivel canónico almacenado antes de compararlo con la política resuelta.
 
-    Los **auxiliares del almacén de sesiones** se encuentran en `api.runtime.agent.session`:
+    Los **asistentes del almacén de sesiones** se encuentran en `api.runtime.agent.session`:
 
     ```typescript
     const entry = api.runtime.agent.session.getSessionEntry({ agentId, sessionKey });
     for (const { sessionKey, entry } of api.runtime.agent.session.listSessionEntries({ agentId })) {
-      // Iterar por las filas de sesiones sin depender de la estructura heredada de sessions.json.
+      // Iterar por las filas de sesión sin depender de la estructura sessions.json heredada.
     }
     await api.runtime.agent.session.patchSessionEntry({
       agentId,
@@ -187,34 +187,34 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     await api.runtime.agent.session.runWithWorkAdmission(
       { storePath, sessionKey },
       async (signal) => {
-        // Crear o actualizar la sesión y, después, pasar signal a la ejecución admitida del agente.
+        // Crear o actualizar la sesión y, a continuación, pasar signal a la ejecución admitida del agente.
       },
     );
     ```
 
-    Dé preferencia a `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` o `upsertSessionEntry(...)` para los flujos de trabajo de sesiones. Estos auxiliares identifican las sesiones por la identidad del agente y de la sesión, para que los plugins no dependan de la estructura de almacenamiento heredada `sessions.json`. Utilice `preserveActivity: true` para modificaciones que afecten únicamente a metadatos y no deban actualizar la actividad de la sesión, y `replaceEntry: true` solo cuando la devolución de llamada devuelva una entrada completa y los campos eliminados deban permanecer eliminados. Las rutas de diagnóstico y migración pueden combinar `fallbackEntry`, `skipMaintenance` y `requireWriteSuccess` para efectuar una reparación atómica del almacén canónico.
+    Utilice preferentemente `getSessionEntry(...)`, `listSessionEntries(...)`, `patchSessionEntry(...)` o `upsertSessionEntry(...)` para los flujos de trabajo de sesiones. Estos asistentes identifican las sesiones mediante la identidad del agente y de la sesión, para que los plugins no dependan de la estructura de almacenamiento heredada `sessions.json`. Utilice `preserveActivity: true` para las modificaciones únicamente de metadatos que no deban actualizar la actividad de la sesión y `replaceEntry: true` solo cuando la devolución de llamada devuelva una entrada completa y los campos eliminados deban permanecer eliminados. Las rutas de Doctor y migración pueden combinar `fallbackEntry`, `skipMaintenance` y `requireWriteSuccess` para realizar una reparación atómica del almacén canónico.
 
-    `createSessionEntry(...)` crea una nueva fila canónica de sesión y una transcripción. Su superficie de confianza `initialEntry` es deliberadamente limitada: un `agentHarnessId` no vacío, un `modelSelectionLocked: true` opcional y un `pluginExtensions` opcional. El entorno de ejecución inyectado solo acepta identificadores de arnés pertenecientes al plugin que realiza la llamada mediante `registerAgentHarness(...)`; se trata de una invariante de propiedad, no de un entorno aislado entre plugins dentro del proceso. Rechaza una fila existente; `label` y `spawnedCwd` son campos de creación independientes, no modificaciones de entradas de confianza.
+    `createSessionEntry(...)` crea una nueva fila de sesión canónica y su transcripción. Su superficie `initialEntry` de confianza es deliberadamente limitada: un `agentHarnessId` no vacío, un `modelSelectionLocked: true` opcional y un `pluginExtensions` opcional. El entorno de ejecución inyectado solo acepta identificadores de arneses que pertenezcan al plugin llamador mediante `registerAgentHarness(...)`; se trata de una invariancia de propiedad, no de un entorno aislado entre plugins que se ejecutan en el mismo proceso. Rechaza las filas existentes; `label` y `spawnedCwd` son campos de creación independientes, no modificaciones de entradas de confianza.
 
-    La creación mantiene el bloqueo de mutación del ciclo de vida de la sesión mediante `afterCreate`, por lo que el trabajo nuevo espera a que finalice la inicialización propiedad del plugin y el trabajo admitido previamente hace que la creación falle. La devolución de llamada recibe un clon del estado creado. Si devuelve una modificación, esta solo puede contener `pluginExtensions`, y su valor constituye el campo `pluginExtensions` final completo. Un fallo de la devolución de llamada o de la persistencia final revierte la nueva fila sin cambios y la transcripción; la reversión protegida conserva una fila que se haya modificado o reclamado simultáneamente. `recoverMatchingInitialEntry: true` solo sirve para reintentar una inicialización interrumpida cuando los campos de confianza persistidos coinciden exactamente, y la recuperación requiere que `afterCreate` devuelva una modificación final.
+    La creación mantiene la barrera de mutación del ciclo de vida de la sesión mediante `afterCreate`, por lo que el trabajo nuevo espera a que finalice la inicialización propiedad del plugin y el trabajo admitido previamente hace que la creación falle. La devolución de llamada recibe un clon del estado creado. Si devuelve una modificación, esta solo puede contener `pluginExtensions`, y su valor es el campo `pluginExtensions` final completo. Si falla una devolución de llamada o la persistencia final, se revierten la nueva fila sin cambios y su transcripción; la reversión protegida conserva una fila modificada o reclamada simultáneamente. `recoverMatchingInitialEntry: true` solo sirve para reintentar una inicialización interrumpida cuando los campos de confianza conservados coinciden exactamente, y la recuperación requiere que `afterCreate` devuelva una modificación final.
 
-    Utilice `runWithWorkAdmission(...)` cuando un plugin inicie trabajo en una sesión persistida. La devolución de llamada rechaza sesiones archivadas o sustituidas simultáneamente, mantiene coordinadas hasta su finalización las mutaciones de archivado, restablecimiento o eliminación y recibe una `AbortSignal` que debe reenviarse a la ejecución del agente. Un arnés puede indicar explícitamente delegados de ejecución de confianza mediante su campo de registro experimental `delegatedExecutionPluginIds`. Los delegados solo pueden admitir y ejecutar una sesión existente exacta con el modelo bloqueado; todas las mutaciones de la sesión siguen restringidas al propietario del arnés. Consulte [Plugins de arnés de agentes](/es/plugins/sdk-agent-harness#delegated-execution).
+    Utilice `runWithWorkAdmission(...)` cuando un plugin inicie trabajo en una sesión persistida. La devolución de llamada rechaza sesiones archivadas o sustituidas simultáneamente, mantiene coordinadas hasta su finalización las mutaciones de archivado, restablecimiento o eliminación y recibe un `AbortSignal` que debe pasarse a la ejecución del agente. Un arnés puede nombrar explícitamente delegados de ejecución de confianza mediante su campo de registro experimental `delegatedExecutionPluginIds`. Los delegados solo pueden admitir y ejecutar una sesión existente exacta con el modelo bloqueado; todas las mutaciones de la sesión siguen restringidas al propietario del arnés. Consulte [Plugins de arnés de agente](/es/plugins/sdk-agent-harness#delegated-execution).
 
-    Los plugins de mantenimiento y reparación pueden usar `deleteSessionEntry(...)` para una entrada de sesión con ámbito específico, `cleanupSessionLifecycleArtifacts(...)` para sesiones temporales cuyo ciclo de vida está gestionado y `resolveSessionStoreBackupPaths(...)` antes de modificar un almacén. Pase `expectedSessionId` y `expectedUpdatedAt` cuando la eliminación no deba entrar en conflicto con una actualización simultánea de la sesión; use `expectedSessionId: null` cuando la instantánea anterior no tuviera un id. de sesión. Estos asistentes son superficies específicas de reparación y ciclo de vida, no una API general de eliminación de almacenes.
+    Los plugins de mantenimiento y reparación pueden usar `deleteSessionEntry(...)` para una entrada de sesión con un ámbito determinado, `cleanupSessionLifecycleArtifacts(...)` para sesiones temporales administradas por el ciclo de vida y `resolveSessionStoreBackupPaths(...)` antes de modificar un almacén. Pase `expectedSessionId` y `expectedUpdatedAt` cuando la eliminación no deba entrar en conflicto con una actualización simultánea de la sesión; use `expectedSessionId: null` cuando la instantánea anterior no tuviera id. de sesión. Estos auxiliares son superficies específicas de reparación y ciclo de vida, no una API general para eliminar datos del almacén.
 
-    `resolveStorePath(...)` y `updateSessionStoreEntry(...)` completan los asistentes de sesión: `resolveStorePath` resuelve la ruta del almacén de sesiones para un ámbito determinado y `updateSessionStoreEntry({ storePath, sessionKey, update })` modifica directamente una entrada mediante la ruta del almacén cuando el llamador ya la conoce.
+    `resolveStorePath(...)` y `updateSessionStoreEntry(...)` completan los auxiliares de sesión: `resolveStorePath` resuelve la ruta del almacén de sesiones para un ámbito determinado y `updateSessionStoreEntry({ storePath, sessionKey, update })` modifica directamente una entrada mediante la ruta del almacén cuando el llamador ya la conoce.
 
-    `loadTranscriptEventsSync(...)` está disponible para las rutas síncronas de doctor y reparación que no pueden usar el entorno de ejecución asíncrono de transcripciones. Devuelve registros `SessionStoreTranscriptEvent` sin procesar. El código normal del entorno de ejecución de los plugins debe preferir `openclaw/plugin-sdk/session-transcript-runtime`.
+    `loadTranscriptEventsSync(...)` está disponible para las rutas síncronas de diagnóstico y reparación que no pueden usar el entorno de ejecución asíncrono de transcripciones. Devuelve registros `SessionStoreTranscriptEvent` sin procesar. El código normal del entorno de ejecución de los plugins debe usar preferentemente `openclaw/plugin-sdk/session-transcript-runtime`.
 
-    `formatSqliteSessionFileMarker(...)`, `parseSqliteSessionFileMarker(...)` y `sqliteSessionFileMarkerMatchesSession(...)` son asistentes de transición para el código que aún recibe un campo heredado denominado `sessionFile`. Un marcador de SQLite analizado identifica un destino activo de transcripción en SQLite; no es una ruta del sistema de archivos. Las API nuevas deben transportar una identidad de sesión tipada en lugar de cadenas de marcadores.
+    `formatSqliteSessionFileMarker(...)`, `parseSqliteSessionFileMarker(...)` y `sqliteSessionFileMarkerMatchesSession(...)` son auxiliares de transición para el código que aún recibe un campo heredado denominado `sessionFile`. Un marcador de SQLite analizado identifica un destino de transcripción activo en SQLite; no es una ruta del sistema de archivos. Las API nuevas deben transportar una identidad de sesión tipada en lugar de cadenas de marcadores.
 
-    Para leer y escribir transcripciones, importe `openclaw/plugin-sdk/session-transcript-runtime` y use `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `readSessionTranscriptRawDelta(...)`, `readSessionTranscriptVisibleMessageDelta(...)`, `readVisibleSessionTranscriptMessageEntries(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` o `withSessionTranscriptWriteLock(...)` con `{ agentId, sessionKey, sessionId }`. Estas API permiten a los plugins identificar una transcripción, leer eventos sin procesar o entradas de mensajes visibles y seguras para la rama, añadir mensajes, publicar actualizaciones y ejecutar operaciones relacionadas bajo el mismo bloqueo de escritura de la transcripción sin depender de rutas de archivos de transcripciones activas. `readVisibleSessionTranscriptMessageEntries(...)` devuelve metadatos de lectura ordenados; su campo `seq` no es un cursor reanudable.
+    Para leer y escribir transcripciones, importe `openclaw/plugin-sdk/session-transcript-runtime` y use `resolveSessionTranscriptIdentity(...)`, `resolveSessionTranscriptTarget(...)`, `readSessionTranscriptEvents(...)`, `readSessionTranscriptRawDelta(...)`, `readSessionTranscriptVisibleMessageDelta(...)`, `readVisibleSessionTranscriptMessageEntries(...)`, `appendSessionTranscriptMessageByIdentity(...)`, `publishSessionTranscriptUpdateByIdentity(...)` o `withSessionTranscriptWriteLock(...)` con `{ agentId, sessionKey, sessionId }`. Estas API permiten a los plugins identificar una transcripción, leer eventos sin procesar o entradas de mensajes visibles y seguras para la rama, añadir mensajes, publicar actualizaciones y ejecutar operaciones relacionadas bajo el mismo bloqueo de escritura de la transcripción, sin depender de las rutas de los archivos de transcripción activos. `readVisibleSessionTranscriptMessageEntries(...)` devuelve metadatos de lectura ordenados; su campo `seq` no es un cursor reanudable.
 
-    `readSessionTranscriptRawDelta(...)` devuelve un resultado acotado `page`, `reset` o `missing`. Pase el valor opaco `page.cursor` en la llamada siguiente. Las adiciones puras conservan el cursor, mientras que la sustitución de la transcripción devuelve `reset` con un nuevo cursor de inicialización. De forma predeterminada, las páginas admiten 1,000 eventos y 1,000,000 bytes serializados; los llamadores pueden solicitar hasta 10,000 eventos y 64 MiB. Cuando el siguiente evento por sí solo supera `maxBytes`, la página queda vacía e informa de `requiredBytes`; vuelva a intentarlo con al menos ese límite de bytes cuando no sea superior a 64 MiB. Los eventos individuales de mayor tamaño requieren la API de lectura completa. Un cursor solo identifica una posición y nunca concede acceso a otra sesión.
+    `readSessionTranscriptRawDelta(...)` devuelve un resultado acotado `page`, `reset` o `missing`. Pase el valor opaco `page.cursor` a la siguiente llamada. Las adiciones puras conservan el cursor, mientras que la sustitución de la transcripción devuelve `reset` con un nuevo cursor de inicialización. Las páginas tienen de forma predeterminada 1,000 eventos y 1,000,000 bytes serializados; los llamadores pueden solicitar hasta 10,000 eventos y 64 MiB. Cuando solo el siguiente evento supera `maxBytes`, la página está vacía e indica `requiredBytes`; vuelva a intentarlo con al menos ese límite de bytes cuando no sea superior a 64 MiB. Los eventos individuales más grandes requieren la API de lectura completa. Un cursor solo identifica una posición y nunca concede acceso a otra sesión.
 
-    `readSessionTranscriptVisibleMessageDelta(...)` proporciona la misma estructura acotada de inicialización y reanudación sobre la proyección activa de mensajes gestionada por el host. Devuelve los mensajes del más antiguo al más reciente, por lo que los motores de contexto pueden consumir el historial inicial y conservar el cursor opaco como marca de agua. Almacene y devuelva el cursor sin modificarlo; es una indicación de continuación, no una credencial de autorización. Las adiciones lineales se reanudan después del último mensaje devuelto. La sustitución de la transcripción, un cursor cuyo anclaje haya abandonado la rama activa o se haya desplazado dentro de ella, los cursores mal formados y los cursores de otras sesiones devuelven `reset` con un nuevo cursor de inicialización. Los valores predeterminados y máximos de cantidad y bytes coinciden con los de la API de diferencias sin procesar. Mientras se reconstruye la proyección activa tras un cambio de rama, el resultado es `unavailable` con el motivo `projection_rebuilding`; vuelva a intentarlo más tarde en lugar de recurrir a un archivo de transcripción activa.
+    `readSessionTranscriptVisibleMessageDelta(...)` proporciona la misma estructura acotada de inicialización y reanudación sobre la proyección activa de mensajes administrada por el host. Devuelve los mensajes del más antiguo al más reciente, de modo que los motores de contexto puedan consumir el historial inicial y conservar el cursor opaco como su marca de agua. Almacene y devuelva el cursor sin modificarlo; es una indicación de continuación, no una credencial de autorización. Las adiciones lineales se reanudan después del último mensaje devuelto. La sustitución de la transcripción, un cursor cuyo anclaje haya salido de la rama activa o se haya desplazado dentro de ella, los cursores con formato incorrecto y los cursores de otras sesiones devuelven `reset` con un nuevo cursor de inicialización. Los valores predeterminados y los límites de cantidad y bytes coinciden con los de la API de deltas sin procesar. Mientras se reconstruye la proyección activa tras un cambio de rama, el resultado es `unavailable` con el motivo `projection_rebuilding`; vuelva a intentarlo más tarde en lugar de recurrir a un archivo de transcripción activo.
 
-    Los asistentes heredados para el almacén completo y el archivo de transcripción activa ya no se exportan desde el SDK de plugins. Use los asistentes de entradas con ámbito específico para los metadatos de sesión y los asistentes de identidad de transcripciones para las operaciones sobre transcripciones activas. Los flujos de trabajo de archivo y asistencia que necesiten artefactos de archivo deben usar sus superficies de archivo específicas en lugar de las API del entorno de ejecución de sesiones activas.
+    Los auxiliares heredados para todo el almacén y para los archivos de transcripción activos ya no se exportan desde el SDK de plugins. Use los auxiliares de entradas con ámbito para los metadatos de sesión y los auxiliares de identidad de transcripciones para las operaciones de transcripciones activas. Los flujos de trabajo de archivo y soporte que necesiten artefactos de archivos deben usar sus superficies de archivo específicas en lugar de las API del entorno de ejecución de sesiones activas.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -228,8 +228,8 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    Ejecute una finalización de texto gestionada por el host sin importar componentes internos del proveedor ni
-    duplicar la preparación del modelo, la autenticación y la URL base de OpenClaw.
+    Ejecute una finalización de texto administrada por el host sin importar componentes internos del proveedor ni
+    duplicar la preparación del modelo, la autenticación o la URL base de OpenClaw.
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -260,41 +260,41 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     }
     ```
 
-    `acquireLocalService(...)` es un contrato de SDK estable y genérico para servicios
+    `acquireLocalService(...)` es un contrato estable y genérico del SDK para servicios
     de proveedores. El host resuelve la configuración del proceso desde
     `models.providers.<providerId>.localService`; los llamadores no pueden proporcionar un
     comando, argumentos, entorno ni política de ciclo de vida. La creación de procesos,
-    la disponibilidad, los diagnósticos y la política de detención por inactividad siguen siendo internos del host.
+    la preparación, los diagnósticos y la política de detención por inactividad siguen siendo internos del host.
 
     Pase el id. exacto del proveedor configurado y la URL base resuelta de la solicitud. No
-    sustituya los alias por un id. de adaptador: distintos alias pueden apuntar a distintos
-    hosts de GPU locales. El host rechaza los endpoints que no coinciden con la URL base
-    configurada del proveedor, salvo por la normalización `/v1` que usan los adaptadores de Ollama y LM
-    Studio. El host controla la serialización del inicio, las sondas de disponibilidad,
-    las concesiones de solicitudes, la gestión de interrupciones y el apagado por inactividad.
+    sustituya los alias por el id. de un adaptador: distintos alias pueden apuntar a distintos
+    hosts de GPU locales. El host rechaza los endpoints que no coincidan con la URL base
+    configurada del proveedor, salvo la normalización `/v1` utilizada por los adaptadores
+    de Ollama y LM Studio. El host administra la serialización del inicio, las comprobaciones de preparación,
+    las asignaciones de solicitudes, la gestión de cancelaciones y el apagado por inactividad.
 
-    El asistente usa la misma ruta de preparación de finalización sencilla que el
-    entorno de ejecución integrado de OpenClaw y la instantánea de configuración del entorno de ejecución gestionada por el host. Los motores de contexto
+    El auxiliar usa la misma ruta de preparación de finalizaciones simples que el
+    entorno de ejecución integrado de OpenClaw y la instantánea de configuración del entorno de ejecución administrada por el host. Los motores de contexto
     reciben una capacidad `llm.complete` vinculada a la sesión, por lo que las llamadas al modelo usan el
     agente de la sesión activa y no recurren silenciosamente al agente predeterminado. El
     resultado incluye la atribución de proveedor, modelo y agente, además del uso normalizado de tokens,
     caché y coste estimado cuando está disponible.
 
-    Establezca `reasoning` para solicitar un nivel de razonamiento para el modelo seleccionado. El
-    host normaliza los niveles canónicos de razonamiento (`off`, `minimal`, `low`,
+    Establezca `reasoning` para solicitar un esfuerzo de razonamiento para el modelo seleccionado. El
+    host normaliza los niveles de razonamiento canónicos (`off`, `minimal`, `low`,
     `medium`, `high`, `xhigh`, `adaptive`, `max` y `ultra`) para el
     proveedor y el modelo seleccionados antes de enviar la finalización. `adaptive` se convierte en
-    `medium`; `max` y `ultra` se convierten en `max` cuando se admite y, de lo contrario, en `xhigh`.
+    `medium`; `max` y `ultra` se convierten en `max` cuando se admite; de lo contrario, en `xhigh`.
 
     <Warning>
-    Las sustituciones de modelos requieren la aceptación explícita del operador mediante `plugins.entries.<id>.llm.allowModelOverride: true` en la configuración. Use `plugins.entries.<id>.llm.allowedModels` para restringir los plugins de confianza a destinos canónicos `provider/model` específicos. Las finalizaciones entre agentes requieren `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
+    Las anulaciones del modelo requieren que el operador las habilite mediante `plugins.entries.<id>.llm.allowModelOverride: true` en la configuración. Use `plugins.entries.<id>.llm.allowedModels` para restringir los plugins de confianza a destinos canónicos `provider/model` específicos. Las finalizaciones entre agentes requieren `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.gateway">
     Llame a otro método del Gateway dentro del proceso y conserve la identidad de confianza del entorno de ejecución
-    del plugin actual. Esto está destinado a plugins oficiales integrados o de confianza que componen capacidades
-    del Gateway pertenecientes al plugin sin abrir una conexión WebSocket de bucle invertido.
+    del plugin actual. Esto está destinado a plugins integrados u oficiales de confianza que combinan capacidades
+    del Gateway administradas por plugins sin abrir una conexión WebSocket de bucle invertido.
 
     ```typescript
     if (await api.runtime.gateway.isAvailable()) {
@@ -306,23 +306,23 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     }
     ```
 
-    Las solicitudes usan el ámbito `operator.write` y no conceden el ámbito de administrador. Se rechazan las llamadas de plugins
-    externos arbitrarios. Los métodos fallidos lanzan un `GatewayClientRequestError`, y conservan los
-    `details` estructurados, los metadatos de reintento y el código de error del Gateway para los flujos de recuperación. Use `isAvailable()`
+    Las solicitudes usan el ámbito `operator.write` y no conceden el ámbito de administración. Se rechazan las llamadas de plugins
+    externos arbitrarios. Los métodos fallidos generan un `GatewayClientRequestError` y conservan los datos estructurados
+    `details`, los metadatos de reintento y el código de error del Gateway para los flujos de recuperación. Use `isAvailable()`
     antes de elegir esta ruta desde herramientas que también puedan ejecutarse en procesos de agentes independientes.
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Inicie y gestione ejecuciones de subagentes en segundo plano.
+    Inicie y administre ejecuciones de subagentes en segundo plano.
 
     ```typescript
     // Iniciar una ejecución de subagente
     const { runId } = await api.runtime.subagent.run({
       sessionKey: "agent:main:subagent:search-helper",
-      message: "Amplía esta consulta para convertirla en búsquedas de seguimiento específicas.",
+      message: "Amplía esta consulta para generar búsquedas de seguimiento específicas.",
       toolsAlsoAllow: ["my_plugin_progress"],
-      provider: "openai", // sustitución opcional
-      model: "gpt-5.6-sol", // sustitución opcional
+      provider: "openai", // anulación opcional
+      model: "gpt-5.6-sol", // anulación opcional
       deliver: false,
     });
 
@@ -342,12 +342,12 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     ```
 
     <Warning>
-    Las sustituciones de modelos (`provider`/`model`) requieren la aceptación explícita del operador mediante `plugins.entries.<id>.subagent.allowModelOverride: true` en la configuración. Los plugins que no sean de confianza aún pueden ejecutar subagentes, pero las solicitudes de sustitución se rechazan.
+    Las anulaciones del modelo (`provider`/`model`) requieren que el operador las habilite mediante `plugins.entries.<id>.subagent.allowModelOverride: true` en la configuración. Los plugins que no son de confianza pueden ejecutar subagentes, pero se rechazan las solicitudes de anulación.
     </Warning>
 
-    `toolsAlsoAllow` añade a la superficie normal de herramientas del trabajador herramientas exactas y de propiedad exclusiva registradas por el plugin llamador. El entorno de ejecución rechaza las herramientas del núcleo y los nombres compartidos con otro plugin. Los perfiles y las políticas de herramientas del operador siguen aplicándose, incluidas las listas explícitas de permitidos y las denegaciones.
+    `toolsAlsoAllow` añade a la superficie normal de herramientas del proceso de trabajo las herramientas exactas y de propiedad exclusiva registradas por el plugin llamador. El entorno de ejecución rechaza las herramientas del núcleo y los nombres compartidos con otro plugin. Se siguen aplicando los perfiles y las políticas de herramientas del operador, incluidas las listas explícitas de elementos permitidos y denegados.
 
-    `deleteSession(...)` puede eliminar las sesiones creadas por el mismo plugin mediante `api.runtime.subagent.run(...)`. La eliminación de sesiones arbitrarias de usuarios u operadores sigue requiriendo una solicitud al Gateway con ámbito de administrador.
+    `deleteSession(...)` puede eliminar las sesiones creadas por el mismo plugin mediante `api.runtime.subagent.run(...)`. Para eliminar sesiones arbitrarias de usuarios u operadores, sigue siendo necesaria una solicitud del Gateway con ámbito de administración.
 
   </Accordion>
   <Accordion title="api.runtime.sandbox">
@@ -369,22 +369,22 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
     ```
 
-    El resultado indica si esta sesión está aislada, si su espacio de trabajo
-    no está disponible, es de solo lectura o permite escritura, y un `confinementError`
-    opcional cuando la política efectiva de Docker, herramientas, sesión, navegador o privilegios elevados puede
-    escapar de ese espacio de trabajo. Use esto para las decisiones de delegación gestionadas por el host que
-    no deben conceder a un trabajador más autoridad que a su llamador. Es un asistente de
-    certificación, no un sustituto de comprobar la autorización del propio llamador.
+    El resultado indica si esta sesión está en un entorno aislado, si su espacio de trabajo
+    no está disponible, es de solo lectura o permite escritura, y un `confinementError` opcional
+    cuando la política efectiva de Docker, herramientas, sesiones, navegador o privilegios elevados puede
+    escapar de ese espacio de trabajo. Use esto para las decisiones de delegación administradas por el host que
+    no deben conceder a un proceso de trabajo más autoridad que la de su llamador. Es un auxiliar de certificación,
+    no un sustituto de la comprobación de la propia autorización del llamador.
 
     `prepareWorkspaceAuthority(...)` realiza la misma comprobación de políticas y también
     prepara el entorno aislado de Docker para `workspaceDir`. Rechaza un contenedor activo
-    cuyo hash de configuración en ejecución no coincida con los montajes o la política solicitados. Pase
+    cuyo hash de configuración actual no coincida con los montajes o la política solicitados. Pase
     únicamente los nombres exactos de las herramientas cuyas implementaciones registradas confine el plugin
-    llamador; los prefijos con comodines no demuestran la propiedad de las herramientas.
+    llamador; los prefijos con comodines no demuestran la propiedad de una herramienta.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Enumere los nodos conectados e invoque un comando del host de un nodo desde el código de un plugin cargado por el Gateway o desde comandos de la CLI del plugin. Use esto cuando un plugin gestione trabajo local en un dispositivo emparejado, por ejemplo, un puente de navegador o audio en otro Mac.
+    Enumere los nodos conectados e invoque un comando del host de un nodo desde el código de un plugin cargado por el Gateway o desde comandos de la CLI del plugin. Use esta opción cuando un plugin administre trabajo local en un dispositivo emparejado, por ejemplo, un puente de navegador o audio en otro Mac.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -397,28 +397,28 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
     ```
 
-    `nodes.list(...)` incluye los descriptores
-    `nodePluginTools` anunciados por cada nodo conectado cuando ese nodo expone al agente
-    herramientas respaldadas por plugins o MCP. Esos descriptores representan el estado de la conexión en tiempo real: el Gateway
+    `nodes.list(...)` incluye los descriptores `nodePluginTools`
+    anunciados por cada nodo conectado cuando ese nodo expone al agente herramientas
+    respaldadas por plugins o MCP. Esos descriptores representan el estado de la conexión activa: el Gateway
     los descarta cuando el nodo se desconecta, y un nodo puede sustituirlos por
     `node.pluginTools.update` tras cambios en el inventario local de plugins o MCP.
 
-    Dentro del Gateway, este runtime se ejecuta en el mismo proceso. En los comandos de la CLI del plugin, llama al Gateway configurado mediante RPC, por lo que comandos como `openclaw googlemeet recover-tab` pueden inspeccionar los nodos emparejados desde el terminal. Los comandos de Node siguen pasando por el emparejamiento normal de nodos del Gateway, las listas de comandos permitidos, las políticas de invocación de nodos del plugin y el procesamiento de comandos local del nodo.
+    Dentro del Gateway, este entorno de ejecución está en proceso. En los comandos de la CLI del plugin, llama al Gateway configurado mediante RPC, por lo que comandos como `openclaw googlemeet recover-tab` pueden inspeccionar los nodos emparejados desde el terminal. Los comandos de Node siguen pasando por el emparejamiento normal de nodos del Gateway, las listas de comandos permitidos, las políticas de invocación de nodos del plugin y el procesamiento local de comandos del nodo.
 
-    Los plugins que exponen herramientas de agente alojadas en nodos pueden establecer `agentTool.defaultPlatforms` para comandos no peligrosos que deban incluirse de forma predeterminada en la lista de permitidos. Omítalo cuando los operadores deban habilitarlos explícitamente con `gateway.nodes.allowCommands`. Los comandos peligrosos del host de nodos deben registrar una política de invocación de nodos con `api.registerNodeInvokePolicy(...)`; la política se ejecuta en el Gateway después de las comprobaciones de la lista de comandos permitidos y antes de reenviar el comando al nodo, por lo que las llamadas directas a `node.invoke`, las herramientas de plugins alojadas en nodos y las herramientas de plugins de nivel superior comparten la misma ruta de aplicación de políticas.
+    Los plugins que exponen herramientas de agente alojadas en nodos pueden establecer `agentTool.defaultPlatforms` para los comandos no peligrosos que deban incluirse de forma predeterminada en la lista de permitidos. Omítalo cuando los operadores deban habilitarlos explícitamente con `gateway.nodes.commands.allow`. Los comandos peligrosos del host del nodo deben registrar una política de invocación de nodos con `api.registerNodeInvokePolicy(...)`; la política se ejecuta en el Gateway después de comprobar la lista de comandos permitidos y antes de reenviar el comando al nodo, de modo que las llamadas directas a `node.invoke`, las herramientas de plugins alojadas en nodos y las herramientas de plugins de nivel superior compartan la misma ruta de aplicación.
 
     <Warning>
-    El campo opcional `scopes` solicita ámbitos de operador del Gateway para la invocación. OpenClaw solo lo respeta en plugins incluidos y en instalaciones de plugins oficiales de confianza; las solicitudes de otros plugins no elevan los privilegios de la llamada. Úselo únicamente cuando un plugin de confianza deba invocar un comando de nodo con un ámbito más estricto del Gateway, como `operator.admin`.
+    El campo opcional `scopes` solicita ámbitos de operador del Gateway para la invocación. OpenClaw solo lo respeta para los plugins incluidos y las instalaciones de plugins oficiales de confianza; las solicitudes de otros plugins no elevan los privilegios de la llamada. Úselo únicamente cuando un plugin de confianza deba invocar un comando de nodo con un ámbito del Gateway más estricto, como `operator.admin`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks">
-    Vincula el estado de Task Flow y Task Run con una clave de sesión existente de OpenClaw o un contexto de herramienta de confianza.
+    Vincula el estado de Task Flow y Task Run con una clave de sesión existente de OpenClaw o con un contexto de herramienta de confianza.
 
     - `api.runtime.tasks.managedFlows` permite realizar mutaciones: crear, avanzar y cancelar Task Flows.
-    - `api.runtime.tasks.flows` y `api.runtime.tasks.runs` son vistas DTO de solo lectura para obtener listas y consultar estados; ambas exponen `bindSession(...)` / `fromToolContext(...)`, además de `get`, `list`, `findLatest` y `resolve`.
+    - `api.runtime.tasks.flows` y `api.runtime.tasks.runs` son vistas DTO de solo lectura para realizar listados y consultas de estado; ambas exponen `bindSession(...)` / `fromToolContext(...)`, además de `get`, `list`, `findLatest` y `resolve`.
 
-    Task Flow realiza el seguimiento del estado persistente de flujos de trabajo de varios pasos. No es un planificador:
+    Task Flow mantiene el estado duradero de los flujos de trabajo de varios pasos. No es un planificador:
     use Cron o `api.session.workflow.scheduleSessionTurn(...)` para activaciones
     futuras y, a continuación, use `managedFlows` desde el turno programado cuando ese trabajo
     necesite el estado del flujo, tareas secundarias, esperas o cancelación.
@@ -435,7 +435,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
       flowId: created.flowId,
       runtime: "acp",
       childSessionKey: "agent:main:subagent:reviewer",
-      task: "Revisar el PR n.º 123",
+      task: "Revisar el PR #123",
       status: "running",
       startedAt: Date.now(),
     });
@@ -474,7 +474,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
     ```
 
-    Usa la configuración principal de `messages.tts` y la selección de proveedor. Devuelve un búfer de audio PCM y la frecuencia de muestreo. `textToSpeechStream` también está disponible para la síntesis en streaming.
+    Utiliza la configuración principal `tts` y la selección de proveedor. Devuelve un búfer de audio PCM y la frecuencia de muestreo. `textToSpeechStream` también está disponible para la síntesis en streaming.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -492,7 +492,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
       filePath: "/tmp/inbound-audio.ogg",
       cfg: api.config,
-      mime: "audio/ogg", // opcional, para cuando no se pueda inferir el tipo MIME
+      mime: "audio/ogg", // opcional, cuando no se puede inferir el tipo MIME
     });
 
     // Describir un vídeo
@@ -508,7 +508,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
 
     // Extracción estructurada de imágenes mediante un proveedor/modelo específico.
-    // Incluya al menos una imagen; las entradas de texto son contexto complementario.
+    // Incluya al menos una imagen; las entradas de texto aportan contexto complementario.
     const evidence = await api.runtime.mediaUnderstanding.extractStructuredWithModel({
       provider: "codex",
       model: "gpt-5.6-sol",
@@ -519,9 +519,9 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
           fileName: "receipt.png",
           mime: "image/png",
         },
-        { type: "text", text: "Dé preferencia al total impreso sobre las notas manuscritas." },
+        { type: "text", text: "Prioriza el total impreso sobre las notas manuscritas." },
       ],
-      instructions: "Extraiga el proveedor, el total y las etiquetas de búsqueda.",
+      instructions: "Extrae el proveedor, el total y las etiquetas de búsqueda.",
       schemaName: "receipt.evidence",
       jsonSchema: {
         type: "object",
@@ -538,7 +538,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
 
     Devuelve `{ text: undefined }` cuando no se produce ninguna salida (por ejemplo, si se omite la entrada).
 
-    `describeImageFileWithModel(...)` describe una imagen ya conocida mediante un proveedor/modelo específico, omitiendo la resolución predeterminada del modelo activo que usa `describeImageFile(...)`.
+    `describeImageFileWithModel(...)` describe una imagen ya conocida mediante un proveedor/modelo específico, omitiendo la resolución predeterminada del modelo activo que utiliza `describeImageFile(...)`.
 
   </Accordion>
   <Accordion title="api.runtime.imageGeneration">
@@ -559,7 +559,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
 
     ```typescript
     const result = await api.runtime.videoGeneration.generate({
-      prompt: "Una toma de dron que sobrevuela una costa al amanecer",
+      prompt: "Una toma de dron sobrevolando una costa al amanecer",
       cfg: api.config,
     });
 
@@ -599,7 +599,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
     const mime = await api.runtime.media.detectMime(buffer);
-    const kind = api.runtime.media.mediaKindFromMime("image/jpeg"); // "imagen"
+    const kind = api.runtime.media.mediaKindFromMime("image/jpeg"); // "image"
     const isVoice = api.runtime.media.isVoiceCompatibleAudio(filePath);
     const metadata = await api.runtime.media.getImageMetadata(filePath);
     const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
@@ -619,9 +619,9 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Instantánea de la configuración actual del runtime y escrituras transaccionales de configuración. Dé preferencia a la
-    configuración que ya se haya pasado a la ruta de llamada activa; use
-    `current()` únicamente cuando el controlador necesite directamente la instantánea del proceso.
+    Instantánea de la configuración actual del entorno de ejecución y escrituras transaccionales de configuración. Se recomienda usar
+    la configuración que ya se haya pasado a la ruta de llamada activa; use
+    `current()` únicamente cuando el controlador necesite acceder directamente a la instantánea del proceso.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -633,14 +633,14 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
     ```
 
-    `mutateConfigFile(...)` y `replaceConfigFile(...)` devuelven un valor `followUp`,
-    por ejemplo `{ mode: "restart", requiresRestart: true, reason }`,
-    que registra la intención del proceso de escritura sin quitar al
+    `mutateConfigFile(...)` y `replaceConfigFile(...)` devuelven un valor
+    `followUp`, por ejemplo `{ mode: "restart", requiresRestart: true, reason }`,
+    que registra la intención del escritor sin retirar al
     Gateway el control del reinicio.
 
   </Accordion>
   <Accordion title="api.runtime.system">
-    Utilidades del sistema.
+    Utilidades de nivel de sistema.
 
     ```typescript
     await api.runtime.system.enqueueSystemEvent(event);
@@ -657,13 +657,13 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runHeartbeatOnce(...)` ejecuta inmediatamente un único ciclo de Heartbeat, omitiendo el temporizador normal de agrupación. Pase `{ heartbeat: { target: "last" } }` para forzar la entrega al último canal activo en lugar de la supresión predeterminada de `target: "none"`.
+    `runHeartbeatOnce(...)` ejecuta inmediatamente un único ciclo de Heartbeat, omitiendo el temporizador normal de fusión. Pase `{ heartbeat: { target: "last" } }` para forzar la entrega al último canal activo en lugar de aplicar la supresión predeterminada `target: "none"`.
 
     `runCommandWithTimeout(...)` devuelve los valores capturados de `stdout` y `stderr`, recuentos opcionales
     de truncamiento, `code`, `signal`, `killed`, `termination` y
-    `noOutputTimedOut`. Los resultados de tiempo de espera y de tiempo de espera sin salida indican `code: 124`
-    cuando el proceso secundario no proporciona un código de salida distinto de cero. Las salidas por señal
-    sin tiempo de espera aún pueden devolver `code: null`, por lo que deben usarse `termination` y
+    `noOutputTimedOut`. Los resultados de tiempo de espera y de tiempo de espera sin salida informan de `code: 124`
+    cuando el proceso secundario no proporciona un código de salida distinto de cero. Las salidas
+    por señal sin tiempo de espera también pueden devolver `code: null`, por lo que deben usarse `termination` y
     `noOutputTimedOut` para distinguir los motivos del tiempo de espera.
 
   </Accordion>
@@ -695,7 +695,7 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
 
-    // Autenticación lista para la solicitud, incluidos los intercambios del runtime del proveedor (por ejemplo, la renovación de OAuth)
+    // Autenticación lista para solicitudes, incluidos los intercambios del entorno de ejecución del proveedor (por ejemplo, la renovación de OAuth)
     const runtimeAuth = await api.runtime.modelAuth.getRuntimeAuthForModel({ model, cfg });
 
     const providerAuth = await api.runtime.modelAuth.resolveApiKeyForProvider({
@@ -752,17 +752,17 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     );
     ```
 
-    Los almacenes con claves sobreviven a los reinicios y están aislados por el identificador del plugin vinculado al runtime. Use `registerIfAbsent(...)` para las reclamaciones atómicas de deduplicación: devuelve `true` cuando la clave no existía o había caducado y se registró, o `false` cuando ya existe un valor vigente, sin sobrescribir su valor, hora de creación ni TTL. Use `deleteIf(...)` cuando la limpieza deba eliminar únicamente el valor observado previamente; su predicado síncrono y la eliminación se ejecutan en una sola transacción de SQLite. Límites: `maxEntries` por espacio de nombres, 50,000 filas vigentes por plugin, valores JSON inferiores a 64KB y caducidad opcional mediante TTL. De forma predeterminada, una escritura que alcanza cualquiera de los límites de filas descarta las filas vigentes más antiguas del espacio de nombres en el que se escribe; los espacios de nombres relacionados no se desalojan para esa escritura y esta sigue fallando si el espacio de nombres no puede liberar suficientes filas. Establezca `overflowPolicy: "reject-new"` para los registros de propiedad duraderos que nunca deban desalojarse: las claves nuevas fallan al alcanzar cualquiera de los límites, mientras que las existentes siguen pudiendo actualizarse.
+    Los almacenes con clave sobreviven a los reinicios y están aislados por el identificador del plugin vinculado al entorno de ejecución. Use `registerIfAbsent(...)` para las reclamaciones atómicas de deduplicación: devuelve `true` cuando la clave no existía o había caducado y se registró, o `false` cuando ya existe un valor vigente, sin sobrescribir su valor, hora de creación ni TTL. Use `deleteIf(...)` cuando la limpieza deba eliminar únicamente el valor observado anteriormente; su predicado síncrono y la eliminación se ejecutan en una sola transacción de SQLite. Límites: `maxEntries` por espacio de nombres, 50,000 filas vigentes por plugin, valores JSON inferiores a 64KB y caducidad TTL opcional. De forma predeterminada, una escritura que alcanza cualquiera de los límites de filas descarta las filas vigentes más antiguas del espacio de nombres en el que se escribe; los espacios de nombres hermanos no se desalojan para esa escritura, y la escritura falla igualmente si el espacio de nombres no puede liberar suficientes filas. Establezca `overflowPolicy: "reject-new"` para los registros de propiedad duraderos que nunca deban desalojarse: las claves nuevas fallan al alcanzar cualquiera de los límites, mientras que las existentes siguen pudiendo actualizarse.
 
-    `openSyncKeyedStore<T>(...)` devuelve la misma estructura de almacén con métodos síncronos (`register`, `registerIfAbsent`, `deleteIf`, `lookup`, `consume` y `clear` devuelven valores directamente en lugar de promesas) para los llamadores que no pueden esperar.
+    `openSyncKeyedStore<T>(...)` devuelve la misma estructura de almacén con métodos síncronos (`register`, `registerIfAbsent`, `deleteIf`, `lookup`, `consume` y `clear` devuelven los valores directamente en lugar de promesas) para los llamadores que no pueden esperar.
 
-    `openBlobStore<TMetadata>(...)` almacena cargas útiles binarias acotadas en SQLite compartido sin base64 ni archivos auxiliares. Requiere límites de bytes por entrada y por espacio de nombres, así como límites de filas; copia las matrices de bytes en el límite de la API; y enumera los metadatos sin cargar todos los BLOB. `register(...)` es una operación de inserción o actualización explícita, incluso para claves caducadas. `registerIfAbsent(...)` proporciona una creación segura frente a colisiones: una clave caducada permanece ocupada hasta que su propietario la reclama con `deleteExpiredKey(key)` o `deleteExpired()`, lo que conserva los metadatos necesarios para eliminar los artefactos con nombre relacionados después de confirmar la transacción de SQLite. Toda fila con un TTL es transitoria y se excluye de las copias de seguridad y restauraciones incluso antes de caducar; omita el TTL para el estado duradero y restaurable. Los límites de seguridad del host restringen cada BLOB a 100 MiB, cada plugin a 512 MiB de BLOB almacenados físicamente y cada plugin a 50,000 filas almacenadas físicamente, incluidas las filas caducadas pendientes de limpieza por parte del propietario. Use `registerIfAbsent(...)` con `overflowPolicy: "reject-new"` cuando las materializaciones externas no deban quedar huérfanas silenciosamente debido a una sustitución o un desalojo.
+    `openBlobStore<TMetadata>(...)` almacena cargas binarias acotadas en SQLite compartido, sin base64 ni archivos auxiliares. Requiere límites de bytes por entrada y por espacio de nombres, además de límites de filas; copia las matrices de bytes en el límite de la API; y enumera los metadatos sin cargar todos los BLOB. `register(...)` es una operación explícita de inserción o actualización, incluso para claves caducadas. `registerIfAbsent(...)` proporciona una creación segura frente a colisiones: una clave caducada permanece ocupada hasta que su propietario la reclama mediante `deleteExpiredKey(key)` o `deleteExpired()`, lo que conserva los metadatos necesarios para eliminar los artefactos relacionados con nombre después de confirmar la transacción de SQLite. Cualquier fila con TTL es transitoria y queda excluida de la copia de seguridad y la restauración incluso antes de caducar; omita el TTL para el estado duradero y restaurable. Los fusibles del host limitan cada BLOB a 100 MiB, cada plugin a 512 MiB de BLOB almacenados físicamente y cada plugin a 50,000 filas almacenadas físicamente, incluidas las filas caducadas pendientes de limpieza por parte del propietario. Use `registerIfAbsent(...)` con `overflowPolicy: "reject-new"` cuando las materializaciones externas no deban quedar huérfanas silenciosamente debido a una sustitución o un desalojo.
 
-    `openChannelIngressQueue<TPayload>(...)` abre una cola de entrada persistente cuyo ámbito se limita al plugin llamador, para almacenar en búfer eventos entrantes que requieren procesamiento al menos una vez entre reinicios. Cuando la recuperación de reclamaciones obsoletas use `shouldRecover`, proporcione también `shouldRecoverCorrupt` si las cargas útiles reclamadas y dañadas deben ponerse en cuarentena: su identidad de reclamación independiente de la carga útil permite que el plugin conserve la política vigente del propietario y del carril antes de que la cola marque la fila como eliminada.
+    `openChannelIngressQueue<TPayload>(...)` abre una cola de entrada persistente, limitada al plugin que realiza la llamada, para almacenar temporalmente eventos entrantes que requieren procesamiento al menos una vez entre reinicios. Cuando la recuperación de reclamaciones obsoletas use `shouldRecover`, proporcione también `shouldRecoverCorrupt` si las cargas reclamadas dañadas deben ponerse en cuarentena: su identidad de reclamación independiente de la carga permite que el plugin conserve las políticas vigentes de propietario y carril antes de que la cola marque la fila como eliminada.
 
-    `withLease(...)` serializa el trabajo cooperativo de los plugins entre procesos de OpenClaw. Elija `database: { scope: "shared" }` para un único propietario global o `{ scope: "agent", agentId }` para una propiedad independiente por agente. Propague el `AbortSignal` de la función de devolución de llamada a cada operación que pueda fallar. `assertOwned()` es un punto de control en un instante determinado antes de iniciar otro paso importante; el host también verifica la propiedad después de la función de devolución de llamada. La pérdida de la concesión o la cancelación por parte del llamador interrumpe la señal. Las esperas de adquisición y los heartbeats se producen fuera de las transacciones síncronas breves de SQLite; los plugins nunca reciben rutas ni identificadores de la base de datos. Esto es una cancelación cooperativa, no un token de exclusión ni una autorización para escrituras externas sin protección.
+    `withLease(...)` serializa el trabajo cooperativo de los plugins entre procesos de OpenClaw. Elija `database: { scope: "shared" }` para un único propietario global o `{ scope: "agent", agentId }` para una propiedad independiente por agente. Reenvíe el `AbortSignal` de la función de devolución de llamada a cada operación que pueda fallar. `assertOwned()` es un punto de control en un instante concreto antes de iniciar otro paso importante; el host también verifica la propiedad después de la función de devolución de llamada. La pérdida del arrendamiento o la cancelación por parte del llamador interrumpen la señal. Las esperas de adquisición y los Heartbeat se producen fuera de las transacciones síncronas breves de SQLite; los plugins nunca reciben rutas ni identificadores de bases de datos. Se trata de cancelación cooperativa, no de un token de aislamiento ni de autorización para escrituras externas sin aislamiento.
 
-    `openChannelIngressDrain(...)` abre el trabajador principal independiente del canal sobre esa cola (o crea una cola cuando no se proporciona ninguna). El vaciado gestiona la recuperación de reclamaciones obsoletas, la serialización de reclamaciones por carril, la finalización al adoptar o al retornar el envío, la disposición para reintentos o mensajes fallidos, la sustitución opcional previa a la adopción y el tiempo de espera por bloqueo entre la reclamación y la adopción. Conecte la propiedad de la reclamación con la generación de respuestas mediante `turnAdoptionLifecycle` (a través de `bindIngressLifecycleToReplyOptions` desde `plugin-sdk/channel-outbound`). Los plugins de canal conservan la puesta en cola en el lado de aceptación, la derivación del carril, la clasificación de errores no reintentables y cualquier política de autorización de sustitución.
+    `openChannelIngressDrain(...)` abre el trabajador principal independiente del canal sobre esa cola (o crea una cuando no se proporciona ninguna). El drenaje se encarga de la recuperación de reclamaciones obsoletas, la serialización de reclamaciones por carril, la finalización al adoptar o al devolver el envío, la disposición para reintentos o mensajes fallidos, la sustitución opcional previa a la adopción y el tiempo de espera por bloqueo entre la reclamación y la adopción. Conecte la propiedad de la reclamación con la generación de respuestas mediante `turnAdoptionLifecycle` (a través de `bindIngressLifecycleToReplyOptions` desde `plugin-sdk/channel-outbound`). Los plugins de canal conservan el encolado del lado de la aceptación, la derivación del carril, la clasificación de elementos no reintentables y cualquier política de autorización de sustitución.
 
     <Warning>
     `openBlobStore`, `openKeyedStore`, `openSyncKeyedStore`, `withLease`, `openChannelIngressQueue` y `openChannelIngressDrain` solo están disponibles para los plugins incluidos y las instalaciones de plugins oficiales de confianza en esta versión.
@@ -770,28 +770,28 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    Ayudantes de runtime específicos del canal (disponibles cuando se carga un plugin de canal). Agrupados por función:
+    Ayudantes del entorno de ejecución específicos del canal (disponibles cuando se carga un plugin de canal). Agrupados por función:
 
     | Grupo | Propósito |
     | --- | --- |
-    | `text` | División en fragmentos (`chunkText`, `chunkMarkdownText`, `resolveChunkMode`), detección de comandos de control y conversión de tablas Markdown. |
-    | `reply` | Envío de respuestas en bloques almacenados en búfer, formato de envoltorios y resolución de la configuración efectiva de mensajes y retrasos humanos. |
+    | `text` | División en fragmentos (`chunkText`, `chunkMarkdownText`, `resolveChunkMode`), detección de comandos de control y conversión de tablas de Markdown. |
+    | `reply` | Envío de respuestas por bloques almacenados en búfer, formato de envoltorios y resolución de la configuración efectiva de mensajes y retraso humano. |
     | `routing` | `buildAgentSessionKey`, `resolveAgentRoute`. |
-    | `pairing` | `buildPairingReply`, lecturas y eliminaciones de la lista de permitidos, inserciones o actualizaciones de solicitudes de vinculación y entradas de aprobación derivadas de solicitudes. |
+    | `pairing` | `buildPairingReply`, lecturas y eliminaciones de listas de permitidos, inserciones o actualizaciones de solicitudes de emparejamiento y entradas de aprobación derivadas de solicitudes. |
     | `media` | Descarga y almacenamiento de contenido multimedia remoto (véase más adelante). |
-    | `activity` | Registra y lee la última actividad del canal. |
-    | `session` | Metadatos de sesión procedentes de eventos entrantes y actualizaciones de la última ruta. |
+    | `activity` | Registrar y leer la última actividad del canal. |
+    | `session` | Metadatos de sesión de eventos entrantes y actualizaciones de la última ruta. |
     | `mentions` | Ayudantes de políticas de menciones (véase más adelante). |
     | `reactions` | Identificadores de reacciones de confirmación para indicadores de procesamiento en curso. |
-    | `groups` | Resolución de la política de grupo y del requisito de mención. |
-    | `debounce` | Estabilización de mensajes entrantes. |
-    | `commands` | Autorización de comandos y control de comandos de texto. |
-    | `outbound` | Carga el adaptador de salida de un canal. |
-    | `inbound` | Crea el contexto del evento entrante y ejecuta el núcleo compartido de eventos entrantes y respuestas. |
-    | `threadBindings` | Ajusta el tiempo de espera por inactividad y la antigüedad máxima de los hilos de sesión vinculados. |
-    | `runtimeContexts` | Registra, lee y observa el contexto local del proceso por canal, cuenta y capacidad. |
+    | `groups` | Resolución de políticas de grupo y del requisito de mención. |
+    | `debounce` | Supresión de rebotes de mensajes entrantes. |
+    | `commands` | Autorización de comandos y control de acceso a comandos de texto. |
+    | `outbound` | Cargar el adaptador de salida de un canal. |
+    | `inbound` | Crear el contexto del evento entrante y ejecutar el núcleo compartido de eventos entrantes y respuestas. |
+    | `threadBindings` | Ajustar el tiempo de espera de inactividad y la antigüedad máxima de los hilos de sesión vinculados. |
+    | `runtimeContexts` | Registrar, leer y observar el contexto local del proceso por canal, cuenta y capacidad. |
 
-    `api.runtime.channel.media` es la superficie preferida para las descargas y el almacenamiento de contenido multimedia del canal:
+    `api.runtime.channel.media` es la superficie preferida para descargar y almacenar contenido multimedia de canales:
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -802,9 +802,9 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     });
     ```
 
-    Use `saveRemoteMedia(...)` cuando una URL remota deba convertirse en contenido multimedia de OpenClaw. Use `saveResponseMedia(...)` cuando el plugin ya haya obtenido un `Response` con autenticación, redirecciones o gestión de listas de permitidos propias del plugin. Use `readRemoteMediaBuffer(...)` únicamente cuando el plugin necesite bytes sin procesar para inspeccionarlos, transformarlos, descifrarlos o volver a cargarlos. `fetchRemoteMedia(...)` sigue siendo un alias de compatibilidad obsoleto de `readRemoteMediaBuffer(...)`.
+    Use `saveRemoteMedia(...)` cuando una URL remota deba convertirse en contenido multimedia de OpenClaw. Use `saveResponseMedia(...)` cuando el plugin ya haya obtenido un `Response` con autenticación, redirecciones o gestión de listas de permitidos propias del plugin. Use `readRemoteMediaBuffer(...)` únicamente cuando el plugin necesite los bytes sin procesar para inspeccionarlos, transformarlos, descifrarlos o volver a cargarlos. `fetchRemoteMedia(...)` sigue siendo un alias de compatibilidad obsoleto de `readRemoteMediaBuffer(...)`.
 
-    `api.runtime.channel.mentions` es la superficie compartida de políticas de menciones entrantes para los plugins de canal incluidos que usan inyección de runtime:
+    `api.runtime.channel.mentions` es la superficie compartida de políticas de menciones entrantes para los plugins de canal incluidos que usan inyección en el entorno de ejecución:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -839,16 +839,16 @@ entre dos partes que no pasen por el ejecutor compartido de respuestas entrantes
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    Use la ruta normalizada `{ facts, policy }` para las decisiones sobre menciones.
+    Use la ruta normalizada `{ facts, policy }` para tomar decisiones sobre menciones.
 
-    Varios campos de `reply`, `session` y `inbound` contienen notas `@deprecated` por campo que apuntan al núcleo actual de turnos del canal o a los adaptadores de salida del canal; consulte el JSDoc en línea del ayudante específico antes de crear código nuevo basado en él.
+    Varios campos de `reply`, `session` y `inbound` contienen notas `@deprecated` por campo que apuntan al núcleo actual del turno del canal o a los adaptadores de salida del canal; consulte la documentación JSDoc en línea del ayudante específico antes de crear código nuevo basado en él.
 
   </Accordion>
 </AccordionGroup>
 
-## Almacenamiento de referencias del runtime
+## Almacenamiento de referencias del entorno de ejecución
 
-Use `createPluginRuntimeStore` para almacenar la referencia del runtime y utilizarla fuera de la función de devolución de llamada `register`:
+Use `createPluginRuntimeStore` para almacenar la referencia del entorno de ejecución y usarla fuera de la función de devolución de llamada `register`:
 
 <Steps>
   <Step title="Crear el almacén">
@@ -889,7 +889,7 @@ Use `createPluginRuntimeStore` para almacenar la referencia del runtime y utiliz
 </Steps>
 
 <Note>
-Se recomienda `pluginId` para la identidad del almacén del runtime. La forma de nivel inferior `key` está destinada a casos poco habituales en los que un plugin necesita deliberadamente más de una ranura de runtime.
+Use preferentemente `pluginId` para la identidad del almacén del entorno de ejecución. La forma de nivel inferior `key` está destinada a casos poco habituales en los que un plugin necesita intencionadamente más de una ranura del entorno de ejecución.
 </Note>
 
 ## Otros campos `api` de nivel superior
@@ -903,23 +903,23 @@ Además de `api.runtime`, el objeto de la API también proporciona:
   Nombre para mostrar del plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  Instantánea actual de la configuración (instantánea activa del runtime en memoria cuando está disponible).
+  Instantánea de la configuración actual (instantánea activa del entorno de ejecución en memoria cuando está disponible).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  Configuración específica del plugin procedente de `plugins.entries.<id>.config`.
+  Configuración específica del plugin de `plugins.entries.<id>.config`.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  Registrador con ámbito limitado (`debug`, `info`, `warn`, `error`).
+  Registrador limitado al ámbito (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  Modo de carga actual: `"full"` (activación en vivo), `"discovery"` / `"tool-discovery"` (detección de capacidades de solo lectura), `"setup-only"` (entrada de configuración ligera), `"setup-runtime"` (flujo de configuración que también necesita la entrada del canal del runtime) o `"cli-metadata"` (recopilación de metadatos de comandos de la CLI).
+  Modo de carga actual: `"full"` (activación en vivo), `"discovery"` / `"tool-discovery"` (detección de capacidades de solo lectura), `"setup-only"` (entrada de configuración ligera), `"setup-runtime"` (flujo de configuración que también necesita la entrada del canal del entorno de ejecución) o `"cli-metadata"` (recopilación de metadatos de comandos de la CLI).
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
   Resuelve una ruta relativa a la raíz del plugin.
 </ParamField>
 
-## Contenido relacionado
+## Temas relacionados
 
-- [Funcionamiento interno de los plugins](/es/plugins/architecture) — modelo de capacidades y registro
+- [Componentes internos de los plugins](/es/plugins/architecture) — modelo de capacidades y registro
 - [Puntos de entrada del SDK](/es/plugins/sdk-entrypoints) — opciones de `definePluginEntry`
 - [Descripción general del SDK](/es/plugins/sdk-overview) — referencia de subrutas

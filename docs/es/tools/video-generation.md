@@ -4,36 +4,36 @@ read_when:
     - Configuración de proveedores y modelos de generación de vídeo
     - Descripción de los parámetros de la herramienta video_generate
 sidebarTitle: Video generation
-summary: Genera vídeos mediante video_generate a partir de referencias de texto, imagen o vídeo en 16 backends de proveedores
-title: Generación de vídeo
+summary: Genera vídeos mediante `video_generate` a partir de referencias de texto, imagen o vídeo en 16 backends de proveedores
+title: Generación de video
 x-i18n:
-    generated_at: "2026-07-19T02:15:12Z"
+    generated_at: "2026-07-22T10:52:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 9ec1b1fb7054c1a4ce16b9d1aae910774175381233fa7b9b8fd7df32c22ba3f8
+    source_hash: 4afc9338fdfdc269b50b949b6d1a186e3a2064ed4ee40a41722efea40ae791aa
     source_path: tools/video-generation.md
     workflow: 16
 ---
 
-Los agentes de OpenClaw generan videos a partir de indicaciones de texto, imágenes de referencia o
-videos existentes mediante `video_generate`. Se admiten dieciséis backends de proveedores;
-el agente elige automáticamente el adecuado según la configuración y las claves de API
-disponibles.
+Los agentes de OpenClaw generan vídeos a partir de indicaciones de texto, imágenes de referencia o
+vídeos existentes mediante `video_generate`. Se admiten dieciséis backends de
+proveedores; el agente elige automáticamente el adecuado según la configuración y
+las claves de API disponibles.
 
 <Note>
-`video_generate` solo aparece cuando hay al menos un proveedor de generación de video
-disponible. Si no figura entre las herramientas del agente, establezca una clave de API de un proveedor o
-configure `agents.defaults.videoGenerationModel`.
+`video_generate` solo aparece cuando hay al menos un proveedor de generación de vídeo
+disponible. Si no figura entre las herramientas del agente, establezca una clave de API del proveedor o
+configure `agents.defaults.mediaModels.video`.
 </Note>
 
 `video_generate` tiene tres modos de ejecución, determinados a partir de las entradas de referencia
 de la llamada:
 
-- `generate` - sin contenido multimedia de referencia (texto a video).
+- `generate` - sin contenido multimedia de referencia (texto a vídeo).
 - `imageToVideo` - una o más imágenes de referencia.
-- `videoToVideo` - uno o más videos de referencia.
+- `videoToVideo` - uno o más vídeos de referencia.
 
 Los proveedores pueden admitir cualquier subconjunto de esos modos. La herramienta valida el
 modo activo antes del envío e informa de los modos admitidos en `action=list`.
@@ -51,44 +51,44 @@ modo activo antes del envío e informa de los modos admitidos en `action=list`.
   </Step>
   <Step title="Elegir un modelo predeterminado (opcional)">
     ```bash
-    openclaw config set agents.defaults.videoGenerationModel.primary "google/veo-3.1-fast-generate-preview"
+    openclaw config set agents.defaults.mediaModels.video.primary "google/veo-3.1-fast-generate-preview"
     ```
   </Step>
   <Step title="Solicitarlo al agente">
-    > Genera un video cinematográfico de 5 segundos de una langosta amistosa surfeando al atardecer.
+    > Genera un vídeo cinematográfico de 5 segundos de una langosta amistosa surfeando al atardecer.
 
-    El agente llama a `video_generate` automáticamente. No es necesario incluir herramientas
-    en una lista de permitidas.
+    El agente llama automáticamente a `video_generate`. No es necesario incluir
+    la herramienta en una lista de permitidas.
 
   </Step>
 </Steps>
 
-## Funcionamiento de la generación asíncrona
+## Cómo funciona la generación asíncrona
 
-La generación de video es asíncrona:
+La generación de vídeo es asíncrona:
 
-1. OpenClaw envía la solicitud al proveedor y devuelve inmediatamente un identificador de tarea.
+1. OpenClaw envía la solicitud al proveedor y devuelve inmediatamente un id de tarea.
 2. El proveedor procesa el trabajo en segundo plano (normalmente entre 30 segundos y varios minutos, según el proveedor y la resolución; los proveedores lentos respaldados por colas pueden ejecutarse hasta alcanzar el tiempo de espera configurado).
-3. Cuando el video está listo, OpenClaw reactiva la misma sesión mediante un evento interno de finalización.
-4. El agente lo comunica mediante el modo normal de respuesta visible de la sesión:
+3. Cuando el vídeo está listo, OpenClaw reactiva la misma sesión con un evento interno de finalización.
+4. El agente informa de ello mediante el modo normal de respuesta visible de la sesión:
    una respuesta final automática, o `message(action="send")` cuando la sesión requiere
-   la herramienta de mensajes. Si la sesión solicitante está inactiva, o su reactivación falla y
+   la herramienta de mensajes. Si la sesión solicitante está inactiva, o si falla su reactivación y
    el contenido multimedia generado sigue sin aparecer en la respuesta de finalización, OpenClaw envía
-   un respaldo directo idempotente con el contenido multimedia.
+   directamente una alternativa idempotente con el contenido multimedia.
 
-Mientras un trabajo está en curso, las llamadas duplicadas a `video_generate` en la misma
+Mientras hay un trabajo en curso, las llamadas duplicadas a `video_generate` en la misma
 sesión devuelven el estado actual de la tarea en lugar de iniciar otra
 generación. Use `action: "status"` para comprobarlo sin activar una nueva
 generación, o `openclaw tasks list` / `openclaw tasks show <lookup>` desde la
 CLI (consulte [Tareas en segundo plano](/es/automation/tasks)).
 
-Fuera de las ejecuciones del agente respaldadas por una sesión (por ejemplo, invocaciones directas de herramientas),
+Fuera de las ejecuciones del agente respaldadas por una sesión (por ejemplo, las invocaciones directas de herramientas),
 la herramienta recurre a la generación en línea y devuelve la ruta final del contenido multimedia
 en el mismo turno.
 
-Los archivos de video generados se guardan en el almacenamiento multimedia administrado por OpenClaw cuando el
-proveedor devuelve bytes. El límite predeterminado es de 16MB (el límite compartido para contenido multimedia de
-video); `agents.defaults.mediaMaxMb` lo aumenta para renderizados de mayor tamaño. Cuando un
+Los archivos de vídeo generados se guardan en el almacenamiento multimedia administrado por OpenClaw cuando el
+proveedor devuelve bytes. El límite predeterminado es de 16MB (el límite compartido de contenido multimedia de
+vídeo); `agents.defaults.mediaMaxMb` lo aumenta para renderizaciones más grandes. Cuando un
 proveedor también devuelve una URL de salida alojada, OpenClaw entrega esa URL en lugar
 de marcar la tarea como fallida si la persistencia local rechaza un archivo demasiado grande.
 
@@ -97,9 +97,9 @@ de marcar la tarea como fallida si la persistencia local rechaza un archivo dema
 | Estado       | Significado                                                                                            |
 | ----------- | ------------------------------------------------------------------------------------------------------ |
 | `queued`    | Tarea creada, a la espera de que el proveedor la acepte.                                               |
-| `running`   | El proveedor está procesando (normalmente entre 30 segundos y varios minutos, según el proveedor y la resolución). |
-| `succeeded` | El video está listo; el agente se reactiva y lo publica en la conversación.                            |
-| `failed`    | Error del proveedor o tiempo de espera agotado; el agente se reactiva con los detalles del error.      |
+| `running`   | El proveedor está procesándola (normalmente entre 30 segundos y varios minutos, según el proveedor y la resolución). |
+| `succeeded` | El vídeo está listo; el agente se reactiva y lo publica en la conversación.                            |
+| `failed`    | Error del proveedor o tiempo de espera agotado; el agente se reactiva con los detalles del error.       |
 
 Compruebe el estado desde la CLI:
 
@@ -111,52 +111,52 @@ openclaw tasks cancel <lookup>
 
 ## Proveedores compatibles
 
-| Proveedor             | Modelo predeterminado             | Texto | Referencia de imagen                                 | Referencia de video                            | Autenticación                            |
-| --------------------- | --------------------------------- | :--: | ---------------------------------------------------- | ---------------------------------------------- | ---------------------------------------- |
-| Alibaba               | `wan2.6-t2v`                |  ✓   | Sí (URL remota)                                      | Sí (URL remota)                                | `MODELSTUDIO_API_KEY`                       |
-| BytePlus (incluido)   | `seedance-1-0-pro-250528`                |  ✓   | Hasta 2 imágenes (primer y último fotograma)         | -                                              | `BYTEPLUS_API_KEY`                       |
-| Plugin BytePlus 1.5   | `seedance-1-5-pro-251215`                |  ✓   | Hasta 2 imágenes (primer y último fotograma mediante el rol) | -                                      | `BYTEPLUS_API_KEY`                       |
-| BytePlus Seedance 2.0 | `dreamina-seedance-2-0-260128`                |  ✓   | Hasta 9 imágenes de referencia                       | Hasta 3 videos                                 | `BYTEPLUS_API_KEY`                       |
-| ComfyUI               | `workflow`                |  ✓   | 1 imagen                                             | -                                              | `COMFY_API_KEY` o `COMFY_CLOUD_API_KEY` |
-| DeepInfra             | `Pixverse/Pixverse-T2V`                |  ✓   | -                                                    | -                                              | `DEEPINFRA_API_KEY`                       |
-| fal                   | `fal-ai/minimax/video-01-live`                |  ✓   | 1 imagen; hasta 9 con la conversión de referencia a video de Seedance | Hasta 3 videos con la conversión de referencia a video de Seedance | `FAL_KEY` |
-| Google                | `veo-3.1-fast-generate-preview`                |  ✓   | 1 imagen                                             | 1 video                                        | `GEMINI_API_KEY`                       |
-| MiniMax               | `MiniMax-Hailuo-2.3`                |  ✓   | 1 imagen                                             | -                                              | `MINIMAX_API_KEY` o MiniMax OAuth       |
-| OpenAI                | `sora-2`                |  ✓   | 1 imagen                                             | 1 video                                        | `OPENAI_API_KEY`                       |
-| OpenRouter            | `google/veo-3.1-fast`                |  ✓   | Hasta 4 imágenes (primer/último fotograma o referencias) | -                                         | `OPENROUTER_API_KEY`                       |
-| Qwen                  | `wan2.6-t2v`                |  ✓   | Sí (URL remota)                                      | Sí (URL remota)                                | `QWEN_API_KEY`                       |
-| Runway                | `gen4.5`                |  ✓   | 1 imagen                                             | 1 video                                        | `RUNWAYML_API_SECRET`                       |
-| Together              | `Wan-AI/Wan2.2-T2V-A14B`                |  ✓   | Solo `Wan-AI/Wan2.2-I2V-A14B`                              | -                                              | `TOGETHER_API_KEY`                       |
-| Vydra                 | `veo3`                |  ✓   | 1 imagen (`kling`)                        | -                                              | `VYDRA_API_KEY`                       |
-| xAI                   | `grok-imagine-video`                |  ✓   | Clásico: 1 primer fotograma o 7 referencias; 1.5: 1 fotograma | Clásico: 1 video                        | `XAI_API_KEY`                       |
+| Proveedor             | Modelo predeterminado            | Texto | Referencia de imagen                                 | Referencia de vídeo                            | Autenticación                            |
+| --------------------- | ------------------------------- | :--: | ---------------------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| Alibaba               | `wan2.6-t2v`                    |  ✓   | Sí (URL remota)                                      | Sí (URL remota)                                 | `MODELSTUDIO_API_KEY`                    |
+| BytePlus (incluido)   | `seedance-1-0-pro-250528`       |  ✓   | Hasta 2 imágenes (primer y último fotograma)         | -                                               | `BYTEPLUS_API_KEY`                       |
+| Plugin BytePlus 1.5   | `seedance-1-5-pro-251215`       |  ✓   | Hasta 2 imágenes (primer y último fotograma mediante rol) | -                                          | `BYTEPLUS_API_KEY`                       |
+| BytePlus Seedance 2.0 | `dreamina-seedance-2-0-260128`  |  ✓   | Hasta 9 imágenes de referencia                       | Hasta 3 vídeos                                  | `BYTEPLUS_API_KEY`                       |
+| ComfyUI               | `workflow`                      |  ✓   | 1 imagen                                             | -                                               | `COMFY_API_KEY` o `COMFY_CLOUD_API_KEY` |
+| DeepInfra             | `Pixverse/Pixverse-T2V`         |  ✓   | -                                                    | -                                               | `DEEPINFRA_API_KEY`                      |
+| fal                   | `fal-ai/minimax/video-01-live`  |  ✓   | 1 imagen; hasta 9 con referencia a vídeo de Seedance | Hasta 3 vídeos con referencia a vídeo de Seedance | `FAL_KEY`                    |
+| Google                | `veo-3.1-fast-generate-preview` |  ✓   | 1 imagen                                             | 1 vídeo                                         | `GEMINI_API_KEY`                         |
+| MiniMax               | `MiniMax-Hailuo-2.3`            |  ✓   | 1 imagen                                             | -                                               | `MINIMAX_API_KEY` o OAuth de MiniMax    |
+| OpenAI                | `sora-2`                        |  ✓   | 1 imagen                                             | 1 vídeo                                         | `OPENAI_API_KEY`                         |
+| OpenRouter            | `google/veo-3.1-fast`           |  ✓   | Hasta 4 imágenes (primer/último fotograma o referencias) | -                                           | `OPENROUTER_API_KEY`                     |
+| Qwen                  | `wan2.6-t2v`                    |  ✓   | Sí (URL remota)                                      | Sí (URL remota)                                 | `QWEN_API_KEY`                           |
+| Runway                | `gen4.5`                        |  ✓   | 1 imagen                                             | 1 vídeo                                         | `RUNWAYML_API_SECRET`                    |
+| Together              | `Wan-AI/Wan2.2-T2V-A14B`        |  ✓   | Solo `Wan-AI/Wan2.2-I2V-A14B`                        | -                                               | `TOGETHER_API_KEY`                       |
+| Vydra                 | `veo3`                          |  ✓   | 1 imagen (`kling`)                                    | -                                               | `VYDRA_API_KEY`                          |
+| xAI                   | `grok-imagine-video`            |  ✓   | Clásico: 1 primer fotograma o 7 referencias; 1.5: 1 fotograma | Clásico: 1 vídeo                         | `XAI_API_KEY`                            |
 
 Algunos proveedores aceptan variables de entorno de claves de API adicionales o alternativas. Consulte
 las [páginas de cada proveedor](#related) para obtener más información.
 
-Ejecute `video_generate action=list` para consultar en tiempo de ejecución los proveedores, modelos y
+Ejecute `video_generate action=list` para inspeccionar en tiempo de ejecución los proveedores, modelos y
 modos de ejecución disponibles.
 
 ### Matriz de capacidades
 
 El contrato de modos explícito utilizado por `video_generate`, las pruebas de contrato y
-el barrido activo compartido:
+el barrido compartido en vivo:
 
-| Proveedor  | `generate` | `imageToVideo` | `videoToVideo` | Carriles activos compartidos actualmente                                                                                                  |
-| ---------- | :--------: | :------------: | :------------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Alibaba    |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite `videoToVideo` porque este proveedor necesita URL de video `http(s)` remotas |
-| BytePlus   |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                    |
-| ComfyUI    |     ✓      |       ✓        |       -        | No se incluye en el barrido compartido; la cobertura específica del flujo de trabajo se encuentra en las pruebas de Comfy                |
-| DeepInfra  |     ✓      |       -        |       -        | `generate`; los esquemas de video nativos de DeepInfra son de texto a video en el contrato del Plugin                              |
-| fal        |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; `videoToVideo` solo al usar la conversión de referencia a video de Seedance                    |
-| Google     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite el `videoToVideo` compartido porque el barrido actual de Gemini/Veo basado en búferes no acepta esa entrada |
-| MiniMax    |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                    |
-| OpenAI     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite el `videoToVideo` compartido porque esta ruta de organización/entrada necesita actualmente acceso del proveedor a la edición de video |
-| OpenRouter |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                    |
-| Qwen       |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite `videoToVideo` porque este proveedor necesita URL de video `http(s)` remotas |
-| Runway     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; `videoToVideo` solo se ejecuta cuando el modelo seleccionado es `runway/gen4_aleph`             |
-| Together   |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                    |
-| Vydra      |     ✓      |       ✓        |       -        | `generate`; se omite el `imageToVideo` compartido porque `veo3` incluido solo admite texto y `kling` incluido requiere una URL de imagen remota |
-| xAI        |     ✓      |       ✓        |       ✓        | El modelo clásico admite todos los modos; Video 1.5 solo admite la conversión de imagen a video; la entrada MP4 remota mantiene `videoToVideo` fuera del barrido compartido |
+| Proveedor  | `generate` | `imageToVideo` | `videoToVideo` | Carriles compartidos en vivo actualmente                                                                                               |
+| ---------- | :--------: | :------------: | :------------: | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Alibaba    |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite `videoToVideo` porque este proveedor necesita URL de vídeo `http(s)` remotas                           |
+| BytePlus   |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                              |
+| ComfyUI    |     ✓      |       ✓        |       -        | No se incluye en el barrido compartido; la cobertura específica del flujo de trabajo reside en las pruebas de Comfy                    |
+| DeepInfra  |     ✓      |       -        |       -        | `generate`; los esquemas de vídeo nativos de DeepInfra son de texto a vídeo en el contrato del Plugin                                  |
+| fal        |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; `videoToVideo` solo cuando se usa la referencia a vídeo de Seedance                                |
+| Google     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite el `videoToVideo` compartido porque el barrido actual de Gemini/Veo respaldado por búfer no acepta esa entrada |
+| MiniMax    |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                              |
+| OpenAI     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite el `videoToVideo` compartido porque esta ruta de organización/entrada requiere actualmente acceso de edición de vídeo por parte del proveedor |
+| OpenRouter |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                              |
+| Qwen       |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; se omite `videoToVideo` porque este proveedor necesita URL de vídeo `http(s)` remotas                              |
+| Runway     |     ✓      |       ✓        |       ✓        | `generate`, `imageToVideo`; `videoToVideo` solo se ejecuta cuando el modelo seleccionado es `runway/gen4_aleph`                         |
+| Together   |     ✓      |       ✓        |       -        | `generate`, `imageToVideo`                                                                                                              |
+| Vydra      |     ✓      |       ✓        |       -        | `generate`; se omite el `imageToVideo` compartido porque el `veo3` incluido solo admite texto y el `kling` incluido requiere una URL de imagen remota |
+| xAI        |     ✓      |       ✓        |       ✓        | La versión clásica admite todos los modos; Video 1.5 solo admite imagen a vídeo; la entrada MP4 remota mantiene `videoToVideo` fuera del barrido compartido |
 
 ## Parámetros de la herramienta
 
@@ -171,33 +171,34 @@ el barrido activo compartido:
 <ParamField path="image" type="string">Una sola imagen de referencia (ruta o URL).</ParamField>
 <ParamField path="images" type="string[]">Varias imágenes de referencia (hasta 9).</ParamField>
 <ParamField path="imageRoles" type="string[]">
-Indicaciones de rol opcionales por posición, paralelas a la lista combinada de imágenes.
+Indicaciones opcionales de rol por posición, paralelas a la lista combinada de imágenes.
 Valores canónicos: `first_frame`, `last_frame`, `reference_image`.
 </ParamField>
 <ParamField path="video" type="string">Un solo vídeo de referencia (ruta o URL).</ParamField>
 <ParamField path="videos" type="string[]">Varios vídeos de referencia (hasta 4).</ParamField>
 <ParamField path="videoRoles" type="string[]">
-Indicaciones de rol opcionales por posición, paralelas a la lista combinada de vídeos.
+Indicaciones opcionales de rol por posición, paralelas a la lista combinada de vídeos.
 Valor canónico: `reference_video`.
 </ParamField>
 <ParamField path="audioRef" type="string">
-Un solo audio de referencia (ruta o URL). Se usa como música de fondo o
+Un solo audio de referencia (ruta o URL). Se utiliza para música de fondo o como
 referencia de voz cuando el proveedor admite entradas de audio.
 </ParamField>
 <ParamField path="audioRefs" type="string[]">Varios audios de referencia (hasta 3).</ParamField>
 <ParamField path="audioRoles" type="string[]">
-Indicaciones de rol opcionales por posición, paralelas a la lista combinada de audios.
+Indicaciones opcionales de rol por posición, paralelas a la lista combinada de audios.
 Valor canónico: `reference_audio`.
 </ParamField>
 
 <Note>
-Las indicaciones de rol se reenvían al proveedor sin modificaciones. Los valores canónicos proceden de
-la unión `VideoGenerationAssetRole`, pero los proveedores pueden aceptar cadenas
-de rol adicionales. Las matrices `*Roles` no deben contener más entradas que la
-lista de referencias correspondiente; los errores de desfase en una posición generan un error claro.
-Use una cadena vacía para dejar una posición sin definir. Para xAI, establezca cada rol de imagen como
-`reference_image` para usar su modo de generación `reference_images`; omita el
-rol o use `first_frame` para convertir una sola imagen en vídeo.
+Las indicaciones de rol se reenvían al proveedor sin modificaciones. Los valores canónicos
+proceden de la unión `VideoGenerationAssetRole`, pero los proveedores pueden aceptar cadenas de
+rol adicionales. Las matrices `*Roles` no deben tener más entradas que la
+lista de referencias correspondiente; los errores de desplazamiento de una posición
+producen un error claro. Utilice una cadena vacía para dejar una posición sin establecer.
+Para xAI, establezca todos los roles de imagen en `reference_image` para utilizar su
+modo de generación `reference_images`; omita el rol o utilice
+`first_frame` para la conversión de una sola imagen a vídeo.
 </Note>
 
 ### Controles de estilo
@@ -207,91 +208,94 @@ rol o use `first_frame` para convertir una sola imagen en vídeo.
 </ParamField>
 <ParamField path="resolution" type="string">Indicación de resolución, como `360P`, `480P`, `540P`, `720P`, `768P`, `1080P`, `4K` o un valor específico del proveedor. OpenClaw normaliza o ignora los valores no admitidos según el proveedor.</ParamField>
 <ParamField path="durationSeconds" type="number">
-  Duración objetivo en segundos (redondeada al valor admitido más cercano por el proveedor).
+  Duración objetivo en segundos (redondeada al valor admitido por el proveedor más cercano).
 </ParamField>
-<ParamField path="size" type="string">Indicación de tamaño cuando el proveedor la admita.</ParamField>
+<ParamField path="size" type="string">Indicación de tamaño cuando el proveedor la admite.</ParamField>
 <ParamField path="audio" type="boolean">
   Activa el audio generado en la salida cuando sea compatible. Es distinto de `audioRef*` (entradas).
 </ParamField>
 <ParamField path="watermark" type="boolean">Activa o desactiva la marca de agua del proveedor cuando sea compatible.</ParamField>
 
-`adaptive` es un valor centinela específico del proveedor: se reenvía sin modificaciones a
-los proveedores que declaran `adaptive` en sus capacidades (por ejemplo, BytePlus
-Seedance lo usa para detectar automáticamente la relación a partir de las dimensiones
-de la imagen de entrada). Los proveedores que no lo declaran muestran el valor mediante
-`details.ignoredOverrides` en el resultado de la herramienta para que el descarte sea visible.
+`adaptive` es un valor centinela específico del proveedor: se reenvía sin
+modificaciones a los proveedores que declaran `adaptive` en sus capacidades
+(p. ej., BytePlus Seedance lo utiliza para detectar automáticamente la relación a partir
+de las dimensiones de la imagen de entrada). Los proveedores que no lo declaran muestran
+el valor mediante `details.ignoredOverrides` en el resultado de la herramienta, para que la
+omisión sea visible.
 
 ### Opciones avanzadas
 
 <ParamField path="action" type='"generate" | "status" | "list"' default="generate">
-  `"status"` devuelve la tarea de la sesión actual; `"list"` inspecciona los proveedores.
+  `"status"` devuelve la tarea actual de la sesión; `"list"` inspecciona los proveedores.
 </ParamField>
-<ParamField path="model" type="string">Sustitución del proveedor/modelo (por ejemplo, `runway/gen4.5`).</ParamField>
+<ParamField path="model" type="string">Sustitución del proveedor/modelo (p. ej., `runway/gen4.5`).</ParamField>
 <ParamField path="filename" type="string">Indicación del nombre del archivo de salida.</ParamField>
-<ParamField path="timeoutMs" type="number">Tiempo de espera opcional de la operación del proveedor en milisegundos. Si se omite, OpenClaw usa `agents.defaults.videoGenerationModel.timeoutMs` si está configurado; de lo contrario, usa el valor predeterminado del proveedor definido por el autor del plugin, si existe.</ParamField>
+<ParamField path="timeoutMs" type="number">Tiempo de espera opcional de la operación del proveedor en milisegundos. Cuando se omite, OpenClaw utiliza `agents.defaults.mediaModels.video.timeoutMs` si está configurado; de lo contrario, utiliza el valor predeterminado del proveedor definido por el autor del plugin, si existe.</ParamField>
 <ParamField path="providerOptions" type="object">
-  Opciones específicas del proveedor como objeto JSON (por ejemplo, `{"seed": 42, "draft": true}`).
-  Los proveedores que declaran un esquema tipado validan las claves y los tipos; las claves
-  desconocidas o las incompatibilidades hacen que se omita el candidato durante la conmutación por error. Los proveedores sin
-  un esquema declarado reciben las opciones sin modificaciones. Ejecute `video_generate action=list`
-  para ver qué acepta cada proveedor.
+  Opciones específicas del proveedor como objeto JSON (p. ej., `{"seed": 42, "draft": true}`).
+  Los proveedores que declaran un esquema tipado validan las claves y los tipos; las
+  claves desconocidas o las discrepancias hacen que se omita el candidato durante la
+  conmutación por error. Los proveedores sin un esquema declarado reciben las opciones
+  sin modificaciones. Ejecute `video_generate action=list` para ver qué acepta cada proveedor.
 </ParamField>
 
 <Note>
-No todos los proveedores admiten todos los parámetros. OpenClaw normaliza la duración al
-valor admitido más cercano por el proveedor y reasigna las indicaciones de geometría traducidas,
-como la conversión de tamaño a relación de aspecto, cuando un proveedor de respaldo ofrece una
-superficie de control diferente. Las sustituciones que realmente no se admiten se ignoran en la medida
-de lo posible y se notifican como advertencias en el resultado de la herramienta. Los límites estrictos de capacidad
-(como un exceso de entradas de referencia) generan un error antes del envío. Los resultados de la herramienta
-informan de los ajustes aplicados; `details.normalization` registra cualquier
+No todos los proveedores admiten todos los parámetros. OpenClaw normaliza la duración
+al valor admitido por el proveedor más cercano y reasigna indicaciones geométricas
+traducidas, como de tamaño a relación de aspecto, cuando un proveedor alternativo
+expone una superficie de control diferente. Las sustituciones que realmente no se
+admiten se ignoran en la medida de lo posible y se notifican como advertencias en el
+resultado de la herramienta. Los límites estrictos de capacidad (como demasiadas
+entradas de referencia) producen un error antes del envío. Los resultados de la
+herramienta informan de los ajustes aplicados; `details.normalization` registra cualquier
 traducción entre lo solicitado y lo aplicado.
 </Note>
 
 Las entradas de referencia seleccionan el modo de ejecución:
 
-- Sin contenido multimedia de referencia -> `generate`
+- Sin medios de referencia -> `generate`
 - Cualquier referencia de imagen -> `imageToVideo`
 - Cualquier referencia de vídeo -> `videoToVideo`
 - Las entradas de audio de referencia **no** cambian el modo resuelto; se aplican
-  sobre el modo seleccionado por las referencias de imagen o vídeo y solo funcionan
+  sobre el modo que seleccionen las referencias de imagen o vídeo y solo funcionan
   con proveedores que declaran `maxInputAudios`.
 
-La combinación de referencias de imagen y vídeo no constituye una superficie de capacidades compartida estable.
-Es preferible usar un único tipo de referencia por solicitud.
+Las referencias mixtas de imagen y vídeo no constituyen una superficie de capacidad
+compartida estable. Se recomienda utilizar un solo tipo de referencia por solicitud.
 
 #### Conmutación por error y opciones tipadas
 
-Algunas comprobaciones de capacidades se aplican en la capa de conmutación por error, en lugar de en el límite
-de la herramienta, por lo que una solicitud que exceda los límites del proveedor principal puede ejecutarse
-en un proveedor de respaldo con la capacidad necesaria:
+Algunas comprobaciones de capacidades se aplican en la capa de conmutación por error,
+en lugar de en el límite de la herramienta, por lo que una solicitud que supere los
+límites del proveedor principal puede ejecutarse en un proveedor alternativo capaz:
 
 - El candidato activo que no declare `maxInputAudios` (o `0`) se omite cuando
   la solicitud contiene referencias de audio; se prueba el siguiente candidato. La misma
-  protección se aplica a los recuentos de referencias de imágenes y vídeos respecto a
+  protección se aplica a los recuentos de referencias de imagen y vídeo con respecto a
   `maxInputImages`/`maxInputVideos`.
-- Si el `maxDurationSeconds` del candidato activo es inferior al `durationSeconds`
+- Si el valor `maxDurationSeconds` del candidato activo es inferior al `durationSeconds`
   solicitado y no hay una lista `supportedDurationSeconds` declarada, se omite.
 - Si la solicitud contiene `providerOptions` y el candidato activo declara explícitamente
   un esquema tipado `providerOptions`, se omite si las claves proporcionadas no están
-  en el esquema o los tipos de los valores no coinciden. Los proveedores sin un
-  esquema declarado reciben las opciones sin modificaciones (transferencia
-  retrocompatible). Un proveedor puede rechazar todas las opciones de proveedor
-  declarando un esquema vacío (`capabilities.providerOptions: {}`), lo que
-  provoca la misma omisión que una incompatibilidad de tipos.
+  en el esquema o si los tipos de los valores no coinciden. Los proveedores sin un
+  esquema declarado reciben las opciones sin modificaciones (transferencia compatible
+  con versiones anteriores). Un proveedor puede rechazar todas las opciones de proveedor
+  mediante la declaración de un esquema vacío (`capabilities.providerOptions: {}`), lo que provoca la
+  misma omisión que una discrepancia de tipos.
 
-El primer motivo de omisión de una solicitud se registra en `warn` para que los operadores sepan cuándo
-se ha omitido su proveedor principal; las omisiones posteriores se registran en `debug` para
-evitar ruido en las cadenas largas de conmutación por error. Si se omiten todos los candidatos, el
-error agregado incluye el motivo de omisión de cada uno.
+El primer motivo de omisión de una solicitud se registra en `warn` para que
+los operadores vean cuándo se ha descartado su proveedor principal; las omisiones
+posteriores se registran en `debug` para mantener silenciosas las cadenas
+largas de conmutación por error. Si se omiten todos los candidatos, el error agregado
+incluye el motivo de omisión de cada uno.
 
 ## Acciones
 
 | Acción     | Qué hace                                                                                                 |
 | ---------- | -------------------------------------------------------------------------------------------------------- |
 | `generate` | Valor predeterminado. Crea un vídeo a partir de la instrucción proporcionada y las entradas de referencia opcionales. |
-| `status`   | Comprueba el estado de la tarea de vídeo en curso de la sesión actual sin iniciar otra generación.        |
-| `list`     | Muestra los proveedores y modelos disponibles, así como sus capacidades.                                  |
+| `status`   | Comprueba el estado de la tarea de vídeo en curso de la sesión actual sin iniciar otra generación.       |
+| `list`     | Muestra los proveedores y modelos disponibles, así como sus capacidades.                                 |
 
 ## Selección del modelo
 
@@ -300,15 +304,15 @@ OpenClaw resuelve el modelo en este orden:
 1. **Parámetro de herramienta `model`**: si el agente especifica uno en la llamada.
 2. **`videoGenerationModel.primary`** de la configuración.
 3. **`videoGenerationModel.fallbacks`** en orden.
-4. **Detección automática**: proveedores que tienen una autenticación válida, comenzando por el
-   proveedor predeterminado actual y continuando con los proveedores restantes en orden
+4. **Detección automática**: proveedores con autenticación válida, comenzando por el
+   proveedor predeterminado actual y siguiendo con los proveedores restantes en orden
    alfabético.
 
-Si un proveedor falla, se prueba automáticamente el siguiente candidato. Si todos
-los candidatos fallan, el error incluye los detalles de cada intento.
+Si un proveedor falla, se prueba automáticamente el siguiente candidato. Si fallan
+todos los candidatos, el error incluye los detalles de cada intento.
 
-Establezca `agents.defaults.mediaGenerationAutoProviderFallback: false` para usar
-solo las entradas explícitas `model`, `primary` y `fallbacks`.
+La conmutación automática por error entre proveedores autenticados siempre está
+activada. Un valor `model` por llamada sigue siendo el que prevalece.
 
 ```json5
 {
@@ -328,7 +332,7 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
 
 <AccordionGroup>
   <Accordion title="Alibaba">
-    Usa el endpoint asíncrono de DashScope / Model Studio. Las imágenes y los
+    Utiliza el endpoint asíncrono de DashScope / Model Studio. Las imágenes y los
     vídeos de referencia deben ser URL `http(s)` remotas.
   </Accordion>
   <Accordion title="BytePlus (incluido)">
@@ -337,9 +341,9 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
     Modelos: `seedance-1-0-pro-250528` (predeterminado),
     `seedance-1-5-pro-251215`.
 
-    Usa la API unificada `content[]`. Admite hasta 2 imágenes de entrada
-    (`first_frame` + `last_frame`). Pase las imágenes por posición o defina explícitamente
-    el valor `role` de cada imagen.
+    Utiliza la API unificada `content[]`. Admite hasta 2 imágenes de entrada
+    (`first_frame` + `last_frame`). Pase las imágenes por posición o establezca
+    explícitamente el valor `role` de cada imagen.
 
     Claves `providerOptions` admitidas: `seed` (número), `draft` (booleano:
     fuerza 480p), `camera_fixed` (booleano).
@@ -350,10 +354,10 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
     (externo, no incluido). Id. del proveedor: `byteplus-seedance15`. Modelo:
     `seedance-1-5-pro-251215`.
 
-    Usa la API unificada `content[]`. Admite como máximo 2 imágenes de entrada
-    (`first_frame` + `last_frame`). Todas las entradas deben ser URL `https://`
-    remotas. Defina `role: "first_frame"` / `"last_frame"` en cada imagen o
-    pase las imágenes por posición.
+    Utiliza la API unificada `content[]`. Admite como máximo 2 imágenes de entrada
+    (`first_frame` + `last_frame`). Todas las entradas deben ser URL
+    `https://` remotas. Establezca `role: "first_frame"` / `"last_frame"`
+    en cada imagen o pase las imágenes por posición.
 
     `aspectRatio: "adaptive"` detecta automáticamente la relación a partir de la imagen de entrada.
     `audio: true` se asigna a `generate_audio`. `providerOptions.seed`
@@ -366,9 +370,9 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
     `dreamina-seedance-2-0-260128`,
     `dreamina-seedance-2-0-fast-260128`.
 
-    Usa la API unificada `content[]`. Admite hasta 9 imágenes de referencia,
+    Utiliza la API unificada `content[]`. Admite hasta 9 imágenes de referencia,
     3 vídeos de referencia y 3 audios de referencia. Todas las entradas deben ser URL
-    `https://` remotas. Defina `role` en cada recurso; valores admitidos:
+    `https://` remotas. Establezca `role` en cada recurso; valores admitidos:
     `"first_frame"`, `"last_frame"`, `"reference_image"`,
     `"reference_video"`, `"reference_audio"`.
 
@@ -382,20 +386,20 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
     de imagen a vídeo mediante el grafo configurado.
   </Accordion>
   <Accordion title="fal">
-    Utiliza un flujo respaldado por una cola para trabajos de larga duración. OpenClaw espera hasta 20
-    minutos de forma predeterminada antes de considerar que un trabajo en curso de la cola de fal ha
-    agotado el tiempo de espera. La mayoría de los modelos de vídeo de fal
-    aceptan una única referencia de imagen. Los modelos de referencia a vídeo
+    Utiliza un flujo respaldado por colas para trabajos de larga duración. OpenClaw espera hasta 20
+    minutos de forma predeterminada antes de considerar agotado el tiempo de espera de un trabajo
+    en curso en la cola de fal. La mayoría de los modelos de vídeo de fal
+    aceptan una sola referencia de imagen. Los modelos de referencia a vídeo
     Seedance 2.0 aceptan hasta 9 imágenes, 3 vídeos y 3 referencias de audio, con
     un máximo de 12 archivos de referencia en total.
   </Accordion>
   <Accordion title="Google (Gemini / Veo)">
-    Admite una referencia de imagen o de vídeo. Las solicitudes de audio generado se
+    Admite una referencia de imagen o una referencia de vídeo. Las solicitudes de audio generado se
     ignoran con una advertencia en la ruta de la API de Gemini porque esa API rechaza
     el parámetro `generateAudio` para la generación de vídeo actual de Veo.
   </Accordion>
   <Accordion title="MiniMax">
-    Solo admite una única referencia de imagen. MiniMax acepta las resoluciones `768P` y `1080P`;
+    Solo se admite una referencia de imagen. MiniMax acepta las resoluciones `768P` y `1080P`;
     las solicitudes como `720P` se normalizan al valor compatible más
     cercano antes de enviarse.
   </Accordion>
@@ -407,7 +411,7 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
   <Accordion title="OpenRouter">
     Utiliza la API asíncrona `/videos` de OpenRouter. OpenClaw envía el
     trabajo, consulta periódicamente `polling_url` y descarga `unsigned_urls` o el
-    endpoint documentado de contenido del trabajo. El valor predeterminado incluido `google/veo-3.1-fast`
+    endpoint documentado del contenido del trabajo. El valor predeterminado incluido `google/veo-3.1-fast`
     anuncia duraciones de 4/6/8 segundos, resoluciones `720P`/`1080P` y
     relaciones de aspecto `16:9`/`9:16`.
   </Accordion>
@@ -417,39 +421,40 @@ solo las entradas explícitas `model`, `primary` y `fallbacks`.
   </Accordion>
   <Accordion title="Runway">
     Admite archivos locales mediante URI de datos. La conversión de vídeo a vídeo requiere
-    `runway/gen4_aleph`. Las ejecuciones de solo texto ofrecen relaciones de aspecto `16:9` y `9:16`.
+    `runway/gen4_aleph`. Las ejecuciones que solo usan texto exponen relaciones de aspecto
+    `16:9` y `9:16`.
   </Accordion>
   <Accordion title="Together">
-    Solo admite una única referencia de imagen.
+    Solo se admite una referencia de imagen.
   </Accordion>
   <Accordion title="Vydra">
-    Utiliza `https://www.vydra.ai/api/v1` directamente para evitar redirecciones
-    que descartan la autenticación. `veo3` se incluye solo para texto a vídeo; `kling` requiere
+    Utiliza `https://www.vydra.ai/api/v1` directamente para evitar redirecciones que
+    descarten la autenticación. `veo3` se incluye únicamente para texto a vídeo; `kling` requiere
     una URL de imagen remota.
   </Accordion>
   <Accordion title="xAI">
-    El modelo predeterminado `grok-imagine-video` admite texto a vídeo, conversión de
-    una única imagen del primer fotograma a vídeo, hasta 7 entradas `reference_image` mediante
-    `reference_images` de xAI y flujos remotos de edición/extensión de vídeo. La generación usa
-    `480P` de forma predeterminada; la conversión de una sola imagen a vídeo hereda la proporción de origen cuando
-    se omite `aspectRatio`. La edición/extensión de vídeo hereda la geometría de entrada y
-    no acepta sustituciones de relación de aspecto ni de resolución. La extensión admite entre 2 y 10
+    El modelo predeterminado `grok-imagine-video` admite texto a vídeo, conversión
+    de una sola imagen del primer fotograma a vídeo, hasta 7 entradas `reference_image` mediante
+    `reference_images` de xAI y flujos remotos de edición y extensión de vídeo. La generación usa
+    `480P` de forma predeterminada; la conversión de una sola imagen a vídeo hereda la relación
+    de la fuente cuando se omite `aspectRatio`. La edición y extensión de vídeo heredan la geometría
+    de entrada y no aceptan sustituciones de relación de aspecto ni de resolución. La extensión acepta entre 2 y 10
     segundos.
 
     `grok-imagine-video-1.5` solo admite imagen a vídeo: proporcione exactamente una imagen.
     Admite entre 1 y 15 segundos y `480P`, `720P` o `1080P`, con
-    `480P` como valor predeterminado; omita `aspectRatio` para heredar la proporción de la imagen de origen. Los identificadores
-    de vista previa y los identificadores fechados de la versión 1.5 reciben la misma validación y se reenvían
+    `480P` como valor predeterminado; omita `aspectRatio` para heredar la relación de la imagen de origen. Los identificadores
+    de vista previa y los identificadores 1.5 con fecha reciben la misma validación y se reenvían
     sin cambios.
 
   </Accordion>
 </AccordionGroup>
 
-## Modos de capacidad del proveedor
+## Modos de capacidad de los proveedores
 
-El contrato compartido de generación de vídeo admite capacidades específicas de cada modo
-en lugar de limitarse a límites agregados planos. Las nuevas implementaciones de proveedores
-deben preferir bloques de modo explícitos:
+El contrato compartido de generación de vídeo admite capacidades específicas
+por modo en lugar de limitarse a límites agregados planos. Las nuevas implementaciones
+de proveedores deben priorizar bloques de modo explícitos:
 
 ```typescript
 capabilities: {
@@ -475,10 +480,10 @@ capabilities: {
 ```
 
 Los campos agregados planos como `maxInputImages` y `maxInputVideos`
-**no** son suficientes para anunciar la compatibilidad con modos de transformación. Los proveedores deben
+**no** bastan para anunciar la compatibilidad con los modos de transformación. Los proveedores deben
 declarar `generate`, `imageToVideo` y `videoToVideo` explícitamente para que las
 pruebas en vivo, las pruebas de contrato y la herramienta compartida `video_generate` puedan validar
-la compatibilidad con los modos de forma determinista.
+la compatibilidad de los modos de forma determinista.
 
 Cuando un modelo de un proveedor admita más entradas de referencia que los
 demás, utilice `maxInputImagesByModel`, `maxInputVideosByModel` o
@@ -492,17 +497,17 @@ Cobertura en vivo opcional para los proveedores compartidos incluidos:
 OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/video-generation-providers.live.test.ts
 ```
 
-Contenedor del repositorio:
+Wrapper del repositorio:
 
 ```bash
 pnpm test:live:media video
 ```
 
-Este archivo de pruebas en vivo utiliza de forma predeterminada las variables de entorno de proveedor ya exportadas antes que los perfiles de autenticación
-almacenados y ejecuta de forma predeterminada una prueba de humo segura para versiones:
+Este archivo de pruebas en vivo utiliza de forma predeterminada las variables de entorno ya exportadas de los proveedores antes que los perfiles
+de autenticación almacenados y ejecuta de forma predeterminada una prueba de humo segura para versiones:
 
-- `generate` para cada proveedor que no sea FAL en el barrido.
-- Solicitud de langosta de un segundo.
+- `generate` para cada proveedor que no sea FAL del barrido.
+- Prompt de langosta de un segundo.
 - Límite de operaciones por proveedor de
   `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` de forma predeterminada).
 
@@ -513,15 +518,15 @@ de publicación:
 pnpm test:live:media video --video-providers fal
 ```
 
-Establezca `OPENCLAW_LIVE_VIDEO_GENERATION_FULL_MODES=1` para ejecutar también los
-modos de transformación declarados que el barrido compartido puede probar de forma segura con medios locales:
+Establezca `OPENCLAW_LIVE_VIDEO_GENERATION_FULL_MODES=1` para ejecutar también los modos de
+transformación declarados que el barrido compartido pueda ejercer de forma segura con medios locales:
 
 - `imageToVideo` cuando `capabilities.imageToVideo.enabled`.
 - `videoToVideo` cuando `capabilities.videoToVideo.enabled` y el
   proveedor/modelo acepte entradas de vídeo local respaldadas por búfer en el barrido
   compartido.
 
-Actualmente, la vía en vivo compartida `videoToVideo` solo cubre `runway` cuando se
+Actualmente, el carril en vivo compartido `videoToVideo` cubre `runway` solo cuando se
 selecciona `runway/gen4_aleph`.
 
 ## Configuración
@@ -544,7 +549,7 @@ Establezca el modelo predeterminado de generación de vídeo en la configuració
 O mediante la CLI:
 
 ```bash
-openclaw config set agents.defaults.videoGenerationModel.primary "qwen/wan2.6-t2v"
+openclaw config set agents.defaults.mediaModels.video.primary "qwen/wan2.6-t2v"
 ```
 
 ## Temas relacionados
