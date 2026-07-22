@@ -39,7 +39,7 @@ x-i18n:
 多個 PDF 路徑或 URL，合計最多 10 個。
 </ParamField>
 
-<ParamField path="prompt" type="string" default="分析這份 PDF 文件。">
+<ParamField path="prompt" type="string" default="Analyze this PDF document.">
 分析提示詞。
 </ParamField>
 
