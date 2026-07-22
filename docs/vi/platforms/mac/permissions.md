@@ -1,41 +1,44 @@
 ---
 read_when:
     - Gỡ lỗi lời nhắc cấp quyền trên macOS bị thiếu hoặc bị treo
-    - Quyết định có cấp quyền Trợ năng cho Node hoặc môi trường thực thi CLI hay không
+    - Quyết định có cấp quyền Trợ năng cho node hoặc môi trường chạy CLI hay không
     - Đóng gói hoặc ký ứng dụng macOS
-    - Thay đổi ID gói ứng dụng hoặc đường dẫn cài đặt ứng dụng
-summary: Khả năng duy trì quyền trên macOS (TCC) và các yêu cầu ký mã
+    - Thay đổi ID gói hoặc đường dẫn cài đặt ứng dụng
+summary: Khả năng duy trì quyền macOS (TCC) và các yêu cầu ký mã
 title: Quyền trên macOS
 x-i18n:
-    generated_at: "2026-07-12T08:05:17Z"
+    generated_at: "2026-07-22T02:22:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c8431a1d5a27aed00c50c5d6c8c36554cf766051dfdccea677d0523bbc4189d4
+    source_hash: e561aa641e44fc1e1b95a3db244f31124e4e51d13ae709bee188d86054301e34
     source_path: platforms/mac/permissions.md
     workflow: 16
 ---
 
-Các quyền được cấp trên macOS rất dễ mất ổn định. TCC liên kết quyền được cấp với chữ ký mã, mã định danh gói và đường dẫn trên ổ đĩa của ứng dụng. Nếu bất kỳ yếu tố nào trong số đó thay đổi, macOS sẽ coi ứng dụng là ứng dụng mới và có thể loại bỏ hoặc ẩn lời nhắc.
+Quyền được cấp trên macOS rất dễ bị mất. TCC liên kết quyền được cấp với chữ ký mã, mã định danh gói và đường dẫn trên đĩa của ứng dụng. Nếu bất kỳ yếu tố nào trong số đó thay đổi, macOS sẽ coi ứng dụng là mới và có thể bỏ qua hoặc ẩn lời nhắc.
 
 ## Yêu cầu để duy trì quyền ổn định
 
 - Cùng đường dẫn: chạy ứng dụng từ một vị trí cố định (đối với OpenClaw là `dist/OpenClaw.app`).
 - Cùng mã định danh gói: ID gói của OpenClaw là `ai.openclaw.mac`; việc thay đổi ID này sẽ tạo ra một danh tính quyền mới.
-- Ứng dụng đã ký: các bản dựng không được ký hoặc được ký tùy biến sẽ không duy trì quyền.
-- Chữ ký nhất quán: sử dụng chứng chỉ Apple Development hoặc Developer ID thực để chữ ký giữ nguyên qua các lần dựng lại.
+- Ứng dụng đã ký: các bản dựng chưa ký hoặc ký ad-hoc không duy trì được quyền.
+- Chữ ký nhất quán: sử dụng chứng chỉ Apple Development hoặc Developer ID thực để chữ ký duy trì ổn định giữa các lần dựng lại.
 
-Chữ ký tùy biến tạo ra một danh tính mới sau mỗi lần dựng. macOS sẽ quên các quyền đã cấp trước đó và lời nhắc có thể biến mất hoàn toàn cho đến khi các mục cũ được xóa.
+Chữ ký ad-hoc tạo ra một danh tính mới trong mỗi lần dựng. macOS quên các quyền đã cấp trước đó và lời nhắc có thể biến mất hoàn toàn cho đến khi các mục cũ được xóa.
 
-## Cấp quyền Trợ năng cho môi trường chạy Node và CLI
+## Quyền Trợ năng cho môi trường chạy Node và CLI
 
-Ưu tiên cấp quyền Trợ năng cho OpenClaw.app, Peekaboo.app hoặc một trình trợ giúp đã ký khác có mã định danh gói riêng, thay vì cho tệp nhị phân `node` dùng chung.
+Nên cấp quyền Trợ năng cho OpenClaw.app, Peekaboo.app hoặc một trình trợ giúp đã ký khác có mã định danh gói riêng thay vì một tệp nhị phân `node` dùng chung.
 
-TCC của macOS cấp quyền Trợ năng cho danh tính mã của tiến trình mà nó nhận diện. Nếu quy trình làm việc của Homebrew, nvm, pnpm hoặc npm khiến một tệp thực thi `node` dùng chung nhận được quyền Trợ năng, mọi gói JavaScript được khởi chạy qua chính tệp thực thi đó đều có thể thừa hưởng đặc quyền tự động hóa giao diện đồ họa.
+TCC của macOS cấp quyền Trợ năng cho danh tính mã của tiến trình mà hệ thống nhận diện. Nếu quy trình làm việc Homebrew, nvm, pnpm hoặc npm khiến một tệp thực thi `node` dùng chung nhận được quyền Trợ năng, mọi gói JavaScript được khởi chạy thông qua cùng tệp thực thi đó đều có thể kế thừa đặc quyền tự động hóa GUI.
 
-Hãy coi một mục `node` trong System Settings là quyền rộng dành cho môi trường chạy Node đó, không phải quyền dành cho một gói npm cụ thể. Tránh cấp quyền Trợ năng cho `node` trừ khi bạn tin cậy mọi tập lệnh và gói được khởi chạy qua chính bản cài đặt Node đó.
+Hãy coi mục `node` trong System Settings là quyền rộng dành cho môi trường chạy Node đó, không phải quyền dành cho một gói npm. Tránh cấp quyền Trợ năng cho `node` trừ khi bạn tin cậy mọi tập lệnh và gói được khởi chạy thông qua chính xác bản cài đặt Node đó.
 
-Nếu vô tình cấp quyền Trợ năng cho `node`, hãy xóa mục đó khỏi System Settings -> Privacy & Security -> Accessibility. Sau đó, cấp quyền cho ứng dụng hoặc trình trợ giúp đã ký chịu trách nhiệm tự động hóa giao diện người dùng.
+Việc phê duyệt quyền Trợ năng không bật tính năng chia sẻ hoạt động. **Settings -> Permissions -> Active computer detection** là một tùy chọn riêng biệt, mặc định tắt, dùng để chia sẻ khoảng thời gian không hoạt động có giới hạn với Gateway của bạn. Việc tắt tùy chọn này sẽ xóa dữ liệu hoạt động được lưu giữ mà không thu hồi quyền Trợ năng hoặc ngắt kết nối Node.
+
+Nếu bạn vô tình cấp quyền Trợ năng cho `node`, hãy xóa mục đó khỏi System Settings -> Privacy & Security -> Accessibility. Sau đó, cấp quyền cho ứng dụng hoặc trình trợ giúp đã ký chịu trách nhiệm về tự động hóa giao diện người dùng.
 
 ## Danh sách kiểm tra khôi phục khi lời nhắc biến mất
 
@@ -43,9 +46,9 @@ Nếu vô tình cấp quyền Trợ năng cho `node`, hãy xóa mục đó khỏ
 2. Xóa mục ứng dụng trong System Settings -> Privacy & Security.
 3. Khởi chạy lại ứng dụng từ cùng đường dẫn và cấp lại quyền.
 4. Nếu lời nhắc vẫn không xuất hiện, hãy đặt lại các mục TCC bằng `tccutil` rồi thử lại.
-5. Một số lời nhắc cấp quyền chỉ xuất hiện lại sau khi khởi động lại hoàn toàn macOS.
+5. Một số quyền chỉ xuất hiện lại sau khi khởi động lại hoàn toàn macOS.
 
-Ví dụ về cách đặt lại (sử dụng ID gói của OpenClaw là `ai.openclaw.mac`):
+Ví dụ về lệnh đặt lại (sử dụng ID gói của OpenClaw là `ai.openclaw.mac`):
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -55,11 +58,11 @@ sudo tccutil reset AppleEvents
 
 ## Quyền đối với tệp và thư mục (Desktop/Documents/Downloads)
 
-macOS cũng có thể kiểm soát quyền truy cập Desktop, Documents và Downloads đối với các tiến trình chạy trong thiết bị đầu cuối hoặc chạy nền. Nếu việc đọc tệp hoặc liệt kê thư mục bị treo, hãy cấp quyền truy cập cho chính ngữ cảnh tiến trình thực hiện thao tác với tệp (ví dụ: Terminal/iTerm, ứng dụng được LaunchAgent khởi chạy hoặc tiến trình SSH).
+macOS cũng có thể hạn chế quyền truy cập Desktop, Documents và Downloads đối với các tiến trình đầu cuối/nền. Nếu thao tác đọc tệp hoặc liệt kê thư mục bị treo, hãy cấp quyền truy cập cho cùng ngữ cảnh tiến trình thực hiện các thao tác với tệp (ví dụ: Terminal/iTerm, ứng dụng do LaunchAgent khởi chạy hoặc tiến trình SSH).
 
-Giải pháp thay thế: di chuyển tệp vào không gian làm việc của OpenClaw (`~/.openclaw/workspace`) nếu bạn muốn tránh phải cấp quyền riêng cho từng thư mục.
+Giải pháp thay thế: chuyển tệp vào không gian làm việc OpenClaw (`~/.openclaw/workspace`) nếu bạn muốn tránh phải cấp quyền cho từng thư mục.
 
-Nếu đang kiểm thử quyền, hãy luôn ký bằng chứng chỉ thực. Các bản dựng được ký tùy biến chỉ phù hợp cho những lần chạy nhanh cục bộ khi quyền không quan trọng.
+Nếu đang kiểm thử quyền, hãy luôn ký bằng chứng chỉ thực. Các bản dựng ad-hoc chỉ chấp nhận được cho những lần chạy cục bộ nhanh khi quyền không quan trọng.
 
 ## Liên quan
 

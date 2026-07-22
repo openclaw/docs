@@ -2,15 +2,15 @@
 read_when:
     - Anda memerlukan halaman referensi untuk Plugin OpenClaw tertentu
     - Anda sedang mengaudit cakupan dokumentasi plugin
-summary: Indeks halaman referensi plugin OpenClaw yang dihasilkan
+summary: Indeks halaman referensi Plugin OpenClaw yang dihasilkan
 title: Referensi Plugin
 x-i18n:
-    generated_at: "2026-07-19T05:12:44Z"
+    generated_at: "2026-07-22T01:49:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: f1d33fb54bc28e392de104462f6276d7f9b479e923f5ac4d2b88b24e835fb7a5
+    source_hash: 2f8dfd157054a2af95c5e0a9406c471c9565e80d30e1472b6de6cb71cb6069fd
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -18,11 +18,11 @@ x-i18n:
 # Referensi Plugin
 
 Halaman ini dihasilkan dari `extensions/*/package.json` dan
-`openclaw.plugin.json`. Buat ulang dengan:
+`openclaw.plugin.json`. Hasilkan ulang dengan:
 
 ```bash
 pnpm plugins:inventory:gen
 ```
 
-Gunakan [Inventaris Plugin](/id/plugins/plugin-inventory) untuk menelusuri seluruh 142
-halaman referensi plugin yang dihasilkan berdasarkan distribusi, paket, dan deskripsi.
+Gunakan [Inventaris Plugin](/id/plugins/plugin-inventory) untuk menelusuri seluruh 143
+halaman referensi Plugin yang dihasilkan berdasarkan distribusi, paket, dan deskripsi.
