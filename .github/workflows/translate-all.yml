@@ -42,6 +42,11 @@ on:
         required: false
         default: false
         type: boolean
+      canary_source_path:
+        description: Source page used by the non-publishing translation canary.
+        required: true
+        default: channels/line.md
+        type: string
       translation_effort:
         description: Thinking effort for full translation batches.
         required: true
@@ -90,6 +95,12 @@ jobs:
           set -euo pipefail
 
           python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
+
+      - name: Reject publishing a diagnostic canary source
+        if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'
+        run: |
+          echo "Only channels/line.md has matching live-smoke metadata for canary publication." >&2
+          exit 1
 
   plan:
     name: Plan full locale batches
@@ -170,7 +181,7 @@ jobs:
       # Canary remains the source-blind behavior probe for prompt/source changes.
       thinking_effort: "xhigh"
       pending_limit: "1"
-      canary_source_path: channels/line.md
+      canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}
       canary_live_path: channels/line
       canary_expected_h1: LINE
       canary_publish_required: ${{ inputs.canary_only == true }}

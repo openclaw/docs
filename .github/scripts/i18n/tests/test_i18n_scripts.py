@@ -208,7 +208,11 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("needs.translate-canary.result == 'success'", text)
             self.assertIn("inputs.canary_only != true", text)
         self.assertIn("artifact_role: canary", text)
-        self.assertIn("canary_source_path: channels/line.md", text)
+        self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", text)
+        self.assertIn(
+            "if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'",
+            text,
+        )
         self.assertIn("canary_live_path: channels/line", text)
         self.assertIn("canary_expected_h1: LINE", text)
         self.assertIn("canary_publish_required: ${{ inputs.canary_only == true }}", text)
@@ -422,6 +426,8 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual(1, full.count('thinking_effort: "xhigh"'))
         self.assertEqual(6, full.count("thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}"))
         self.assertIn("translation_effort:", full)
+        self.assertIn("canary_source_path:", full)
+        self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", full)
         self.assertNotIn("- max", full)
         self.assertEqual(1, incremental.count('thinking_effort: "xhigh"'))
         self.assertNotIn('thinking_effort: "max"', incremental)
