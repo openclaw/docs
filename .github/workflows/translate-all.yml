@@ -43,13 +43,12 @@ on:
         default: false
         type: boolean
       translation_effort:
-        description: Thinking effort for full translation batches. Use max only for hard recovery.
+        description: Thinking effort for full translation batches.
         required: true
         default: xhigh
         type: choice
         options:
           - xhigh
-          - max
 
 permissions:
   actions: write
@@ -169,7 +168,7 @@ jobs:
       shard_total: "1"
       worker_parallel: "3"
       # Canary remains the source-blind behavior probe for prompt/source changes.
-      thinking_effort: "max"
+      thinking_effort: "xhigh"
       pending_limit: "1"
       canary_source_path: channels/line.md
       canary_live_path: channels/line

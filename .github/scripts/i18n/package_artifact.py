@@ -43,6 +43,7 @@ from pathlib import Path
 CANONICAL_I18N_MARKER_RE = re.compile(r"__OC_I18N_\d+__")
 I18N_MARKER_PREFIX_RE = re.compile(r"__oc_i18n_", re.IGNORECASE)
 MDX_PROTECTED_ATTRIBUTE_CHECKER = Path(__file__).with_name("check_mdx_protected_attributes.mjs")
+MDX_PROTECTED_ATTRIBUTE_REPAIR = Path(__file__).with_name("repair_mdx_protected_attributes.mjs")
 
 
 def git_lines(args: list[str]) -> list[str]:
@@ -178,6 +179,64 @@ def drifted_mdx_protected_attribute_paths(workspace: Path, locale: str, changed:
     return drifted + parsed_drifted
 
 
+def repair_mdx_protected_attributes(
+    workspace: Path,
+    locale: str,
+    locale_slug: str,
+    shard_index: int,
+    shard_total: int,
+) -> tuple[str, list[str], bool]:
+    manifest = workspace / ".openclaw-sync" / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
+    if not manifest.is_file():
+        return f"missing pending manifest: {manifest}", [], False
+    source_paths = [Path(line) for line in manifest.read_text(encoding="utf-8").splitlines() if line.strip()]
+    repairable_sources = [path for path in source_paths if path.suffix in {".md", ".mdx"}]
+    if not repairable_sources:
+        return "", [], False
+    module_root = workspace
+    if not (module_root / "node_modules/@mdx-js/mdx/package.json").is_file():
+        repository_root = Path(__file__).resolve().parents[3]
+        if (repository_root / "node_modules/@mdx-js/mdx/package.json").is_file():
+            module_root = repository_root
+    result = subprocess.run(
+        [
+            "node",
+            str(MDX_PROTECTED_ATTRIBUTE_REPAIR),
+            "--workspace",
+            str(workspace),
+            "--locale",
+            locale,
+            "--manifest",
+            str(manifest),
+            "--module-root",
+            str(module_root),
+        ],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        return result.stderr.strip() or result.stdout.strip() or "unknown error", [], True
+    try:
+        output = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        return f"repair returned invalid JSON: {exc}", [], True
+    repaired = output.get("repaired")
+    if not isinstance(repaired, list) or not all(isinstance(path, str) for path in repaired):
+        return "repair returned invalid paths", [], True
+    docs_root = (workspace / "docs").resolve()
+    try:
+        allowed_repaired = {
+            f"docs/{locale}/{source.resolve().relative_to(docs_root).as_posix()}" for source in repairable_sources
+        }
+    except ValueError:
+        return "pending manifest source escapes docs root", [], True
+    if any(path not in allowed_repaired for path in repaired):
+        return "repair returned path outside pending manifest", [], True
+    return "", repaired, True
+
+
 def append_outputs(metadata: dict[str, object]) -> None:
     output = os.environ.get("GITHUB_OUTPUT")
     if not output:
@@ -222,6 +281,7 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
     changed_path = artifact_dir / "changed-files.txt"
     deleted_path = artifact_dir / "deleted-files.txt"
 
+    protected_attribute_repair_outcome = "skipped"
     if failed_reason:
         write_lines(changed_path, [])
         write_lines(deleted_path, [])
@@ -232,12 +292,29 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         deleted = git_lines(["diff", "--name-only", "--diff-filter=D", "--", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"])
 
         allowed = read_pending_allowed(workspace, locale, locale_slug, shard_index, shard_total)
+        protected_attribute_repair_error, repaired_paths, protected_attribute_repair_ran = repair_mdx_protected_attributes(
+            workspace, locale, locale_slug, shard_index, shard_total
+        )
+        protected_attribute_repair_outcome = (
+            "failure" if protected_attribute_repair_error else "success" if protected_attribute_repair_ran else "skipped"
+        )
+        # A repair can be the only working-tree change for a pending page, so
+        # include the script's validated paths in the pre-repair Git snapshot.
+        changed = sorted(set(changed + repaired_paths))
         # The finalizer treats every changed-files.txt entry as a required
         # payload file, so allowed-but-missing TM paths must not be advertised.
         shard_changed = [line for line in changed if line in allowed and (workspace / line).is_file()]
         leaked_paths = leaked_i18n_protocol_paths(workspace, locale, shard_changed)
-        protected_attribute_drift = drifted_mdx_protected_attribute_paths(workspace, locale, shard_changed)
-        if leaked_paths:
+        protected_attribute_drift = (
+            drifted_mdx_protected_attribute_paths(workspace, locale, shard_changed)
+            if not protected_attribute_repair_error
+            else []
+        )
+        if protected_attribute_repair_error:
+            failed_reason = "mdx protected attribute repair failed"
+            shard_changed = []
+            deleted = []
+        elif leaked_paths:
             failed_reason = "i18n protocol marker leaked"
             shard_changed = []
             deleted = []
@@ -288,6 +365,7 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         "mdx_repair_outcome": os.environ.get("MDX_REPAIR_OUTCOME", "skipped"),
         "mdx_scope_outcome": os.environ.get("MDX_SCOPE_OUTCOME", "skipped"),
         "mdx_recheck_outcome": os.environ.get("MDX_RECHECK_OUTCOME", "skipped"),
+        "mdx_protected_attribute_repair_outcome": protected_attribute_repair_outcome,
         "failed_reason": failed_reason,
     }
     (artifact_dir / "metadata.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")

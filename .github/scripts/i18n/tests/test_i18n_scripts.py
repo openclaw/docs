@@ -407,7 +407,7 @@ class I18NScriptTests(unittest.TestCase):
 
             self.assertTrue(outside_output.exists())
 
-    def test_translation_worker_timeout_accommodates_max_full_shards(self) -> None:
+    def test_translation_worker_timeout_accommodates_full_shards(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         self.assertRegex(reusable, r"(?ms)^  translate:\n.*?^    timeout-minutes: 360$")
 
@@ -417,11 +417,12 @@ class I18NScriptTests(unittest.TestCase):
         incremental = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
 
         self.assertIn("npm install -g @openai/codex@0.144.4", reusable)
-        self.assertIn("effort: max", reusable)
-        self.assertEqual(1, full.count('thinking_effort: "max"'))
+        self.assertIn("effort: xhigh", reusable)
+        self.assertNotIn("effort: max", reusable)
+        self.assertEqual(1, full.count('thinking_effort: "xhigh"'))
         self.assertEqual(6, full.count("thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}"))
         self.assertIn("translation_effort:", full)
-        self.assertIn("Use max only for hard recovery.", full)
+        self.assertNotIn("- max", full)
         self.assertEqual(1, incremental.count('thinking_effort: "xhigh"'))
         self.assertNotIn('thinking_effort: "max"', incremental)
 
@@ -986,14 +987,14 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/fr/tools").mkdir(parents=True)
             (repo / "docs/tools").mkdir(parents=True)
             (repo / "docs/tools/pdf.md").write_text(
-                '<ParamField path="prompt" type="string" default="Analyze this PDF document.">\n',
+                '<ParamField path="prompt" type="string" default="Analyze this PDF document." />\n',
                 encoding="utf-8",
             )
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
             (repo / "docs/fr/tools/pdf.md").write_text(
-                '<ParamField path="prompt" type="string" default="Analysez ce document PDF.">\n',
+                '<ParamField path="prompt" type="string" default="Analysez ce document PDF." />\n',
                 encoding="utf-8",
             )
             (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(
@@ -1033,6 +1034,123 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(0, metadata["changed_count"])
             self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
             self.assertFalse((artifact / "payload/docs/fr/tools/pdf.md").exists())
+
+    def test_package_artifact_repairs_mdx_protected_attribute_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr/tools").mkdir(parents=True)
+            (repo / "docs/tools").mkdir(parents=True)
+            source = repo / "docs/tools/pdf.md"
+            translated = repo / "docs/fr/tools/pdf.md"
+            source.write_text(
+                '<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Prompt" />\n',
+                encoding="utf-8",
+            )
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            translated.write_text(
+                '<ParamField label="Invite" default="Analysez ce document PDF." type="texte" path="invite" />\n',
+                encoding="utf-8",
+            )
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n", encoding="utf-8")
+
+            with (
+                chdir(repo),
+                env(
+                    {
+                        "GITHUB_WORKSPACE": str(repo),
+                        "LOCALE": "fr",
+                        "LOCALE_SLUG": "fr",
+                        "SOURCE_SHA": "source-a",
+                        "MODE": "full",
+                        "SHARD_INDEX": "0",
+                        "SHARD_TOTAL": "1",
+                        "WORKER_PARALLEL": "3",
+                        "THINKING_EFFORT": "xhigh",
+                        "PENDING_COUNT": "1",
+                        "TOTAL_PENDING_COUNT": "1",
+                        "ALL_COUNT": "1",
+                        "TRANSLATE_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "success",
+                        "MDX_REPAIR_OUTCOME": "skipped",
+                        "MDX_SCOPE_OUTCOME": "skipped",
+                        "MDX_RECHECK_OUTCOME": "skipped",
+                    }
+                ),
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            expected = (
+                '<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Invite" />\n'
+            )
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual("", metadata["failed_reason"])
+            self.assertEqual("success", metadata["mdx_protected_attribute_repair_outcome"])
+            self.assertEqual(expected, translated.read_text(encoding="utf-8"))
+            self.assertEqual(expected, (artifact / "payload/docs/fr/tools/pdf.md").read_text(encoding="utf-8"))
+
+    def test_protected_attribute_repair_skips_empty_manifest_without_node(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text("", encoding="utf-8")
+            with patch.object(package_artifact.subprocess, "run") as run:
+                result = package_artifact.repair_mdx_protected_attributes(repo, "fr", "fr", 0, 1)
+            self.assertEqual(("", [], False), result)
+            run.assert_not_called()
+
+    def test_package_artifact_includes_repair_only_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr/tools").mkdir(parents=True)
+            (repo / "docs/tools").mkdir(parents=True)
+            source = repo / "docs/tools/pdf.md"
+            translated = repo / "docs/fr/tools/pdf.md"
+            source.write_text('<X default="source" />\n', encoding="utf-8")
+            translated.write_text('<X default="traduit" />\n', encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "existing bad translation")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n", encoding="utf-8")
+
+            with (
+                chdir(repo),
+                env(
+                    {
+                        "GITHUB_WORKSPACE": str(repo),
+                        "LOCALE": "fr",
+                        "LOCALE_SLUG": "fr",
+                        "SOURCE_SHA": "source-a",
+                        "MODE": "full",
+                        "SHARD_INDEX": "0",
+                        "SHARD_TOTAL": "1",
+                        "WORKER_PARALLEL": "3",
+                        "THINKING_EFFORT": "xhigh",
+                        "PENDING_COUNT": "1",
+                        "TOTAL_PENDING_COUNT": "1",
+                        "ALL_COUNT": "1",
+                        "TRANSLATE_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "success",
+                        "MDX_REPAIR_OUTCOME": "skipped",
+                        "MDX_SCOPE_OUTCOME": "skipped",
+                        "MDX_RECHECK_OUTCOME": "skipped",
+                    }
+                ),
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual("", metadata["failed_reason"])
+            self.assertEqual(1, metadata["changed_count"])
+            self.assertEqual("docs/fr/tools/pdf.md\n", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
+            self.assertEqual(
+                '<X default="source" />\n',
+                (artifact / "payload/docs/fr/tools/pdf.md").read_text(encoding="utf-8"),
+            )
 
     def test_mdx_protected_attribute_signatures_use_parsed_element_ownership(self) -> None:
         script = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
@@ -1145,6 +1263,51 @@ class I18NScriptTests(unittest.TestCase):
             },
             json.loads(result.stdout),
         )
+
+    def test_mdx_protected_attribute_repair_uses_parser_offsets(self) -> None:
+        checker = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_protected_attributes.mjs"
+        program = f"""
+          import {{ createProcessor }} from "@mdx-js/mdx";
+          import {{ protectedAttributeSignatures }} from {json.dumps(checker.as_uri())};
+          import {{ repairProtectedAttributes }} from {json.dumps(repair.as_uri())};
+          const processor = createProcessor({{ format: "mdx" }});
+          const markdownProcessor = createProcessor({{ format: "md" }});
+          const source = `
+<X title="English" id="fixed" {{...props}} data-label="English" rel={{next()}} />
+{{ready && <Y default={{1n}} label="English" />}}
+<Outer content={{<Inner id="inner" />}} id="outer" title="English" />
+<Z title="English" />
+\\`<Y default={{9n}} />\\`
+`;
+          const translated = `
+<X data-label="Français" rel={{other()}} {{...otherProps}} id="traduit" title="Français" />
+{{ready && <Y label="Français" default={{2n}} />}}
+<Outer title="Français" id="extérieur" content={{<Inner id="intérieur" />}} />
+<Z title="Français" id="added" />
+\\`<Y default={{8n}} />\\`
+`;
+          const result = repairProtectedAttributes(processor, markdownProcessor, source, translated);
+          const expected = protectedAttributeSignatures(processor.parse(source));
+          const actual = protectedAttributeSignatures(processor.parse(result.value));
+          process.stdout.write(JSON.stringify({{ result, expected, actual }}));
+        """
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            cwd=REPO_ROOT,
+            stdout=subprocess.PIPE,
+        )
+        output = json.loads(result.stdout)
+        self.assertTrue(output["result"]["changed"])
+        self.assertEqual(output["expected"], output["actual"])
+        self.assertIn('data-label="Français"', output["result"]["value"])
+        self.assertIn('label="Français"', output["result"]["value"])
+        self.assertIn('content={<Inner id="inner" />}', output["result"]["value"])
+        self.assertIn('title="Français"', output["result"]["value"])
+        self.assertIn('<Z title="Français" />', output["result"]["value"])
+        self.assertIn('`<Y default={8n} />`', output["result"]["value"])
 
     def test_mdx_protected_attribute_check_includes_spread_only_documents(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

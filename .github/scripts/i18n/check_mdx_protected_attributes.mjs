@@ -53,6 +53,37 @@ function estreeAttributeSignature(attribute) {
   return [name, "unknown", canonicalAst(attribute.value)];
 }
 
+function normalizeAttributeOrder(attributes) {
+  const normalized = [];
+  let segment = [];
+  function flush() {
+    if (segment.length === 0) return;
+    const names = segment.map((attribute) => attribute[0]);
+    if (new Set(names).size === names.length) {
+      const literals = segment.filter((attribute) => attribute[1] === "boolean" || attribute[1] === "string");
+      const expressions = segment.filter((attribute) => attribute[1] !== "boolean" && attribute[1] !== "string");
+      literals.sort((left, right) => {
+        const leftText = JSON.stringify(left);
+        const rightText = JSON.stringify(right);
+        return leftText < rightText ? -1 : leftText > rightText ? 1 : 0;
+      });
+      segment = [...literals, ...expressions];
+    }
+    normalized.push(...segment);
+    segment = [];
+  }
+  for (const attribute of attributes) {
+    if (attribute[0] === "...") {
+      flush();
+      normalized.push(attribute);
+    } else {
+      segment.push(attribute);
+    }
+  }
+  flush();
+  return normalized;
+}
+
 function literalMarkdownRanges(tree, source) {
   const ranges = [];
   function visit(node) {
@@ -72,7 +103,7 @@ function literalMarkdownRanges(tree, source) {
   return ranges;
 }
 
-function parseMdx(processor, markdownProcessor, value) {
+export function parseMdx(processor, markdownProcessor, value) {
   let prepared = value;
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     try {
@@ -142,37 +173,6 @@ export function protectedAttributeSignatures(tree) {
   elements.sort((left, right) => left.offset - right.offset || left.sequence - right.sequence);
   const occurrences = new Map();
   const signatures = [];
-
-  function normalizeAttributeOrder(attributes) {
-    const normalized = [];
-    let segment = [];
-    function flush() {
-      if (segment.length === 0) return;
-      const names = segment.map((attribute) => attribute[0]);
-      if (new Set(names).size === names.length) {
-        const literals = segment.filter((attribute) => attribute[1] === "boolean" || attribute[1] === "string");
-        const expressions = segment.filter((attribute) => attribute[1] !== "boolean" && attribute[1] !== "string");
-        literals.sort((left, right) => {
-          const leftText = JSON.stringify(left);
-          const rightText = JSON.stringify(right);
-          return leftText < rightText ? -1 : leftText > rightText ? 1 : 0;
-        });
-        segment = [...literals, ...expressions];
-      }
-      normalized.push(...segment);
-      segment = [];
-    }
-    for (const attribute of attributes) {
-      if (attribute[0] === "...") {
-        flush();
-        normalized.push(attribute);
-      } else {
-        segment.push(attribute);
-      }
-    }
-    flush();
-    return normalized;
-  }
 
   for (const element of elements) {
     const occurrence = occurrences.get(element.name) || 0;
