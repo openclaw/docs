@@ -210,6 +210,14 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("artifact_role: canary", text)
         self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", text)
         self.assertIn(
+            "max_attempts: ${{ (inputs.canary_source_path || 'channels/line.md') != 'channels/line.md' && '1' || '5' }}",
+            text,
+        )
+        self.assertIn(
+            "log_rejected_body: ${{ (inputs.canary_source_path || 'channels/line.md') != 'channels/line.md' }}",
+            text,
+        )
+        self.assertIn(
             "if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'",
             text,
         )

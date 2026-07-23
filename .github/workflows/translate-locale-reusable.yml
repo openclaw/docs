@@ -62,6 +62,14 @@ on:
         required: false
         default: false
         type: boolean
+      max_attempts:
+        required: false
+        default: "5"
+        type: string
+      log_rejected_body:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   translate:
@@ -169,6 +177,8 @@ jobs:
           OPENCLAW_DOCS_I18N_PROVIDER: openai
           OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
+          # Owned by source/scripts/docs-i18n; diagnostics opt in per canary.
+          OPENCLAW_DOCS_I18N_LOG_REJECTED_BODY: ${{ inputs.log_rejected_body && '1' || '0' }}
           WORKER_PARALLEL: ${{ inputs.worker_parallel }}
           THINKING_EFFORT: ${{ inputs.thinking_effort }}
         run: |
@@ -186,7 +196,11 @@ jobs:
           fi
 
           attempt=1
-          max_attempts=5
+          max_attempts="${{ inputs.max_attempts }}"
+          if ! [[ "${max_attempts}" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Invalid translation max_attempts: ${max_attempts}" >&2
+            exit 1
+          fi
           while [ "$attempt" -le "$max_attempts" ]; do
             PARTIAL_ARGS=(--allow-partial)
             if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then
