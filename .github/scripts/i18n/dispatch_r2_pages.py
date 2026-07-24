@@ -311,8 +311,6 @@ def main() -> None:
             wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)
             break
         except SystemExit as exc:
-            if isinstance(exc, R2RunConclusionError) and exc.conclusion == "cancelled":
-                raise
             if attempt >= args.dispatch_attempts:
                 raise
             print(f"R2 Pages dispatch attempt {attempt}/{args.dispatch_attempts} failed: {exc}; retrying.")

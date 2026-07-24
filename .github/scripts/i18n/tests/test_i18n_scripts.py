@@ -1803,8 +1803,9 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotEqual(dispatches[0], dispatches[1])
         self.assertEqual([("https://docs.openclaw.ai/zh-TW/channels/line", "LINE")], verified)
 
-    def test_dispatch_r2_pages_does_not_retry_cancelled_run(self) -> None:
+    def test_dispatch_r2_pages_retries_cancelled_run(self) -> None:
         dispatches: list[str] = []
+        waited: list[str] = []
 
         def fake_dispatch(
             workflow: str,
@@ -1817,10 +1818,12 @@ class I18NScriptTests(unittest.TestCase):
             request_id: str = "",
         ) -> str:
             dispatches.append(request_id)
-            return "123"
+            return "123" if len(dispatches) == 1 else "456"
 
         def fake_wait(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int) -> None:
-            raise dispatch_r2_pages.R2RunConclusionError(run_id, "cancelled")
+            waited.append(run_id)
+            if run_id == "123":
+                raise dispatch_r2_pages.R2RunConclusionError(run_id, "cancelled")
 
         argv = [
             "dispatch_r2_pages.py",
@@ -1836,12 +1839,14 @@ class I18NScriptTests(unittest.TestCase):
             patch.object(dispatch_r2_pages, "known_workflow_dispatch_run_ids", lambda workflow, ref, repo: set()),
             patch.object(dispatch_r2_pages, "dispatch", fake_dispatch),
             patch.object(dispatch_r2_pages, "wait_for_run", fake_wait),
+            patch.object(dispatch_r2_pages, "verify_live_h1", lambda url, expected_h1, timeout_seconds, poll_seconds: None),
             patch.object(dispatch_r2_pages.time, "sleep", lambda _: None),
         ):
-            with self.assertRaisesRegex(SystemExit, "conclusion=cancelled"):
-                dispatch_r2_pages.main()
+            dispatch_r2_pages.main()
 
-        self.assertEqual(1, len(dispatches))
+        self.assertEqual(["123", "456"], waited)
+        self.assertEqual(2, len(dispatches))
+        self.assertNotEqual(dispatches[0], dispatches[1])
 
     def test_dispatch_r2_pages_no_wait_skips_strict_publish_gate(self) -> None:
         waited: list[str] = []
