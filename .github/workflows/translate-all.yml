@@ -42,6 +42,11 @@ on:
         required: false
         default: false
         type: boolean
+      diagnostic_canary_only:
+        description: Run only a non-publishing diagnostic canary.
+        required: false
+        default: false
+        type: boolean
       canary_source_path:
         description: Source page used by the non-publishing translation canary.
         required: true
@@ -100,6 +105,12 @@ jobs:
         if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'
         run: |
           echo "Only channels/line.md has matching live-smoke metadata for canary publication." >&2
+          exit 1
+
+      - name: Reject conflicting canary-only modes
+        if: inputs.canary_only == true && inputs.diagnostic_canary_only == true
+        run: |
+          echo "Choose either publishing canary_only or diagnostic_canary_only, not both." >&2
           exit 1
 
   plan:
@@ -198,7 +209,7 @@ jobs:
       - prepare
       - plan
       - translate-canary
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_1_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_1_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -228,7 +239,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-1
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_2_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_2_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -257,7 +268,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-2
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_3_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_3_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -286,7 +297,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-3
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_4_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_4_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -315,7 +326,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-4
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_5_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_5_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -344,7 +355,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-5
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_6_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_6_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -378,7 +389,7 @@ jobs:
       - translate-batch-4
       - translate-batch-5
       - translate-batch-6
-    if: always() && needs.prepare.outputs.should_translate == 'true' && inputs.canary_only != true && needs.translate-canary.result == 'success'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.translate-canary.result == 'success'
     uses: ./.github/workflows/translate-finalize-reusable.yml
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}

@@ -209,6 +209,8 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("inputs.canary_only != true", text)
         self.assertIn("artifact_role: canary", text)
         self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", text)
+        self.assertIn("diagnostic_canary_only:", text)
+        self.assertEqual(7, text.count("inputs.diagnostic_canary_only != true"))
         self.assertIn(
             "max_attempts: ${{ (inputs.canary_source_path || 'channels/line.md') != 'channels/line.md' && '1' || '5' }}",
             text,
