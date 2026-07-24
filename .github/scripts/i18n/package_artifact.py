@@ -37,6 +37,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -298,6 +299,8 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         protected_attribute_repair_outcome = (
             "failure" if protected_attribute_repair_error else "success" if protected_attribute_repair_ran else "skipped"
         )
+        if protected_attribute_repair_error:
+            print(f"MDX protected attribute repair failed: {protected_attribute_repair_error}", file=sys.stderr)
         # A repair can be the only working-tree change for a pending page, so
         # include the script's validated paths in the pre-repair Git snapshot.
         changed = sorted(set(changed + repaired_paths))

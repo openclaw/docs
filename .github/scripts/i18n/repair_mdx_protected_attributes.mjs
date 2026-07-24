@@ -202,12 +202,21 @@ async function main() {
     if (!relative.endsWith(".md") && !relative.endsWith(".mdx")) continue;
     const translatedPath = path.join(docsRoot, args.locale, relative);
     if (!fs.existsSync(translatedPath)) continue;
-    const result = repairProtectedAttributes(
-      processor,
-      markdownProcessor,
-      fs.readFileSync(sourcePath, "utf8"),
-      fs.readFileSync(translatedPath, "utf8"),
-    );
+    const translated = fs.readFileSync(translatedPath, "utf8");
+    let result;
+    try {
+      result = repairProtectedAttributes(
+        processor,
+        markdownProcessor,
+        fs.readFileSync(sourcePath, "utf8"),
+        translated,
+      );
+    } catch (error) {
+      if (process.env.OPENCLAW_DOCS_I18N_LOG_REJECTED_BODY === "1") {
+        process.stderr.write(`docs-i18n: rejected protected-attribute body docs/${args.locale}/${relative} ${JSON.stringify(translated)}\n`);
+      }
+      throw new Error(`docs/${args.locale}/${relative}: ${error.message || error}`, { cause: error });
+    }
     if (result.changed) {
       fs.writeFileSync(translatedPath, result.value);
       repaired.push(path.relative(workspace, translatedPath));
