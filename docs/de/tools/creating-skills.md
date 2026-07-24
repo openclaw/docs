@@ -253,6 +253,7 @@ Den vollständigen Lebenszyklus eines Vorschlags finden Sie unter [Skill Worksho
     beliebige Befehlseinschleusung aus nicht vertrauenswürdigen Eingaben zulassen.
   - **Lokal testen** — verwenden Sie vor dem Teilen `openclaw agent --message "..."`.
   - **ClawHub verwenden** — durchsuchen Sie vor einer Neuentwicklung die Community-Skills unter [clawhub.ai](https://clawhub.ai).
+
 </Tip>
 
 ## Verwandte Themen
