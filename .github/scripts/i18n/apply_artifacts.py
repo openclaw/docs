@@ -170,6 +170,20 @@ def should_apply_deleted(source_current: bool, locale: str, rel: str) -> tuple[b
     return True, ""
 
 
+def artifact_stale_issue(artifact: Path, locale: str, source_current: bool) -> str:
+    if source_current:
+        return ""
+    for rel in read_lines(artifact / "changed-files.txt"):
+        apply_change, reason = should_apply_changed(False, locale, rel, artifact / "payload" / rel)
+        if not apply_change:
+            return reason
+    for rel in read_lines(artifact / "deleted-files.txt"):
+        apply_delete, reason = should_apply_deleted(False, locale, rel)
+        if not apply_delete:
+            return reason
+    return ""
+
+
 def checkout_latest_main(skip_checkout_main: bool) -> None:
     if skip_checkout_main:
         return
@@ -388,6 +402,11 @@ def apply_artifacts(
         if payload_issue:
             blocked_locales.add(slug)
             preflight_issues.append(f"{artifact.name}: {payload_issue}")
+            continue
+        stale_issue = artifact_stale_issue(artifact, locale, source_current)
+        if stale_issue:
+            blocked_locales.add(slug)
+            preflight_issues.append(f"{artifact.name}: stale payload ({stale_issue})")
 
     for slug in expected:
         for shard_index in range(shard_total):

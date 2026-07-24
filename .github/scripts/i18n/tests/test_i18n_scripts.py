@@ -2298,6 +2298,67 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
             self.assertIn("Setup FR", (repo / "docs/fr/guide/setup.md").read_text(encoding="utf-8"))
 
+    def test_apply_artifacts_leaves_locale_unchanged_when_one_stale_page_changed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo_with_source(tmp)
+            (repo / "docs/guide.md").write_text("# Current guide\n", encoding="utf-8")
+            (repo / "docs/fr").mkdir()
+            (repo / "docs/fr/index.md").write_text("# Existing index FR\n", encoding="utf-8")
+            (repo / "docs/fr/guide.md").write_text("# Existing guide FR\n", encoding="utf-8")
+            (repo / ".openclaw-sync/source.json").write_text(
+                '{"repository":"openclaw/openclaw","sha":"source-b"}\n',
+                encoding="utf-8",
+            )
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "move source")
+            index_hash = hashlib.sha256((repo / "docs/index.md").read_bytes()).hexdigest()
+            artifacts = repo / ".openclaw-sync/i18n-artifacts"
+            self._write_artifact(
+                artifacts,
+                "fr-s0of1",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "full",
+                    "shard_index": 0,
+                    "shard_total": 1,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/index.md", "docs/fr/guide.md"],
+                payload={
+                    "docs/fr/index.md": (
+                        "---\n"
+                        "x-i18n:\n"
+                        f"  source_hash: {index_hash}\n"
+                        "---\n\n"
+                        "# Updated index FR\n"
+                    ),
+                    "docs/fr/guide.md": (
+                        "---\n"
+                        "x-i18n:\n"
+                        f"  source_hash: {'0' * 64}\n"
+                        "---\n\n"
+                        "# Stale guide FR\n"
+                    ),
+                },
+            )
+
+            with chdir(repo):
+                result = apply_artifacts.apply_artifacts(
+                    source_sha="source-a",
+                    mode="full",
+                    shard_total=1,
+                    expected_locales="fr=fr",
+                    artifacts_root=artifacts,
+                    skip_checkout_main=True,
+                )
+
+            self.assertEqual(1, result["incomplete_count"])
+            self.assertEqual(0, result["changed_count"])
+            self.assertEqual("# Existing index FR\n", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+            self.assertEqual("# Existing guide FR\n", (repo / "docs/fr/guide.md").read_text(encoding="utf-8"))
+
     def test_apply_artifacts_leaves_incomplete_locale_unchanged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = self._repo_with_source(tmp)
