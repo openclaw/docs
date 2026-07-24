@@ -4,12 +4,12 @@ read_when:
 summary: Sprachaktivierungs- und Push-to-Talk-Modi sowie Routingdetails in der Mac-App
 title: Sprachaktivierung (macOS)
 x-i18n:
-    generated_at: "2026-07-12T15:39:20Z"
+    generated_at: "2026-07-24T04:30:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: 2a0a5ac44931b578daa4f74b3728a65a1c19ab9742e2d4b9f4c6db49fa5d7b8a
+    source_hash: d3b2a01ee997b4158bf88b9ef54b1e523503722620f943d594323516619e7502
     source_path: platforms/mac/voicewake.md
     workflow: 16
 ---
@@ -18,57 +18,60 @@ x-i18n:
 
 ## Anforderungen
 
-Sprachaktivierung und Push-to-Talk erfordern macOS 26 oder neuer. Unter älteren macOS-Versionen sind die Steuerelemente auf der Seite mit den Spracheinstellungen ausgeblendet; stattdessen wird dort auf die Anforderung macOS 26 hingewiesen.
+Sprachaktivierung und Push-to-Talk erfordern macOS 26 oder neuer. Unter älteren macOS-Versionen sind die Bedienelemente auf der Seite mit den Spracheinstellungen ausgeblendet; stattdessen wird dort auf die Anforderung von macOS 26 hingewiesen.
+
+Für die Sprachaktivierung muss Apple Speech die geräteinterne Erkennung für die ausgewählte Sprache unterstützen. Die App verweigert den Start der passiven Aktivierungsworterkennung, wenn dieser ausschließlich lokale Vertrag nicht verfügbar ist; sie greift niemals auf die Netzwerkerkennung zurück. Push-to-Talk, Sprechmodus und das Diktieren im Schnellchat sind ausdrückliche Benutzeraktionen und dürfen für eine breitere Sprachabdeckung die Netzwerkdienste von Apple Speech verwenden.
 
 ## Modi
 
-- **Aktivierungswortmodus** (Standard): Eine ständig aktive Spracherkennung wartet auf Aktivierungswörter (`swabbleTriggerWords`). Bei einer Übereinstimmung beginnt sie mit der Aufnahme, zeigt das Overlay mit vorläufigem Text an und sendet nach einer Sprechpause automatisch.
-- **Push-to-Talk (rechte Wahltaste gedrückt halten)**: Halten Sie die rechte Wahltaste gedrückt, um sofort mit der Aufnahme zu beginnen; ein Aktivierungswort ist nicht erforderlich. Das Overlay wird angezeigt, solange die Taste gedrückt bleibt. Beim Loslassen wird die Aufnahme abgeschlossen und nach einer kurzen Verzögerung weitergeleitet, damit Sie den Text bearbeiten können.
+- **Aktivierungswortmodus** (Standard): Eine ständig aktive, geräteinterne Spracherkennung wartet auf Auslöser-Token (`swabbleTriggerWords`). Bei einer Übereinstimmung startet sie die Aufnahme, zeigt das Overlay mit dem vorläufigen Text an und sendet nach einer Sprechpause automatisch.
+- **Push-to-Talk (rechte Wahltaste gedrückt halten)**: Halten Sie die rechte Wahltaste gedrückt, um die Aufnahme sofort zu starten; ein Auslöser ist nicht erforderlich. Das Overlay wird angezeigt, solange die Taste gedrückt ist. Beim Loslassen wird die Aufnahme abgeschlossen und nach einer kurzen Verzögerung weitergeleitet, damit Sie den Text bearbeiten können.
 
 ## Laufzeitverhalten (Aktivierungswort)
 
 - Die Spracherkennung befindet sich in `VoiceWakeRuntime`.
-- Die Aktivierung erfolgt nur, wenn zwischen dem Aktivierungswort und dem nächsten Wort eine deutliche Pause liegt (`triggerPauseWindow` = 0.55s). Overlay und Signalton können bereits während der Pause starten, noch bevor der Befehl beginnt.
-- Zeitfenster für Sprechpausen: 2.0s (`silenceWindow`) bei laufender Spracheingabe, 5.0s (`triggerOnlySilenceWindow`), wenn nur das Aktivierungswort erkannt wurde.
-- Erzwungener Abbruch: 120s (`captureHardStop`), um unkontrolliert fortlaufende Sitzungen zu verhindern.
+- Der Auslöser wird nur aktiviert, wenn zwischen dem Aktivierungswort und dem nächsten Wort eine deutliche Pause liegt (`triggerPauseWindow` = 0.55s). Overlay und Signalton können bereits während der Pause starten, noch bevor der Befehl beginnt.
+- Stille-Zeitfenster: 2.0s (`silenceWindow`) bei fortlaufender Sprache, 5.0s (`triggerOnlySilenceWindow`), wenn nur der Auslöser erkannt wurde.
+- Fester Abbruch: 120s (`captureHardStop`), um außer Kontrolle geratene Sitzungen zu verhindern.
 - Entprellzeit zwischen Sitzungen: 350ms (`debounceAfterSend`) nach dem Senden.
-- Das Overlay wird über `VoiceWakeOverlayController` gesteuert, wobei bestätigter und vorläufiger Text unterschiedlich eingefärbt werden.
-- Nach dem Senden wird die Spracherkennung ordnungsgemäß neu gestartet, um auf das nächste Aktivierungswort zu warten.
+- Das Overlay wird über `VoiceWakeOverlayController` gesteuert und stellt bestätigten und vorläufigen Text unterschiedlich farbig dar.
+- Nach dem Senden wird die Spracherkennung sauber neu gestartet, um auf den nächsten Auslöser zu warten.
 
 ## Lebenszyklusinvarianten
 
 - Wenn die Sprachaktivierung aktiviert ist und die Berechtigungen erteilt wurden, bleibt die Aktivierungsworterkennung aktiv, außer während einer laufenden Push-to-Talk-Aufnahme.
-- Das Schließen des Overlays, einschließlich des manuellen Schließens über die X-Schaltfläche, setzt die Spracherkennung immer fort: `VoiceSessionCoordinator.overlayDidDismiss` ruft in jedem Schließpfad `VoiceWakeRuntime.refresh(state:)` auf. Informationen zum Sitzungs-/Tokenmodell finden Sie unter [Sprach-Overlay](/de/platforms/mac/voice-overlay).
+- Beim Schließen des Overlays wird die Spracherkennung immer fortgesetzt, auch beim manuellen Schließen über die X-Schaltfläche: `VoiceSessionCoordinator.overlayDidDismiss` ruft bei jedem Schließpfad `VoiceWakeRuntime.refresh(state:)` auf. Informationen zum Sitzungs-/Token-Modell finden Sie unter [Sprach-Overlay](/de/platforms/mac/voice-overlay).
 
-## Besonderheiten von Push-to-Talk
+## Einzelheiten zu Push-to-Talk
 
-- Die Erkennung der Tastenkombination verwendet einen globalen `.flagsChanged`-Monitor für die rechte Wahltaste (`keyCode 61` + `.option`). Er beobachtet Ereignisse nur und fängt sie niemals ab.
-- Die Aufnahme erfolgt in `VoicePushToTalk`: Die Spracherkennung wird sofort gestartet, vorläufige Ergebnisse werden an das Overlay übertragen und beim Loslassen wird `VoiceWakeForwarder` aufgerufen.
-- Beim Start von Push-to-Talk wird die Aktivierungswort-Laufzeit angehalten, um konkurrierende Audioabgriffe zu vermeiden; nach dem Loslassen wird sie automatisch neu gestartet.
+- Die Tastenkombinationserkennung verwendet einen globalen `.flagsChanged`-Monitor für die rechte Wahltaste (`keyCode 61` + `.option`). Er beobachtet Ereignisse nur und unterdrückt sie niemals.
+- Die Aufnahme befindet sich in `VoicePushToTalk`: Sie startet Speech sofort, überträgt vorläufige Ergebnisse fortlaufend an das Overlay und ruft beim Loslassen `VoiceWakeForwarder` auf.
+- Beim Start von Push-to-Talk wird die Aktivierungswort-Laufzeit pausiert, um konkurrierende Audiozugriffe zu vermeiden; nach dem Loslassen wird sie automatisch neu gestartet.
 - Berechtigungen: Mikrofon und Spracherkennung sind erforderlich; für den Empfang von Tastenereignissen ist die Genehmigung für Bedienungshilfen/Eingabeüberwachung erforderlich.
-- Externe Tastaturen: Einige stellen die rechte Wahltaste nicht wie erwartet bereit. Bieten Sie eine alternative Tastenkombination an, wenn Benutzer nicht erkannte Eingaben melden.
+- Externe Tastaturen: Einige stellen die rechte Wahltaste nicht wie erwartet bereit. Bieten Sie eine alternative Tastenkombination an, wenn Benutzer von nicht erkannten Betätigungen berichten.
 
-## Benutzereinstellungen
+## Benutzersichtbare Einstellungen
 
-- Umschalter **Sprachaktivierung**: Aktiviert die Aktivierungswort-Laufzeit.
+- Schalter **Sprachaktivierung**: Aktiviert die Aktivierungswort-Laufzeit.
 - **Rechte Wahltaste zum Sprechen gedrückt halten**: Aktiviert den Push-to-Talk-Monitor.
-- Auswahlfelder für Sprache und Mikrofon, eine Live-Pegelanzeige, eine Tabelle mit Aktivierungswörtern und eine Testfunktion (nur lokal, leitet niemals etwas weiter).
-- Die Mikrofonauswahl behält die letzte Auswahl bei, wenn ein Gerät getrennt wird, zeigt einen Hinweis zur unterbrochenen Verbindung an und weicht vorübergehend auf die Systemvorgabe aus, bis das Gerät wieder verfügbar ist.
-- **Töne**: Signaltöne bei der Erkennung des Aktivierungsworts und beim Senden; standardmäßig wird der macOS-Systemton „Glass“ verwendet. Wählen Sie für jedes Ereignis eine beliebige von `NSSound` ladbare Datei (z. B. MP3/WAV/AIFF) oder wählen Sie **Kein Ton**.
+- Wenn die ausgewählte Sprache auf diesem Mac keine geräteinterne Erkennung unterstützt, bleibt die Sprachaktivierung deaktiviert, während Push-to-Talk und der Sprechmodus weiterhin verfügbar sind.
+- Auswahlfelder für Sprache und Mikrofon, eine Live-Pegelanzeige, eine Tabelle mit Auslösewörtern und ein Tester (ausschließlich lokal, leitet niemals etwas weiter).
+- Das Auswahlfeld für das Mikrofon behält die letzte Auswahl bei, wenn ein Gerät getrennt wird, zeigt einen Hinweis zur unterbrochenen Verbindung an und greift bis zur erneuten Verbindung vorübergehend auf die Systemvorgabe zurück.
+- **Töne**: Signaltöne bei Erkennung des Auslösers und beim Senden; standardmäßig wird der macOS-Systemton „Glass“ verwendet. Wählen Sie pro Ereignis eine beliebige, von `NSSound` ladbare Datei (z. B. MP3/WAV/AIFF), oder wählen Sie **Kein Ton**.
 
 ## Weiterleitungsverhalten
 
-- Bei der Weiterleitung wählt `VoiceWakeForwarder.selectedSessionOptions` den aktiven WebChat-Sitzungsschlüssel aus, falls einer festgelegt ist, andernfalls den Hauptsitzungsschlüssel des Gateways.
-- Die Sitzung wird über `sessions.list` gesucht. Der Übermittlungskanal und das Ziel werden aus dem Übermittlungskontext der Sitzung abgeleitet; ersatzweise werden der letzte Kanal und das letzte Ziel und anschließend ein analysierter Sitzungsschlüssel verwendet. Wenn nichts aufgelöst werden kann, wird standardmäßig WebChat verwendet.
-- Wenn die Übermittlung fehlschlägt, wird der Fehler protokolliert (Kategorie `voicewake.forward`), und der Lauf bleibt weiterhin über WebChat/Sitzungsprotokolle sichtbar.
+- Bei der Weiterleitung wählt `VoiceWakeForwarder.selectedSessionOptions` den Schlüssel der aktiven WebChat-Sitzung aus, sofern einer festgelegt ist, andernfalls den Schlüssel der Hauptsitzung des Gateways.
+- Die Sitzung wird über `sessions.list` gesucht. Zustellungskanal und Ziel werden aus dem Zustellungskontext der Sitzung abgeleitet (ersatzweise aus deren letztem Kanal/Ziel und anschließend aus einem analysierten Sitzungsschlüssel); wenn nichts aufgelöst werden kann, wird standardmäßig WebChat verwendet.
+- Wenn die Zustellung fehlschlägt, wird der Fehler protokolliert (Kategorie `voicewake.forward`), und der Lauf bleibt weiterhin über die WebChat-/Sitzungsprotokolle sichtbar.
 
 ## Weiterleitungsnutzlast
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` stellt dem Transkript eine Zeile mit einem Maschinenhinweis voran (aufgelöster Hostname, ersatzweise „dieser Mac“), die sowohl für den Aktivierungswort- als auch für den Push-to-Talk-Pfad verwendet wird.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` stellt dem Transkript eine Zeile mit einem Gerätehinweis voran (aufgelöster Hostname, ersatzweise „dieser Mac“), die sowohl für den Aktivierungswort- als auch den Push-to-Talk-Pfad verwendet wird.
 
-## Schnellprüfung
+## Schnelle Überprüfung
 
-- Aktivieren Sie Push-to-Talk, halten Sie die rechte Wahltaste gedrückt, sprechen Sie und lassen Sie die Taste los: Das Overlay sollte zunächst vorläufige Ergebnisse anzeigen und diese anschließend senden.
+- Aktivieren Sie Push-to-Talk, halten Sie die rechte Wahltaste gedrückt, sprechen Sie und lassen Sie sie los: Das Overlay sollte zunächst vorläufige Ergebnisse anzeigen und sie anschließend senden.
 - Während Sie die Taste gedrückt halten, sollten die Ohren in der Menüleiste vergrößert bleiben (`triggerVoiceEars(ttl: nil)`); nach dem Loslassen werden sie wieder kleiner.
 
 ## Verwandte Themen

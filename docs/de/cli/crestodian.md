@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Sie sind einem älteren Link zur Crestodian-Dokumentation gefolgt
+    - Sie sind einem älteren Crestodian-Dokumentationslink gefolgt
 redirect: /cli/openclaw
 summary: Weiterleitung zur OpenClaw-System-Agent-Referenz
 title: Crestodian (Weiterleitung)
 x-i18n:
-    generated_at: "2026-07-16T12:49:55Z"
+    generated_at: "2026-07-24T04:56:32Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -15,4 +15,4 @@ x-i18n:
     workflow: 16
 ---
 
-Diese Seite wurde zu [OpenClaw-Einrichtung und -Reparatur](/cli/openclaw) verschoben.
+Diese Seite wurde zu [OpenClaw-Einrichtung und -Reparatur](/de/cli/openclaw) verschoben.

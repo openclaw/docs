@@ -4,7 +4,7 @@ read_when:
 summary: Fügt OpenClaw Unterstützung für den Z.AI-Modell-Provider hinzu.
 title: Z.AI-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:08:15Z"
+    generated_at: "2026-07-24T04:00:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

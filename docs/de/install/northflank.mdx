@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Bereitstellung von OpenClaw auf Northflank
-    - Sie möchten eine Cloud-Bereitstellung mit nur einem Klick und browserbasierter Steuerungsoberfläche
+    - OpenClaw auf Northflank bereitstellen
+    - Sie möchten eine Cloud-Bereitstellung mit nur einem Klick und browserbasierter Steuerungsoberfläche.
 summary: OpenClaw auf Northflank mit einer Ein-Klick-Vorlage bereitstellen
 title: Northflank
 x-i18n:
-    generated_at: "2026-07-12T01:49:21Z"
+    generated_at: "2026-07-24T03:52:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 16bb96fdf470999e15e163b6227d228ce8b60b9a172eb74cadc87bddd3955957
     source_path: install/northflank.mdx
     workflow: 16
 ---
 
-Stellen Sie OpenClaw mit einer Ein-Klick-Vorlage auf Northflank bereit und greifen Sie über die webbasierte Steuerungsoberfläche darauf zu. Dies ist der einfachste Weg „ohne Terminal auf dem Server“: Northflank betreibt den Gateway für Sie.
+Stellen Sie OpenClaw mit einer Ein-Klick-Vorlage auf Northflank bereit und greifen Sie über die webbasierte Control UI darauf zu. Dies ist der einfachste Weg „ohne Terminal auf dem Server“: Northflank führt das Gateway für Sie aus.
 
 ## Erste Schritte
 
@@ -25,16 +26,16 @@ Stellen Sie OpenClaw mit einer Ein-Klick-Vorlage auf Northflank bereit und greif
 5. Klicken Sie auf **Deploy stack**, um die OpenClaw-Vorlage zu erstellen und auszuführen.
 6. Warten Sie, bis die Bereitstellung abgeschlossen ist, und klicken Sie dann auf **View resources**.
 7. Öffnen Sie den OpenClaw-Dienst.
-8. Öffnen Sie die öffentliche OpenClaw-URL unter `/openclaw` und stellen Sie mit dem konfigurierten gemeinsamen Geheimnis eine Verbindung her. Diese Vorlage verwendet standardmäßig `OPENCLAW_GATEWAY_TOKEN`. Wenn Sie dies durch eine Passwortauthentifizierung ersetzen, verwenden Sie stattdessen dieses Passwort.
+8. Öffnen Sie die öffentliche OpenClaw-URL unter `/openclaw` und stellen Sie die Verbindung mit dem konfigurierten gemeinsamen Geheimnis her. Diese Vorlage verwendet standardmäßig `OPENCLAW_GATEWAY_TOKEN`; wenn Sie es durch eine Passwortauthentifizierung ersetzen, verwenden Sie stattdessen dieses Passwort.
 
-## Bereitgestellte Komponenten
+## Leistungsumfang
 
-- Gehosteter OpenClaw Gateway und Steuerungsoberfläche
+- Gehostetes OpenClaw-Gateway + Control UI
 - Persistenter Speicher über ein Northflank-Volume (`/data`), damit `openclaw.json`, agentenspezifische `auth-profiles.json`, Kanal-/Provider-Status, Sitzungen und Arbeitsbereich erneute Bereitstellungen überstehen
 
 ## Einen Kanal verbinden
 
-Verwenden Sie die Steuerungsoberfläche unter `/openclaw` oder führen Sie `openclaw onboard` über SSH aus, um Anweisungen zur Kanaleinrichtung zu erhalten:
+Verwenden Sie die Control UI unter `/openclaw` oder führen Sie `openclaw onboard` über SSH aus, um Anweisungen zur Kanaleinrichtung zu erhalten:
 
 - [Telegram](/de/channels/telegram) (am schnellsten, nur ein Bot-Token erforderlich)
 - [Discord](/de/channels/discord)
@@ -42,6 +43,6 @@ Verwenden Sie die Steuerungsoberfläche unter `/openclaw` oder führen Sie `open
 
 ## Nächste Schritte
 
-- Nachrichtenkanäle einrichten: [Kanäle](/de/channels)
-- Den Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
-- OpenClaw auf dem neuesten Stand halten: [Aktualisierung](/de/install/updating)
+- Messaging-Kanäle einrichten: [Kanäle](/de/channels)
+- Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
+- OpenClaw aktuell halten: [Aktualisierung](/de/install/updating)

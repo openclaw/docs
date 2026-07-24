@@ -3,24 +3,22 @@ read_when:
     - Sie möchten abgeleitete Verpflichtungen zu Folgemaßnahmen prüfen
     - Sie möchten ausstehende Check-ins verwerfen
     - Sie prüfen, was der Heartbeat möglicherweise übermittelt.
-summary: CLI-Referenz für `openclaw commitments` (abgeleitete Nachfassaktionen prüfen und verwerfen)
+summary: CLI-Referenz für `openclaw commitments` (abgeleitete Folgeaktionen prüfen und verwerfen)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-07-16T12:37:19Z"
+    generated_at: "2026-07-24T03:42:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: db8a7d8f5756ccb18ed0990fcedf50d1072bb67e775c29eefdbd1a7dd795b7b0
+    source_hash: 4a7c573daad6a9bc6ce4532514c8cc22b3c510b4fc0cf9d1a79048413f08c1a2
     source_path: cli/commitments.md
     workflow: 16
 ---
 
-Nachfolgende abgeleitete Zusagen auflisten und verwalten.
-
-Zusagen sind optional (`commitments.enabled`), kurzlebige Erinnerungen an Folgemaßnahmen,
-die aus dem Gesprächskontext erstellt und per Heartbeat zugestellt werden. Eine konzeptionelle Anleitung und die Konfiguration finden Sie unter
-[Abgeleitete Zusagen](/de/concepts/commitments).
+Prüfen und verwerfen Sie Datensätze, die vom eingestellten Experiment mit abgeleiteten Zusagen zurückgelassen wurden.
+OpenClaw erstellt oder übermittelt keine neuen Zusagen mehr, behält jedoch den Wartungsbefehl bei,
+damit bei Upgrades vorhandene SQLite-Zeilen geprüft und bereinigt werden können.
 
 Ohne Unterbefehl listet `openclaw commitments` ausstehende Zusagen auf.
 
@@ -37,11 +35,10 @@ openclaw commitments dismiss <id...> [--json]
 - `--all`: alle Status statt nur ausstehender Zusagen anzeigen.
 - `--agent <id>`: nach einer Agent-ID filtern.
 - `--status <status>`: nach Status filtern. Werte: `pending`, `sent`,
-  `dismissed`, `snoozed` oder `expired`. Unbekannte Werte führen zum Beenden mit einer Fehlermeldung.
+  `dismissed`, `snoozed` oder `expired`. Unbekannte Werte führen zum Beenden mit einem Fehler.
 - `--json`: maschinenlesbares JSON ausgeben.
 
-`dismiss` markiert die angegebenen Zusagen-IDs als `dismissed`, sodass Heartbeat sie nicht
-zustellt.
+`dismiss` markiert die angegebenen Zusagen-IDs als `dismissed`.
 
 ## Beispiele
 
@@ -91,7 +88,7 @@ und eine Zeile pro Zusage:
 - Art (`event_check_in`, `deadline_check`, `care_check_in` oder `open_loop`)
 - frühester Fälligkeitszeitpunkt
 - Geltungsbereich (Agent/Kanal/Ziel)
-- vorgeschlagener Rückfragetext
+- vorgeschlagener Check-in-Text
 
 Die JSON-Ausgabe enthält die Anzahl, die aktiven Status- und Agentenfilter, den
 Pfad zur gemeinsam genutzten SQLite-Datenbank und die vollständigen gespeicherten Datensätze.
@@ -99,6 +96,6 @@ Pfad zur gemeinsam genutzten SQLite-Datenbank und die vollständigen gespeichert
 ## Verwandte Themen
 
 - [Abgeleitete Zusagen](/de/concepts/commitments)
-- [Speicherübersicht](/de/concepts/memory)
+- [Arbeitsspeicherübersicht](/de/concepts/memory)
 - [Heartbeat](/de/gateway/heartbeat)
 - [Geplante Aufgaben](/de/automation/cron-jobs)

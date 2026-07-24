@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das deepseek-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das deepseek-Plugin.
 summary: Fügt OpenClaw Unterstützung für den DeepSeek-Modell-Provider hinzu.
 title: DeepSeek-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:05Z"
+    generated_at: "2026-07-24T04:32:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -29,4 +29,4 @@ Provider: `deepseek`; Verträge: `usageProviders`
 
 ## Zugehörige Dokumentation
 
-- [DeepSeek](/de/providers/deepseek)
+- [deepseek](/de/providers/deepseek)

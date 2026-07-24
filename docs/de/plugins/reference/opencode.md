@@ -4,7 +4,7 @@ read_when:
 summary: Fügt OpenClaw Unterstützung für den OpenCode-Modell-Provider hinzu.
 title: OpenCode-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:07:11Z"
+    generated_at: "2026-07-24T04:48:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -31,18 +31,18 @@ Provider: `opencode`; Verträge: `mediaUnderstandingProviders`
 
 ## Native Sitzungen
 
-OpenClaw erkennt die `opencode`-CLI auf dem Gateway und gekoppelten Nodes automatisch. Gespeicherte
-Sitzungen werden anschließend in der Sitzungs-Seitenleistengruppe **OpenCode** angezeigt, mit schreibgeschütztem
+OpenClaw erkennt die `opencode`-CLI automatisch auf dem Gateway und gekoppelten Nodes. Gespeicherte
+Sitzungen werden anschließend in der Sitzungsseitenleiste in der Gruppe **OpenCode** angezeigt, mit schreibgeschütztem
 Durchsuchen der Transkripte über die offiziellen Befehle `opencode --pure db ... --format json`
 und `opencode --pure export`. Die eingeschränkte Umgebung und der Modus `--pure`
 verhindern, dass beim Durchsuchen des Katalogs Projekt-Plugins geladen oder nicht zugehörige
 Gateway-Anmeldedaten übernommen werden.
 
-Schalten Sie **OpenCode Session Catalog** unter **Config > Plugins > OpenCode** aus, um
+Deaktivieren Sie **OpenCode Session Catalog** unter **Config > Plugins > OpenCode**, um
 die Erkennung zu deaktivieren. Sie ist standardmäßig aktiviert.
 
 <!-- openclaw-plugin-reference:manual-end -->
 
 ## Verwandte Dokumentation
 
-- [OpenCode](/de/providers/opencode)
+- [opencode](/de/providers/opencode)

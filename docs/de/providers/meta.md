@@ -1,13 +1,14 @@
 ---
 read_when:
     - Sie möchten Meta mit OpenClaw verwenden
-    - Sie benötigen die Umgebungsvariable MODEL_API_KEY oder die Authentifizierungsauswahl der CLI
+    - Sie benötigen die Umgebungsvariable MODEL_API_KEY oder die CLI-Authentifizierungsauswahl
 summary: Meta-Einrichtung (Authentifizierung + Auswahl des Modells muse-spark-1.1)
-title: Metadaten
+title: Meta
 x-i18n:
-    generated_at: "2026-07-12T02:04:20Z"
+    generated_at: "2026-07-24T04:07:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: f2ce7616d9abc14a2d15ee53ea7725d3e70059af1a38bb61dbfe5b3969106432
     source_path: providers/meta.md
@@ -15,20 +16,20 @@ x-i18n:
 ---
 
 Die **Meta API** verwendet die OpenAI-kompatible **Responses API** (`POST /v1/responses`)
-für das Reasoning-Modell `muse-spark-1.1`. Der Provider wird als gebündeltes OpenClaw-
-Plugin ausgeliefert.
+für das Reasoning-Modell `muse-spark-1.1`. Der Provider wird als gebündeltes
+OpenClaw-Plugin ausgeliefert.
 
 | Eigenschaft          | Wert                               |
 | -------------------- | ---------------------------------- |
-| Provider-ID          | `meta`                             |
+| Provider-ID          | `meta`                 |
 | Plugin               | gebündelter Provider               |
-| Authentifizierungs-Umgebungsvariable | `MODEL_API_KEY`    |
-| Onboarding-Flag      | `--auth-choice meta-api-key`       |
-| Direktes CLI-Flag    | `--meta-api-key <key>`             |
+| Authentifizierungs-Umgebungsvariable | `MODEL_API_KEY` |
+| Onboarding-Flag      | `--auth-choice meta-api-key`                 |
+| Direktes CLI-Flag    | `--meta-api-key <key>`                 |
 | API                  | Responses API (`openai-responses`) |
-| Basis-URL            | `https://api.meta.ai/v1`           |
-| Standardmodell       | `meta/muse-spark-1.1`              |
-| Standard-Reasoning   | `high` (`reasoning.effort`)        |
+| Basis-URL            | `https://api.meta.ai/v1`                 |
+| Standardmodell       | `meta/muse-spark-1.1`                 |
+| Standard-Reasoning   | `high` (`reasoning.effort`) |
 
 ## Erste Schritte
 
@@ -58,7 +59,7 @@ export MODEL_API_KEY=<key>
     openclaw models list --provider meta
     ```
 
-    Listet den statischen Katalogeintrag `muse-spark-1.1` auf. Wenn `MODEL_API_KEY` nicht aufgelöst werden kann,
+    Listet den statischen Katalogeintrag `muse-spark-1.1` auf. Wenn `MODEL_API_KEY` nicht aufgelöst ist,
     meldet `openclaw models status --json` die fehlenden Anmeldedaten unter
     `auth.unusableProfiles`.
 
@@ -76,16 +77,16 @@ openclaw onboard --non-interactive --accept-risk \
 
 ## Integrierter Katalog
 
-| Modellreferenz        | Name           | Reasoning | Kontextfenster | Maximale Ausgabe |
-| --------------------- | -------------- | --------- | --------------- | ---------------- |
-| `meta/muse-spark-1.1` | Muse Spark 1.1 | ja        | 1.048.576       | 131.072          |
+| Modellreferenz        | Name           | Reasoning | Kontextfenster | Max. Ausgabe |
+| --------------------- | -------------- | --------- | -------------- | ------------ |
+| `meta/muse-spark-1.1` | Muse Spark 1.1 | ja        | 1,048,576      | 131,072      |
 
 Funktionen:
 
 - Text- und Bildeingabe
 - Tool-Aufrufe und Streaming
 - Reasoning-Aufwand: `minimal`, `low`, `medium`, `high`, `xhigh` (Standard: `high`)
-- Zustandslose Wiedergabe verschlüsselter Reasoning-Inhalte (`store: false`, `include: ["reasoning.encrypted_content"]`)
+- Zustandslose, verschlüsselte Reasoning-Wiedergabe (`store: false`, `include: ["reasoning.encrypted_content"]`)
 
 <Warning>
 `muse-spark-1.1` akzeptiert `reasoning.effort: "none"` nicht. OpenClaw ordnet
@@ -109,11 +110,11 @@ Funktionen:
 ```
 
 <Note>
-Wenn der Gateway als Daemon ausgeführt wird (launchd, systemd, Docker), stellen Sie sicher,
+Wenn das Gateway als Daemon (launchd, systemd, Docker) ausgeführt wird, stellen Sie sicher,
 dass `MODEL_API_KEY` für diesen Prozess verfügbar ist – beispielsweise in
 `~/.openclaw/.env` oder über `env.shellEnv`. Ein Schlüssel, der nur in einer
-interaktiven Shell exportiert wurde, hilft einem verwalteten Dienst nicht, sofern die Umgebungsvariable
-nicht separat importiert wird.
+interaktiven Shell exportiert wurde, hilft einem verwalteten Dienst nicht, sofern die
+Umgebungsvariable nicht separat importiert wird.
 </Note>
 
 ## Smoke-Test
@@ -123,7 +124,7 @@ export MODEL_API_KEY=<key>
 pnpm test:live -- extensions/meta/meta.live.test.ts
 ```
 
-Live-Tests verwenden `muse-spark-1.1` mit `POST /v1/responses`.
+Live-Tests verwenden `muse-spark-1.1` für `POST /v1/responses`.
 
 ## Verwandte Themen
 

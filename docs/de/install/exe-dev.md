@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Sie möchten einen günstigen, permanent verfügbaren Linux-Host für das Gateway
-    - Sie möchten remote auf die Control UI zugreifen, ohne einen eigenen VPS zu betreiben.
+    - Sie möchten einen günstigen, durchgehend verfügbaren Linux-Host für das Gateway.
+    - Sie möchten aus der Ferne auf die Control UI zugreifen, ohne einen eigenen VPS zu betreiben
 summary: OpenClaw Gateway auf exe.dev (VM + HTTPS-Proxy) für den Fernzugriff ausführen
 title: exe.dev
 x-i18n:
-    generated_at: "2026-07-12T01:46:13Z"
+    generated_at: "2026-07-24T03:52:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
@@ -21,22 +22,22 @@ Diese Anleitung setzt das standardmäßige **exeuntu**-Image von exe.dev voraus.
 ## Voraussetzungen
 
 - exe.dev-Konto
-- Zugriff auf exe.dev-VMs über `ssh exe.dev` (optional, für die manuelle Einrichtung)
+- `ssh exe.dev`-Zugriff auf exe.dev-VMs (optional, für die manuelle Einrichtung)
 
 ## Schnelleinstieg für Einsteiger
 
 1. Öffnen Sie [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Geben Sie nach Bedarf Ihren Authentifizierungsschlüssel bzw. Ihr Token ein
+2. Geben Sie bei Bedarf Ihren Authentifizierungsschlüssel bzw. Ihr Token ein
 3. Klicken Sie neben Ihrer VM auf "Agent" und warten Sie, bis Shelley die Bereitstellung abgeschlossen hat
-4. Öffnen Sie `https://<vm-name>.exe.xyz/` und authentifizieren Sie sich mit dem konfigurierten gemeinsamen Geheimnis (standardmäßig Token-Authentifizierung; Passwortauthentifizierung funktioniert ebenfalls, wenn Sie `gateway.auth.mode` umstellen)
-5. Genehmigen Sie ausstehende Gerätekopplungsanfragen mit `openclaw devices approve <requestId>`
+4. Öffnen Sie `https://<vm-name>.exe.xyz/` und authentifizieren Sie sich mit dem konfigurierten gemeinsamen Geheimnis (standardmäßig Token-Authentifizierung; Passwort-Authentifizierung funktioniert ebenfalls, wenn Sie `gateway.auth.mode` umstellen)
+5. Genehmigen Sie ausstehende Anfragen zur Gerätekopplung mit `openclaw devices approve <requestId>`
 
 ## Automatisierte Installation mit Shelley
 
 Shelley, der Agent von exe.dev, kann OpenClaw anhand einer Eingabeaufforderung installieren:
 
 ```text
-Richte OpenClaw (https://docs.openclaw.ai/install) auf dieser VM ein. Verwende für das Onboarding von OpenClaw die Flags für die nicht interaktive Ausführung und die Risikoakzeptanz. Füge die bereitgestellten Authentifizierungsdaten oder das Token nach Bedarf hinzu. Konfiguriere nginx so, dass Anfragen vom Standardport 18789 an den Stamm-Pfad der standardmäßig aktivierten Website-Konfiguration weitergeleitet werden, und stelle sicher, dass WebSocket-Unterstützung aktiviert ist. Die Kopplung erfolgt mit "openclaw devices list" und "openclaw devices approve <request id>". Stelle sicher, dass das Dashboard anzeigt, dass der Zustand von OpenClaw in Ordnung ist. exe.dev übernimmt für uns die Weiterleitung von Port 8000 an Port 80/443 sowie HTTPS. Daher sollte die endgültige erreichbare Adresse <vm-name>.exe.xyz ohne Portangabe lauten.
+Richten Sie OpenClaw (https://docs.openclaw.ai/install) auf dieser VM ein. Verwenden Sie für das OpenClaw-Onboarding die Flags für den nicht interaktiven Modus und zum Akzeptieren des Risikos. Fügen Sie nach Bedarf die bereitgestellte Authentifizierung oder das Token hinzu. Konfigurieren Sie nginx so, dass Anfragen vom Standardport 18789 an den Stamm-Pfad in der standardmäßig aktivierten Website-Konfiguration weitergeleitet werden, und stellen Sie sicher, dass WebSocket-Unterstützung aktiviert ist. Die Kopplung erfolgt mit "openclaw devices list" und "openclaw devices approve <request id>". Stellen Sie sicher, dass das Dashboard anzeigt, dass der Zustand von OpenClaw OK ist. exe.dev übernimmt für uns die Weiterleitung von Port 8000 zu Port 80/443 sowie HTTPS, daher sollte die endgültige Angabe für "erreichbar" <vm-name>.exe.xyz ohne Portangabe lauten.
 ```
 
 ## Manuelle Installation
@@ -56,7 +57,7 @@ Richte OpenClaw (https://docs.openclaw.ai/install) auf dieser VM ein. Verwende f
     ```
 
     <Tip>
-    Betreiben Sie diese VM **zustandsbehaftet**. OpenClaw speichert `openclaw.json`, die agentspezifischen `auth-profiles.json`, Sitzungen sowie den Kanal- und Provider-Zustand unter `~/.openclaw/` und den Arbeitsbereich unter `~/.openclaw/workspace/`.
+    Behalten Sie diese VM **zustandsbehaftet** bei. OpenClaw speichert `openclaw.json`, agentenspezifische `auth-profiles.json`, Sitzungen sowie den Kanal-/Provider-Status unter `~/.openclaw/` und den Arbeitsbereich unter `~/.openclaw/workspace/`.
     </Tip>
 
   </Step>
@@ -107,23 +108,23 @@ Richte OpenClaw (https://docs.openclaw.ai/install) auf dieser VM ein. Verwende f
     }
     ```
 
-    Überschreiben Sie Weiterleitungs-Header, statt vom Client bereitgestellte Ketten beizubehalten. OpenClaw vertraut weitergeleiteten IP-Metadaten nur von ausdrücklich konfigurierten Proxys. Durch Anhängen erzeugte `X-Forwarded-For`-Ketten gelten als Sicherheitsrisiko.
+    Überschreiben Sie Weiterleitungs-Header, anstatt vom Client bereitgestellte Ketten beizubehalten. OpenClaw vertraut weitergeleiteten IP-Metadaten nur von ausdrücklich konfigurierten Proxys, und durch Anhängen erzeugte `X-Forwarded-For`-Ketten werden als Sicherheitsrisiko behandelt.
 
   </Step>
 
   <Step title="Auf OpenClaw zugreifen und Geräte genehmigen">
-    Öffnen Sie `https://<vm-name>.exe.xyz/` (siehe die Ausgabe der Control UI während des Onboardings). Wenn Sie zur Authentifizierung aufgefordert werden, fügen Sie das konfigurierte gemeinsame Geheimnis von der VM ein.
+    Öffnen Sie `https://<vm-name>.exe.xyz/` (siehe die Ausgabe der Control UI beim Onboarding). Wenn Sie zur Authentifizierung aufgefordert werden, fügen Sie das konfigurierte gemeinsame Geheimnis von der VM ein.
 
-    Diese Anleitung verwendet standardmäßig Token-Authentifizierung. Rufen Sie daher `gateway.auth.token` mit `openclaw config get gateway.auth.token` ab oder erzeugen Sie mit `openclaw doctor --n` ein neues Token. Wenn Sie den Gateway auf Passwortauthentifizierung umgestellt haben, verwenden Sie stattdessen `gateway.auth.password` bzw. `OPENCLAW_GATEWAY_PASSWORD`.
+    Diese Anleitung verwendet standardmäßig Token-Authentifizierung. Rufen Sie daher `gateway.auth.token` mit `openclaw config get gateway.auth.token` ab oder erzeugen Sie mit `openclaw doctor --n` ein neues Token. Wenn Sie den Gateway auf Passwort-Authentifizierung umgestellt haben, verwenden Sie stattdessen `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
 
     Genehmigen Sie Geräte mit `openclaw devices list` und `openclaw devices approve <requestId>`. Verwenden Sie im Zweifelsfall Shelley in Ihrem Browser.
 
   </Step>
 </Steps>
 
-## Einrichtung entfernter Kanäle
+## Remote-Kanaleinrichtung
 
-Bevorzugen Sie für entfernte Hosts einen einzelnen Aufruf von `config patch` anstelle vieler SSH-Aufrufe von `config set`. Bewahren Sie echte Tokens in der VM-Umgebung oder in `~/.openclaw/.env` auf und tragen Sie in `openclaw.json` ausschließlich SecretRefs ein. Den vollständigen SecretRef-Vertrag finden Sie unter [Geheimnisverwaltung](/de/gateway/secrets).
+Bevorzugen Sie bei Remote-Hosts einen einzigen `config patch`-Aufruf gegenüber vielen SSH-Aufrufen an `config set`. Bewahren Sie echte Tokens in der VM-Umgebung oder in `~/.openclaw/.env` auf und tragen Sie in `openclaw.json` ausschließlich SecretRefs ein. Den vollständigen SecretRef-Vertrag finden Sie unter [Geheimnisverwaltung](/de/gateway/secrets).
 
 Sorgen Sie auf der VM dafür, dass die Dienstumgebung die benötigten Geheimnisse enthält:
 
@@ -188,9 +189,9 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.di
 
 Die vollständige Referenz zur Kanalkonfiguration finden Sie unter [Discord](/de/channels/discord) und [Slack](/de/channels/slack).
 
-## Fernzugriff
+## Remote-Zugriff
 
-exe.dev übernimmt die Authentifizierung für den Fernzugriff. Standardmäßig wird HTTP-Datenverkehr von Port 8000 mit E-Mail-Authentifizierung an `https://<vm-name>.exe.xyz` weitergeleitet.
+exe.dev übernimmt die Authentifizierung für den Remote-Zugriff. Standardmäßig wird HTTP-Datenverkehr von Port 8000 mit E-Mail-Authentifizierung an `https://<vm-name>.exe.xyz` weitergeleitet.
 
 ## Aktualisierung
 
@@ -202,5 +203,5 @@ Informationen zum Wechseln von Kanälen und zur manuellen Wiederherstellung find
 
 ## Verwandte Themen
 
-- [Entfernter Gateway](/de/gateway/remote)
+- [Remote-Gateway](/de/gateway/remote)
 - [Installationsübersicht](/de/install)

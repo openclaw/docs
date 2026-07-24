@@ -4,7 +4,7 @@ read_when:
 summary: Experimentelle Canvas-Steuerungs- und A2UI-Rendering-Oberflächen für gekoppelte Nodes.
 title: Canvas-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:20:44Z"
+    generated_at: "2026-07-24T04:03:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

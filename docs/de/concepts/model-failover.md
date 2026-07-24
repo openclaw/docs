@@ -1,17 +1,18 @@
 ---
 read_when:
-    - Diagnose der Rotation von Authentifizierungsprofilen, Abklingzeiten oder des Modell-Fallback-Verhaltens
+    - Diagnose der Rotation von Authentifizierungsprofilen, Cooldowns oder des Modell-Fallback-Verhaltens
     - Failover-Regeln für Authentifizierungsprofile oder Modelle aktualisieren
-    - Zusammenspiel von Modellüberschreibungen für Sitzungen und Wiederholungsversuchen mit Fallback verstehen
+    - Verstehen, wie Modellüberschreibungen für Sitzungen mit Wiederholungsversuchen unter Verwendung von Fallbacks interagieren
 sidebarTitle: Model failover
-summary: Wie OpenClaw Authentifizierungsprofile rotiert und auf andere Modelle zurückgreift
+summary: Wie OpenClaw Authentifizierungsprofile rotiert und auf andere Modelle ausweicht
 title: Modell-Failover
 x-i18n:
-    generated_at: "2026-07-12T01:33:01Z"
+    generated_at: "2026-07-24T03:45:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2da6399c8f5c6d9ab40486b553a41600a3c8eb64efa09e72784b81e42edbba61
+    source_hash: 3dfedbc85038eebb5be056a7b3ffa3275b4329a0b0d791e1a2b4701cbaa4b595
     source_path: concepts/model-failover.md
     workflow: 16
 ---
@@ -24,47 +25,47 @@ OpenClaw behandelt Fehler in zwei Stufen:
 ## Laufzeitablauf
 
 <Steps>
-  <Step title="Resolve session state">
-    Ermitteln Sie das aktive Sitzungsmodell und die Präferenz für das Auth-Profil.
+  <Step title="Sitzungsstatus auflösen">
+    Das aktive Sitzungsmodell und die Präferenz für das Auth-Profil auflösen.
   </Step>
-  <Step title="Build candidate chain">
-    Erstellen Sie die Kette der Modellkandidaten aus der aktuellen Modellauswahl und der Fallback-Richtlinie für die Quelle dieser Auswahl. Konfigurierte Standardwerte, primäre Modelle von Cron-Aufträgen und automatisch ausgewählte Fallback-Modelle können konfigurierte Fallbacks verwenden; explizite Benutzerauswahlen für Sitzungen sind strikt.
+  <Step title="Kandidatenkette erstellen">
+    Die Modellkandidatenkette aus der aktuellen Modellauswahl und der Fallback-Richtlinie für die Quelle dieser Auswahl erstellen. Konfigurierte Standardwerte, primäre Modelle von Cron-Jobs und automatisch ausgewählte Fallback-Modelle können konfigurierte Fallbacks verwenden; explizite Benutzerauswahlen für Sitzungen sind strikt.
   </Step>
-  <Step title="Try the current provider">
-    Versuchen Sie den aktuellen Provider unter Anwendung der Regeln für Auth-Profil-Rotation und Abklingzeiten.
+  <Step title="Aktuellen Provider versuchen">
+    Den aktuellen Provider unter Anwendung der Regeln für Rotation und Cooldown von Auth-Profilen versuchen.
   </Step>
-  <Step title="Advance on failover-worthy errors">
-    Wenn die Möglichkeiten dieses Providers aufgrund eines Fehlers ausgeschöpft sind, der einen Failover rechtfertigt, wechseln Sie zum nächsten Modellkandidaten.
+  <Step title="Bei Failover-relevanten Fehlern fortfahren">
+    Wenn die Möglichkeiten dieses Providers aufgrund eines Failover-relevanten Fehlers ausgeschöpft sind, zum nächsten Modellkandidaten wechseln.
   </Step>
-  <Step title="Persist fallback override">
-    Speichern Sie die ausgewählte Fallback-Überschreibung, bevor der erneute Versuch beginnt, damit andere Leser der Sitzung denselben Provider und dasselbe Modell sehen, die der Runner gleich verwenden wird. Die gespeicherte Modellüberschreibung wird mit `modelOverrideSource: "auto"` gekennzeichnet.
+  <Step title="Fallback für den aktuellen Durchlauf verwenden">
+    Den erfolgreichen Fallback-Kandidaten ausführen, ohne den für die Sitzung ausgewählten Provider oder das Modell zu ändern.
   </Step>
-  <Step title="Roll back narrowly on failure">
-    Wenn der Fallback-Kandidat fehlschlägt, setzen Sie ausschließlich die sitzungsbezogenen Überschreibungsfelder des Fallbacks zurück, sofern sie weiterhin diesem fehlgeschlagenen Kandidaten entsprechen.
+  <Step title="Sichere reine Überlastung erneut versuchen">
+    Wenn alle Kandidaten ausschließlich wegen überlasteter Provider fehlschlagen, die vollständige durchlauflokale Kette mit exponentiellem Backoff bis zu 10-mal erneut versuchen, solange weder eine Werkzeugausführung noch eine Assistentenausgabe begonnen hat. Nach 30 Sekunden einmalig einen Statushinweis senden, damit der Benutzer nicht ohne Rückmeldung warten muss.
   </Step>
-  <Step title="Throw FallbackSummaryError if exhausted">
-    Wenn alle Kandidaten fehlschlagen, lösen Sie einen `FallbackSummaryError` mit Details zu jedem Versuch und dem frühesten Ablauf einer Abklingzeit aus, sofern dieser bekannt ist.
+  <Step title="Bei ausgeschöpften Kandidaten FallbackSummaryError auslösen">
+    Wenn alle Kandidaten fehlschlagen, einen `FallbackSummaryError` mit Details zu jedem Versuch und dem frühesten Ablaufzeitpunkt eines Cooldowns auslösen, sofern dieser bekannt ist.
   </Step>
 </Steps>
 
-Dies ist absichtlich enger gefasst als „die gesamte Sitzung speichern und wiederherstellen“. Der Antwort-Runner speichert nur die Felder zur Modellauswahl, für die er beim Fallback verantwortlich ist: `providerOverride`, `modelOverride`, `modelOverrideSource`, `authProfileOverride`, `authProfileOverrideSource`, `authProfileOverrideCompactionCount`. Dadurch wird verhindert, dass ein fehlgeschlagener erneuter Fallback-Versuch neuere, nicht damit zusammenhängende Sitzungsänderungen überschreibt, etwa eine manuelle Änderung mit `/model` oder eine Aktualisierung der Sitzungsrotation, die während des laufenden Versuchs erfolgt ist.
+Die Fallback-Ausführung gilt nur für den jeweiligen Durchlauf. Der Antwort-Runner speichert ausschließlich den Zustand der Fallback-Hinweise, damit `/status` und Übergangshinweise zwischen dem ausgewählten Modell und dem antwortenden Modell unterscheiden können; er speichert den Fallback nicht als Modellauswahl für den nächsten Durchlauf.
 
-## Richtlinie für die Auswahlquelle
+## Richtlinie für Auswahlquellen
 
 Die Auswahlquelle bestimmt, ob die Fallback-Kette zulässig ist:
 
 - **Konfigurierter Standardwert**: `agents.defaults.model.primary` verwendet `agents.defaults.model.fallbacks`.
-- **Primäres Agentenmodell**: `agents.list[].model` ist strikt, sofern das Modellobjekt dieses Agenten keine eigenen `fallbacks` enthält. Verwenden Sie `fallbacks: []`, um das strikte Verhalten ausdrücklich festzulegen, oder eine nicht leere Liste, um den Modell-Fallback für diesen Agenten zu aktivieren.
-- **Automatische Fallback-Überschreibung**: Ein Laufzeit-Fallback schreibt vor dem erneuten Versuch `providerOverride`, `modelOverride`, `modelOverrideSource: "auto"` und das ausgewählte Ursprungsmodell. Mit dieser Überschreibung wird die konfigurierte Fallback-Kette weiter durchlaufen, ohne das primäre Modell bei jeder Nachricht erneut zu prüfen. OpenClaw prüft jedoch alle 5 Minuten den konfigurierten Ursprung (nicht konfigurierbar) und entfernt die Überschreibung, sobald er wieder verfügbar ist. `/new`, `/reset` und `sessions.reset` entfernen ebenfalls automatisch erzeugte Überschreibungen. Heartbeat-Ausführungen ohne explizites `heartbeat.model` entfernen direkte automatische Überschreibungen, wenn deren Ursprung nicht mehr dem aktuell konfigurierten Standardwert entspricht.
-- **Benutzerdefinierte Sitzungsüberschreibung**: `/model`, die Modellauswahl, `session_status(model=...)` und `sessions.patch` schreiben `modelOverrideSource: "user"`. Dies ist eine exakte Modellauswahl für die Sitzung. Wenn der ausgewählte Provider oder das ausgewählte Modell fehlschlägt, bevor eine Antwort erzeugt wurde, meldet OpenClaw den Fehler, anstatt mit einem nicht damit zusammenhängenden konfigurierten Fallback zu antworten.
-- **Veraltete Sitzungsüberschreibung**: Ältere Sitzungseinträge können `modelOverride` ohne `modelOverrideSource` enthalten. OpenClaw behandelt diese als Benutzerüberschreibungen, damit eine explizite alte Auswahl nicht unbemerkt in Fallback-Verhalten umgewandelt wird.
-- **Modell in Cron-Nutzdaten**: `payload.model` beziehungsweise `--model` eines Cron-Auftrags ist das primäre Modell des Auftrags und keine benutzerdefinierte Sitzungsüberschreibung. Es verwendet konfigurierte Fallbacks, sofern der Auftrag keine `payload.fallbacks` angibt; mit `payload.fallbacks: []` wird die Cron-Ausführung strikt.
+- **Primäres Agentenmodell**: `agents.entries.*.model` ist strikt, sofern das Modellobjekt dieses Agenten nicht über ein eigenes `fallbacks` verfügt. Verwenden Sie `fallbacks: []`, um das strikte Verhalten ausdrücklich festzulegen, oder eine nicht leere Liste, um den Modell-Fallback für diesen Agenten zu aktivieren.
+- **Laufzeit-Fallback**: Der Fallback-Kandidat gilt nur für den aktuellen Durchlauf. Der nächste Durchlauf beginnt wieder mit dem ausgewählten primären Modell. OpenClaw erkennt weiterhin zuvor gespeicherte `modelOverrideSource: "auto"`-Einträge, prüft deren konfigurierten Ursprung alle 5 Minuten und entfernt sie, sobald der Ursprung wieder verfügbar ist. `/new`, `/reset` und `sessions.reset` entfernen diese Einträge ebenfalls.
+- **Benutzerdefinierte Sitzungsüberschreibung**: `/model`, die Modellauswahl, `session_status(model=...)` und `sessions.patch` schreiben `modelOverrideSource: "user"`. Dies ist eine exakte Sitzungsauswahl. Wenn der ausgewählte Provider oder das ausgewählte Modell fehlschlägt, bevor eine Antwort erzeugt wurde, meldet OpenClaw den Fehler, statt mit einem nicht zugehörigen konfigurierten Fallback zu antworten.
+- **Veraltete Sitzungsüberschreibung**: Ältere Sitzungseinträge können `modelOverride` ohne `modelOverrideSource` enthalten. OpenClaw behandelt diese als Benutzerüberschreibungen, damit eine explizite alte Auswahl nicht stillschweigend in Fallback-Verhalten umgewandelt wird.
+- **Cron-Nutzlastmodell**: Ein `payload.model` / `--model` eines Cron-Jobs ist das primäre Modell des Jobs und keine benutzerdefinierte Sitzungsüberschreibung. Es verwendet konfigurierte Fallbacks, sofern der Job nicht `payload.fallbacks` bereitstellt; `payload.fallbacks: []` sorgt für eine strikte Cron-Ausführung.
 
-OpenClaw merkt sich kürzlich erfolgte Prüfungen des primären Modells je Sitzung und primärem Modell, damit ein fehlerhaftes primäres Modell nicht bei jedem Durchlauf erneut versucht wird. Es sendet einen sichtbaren Hinweis, wenn eine Sitzung zu einem Fallback wechselt, und einen weiteren Hinweis, wenn sie zum ausgewählten primären Modell zurückkehrt. Der Hinweis wird nicht bei jedem Durchlauf mit beibehaltenem Fallback wiederholt.
+OpenClaw sendet einen sichtbaren Hinweis, wenn ein Durchlauf zu einem Fallback wechselt, und einen weiteren Hinweis, wenn ein späterer Durchlauf mit dem ausgewählten primären Modell erfolgreich ist. Der gespeicherte Hinweisstatus verhindert wiederholte Hinweise, wenn aufeinanderfolgende Durchläufe dasselbe Paar aus ausgewähltem und aktivem Modell verwenden, während die Modellauswahl selbst unverändert bleibt.
 
 ## Cache zum Überspringen von Auth-Fehlern
 
-Standardmäßig behält jeder neue Durchlauf das bestehende Verhalten für erneute Fallback-Versuche bei: OpenClaw versucht jeden konfigurierten Fallback-Kandidaten erneut, einschließlich nicht primärer Kandidaten, die kürzlich mit `auth` oder `auth_permanent` fehlgeschlagen sind.
+Standardmäßig behält jeder neue Durchlauf das bestehende Wiederholungsverhalten für Fallbacks bei: OpenClaw versucht jeden konfigurierten Fallback-Kandidaten erneut, einschließlich nicht primärer Kandidaten, die kürzlich mit `auth` oder `auth_permanent` fehlgeschlagen sind.
 
 Aktivieren Sie die Unterdrückung wiederholter Auth-Fehler mit:
 
@@ -72,91 +73,94 @@ Aktivieren Sie die Unterdrückung wiederholter Auth-Fehler mit:
 OPENCLAW_FALLBACK_SKIP_TTL_MS=60000
 ```
 
-Wenn diese Option aktiviert ist, zeichnet OpenClaw nach einem Fehler der Auth-Klasse für einen nicht primären Fallback-Kandidaten eine sitzungsbezogene Überspringmarkierung im Arbeitsspeicher auf. Der Schlüssel besteht aus Sitzungs-ID, Provider und Modell. Primäre Kandidaten werden niemals übersprungen, sodass bei einer expliziten Benutzerauswahl eines Modells weiterhin der tatsächliche Auth-Fehler angezeigt wird. Der Cache ist prozesslokal und wird bei einem Neustart des Gateways geleert.
+Wenn diese Funktion aktiviert ist, speichert OpenClaw nach einem Fehler der Auth-Klasse eine sitzungsbezogene Überspringmarkierung im Arbeitsspeicher für einen nicht primären Fallback-Kandidaten. Der Schlüssel besteht aus Sitzungs-ID, Provider und Modell. Primäre Kandidaten werden niemals übersprungen, sodass bei einer expliziten Modellauswahl durch den Benutzer weiterhin der tatsächliche Auth-Fehler angezeigt wird. Der Cache ist prozesslokal und wird bei einem Neustart des Gateways geleert.
 
 Der Wert ist eine TTL in Millisekunden. `0` oder ein nicht gesetzter Wert deaktiviert den Cache. Positive Werte werden auf einen Bereich zwischen 1 Sekunde und 10 Minuten begrenzt.
 
 ## Für Benutzer sichtbare Fallback-Hinweise
 
-Wenn eine Sitzung zu einem automatisch ausgewählten Fallback wechselt, sendet OpenClaw einen Statushinweis über dieselbe Antwortoberfläche:
+Wenn eine Sitzung zu einem automatisch ausgewählten Fallback wechselt, sendet OpenClaw einen Statushinweis auf derselben Antwortoberfläche:
 
 ```text
-↪️ Model Fallback: <fallback> (selected <primary>; <reason>)
+↪️ Modell-Fallback: <fallback> (ausgewählt: <primary>; <reason>)
 ```
 
 Wenn eine spätere Prüfung erfolgreich ist und die Sitzung zum ausgewählten primären Modell zurückkehrt, sendet OpenClaw:
 
 ```text
-↪️ Model Fallback cleared: <primary> (was <fallback>)
+↪️ Modell-Fallback aufgehoben: <primary> (zuvor <fallback>)
 ```
 
-Diese Hinweise sind Betriebsnachrichten und keine Inhalte des Assistenten. Sie werden einmal je Zustandsänderung zugestellt, soweit möglich auch bei Durchläufen, die ausschließlich Nebeneffekte auslösen. Bei Durchläufen mit beibehaltenem Fallback werden sie jedoch nicht wiederholt. Die Zustellung umgeht die normale Unterdrückung von Antworten an die Quelle, belegt bei Kanälen mit Threads nicht den Platz der ersten Assistentenantwort und wird von der Sprachsynthese sowie der Extraktion von Zusagen ausgeschlossen.
+Diese Hinweise sind Betriebsmeldungen und keine Assistenteninhalte. Sie werden einmal pro Statusänderung zugestellt, nach Möglichkeit auch bei Durchläufen, die ausschließlich Nebeneffekte haben; wiederholte durchlauflokale Fallback-Übergänge führen jedoch nicht zu erneuten Hinweisen. Die Zustellung umgeht die normale Unterdrückung von Antworten an die Quelle, belegt bei Kanälen mit Threads nicht den Platz für die erste Assistentenantwort und ist von Sprachausgabe sowie Zusagenextraktion ausgeschlossen.
 
-## Auth-Speicherung (Schlüssel und OAuth)
+## Auth-Speicher (Schlüssel + OAuth)
 
 OpenClaw verwendet **Auth-Profile** sowohl für API-Schlüssel als auch für OAuth-Token.
 
-- Geheimnisse und der Laufzeitstatus der Auth-Weiterleitung befinden sich in `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`.
-- Die Konfigurationen `auth.profiles` und `auth.order` enthalten **nur Metadaten und Weiterleitungsinformationen** (keine Geheimnisse).
-- Veraltete, ausschließlich für den Import bestimmte OAuth-Datei: `~/.openclaw/credentials/oauth.json` (wird bei der ersten Verwendung in den Auth-Speicher des jeweiligen Agenten importiert).
-- Veraltete Dateien `auth-profiles.json`, `auth-state.json` und agentenspezifische `auth.json`-Dateien werden durch `openclaw doctor --fix` importiert.
+- Geheimnisse und der Laufzeitstatus des Auth-Routings befinden sich in `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`.
+- Die Konfigurationen `auth.profiles` / `auth.order` enthalten **nur Metadaten + Routing** (keine Geheimnisse).
+- Veraltete, ausschließlich für den Import vorgesehene OAuth-Datei: `~/.openclaw/credentials/oauth.json` (wird bei der ersten Verwendung in den agentenspezifischen Auth-Speicher importiert).
+- Veraltete Dateien `auth-profiles.json`, `auth-state.json` und agentenspezifische Dateien `auth.json` werden von `openclaw doctor --fix` importiert.
 
 Weitere Einzelheiten: [OAuth](/de/concepts/oauth)
 
-Typen von Zugangsdaten:
+Anmeldedatentypen:
 
 - `type: "api_key"` → `{ provider, key }`
-- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (+ `projectId`/`enterpriseUrl` bei einigen Providern)
-- `type: "token"` → statisches Token im Bearer-Stil, optional mit Ablaufzeit; OpenClaw aktualisiert es nicht (wird für `aws-sdk` und andere Auth-Modi mit Zugangsdatenketten verwendet)
+- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (+ `projectId`/`enterpriseUrl` für einige Provider)
+- `type: "token"` → statisches Token im Bearer-Stil, optional mit Ablaufzeit; OpenClaw aktualisiert es nicht (verwendet für `aws-sdk` und andere Auth-Modi mit Anmeldedatenketten)
 
 ## Profil-IDs
 
-OAuth-Anmeldungen erstellen getrennte Profile, damit mehrere Konten gleichzeitig verwendet werden können.
+OAuth-Anmeldungen erstellen separate Profile, sodass mehrere Konten nebeneinander bestehen können.
 
 - Standardwert: `provider:default`, wenn keine E-Mail-Adresse verfügbar ist.
 - OAuth mit E-Mail-Adresse: `provider:<email>` (zum Beispiel `google-antigravity:user@gmail.com`).
 
-Die Profile befinden sich im Auth-Profilspeicher der agentenspezifischen `openclaw-agent.sqlite`.
+Profile befinden sich im agentenspezifischen Auth-Profilspeicher `openclaw-agent.sqlite`.
 
 ## Rotationsreihenfolge
 
-Wenn ein Provider über mehrere Profile verfügt, bestimmt OpenClaw die Reihenfolge folgendermaßen:
+Wenn ein Provider über mehrere Profile verfügt, bestimmt OpenClaw die Reihenfolge wie folgt:
 
 <Steps>
-  <Step title="Explicit config">
+  <Step title="Explizite Konfiguration">
     `auth.order[provider]` (sofern festgelegt).
   </Step>
-  <Step title="Configured profiles">
+  <Step title="Konfigurierte Profile">
     `auth.profiles`, nach Provider gefiltert.
   </Step>
-  <Step title="Stored profiles">
-    Agentenspezifische Einträge für Auth-Profile des Providers in SQLite.
+  <Step title="Gespeicherte Profile">
+    Agentenspezifische SQLite-Auth-Profileinträge für den Provider.
   </Step>
 </Steps>
 
 Wenn keine explizite Reihenfolge konfiguriert ist, verwendet OpenClaw eine Round-Robin-Reihenfolge:
 
-- **Primärer Schlüssel:** Profiltyp (**OAuth, dann statisches Token, dann API-Schlüssel**).
-- **Sekundärer Schlüssel:** `usageStats.lastUsed` (innerhalb jedes Typs zuerst der älteste Wert).
-- **Profile mit Abklingzeit oder deaktivierte Profile** werden ans Ende verschoben und nach dem frühesten Ablaufzeitpunkt sortiert.
+- **Primärschlüssel:** Profiltyp (**OAuth, dann statisches Token, dann API-Schlüssel**).
+- **Sekundärschlüssel für OAuth:** Profile mit einem aktuell verwendbaren Zugriffstoken vor
+  Profilen, deren Zugriffstoken abgelaufen ist. Abgelaufene OAuth-Profile bleiben auswählbar, damit
+  die Laufzeit sie aktualisieren kann, wenn kein verwendbares anderes Profil verfügbar ist.
+- **Nächster Schlüssel:** `usageStats.lastUsed` (älteste zuerst, innerhalb jeder Typ-/Statusstufe).
+- **Profile im Cooldown oder deaktivierte Profile** werden ans Ende verschoben und nach dem frühesten Ablaufzeitpunkt sortiert.
 
 ### Sitzungsbindung (cachefreundlich)
 
-OpenClaw **bindet das ausgewählte Auth-Profil an die jeweilige Sitzung**, damit die Provider-Caches verfügbar bleiben. Es rotiert **nicht** bei jeder Anfrage. Das gebundene Profil wird wiederverwendet, bis:
+OpenClaw **bindet das ausgewählte Auth-Profil an die jeweilige Sitzung**, um die Provider-Caches warm zu halten. Es rotiert **nicht** bei jeder Anfrage. Das gebundene Profil wird wiederverwendet, bis:
 
 - die Sitzung zurückgesetzt wird (`/new` / `/reset`)
 - eine Compaction abgeschlossen wird (der Compaction-Zähler wird erhöht)
-- sich das Profil in einer Abklingzeit befindet oder deaktiviert ist
+- sich das Profil im Cooldown befindet oder deaktiviert ist
 
-Eine manuelle Auswahl über `/model …@<profileId>` legt für diese Sitzung eine **Benutzerüberschreibung** fest und wird bis zum Beginn einer neuen Sitzung nicht automatisch rotiert.
+Die manuelle Auswahl über `/model …@<profileId>` legt eine **Benutzerüberschreibung** für diese Sitzung fest und wird bis zum Beginn einer neuen Sitzung nicht automatisch rotiert.
 
 <Note>
-Automatisch gebundene Profile, die vom Sitzungsrouter ausgewählt wurden, werden als **Präferenz** behandelt: Sie werden zuerst versucht, OpenClaw kann bei Ratenbegrenzungen oder Zeitüberschreitungen jedoch zu einem anderen Profil wechseln. Wenn das ursprüngliche Profil wieder verfügbar ist, können neue Ausführungen es erneut bevorzugen, ohne das ausgewählte Modell oder die Laufzeit zu ändern. Vom Benutzer gebundene Profile bleiben auf dieses Profil festgelegt. Wenn es fehlschlägt und Modell-Fallbacks konfiguriert sind, wechselt OpenClaw zum nächsten Modell, anstatt das Profil zu wechseln.
+Automatisch gebundene Profile (vom Sitzungsrouter ausgewählt) werden als **Präferenz** behandelt: Sie werden zuerst versucht, OpenClaw kann bei Ratenbegrenzungen oder Zeitüberschreitungen jedoch zu einem anderen Profil rotieren. Wenn das ursprüngliche Profil wieder verfügbar ist, können neue Ausführungen es erneut bevorzugen, ohne das ausgewählte Modell oder die Laufzeit zu ändern. Vom Benutzer gebundene Profile bleiben auf dieses Profil festgelegt; wenn es fehlschlägt und Modell-Fallbacks konfiguriert sind, wechselt OpenClaw zum nächsten Modell, statt das Profil zu wechseln.
 </Note>
 
-### OpenAI-Codex-Abonnement mit API-Schlüssel als Reserve
+### OpenAI-Codex-Abonnement mit API-Schlüssel als Absicherung
 
-Bei OpenAI-Agentenmodellen sind Authentifizierung und Laufzeit voneinander getrennt. `openai/gpt-*` verbleibt im Codex-Harness, während die Authentifizierung zwischen einem Codex-Abonnementprofil und einem OpenAI-API-Schlüssel als Reserve rotieren kann.
+Bei OpenAI-Agentenmodellen sind Authentifizierung und Laufzeit voneinander getrennt. `openai/gpt-*` verbleibt im Codex-Harness, während die Authentifizierung zwischen einem Codex-Abonnementprofil und einem OpenAI-API-Schlüssel als Absicherung rotieren kann.
 
 Verwenden Sie `auth.order.openai` für die benutzerseitige Reihenfolge:
 
@@ -170,47 +174,49 @@ Verwenden Sie `auth.order.openai` für die benutzerseitige Reihenfolge:
 }
 ```
 
-Verwenden Sie `openai:*` sowohl für ChatGPT-/Codex-OAuth-Profile als auch für OpenAI-API-Schlüsselprofile. Wenn das Abonnement ein Codex-Nutzungslimit erreicht, speichert OpenClaw den genauen Zeitpunkt der Zurücksetzung, sofern Codex einen bereitstellt, versucht das nächste Auth-Profil in der festgelegten Reihenfolge und belässt die Ausführung im Codex-Harness. Sobald der Zeitpunkt der Zurücksetzung verstrichen ist, ist das Abonnementprofil wieder verfügbar, und die nächste automatische Auswahl kann zu ihm zurückkehren.
+Verwenden Sie `openai:*` sowohl für ChatGPT-/Codex-OAuth-Profile als auch für OpenAI-API-Schlüsselprofile. Wenn das Abonnement ein Codex-Nutzungslimit erreicht, speichert OpenClaw den exakten Rücksetzzeitpunkt, sofern Codex einen bereitstellt, versucht das nächste Auth-Profil in der Reihenfolge und belässt die Ausführung im Codex-Harness. Sobald der Rücksetzzeitpunkt verstrichen ist, kann das Abonnementprofil wieder ausgewählt werden, und die nächste automatische Auswahl kann dorthin zurückkehren.
 
-Verwenden Sie ein vom Benutzer gebundenes Profil nur, wenn Sie für diese Sitzung die Verwendung eines bestimmten Kontos oder Schlüssels erzwingen möchten. Vom Benutzer gebundene Profile sind absichtlich strikt und wechseln nicht unbemerkt zu einem anderen Profil.
+Verwenden Sie ein vom Benutzer gebundenes Profil nur, wenn für diese Sitzung die Verwendung eines bestimmten Kontos oder Schlüssels erzwungen werden soll. Vom Benutzer gebundene Profile sind absichtlich strikt und wechseln nicht stillschweigend zu einem anderen Profil.
 
-## Abklingzeiten
+## Cooldowns
 
-Wenn ein Profil aufgrund von Auth- oder Ratenbegrenzungsfehlern fehlschlägt oder eine Zeitüberschreitung auftritt, die wie eine Ratenbegrenzung wirkt, versetzt OpenClaw es in eine Abklingzeit und wechselt zum nächsten Profil.
+Wenn ein Profil aufgrund von Auth- oder Ratenbegrenzungsfehlern fehlschlägt (oder aufgrund einer Zeitüberschreitung, die wie eine Ratenbegrenzung wirkt), versetzt OpenClaw es in den Cooldown und wechselt zum nächsten Profil.
 
 <AccordionGroup>
-  <Accordion title="What lands in the rate-limit / timeout bucket">
-    Diese Kategorie für Ratenbegrenzungen ist umfassender als ein einfacher `429`-Fehler: Sie umfasst auch Provider-Meldungen wie `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` sowie periodische Begrenzungen von Nutzungszeiträumen wie `weekly limit reached` oder `monthly limit exhausted`.
+  <Accordion title="Was der Kategorie für Ratenbegrenzung/Zeitüberschreitung zugeordnet wird">
+    Diese Ratenbegrenzungskategorie ist umfassender als lediglich `429`: Sie schließt auch Provider-Meldungen wie `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` sowie regelmäßige Nutzungslimits wie `weekly limit reached` oder `monthly limit exhausted` ein.
 
-    Format- und Fehler aufgrund ungültiger Anfragen sind üblicherweise endgültig, da ein erneuter Versuch mit denselben Nutzdaten auf dieselbe Weise fehlschlagen würde. OpenClaw zeigt sie daher an, anstatt die Auth-Profile zu rotieren. Bekannte Reparaturpfade für erneute Versuche können ausdrücklich aktiviert werden: Beispielsweise werden Fehler bei der Validierung von Tool-Aufruf-IDs in Cloud Code Assist bereinigt und über die Richtlinie `allowFormatRetry` einmal erneut versucht. OpenAI-kompatible Fehler zum Beendigungsgrund wie `Unhandled stop reason: error`, `stop reason: error` und `reason: error` werden als Signale für Zeitüberschreitung oder Failover klassifiziert.
+    Format- und Fehler aufgrund ungültiger Anfragen sind in der Regel endgültig, da ein erneuter Versuch mit derselben Nutzlast auf dieselbe Weise fehlschlagen würde. Daher zeigt OpenClaw sie an, statt die Auth-Profile zu rotieren. Bekannte Wiederholungs- und Reparaturpfade können ausdrücklich aktiviert werden: Beispielsweise werden Validierungsfehler bei Tool-Aufruf-IDs von Cloud Code Assist bereinigt und gemäß der Richtlinie `allowFormatRetry` einmal erneut versucht.
 
-    Allgemeiner Servertext kann ebenfalls dieser Kategorie für Zeitüberschreitungen zugeordnet werden, wenn die Quelle einem bekannten vorübergehenden Muster entspricht. Beispielsweise wird die unveränderte Stream-Wrapper-Meldung der Modelllaufzeit `An unknown error occurred` bei jedem Provider als Grund für einen Failover behandelt, da die gemeinsame Modelllaufzeit sie ausgibt, wenn Provider-Streams ohne nähere Einzelheiten mit `stopReason: "aborted"` oder `stopReason: "error"` enden. JSON-Nutzdaten vom Typ `api_error` mit vorübergehendem Servertext wie `internal server error`, `unknown error, 520`, `upstream error` oder `backend error` werden ebenfalls als Zeitüberschreitungen behandelt, die einen Failover rechtfertigen.
+    OpenAI-kompatible, **vom Provider abgeschlossene** Stopp-/Beendigungsgründe wie `Unhandled stop reason: error`, `stop reason: error`, `reason: error` und `Provider finish_reason: error` werden als **`server_error`** (HTTP-ähnlicher Status 500) und nicht als Zeitüberschreitung klassifiziert. Sie bleiben für Failover durch Modell-/Profilrotation geeignet, die Diagnose behält jedoch den Text des Beendigungsgrunds des Providers bei, statt den Benutzertext in „Zeitüberschreitung der LLM-Anfrage.“ umzuschreiben. Transportbezogene Beendigungsgründe wie `Provider finish_reason: abort`, `network_error` und `malformed_response` verbleiben in der Kategorie für Zeitüberschreitung/Failover (Status 408).
 
-    OpenRouter-spezifischer allgemeiner Upstream-Text wie das unveränderte `Provider returned error` wird nur dann als Zeitüberschreitung behandelt, wenn der Provider-Kontext tatsächlich OpenRouter ist. Allgemeiner interner Fallback-Text wie `LLM request failed with an unknown error.` wird weiterhin zurückhaltend behandelt und löst allein keinen Failover aus.
+    Generischer Servertext kann ebenfalls dieser Zeitüberschreitungskategorie zugeordnet werden, wenn die Quelle einem bekannten vorübergehenden Muster entspricht. Beispielsweise wird die reine Stream-Wrapper-Meldung der Modelllaufzeit `An unknown error occurred` für jeden Provider als Failover-relevant behandelt, da die gemeinsame Modelllaufzeit sie ausgibt, wenn Provider-Streams ohne spezifische Details mit `stopReason: "aborted"` oder `stopReason: "error"` enden. JSON-Nutzlasten vom Typ `api_error` mit vorübergehendem Servertext wie `internal server error`, `unknown error, 520`, `upstream error` oder `backend error` werden ebenfalls als Failover-relevante Zeitüberschreitungen behandelt.
+
+    OpenRouter-spezifischer generischer Upstream-Text wie etwa ein alleinstehendes `Provider returned error` wird nur dann als Zeitüberschreitung behandelt, wenn der Provider-Kontext tatsächlich OpenRouter ist. Generischer interner Fallback-Text wie `LLM request failed with an unknown error.` bleibt konservativ und löst für sich allein keinen Failover aus.
 
   </Accordion>
-  <Accordion title="Obergrenzen für SDK-Retry-After">
-    Einige Provider-SDKs warten andernfalls möglicherweise lange innerhalb eines `Retry-After`-Zeitfensters, bevor sie die Kontrolle an OpenClaw zurückgeben. Bei Stainless-basierten SDKs wie Anthropic und OpenAI begrenzt OpenClaw SDK-interne Wartezeiten für `retry-after-ms` / `retry-after` standardmäßig auf 60 Sekunden und gibt länger dauernde, wiederholbare Antworten sofort weiter, damit dieser Failover-Pfad ausgeführt werden kann. Passen Sie die Obergrenze mit `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS` an oder deaktivieren Sie sie; siehe [Wiederholungsverhalten](/de/concepts/retry).
+  <Accordion title="Retry-after-Obergrenzen des SDK">
+    Einige Provider-SDKs würden andernfalls möglicherweise für ein langes `Retry-After`-Zeitfenster pausieren, bevor sie die Kontrolle an OpenClaw zurückgeben. Bei Stainless-basierten SDKs wie Anthropic und OpenAI begrenzt OpenClaw SDK-interne Wartezeiten für `retry-after-ms` / `retry-after` standardmäßig auf 60 Sekunden und gibt länger dauernde wiederholbare Antworten sofort weiter, damit dieser Failover-Pfad ausgeführt werden kann. Passen Sie die Obergrenze mit `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS` an oder deaktivieren Sie sie; siehe [Wiederholungsverhalten](/de/concepts/retry).
   </Accordion>
   <Accordion title="Modellspezifische Abklingzeiten">
-    Abklingzeiten für Ratenbegrenzungen können ebenfalls modellspezifisch sein:
+    Abklingzeiten für Ratenbegrenzungen können auch modellspezifisch sein:
 
-    - OpenClaw erfasst bei Ratenbegrenzungsfehlern `cooldownModel`, wenn die ID des fehlgeschlagenen Modells bekannt ist.
-    - Ein anderes Modell desselben Providers kann weiterhin versucht werden, wenn die Abklingzeit für ein anderes Modell gilt.
-    - Zeitfenster für Abrechnungsfehler oder Deaktivierungen sperren weiterhin das gesamte Profil für alle Modelle.
+    - OpenClaw zeichnet bei Ratenbegrenzungsfehlern `cooldownModel` auf, wenn die ID des fehlgeschlagenen Modells bekannt ist.
+    - Ein verwandtes Modell beim selben Provider kann weiterhin ausprobiert werden, wenn die Abklingzeit für ein anderes Modell gilt.
+    - Abrechnungs-/Deaktivierungszeiträume blockieren weiterhin das gesamte Profil über alle Modelle hinweg.
 
   </Accordion>
 </AccordionGroup>
 
-Reguläre Abklingzeiten (weder Abrechnungsfehler noch dauerhafte Authentifizierungsfehler) skalieren mit der Anzahl der kürzlich aufgetretenen Fehler des Profils:
+Reguläre Abklingzeiten (weder abrechnungsbedingt noch dauerhaft authentifizierungsbedingt) richten sich nach der Anzahl der kürzlich aufgetretenen Fehler des Profils:
 
-- 1. Fehler: 30 Sekunden
-- 2. Fehler: 1 Minute
+- 1\. Fehler: 30 Sekunden
+- 2\. Fehler: 1 Minute
 - Ab dem 3. Fehler: 5 Minuten (Obergrenze)
 
-Die Zähler werden zurückgesetzt, sobald das Fehlerzeitfenster des Profils abgelaufen ist (`auth.cooldowns.failureWindowHours`, Standardwert 24).
+Die Zähler werden zurückgesetzt, sobald das integrierte Fehlerzeitfenster des Profils abgelaufen ist.
 
-Der Status wird im agentenspezifischen SQLite-Authentifizierungsstatus unter `usageStats` gespeichert:
+Der Zustand wird im agentenspezifischen SQLite-Authentifizierungszustand unter `usageStats` gespeichert:
 
 ```json
 {
@@ -224,19 +230,19 @@ Der Status wird im agentenspezifischen SQLite-Authentifizierungsstatus unter `us
 }
 ```
 
-## Deaktivierungen aufgrund von Abrechnungsfehlern
+## Deaktivierungen wegen Abrechnungsproblemen
 
-Abrechnungs- oder Guthabenfehler (beispielsweise „unzureichendes Guthaben“ / „Guthabenstand zu niedrig“) werden als Grund für einen Failover behandelt, sind jedoch normalerweise nicht vorübergehend. Statt einer kurzen Abklingzeit markiert OpenClaw das Profil als **deaktiviert** (mit einer längeren Wartezeit) und wechselt zum nächsten Profil beziehungsweise Provider.
+Abrechnungs-/Guthabenfehler (zum Beispiel „insufficient credits“ / „credit balance too low“) werden als Grund für einen Failover behandelt, sind jedoch normalerweise nicht vorübergehend. Statt einer kurzen Abklingzeit markiert OpenClaw das Profil als **deaktiviert** (mit einem längeren Backoff) und wechselt zum nächsten Profil/Provider.
 
 <Note>
-Nicht jede Antwort, die auf ein Abrechnungsproblem hindeutet, verwendet `402`, und nicht jeder HTTP-Status `402` wird hier eingeordnet. OpenClaw ordnet eindeutige Abrechnungstexte weiterhin der Abrechnungskategorie zu, auch wenn ein Provider stattdessen `401` oder `403` zurückgibt. Providerspezifische Erkennungsmuster bleiben jedoch auf den jeweiligen Provider beschränkt (beispielsweise OpenRouter `403 Key limit exceeded`).
+Nicht jede Antwort, die wie ein Abrechnungsfehler aussieht, ist `402`, und nicht jeder HTTP-Status `402` fällt in diese Kategorie. OpenClaw ordnet eindeutigen Abrechnungstext auch dann der Abrechnungskategorie zu, wenn ein Provider stattdessen `401` oder `403` zurückgibt. Provider-spezifische Matcher bleiben jedoch auf den jeweiligen Provider beschränkt (zum Beispiel OpenRouter `403 Key limit exceeded`).
 
-Vorübergehende `402`-Fehler aufgrund von Nutzungszeitfenstern sowie Ausgabenlimits von Organisationen oder Arbeitsbereichen werden dagegen als `rate_limit` klassifiziert, wenn die Meldung auf einen wiederholbaren Vorgang hindeutet (beispielsweise `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` oder `organization spending limit exceeded`). Diese Fehler verbleiben auf dem Pfad mit kurzer Abklingzeit und Failover, statt dem Pfad mit langfristiger Deaktivierung aufgrund eines Abrechnungsfehlers zu folgen.
+Vorübergehende `402`-Fehler bei Nutzungszeitfenstern und Ausgabenlimits von Organisationen/Arbeitsbereichen werden dagegen als `rate_limit` klassifiziert, wenn die Meldung wiederholbar erscheint (zum Beispiel `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` oder `organization spending limit exceeded`). Diese verbleiben auf dem Pfad für kurze Abklingzeiten und Failover statt auf dem Pfad für langfristige Deaktivierungen wegen Abrechnungsproblemen.
 </Note>
 
-Mit hoher Sicherheit dauerhafte Authentifizierungsfehler (widerrufene oder deaktivierte Schlüssel sowie deaktivierte Arbeitsbereiche) werden ähnlich behandelt und führen ebenfalls zu einer Deaktivierung. Die Wiederherstellung erfolgt jedoch deutlich früher als bei Abrechnungsfehlern, da manche Provider bei Störungen vorübergehend Antworten liefern, die wie Authentifizierungsfehler aussehen.
+Mit hoher Sicherheit dauerhafte Authentifizierungsfehler (widerrufene/deaktivierte Schlüssel, deaktivierte Arbeitsbereiche) werden ähnlich deaktiviert, erholen sich jedoch wesentlich früher als Abrechnungsfehler, da einige Provider bei Störungen vorübergehend wie Authentifizierungsfehler aussehende Nutzdaten zurückgeben.
 
-Der Status wird im agentenspezifischen SQLite-Authentifizierungsstatus gespeichert:
+Der Zustand wird im agentenspezifischen SQLite-Authentifizierungszustand gespeichert:
 
 ```json
 {
@@ -249,28 +255,17 @@ Der Status wird im agentenspezifischen SQLite-Authentifizierungsstatus gespeiche
 }
 ```
 
-Standardwerte (`auth.cooldowns.*`):
-
-| Schlüssel                      | Standardwert | Zweck                                                                                       |
-| ------------------------------ | ------------ | ------------------------------------------------------------------------------------------- |
-| `billingBackoffHours`          | 5            | Grundwartezeit bei Abrechnungsfehlern; verdoppelt sich mit jedem Abrechnungsfehler           |
-| `billingMaxHours`              | 24           | Obergrenze der Wartezeit bei Abrechnungsfehlern                                              |
-| `authPermanentBackoffMinutes`  | 10           | Grundwartezeit bei mit hoher Sicherheit dauerhaften Authentifizierungsfehlern                |
-| `authPermanentMaxMinutes`      | 60           | Obergrenze dieser Wartezeit                                                                  |
-| `failureWindowHours`           | 24           | Fehlerzähler werden zurückgesetzt, wenn in diesem Zeitfenster keine Fehler auftreten         |
-| `overloadedProfileRotations`   | 1            | Zulässige Profilwechsel innerhalb desselben Providers vor dem Modell-Fallback bei Überlastung |
-| `overloadedBackoffMs`          | 0            | Feste Verzögerung vor einem erneuten Versuch nach einem Profilwechsel bei Überlastung         |
-| `rateLimitedProfileRotations`  | 1            | Zulässige Profilwechsel innerhalb desselben Providers vor dem Modell-Fallback bei Ratenbegrenzung |
-
-Überlastungs- und Ratenbegrenzungsfehler werden aggressiver behandelt als Abklingzeiten bei Abrechnungsfehlern: Standardmäßig erlaubt OpenClaw einen erneuten Versuch mit einem anderen Authentifizierungsprofil desselben Providers und wechselt anschließend ohne Wartezeit zum nächsten konfigurierten Fallback-Modell.
+Überlastungs- und Ratenbegrenzungsfehler werden aggressiver behandelt als Abrechnungs-Abklingzeiten: Standardmäßig erlaubt OpenClaw einen erneuten Versuch mit einem Authentifizierungsprofil desselben Providers und wechselt anschließend ohne Wartezeit zum nächsten konfigurierten Modell-Fallback.
 
 ## Modell-Fallback
 
-Wenn alle Profile eines Providers fehlschlagen, wechselt OpenClaw zum nächsten Modell in `agents.defaults.model.fallbacks`. Dies gilt für Authentifizierungsfehler, Ratenbegrenzungen und Zeitüberschreitungen, nachdem sämtliche Profilwechsel ausgeschöpft wurden. Andere Fehler lösen keinen Wechsel zum Fallback aus. Providerfehler, die nicht genügend Details enthalten, werden im Fallback-Status dennoch präzise gekennzeichnet: `empty_response` bedeutet, dass der Provider weder eine verwendbare Meldung noch einen verwendbaren Status zurückgegeben hat, `no_error_details` bedeutet, dass der Provider ausdrücklich `Unknown error (no error details in response)` zurückgegeben hat, und `unclassified` bedeutet, dass OpenClaw die unverarbeitete Vorschau beibehalten hat, aber noch keine Klassifizierung darauf zutraf.
+Wenn alle Profile eines Providers fehlschlagen, wechselt OpenClaw zum nächsten Modell in `agents.defaults.model.fallbacks`. Dies gilt für Authentifizierungsfehler, Ratenbegrenzungen und Zeitüberschreitungen, bei denen die Profilrotation ausgeschöpft wurde (andere Fehler lösen keinen weiteren Fallback aus). Provider-Fehler, die nicht genügend Details bereitstellen, werden im Fallback-Zustand dennoch präzise gekennzeichnet: `empty_response` bedeutet, dass der Provider weder eine verwendbare Meldung noch einen verwendbaren Status zurückgegeben hat, `no_error_details` bedeutet, dass der Provider ausdrücklich `Unknown error (no error details in response)` zurückgegeben hat, und `unclassified` bedeutet, dass OpenClaw die unverarbeitete Vorschau beibehalten hat, bisher jedoch kein Klassifikator darauf zutraf.
 
-Signale für einen ausgelasteten Provider wie `ModelNotReadyException` werden der Überlastungskategorie zugeordnet und folgen derselben Richtlinie „ein Profilwechsel, dann Fallback“ wie Ratenbegrenzungen (siehe die Tabelle mit den Standardwerten oben).
+Signale für eine Auslastung des Providers wie `ModelNotReadyException` fallen in die Überlastungskategorie und folgen derselben Richtlinie „eine Rotation, dann Fallback“ wie Ratenbegrenzungen (siehe die Standardwerttabelle oben).
 
-Wenn ein Durchlauf mit dem konfigurierten primären Standardmodell, dem primären Modell eines Cron-Auftrags, dem primären Modell eines Agenten mit expliziten Fallbacks oder einer automatisch ausgewählten Fallback-Überschreibung beginnt, kann OpenClaw die passende konfigurierte Fallback-Kette durchlaufen. Primäre Agentenmodelle ohne explizite Fallbacks und explizite Benutzerauswahlen (beispielsweise `/model ollama/qwen3.5:27b`, die Modellauswahl, `sessions.patch` oder einmalige CLI-Überschreibungen für Provider und Modell) werden strikt behandelt: Wenn dieser Provider beziehungsweise dieses Modell nicht erreichbar ist oder vor der Ausgabe einer Antwort fehlschlägt, meldet OpenClaw den Fehler, statt über einen nicht zugehörigen Fallback zu antworten.
+Wenn die gesamte Kandidatenkette ausschließlich aufgrund von Überlastungsfehlern ausgeschöpft wird, versucht der Antwort-Runner die Kette im selben Durchlauf bis zu 10-mal erneut. Eine Wiederholung des gesamten Durchlaufs ist nur zulässig, bevor die Werkzeugausführung oder die Assistentenausgabe beginnt. Dadurch werden doppelte Änderungen oder Nachrichten vermieden, falls nach bereits wahrnehmbarer Arbeit eine Überlastung auftritt. Der Backoff beginnt bei 2,5 Sekunden und verdoppelt sich bis zu einer Obergrenze von 30 Sekunden. Sobald der Durchlauf 30 Sekunden gewartet hat, sendet OpenClaw einmalig einen vorübergehenden Statushinweis: `The AI service is temporarily overloaded. I’m still retrying; this may take a few minutes.` Der erneute Versuch und ein möglicher erfolgreicher Fallback bleiben auf den aktuellen Durchlauf beschränkt; für gewöhnliche vorübergehende Serverfehler gilt weiterhin die separate Richtlinie mit einem erneuten Versuch.
+
+Wenn ein Lauf mit dem konfigurierten standardmäßigen Primärmodell, dem Primärmodell eines Cron-Jobs, dem Primärmodell eines Agenten mit expliziten Fallbacks oder einer automatisch ausgewählten Fallback-Überschreibung beginnt, kann OpenClaw die entsprechende konfigurierte Fallback-Kette durchlaufen. Agenten-Primärmodelle ohne explizite Fallbacks und explizite Benutzerauswahlen (zum Beispiel `/model ollama/qwen3.5:27b`, die Modellauswahl, `sessions.patch` oder einmalige CLI-Überschreibungen für Provider/Modell) sind strikt: Wenn dieser Provider bzw. dieses Modell nicht erreichbar ist oder vor dem Erzeugen einer Antwort fehlschlägt, meldet OpenClaw den Fehler, statt mit einem nicht zugehörigen Fallback zu antworten.
 
 ### Regeln für die Kandidatenkette
 
@@ -280,10 +275,10 @@ OpenClaw erstellt die Kandidatenliste aus dem aktuell angeforderten `provider/mo
   <Accordion title="Regeln">
     - Das angeforderte Modell steht immer an erster Stelle.
     - Explizit konfigurierte Fallbacks werden dedupliziert, jedoch nicht anhand der Modell-Zulassungsliste gefiltert. Sie gelten als ausdrückliche Absicht des Betreibers.
-    - Wenn der aktuelle Durchlauf bereits ein konfiguriertes Fallback derselben Providerfamilie verwendet, nutzt OpenClaw weiterhin die vollständige konfigurierte Kette.
-    - Wenn keine explizite Fallback-Überschreibung angegeben ist, werden konfigurierte Fallbacks vor dem konfigurierten primären Modell versucht, selbst wenn das angeforderte Modell einen anderen Provider verwendet.
-    - Wenn dem Fallback-Runner keine explizite Fallback-Überschreibung übergeben wird, wird das konfigurierte primäre Modell am Ende angefügt, damit die Kette nach Ausschöpfung früherer Kandidaten wieder beim regulären Standardmodell ankommen kann.
-    - Wenn ein Aufrufer `fallbacksOverride` angibt, verwendet der Runner ausschließlich das angeforderte Modell und diese Überschreibungsliste. Eine leere Liste deaktiviert den Modell-Fallback und verhindert, dass das konfigurierte primäre Modell als verborgenes Ziel für einen erneuten Versuch angefügt wird.
+    - Wenn der aktuelle Lauf bereits einen konfigurierten Fallback derselben Provider-Familie verwendet, nutzt OpenClaw weiterhin die gesamte konfigurierte Kette.
+    - Wenn keine explizite Fallback-Überschreibung angegeben ist, werden konfigurierte Fallbacks vor dem konfigurierten Primärmodell ausprobiert, selbst wenn das angeforderte Modell einen anderen Provider verwendet.
+    - Wenn dem Fallback-Runner keine explizite Fallback-Überschreibung übergeben wird, wird das konfigurierte Primärmodell am Ende angefügt, damit die Kette nach Ausschöpfung früherer Kandidaten wieder zum regulären Standardmodell zurückkehren kann.
+    - Wenn ein Aufrufer `fallbacksOverride` angibt, verwendet der Runner genau das angeforderte Modell und diese Überschreibungsliste. Eine leere Liste deaktiviert den Modell-Fallback und verhindert, dass das konfigurierte Primärmodell als verborgenes Ziel für einen erneuten Versuch angefügt wird.
 
   </Accordion>
 </AccordionGroup>
@@ -294,75 +289,54 @@ OpenClaw erstellt die Kandidatenliste aus dem aktuell angeforderten `provider/mo
   <Tab title="Fortsetzung bei">
     - Authentifizierungsfehlern
     - Ratenbegrenzungen und ausgeschöpften Abklingzeiten
-    - Überlastungsfehlern oder ausgelasteten Providern
+    - Überlastungsfehlern bzw. Auslastung des Providers
     - Failover-Fehlern in Form einer Zeitüberschreitung
-    - Deaktivierungen aufgrund von Abrechnungsfehlern
-    - `LiveSessionModelSwitchError`, der in einen Failover-Pfad normalisiert wird, damit ein veraltetes persistiertes Modell keine äußere Wiederholungsschleife verursacht
-    - anderen nicht erkannten Fehlern, solange noch Kandidaten verbleiben
+    - Deaktivierungen wegen Abrechnungsproblemen
+    - `LiveSessionModelSwitchError`, das in einen Failover-Pfad normalisiert wird, damit ein veraltetes persistiertes Modell keine äußere Wiederholungsschleife erzeugt
+    - anderen nicht erkannten Fehlern, solange noch weitere Kandidaten vorhanden sind
 
   </Tab>
   <Tab title="Keine Fortsetzung bei">
-    - expliziten Abbrüchen, die nicht einer Zeitüberschreitung oder einem Failover entsprechen
-    - Kontextüberlauffehlern, die innerhalb der Compaction- und Wiederholungslogik verbleiben sollten (beispielsweise `request_too_large`, `input token count exceeds the maximum number of input tokens`, `input exceeds the maximum number of tokens`, `input too long for the model` oder `ollama error: context length exceeded`)
+    - expliziten Abbrüchen, die nicht wie eine Zeitüberschreitung oder ein Failover aussehen
+    - Kontextüberlauffehlern, die innerhalb der Compaction-/Wiederholungslogik verbleiben sollen (zum Beispiel `request_too_large`, `input token count exceeds the maximum number of input tokens`, `input exceeds the maximum number of tokens`, `input too long for the model` oder `ollama error: context length exceeded`)
     - einem abschließenden unbekannten Fehler, wenn keine Kandidaten mehr vorhanden sind
-    - Sicherheitsablehnungen von Claude Fable 5; direkte Anfragen mit API-Schlüssel behandeln diese stattdessen auf Providerebene über Anthropics serverseitigen Fallback auf `claude-opus-4-8` (siehe [Anthropic](/de/providers/anthropic#safety-refusal-fallback-claude-fable-5))
+    - Sicherheitsablehnungen von Claude Fable 5; direkte Anfragen mit API-Schlüssel behandeln diese stattdessen auf Provider-Ebene über Anthropics serverseitigen Fallback auf `claude-opus-4-8` (siehe [Anthropic](/de/providers/anthropic#safety-refusal-fallback-claude-fable-5))
 
   </Tab>
 </Tabs>
 
-### Verhalten beim Überspringen und Prüfen von Abklingzeiten
+### Verhalten beim Überspringen oder Prüfen während der Abklingzeit
 
-Wenn sich alle Authentifizierungsprofile eines Providers bereits in der Abklingzeit befinden, überspringt OpenClaw diesen Provider nicht automatisch dauerhaft. Stattdessen trifft es für jeden Kandidaten eine eigene Entscheidung:
+Wenn sich bereits alle Authentifizierungsprofile eines Providers in einer Abklingzeit befinden, überspringt OpenClaw diesen Provider nicht automatisch dauerhaft. Die Entscheidung wird für jeden Kandidaten einzeln getroffen:
 
 <AccordionGroup>
   <Accordion title="Entscheidungen pro Kandidat">
-    - Dauerhafte Authentifizierungsfehler führen dazu, dass der gesamte Provider sofort übersprungen wird.
-    - Deaktivierungen aufgrund von Abrechnungsfehlern führen normalerweise zum Überspringen, der primäre Kandidat kann jedoch weiterhin gedrosselt geprüft werden, damit eine Wiederherstellung ohne Neustart möglich ist.
-    - Der primäre Kandidat kann kurz vor Ablauf der Abklingzeit mit einer providerspezifischen Drosselung geprüft werden.
-    - Andere Fallback-Modelle desselben Providers können trotz Abklingzeit versucht werden, wenn der Fehler vorübergehend erscheint (`rate_limit`, `overloaded` oder unbekannt). Dies ist besonders relevant, wenn eine Ratenbegrenzung modellspezifisch ist und ein anderes Modell möglicherweise sofort wieder funktioniert.
-    - Prüfungen vorübergehender Abklingzeiten sind auf eine pro Provider und Fallback-Durchlauf begrenzt, damit ein einzelner Provider den providerübergreifenden Fallback nicht verzögert.
+    - Dauerhafte Authentifizierungsfehler führen zum sofortigen Überspringen des gesamten Providers.
+    - Deaktivierungen wegen Abrechnungsproblemen führen normalerweise zum Überspringen, der Primärkandidat kann jedoch gedrosselt geprüft werden, sodass eine Wiederherstellung ohne Neustart möglich ist.
+    - Der Primärkandidat kann kurz vor Ablauf der Abklingzeit geprüft werden, mit einer Drosselung pro Provider.
+    - Fallback-Geschwistermodelle desselben Providers können trotz Abklingzeit ausprobiert werden, wenn der Fehler vorübergehend erscheint (`rate_limit`, `overloaded` oder unbekannt). Dies ist besonders relevant, wenn eine Ratenbegrenzung modellspezifisch ist und ein Geschwistermodell möglicherweise sofort wieder funktioniert.
+    - Vorübergehende Prüfungen während der Abklingzeit sind auf eine Prüfung pro Provider und Fallback-Lauf begrenzt, damit ein einzelner Provider den Provider-übergreifenden Fallback nicht verzögert.
 
   </Accordion>
 </AccordionGroup>
 
-## Sitzungsüberschreibungen und Modellwechsel während des Betriebs
+## Sitzungsüberschreibungen und Live-Modellwechsel
 
-Änderungen des Sitzungsmodells sind ein gemeinsamer Status. Der aktive Runner, der Befehl `/model`, Compaction- und Sitzungsaktualisierungen sowie der Abgleich laufender Sitzungen lesen oder schreiben jeweils Teile desselben Sitzungseintrags.
+Änderungen des Sitzungsmodells sind ein gemeinsam genutzter Zustand. Der aktive Runner, der Befehl `/model`, Compaction-/Sitzungsaktualisierungen und der Live-Sitzungsabgleich lesen oder schreiben jeweils Teile desselben Sitzungseintrags. Die Fallback-Ausführung schreibt keine Modellauswahlfelder und kann daher während eines erneuten Versuchs keine neuere manuelle Auswahl ersetzen.
 
-Daher müssen Fallback-Wiederholungsversuche mit Modellwechseln während des Betriebs koordiniert werden:
+Für Live-Modellwechsel gelten folgende Regeln:
 
-- Nur explizite, vom Benutzer veranlasste Modelländerungen markieren einen ausstehenden Modellwechsel während des Betriebs. Dazu gehören `/model`, `session_status(model=...)` und `sessions.patch`.
-- Systemgesteuerte Modelländerungen wie Fallback-Wechsel, Heartbeat-Überschreibungen oder Compaction markieren niemals selbstständig einen ausstehenden Modellwechsel während des Betriebs.
-- Vom Benutzer veranlasste Modellüberschreibungen gelten für die Fallback-Richtlinie als exakte Auswahl. Daher wird ein nicht erreichbarer ausgewählter Provider als Fehler angezeigt, statt durch `agents.defaults.model.fallbacks` verdeckt zu werden.
-- Bevor ein Fallback-Wiederholungsversuch beginnt, persistiert der Antwort-Runner die ausgewählten Felder der Fallback-Überschreibung im Sitzungseintrag.
-- Automatische Fallback-Überschreibungen bleiben in nachfolgenden Durchläufen ausgewählt, damit OpenClaw nicht bei jeder Nachricht ein bekanntermaßen fehlerhaftes primäres Modell prüft. OpenClaw prüft den konfigurierten Ursprung regelmäßig erneut und entfernt die automatische Überschreibung nach dessen Wiederherstellung. `/new`, `/reset` und `sessions.reset` entfernen automatisch erzeugte Überschreibungen sofort.
-- Benutzerantworten kündigen Fallback-Übergänge und die Wiederherstellung nach Aufhebung des Fallbacks einmal pro Statusänderung an. Durchläufe mit beibehaltenem Fallback wiederholen den Hinweis nicht.
-- `/status` zeigt das ausgewählte Modell und, wenn der Fallback-Status davon abweicht, das aktive Fallback-Modell sowie den Grund.
-- Beim Abgleich laufender Sitzungen haben persistierte Sitzungsüberschreibungen Vorrang vor veralteten Modellfeldern der Laufzeit.
-- Wenn ein Fehler beim Modellwechsel während des Betriebs auf einen späteren Kandidaten in der aktiven Fallback-Kette verweist, springt OpenClaw direkt zu diesem ausgewählten Modell, statt zunächst nicht zugehörige Kandidaten zu durchlaufen.
-- Wenn der Fallback-Versuch fehlschlägt, setzt der Runner nur die von ihm geschriebenen Überschreibungsfelder zurück und auch nur dann, wenn sie weiterhin diesem fehlgeschlagenen Kandidaten entsprechen.
+- Nur explizite, benutzergesteuerte Modelländerungen markieren einen ausstehenden Live-Wechsel. Dazu gehören `/model`, `session_status(model=...)` und `sessions.patch`.
+- Systemgesteuerte Modelländerungen wie Fallback-Rotation, Heartbeat-Überschreibungen oder Compaction markieren niemals von sich aus einen ausstehenden Live-Wechsel.
+- Benutzergesteuerte Modellüberschreibungen werden für die Fallback-Richtlinie als exakte Auswahl behandelt. Daher wird ein nicht erreichbarer ausgewählter Provider als Fehler gemeldet, statt durch `agents.defaults.model.fallbacks` verdeckt zu werden.
+- Laufzeit-Fallback-Kandidaten bleiben auf den aktuellen Durchlauf beschränkt. Der nächste Durchlauf beginnt mit dem aktuell ausgewählten Modell, einschließlich einer manuellen Auswahl, die während des vorherigen Laufs eingegangen ist.
+- Zuvor gespeicherte automatische Fallback-Überschreibungen werden weiterhin unterstützt: OpenClaw prüft regelmäßig ihren konfigurierten Ursprung und entfernt die Überschreibung, sobald dieser wieder funktioniert; `/new`, `/reset` und `sessions.reset` entfernen automatisch erzeugte Überschreibungen sofort.
+- Benutzerantworten kündigen Fallback-Übergänge und die Wiederherstellung nach Entfernung des Fallbacks einmal pro Zustandsänderung an. Wiederholte Durchläufe mit demselben ausgewählten/aktiven Paar wiederholen den Hinweis nicht.
+- `/status` zeigt das ausgewählte Modell und, wenn der Fallback-Zustand davon abweicht, das aktive Fallback-Modell und den Grund.
+- Beim Live-Sitzungsabgleich haben persistierte Sitzungsüberschreibungen Vorrang vor veralteten Laufzeit-Modellfeldern.
+- Wenn ein Live-Wechselfehler auf einen späteren Kandidaten in der aktiven Fallback-Kette verweist, springt OpenClaw direkt zu diesem ausgewählten Modell, statt zunächst nicht zugehörige Kandidaten zu durchlaufen.
 
-Dies verhindert den klassischen Wettlauf:
-
-<Steps>
-  <Step title="Primäres Modell schlägt fehl">
-    Das ausgewählte primäre Modell schlägt fehl.
-  </Step>
-  <Step title="Fallback im Arbeitsspeicher ausgewählt">
-    Der Fallback-Kandidat wird im Arbeitsspeicher ausgewählt.
-  </Step>
-  <Step title="Sitzungsspeicher enthält weiterhin das alte primäre Modell">
-    Der Sitzungsspeicher verweist weiterhin auf das alte primäre Modell.
-  </Step>
-  <Step title="Abgleich während des Betriebs liest veralteten Status">
-    Der Abgleich der laufenden Sitzung liest den veralteten Sitzungsstatus.
-  </Step>
-  <Step title="Wiederholungsversuch wird zurückgesetzt">
-    Der Wiederholungsversuch wird auf das alte Modell zurückgesetzt, bevor der Fallback-Versuch beginnt.
-  </Step>
-</Steps>
-
-Die persistierte Fallback-Überschreibung schließt dieses Zeitfenster, während das gezielte Zurücksetzen neuere manuelle oder laufzeitbedingte Sitzungsänderungen beibehält.
+Der aktive Lauf führt den ausgewählten Kandidaten direkt mit. Der Live-Abgleich ändert diesen Kandidaten nur bei einem explizit ausstehenden Benutzerwechsel, sodass weder eine vorübergehende Fallback-Überschreibung noch eine Rücknahme erforderlich ist.
 
 ## Beobachtbarkeit und Fehlerzusammenfassungen
 
@@ -373,26 +347,21 @@ Die persistierte Fallback-Überschreibung schließt dieses Zeitfenster, während
 - optionaler Status/Code
 - menschenlesbare Fehlerzusammenfassung
 
-Strukturierte `model_fallback_decision`-Protokolle enthalten außerdem flache `fallbackStep*`-Felder, wenn ein Kandidat fehlschlägt, übersprungen wird oder ein späterer Fallback erfolgreich ist. Diese Felder machen den versuchten Übergang explizit (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`), sodass Protokoll- und Diagnoseexporter den primären Fehler rekonstruieren können, selbst wenn auch der abschließende Fallback fehlschlägt.
+Strukturierte `model_fallback_decision`-Protokolle enthalten außerdem flache `fallbackStep*`-Felder, wenn ein Kandidat fehlschlägt, übersprungen wird oder ein späterer Fallback erfolgreich ist. Diese Felder machen den versuchten Übergang explizit (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`), sodass Protokoll- und Diagnoseexporter den Fehler des Primärmodells rekonstruieren können, selbst wenn auch der abschließende Fallback fehlschlägt.
 
-Wenn alle Kandidaten fehlschlagen, löst OpenClaw `FallbackSummaryError` aus. Der äußere Antwort-Runner kann damit eine spezifischere Meldung wie „für alle Modelle gelten vorübergehend Ratenbegrenzungen“ erstellen und, sofern bekannt, das früheste Ende einer Abkühlphase angeben.
+Wenn jeder Kandidat fehlschlägt, löst OpenClaw `FallbackSummaryError` aus. Der äußere Antwort-Runner kann dies verwenden, um eine spezifischere Meldung wie „Alle Modelle sind vorübergehend ratenbegrenzt“ zu erstellen und den frühesten Ablauf der Abklingzeit anzugeben, sofern dieser bekannt ist.
 
-Diese Zusammenfassung der Abkühlphasen berücksichtigt das jeweilige Modell:
+Diese Zusammenfassung der Abklingzeiten berücksichtigt das Modell:
 
-- nicht zugehörige, modellspezifische Ratenbegrenzungen werden für die versuchte Provider-/Modellkette ignoriert
-- wenn die verbleibende Sperre eine passende modellspezifische Ratenbegrenzung ist, meldet OpenClaw den letzten passenden Ablaufzeitpunkt, der dieses Modell weiterhin blockiert
+- nicht zugehörige modellspezifische Ratenbegrenzungen werden für die versuchte Provider-/Modellkette ignoriert
+- wenn die verbleibende Sperre eine passende modellspezifische Ratenbegrenzung ist, meldet OpenClaw den letzten passenden Ablaufzeitpunkt, der dieses Modell weiterhin sperrt
 
 ## Zugehörige Konfiguration
 
-Unter [Gateway-Konfiguration](/de/gateway/configuration) finden Sie Informationen zu:
+Informationen zu Folgendem finden Sie unter [Gateway-Konfiguration](/de/gateway/configuration):
 
 - `auth.profiles` / `auth.order`
-- `auth.cooldowns.billingBackoffHours` / `auth.cooldowns.billingBackoffHoursByProvider`
-- `auth.cooldowns.billingMaxHours` / `auth.cooldowns.failureWindowHours`
-- `auth.cooldowns.authPermanentBackoffMinutes` / `auth.cooldowns.authPermanentMaxMinutes`
-- `auth.cooldowns.overloadedProfileRotations` / `auth.cooldowns.overloadedBackoffMs`
-- `auth.cooldowns.rateLimitedProfileRotations`
 - `agents.defaults.model.primary` / `agents.defaults.model.fallbacks`
-- Routing von `agents.defaults.imageModel`
+- `agents.defaults.imageModel`-Routing
 
-Unter [Modelle](/de/concepts/models) finden Sie einen umfassenderen Überblick über die Modellauswahl und Fallbacks.
+Einen umfassenderen Überblick über die Modellauswahl und Fallbacks finden Sie unter [Modelle](/de/concepts/models).

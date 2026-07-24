@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das feishu-Plugin.
-summary: OpenClaw-Plugin für den Feishu/Lark-Kanal für Chats und Arbeitsplatz-Tools (von der Community unter der Leitung von @m1heng gepflegt).
+    - Sie installieren, konfigurieren oder überprüfen das Feishu-Plugin
+summary: OpenClaw-Plugin für den Feishu-/Lark-Kanal für Chats und Arbeitsplatz-Tools (von der Community unter Betreuung von @m1heng gepflegt).
 title: Feishu-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:29Z"
+    generated_at: "2026-07-24T03:58:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Feishu-Plugin
 
-OpenClaw Feishu/Lark-Kanal-Plugin für Chats und Arbeitsplatz-Tools (von der Community betreut durch @m1heng).
+OpenClaw Feishu/Lark-Kanal-Plugin für Chats und Arbeitsplatz-Tools (von der Community gepflegt durch @m1heng).
 
 ## Distribution
 

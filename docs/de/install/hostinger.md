@@ -1,22 +1,22 @@
 ---
 read_when:
     - OpenClaw auf Hostinger einrichten
-    - Sie suchen einen verwalteten VPS für OpenClaw
+    - Auf der Suche nach einem verwalteten VPS für OpenClaw
     - Hostinger 1-Click OpenClaw verwenden
 summary: OpenClaw auf Hostinger hosten
 title: Hostinger
 x-i18n:
-    generated_at: "2026-07-12T15:26:50Z"
+    generated_at: "2026-07-24T05:02:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
     source_hash: 7dc49e741f8581928553e2426ed91f92df6e7b0c31dd8780c0d6e891a07be263
     source_path: install/hostinger.md
     workflow: 16
 ---
 
-Führen Sie einen persistenten OpenClaw Gateway auf [Hostinger](https://www.hostinger.com/openclaw) aus – entweder als verwaltete **1-Click**-Bereitstellung oder als selbst administrierte **VPS**-Installation.
+Führen Sie ein dauerhaftes OpenClaw Gateway auf [Hostinger](https://www.hostinger.com/openclaw) aus, entweder als verwaltete **1-Click**-Bereitstellung oder als selbst administrierte **VPS**-Installation.
 
 ## Voraussetzungen
 
@@ -25,7 +25,7 @@ Führen Sie einen persistenten OpenClaw Gateway auf [Hostinger](https://www.host
 
 ## Option A: OpenClaw mit 1-Click
 
-Hostinger übernimmt Infrastruktur, Docker und automatische Updates. Dies ist der schnellste Weg zu einer laufenden Instanz.
+Hostinger übernimmt die Infrastruktur, Docker und automatische Updates. Dies ist der schnellste Weg zu einer laufenden Instanz.
 
 <Steps>
   <Step title="Kaufen und starten">
@@ -46,7 +46,7 @@ Hostinger übernimmt Infrastruktur, Docker und automatische Updates. Dies ist de
   </Step>
 
   <Step title="Installation abschließen">
-    Klicken Sie auf **Finish**, um die Instanz bereitzustellen. Sobald sie bereit ist, greifen Sie über **OpenClaw Overview** in hPanel auf das OpenClaw-Dashboard zu.
+    Klicken Sie auf **Finish**, um die Instanz bereitzustellen. Sobald sie bereit ist, können Sie über **OpenClaw Overview** in hPanel auf das OpenClaw-Dashboard zugreifen.
   </Step>
 
 </Steps>
@@ -68,36 +68,36 @@ Diese Option bietet mehr Kontrolle über den Server. Hostinger stellt OpenClaw �
   <Step title="OpenClaw konfigurieren">
     Sobald der VPS bereitgestellt ist, füllen Sie die Konfigurationsfelder aus:
 
-    - **Gateway token** – wird automatisch generiert; speichern Sie es zur späteren Verwendung.
+    - **Gateway token** – wird automatisch generiert; speichern Sie ihn zur späteren Verwendung.
     - **WhatsApp number** – Ihre Nummer mit Ländervorwahl (optional).
     - **Telegram bot token** – von [BotFather](https://t.me/BotFather) (optional).
-    - **API keys** – nur erforderlich, wenn Sie während des Bezahlvorgangs keine Ready-to-Use-AI-Guthaben ausgewählt haben.
+    - **API keys** – nur erforderlich, wenn Sie während des Bezahlvorgangs keine Ready-to-Use AI-Guthaben ausgewählt haben.
 
   </Step>
 
   <Step title="OpenClaw starten">
-    Klicken Sie auf **Deploy**. Sobald OpenClaw ausgeführt wird, öffnen Sie das OpenClaw-Dashboard über hPanel, indem Sie auf **Open** klicken.
+    Klicken Sie auf **Deploy**. Sobald OpenClaw ausgeführt wird, öffnen Sie das OpenClaw-Dashboard in hPanel, indem Sie auf **Open** klicken.
   </Step>
 
 </Steps>
 
-Protokolle, Neustarts und Updates werden über die Docker-Manager-Oberfläche in hPanel ausgeführt. Drücken Sie zum Aktualisieren im Docker Manager auf **Update**, um das neueste Image abzurufen.
+Protokolle, Neustarts und Updates werden über die Docker-Manager-Oberfläche in hPanel verwaltet. Drücken Sie zum Aktualisieren im Docker Manager auf **Update**, um das neueste Image abzurufen.
 
 ## Einrichtung überprüfen
 
-Senden Sie Ihrem Assistenten über den verbundenen Kanal „Hi“. OpenClaw antwortet und führt Sie durch die anfänglichen Einstellungen.
+Senden Sie Ihrem Assistenten über den verbundenen Kanal „Hallo“. OpenClaw antwortet und führt Sie durch die anfänglichen Einstellungen.
 
 ## Fehlerbehebung
 
-**Dashboard wird nicht geladen** – warten Sie einige Minuten, bis die Bereitstellung des Containers abgeschlossen ist, und prüfen Sie anschließend die Docker-Manager-Protokolle in hPanel.
+**Dashboard wird nicht geladen** – warten Sie einige Minuten, bis die Bereitstellung des Containers abgeschlossen ist, und prüfen Sie dann die Docker-Manager-Protokolle in hPanel.
 
 **Docker-Container wird ständig neu gestartet** – öffnen Sie die Docker-Manager-Protokolle und suchen Sie nach Konfigurationsfehlern (fehlende Tokens, ungültige API-Schlüssel).
 
-**Telegram-Bot antwortet nicht** – wenn eine DM-Kopplung erforderlich ist, erhält ein unbekannter Absender anstelle einer Antwort einen kurzen Kopplungscode. Genehmigen Sie ihn im Dashboard-Chat von OpenClaw oder mit `openclaw pairing approve telegram <CODE>`, wenn Sie Shell-Zugriff auf den Container haben. Weitere Informationen finden Sie unter [Kopplung](/de/channels/pairing).
+**Telegram-Bot antwortet nicht** – wenn eine DM-Kopplung erforderlich ist, erhält ein unbekannter Absender statt einer Antwort einen kurzen Kopplungscode. Genehmigen Sie ihn im Chat des OpenClaw-Dashboards oder mit `openclaw pairing approve telegram <CODE>`, falls Sie Shell-Zugriff auf den Container haben. Siehe [Kopplung](/de/channels/pairing).
 
 ## Nächste Schritte
 
-- [Kanäle](/de/channels) – verbinden Sie Telegram, WhatsApp, Discord und weitere Dienste
+- [Kanäle](/de/channels) – Telegram, WhatsApp, Discord und weitere verbinden
 - [Gateway-Konfiguration](/de/gateway/configuration) – alle Konfigurationsoptionen
 
 ## Verwandte Themen

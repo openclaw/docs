@@ -4,7 +4,7 @@ read_when:
 summary: Cloud-Worker-Provider auf Basis der Crabbox CLI.
 title: Crabbox-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:02Z"
+    generated_at: "2026-07-24T05:15:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das WhatsApp-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das WhatsApp-Plugin.
 summary: OpenClaw-WhatsApp-Kanal-Plugin für WhatsApp-Web-Chats.
 title: WhatsApp-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:25:14Z"
+    generated_at: "2026-07-24T04:48:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ OpenClaw-WhatsApp-Kanal-Plugin für WhatsApp-Web-Chats.
 
 Kanäle: `whatsapp`; Verträge: `tools`; Skills
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [WhatsApp](/de/channels/whatsapp)

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das minimax-Plugin.
-summary: Fügt OpenClaw Unterstützung für die Modell-Provider MiniMax und MiniMax Portal hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das minimax-Plugin.
+summary: Fügt Unterstützung für die Modell-Provider MiniMax und MiniMax Portal zu OpenClaw hinzu.
 title: MiniMax-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:10:52Z"
+    generated_at: "2026-07-24T04:33:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ Fügt OpenClaw Unterstützung für die Modell-Provider MiniMax und MiniMax Porta
 
 Provider: `minimax`, `minimax-portal`; Verträge: `imageGenerationProviders`, `mediaUnderstandingProviders`, `musicGenerationProviders`, `speechProviders`, `usageProviders`, `videoGenerationProviders`, `webSearchProviders`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [minimax](/de/providers/minimax)

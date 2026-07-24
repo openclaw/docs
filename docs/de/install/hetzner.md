@@ -1,36 +1,37 @@
 ---
 read_when:
-    - Sie möchten OpenClaw rund um die Uhr auf einem Cloud-VPS betreiben (nicht auf Ihrem Laptop)
-    - Sie möchten ein produktionsreifes, dauerhaft verfügbares Gateway auf Ihrem eigenen VPS.
+    - Sie möchten, dass OpenClaw rund um die Uhr auf einem Cloud-VPS läuft (nicht auf Ihrem Laptop)
+    - Sie möchten einen produktionsreifen, dauerhaft verfügbaren Gateway auf Ihrem eigenen VPS.
     - Sie möchten vollständige Kontrolle über Persistenz, Binärdateien und das Neustartverhalten.
     - Sie führen OpenClaw in Docker bei Hetzner oder einem ähnlichen Provider aus
-summary: OpenClaw Gateway rund um die Uhr auf einem günstigen Hetzner-VPS (Docker) mit persistentem Zustand und integrierten Binärdateien betreiben
+summary: OpenClaw Gateway rund um die Uhr auf einem günstigen Hetzner-VPS (Docker) mit dauerhaftem Zustand und integrierten Binärdateien ausführen
 title: Hetzner
 x-i18n:
-    generated_at: "2026-07-12T01:46:21Z"
+    generated_at: "2026-07-24T04:37:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 8ffebc0ce725fd219d13d0a556940327e70dab810b8fbee0b365c4870dc7109b
     source_path: install/hetzner.md
     workflow: 16
 ---
 
-Führen Sie ein dauerhaftes OpenClaw Gateway auf einem Hetzner-VPS mit Docker aus – mit persistentem Zustand, fest integrierten Binärdateien und sicherem Neustartverhalten.
+Führen Sie ein dauerhaftes OpenClaw Gateway auf einem Hetzner-VPS mit Docker, persistentem Zustand, fest integrierten Binärdateien und sicherem Neustartverhalten aus.
 
-Die Preise von Hetzner ändern sich; wählen Sie den kleinsten geeigneten Debian-/Ubuntu-VPS und skalieren Sie ihn hoch, wenn OOM-Fehler auftreten.
+Die Preise von Hetzner ändern sich; wählen Sie den kleinsten passenden Debian-/Ubuntu-VPS und skalieren Sie ihn bei Speicherüberläufen nach oben.
 
-Sie können über eine SSH-Portweiterleitung von Ihrem Laptop auf das Gateway zugreifen oder den Port direkt freigeben, wenn Sie Firewall und Tokens selbst verwalten.
+Auf das Gateway kann über eine SSH-Portweiterleitung von Ihrem Laptop oder über eine direkte Portfreigabe zugegriffen werden, wenn Sie Firewall und Tokens selbst verwalten.
 
 Hinweis zum Sicherheitsmodell:
 
 - Gemeinsam im Unternehmen genutzte Agenten sind in Ordnung, wenn sich alle innerhalb derselben Vertrauensgrenze befinden und die Laufzeitumgebung ausschließlich geschäftlich genutzt wird.
-- Sorgen Sie für eine strikte Trennung: dedizierter VPS/dedizierte Laufzeitumgebung und dedizierte Konten; keine persönlichen Apple-, Google-, Browser- oder Passwortmanagerprofile auf diesem Host.
-- Wenn Benutzer einander gegenüber potenziell böswillig sind, trennen Sie sie nach Gateway, Host oder Betriebssystembenutzer.
+- Sorgen Sie für eine strikte Trennung: dedizierter VPS/dedizierte Laufzeitumgebung und dedizierte Konten; keine persönlichen Apple-/Google-/Browser-/Passwortmanager-Profile auf diesem Host.
+- Wenn sich Benutzer gegenseitig als Angreifer betrachten müssen, trennen Sie sie nach Gateway/Host/OS-Benutzer.
 
 Siehe [Sicherheit](/de/gateway/security) und [VPS-Hosting](/de/vps).
 
-Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pakete auf einem anderen Linux-VPS entsprechend zu. Den allgemeinen Docker-Ablauf finden Sie unter [Docker](/de/install/docker).
+Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Passen Sie die Pakete auf einem anderen Linux-VPS entsprechend an. Den allgemeinen Docker-Ablauf finden Sie unter [Docker](/de/install/docker).
 
 ## Voraussetzungen
 
@@ -38,7 +39,7 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
 - SSH-Zugriff von Ihrem Laptop
 - Docker und Docker Compose
 - Anmeldedaten für die Modellauthentifizierung
-- Optionale Provider-Anmeldedaten (WhatsApp-QR-Code, Telegram-Bot-Token, Gmail-OAuth)
+- Optionale Provider-Anmeldedaten (WhatsApp-QR-Code, Telegram-Bot-Token, Gmail OAuth)
 - Etwa 20 Minuten
 
 ## Schnellverfahren
@@ -46,21 +47,21 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
 1. Hetzner-VPS bereitstellen
 2. Docker installieren
 3. OpenClaw-Repository klonen
-4. Persistente Host-Verzeichnisse erstellen
+4. Persistente Hostverzeichnisse erstellen
 5. `.env` und `docker-compose.yml` konfigurieren
-6. Erforderliche Binärdateien fest in das Image integrieren
+6. Erforderliche Binärdateien in das Image integrieren
 7. `docker compose up -d`
-8. Persistenz und Zugriff auf das Gateway überprüfen
+8. Persistenz und Gateway-Zugriff überprüfen
 
 <Steps>
   <Step title="VPS bereitstellen">
-    Erstellen Sie einen Ubuntu- oder Debian-VPS bei Hetzner und stellen Sie anschließend als Root eine Verbindung her:
+    Erstellen Sie bei Hetzner einen Ubuntu- oder Debian-VPS und stellen Sie anschließend als Root eine Verbindung her:
 
     ```bash
     ssh root@YOUR_VPS_IP
     ```
 
-    Behandeln Sie den VPS als zustandsbehaftete und nicht als kurzlebige Infrastruktur.
+    Behandeln Sie den VPS als zustandsbehaftete und nicht als austauschbare Infrastruktur.
 
   </Step>
 
@@ -86,17 +87,17 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
     cd openclaw
     ```
 
-    Diese Anleitung erstellt ein benutzerdefiniertes Image, damit alle darin fest integrierten Binärdateien Neustarts überstehen.
+    Diese Anleitung erstellt ein benutzerdefiniertes Image, damit alle darin integrierten Binärdateien Neustarts überstehen.
 
   </Step>
 
-  <Step title="Persistente Host-Verzeichnisse erstellen">
-    Docker-Container sind kurzlebig; der gesamte dauerhaft benötigte Zustand muss auf dem Host gespeichert werden.
+  <Step title="Persistente Hostverzeichnisse erstellen">
+    Docker-Container sind flüchtig; der gesamte dauerhafte Zustand muss auf dem Host gespeichert werden.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
 
-    # Eigentümer auf den Containerbenutzer festlegen (UID 1000):
+    # Eigentümerschaft auf den Containerbenutzer (uid 1000) setzen:
     chown -R 1000:1000 /root/.openclaw
     ```
 
@@ -119,21 +120,17 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
     ```
 
     Legen Sie `OPENCLAW_GATEWAY_TOKEN` fest, um das stabile Gateway-Token über
-    `.env` zu verwalten; konfigurieren Sie andernfalls `gateway.auth.token`, bevor
-    Sie sich darauf verlassen, dass Clients auch nach Neustarts darauf zugreifen
-    können. Wenn keines von beiden festgelegt ist, verwendet OpenClaw für diesen
-    Start ein ausschließlich zur Laufzeit gültiges Token. Erzeugen Sie ein
-    Schlüsselbundpasswort für `GOG_KEYRING_PASSWORD`:
+    `.env` zu verwalten; andernfalls konfigurieren Sie `gateway.auth.token`, bevor Sie sich bei Clients
+    über Neustarts hinweg darauf verlassen. Wenn keines von beiden festgelegt ist, verwendet OpenClaw für
+    diesen Start ein ausschließlich zur Laufzeit vorhandenes Token. Generieren Sie ein Schlüsselbund-Passwort für `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **Übertragen Sie diese Datei nicht in die Versionsverwaltung.** Sie enthält
-    Umgebungsvariablen für den Container und die Laufzeitumgebung, beispielsweise
-    `OPENCLAW_GATEWAY_TOKEN`. Gespeicherte OAuth-/API-Schlüssel-Authentifizierungen
-    für Provider befinden sich in der eingebundenen Datei
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
+    **Committen Sie diese Datei nicht.** Sie enthält Umgebungsvariablen für Container/Laufzeitumgebung wie
+    `OPENCLAW_GATEWAY_TOKEN`. Gespeicherte OAuth-/API-Schlüssel-Authentifizierungsdaten für Provider befinden sich im
+    eingebundenen `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
 
   </Step>
 
@@ -163,7 +160,7 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
           # Empfohlen: Das Gateway auf dem VPS nur an Loopback binden; Zugriff über einen SSH-Tunnel.
-          # Um es öffentlich freizugeben, das Präfix `127.0.0.1:` entfernen und die Firewall entsprechend konfigurieren.
+          # Um es öffentlich zugänglich zu machen, das Präfix `127.0.0.1:` entfernen und die Firewall entsprechend konfigurieren.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -178,80 +175,76 @@ Diese Anleitung setzt Ubuntu oder Debian auf Hetzner voraus. Ordnen Sie die Pake
           ]
     ```
 
-    `--allow-unconfigured` dient nur der Vereinfachung der Ersteinrichtung und ersetzt keine ordnungsgemäße Gateway-Konfiguration. Legen Sie für Ihre Bereitstellung dennoch eine Authentifizierung (`gateway.auth.token` oder Passwort) und einen sicheren Bindungsmodus fest.
+    `--allow-unconfigured` dient nur der bequemeren Ersteinrichtung und ersetzt keine echte Gateway-Konfiguration. Legen Sie dennoch eine Authentifizierung (`gateway.auth.token` oder Passwort) und einen sicheren Bindungsmodus für Ihre Bereitstellung fest.
 
   </Step>
 
-  <Step title="Gemeinsame Laufzeitschritte für Docker-VMs">
-    Befolgen Sie die gemeinsame Laufzeitanleitung für den allgemeinen Ablauf auf einem Docker-Host:
+  <Step title="Gemeinsame Schritte für die Docker-VM-Laufzeitumgebung">
+    Befolgen Sie für den allgemeinen Ablauf auf einem Docker-Host die gemeinsame Laufzeitanleitung:
 
-    - [Erforderliche Binärdateien fest in das Image integrieren](/de/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Erforderliche Binärdateien in das Image integrieren](/de/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Erstellen und starten](/de/install/docker-vm-runtime#build-and-launch)
-    - [Welche Daten wo persistent gespeichert werden](/de/install/docker-vm-runtime#what-persists-where)
+    - [Was wo persistent gespeichert wird](/de/install/docker-vm-runtime#what-persists-where)
     - [Aktualisierungen](/de/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="Hetzner-spezifischer Zugriff">
-    Öffnen Sie nach den gemeinsamen Erstellungs- und Startschritten den Tunnel.
+    Öffnen Sie nach den gemeinsamen Schritten zum Erstellen und Starten den Tunnel.
 
-    **Voraussetzung:** Stellen Sie sicher, dass die `sshd`-Konfiguration Ihres VPS
-    TCP-Weiterleitungen zulässt. Wenn Sie Ihre SSH-Konfiguration gehärtet haben,
-    prüfen Sie `/etc/ssh/sshd_config` und legen Sie Folgendes fest:
+    **Voraussetzung:** Stellen Sie sicher, dass die sshd-Konfiguration Ihres VPS TCP-Weiterleitungen zulässt. Wenn Sie
+    Ihre SSH-Konfiguration gehärtet haben, prüfen Sie `/etc/ssh/sshd_config` und legen Sie Folgendes fest:
 
     ```text
     AllowTcpForwarding local
     ```
 
-    `local` erlaubt lokale `ssh -L`-Weiterleitungen von Ihrem Laptop und blockiert
-    gleichzeitig Remote-Weiterleitungen vom Server. Bei der Einstellung `no`
-    schlägt der Tunnel mit folgender Meldung fehl:
+    `local` erlaubt lokale `ssh -L`-Weiterleitungen von Ihrem Laptop und blockiert gleichzeitig
+    Remote-Weiterleitungen vom Server. Wenn Sie den Wert auf `no` setzen, schlägt der Tunnel mit folgender Meldung fehl:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    Nachdem Sie bestätigt haben, dass die TCP-Weiterleitung aktiviert ist, starten
-    Sie den SSH-Dienst neu (`systemctl restart ssh`) und führen Sie den Tunnel von
-    Ihrem Laptop aus:
+    Nachdem Sie bestätigt haben, dass die TCP-Weiterleitung aktiviert ist, starten Sie den SSH-Dienst
+    (`systemctl restart ssh`) neu und führen Sie den Tunnel von Ihrem Laptop aus:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 root@YOUR_VPS_IP
     ```
 
-    Öffnen Sie `http://127.0.0.1:18789/` und fügen Sie das konfigurierte gemeinsame
-    Geheimnis ein. Diese Anleitung verwendet standardmäßig das Gateway-Token;
-    verwenden Sie stattdessen Ihr konfiguriertes Passwort, wenn Sie zur
-    Passwortauthentifizierung gewechselt haben.
+    Öffnen Sie `http://127.0.0.1:18789/` und fügen Sie das konfigurierte gemeinsame Geheimnis ein.
+    Diese Anleitung verwendet standardmäßig das Gateway-Token; verwenden Sie stattdessen Ihr konfiguriertes Passwort,
+    wenn Sie zur Passwortauthentifizierung gewechselt haben.
 
   </Step>
 </Steps>
 
 Die gemeinsame Übersicht zur Persistenz finden Sie unter [Docker-VM-Laufzeitumgebung](/de/install/docker-vm-runtime#what-persists-where).
 
-## Infrastruktur als Code (Terraform)
+## Infrastructure as Code (Terraform)
 
-Für Teams, die Infrastructure-as-Code-Abläufe bevorzugen, bietet eine von der Community gepflegte Terraform-Einrichtung Folgendes:
+Für Teams, die Infrastructure-as-Code-Workflows bevorzugen, bietet eine von der Community gepflegte Terraform-Einrichtung Folgendes:
 
-- Modulare Terraform-Konfiguration mit Remote-Zustandsverwaltung
+- Modulare Terraform-Konfiguration mit Verwaltung des Remote-Zustands
 - Automatisierte Bereitstellung über cloud-init
-- Bereitstellungsskripte (Ersteinrichtung, Bereitstellung, Sicherung/Wiederherstellung)
+- Bereitstellungsskripte (Bootstrap, Bereitstellung, Sicherung/Wiederherstellung)
 - Sicherheitshärtung (Firewall, UFW, ausschließlicher SSH-Zugriff)
-- SSH-Tunnelkonfiguration für den Zugriff auf das Gateway
+- SSH-Tunnelkonfiguration für den Gateway-Zugriff
 
 **Repositorys:**
 
 - Infrastruktur: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - Docker-Konfiguration: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-Dieser Ansatz ergänzt die oben beschriebene Docker-Einrichtung durch reproduzierbare Bereitstellungen, versionsverwaltete Infrastruktur und automatisierte Notfallwiederherstellung.
+Dieser Ansatz ergänzt die obige Docker-Einrichtung um reproduzierbare Bereitstellungen, eine versionsverwaltete Infrastruktur und eine automatisierte Notfallwiederherstellung.
 
 <Note>
-Von der Community gepflegt. Informationen zu Problemen oder Beiträgen finden Sie über die oben aufgeführten Repository-Links.
+Von der Community gepflegt. Informationen zu Problemen oder Beiträgen finden Sie unter den obigen Repository-Links.
 </Note>
 
 ## Nächste Schritte
 
 - Nachrichtenkanäle einrichten: [Kanäle](/de/channels)
 - Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
-- OpenClaw aktuell halten: [Aktualisierung](/de/install/updating)
+- OpenClaw auf dem neuesten Stand halten: [Aktualisieren](/de/install/updating)
 
 ## Verwandte Themen
 

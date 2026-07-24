@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw-LINE-Kanal-Plugin für Chats über die LINE Bot API.
 title: LINE-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:22:12Z"
+    generated_at: "2026-07-24T04:47:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ OpenClaw LINE-Kanal-Plugin für Chats über die LINE Bot API.
 
 Kanäle: `line`
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [LINE](/de/channels/line)

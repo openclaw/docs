@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das zalouser-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das zalouser-Plugin.
 summary: OpenClaw-Plugin für persönliche Zalo-Konten über die native zca-js-Integration.
 title: Zalo-Personal-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:12:58Z"
+    generated_at: "2026-07-24T04:34:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

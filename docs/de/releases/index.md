@@ -1,9 +1,9 @@
 ---
 description: Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits.
-summary: Kuratierte OpenClaw-Versionshinweise für alle, die an der Produktentwicklung interessiert sind, nicht am unbearbeiteten Änderungsprotokoll.
+summary: Kuratierten OpenClaw-Versionshinweise für alle, die an der Produktentwicklung und nicht am unbearbeiteten Änderungsprotokoll interessiert sind.
 title: Versionshinweise
 x-i18n:
-    generated_at: "2026-07-16T13:28:02Z"
+    generated_at: "2026-07-24T05:17:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -15,20 +15,20 @@ x-i18n:
 
 # Versionshinweise
 
-Diese Seiten bilden die leserorientierte Version der OpenClaw-Versionen. Sie führen
-die wichtigsten Neuerungen, praktischen Auswirkungen, Quelllinks und Würdigungen der Mitwirkenden zusammen,
-ohne dass Sie zuerst das unaufbereitete Änderungsprotokoll durchsuchen müssen.
+Diese Seiten sind die leserorientierte Fassung der OpenClaw-Versionen. Sie führen
+die Kernaussagen, praktischen Auswirkungen, Quelllinks und Danksagungen an Mitwirkende zusammen,
+ohne dass Sie zuerst das unverarbeitete Änderungsprotokoll durchsuchen müssen.
 
 ## Versionen
 
 - [v2026.7.1](/releases/2026.7.1) - Überarbeitungen der Control UI und des Onboardings,
-  umfangreiche iOS- und Android-Updates, erweiterte Modellunterstützung und Gateway-Wiederherstellung.
-- [v2026.6.11](/de/releases/2026.6.11) - Zuverlässigkeitsverbesserungen für Antworten, Sendevorgänge,
-  erneute Verbindungen, die Modelleinrichtung, Sitzungen und sicherere Administratorstandards.
+  umfassende Aktualisierungen für iOS und Android, erweiterte Modellunterstützung und Gateway-Wiederherstellung.
+- [v2026.6.11](/de/releases/2026.6.11) - Zuverlässigkeitskorrekturen für Antworten, Sendevorgänge,
+  Wiederverbindungen, die Modelleinrichtung und Sitzungen sowie sicherere Standardeinstellungen für Administratoren.
 
-## Unaufbereiteter Versionsverlauf
+## Unverarbeiteter Versionsverlauf
 
-Verwenden Sie die kuratierten Hinweise, wenn Sie einen Überblick über die Produktentwicklung wünschen. Verwenden Sie den unaufbereiteten Verlauf, wenn
+Verwenden Sie die kuratierten Hinweise, wenn Sie einen Überblick über die Produktentwicklung wünschen. Verwenden Sie den unverarbeiteten Verlauf, wenn
 Sie eine kompakte Übersicht für Maintainer benötigen:
 
 - [GitHub-Versionen](https://github.com/openclaw/openclaw/releases)

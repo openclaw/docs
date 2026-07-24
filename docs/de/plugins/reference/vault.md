@@ -1,12 +1,13 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das Vault-Plugin.
-summary: Integration des HashiCorp-Vault-SecretRef-Providers.
+summary: Integration des SecretRef-Providers von HashiCorp Vault.
 title: Vault-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:58:41Z"
+    generated_at: "2026-07-24T04:00:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 687ee6457cbd180f6aa1345cc1285ca69d430f4dbe811db87738dfbc4b03a2d4
     source_path: plugins/reference/vault.md
@@ -15,7 +16,7 @@ x-i18n:
 
 # Vault-Plugin
 
-Integration des HashiCorp-Vault-Providers für SecretRef.
+HashiCorp-Vault-Integration als SecretRef-Provider.
 
 ## Distribution
 
@@ -28,4 +29,4 @@ Plugin
 
 ## Zugehörige Dokumentation
 
-- [Vault](/plugins/vault)
+- [Vault](/de/plugins/vault)

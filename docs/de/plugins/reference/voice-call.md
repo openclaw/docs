@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw-Sprachanruf-Plugin für Telefonanrufe über Twilio, Telnyx und Plivo.
 title: Sprachanruf-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:12:31Z"
+    generated_at: "2026-07-24T05:08:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

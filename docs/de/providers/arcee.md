@@ -1,15 +1,16 @@
 ---
 read_when:
     - Sie möchten Arcee AI mit OpenClaw verwenden
-    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die Authentifizierungsauswahl der CLI
+    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die CLI-Authentifizierungsoption
 summary: Arcee-AI-Einrichtung (Authentifizierung + Modellauswahl)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-07-12T02:03:41Z"
+    generated_at: "2026-07-24T04:51:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
+    source_hash: a4c2fc7b8d86dd0d2a300dfc48951657cbcfcd9250016f52c1804777b2966e11
     source_path: providers/arcee.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ x-i18n:
 Greifen Sie direkt über die Arcee-Plattform oder über [OpenRouter](/de/providers/openrouter) auf Arcee-Modelle zu.
 
 | Eigenschaft | Wert                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------- |
-| Provider    | `arcee`                                                                               |
-| Authentifizierung | `ARCEEAI_API_KEY` (direkt) oder `OPENROUTER_API_KEY` (über OpenRouter)          |
-| API         | OpenAI-kompatibel                                                                     |
-| Basis-URL   | `https://api.arcee.ai/api/v1` (direkt) oder `https://openrouter.ai/api/v1` (OpenRouter) |
+| -------- | ------------------------------------------------------------------------------------- |
+| Provider | `arcee`                                                                               |
+| Authentifizierung | `ARCEEAI_API_KEY` (direkt) oder `OPENROUTER_API_KEY` (über OpenRouter)                   |
+| API      | OpenAI-kompatibel                                                                     |
+| Basis-URL | `https://api.arcee.ai/api/v1` (direkt) oder `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Plugin installieren
 
@@ -80,7 +81,7 @@ openclaw gateway restart
         }
         ```
 
-        Dieselben Modellreferenzen funktionieren sowohl für direkte als auch für OpenRouter-Konfigurationen.
+        Für direkte und OpenRouter-Konfigurationen funktionieren dieselben Modellreferenzen.
       </Step>
     </Steps>
 
@@ -109,24 +110,28 @@ openclaw gateway restart
   </Tab>
 </Tabs>
 
-## Integrierter Katalog
+## Direkter Arcee-Katalog
 
-| Modellreferenz                 | Name                   | Eingabe | Kontext | Max. Ausgabe | Kosten (Ein-/Ausgabe pro 1 Mio.) | Tools | Hinweise                                  |
-| ------------------------------ | ---------------------- | ------- | ------- | ------------ | -------------------------------- | ----- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | Text    | 256K    | 80K          | $0.25 / $0.90                    | Nein  | Standardmodell; erweitertes Denken        |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | Text    | 128K    | 16K          | $0.25 / $1.00                    | Ja    | Universell einsetzbar; 400 Mrd. Parameter, 13 Mrd. aktiv |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | Text    | 128K    | 80K          | $0.045 / $0.15                   | Ja    | Schnell und kosteneffizient; Funktionsaufrufe |
+| Modellreferenz                | Name                   | Eingabe | Kontext | Maximale Ausgabe | Kosten (Ein-/Ausgabe pro 1 Mio.) | Tools | Hinweise                                  |
+| ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------- | ----- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | Text  | 256K    | 80K        | $0.25 / $0.90        | Nein  | Standardmodell; erweitertes Denken        |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | Text  | 128K    | 16K        | $0.25 / $1.00        | Ja    | Universell einsetzbar; 400B Parameter, 13B aktiv |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | Text  | 128K    | 80K        | $0.045 / $0.15       | Ja    | Schnell und kosteneffizient; Funktionsaufrufe |
 
 <Tip>
 Die Onboarding-Voreinstellung legt `arcee/trinity-large-thinking` als Standardmodell fest.
 </Tip>
+
+## OpenRouter-Katalog
+
+Das OpenRouter-Onboarding stellt `arcee/trinity-large-preview` und `arcee/trinity-large-thinking` bereit. OpenClaw behält diese mit dem Provider qualifizierten Modellreferenzen in der Konfiguration bei und sendet die kanonischen `arcee-ai/*`-Laufzeit-IDs von OpenRouter. Trinity Mini wird nicht mehr von OpenRouter bereitgestellt. Verwenden Sie für dieses Modell die direkte Arcee-API.
 
 ## Unterstützte Funktionen
 
 | Funktion                                      | Unterstützt                                  |
 | --------------------------------------------- | -------------------------------------------- |
 | Streaming                                     | Ja                                           |
-| Tool-Nutzung/Funktionsaufrufe                 | Ja (Trinity Mini, Trinity Large Preview)     |
+| Tool-Nutzung / Funktionsaufrufe               | Ja (Trinity Mini, Trinity Large Preview)     |
 | Strukturierte Ausgabe (JSON-Modus und JSON-Schema) | Ja                                      |
 | Erweitertes Denken                            | Ja (Trinity Large Thinking; Tools deaktiviert) |
 
@@ -138,9 +143,9 @@ Die Onboarding-Voreinstellung legt `arcee/trinity-large-thinking` als Standardmo
   </Accordion>
 
   <Accordion title="OpenRouter-Routing">
-    Wenn Sie Arcee-Modelle über OpenRouter verwenden, gelten dieselben `arcee/*`-Modellreferenzen.
-    OpenClaw führt das Routing transparent anhand Ihrer Authentifizierungsauswahl durch. Weitere
-    OpenRouter-spezifische Konfigurationsdetails finden Sie in der
+    OpenRouter verwendet dieselbe OpenClaw-Modellreferenz `arcee/trinity-large-thinking`.
+    OpenClaw leitet sie mit der kanonischen OpenRouter-Laufzeit-ID `arcee-ai/trinity-large-thinking`
+    weiter. Weitere OpenRouter-spezifische Konfigurationsdetails finden Sie in der
     [Dokumentation zum OpenRouter-Provider](/de/providers/openrouter).
   </Accordion>
 </AccordionGroup>

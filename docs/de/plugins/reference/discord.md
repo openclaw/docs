@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder überprüfen das Discord-Plugin
-summary: OpenClaw-Discord-Kanal-Plugin für Kanäle, Direktnachrichten, Befehle und App-Ereignisse.
+summary: OpenClaw Discord-Kanal-Plugin für Kanäle, Direktnachrichten, Befehle und App-Ereignisse.
 title: Discord-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:21:15Z"
+    generated_at: "2026-07-24T03:58:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

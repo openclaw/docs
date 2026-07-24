@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das voyage-Plugin.
-summary: Unterstützung für Provider von Speicher-Embeddings hinzugefügt.
+summary: Fügt Unterstützung für Provider von Speicher-Embeddings hinzu.
 title: Voyage-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:25:01Z"
+    generated_at: "2026-07-24T04:01:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Voyage-Plugin
 
-Fügt Unterstützung für Provider von Memory-Embeddings hinzu.
+Fügt Unterstützung für einen Provider für Speicher-Embeddings hinzu.
 
 ## Distribution
 

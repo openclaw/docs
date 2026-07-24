@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Runway-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das Runway-Plugin.
 summary: Fügt Unterstützung für Provider zur Videogenerierung hinzu.
 title: Runway-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:11:46Z"
+    generated_at: "2026-07-24T04:33:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Runway-Plugin
 
-Fügt Unterstützung für Provider zur Videogenerierung hinzu.
+Fügt Unterstützung für einen Provider zur Videogenerierung hinzu.
 
 ## Distribution
 

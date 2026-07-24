@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Microsoft-Teams-Plugin.
-summary: OpenClaw Microsoft Teams-Kanal-Plugin für Bot-Unterhaltungen.
+    - Sie installieren, konfigurieren oder prüfen das msteams-Plugin.
+summary: OpenClaw-Microsoft-Teams-Kanal-Plugin für Bot-Unterhaltungen.
 title: Microsoft Teams-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:10:54Z"
+    generated_at: "2026-07-24T05:15:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

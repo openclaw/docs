@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder überprüfen das Signal-Plugin.
-summary: Fügt die Signal-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+summary: Fügt die Signal-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Signal-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:07:31Z"
+    generated_at: "2026-07-24T04:01:37Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,14 +16,14 @@ x-i18n:
 
 # Signal-Plugin
 
-Fügt die Signal-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+Fügt die Signal-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
-## Distribution
+## Verteilung
 
 - Paket: `@openclaw/signal`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/signal`
 
-## Schnittstelle
+## Oberfläche
 
 Kanäle: `signal`
 

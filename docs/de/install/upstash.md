@@ -1,14 +1,14 @@
 ---
 read_when:
     - OpenClaw auf Upstash Box bereitstellen
-    - Sie möchten eine verwaltete Linux-Umgebung für OpenClaw mit per SSH-Tunnel zugänglichem Dashboard.
-summary: Hosten Sie OpenClaw auf Upstash Box mit Keep-Alive und Zugriff über einen SSH-Tunnel
+    - Sie möchten eine verwaltete Linux-Umgebung für OpenClaw mit Dashboard-Zugriff über einen SSH-Tunnel
+summary: OpenClaw auf Upstash Box mit Keep-Alive und Zugriff per SSH-Tunnel hosten
 title: Upstash Box
 x-i18n:
-    generated_at: "2026-07-12T15:28:18Z"
+    generated_at: "2026-07-24T03:57:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
     source_hash: 29232c43e0e4940b7445ab8896c9ccd3e81d0fdbdd522d7f50cb8c8057ac18f0
     source_path: install/upstash.md
@@ -18,27 +18,27 @@ x-i18n:
 Führen Sie ein dauerhaftes OpenClaw Gateway auf Upstash Box aus, einer verwalteten Linux-Umgebung
 mit Unterstützung für einen Keep-Alive-Lebenszyklus.
 
-Verwenden Sie für den Zugriff auf das Dashboard einen SSH-Tunnel. Geben Sie den Gateway-Port nicht direkt
-im öffentlichen Internet frei.
+Verwenden Sie für den Zugriff auf das Dashboard einen SSH-Tunnel. Setzen Sie den Gateway-Port nicht direkt
+dem öffentlichen Internet aus.
 
 ## Voraussetzungen
 
 - Upstash-Konto
 - Keep-Alive-Upstash-Box
-- SSH-Client auf Ihrem lokalen Computer
+- SSH-Client auf Ihrem lokalen Rechner
 
 ## Eine Box erstellen
 
 Erstellen Sie in der Upstash Console eine Keep-Alive-Box. Notieren Sie sich die Box-ID (zum Beispiel
 `right-flamingo-14486`) und Ihren Box-API-Schlüssel.
 
-Upstash pflegt seine aktuelle Anleitung für die OpenClaw Box unter
-[OpenClaw-Einrichtung](https://upstash.com/docs/box/guides/openclaw-setup).
+Upstash stellt seine aktuelle Anleitung für eine OpenClaw Box unter
+[OpenClaw-Einrichtung](https://upstash.com/docs/box/guides/openclaw-setup) bereit.
 
-## Verbindung über einen SSH-Tunnel herstellen
+## Über einen SSH-Tunnel verbinden
 
-Leiten Sie den OpenClaw-Dashboard-Port an Ihren lokalen Computer weiter. Verwenden Sie Ihren Box-API-Schlüssel
-als SSH-Passwort, wenn Sie dazu aufgefordert werden:
+Leiten Sie den Port des OpenClaw-Dashboards an Ihren lokalen Rechner weiter. Verwenden Sie bei der Aufforderung Ihren Box-API-Schlüssel
+als SSH-Passwort:
 
 ```bash
 ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
@@ -60,7 +60,7 @@ sudo npm install -g openclaw
 openclaw onboard --install-daemon
 ```
 
-Folgen Sie den Aufforderungen. Kopieren Sie die Dashboard-URL und das Token, wenn das Onboarding abgeschlossen ist.
+Folgen Sie den Aufforderungen. Kopieren Sie nach Abschluss des Onboardings die Dashboard-URL und das Token.
 
 ## Gateway starten
 
@@ -79,8 +79,8 @@ http://127.0.0.1:18789/#token=<your-token>
 
 ## Automatischer Neustart
 
-Legen Sie diesen Befehl als Box-Initialisierungsskript fest, damit das Gateway neu gestartet wird, wenn die Box
-startet:
+Legen Sie diesen Befehl als Init-Skript der Box fest, damit das Gateway beim Start der Box
+neu gestartet wird:
 
 ```bash
 nohup openclaw gateway > gateway.log 2>&1 &
@@ -88,15 +88,15 @@ nohup openclaw gateway > gateway.log 2>&1 &
 
 ## Fehlerbehebung
 
-Falls SSH während des Onboardings nicht mehr reagiert, stellen Sie die Verbindung mit einer bereinigten SSH-Konfiguration und
+Wenn SSH während des Onboardings nicht mehr reagiert, stellen Sie die Verbindung mit einer leeren SSH-Konfiguration und
 Keep-Alives erneut her:
 
 ```bash
 ssh -F /dev/null -o ControlMaster=no -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Dadurch werden veraltete lokale Einstellungen in `~/.ssh/config` umgangen, und der Tunnel bleibt
-während inaktiver Netzwerkphasen aktiv.
+Dadurch werden veraltete lokale `~/.ssh/config`-Einstellungen umgangen und der Tunnel bleibt
+auch während inaktiver Netzwerkphasen aktiv.
 
 ## Verwandte Themen
 

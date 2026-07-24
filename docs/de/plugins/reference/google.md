@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das google-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das Google-Plugin.
 summary: Fügt OpenClaw Unterstützung für die Modell-Provider Google, Google Gemini CLI und Google Vertex hinzu.
 title: Google-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:01Z"
+    generated_at: "2026-07-24T03:58:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ Fügt OpenClaw Unterstützung für die Modell-Provider Google, Google Gemini CLI
 
 Provider: `google`, `google-gemini-cli`, `google-vertex`; Verträge: `imageGenerationProviders`, `mediaUnderstandingProviders`, `memoryEmbeddingProviders`, `musicGenerationProviders`, `realtimeVoiceProviders`, `speechProviders`, `usageProviders`, `videoGenerationProviders`, `webSearchProviders`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [Google](/de/providers/google)

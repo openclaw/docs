@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das duckduckgo-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das duckduckgo-Plugin
 summary: Fügt Unterstützung für Websuch-Provider hinzu.
 title: DuckDuckGo-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:05:41Z"
+    generated_at: "2026-07-24T04:33:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # DuckDuckGo-Plugin
 
-Fügt Unterstützung für einen Websuch-Provider hinzu.
+Fügt Unterstützung für Websuch-Provider hinzu.
 
 ## Distribution
 

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das synology-chat-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das synology-chat-Plugin.
 summary: Synology-Chat-Kanal-Plugin für OpenClaw-Kanäle und Direktnachrichten.
 title: Synology-Chat-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:24:34Z"
+    generated_at: "2026-07-24T04:48:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -29,4 +29,4 @@ Kanäle: `synology-chat`
 
 ## Zugehörige Dokumentation
 
-- [Synology Chat](/de/channels/synology-chat)
+- [synology-chat](/de/channels/synology-chat)

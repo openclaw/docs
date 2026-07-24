@@ -4,7 +4,7 @@ read_when:
 summary: Fügt Tools hinzu, die von Agenten aufgerufen werden können.
 title: Browser-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:08:34Z"
+    generated_at: "2026-07-24T03:59:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

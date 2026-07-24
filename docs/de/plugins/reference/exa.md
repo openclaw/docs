@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das exa-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das exa-Plugin
 summary: Fügt Unterstützung für Websuche-Provider hinzu.
 title: Exa-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:19Z"
+    generated_at: "2026-07-24T05:07:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Exa-Plugin
 
-Fügt Unterstützung für Websuch-Provider hinzu.
+Fügt Unterstützung für Websuche-Provider hinzu.
 
 ## Distribution
 
@@ -27,6 +27,6 @@ Fügt Unterstützung für Websuch-Provider hinzu.
 
 Verträge: `webSearchProviders`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [exa](/de/tools/exa-search)

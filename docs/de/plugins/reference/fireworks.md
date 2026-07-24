@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Fireworks-Plugin.
-summary: Fügt OpenClaw Unterstützung für den Modell-Provider Fireworks hinzu.
+    - Sie installieren, konfigurieren oder prüfen das Fireworks-Plugin.
+summary: Fügt Unterstützung für den Fireworks-Modell-Provider zu OpenClaw hinzu.
 title: Fireworks-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:36Z"
+    generated_at: "2026-07-24T04:47:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

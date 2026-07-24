@@ -1,69 +1,70 @@
 ---
 read_when:
     - Refaktorierung des ACP-Sitzungslebenszyklus oder der ACPX-Prozessbereinigung
-    - Fehlerbehebung bei verwaisten ACPX-Prozessen, PID-Wiederverwendung oder sicherer Bereinigung bei mehreren Gateways
-    - Ändern der Sichtbarkeit von sessions_list für gestartete ACP- oder Subagent-Sitzungen
+    - Fehlerbehebung bei verwaisten ACPX-Prozessen, PID-Wiederverwendung oder sicherer Bereinigung mehrerer Gateways
+    - Ändern der `sessions_list`-Sichtbarkeit für gestartete ACP- oder Subagent-Sitzungen
     - Entwurf von Eigentümermetadaten für Hintergrundaufgaben, ACP-Sitzungen oder Prozess-Leases
 sidebarTitle: ACP lifecycle refactor
-summary: Migrationsplan zur expliziten Festlegung der Zuständigkeit für ACP-Sitzungen und ACPX-Prozesse
-title: Refaktorierung des ACP-Lebenszyklus
+summary: Migrationsplan zur expliziten Festlegung der Eigentümerschaft von ACP-Sitzungen und ACPX-Prozessen
+title: ACP-Lebenszyklus-Refaktorierung
 x-i18n:
-    generated_at: "2026-07-12T02:07:04Z"
+    generated_at: "2026-07-24T05:19:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
+    source_hash: bda66f0acc93216c3d9386ca3ebf7f544efd306cd7f53386391f0c48e5dc8f06
     source_path: refactor/acp.md
     workflow: 16
 ---
 
-Der ACP-Lebenszyklus funktioniert derzeit, aber zu viele seiner Eigenschaften werden erst nachträglich abgeleitet.
-Die Prozessbereinigung rekonstruiert die Zugehörigkeit anhand von PIDs, Befehlszeichenfolgen, Wrapper-
-Pfaden und der aktuellen Prozesstabelle. Die Sitzungssichtbarkeit rekonstruiert die Zugehörigkeit
-anhand von Sitzungsschlüssel-Zeichenfolgen sowie zusätzlichen `sessions.list({ spawnedBy })`-Abfragen.
-Dadurch sind gezielte Korrekturen möglich, aber Randfälle werden leicht übersehen:
-PID-Wiederverwendung, Befehle mit Anführungszeichen, Enkelprozesse von Adaptern, mehrere Gateway-Statusverzeichnisse,
-`cancel` gegenüber `close` sowie die Sichtbarkeit `tree` gegenüber `all` werden zu getrennten
-Stellen, an denen dieselben Zugehörigkeitsregeln erneut ermittelt werden müssen.
+Der ACP-Lebenszyklus funktioniert derzeit, aber zu viele seiner Aspekte werden erst im Nachhinein abgeleitet.
+Die Prozessbereinigung rekonstruiert die Eigentümerschaft anhand von PIDs, Befehlszeichenfolgen, Wrapper-
+Pfaden und der aktuellen Prozesstabelle. Die Sitzungssichtbarkeit rekonstruiert die Eigentümerschaft
+anhand von Sitzungsschlüssel-Zeichenfolgen und zusätzlichen `sessions.list({ spawnedBy })`-Abfragen.
+Dadurch sind gezielte Korrekturen möglich, aber Randfälle werden auch leicht übersehen:
+PID-Wiederverwendung, Befehle mit Anführungszeichen, untergeordnete Adapterprozesse, Zustandsstammverzeichnisse mehrerer Gateways,
+`cancel` gegenüber `close` sowie die Sichtbarkeit von `tree` gegenüber `all` werden jeweils zu separaten
+Stellen, an denen dieselben Eigentümerschaftsregeln erneut ermittelt werden müssen.
 
-Dieses Refactoring macht die Zugehörigkeit zu einem eigenständigen Konzept. Das Ziel ist keine neue ACP-
-Produktoberfläche, sondern ein sichererer interner Vertrag für das bestehende Verhalten von ACP und ACPX.
+Dieses Refactoring macht die Eigentümerschaft zu einem grundlegenden Konzept. Ziel ist keine neue ACP-Produktoberfläche,
+sondern ein sichererer interner Vertrag für das bestehende Verhalten von ACP und ACPX.
 
 ## Ziele
 
-- Die Bereinigung sendet niemals ein Signal an einen Prozess, sofern aktuelle Laufzeitnachweise nicht mit einer
+- Die Bereinigung sendet niemals ein Signal an einen Prozess, sofern die aktuellen Live-Nachweise nicht mit einem
   OpenClaw-eigenen Lease übereinstimmen.
-- `cancel`, `close` und die Bereinigung beim Start haben unterschiedliche Lebenszyklusabsichten.
+- `cancel`, `close` und das Bereinigen beim Start haben unterschiedliche Lebenszyklusabsichten.
 - `sessions_list`, `sessions_history`, `sessions_send` und Statusprüfungen verwenden
-  dasselbe Modell für Sitzungen im Besitz des Anfragenden.
+  dasselbe Modell für Sitzungen im Eigentum des Anfragenden.
 - Installationen mit mehreren Gateways können nicht gegenseitig ihre ACPX-Wrapper bereinigen.
 - Alte ACPX-Sitzungsdatensätze funktionieren während der Migration weiterhin.
-- Die Laufzeit bleibt Eigentum des Plugins; der Kern erhält keine Kenntnisse über Details des ACPX-Pakets.
+- Die Laufzeit bleibt Eigentum des Plugins; der Kern erhält keine Kenntnis von ACPX-Paketdetails.
 
 ## Nichtziele
 
-- ACPX zu ersetzen oder die öffentliche `/acp`-Befehlsoberfläche zu ändern.
+- ACPX zu ersetzen oder die öffentliche Befehlsoberfläche `/acp` zu ändern.
 - Anbieterspezifisches Verhalten von ACP-Adaptern in den Kern zu verschieben.
-- Von Benutzern zu verlangen, den Status vor einem Upgrade manuell zu bereinigen.
-- Durch `cancel` wiederverwendbare ACP-Sitzungen zu schließen.
+- Von Benutzern zu verlangen, den Zustand vor einem Upgrade manuell zu bereinigen.
+- Durch `cancel` wiederverwendbare ACP-Sitzungen schließen zu lassen.
 
 ## Zielmodell
 
-### Identität der Gateway-Instanz
+### Gateway-Instanzidentität
 
-Jeder Gateway-Prozess sollte über eine stabile Laufzeitinstanz-ID verfügen:
+Jeder Gateway-Prozess sollte eine stabile Laufzeit-Instanz-ID besitzen:
 
 ```ts
 type GatewayInstanceId = string;
 ```
 
-Sie kann beim Start des Gateways erzeugt und für die Lebensdauer dieser
-Installation im Status gespeichert werden. Sie ist kein Sicherheitsgeheimnis, sondern ein Unterscheidungsmerkmal für die Zugehörigkeit,
+Sie kann beim Start des Gateways generiert und für die Lebensdauer
+dieser Installation im Zustand gespeichert werden. Sie ist kein Sicherheitsgeheimnis, sondern ein Unterscheidungsmerkmal für die Eigentümerschaft,
 das verhindert, dass die ACP-Prozesse eines Gateways mit den Prozessen eines anderen Gateways verwechselt werden.
 
-### Zugehörigkeit von ACP-Sitzungen
+### Eigentümerschaft von ACP-Sitzungen
 
-Jede gestartete ACP-Sitzung sollte über normalisierte Zugehörigkeitsmetadaten verfügen:
+Jede gestartete ACP-Sitzung sollte normalisierte Eigentümerschaftsmetadaten besitzen:
 
 ```ts
 type AcpSessionOwner = {
@@ -78,7 +79,7 @@ type AcpSessionOwner = {
 };
 ```
 
-Der Gateway sollte diese Felder in Sitzungszeilen zurückgeben, sofern sie bekannt sind.
+Das Gateway sollte diese Felder in Sitzungszeilen zurückgeben, sofern sie bekannt sind.
 Die Sichtbarkeitsfilterung sollte eine reine Prüfung der Zeilenmetadaten sein:
 
 ```ts
@@ -90,9 +91,9 @@ canSeeSessionRow({
 });
 ```
 
-Dadurch entfallen verborgene zusätzliche `sessions.list({ spawnedBy })`-Aufrufe aus
-Sichtbarkeitsprüfungen. Ein gestartetes agentenübergreifendes ACP-Kind gehört dem Anfragenden, weil
-dies aus der Zeile hervorgeht, und nicht, weil es zufällig von einer zweiten Abfrage gefunden wird.
+Dadurch werden verborgene zusätzliche `sessions.list({ spawnedBy })`-Aufrufe aus
+Sichtbarkeitsprüfungen entfernt. Eine gestartete agentenübergreifende untergeordnete ACP-Sitzung gehört dem Anfragenden, weil
+dies in der Zeile angegeben ist, und nicht, weil sie zufällig durch eine zweite Abfrage gefunden wird.
 
 ### ACPX-Prozess-Leases
 
@@ -113,29 +114,28 @@ type AcpxProcessLease = {
 };
 ```
 
-Der Wrapper-Prozess sollte die Lease-ID und die Gateway-Instanz-ID über seine
-Umgebung erhalten:
+Der Wrapper-Prozess erhält die Lease-ID und die Gateway-Instanz-ID als portable
+Argumente:
 
 ```sh
-OPENCLAW_ACPX_LEASE_ID=...
-OPENCLAW_GATEWAY_INSTANCE_ID=...
+--openclaw-acpx-lease-id ... --openclaw-gateway-instance-id ...
 ```
 
-Wenn die Plattform dies zulässt, sollte die Überprüfung aktuelle Prozessmetadaten bevorzugen,
-die nicht durch Befehlsquotierung verwechselt werden können:
+Wenn die Plattform dies zulässt, sollte die Verifizierung Live-Prozessmetadaten bevorzugen,
+die nicht durch Anführungszeichen in Befehlen verwechselt werden können:
 
-- Die Root-PID existiert weiterhin
-- Der aktuelle Wrapper-Pfad liegt unter `wrapperRoot`
-- Die Prozessgruppe entspricht der Lease, sofern verfügbar
-- Die Umgebung enthält die erwartete Lease-ID, sofern sie gelesen werden kann
-- Der Befehlshash oder der Pfad zur ausführbaren Datei entspricht der Lease
+- Die Stamm-PID existiert weiterhin
+- Der Live-Wrapper-Pfad befindet sich unter `wrapperRoot`
+- Die Prozessgruppe stimmt, sofern verfügbar, mit dem Lease überein
+- Die Argumente enthalten die erwartete Lease-ID
+- Der Befehlshash oder der Pfad der ausführbaren Datei stimmt mit dem Lease überein
 
-Wenn der aktuelle Prozess nicht überprüft werden kann, schlägt die Bereinigung sicher geschlossen fehl.
+Wenn der Live-Prozess nicht verifiziert werden kann, schlägt die Bereinigung nach dem Fail-Closed-Prinzip fehl.
 
 ## Lebenszyklus-Controller
 
-Es wird ein einzelner ACPX-Lebenszyklus-Controller eingeführt, der Prozess-Leases und die Bereinigungs-
-richtlinie verwaltet:
+Führen Sie einen einzigen ACPX-Lebenszyklus-Controller ein, der Prozess-Leases und die Bereinigungsrichtlinie
+verwaltet:
 
 ```ts
 interface AcpxLifecycleController {
@@ -151,16 +151,16 @@ interface AcpxLifecycleController {
 }
 ```
 
-`cancelTurn` fordert ausschließlich den Abbruch des Durchlaufs an. Wiederverwendbare Wrapper-
-oder Adapterprozesse dürfen dadurch nicht bereinigt werden.
+`cancelTurn` fordert ausschließlich den Abbruch des Durchlaufs an. Es darf keine wiederverwendbaren Wrapper-
+oder Adapterprozesse bereinigen.
 
-`closeSession` darf Prozesse bereinigen, jedoch erst nach dem Laden des Sitzungsdatensatzes,
-dem Laden der Lease und der Überprüfung, dass der aktuelle Prozessbaum weiterhin zu dieser
+`closeSession` darf bereinigen, jedoch erst nach dem Laden des Sitzungsdatensatzes,
+dem Laden des Leases und der Verifizierung, dass der Live-Prozessbaum weiterhin zu diesem
 Lease gehört.
 
-`reapStartupOrphans` beginnt mit offenen Leases im Status. Die Prozesstabelle darf verwendet werden,
-um Nachfahren zu finden, aber es sollten nicht zuerst beliebige Befehle durchsucht werden, die wie ACP aussehen,
-um anschließend zu entscheiden, dass sie wahrscheinlich zu dieser Installation gehören.
+`reapStartupOrphans` beginnt mit offenen Leases im Zustand. Dabei darf die Prozesstabelle
+zum Ermitteln untergeordneter Prozesse verwendet werden, jedoch sollten nicht zuerst beliebige ACP-ähnliche
+Befehle durchsucht und anschließend als wahrscheinlich eigene Prozesse eingestuft werden.
 
 ## Wrapper-Vertrag
 
@@ -170,16 +170,16 @@ Generierte Wrapper sollten klein bleiben. Sie sollten:
 - normale Beendigungssignale an die Prozessgruppe weiterleiten
 - den Tod des übergeordneten Prozesses erkennen
 - beim Tod des übergeordneten Prozesses SIGTERM senden und den Wrapper anschließend aktiv halten, bis der SIGKILL-
-  Rückfall ausgeführt wird
-- Root-PID und Prozessgruppen-ID an den Lebenszyklus-Controller zurückmelden, sofern
-  diese verfügbar sind
+  Fallback ausgeführt wird
+- die Stamm-PID und die Prozessgruppen-ID, sofern verfügbar, an den Lebenszyklus-Controller
+  zurückmelden
 
 Wrapper sollten nicht über Sitzungsrichtlinien entscheiden. Sie erzwingen lediglich die lokale Bereinigung des Prozessbaums
 für ihre eigene Adaptergruppe.
 
-## Vertrag für die Sitzungssichtbarkeit
+## Vertrag zur Sitzungssichtbarkeit
 
-Die Sichtbarkeit sollte die normalisierte Zugehörigkeit der Zeile verwenden:
+Die Sichtbarkeit sollte die normalisierte Eigentümerschaft der Zeilen verwenden:
 
 ```ts
 type SessionVisibilityInput = {
@@ -199,108 +199,108 @@ type SessionVisibilityInput = {
 Regeln:
 
 - `self`: nur die Sitzung des Anfragenden.
-- `tree`: die Sitzung des Anfragenden sowie Zeilen, die ihm gehören oder von ihm gestartet wurden.
-- `all`: alle Zeilen desselben Agenten, gemäß a2a zulässige agentenübergreifende Zeilen und dem Anfragenden gehörende
-  gestartete agentenübergreifende Zeilen, selbst wenn allgemeines a2a deaktiviert ist.
-- `agent`: nur derselbe Agent, sofern keine ausdrückliche Zugehörigkeitsbeziehung angibt, dass die Zeile
+- `tree`: die Sitzung des Anfragenden sowie Zeilen, die dem Anfragenden gehören oder von ihm gestartet wurden.
+- `all`: alle Zeilen desselben Agenten, durch a2a erlaubte agentenübergreifende Zeilen sowie agentenübergreifende gestartete Zeilen
+  im Eigentum des Anfragenden, selbst wenn allgemeines a2a deaktiviert ist.
+- `agent`: nur derselbe Agent, sofern nicht eine explizite Eigentümerbeziehung angibt, dass die Zeile
   dem Anfragenden gehört.
 
-Dadurch werden `tree` und `all` monoton: `all` darf kein zugehöriges Kind ausblenden, das
+Dadurch werden `tree` und `all` monoton: `all` darf kein untergeordnetes Element im Eigentum des Anfragenden ausblenden, das
 `tree` anzeigen würde.
 
 ## Migrationsplan
 
 ### Phase 1: Identität und Leases hinzufügen
 
-- `gatewayInstanceId` zum Gateway-Status hinzufügen.
-- Einen ACPX-Lease-Speicher im ACPX-Statusverzeichnis hinzufügen.
-- Vor dem Start eines generierten Wrappers eine Lease schreiben.
+- `gatewayInstanceId` zum Gateway-Zustand hinzufügen.
+- Einen ACPX-Lease-Speicher unter dem ACPX-Zustandsverzeichnis hinzufügen.
+- Vor dem Start eines generierten Wrappers einen Lease schreiben.
 - `leaseId` in neuen ACPX-Sitzungsdatensätzen speichern.
 - Vorhandene PID- und Befehlsfelder für alte Datensätze beibehalten.
 
-### Phase 2: Lease-basierte Bereinigung
+### Phase 2: Lease-zuerst-Bereinigung
 
 - Die Bereinigung beim Schließen so ändern, dass zuerst `leaseId` geladen wird.
-- Vor dem Senden von Signalen die aktuelle Prozesszugehörigkeit anhand der Lease überprüfen.
-- Den derzeitigen Rückfall auf Root-PID und Wrapper-Stammverzeichnis nur für Altdatensätze beibehalten.
-- Leases nach einer überprüften Bereinigung als `closed` markieren.
-- Leases als `lost` markieren, wenn der Prozess bereits vor der Bereinigung beendet wurde.
+- Vor dem Senden von Signalen die Live-Prozesseigentümerschaft anhand des Leases verifizieren.
+- Den aktuellen Fallback über Stamm-PID und Wrapper-Stammverzeichnis ausschließlich für Legacy-Datensätze beibehalten.
+- Leases nach verifizierter Bereinigung als `closed` markieren.
+- Leases als `lost` markieren, wenn der Prozess vor der Bereinigung beendet wurde.
 
-### Phase 3: Lease-basierte Bereinigung beim Start
+### Phase 3: Lease-zuerst-Bereinigung beim Start
 
 - Die Bereinigung beim Start durchsucht offene Leases.
-- Für jede Lease den Root-Prozess überprüfen und Nachfahren erfassen.
-- Überprüfte Bäume von den Kindern zum Elternprozess bereinigen.
-- Alte Leases mit dem Status `closed` und `lost` innerhalb eines begrenzten Aufbewahrungszeitraums verwerfen.
-- Die Suche anhand von Befehlsmarkierungen nur als vorübergehenden Rückfall für Altdaten beibehalten und nach Möglichkeit durch
-  Wrapper-Stammverzeichnis und Gateway-Instanz absichern.
+- Für jeden Lease den Stammprozess verifizieren und untergeordnete Prozesse erfassen.
+- Verifizierte Bäume von den untergeordneten Prozessen aufwärts bereinigen.
+- Alte Leases mit `closed` und `lost` innerhalb eines begrenzten Aufbewahrungszeitraums verfallen lassen.
+- Das Durchsuchen nach Befehlsmarkierungen nur als vorübergehenden Legacy-Fallback beibehalten, nach Möglichkeit abgesichert durch
+  das Wrapper-Stammverzeichnis und die Gateway-Instanz.
 
-### Phase 4: Zeilen zur Sitzungszugehörigkeit
+### Phase 4: Zeilen zur Sitzungseigentümerschaft
 
-- Zugehörigkeitsmetadaten zu Gateway-Sitzungszeilen hinzufügen.
-- ACPX, Subagenten, Hintergrundaufgaben und Sitzungsspeicher so anpassen, dass sie
-  `ownerSessionKey` oder `spawnedBy` befüllen.
-- Prüfungen der Sitzungssichtbarkeit auf Zeilenmetadaten umstellen.
+- Eigentümerschaftsmetadaten zu Gateway-Sitzungszeilen hinzufügen.
+- ACPX-, Subagent-, Hintergrundaufgaben- und Sitzungsspeicher-Schreibvorgänge so anpassen, dass sie
+  `ownerSessionKey` oder `spawnedBy` ausfüllen.
+- Sichtbarkeitsprüfungen für Sitzungen auf die Verwendung von Zeilenmetadaten umstellen.
 - Zusätzliche `sessions.list({ spawnedBy })`-Abfragen während der Sichtbarkeitsprüfung entfernen.
 
-### Phase 5: Veraltete Heuristiken entfernen
+### Phase 5: Legacy-Heuristiken entfernen
 
 Nach einem Release-Zeitraum:
 
-- bei der Bereinigung nicht veralteter ACPX-Datensätze nicht mehr auf gespeicherte Root-Befehlszeichenfolgen zurückgreifen
-- Suchen nach Befehlsmarkierungen beim Start entfernen
-- Rückfallabfragen von Listen für die Sichtbarkeit entfernen
-- defensives, sicher geschlossenes Verhalten für fehlende oder nicht überprüfbare Leases beibehalten
+- bei der Bereinigung von Nicht-Legacy-ACPX-Sitzungen nicht mehr auf gespeicherte Stamm-Befehlszeichenfolgen zurückgreifen
+- das Durchsuchen nach Befehlsmarkierungen beim Start entfernen
+- Fallback-Listenabfragen für die Sichtbarkeit entfernen
+- das defensive Fail-Closed-Verhalten für fehlende oder nicht verifizierbare Leases beibehalten
 
 ## Tests
 
-Zwei tabellengesteuerte Testsammlungen hinzufügen.
+Fügen Sie zwei tabellengesteuerte Testsuiten hinzu.
 
 Prozesslebenszyklus-Simulator:
 
-- PID wird von einem nicht zugehörigen Prozess wiederverwendet
-- PID wird vom Wrapper-Stammverzeichnis eines anderen Gateways wiederverwendet
-- gespeicherter Wrapper-Befehl enthält Shell-Anführungszeichen, aktueller `ps`-Befehl dagegen nicht
-- Adapter-Kindprozess wird beendet, Enkelprozess verbleibt in der Prozessgruppe
-- SIGTERM-Rückfall beim Tod des übergeordneten Prozesses erreicht SIGKILL
-- Prozessauflistung ist nicht verfügbar
-- veraltete Lease mit fehlendem Prozess
-- verwaister Prozess beim Start mit Wrapper, Adapter-Kindprozess und Enkelprozess
+- PID wird von einem unabhängigen Prozess wiederverwendet
+- PID wird vom Wrapper-Stammprozess eines anderen Gateways wiederverwendet
+- der gespeicherte Wrapper-Befehl enthält Shell-Anführungszeichen, der Live-Befehl `ps` hingegen nicht
+- der untergeordnete Adapterprozess wird beendet, ein weiterer Nachkomme verbleibt in der Prozessgruppe
+- der SIGTERM-Fallback beim Tod des übergeordneten Prozesses erreicht SIGKILL
+- die Prozessliste ist nicht verfügbar
+- veralteter Lease mit fehlendem Prozess
+- verwaister Prozess beim Start mit Wrapper, untergeordnetem Adapterprozess und weiterem Nachkommen
 
-Matrix für die Sitzungssichtbarkeit:
+Matrix der Sitzungssichtbarkeit:
 
 - `self`, `tree`, `agent`, `all`
 - a2a aktiviert und deaktiviert
 - Zeile desselben Agenten
 - agentenübergreifende Zeile
-- dem Anfragenden gehörende, gestartete agentenübergreifende ACP-Zeile
-- in einer Sandbox ausgeführter Anfragender, auf `tree` beschränkt
-- Aktionen für Auflisten, Verlauf, Senden und Status
+- agentenübergreifende gestartete ACP-Zeile im Eigentum des Anfragenden
+- Anfragender in einer Sandbox, beschränkt auf `tree`
+- Aktionen zum Auflisten, Anzeigen des Verlaufs, Senden und Prüfen des Status
 
-Die wichtige Invariante: Ein dem Anfragenden gehörendes, gestartetes Kind ist überall sichtbar,
+Die wichtige Invariante: Ein gestartetes untergeordnetes Element im Eigentum des Anfragenden ist überall dort sichtbar,
 wo die konfigurierte Sichtbarkeit den Sitzungsbaum des Anfragenden einschließt, und `all` ist nicht
 weniger leistungsfähig als `tree`.
 
 ## Kompatibilitätshinweise
 
-Alte Sitzungsdatensätze verfügen möglicherweise nicht über `leaseId`. Sie sollten den veralteten,
-sicher geschlossenen Bereinigungspfad verwenden:
+Alte Sitzungsdatensätze enthalten möglicherweise kein `leaseId`. Sie sollten den Legacy-Bereinigungspfad
+nach dem Fail-Closed-Prinzip verwenden:
 
-- einen aktuellen Root-Prozess voraussetzen
-- die Zugehörigkeit zum Wrapper-Stammverzeichnis voraussetzen, wenn ein generierter Wrapper erwartet wird
-- bei Roots ohne Wrapper eine Übereinstimmung der Befehle voraussetzen
-- niemals allein anhand veralteter gespeicherter PID-Metadaten ein Signal senden
+- einen aktiven Stammprozess voraussetzen
+- die Eigentümerschaft des Wrapper-Stammverzeichnisses voraussetzen, wenn ein generierter Wrapper erwartet wird
+- bei Stammprozessen ohne Wrapper eine Übereinstimmung des Befehls voraussetzen
+- niemals ausschließlich aufgrund veralteter gespeicherter PID-Metadaten ein Signal senden
 
-Wenn ein Altdatensatz nicht überprüft werden kann, bleibt er unangetastet. Die Lease-Bereinigung beim Start und
-der nächste Release-Zeitraum sollten den Rückfall schließlich außer Betrieb nehmen.
+Wenn ein Legacy-Datensatz nicht verifiziert werden kann, lassen Sie ihn unverändert. Die Lease-Bereinigung beim Start und
+der nächste Release-Zeitraum sollten den Fallback schließlich außer Betrieb nehmen.
 
 ## Erfolgskriterien
 
 - Das Schließen einer alten oder veralteten ACPX-Sitzung kann keinen Prozess eines anderen Gateways beenden.
-- Der Tod des übergeordneten Prozesses hinterlässt keine hartnäckigen Adapter-Enkelprozesse.
+- Der Tod des übergeordneten Prozesses hinterlässt keine hartnäckigen untergeordneten Adapterprozesse.
 - `cancel` bricht den aktiven Durchlauf ab, ohne wiederverwendbare Sitzungen zu schließen.
-- `sessions_list` kann dem Anfragenden gehörende agentenübergreifende ACP-Kinder sowohl unter
+- `sessions_list` kann agentenübergreifende untergeordnete ACP-Sitzungen im Eigentum des Anfragenden sowohl unter
   `tree` als auch unter `all` anzeigen.
 - Die Bereinigung beim Start wird durch Leases gesteuert, nicht durch breit angelegte Suchen in Befehlszeichenfolgen.
-- Die gezielten Matrix-Tests für Prozesse und Sichtbarkeit decken jeden Randfall ab, für den
-  zuvor einzelne Korrekturen bei der Überprüfung erforderlich waren.
+- Die gezielten Tests der Prozess- und Sichtbarkeitsmatrix decken jeden Randfall ab, der
+  zuvor einzelne Korrekturen bei Reviews erforderte.

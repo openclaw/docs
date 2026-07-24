@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Mattermost-Plugin.
-summary: Fügt die Mattermost-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das mattermost-Plugin
+summary: Fügt die Mattermost-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Mattermost-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:10:29Z"
+    generated_at: "2026-07-24T03:59:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

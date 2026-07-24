@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das Perplexity-Plugin.
-summary: Fügt Unterstützung für Websuch-Provider hinzu.
+summary: Fügt Unterstützung für Websuche-Provider hinzu.
 title: Perplexity-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:11:21Z"
+    generated_at: "2026-07-24T04:01:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Perplexity-Plugin
 
-Fügt Unterstützung für den Websuch-Provider hinzu.
+Fügt Unterstützung für Websuch-Provider hinzu.
 
 ## Distribution
 

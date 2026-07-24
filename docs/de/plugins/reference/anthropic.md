@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das anthropic-Plugin
+    - Sie installieren, konfigurieren oder prüfen das anthropic-Plugin
 summary: Anthropic-Modelle, Claude CLI und nativer Claude-Sitzungskatalog.
 title: Anthropic-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:20:27Z"
+    generated_at: "2026-07-24T03:57:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

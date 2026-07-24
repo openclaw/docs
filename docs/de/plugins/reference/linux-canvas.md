@@ -4,7 +4,7 @@ read_when:
 summary: Canvas-Rendering-Bridge für die OpenClaw-Linux-Desktop-App.
 title: Linux-Canvas-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:10:10Z"
+    generated_at: "2026-07-24T05:07:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

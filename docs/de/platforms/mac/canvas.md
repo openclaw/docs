@@ -1,22 +1,22 @@
 ---
 read_when:
     - Implementierung des macOS-Canvas-Panels
-    - Agentensteuerungen für den visuellen Arbeitsbereich hinzufügen
+    - Agentensteuerung für den visuellen Arbeitsbereich hinzufügen
     - Fehlerbehebung beim Laden von Canvas in WKWebView
-summary: Vom Agenten gesteuertes Canvas-Panel, eingebettet über WKWebView und ein benutzerdefiniertes URL-Schema
+summary: Agentengesteuertes Canvas-Panel, eingebettet über WKWebView und ein benutzerdefiniertes URL-Schema
 title: Canvas
 x-i18n:
-    generated_at: "2026-07-12T15:30:51Z"
+    generated_at: "2026-07-24T04:42:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: 21955803c39debfbc34851a0c40a69c1f3c6ca009526d9929a4c429ad0b09084
+    source_hash: 56532246bc06601aa753a59f85f33bfa8d6599deecade591a03972e8b9b16fc2
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-Die macOS-App bettet mithilfe von `WKWebView` ein vom Agenten gesteuertes **Canvas-Panel** ein, einen
+Die macOS-App bettet mithilfe von `WKWebView` ein agentengesteuertes **Canvas-Panel** ein, einen
 leichtgewichtigen visuellen Arbeitsbereich für HTML/CSS/JS, A2UI und kleine interaktive
 UI-Oberflächen.
 
@@ -33,23 +33,24 @@ Das Canvas-Panel stellt diese Dateien über ein benutzerdefiniertes URL-Schema b
 - `openclaw-canvas://main/assets/app.css` -> `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` -> `<canvasRoot>/main/widgets/todo/index.html`
 
-Wenn im Stammverzeichnis keine `index.html` vorhanden ist, zeigt die App eine integrierte Grundgerüstseite an.
+Wenn im Stammverzeichnis kein `index.html` vorhanden ist, zeigt die App eine integrierte Gerüstseite an.
 
-## Verhalten des Panels
+## Panel-Verhalten
 
 - Rahmenloses, größenveränderbares Panel, das nahe der Menüleiste (oder dem Mauszeiger) verankert ist.
+- Das Anzeigen von Canvas wechselt weder die App noch entzieht es den Tastaturfokus.
 - Merkt sich Größe und Position pro Sitzung.
 - Wird automatisch neu geladen, wenn sich lokale Canvas-Dateien ändern.
-- Es ist jeweils nur ein Canvas-Panel sichtbar (die Sitzung wird bei Bedarf gewechselt).
+- Es ist jeweils nur ein Canvas-Panel sichtbar (Sitzungen werden bei Bedarf gewechselt).
 
 Canvas kann unter Settings -> **Allow Canvas** deaktiviert werden. Wenn es deaktiviert ist,
 geben Canvas-Node-Befehle `CANVAS_DISABLED` zurück.
 
-## Agenten-API
+## Agenten-API-Oberfläche
 
 Canvas wird über den Gateway-WebSocket bereitgestellt, sodass der Agent das
 Panel ein- und ausblenden, zu einem Pfad oder einer URL navigieren, JavaScript auswerten und ein
-Snapshot-Bild aufnehmen kann:
+Snapshot-Bild erfassen kann:
 
 ```bash
 openclaw nodes canvas present --node <id>
@@ -58,33 +59,38 @@ openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
+`eval` und `a2ui.*` aktualisieren Inhalte, ohne das Panel zu öffnen oder einzublenden. Nur
+`present`, `navigate` oder eine Benutzeraktion zeigt es an; nach dem Ausblenden werden Inhaltsaktualisierungen
+weiterhin auf das ausgeblendete Panel angewendet. `snapshot` erfordert ein sichtbares Panel und
+gibt andernfalls `CANVAS_HIDDEN` zurück; führen Sie zuerst `present` aus.
+
 `canvas.navigate` akzeptiert lokale Canvas-Pfade, `http(s)`-URLs und `file://`-
-URLs. Durch Übergabe von `"/"` wird das lokale Grundgerüst oder die `index.html` angezeigt.
+URLs. Die Übergabe von `"/"` zeigt das lokale Gerüst oder `index.html` an.
 
 Vom Gateway gehostete Ziele unter `/__openclaw__/canvas/` und
-`/__openclaw__/a2ui/` werden über die aktuell auf den Gültigkeitsbereich der Node-Sitzung beschränkte
-Canvas-URL aufgelöst. Die App aktualisiert diese kurzlebige Berechtigung vor der Navigation;
+`/__openclaw__/a2ui/` werden über die aktuelle bereichsgebundene
+Canvas-URL der Node-Sitzung aufgelöst. Die App aktualisiert diese kurzlebige Berechtigung vor der Navigation;
 Sie müssen eine Berechtigungs-URL nicht selbst erstellen oder kopieren.
 
 ## A2UI in Canvas
 
 A2UI wird vom Canvas-Host des Gateways gehostet und innerhalb des Canvas-
-Panels gerendert. Wenn der Gateway einen Canvas-Host bekannt gibt, navigiert die macOS-App
-beim ersten Öffnen automatisch zur A2UI-Hostseite.
+Panels gerendert. Wenn der Gateway einen Canvas-Host ankündigt, navigiert die macOS-App beim ersten Öffnen
+automatisch zur A2UI-Hostseite.
 
-Die bekannt gegebene URL ist auf eine Berechtigung beschränkt, zum Beispiel
+Die angekündigte URL ist berechtigungsgebunden, beispielsweise
 `http://<gateway-host>:18789/__openclaw__/cap/<token>/__openclaw__/a2ui/?platform=macos`.
-Behandeln Sie sie als kurzlebige Anmeldedaten, nicht als stabilen Link.
+Behandeln Sie sie als kurzlebige Zugangsdaten, nicht als stabilen Link.
 
 ### A2UI-Befehle (v0.8)
 
-Canvas akzeptiert A2UI-v0.8-Nachrichten vom Server an den Client: `beginRendering`,
+Canvas akzeptiert A2UI-v0.8-Server-zu-Client-Nachrichten: `beginRendering`,
 `surfaceUpdate`, `dataModelUpdate`, `deleteSurface`. `createSurface` (v0.9) wird
 noch nicht unterstützt.
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
-{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"Wenn Sie dies lesen können, funktioniert A2UI-Push."},"usageHint":"body"}}}]}}
+{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"Wenn Sie dies lesen können, funktioniert A2UI Push."},"usageHint":"body"}}}]}}
 {"beginRendering":{"surfaceId":"main","root":"root"}}
 EOFA2
 
@@ -102,32 +108,32 @@ openclaw nodes canvas a2ui push --node <id> --text "Hallo von A2UI"
 Canvas kann über `openclaw://agent?...`-Deep-Links neue Agentenläufe auslösen:
 
 ```js
-window.location.href = "openclaw://agent?message=Review%20this%20design";
+window.location.href = "openclaw://agent?message=Dieses%20Design%20prüfen";
 ```
 
 Unterstützte Abfrageparameter:
 
 | Parameter                  | Bedeutung                                             |
 | -------------------------- | ----------------------------------------------------- |
-| `message`                  | Vorausgefüllte Agentenaufforderung.                    |
-| `sessionKey`               | Stabile Sitzungskennung.                               |
-| `thinking`                 | Optionales Denkprofil.                                 |
-| `deliver`, `to`, `channel` | Zustellungsziel.                                       |
-| `timeoutSeconds`           | Optionales Zeitlimit für den Lauf.                     |
+| `message`                  | Vorausgefüllter Agenten-Prompt.                       |
+| `sessionKey`               | Stabile Sitzungskennung.                              |
+| `thinking`                 | Optionales Denkprofil.                                |
+| `deliver`, `to`, `channel` | Zustellungsziel.                                      |
+| `timeoutSeconds`           | Optionales Zeitlimit für den Lauf.                    |
 | `key`                      | Von der App generiertes Sicherheitstoken für vertrauenswürdige lokale Aufrufer. |
 
-Die App fordert eine Bestätigung an, sofern kein gültiger Schlüssel angegeben wird. Links
-ohne Schlüssel zeigen vor der Genehmigung die Nachricht und die URL an und ignorieren Felder
-zur Zustellungsweiterleitung; Links mit Schlüssel verwenden den normalen Ausführungspfad des Gateways.
+Die App fordert zur Bestätigung auf, sofern kein gültiger Schlüssel angegeben wird. Links
+ohne Schlüssel zeigen vor der Genehmigung die Nachricht und die URL an und ignorieren Felder zur
+Zustellungsweiterleitung; Links mit Schlüssel verwenden den normalen Gateway-Laufpfad.
 
 ## Sicherheitshinweise
 
 - Das Canvas-Schema blockiert Verzeichnisdurchquerung; Dateien müssen sich unter dem Sitzungsstammverzeichnis befinden.
 - Lokale Canvas-Inhalte verwenden ein benutzerdefiniertes Schema (kein Loopback-Server erforderlich).
 - Externe `http(s)`-URLs sind nur zulässig, wenn ausdrücklich zu ihnen navigiert wird.
-- Gewöhnliche Webseiten dienen ausschließlich der Darstellung. Agentenaktionen werden nur über das
-  App-eigene Canvas-Schema oder das exakte, auf eine Berechtigung beschränkte Gateway-A2UI-Dokument
-  akzeptiert, das von der App ausgewählt wurde; Unterframes, Weiterleitungen, abgelaufene Berechtigungen und geänderte
+- Gewöhnliche Webseiten dienen ausschließlich der Darstellung. Agentenaktionen werden nur aus dem
+  app-eigenen Canvas-Schema oder dem exakten berechtigungsgebundenen Gateway-A2UI-Dokument
+  akzeptiert, das von der App ausgewählt wurde; Unterframes, Weiterleitungen, veraltete Berechtigungen und geänderte
   Abfragen können keine Aktionen auslösen.
 
 ## Verwandte Themen

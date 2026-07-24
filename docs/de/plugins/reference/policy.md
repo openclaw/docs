@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Richtlinien-Plugin
+    - Sie installieren, konfigurieren oder prüfen das Richtlinien-Plugin
 summary: Fügt richtliniengestützte Doctor-Prüfungen für die Workspace-Konformität hinzu.
 title: Richtlinien-Plugin
 x-i18n:
-    generated_at: "2026-07-12T02:00:25Z"
+    generated_at: "2026-07-24T04:04:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f01de4816a191a175367c06ff69e4ebf6032ee1a105d1d9a48a74093e5e6f774
+    source_hash: 440f2f46e4149fdd5e65bf0140d4981c6d840e8e8c8a85d05eeb23a0839a61ac
     source_path: plugins/reference/policy.md
     workflow: 16
 ---
 
 # Policy-Plugin
 
-Fügt richtliniengestützte Doctor-Prüfungen für die Konformität von Arbeitsbereichen hinzu.
+Fügt richtliniengestützte Doctor-Prüfungen für die Konformität von Workspaces hinzu.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/policy`
 - Installationsweg: in OpenClaw enthalten
@@ -30,23 +31,69 @@ Plugin
 
 ## Verhalten
 
-Das Policy-Plugin stellt Doctor-Systemprüfungen für richtlinienverwaltete OpenClaw-Einstellungen und regulierte Arbeitsbereichsdeklarationen bereit. Policy deckt derzeit die Konformität von Kanälen, Metadaten regulierter Tools, den Sicherheitsstatus von MCP-Servern, den Status von Modell-Providern, den Status des Zugriffs auf private Netzwerke, den Status der Gateway-Exposition, den Status von Arbeitsbereichen und Tools der Agenten, den konfigurierten globalen und agentenspezifischen Tool-Status, den Status der konfigurierten Sandbox-Laufzeit, den Status des Eingangs- und Kanalzugriffs, den Status der Datenverarbeitung sowie den Status der Provider und Authentifizierungsprofile für Geheimnisse in der OpenClaw-Konfiguration ab.
+Das Policy-Plugin ergänzt Doctor-Zustandsprüfungen für richtlinienverwaltete OpenClaw-
+Einstellungen und kontrollierte Workspace-Deklarationen. Policy deckt derzeit die
+Konformität von Kanälen, kontrollierte Tool-Metadaten, den Sicherheitsstatus von MCP-Servern,
+den Status von Modell-Providern, den Zugriffsstatus für private Netzwerke,
+den Expositionsstatus des Gateways, den Workspace-/Tool-Status von Agenten,
+den konfigurierten globalen und agentenspezifischen Tool-Status, den Status der
+konfigurierten Sandbox-Laufzeit, den Zugriffsstatus für Ingress/Kanäle,
+den Datenverarbeitungsstatus sowie den Status von Providern für OpenClaw-
+Konfigurationsgeheimnisse und Authentifizierungsprofilen ab.
 
-Policy speichert verfasste Anforderungen in `policy.jsonc`, wertet vorhandene OpenClaw-Einstellungen und Arbeitsbereichsdeklarationen als Nachweise aus und meldet Abweichungen über `openclaw policy check` und `openclaw doctor --lint`. Eine erfolgreiche Richtlinienprüfung gibt Hashes für Richtlinie, Nachweise, Feststellungen und Bestätigung aus, die Betreiber zu Prüfzwecken aufzeichnen können.
+Policy speichert verfasste Anforderungen in `policy.jsonc`, wertet vorhandene
+OpenClaw-Einstellungen und Workspace-Deklarationen als Nachweise aus und meldet
+Abweichungen über `openclaw policy check` und `openclaw doctor --lint`. Eine erfolgreiche
+Policy-Prüfung gibt Policy-, Nachweis-, Befund- und Bestätigungs-Hashes aus, die
+Betreiber für Auditzwecke aufzeichnen können.
 
-`openclaw policy compare --baseline <file>` vergleicht eine Richtliniendatei mit einer anderen Richtliniendatei. Dabei wird ausschließlich die Konformität auf Konfigurationsebene geprüft: Anhand der Metadaten der Richtlinienregeln wird verifiziert, dass die geprüfte Richtlinie gegenüber der verfassten Baseline weder unvollständig noch schwächer ist. Laufzeitstatus, Anmeldedaten oder Werte von Geheimnissen werden nicht geprüft.
+`openclaw policy compare --baseline <file>` vergleicht eine Policy-Datei mit einer anderen
+Policy-Datei. Dabei wird ausschließlich die Konformität auf Konfigurationsebene geprüft:
+Anhand der Metadaten der Policy-Regeln wird verifiziert, dass die geprüfte Policy
+gegenüber der verfassten Baseline weder Lücken aufweist noch schwächer ist. Laufzeitstatus,
+Anmeldedaten oder Geheimniswerte werden nicht geprüft.
 
-Regeln für den Tool-Status können genehmigte Profile, auf den Arbeitsbereich beschränkte Dateisystem-Tools, begrenzte Einstellungen für Sicherheit, Rückfragen und Host bei der Befehlsausführung, einen deaktivierten Modus mit erhöhten Rechten, exakte `alsoAllow`-Einträge und erforderliche Ablehnungseinträge für Tools verlangen. Die Nachweise erfassen zusätzliche `alsoAllow`-Einträge, da diese den effektiven Tool-Status erweitern können. Diese Prüfungen untersuchen ausschließlich die Konformität der Konfiguration; sie lesen weder den Genehmigungsstatus zur Laufzeit aus noch fügen sie eine Durchsetzung zur Laufzeit hinzu.
+Regeln für den Tool-Status können genehmigte Profile, auf den Workspace beschränkte
+Dateisystem-Tools, begrenzte Einstellungen für Exec-Sicherheit, Rückfragen und Hosts,
+einen deaktivierten Modus mit erhöhten Berechtigungen, exakte
+`alsoAllow`-Einträge und erforderliche Tool-Sperreinträge vorschreiben. Die Nachweise
+erfassen zusätzliche `alsoAllow`-Einträge, da diese den effektiven Tool-Status
+erweitern können. Diese Prüfungen betrachten ausschließlich die Konformität der
+Konfiguration; sie lesen weder den Genehmigungsstatus der Laufzeit aus noch fügen sie
+eine Durchsetzung zur Laufzeit hinzu.
 
-Regeln für den Sandbox-Status können genehmigte Sandbox-Modi und -Backends verlangen, Host-Container-Netzwerke und den Beitritt zu Container-Namespaces untersagen, schreibgeschützte Container-Einhängungen verlangen, das Einhängen von Sockets der Container-Laufzeit sowie uneingeschränkte Containerprofile untersagen und Quellbereiche für Sandbox-Browser-CDP verlangen. Diese Prüfungen untersuchen ausschließlich die Konformität der Konfiguration; sie lesen weder den Genehmigungsstatus zur Laufzeit aus noch prüfen sie aktive Container oder fügen eine Durchsetzung zur Laufzeit hinzu.
+Regeln für den Sandbox-Status können genehmigte Sandbox-Modi und -Backends vorschreiben,
+Host-Container-Netzwerke und das Beitreten zu Container-Namespaces verbieten,
+schreibgeschützte Container-Einhängungen verlangen, das Einhängen von Sockets der
+Container-Laufzeit sowie uneingeschränkte Container-Profile verbieten und
+CDP-Quellbereiche für Sandbox-Browser verlangen.
+Diese Prüfungen betrachten ausschließlich die Konformität der Konfiguration; sie lesen
+weder den Genehmigungsstatus der Laufzeit aus noch prüfen sie aktive Container oder
+fügen eine Durchsetzung zur Laufzeit hinzu.
 
-Regeln zur Datenverarbeitung können die Schwärzung sensibler Protokolldaten und die Pflege der Sitzungsaufbewahrung verlangen sowie die Erfassung von Inhalten für Telemetriezwecke und die Speicherindizierung von Sitzungsprotokollen untersagen. Diese Prüfungen untersuchen ausschließlich die Konformität der Konfiguration; sie prüfen weder Rohprotokolle, Telemetrieexporte, Transkripte, Speicherdateien, Geheimnisse noch personenbezogene Daten.
+Regeln zur Datenverarbeitung können die Schwärzung sensibler Protokolldaten verlangen,
+die Erfassung von Inhalten durch Telemetrie verbieten, die Pflege der
+Sitzungsaufbewahrung vorschreiben und die Speicherindizierung von
+Sitzungstranskripten verbieten. Diese Prüfungen betrachten ausschließlich die
+Konformität der Konfiguration; sie prüfen weder Rohprotokolle, Telemetrieexporte,
+Transkripte, Speicherdateien, Geheimnisse noch personenbezogene Daten.
 
-Benannte Richtlinienbereiche unter `scopes.<scopeName>` können für den jeweils aufgeführten Selektor strengere reguläre Richtlinienabschnitte hinzufügen. `agentIds` unterstützt `tools`, `agents.workspace`, `sandbox` und `dataHandling.memory`; `channelIds` unterstützt `ingress.channels`.
-Laufzeit-Agenten-IDs, die nicht ausdrücklich in `agents.list[]` aufgeführt sind, werden anhand des geerbten globalen beziehungsweise standardmäßigen Status geprüft, statt ohne Nachweise stillschweigend als konform zu gelten. Jeder in `policy.jsonc` vorhandene Bereich muss für seinen Selektor gültig und durchsetzbar sein. Überlagerungsregeln stellen zusätzliche Anforderungen dar, schwächen daher die übergeordnete Richtlinie nicht und können eigene Feststellungen erzeugen, wenn dieselbe beobachtete Konfiguration gegen beide Bereiche verstößt.
+Benannte Policy-Geltungsbereiche unter `scopes.<scopeName>` können für den jeweils
+aufgeführten Selektor strengere reguläre Policy-Abschnitte hinzufügen.
+`agentIds` unterstützt `tools`,
+`agents.workspace`, `sandbox` und `dataHandling.memory`;
+`channelIds` unterstützt `ingress.channels`.
+Laufzeit-Agenten-IDs, die nicht ausdrücklich in `agents.entries.*` aufgeführt sind,
+werden anhand des geerbten globalen beziehungsweise standardmäßigen Status geprüft,
+anstatt ohne Nachweise stillschweigend als erfolgreich zu gelten. Jeder in
+`policy.jsonc` vorhandene Geltungsbereich muss für seinen Selektor gültig und
+durchsetzbar sein. Overlay-Regeln stellen zusätzliche Anforderungen dar; daher
+schwächen sie die Policy auf oberster Ebene nicht ab und können eigene Befunde
+erzeugen, wenn dieselbe beobachtete Konfiguration gegen beide Geltungsbereiche
+verstößt.
 
 <!-- openclaw-plugin-reference:manual-end -->
 
 ## Verwandte Dokumentation
 
-- [Richtlinie](/de/cli/policy)
+- [Policy](/de/cli/policy)

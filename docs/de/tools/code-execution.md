@@ -1,61 +1,61 @@
 ---
 read_when:
-    - Sie möchten `code_execution` aktivieren oder konfigurieren
+    - Sie möchten code_execution aktivieren oder konfigurieren
     - Sie möchten eine Remote-Analyse ohne lokalen Shell-Zugriff
-    - Sie möchten x_search oder web_search mit einer Python-Analyse auf einem entfernten System kombinieren
-summary: 'code_execution: isolierte Remote-Python-Analyse mit xAI ausführen'
+    - Sie möchten x_search oder web_search mit einer entfernten Python-Analyse kombinieren
+summary: 'code_execution: Python-Analysen mit xAI in einer isolierten Remote-Umgebung ausführen'
 title: Codeausführung
 x-i18n:
-    generated_at: "2026-07-12T02:14:56Z"
+    generated_at: "2026-07-24T04:08:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 1ab391daed9154f113535e6d241c45d5c08c22abdc012148a9f0f2ae5ec548b3
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` führt eine isolierte Remote-Python-Analyse über die Responses API von xAI aus
+`code_execution` führt isolierte Remote-Python-Analysen über die Responses API von xAI aus
 (`https://api.x.ai/v1/responses`, derselbe Endpunkt, den `x_search` verwendet). Das Tool wird
-vom gebündelten Plugin `xai` unter dem Vertrag `tools` registriert.
+vom gebündelten `xai`-Plugin gemäß dem `tools`-Vertrag registriert.
 
 <Warning>
-  `code_execution` wird auf den Servern von xAI ausgeführt. xAI berechnet 5 US-Dollar pro 1.000 Tool-Aufrufe
-  zuzüglich der Ein- und Ausgabe-Token des Modells.
+  `code_execution` wird auf den Servern von xAI ausgeführt. xAI berechnet 5 $ pro 1.000 Tool-Aufrufe
+  zuzüglich der Eingabe- und Ausgabe-Token des Modells.
 </Warning>
 
-| Eigenschaft         | Wert                                                                              |
-| ------------------- | --------------------------------------------------------------------------------- |
-| Tool-Name           | `code_execution`                                                                  |
-| Provider-Plugin     | `xai` (gebündelt, `enabledByDefault: true`)                                        |
-| Authentifizierung   | xAI-Authentifizierungsprofil, `XAI_API_KEY` oder `plugins.entries.xai.config.webSearch.apiKey` |
-| Standardmodell      | `grok-4.3`                                                                        |
-| Standard-Timeout    | 30 Sekunden                                                                       |
-| Standard-`maxTurns` | nicht festgelegt (xAI wendet ein eigenes internes Limit an)                       |
+| Eigenschaft        | Wert                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- |
+| Tool-Name          | `code_execution`                                                               |
+| Provider-Plugin    | `xai` (gebündelt, `enabledByDefault: true`)                               |
+| Authentifizierung  | xAI-Authentifizierungsprofil, `XAI_API_KEY` oder `plugins.entries.xai.config.webSearch.apiKey`         |
+| Standardmodell     | `grok-4.3`                                                               |
+| Standardzeitlimit  | 30 Sekunden                                                                       |
+| Standardwert für `maxTurns` | nicht festgelegt (xAI wendet ein eigenes internes Limit an)          |
 
-Verwenden Sie das Tool für Berechnungen, Tabellierungen, schnelle Statistiken und
-diagrammähnliche Analysen, einschließlich der von `x_search` oder `web_search`
-zurückgegebenen Daten. Es hat keinen Zugriff auf lokale Dateien, Ihre Shell, Ihr
-Repository oder gekoppelte Geräte und speichert keinen Zustand zwischen Aufrufen.
-Behandeln Sie daher jeden Aufruf als kurzlebige Analyse und nicht als Notebook-Sitzung.
-Für aktuelle X-Daten führen Sie zuerst [`x_search`](/de/tools/web#x_search) aus und
-übergeben Sie anschließend das Ergebnis.
+Verwenden Sie es für Berechnungen, Tabellierungen, schnelle Statistiken und diagrammartige
+Analysen, einschließlich der von `x_search` oder `web_search` zurückgegebenen Daten. Es hat keinen
+Zugriff auf lokale Dateien, Ihre Shell, Ihr Repository oder gekoppelte Geräte und speichert
+keinen Zustand zwischen Aufrufen. Behandeln Sie daher jeden Aufruf als kurzlebige Analyse und nicht
+als Notebook-Sitzung. Führen Sie für aktuelle X-Daten zuerst [`x_search`](/de/tools/web#x_search)
+aus und leiten Sie das Ergebnis weiter.
 
 Verwenden Sie für die lokale Ausführung stattdessen [`exec`](/de/tools/exec).
 
 ## Einrichtung
 
 <Steps>
-  <Step title="Provide xAI credentials">
+  <Step title="xAI-Anmeldedaten bereitstellen">
     OAuth erfordert ein berechtigtes SuperGrok- oder X-Premium-Abonnement
-    (Bestätigung per Gerätecode, sodass es von Remote-Hosts ohne
+    (Verifizierung per Gerätecode, sodass es von Remote-Hosts ohne
     localhost-Callback funktioniert):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    Bei einer Neuinstallation steht dieselbe Auswahl während des Onboardings zur Verfügung:
+    Bei einer Neuinstallation ist dieselbe Auswahl beim Onboarding verfügbar:
 
     ```bash
     openclaw onboard --install-daemon --auth-choice xai-oauth
@@ -86,23 +86,20 @@ Verwenden Sie für die lokale Ausführung stattdessen [`exec`](/de/tools/exec).
     }
     ```
 
-    Jede dieser drei Optionen stellt auch die Authentifizierung für `x_search` und
-    Grok-`web_search` bereit.
+    Jede dieser drei Optionen versorgt außerdem `x_search` und Grok `web_search`.
 
   </Step>
 
-  <Step title="Enable and tune code_execution">
-    Wenn `enabled` nicht angegeben ist, wird `code_execution` nur bereitgestellt,
-    wenn der Provider des aktiven Modells `xai` ist und die xAI-Anmeldedaten
-    aufgelöst werden können. Legen Sie für ein aktives Modell mit einem bekannten
-    Nicht-xAI-Provider `plugins.entries.xai.config.codeExecution.enabled` auf
-    `true` fest, um die providerübergreifende Verwendung zu aktivieren. Wenn der
-    Provider des aktiven Modells fehlt oder nicht aufgelöst werden kann, bleibt
-    das Tool ausgeblendet. Legen Sie `enabled` auf `false` fest, um es für jeden
+  <Step title="code_execution aktivieren und anpassen">
+    Wenn `enabled` weggelassen wird, ist `code_execution` nur verfügbar, wenn der Provider
+    des aktiven Modells `xai` ist und die xAI-Anmeldedaten aufgelöst werden können. Setzen Sie bei einem aktiven Modell
+    mit einem bekannten Nicht-xAI-Provider
+    `plugins.entries.xai.config.codeExecution.enabled` auf `true`, um die
+    Provider-übergreifende Nutzung zu aktivieren. Wenn der Provider des aktiven Modells fehlt oder nicht aufgelöst werden kann,
+    bleibt das Tool ausgeblendet. Setzen Sie `enabled` auf `false`, um es für jeden
     Provider zu deaktivieren. xAI-Anmeldedaten sind immer erforderlich.
 
-    Verwenden Sie denselben Block, um das Modell, das Aufruflimit oder den Timeout
-    zu überschreiben:
+    Verwenden Sie denselben Block, um das Modell, das Aufruflimit oder das Zeitlimit zu überschreiben:
 
     ```json5
     {
@@ -111,10 +108,10 @@ Verwenden Sie für die lokale Ausführung stattdessen [`exec`](/de/tools/exec).
           xai: {
             config: {
               codeExecution: {
-                enabled: true, // required for a known non-xAI model provider
-                model: "grok-4.3", // override the default xAI code-execution model
-                maxTurns: 2,            // optional cap on internal tool turns
-                timeoutSeconds: 30,     // request timeout (default: 30)
+                enabled: true, // für einen bekannten Nicht-xAI-Modell-Provider erforderlich
+                model: "grok-4.3", // überschreibt das standardmäßige xAI-Modell für die Codeausführung
+                maxTurns: 2,            // optionales Limit für interne Tool-Aufrufe
+                timeoutSeconds: 30,     // Anfragezeitlimit (Standard: 30)
               },
             },
           },
@@ -125,45 +122,43 @@ Verwenden Sie für die lokale Ausführung stattdessen [`exec`](/de/tools/exec).
 
   </Step>
 
-  <Step title="Restart the Gateway">
+  <Step title="Gateway neu starten">
     ```bash
     openclaw gateway restart
     ```
 
-    `code_execution` wird in der Tool-Liste des Agenten angezeigt, sobald sich das
-    xAI-Plugin erneut registriert hat und die obigen Prüfungen für Provider,
-    Aktivierung und Authentifizierung erfolgreich waren.
+    `code_execution` erscheint in der Tool-Liste des Agenten, sobald sich das xAI-Plugin
+    erneut registriert und die obigen Prüfungen für Provider, Aktivierung und Authentifizierung bestanden sind.
 
   </Step>
 </Steps>
 
 ## Verwendung
 
-Formulieren Sie die beabsichtigte Analyse ausdrücklich. Das Tool akzeptiert einen
-einzelnen Parameter `task`; senden Sie daher die vollständige Anfrage und alle
-eingebetteten Daten in einem Prompt:
+Formulieren Sie die beabsichtigte Analyse ausdrücklich. Das Tool akzeptiert einen einzigen Parameter `task`.
+Senden Sie daher die vollständige Anfrage und alle eingebetteten Daten in einem Prompt:
 
 ```text
-Use code_execution to calculate the 7-day moving average for these numbers: ...
+Verwenden Sie code_execution, um den gleitenden 7-Tage-Durchschnitt für diese Zahlen zu berechnen: ...
 ```
 
 ```text
-Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
+Verwenden Sie x_search, um Beiträge zu finden, die diese Woche OpenClaw erwähnen, und anschließend code_execution, um sie nach Tag zu zählen.
 ```
 
 ```text
-Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
+Verwenden Sie web_search, um die neuesten Zahlen zu KI-Benchmarks zu sammeln, und anschließend code_execution, um die prozentualen Änderungen zu vergleichen.
 ```
 
 ## Fehler
 
-Ohne Authentifizierung gibt das Tool einen strukturierten JSON-Fehler zurück
-(keine ausgelöste Ausnahme), sodass der Agent das Problem selbst beheben kann:
+Ohne Authentifizierung gibt das Tool einen strukturierten JSON-Fehler zurück (keine ausgelöste
+Ausnahme), sodass der Agent den Fehler selbst korrigieren kann:
 
 ```json
 {
   "error": "missing_xai_api_key",
-  "message": "code_execution needs xAI credentials. Run `openclaw onboard --auth-choice xai-oauth` to sign in with Grok, run `openclaw onboard --auth-choice xai-api-key`, set `XAI_API_KEY` in the Gateway environment, or configure `plugins.entries.xai.config.webSearch.apiKey`.",
+  "message": "code_execution benötigt xAI-Anmeldedaten. Führen Sie `openclaw onboard --auth-choice xai-oauth` aus, um sich bei Grok anzumelden, führen Sie `openclaw onboard --auth-choice xai-api-key` aus, legen Sie `XAI_API_KEY` in der Gateway-Umgebung fest oder konfigurieren Sie `plugins.entries.xai.config.webSearch.apiKey`.",
   "docs": "https://docs.openclaw.ai/tools/code-execution"
 }
 ```
@@ -171,16 +166,16 @@ Ohne Authentifizierung gibt das Tool einen strukturierten JSON-Fehler zurück
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Exec tool" href="/de/tools/exec" icon="terminal">
+  <Card title="Exec-Tool" href="/de/tools/exec" icon="terminal">
     Lokale Shell-Ausführung auf Ihrem Computer oder einer gekoppelten Node.
   </Card>
-  <Card title="Exec approvals" href="/de/tools/exec-approvals" icon="shield">
-    Richtlinie zum Zulassen oder Ablehnen der Shell-Ausführung.
+  <Card title="Exec-Genehmigungen" href="/de/tools/exec-approvals" icon="shield">
+    Zulassungs-/Ablehnungsrichtlinie für die Shell-Ausführung.
   </Card>
-  <Card title="Web tools" href="/de/tools/web" icon="globe">
+  <Card title="Web-Tools" href="/de/tools/web" icon="globe">
     `web_search`, `x_search` und `web_fetch`.
   </Card>
-  <Card title="xAI provider" href="/de/providers/xai" icon="microchip">
+  <Card title="xAI-Provider" href="/de/providers/xai" icon="microchip">
     Grok-Modelle, Web-/X-Suche und Konfiguration der Codeausführung.
   </Card>
 </CardGroup>

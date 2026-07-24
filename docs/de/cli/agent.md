@@ -1,25 +1,26 @@
 ---
 read_when:
     - Sie möchten einen Agent-Durchlauf über Skripte ausführen (optional die Antwort zustellen)
-summary: CLI-Referenz für `openclaw agent` (eine Agentenrunde über das Gateway senden)
+summary: CLI-Referenz für `openclaw agent` (eine Agent-Runde über das Gateway senden)
 title: Agent
 x-i18n:
-    generated_at: "2026-07-12T01:30:28Z"
+    generated_at: "2026-07-24T04:55:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2e137c037a2fa58ac6534adbf1603218fc695e4c61e6c3118ce2c4ec6f1f2143
+    source_hash: 1a4c139a3b235d6a56ba63063737b80f93448c2dbb7a92c6d0756fb19a9f95e4
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Führt einen Agent-Durchlauf über das Gateway aus. Fällt auf den eingebetteten Agent zurück, wenn die Gateway-Anfrage fehlschlägt; übergeben Sie `--local`, um von Anfang an die eingebettete Ausführung zu erzwingen.
+Führen Sie einen Agent-Durchlauf über den Gateway aus. Das explizite Flag `--local` ist der einzige eingebettete Ausführungspfad.
 
-Übergeben Sie mindestens einen Sitzungsauswähler: `--to`, `--session-key`, `--session-id` oder `--agent`.
+Übergeben Sie mindestens einen Sitzungsselektor: `--to`, `--session-key`, `--session-id` oder `--agent`.
 
-Verwandt: [Tool zum Senden an einen Agent](/de/tools/agent-send)
+Verwandt: [Agent-Sendewerkzeug](/de/tools/agent-send)
 
 ## Optionen
 
@@ -30,15 +31,15 @@ Verwandt: [Tool zum Senden an einen Agent](/de/tools/agent-send)
 - `--session-id <id>`: explizite Sitzungs-ID
 - `--agent <id>`: Agent-ID; überschreibt Routing-Zuordnungen
 - `--model <id>`: Modellüberschreibung für diesen Durchlauf (`provider/model` oder Modell-ID)
-- `--thinking <level>`: Denkniveau des Agents (`off`, `minimal`, `low`, `medium`, `high` sowie vom Provider unterstützte benutzerdefinierte Stufen wie `xhigh`, `adaptive` oder `max`)
-- `--verbose <on|off>`: Ausführlichkeitsstufe für die Sitzung dauerhaft speichern
-- `--channel <channel>`: Zustellungskanal; weglassen, um den Kanal der Hauptsitzung zu verwenden
+- `--thinking <level>`: Denkstufe des Agents (`off`, `minimal`, `low`, `medium`, `high` sowie vom Provider unterstützte benutzerdefinierte Stufen wie `xhigh`, `adaptive` oder `max`)
+- `--verbose <on|off>`: Ausführlichkeitsstufe für die Sitzung speichern
+- `--channel <channel>`: Zustellungskanal; weglassen, um den Hauptkanal der Sitzung zu verwenden
 - `--reply-to <target>`: Überschreibung des Zustellungsziels
 - `--reply-channel <channel>`: Überschreibung des Zustellungskanals
 - `--reply-account <id>`: Überschreibung des Zustellungskontos
 - `--local`: eingebetteten Agent direkt ausführen (nach dem Vorladen der Plugin-Registry)
 - `--deliver`: Antwort an den ausgewählten Kanal bzw. das ausgewählte Ziel zurücksenden
-- `--timeout <seconds>`: Zeitlimit des Agents überschreiben (Standard: 600 oder `agents.defaults.timeoutSeconds`); `0` deaktiviert das Zeitlimit
+- `--timeout <seconds>`: Frist für den Agent-Durchlauf dieses Befehls überschreiben (Standard: 600 oder `agents.defaults.timeoutSeconds`); `0` deaktiviert die Gesamtfrist. Der Rückfallwert von 600 Sekunden gehört zu diesem CLI-Befehl, nicht zu gewöhnlichen Gateway-Durchläufen, deren Standardwert 48 Stunden beträgt.
 - `--json`: JSON ausgeben
 
 ## Beispiele
@@ -58,24 +59,24 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Hinweise
 
-- Übergeben Sie genau eine der Optionen `--message` oder `--message-file`. `--message-file` entfernt eine führende UTF-8-BOM und bewahrt mehrzeilige Inhalte; Dateien ohne gültige UTF-8-Codierung werden abgelehnt.
-- Schrägstrichbefehle (zum Beispiel `/compact`) können nicht über `--message` ausgeführt werden. Die CLI lehnt sie ab und verweist stattdessen auf den entsprechenden eigenständigen Befehl (`openclaw sessions compact <key>` für Compaction).
-- Durchläufe mit `--local` und eingebettetem Rückfall sind einmalig: Für den Durchlauf geöffnete gebündelte MCP-local-loopback-Ressourcen und vorbereitete Claude-stdio-Sitzungen werden nach der Antwort beendet, sodass skriptgesteuerte Aufrufe keine lokalen Unterprozesse weiterlaufen lassen. Gateway-gestützte Durchläufe belassen die dem Gateway gehörenden MCP-local-loopback-Ressourcen stattdessen unter dem laufenden Gateway-Prozess.
-- Wenn `--agent`, `--channel` und `--to` gemeinsam verwendet werden, folgt das Sitzungsrouting dem kanonischen Empfänger des Kanals und `session.dmScope`. Kanäle mit einer stabilen, ausschließlich ausgehenden Empfängeridentität verwenden eine Provider-eigene Sitzung, die von der Hauptsitzung des Agents isoliert ist. `--reply-channel` und `--reply-account` wirken sich nur auf die Zustellung aus.
-- `--session-key` wählt einen expliziten Sitzungsschlüssel aus. Mit einem Agent-Präfix versehene Schlüssel müssen `agent:<agent-id>:<session-key>` verwenden, und `--agent` muss mit der Agent-ID des Schlüssels übereinstimmen, wenn beide angegeben sind. Unpräfixierte Schlüssel, die keine Sentinel-Schlüssel sind, werden bei Angabe von `--agent` diesem Agent zugeordnet, andernfalls dem konfigurierten Standard-Agent; beispielsweise leitet `--agent ops --session-key incident-42` an `agent:ops:incident-42` weiter. Die literalen Schlüssel `global` und `unknown` bleiben nur dann ohne Gültigkeitsbereich, wenn kein `--agent` angegeben ist.
-- `--json` reserviert stdout für die JSON-Antwort; Diagnosemeldungen des Gateways, von Plugins und des eingebetteten Rückfalls werden an stderr gesendet, sodass Skripte stdout direkt parsen können.
-- Das JSON des eingebetteten Rückfalls enthält `meta.transport: "embedded"` und `meta.fallbackFrom: "gateway"`, damit Skripte einen Rückfalldurchlauf erkennen können.
-- Wenn das Gateway einen Durchlauf annimmt, die CLI jedoch beim Warten auf die endgültige Antwort das Zeitlimit überschreitet, verwendet der eingebettete Rückfall eine neue Sitzungs-/Durchlauf-ID im Format `gateway-fallback-*` und meldet `meta.fallbackReason: "gateway_timeout"` sowie die Sitzungsfelder des Rückfalls, anstatt mit dem dem Gateway gehörenden Transkript zu konkurrieren oder die ursprüngliche Sitzung stillschweigend zu ersetzen.
-- `SIGTERM`/`SIGINT` unterbrechen eine wartende Gateway-gestützte Anfrage; wenn das Gateway den Durchlauf bereits angenommen hat, sendet die CLI vor dem Beenden außerdem `chat.abort` für diese Durchlauf-ID. Durchläufe mit `--local` und eingebettetem Rückfall erhalten dasselbe Signal, senden jedoch kein `chat.abort`. Wenn für den internen Schlüssel zur Durchlauf-Deduplizierung bereits ein aktiver Durchlauf für diese Sitzung vorhanden ist, meldet die Antwort `status: "in_flight"`, und die Nicht-JSON-CLI gibt statt einer leeren Antwort eine Diagnosemeldung auf stderr aus. Verwenden Sie für externe Cron-/systemd-Wrapper eine Absicherung zum erzwungenen Beenden wie `timeout -k 60 600 openclaw agent ...`, damit der Supervisor den Prozess beenden kann, falls beim Herunterfahren kein ordnungsgemäßer Abschluss möglich ist.
-- Wenn dieser Befehl die Neuerzeugung von `models.json` auslöst, werden von SecretRef verwaltete Provider-Anmeldedaten als nicht geheime Markierungen gespeichert (zum Beispiel Namen von Umgebungsvariablen, `secretref-env:ENV_VAR_NAME` oder `secretref-managed`), niemals als aufgelöster geheimer Klartext. Das Schreiben der Markierungen erfolgt aus dem aktiven Snapshot der Quellkonfiguration, nicht aus aufgelösten geheimen Laufzeitwerten.
+- Übergeben Sie genau eines von `--message` oder `--message-file`. `--message-file` entfernt eine führende UTF-8-BOM und erhält mehrzeilige Inhalte; Dateien ohne gültiges UTF-8 werden abgelehnt. Dateien mit mehr als 4 MiB werden vor der Weiterleitung abgelehnt.
+- Slash-Befehle (zum Beispiel `/compact`) können nicht über `--message` ausgeführt werden. Die CLI lehnt sie ab und verweist stattdessen auf den entsprechenden eigenständigen Befehl (`openclaw sessions compact <key>` für Compaction).
+- Durchläufe mit `--local` sind einmalig: Gebündelte MCP-Loopback-Ressourcen und für den Durchlauf geöffnete vorgewärmte Claude-stdio-Sitzungen werden nach der Antwort beendet, sodass skriptgesteuerte Aufrufe keine lokalen untergeordneten Prozesse weiterlaufen lassen. Gateway-gestützte Durchläufe verwalten Gateway-eigene MCP-Loopback-Ressourcen stattdessen im laufenden Gateway-Prozess.
+- Die eigenständige eingebettete Ausführung mit `--local` verweigert die Wiederverwendung einer vorhandenen Hauptsitzung, solange die Wiederherstellung nach einem Neustart aussteht. Führen Sie den Durchlauf über einen funktionsfähigen Gateway aus oder setzen Sie ihn dort mit `/new` oder `/reset` zurück; ein unabhängiger eingebetteter Prozess kann die Zuständigkeit für diese Wiederherstellung nicht sicher mit dem Gateway-Scanner koordinieren.
+- Wenn `--agent`, `--channel` und `--to` gemeinsam verwendet werden, folgt das Sitzungsrouting dem kanonischen Empfänger des Kanals und `session.dmScope`. Kanäle mit einer stabilen, ausschließlich ausgehenden Empfängeridentität verwenden eine vom Provider verwaltete Sitzung, die von der Hauptsitzung des Agents isoliert ist. `--reply-channel` und `--reply-account` wirken sich nur auf die Zustellung aus.
+- `--session-key` wählt einen expliziten Sitzungsschlüssel aus. Mit einem Agent-Präfix versehene Schlüssel müssen `agent:<agent-id>:<session-key>` verwenden, und `--agent` muss mit der Agent-ID des Schlüssels übereinstimmen, wenn beide angegeben werden. Unpräfixierte Schlüssel, die keine Sentinel-Schlüssel sind, werden dem angegebenen `--agent` oder andernfalls dem konfigurierten Standard-Agent zugeordnet; beispielsweise wird `--agent ops --session-key incident-42` an `agent:ops:incident-42` weitergeleitet. Die literalen Schlüssel `global` und `unknown` bleiben nur dann ohne Zuordnung, wenn kein `--agent` angegeben ist.
+- `--json` reserviert stdout für die JSON-Antwort; Diagnosemeldungen des Gateways, der Plugins und von `--local` werden an stderr ausgegeben, damit Skripte stdout direkt parsen können.
+- Nachdem vorübergehende Wiederholungsversuche beim Handshake ausgeschöpft sind, führt ein Gateway-Timeout oder eine geschlossene Verbindung zum Fehlschlagen des Befehls; die CLI führt den Durchlauf niemals stillschweigend erneut eingebettet aus. Ein Transportverlust ist mehrdeutig — der Gateway hat den Durchlauf möglicherweise angenommen und schließt ihn gegebenenfalls weiterhin ab —, daher weist der Hinweis auf stderr darauf hin, vor einem erneuten Versuch oder einer erneuten Ausführung mit `--local` zunächst `openclaw gateway status` und das Sitzungsprotokoll zu prüfen, um eine doppelte Ausführung des Durchlaufs zu vermeiden.
+- `SIGTERM`/`SIGINT` unterbrechen eine wartende Gateway-gestützte Anfrage; wenn der Gateway den Durchlauf bereits angenommen hat, sendet die CLI vor dem Beenden außerdem `chat.abort` für die ID dieses Durchlaufs. Durchläufe mit `--local` empfangen dasselbe Signal, senden jedoch kein `chat.abort`. Ein untergeordneter Launcher-Prozess, der aufgrund des ersten weitergeleiteten `SIGINT` bzw. `SIGTERM` beendet wird, endet mit Status 130 bzw. 143. Wenn für den internen Schlüssel zur Deduplizierung von Durchläufen bereits ein aktiver Durchlauf für diese Sitzung vorhanden ist, meldet die Antwort `status: "in_flight"`, und die Nicht-JSON-CLI gibt statt einer leeren Antwort eine Diagnosemeldung auf stderr aus. Behalten Sie für externe Cron-/systemd-Wrapper eine Absicherung zur erzwungenen Beendigung wie `timeout -k 60 600 openclaw agent ...` bei, damit der Supervisor den Prozess bereinigen kann, falls das Herunterfahren nicht abgeschlossen werden kann.
+- Wenn dieser Befehl die Neugenerierung von `models.json` auslöst, werden durch SecretRef verwaltete Provider-Anmeldedaten als nicht geheime Markierungen gespeichert (zum Beispiel Namen von Umgebungsvariablen, `secretref-env:ENV_VAR_NAME` oder `secretref-managed`), niemals als aufgelöster geheimer Klartext. Markierungen werden aus dem aktiven Snapshot der Quellkonfiguration geschrieben, nicht aus aufgelösten geheimen Laufzeitwerten.
 
 ## JSON-Zustellungsstatus
 
-Mit `--json --deliver` enthält die JSON-Antwort der CLI das Feld `deliveryStatus` auf oberster Ebene, damit Skripte zwischen zugestellten, unterdrückten, teilweise und vollständig fehlgeschlagenen Sendungen unterscheiden können:
+Mit `--json --deliver` enthält die JSON-Antwort der CLI das oberste Feld `deliveryStatus`, damit Skripte zwischen zugestellten, unterdrückten, teilweise zugestellten und fehlgeschlagenen Sendungen unterscheiden können:
 
 ```json
 {
-  "payloads": [{ "text": "Report ready", "mediaUrl": null }],
+  "payloads": [{ "text": "Bericht ist fertig", "mediaUrl": null }],
   "meta": { "durationMs": 1200 },
   "deliveryStatus": {
     "requested": true,
@@ -87,27 +88,27 @@ Mit `--json --deliver` enthält die JSON-Antwort der CLI das Feld `deliveryStatu
 }
 ```
 
-Gateway-gestützte CLI-Antworten bewahren außerdem die unverarbeitete Ergebnisstruktur des Gateways unter `result.deliveryStatus`.
+Gateway-gestützte CLI-Antworten erhalten außerdem die unverarbeitete Ergebnisstruktur des Gateways unter `result.deliveryStatus`.
 
-`deliveryStatus.status` hat einen der folgenden Werte:
+`deliveryStatus.status` ist einer der folgenden Werte:
 
-| Status           | Bedeutung                                                                                                                                                                                      |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sent`           | Zustellung abgeschlossen.                                                                                                                                                                      |
-| `suppressed`     | Die Zustellung wurde absichtlich nicht gesendet (zum Beispiel weil ein Hook zum Senden von Nachrichten sie abgebrochen hat oder kein sichtbares Ergebnis vorlag). Endgültig, kein erneuter Versuch. |
-| `partial_failed` | Mindestens eine Nutzlast wurde gesendet, bevor eine spätere Nutzlast fehlschlug.                                                                                                                |
-| `failed`         | Keine dauerhafte Sendung wurde abgeschlossen oder die Zustellungs-Vorprüfung ist fehlgeschlagen.                                                                                                |
+| Status           | Bedeutung                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sent`           | Zustellung abgeschlossen.                                                                                                                  |
+| `suppressed`     | Die Zustellung wurde absichtlich nicht gesendet (zum Beispiel weil ein Hook zum Senden von Nachrichten sie abgebrochen hat oder kein sichtbares Ergebnis vorlag). Endgültig, keine Wiederholung. |
+| `partial_failed` | Mindestens eine Nutzlast wurde gesendet, bevor eine spätere Nutzlast fehlschlug.                                                            |
+| `failed`         | Keine dauerhafte Sendung wurde abgeschlossen oder die Zustellungsvorprüfung ist fehlgeschlagen.                                             |
 
 Allgemeine Felder:
 
 - `requested`: immer `true`, wenn das Objekt vorhanden ist.
-- `attempted`: `true`, sobald der dauerhafte Sendepfad ausgeführt wurde; `false` bei Fehlern der Vorprüfung oder wenn keine sichtbaren Nutzlasten vorhanden sind.
-- `succeeded`: `true`, `false` oder `"partial"`; `"partial"` tritt zusammen mit `status: "partial_failed"` auf.
-- `reason`: Grund in kleingeschriebener Snake-Case-Schreibweise aus der dauerhaften Zustellung oder der Vorabvalidierung. Bekannte Werte sind unter anderem `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` und `no_delivery_target`; fehlgeschlagene dauerhafte Sendungen können außerdem die fehlgeschlagene Phase melden. Behandeln Sie unbekannte Werte als undurchsichtig, da die Menge erweitert werden kann.
+- `attempted`: `true`, sobald der Pfad für die dauerhafte Sendung ausgeführt wurde; `false` bei Fehlern der Vorprüfung oder wenn keine sichtbaren Nutzlasten vorhanden sind.
+- `succeeded`: `true`, `false` oder `"partial"`; `"partial"` wird mit `status: "partial_failed"` kombiniert.
+- `reason`: Grund in kleingeschriebener Snake-Case-Schreibweise aus der dauerhaften Zustellung oder Vorabvalidierung. Bekannte Werte sind unter anderem `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` und `no_delivery_target`; fehlgeschlagene dauerhafte Sendungen können außerdem die fehlgeschlagene Phase melden. Behandeln Sie unbekannte Werte als undurchsichtig, da die Menge erweitert werden kann.
 - `resultCount`: Anzahl der Ergebnisse von Kanalsendungen, sofern verfügbar.
-- `sentBeforeError`: `true`, wenn bei einem teilweisen Fehlschlag mindestens eine Nutzlast gesendet wurde, bevor der Fehler auftrat.
-- `error`: `true` bei fehlgeschlagenen oder teilweise fehlgeschlagenen Sendungen.
-- `errorMessage`: nur vorhanden, wenn eine zugrunde liegende Zustellungsfehlermeldung erfasst wurde. Fehler der Vorprüfung enthalten `error`/`reason`, aber keine `errorMessage`.
+- `sentBeforeError`: `true`, wenn bei einem teilweisen Fehlschlag mindestens eine Nutzlast gesendet wurde, bevor ein Fehler auftrat.
+- `error`: `true` für fehlgeschlagene oder teilweise fehlgeschlagene Sendungen.
+- `errorMessage`: nur vorhanden, wenn die Meldung eines zugrunde liegenden Zustellungsfehlers erfasst wurde. Fehler der Vorprüfung enthalten `error`/`reason`, aber kein `errorMessage`.
 - `payloadOutcomes`: optionale Ergebnisse pro Nutzlast mit `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` oder Hook-Metadaten, sofern verfügbar.
 
 ## Verwandte Themen

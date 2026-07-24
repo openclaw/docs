@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das zalo-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das zalo-Plugin
 summary: OpenClaw-Zalo-Kanal-Plugin für Bot- und Webhook-Chats.
 title: Zalo-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:25:28Z"
+    generated_at: "2026-07-24T04:05:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Zalo-Plugin
 
-OpenClaw Zalo-Kanal-Plugin für Bot- und Webhook-Chats.
+OpenClaw-Zalo-Kanal-Plugin für Bot- und Webhook-Chats.
 
 ## Distribution
 
@@ -29,4 +29,4 @@ Kanäle: `zalo`
 
 ## Zugehörige Dokumentation
 
-- [zalo](/de/channels/zalo)
+- [Zalo](/de/channels/zalo)

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das onepassword-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das onepassword-Plugin.
 summary: Kuratierter 1Password-Secrets-Broker mit Genehmigungsrichtlinie und SQLite-Auditverlauf.
 title: Onepassword-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:58Z"
+    generated_at: "2026-07-24T04:01:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Onepassword-Plugin
 
-Kuratierter 1Password-Secrets-Broker mit Genehmigungsrichtlinie und SQLite-Auditverlauf.
+Kuratierter Broker für 1Password-Secrets mit Genehmigungsrichtlinie und SQLite-Auditverlauf.
 
 ## Distribution
 

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das azure-speech-Plugin.
-summary: Azure AI Speech-Text-to-Speech (MP3, native Ogg/Opus-Sprachnachrichten, PCM-Telefonie).
+    - Sie installieren, konfigurieren oder überprüfen das Plugin azure-speech.
+summary: Azure AI Speech Text-to-Speech (MP3, native Ogg/Opus-Sprachnachrichten, PCM-Telefonie).
 title: Azure-Speech-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:04:38Z"
+    generated_at: "2026-07-24T04:32:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -14,9 +14,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Azure-Speech-Plugin
+# Azure Speech-Plugin
 
-Azure AI Speech Text-to-Speech (MP3, native Ogg/Opus-Sprachnachrichten, PCM-Telefonie).
+Azure AI Speech-Text-zu-Sprache (MP3, native Ogg/Opus-Sprachnachrichten, PCM-Telefonie).
 
 ## Distribution
 

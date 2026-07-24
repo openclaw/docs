@@ -4,7 +4,7 @@ read_when:
 summary: Fügt Unterstützung für Provider zur Videogenerierung hinzu.
 title: Alibaba-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:04:24Z"
+    generated_at: "2026-07-24T04:46:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Alibaba-Plugin
 
-Fügt Unterstützung für den Provider zur Videogenerierung hinzu.
+Fügt Unterstützung für einen Provider zur Videogenerierung hinzu.
 
 ## Distribution
 
@@ -27,6 +27,6 @@ Fügt Unterstützung für den Provider zur Videogenerierung hinzu.
 
 Verträge: `videoGenerationProviders`
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [Alibaba](/de/providers/alibaba)

@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das SMS-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das SMS-Plugin
 summary: Twilio-SMS-Kanal-Plugin für OpenClaw-Textnachrichten.
 title: SMS-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:12:00Z"
+    generated_at: "2026-07-24T04:04:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

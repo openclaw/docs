@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das tlon-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das tlon-Plugin.
 summary: OpenClaw-Tlon/Urbit-Kanal-Plugin für Chat-Workflows.
 title: Tlon-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:07:45Z"
+    generated_at: "2026-07-24T04:34:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -29,4 +29,4 @@ Kanäle: `tlon`; Skills
 
 ## Zugehörige Dokumentation
 
-- [tlon](/de/channels/tlon)
+- [Tlon](/de/channels/tlon)

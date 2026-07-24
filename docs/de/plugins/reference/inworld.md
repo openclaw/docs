@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das inworld-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das inworld-Plugin
 summary: Inworld-Streaming-Text-to-Speech (MP3, OGG_OPUS, PCM-Telefonie).
 title: Inworld-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:09Z"
+    generated_at: "2026-07-24T04:00:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Inworld-Plugin
 
-Inworld-Streaming-Text-zu-Sprache (MP3, OGG_OPUS, PCM-Telefonie).
+Inworld-Streaming-Text-to-Speech (MP3, OGG_OPUS, PCM-Telefonie).
 
 ## Distribution
 

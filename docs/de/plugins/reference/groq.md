@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das groq-Plugin.
-summary: Fügt OpenClaw Unterstützung für den Groq-Modell-Provider hinzu.
+    - Sie installieren, konfigurieren oder prüfen das groq-Plugin.
+summary: Fügt Unterstützung für den Groq-Modell-Provider zu OpenClaw hinzu.
 title: Groq-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:02Z"
+    generated_at: "2026-07-24T04:47:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Groq-Plugin
 
-Fügt OpenClaw Unterstützung für den Groq-Modell-Provider hinzu.
+Fügt Unterstützung für den Groq-Modell-Provider zu OpenClaw hinzu.
 
 ## Distribution
 

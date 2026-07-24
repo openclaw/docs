@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das byteplus-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das byteplus-Plugin.
 summary: Fügt OpenClaw Unterstützung für die Modell-Provider BytePlus und BytePlus Plan hinzu.
 title: BytePlus-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:04:54Z"
+    generated_at: "2026-07-24T03:58:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

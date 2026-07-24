@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie möchten im Terminal einen Blattknoten innerhalb einer Workspace-Datei lesen oder schreiben.
-    - Sie erstellen Skripte für den Arbeitsbereichsstatus und benötigen ein stabiles, typunabhängiges Adressierungsschema
-    - Sie debuggen einen `oc://`-Pfad (validieren Sie die Syntax und prüfen Sie, wohin er aufgelöst wird)
+    - Sie möchten über das Terminal einen Blattwert in einer Workspace-Datei lesen oder schreiben
+    - Sie erstellen Skripte für den Workspace-Status und benötigen ein stabiles, typunabhängiges Adressierungsschema.
+    - Sie debuggen einen `oc://`-Pfad (validieren Sie die Syntax und prüfen Sie, worauf er aufgelöst wird)
 summary: CLI-Referenz für `openclaw path` (Arbeitsbereichsdateien über das Adressierungsschema `oc://` prüfen und bearbeiten)
 title: Pfad
 x-i18n:
-    generated_at: "2026-07-12T01:33:11Z"
+    generated_at: "2026-07-24T04:50:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 7afe5bd1c3a5fca8dd22c7d807e390e751ae7e895c54bf0e10e2734f3889436c
     source_path: cli/path.md
@@ -17,14 +18,14 @@ x-i18n:
 
 # `openclaw path`
 
-Shell-Zugriff auf das `oc://`-Adressierungsschema: eine nach Art weitergeleitete Pfadsyntax
-zum Prüfen und Bearbeiten adressierbarer Arbeitsbereichsdateien (Markdown, JSONC,
+Shell-Zugriff auf das Adressierungsschema `oc://`: eine nach Art weitergeleitete Pfadsyntax
+zum Prüfen und Bearbeiten adressierbarer Workspace-Dateien (Markdown, JSONC,
 JSONL, YAML/YML/Lobster). Selbsthoster, Plugin-Autoren und Editor-Erweiterungen
-verwenden sie, um einen eng begrenzten Bereich zu lesen, zu finden oder zu aktualisieren,
-ohne für jeden Dateityp einen eigenen Parser erstellen zu müssen.
+verwenden sie, um einen eng begrenzten Speicherort zu lesen, zu finden oder zu aktualisieren, ohne
+für jeden Dateityp einen eigenen Parser zu erstellen.
 
-`path` wird vom mitgelieferten optionalen Plugin `oc-path` bereitgestellt. Aktivieren Sie
-es vor der ersten Verwendung:
+`path` wird vom gebündelten optionalen Plugin `oc-path` bereitgestellt. Aktivieren Sie es vor
+der ersten Verwendung:
 
 ```bash
 openclaw plugins enable oc-path
@@ -34,220 +35,211 @@ Die CLI-Verben entsprechen dem Adressierungsmodell:
 
 - `resolve` ist konkret und liefert genau einen Treffer.
 - `find` ist das Verb für mehrere Treffer bei Platzhaltern, Vereinigungen, Prädikaten und
-  positioneller Erweiterung.
+  positionsbezogener Expansion.
 - `set` akzeptiert nur konkrete Pfade oder Einfügemarkierungen; Platzhaltermuster
-  werden vor dem Schreiben abgelehnt.
-- `validate` analysiert einen Pfad ohne Dateisystemzugriff.
-- `emit` durchläuft für eine Datei den Zyklus aus Parsen und Ausgeben (Diagnose der Byte-Treue).
+  werden vor dem Schreiben abgewiesen.
+- `validate` parst einen Pfad ohne Dateisystemzugriff.
+- `emit` führt eine Datei durch Parsen und Ausgeben im Rundlauf zurück (Diagnose der Bytetreue).
 
-## Warum Sie es verwenden sollten
+## Gründe für die Verwendung
 
-Der OpenClaw-Zustand ist über manuell bearbeitetes Markdown, kommentierte JSONC-
-Konfigurationen, nur angehängte JSONL-Protokolle und YAML-Workflow-/Spezifikationsdateien
-verteilt. Skripte, Hooks und Agenten benötigen aus diesen Dateien oft nur einen kleinen
-Wert: einen Frontmatter-Schlüssel, eine Plugin-Einstellung, ein Feld eines Protokolleintrags,
-einen YAML-Schritt oder einen Aufzählungspunkt unter einem benannten Abschnitt.
+Der OpenClaw-Zustand verteilt sich auf manuell bearbeitetes Markdown, kommentierte JSONC-
+Konfigurationen, nur erweiterbare JSONL-Protokolle und YAML-Workflow-/Spezifikationsdateien. Skripte, Hooks
+und Agenten benötigen aus diesen Dateien häufig nur einen kleinen Wert: einen Frontmatter-Schlüssel, eine
+Plugin-Einstellung, ein Feld eines Protokolldatensatzes, einen YAML-Schritt oder einen Aufzählungspunkt unter einem
+benannten Abschnitt.
 
-`openclaw path` stellt diesen Aufrufern eine stabile Adresse statt eines einmaligen
-grep-Ausdrucks, regulären Ausdrucks oder Parsers für jeden Dateityp bereit. Derselbe
-`oc://`-Pfad kann im Terminal validiert, aufgelöst, durchsucht, als Probelauf ausgeführt
-und geschrieben werden. Dadurch bleibt eng begrenzte Automatisierung überprüfbar und
-wiederholbar. Der restliche Dateiinhalt bleibt erhalten, sodass das Schreiben eines
-einzelnen Blattwerts weder Kommentare und Zeilenenden noch die benachbarte Formatierung
-beeinträchtigt.
+`openclaw path` gibt diesen Aufrufern eine stabile Adresse statt eines einmaligen
+grep-, Regex- oder Parser-Ansatzes für jeden Dateityp. Derselbe Pfad `oc://` kann vom Terminal aus validiert,
+aufgelöst, durchsucht, im Probelauf ausgeführt und geschrieben werden, wodurch eng begrenzte
+Automatisierungen überprüfbar und wiederholbar bleiben. Der übrige Dateiinhalt bleibt erhalten, sodass
+das Schreiben eines einzelnen Blattwerts weder Kommentare noch Zeilenenden oder die benachbarte
+Formatierung verändert.
 
-Verwenden Sie den Befehl, wenn das gewünschte Element eine logische Adresse besitzt,
-die Dateistruktur jedoch variiert:
+Verwenden Sie es, wenn das gewünschte Element eine logische Adresse besitzt, die Dateistruktur
+jedoch variiert:
 
-- Ein Hook liest eine einzelne Einstellung aus einer kommentierten JSONC-Datei, ohne
-  beim Zurückschreiben des Werts Kommentare zu verlieren.
-- Ein Wartungsskript findet jedes passende Ereignisfeld in einem JSONL-Protokoll,
-  ohne das gesamte Protokoll in einen eigenen Parser laden zu müssen.
-- Ein Editor springt anhand des Slugs zu einem Markdown-Abschnitt oder Aufzählungspunkt
-  und zeigt anschließend genau die aufgelöste Zeile an.
-- Ein Agent führt vor dem Anwenden eine kleine Arbeitsbereichsänderung als Probelauf
-  aus, wobei die geänderten Bytes bei der Überprüfung sichtbar sind.
+- Ein Hook liest eine Einstellung aus kommentiertem JSONC, ohne Kommentare zu verlieren, wenn
+  er den Wert zurückschreibt.
+- Ein Wartungsskript findet jedes übereinstimmende Ereignisfeld in einem JSONL-Protokoll,
+  ohne das gesamte Protokoll in einen eigenen Parser zu laden.
+- Ein Editor springt anhand des Slugs zu einem Markdown-Abschnitt oder Aufzählungspunkt und rendert anschließend
+  die exakt aufgelöste Zeile.
+- Ein Agent führt eine kleine Workspace-Bearbeitung vor dem Anwenden probeweise aus, wobei die
+  geänderten Bytes bei der Überprüfung sichtbar sind.
 
-Verwenden Sie `openclaw path` nicht für gewöhnliche Bearbeitungen ganzer Dateien,
-umfangreiche Konfigurationsmigrationen oder speicherspezifische Schreibvorgänge;
-dafür sollte der zuständige Befehl oder das zuständige Plugin verwendet werden. `path`
-ist für kleine, adressierbare Dateioperationen vorgesehen, bei denen ein wiederholbarer
-Terminalbefehl einem weiteren maßgeschneiderten Parser vorzuziehen ist.
+Verzichten Sie bei gewöhnlichen Bearbeitungen ganzer Dateien, umfangreichen Konfigurationsmigrationen oder
+speicherspezifischen Schreibvorgängen auf `openclaw path`; dafür sollte der zuständige Befehl oder das zuständige Plugin verwendet werden. `path`
+ist für kleine, adressierbare Dateioperationen vorgesehen, bei denen ein wiederholbarer Terminalbefehl
+einem weiteren maßgeschneiderten Parser vorzuziehen ist.
 
 ## Verwendung
 
-Lesen Sie einen einzelnen Wert aus einer manuell bearbeiteten Konfigurationsdatei:
+Einen Wert aus einer manuell bearbeiteten Konfigurationsdatei lesen:
 
 ```bash
 openclaw path resolve 'oc://config.jsonc/plugins/github/enabled'
 ```
 
-Zeigen Sie einen Schreibvorgang in der Vorschau an, ohne auf den Datenträger zu schreiben:
+Einen Schreibvorgang in der Vorschau anzeigen, ohne den Datenträger zu verändern:
 
 ```bash
 openclaw path set 'oc://config.jsonc/plugins/github/enabled' 'true' --dry-run
 ```
 
-Suchen Sie passende Datensätze in einem nur angehängten JSONL-Protokoll:
+Übereinstimmende Datensätze in einem nur erweiterbaren JSONL-Protokoll finden:
 
 ```bash
 openclaw path find 'oc://session.jsonl/[event=tool_call]/name'
 ```
 
-Adressieren Sie eine Anweisung in Markdown anhand von Abschnitt und Element statt anhand
-der Zeilennummer:
+Eine Anweisung in Markdown über Abschnitt und Element statt über die Zeilennummer
+adressieren:
 
 ```bash
 openclaw path resolve 'oc://AGENTS.md/runtime-safety/openclaw-gateway'
 ```
 
-Validieren Sie einen Pfad in CI oder einem Vorprüfungsskript, bevor das Skript liest oder
+Einen Pfad in CI oder einem Vorprüfungsskript validieren, bevor das Skript liest oder
 schreibt:
 
 ```bash
 openclaw path validate 'oc://AGENTS.md/tools/$last/risk'
 ```
 
-Diese Befehle sind dafür vorgesehen, in Shell-Skripte übernommen zu werden. Verwenden Sie
-`--json`, wenn ein Aufrufer strukturierte Ausgabe benötigt, und `--human`, wenn eine Person
-das Ergebnis prüft.
+Diese Befehle sind so konzipiert, dass sie in Shell-Skripte kopiert werden können. Verwenden Sie `--json`, wenn
+ein Aufrufer eine strukturierte Ausgabe benötigt, und `--human`, wenn eine Person das Ergebnis
+prüft.
 
 ## Funktionsweise
 
-1. Analysiert die `oc://`-Adresse in Felder: Datei, Abschnitt, Element, Feld und eine
+1. Parst die Adresse `oc://` in Positionen: Datei, Abschnitt, Element, Feld und eine
    optionale Sitzungsabfrage.
-2. Wählt anhand der Zielerweiterung den Adapter für den Dateityp (`.md`, `.jsonc`,
+2. Wählt anhand der Zielerweiterung den Adapter für den Dateityp aus (`.md`, `.jsonc`,
    `.json`, `.jsonl`, `.ndjson`, `.yaml`, `.yml`, `.lobster`).
-3. Löst die Felder anhand der Struktur des jeweiligen Dateityps auf: Markdown-
-   Überschriften/-Elemente, JSONC-Objektschlüssel/-Arrayindizes, JSONL-Zeilendatensätze
-   oder YAML-Zuordnungs-/Sequenzknoten.
-4. Gibt bei `set` die bearbeiteten Bytes über denselben Adapter aus, damit unveränderte
-   Dateibereiche ihre Kommentare, Zeilenenden und benachbarte Formatierung behalten,
-   sofern der Dateityp dies unterstützt.
+3. Löst die Positionen anhand der Struktur dieses Dateityps auf: Markdown-
+   Überschriften/-Elemente, JSONC-Objektschlüssel/-Arrayindizes, JSONL-Zeilendatensätze oder
+   YAML-Zuordnungs-/Sequenzknoten.
+4. Gibt bei `set` bearbeitete Bytes über denselben Adapter aus, sodass unveränderte Teile
+   der Datei ihre Kommentare, Zeilenenden und benachbarte Formatierung behalten, sofern
+   der Dateityp dies unterstützt.
 
-`resolve` und `set` erfordern ein einzelnes konkretes Ziel. `find` ist das explorative
-Verb: Es erweitert Platzhalter, Vereinigungen, Prädikate und Ordinalzahlen zu konkreten
-Treffern, die Sie prüfen können, bevor Sie einen davon zum Schreiben auswählen.
+`resolve` und `set` erfordern ein konkretes Ziel. `find` ist das explorative
+Verb: Es expandiert Platzhalter, Vereinigungen, Prädikate und Ordnungszahlen zu den konkreten
+Treffern, die Sie prüfen können, bevor Sie einen zum Schreiben auswählen.
 
 ## Unterbefehle
 
-| Unterbefehl              | Zweck                                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------ |
-| `resolve <oc-path>`      | Gibt den konkreten Treffer am Pfad aus (oder „nicht gefunden“).                             |
-| `find <pattern>`         | Listet Treffer für einen Pfad mit Platzhalter, Vereinigung oder Prädikat auf.               |
-| `set <oc-path> <value>`  | Schreibt ein Blatt oder Einfügeziel an einem konkreten Pfad. Unterstützt `--dry-run`.       |
-| `validate <oc-path>`     | Nur Analyse; gibt die strukturelle Aufschlüsselung aus (Datei/Abschnitt/Element/Feld).      |
-| `emit <file>`            | Durchläuft für eine Datei den Zyklus aus Parsen und Ausgeben (Diagnose der Byte-Treue).     |
+| Unterbefehl              | Zweck                                                                     |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `resolve <oc-path>`     | Den konkreten Treffer am Pfad ausgeben (oder „nicht gefunden“).                      |
+| `find <pattern>`        | Treffer für einen Platzhalter-/Vereinigungs-/Prädikatpfad aufzählen.                  |
+| `set <oc-path> <value>` | Einen Blattwert oder ein Einfügeziel an einem konkreten Pfad schreiben. Unterstützt `--dry-run`.  |
+| `validate <oc-path>`    | Nur parsen; die strukturelle Aufschlüsselung ausgeben (Datei/Abschnitt/Element/Feld). |
+| `emit <file>`           | Eine Datei durch Parsen und Ausgeben im Rundlauf zurückführen (Diagnose der Bytetreue).          |
 
-## Globale Optionen
+## Globale Flags
 
-| Option          | Gilt für                         | Zweck                                                                                     |
-| --------------- | -------------------------------- | ----------------------------------------------------------------------------------------- |
-| `--cwd <dir>`   | `resolve`, `find`, `set`, `emit` | Löst das Dateifeld relativ zu diesem Verzeichnis auf (Standard: `process.cwd()`).          |
-| `--file <path>` | `resolve`, `find`, `set`, `emit` | Überschreibt den aufgelösten Pfad des Dateifelds (absoluter Zugriff).                      |
-| `--json`        | alle                             | Erzwingt JSON-Ausgabe (Standard, wenn stdout kein TTY ist).                                |
-| `--human`       | alle                             | Erzwingt menschenlesbare Ausgabe (Standard, wenn stdout ein TTY ist).                     |
-| `--value-json`  | `set`                            | Analysiert `<value>` als JSON für den Ersatz eines JSON-/JSONC-/JSONL-Blattwerts.          |
-| `--dry-run`     | `set`                            | Gibt die zu schreibenden Bytes aus, ohne sie zu schreiben.                                |
-| `--diff`        | `set` (erfordert `--dry-run`)    | Gibt statt der vollständigen Bytes einen vereinheitlichten Diff aus.                      |
+| Flag            | Gilt für                       | Zweck                                                                  |
+| --------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `--cwd <dir>`   | `resolve`, `find`, `set`, `emit` | Die Dateiposition relativ zu diesem Verzeichnis auflösen (Standard: `process.cwd()`). |
+| `--file <path>` | `resolve`, `find`, `set`, `emit` | Den aufgelösten Pfad der Dateiposition überschreiben (absoluter Zugriff).                |
+| `--json`        | alle                              | JSON-Ausgabe erzwingen (Standard, wenn stdout kein TTY ist).                    |
+| `--human`       | alle                              | Für Menschen lesbare Ausgabe erzwingen (Standard, wenn stdout ein TTY ist).                       |
+| `--value-json`  | `set`                            | `<value>` als JSON für die Ersetzung eines JSON-/JSONC-/JSONL-Blattwerts parsen.           |
+| `--dry-run`     | `set`                            | Die Bytes ausgeben, die geschrieben würden, ohne zu schreiben.                   |
+| `--diff`        | `set` (erfordert `--dry-run`)     | Einen einheitlichen Diff statt der vollständigen Bytes ausgeben.                          |
 
-`validate` akzeptiert nur `--json`/`--human`; da kein Dateisystemzugriff erfolgt,
+`validate` akzeptiert nur `--json` / `--human`; es greift nicht auf das Dateisystem zu, daher
 gelten `--cwd` und `--file` nicht.
 
-## `oc://`-Syntax
+## Syntax von `oc://`
 
 ```text
 oc://FILE/SECTION/ITEM/FIELD?session=SCOPE
 ```
 
-Feldregeln: `field` erfordert `item`, und `item` erfordert `section`. Für alle vier
-Felder gilt:
+Positionsregeln: `field` erfordert `item`, und `item` erfordert `section`. Für
+alle vier Positionen gilt:
 
-- **Segmente in Anführungszeichen** — `"a/b.c"` bleibt trotz der Trennzeichen `/` und `.`
-  erhalten. Der Inhalt wird bytegetreu interpretiert; `"` und `\` sind innerhalb der
-  Anführungszeichen nicht zulässig. Auch das Dateifeld berücksichtigt Anführungszeichen:
-  `oc://"skills/email-drafter"/Tools/$last` behandelt `skills/email-drafter` als einen
-  einzelnen Dateipfad.
+- **Segmente in Anführungszeichen** — `"a/b.c"` übersteht die Trennzeichen `/` und `.`. Der Inhalt ist
+  bytegenau; `"` und `\` sind innerhalb von Anführungszeichen nicht zulässig. Auch die Dateiposition
+  berücksichtigt Anführungszeichen: `oc://"skills/email-drafter"/Tools/$last` behandelt
+  `skills/email-drafter` als einzelnen Dateipfad.
 - **Prädikate** — `[k=v]`, `[k!=v]`, `[k<v]`, `[k<=v]`, `[k>v]`, `[k>=v]`.
-  Numerische Operatoren erfordern, dass beide Seiten in endliche Zahlen umgewandelt
-  werden können.
-- **Vereinigungen** — `{a,b,c}` entspricht jeder der Alternativen.
-- **Platzhalter** — `*` (ein einzelnes Untersegment) und `**` (null oder mehr,
-  rekursiv). `find` akzeptiert sie; `resolve` und `set` lehnen sie als mehrdeutig ab.
-- **Positionell** — `$first`/`$last` werden zum ersten/letzten Index oder deklarierten
-  Schlüssel aufgelöst.
-- **Ordinal** — `#N` für den N-ten Treffer in Dokumentreihenfolge.
-- **Einfügemarkierungen** — `+`, `+key`, `+nnn` für schlüsselbasierte/indexbasierte
-  Einfügungen (mit `set` verwenden).
-- **Sitzungsbereich** — `?session=cron-daily` usw. Unabhängig von der Verschachtelung
-  der Felder. Sitzungswerte sind Rohwerte und werden nicht prozentdekodiert; sie dürfen
-  weder Steuerzeichen noch reservierte Abfragetrennzeichen (`?`, `&`, `%`) enthalten.
+  Numerische Operatoren erfordern, dass beide Seiten in endliche Zahlen umgewandelt werden können.
+- **Vereinigungen** — `{a,b,c}` stimmt mit jeder der Alternativen überein.
+- **Platzhalter** — `*` (einzelnes Untersegment) und `**` (null oder mehr,
+  rekursiv). `find` akzeptiert diese; `resolve` und `set` lehnen sie als
+  mehrdeutig ab.
+- **Positionsbezogen** — `$first` / `$last` werden zum ersten/letzten Index oder
+  deklarierten Schlüssel aufgelöst.
+- **Ordnungszahl** — `#N` für den N-ten Treffer gemäß Dokumentreihenfolge.
+- **Einfügemarkierungen** — `+`, `+key`, `+nnn` für schlüssel-/indexbasierte Einfügung
+  (mit `set` verwenden).
+- **Sitzungsbereich** — `?session=cron-daily` usw. Unabhängig von der Verschachtelung der Positionen.
+  Sitzungswerte sind Rohwerte und werden nicht prozentdekodiert; sie dürfen weder Steuerzeichen
+  noch reservierte Abfrage-Trennzeichen enthalten (`?`, `&`, `%`).
 
-Reservierte Zeichen (`?`, `&`, `%`) außerhalb von Segmenten in Anführungszeichen,
-Prädikaten oder Vereinigungen werden abgelehnt. Steuerzeichen (U+0000–U+001F, U+007F)
-werden überall abgelehnt, einschließlich des Werts der `session`-Abfrage.
+Reservierte Zeichen (`?`, `&`, `%`) außerhalb von Segmenten in Anführungszeichen, Prädikaten oder Vereinigungen
+werden abgewiesen. Steuerzeichen (U+0000-U+001F, U+007F) werden
+überall abgewiesen, einschließlich des Abfragewerts `session`.
 
 `formatOcPath(parseOcPath(path)) === path` wird für kanonische Pfade garantiert.
-Nicht kanonische Abfrageparameter werden ignoriert, mit Ausnahme des ersten nicht leeren
-`session=`-Werts.
+Nicht kanonische Abfrageparameter werden mit Ausnahme des ersten nicht leeren
+Werts `session=` ignoriert.
 
-Feste Grenzwerte: Ein Pfad ist auf 4096 Bytes, höchstens 4 Felder (Datei/Abschnitt/Element/
-Feld), höchstens 64 durch Punkte getrennte Untersegmente je Feld und höchstens 256
-verschachtelte Traversierungsebenen für tiefe JSON-Pfade begrenzt. Unabhängig davon wird
-jede JSONC-/JSON-Eingabedatei über 16 MiB bei jedem Verb, das die Datei lädt, mit einer
-Analysediagnose abgelehnt, statt analysiert zu werden.
+Feste Grenzwerte: Ein Pfad ist auf 4096 Bytes, höchstens 4 Positionen (Datei/Abschnitt/Element/
+Feld), höchstens 64 durch Punkte getrennte Untersegmente pro Position und höchstens 256 verschachtelte
+Traversal-Ebenen für tiefe JSON-Pfade begrenzt. Unabhängig davon wird jede JSONC-/JSON-Dateieingabe
+über 16 MiB für jedes Verb, das diese Datei lädt, mit einer Parsediagnose abgewiesen,
+statt geparst zu werden.
 
 ## Adressierung nach Dateityp
 
-| Typ           | Dateierweiterungen            | Adressierungsmodell                                                                                             |
-| ------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Markdown      | `.md`                         | H2-Abschnitte nach Slug, Aufzählungspunkte nach Slug oder `#N`, Frontmatter über `[frontmatter]`.                |
-| JSONC/JSON    | `.jsonc`, `.json`             | Objektschlüssel und Arrayindizes; Punkte trennen verschachtelte Untersegmente, sofern sie nicht zitiert sind.    |
-| JSONL         | `.jsonl`, `.ndjson`           | Zeilenadressen auf oberster Ebene (`L1`, `L2`, `$first`, `$last`), danach JSONC-artige Navigation in der Zeile. |
-| YAML/.lobster | `.yaml`, `.yml`, `.lobster`   | Zuordnungsschlüssel und Sequenzindizes; Kommentare und Flussstil werden von der YAML-Dokument-API verarbeitet.  |
+| Typ          | Dateierweiterungen             | Adressierungsmodell                                                                                    |
+| ------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| Markdown      | `.md`                       | H2-Abschnitte nach Slug, Aufzählungspunkte nach Slug oder `#N`, Frontmatter über `[frontmatter]`.                 |
+| JSONC/JSON    | `.jsonc`, `.json`           | Objektschlüssel und Arrayindizes; Punkte trennen verschachtelte Untersegmente, sofern sie nicht in Anführungszeichen stehen.                        |
+| JSONL         | `.jsonl`, `.ndjson`         | Zeilenadressen der obersten Ebene (`L1`, `L2`, `$first`, `$last`), anschließend Abstieg im JSONC-Stil innerhalb der Zeile. |
+| YAML/.lobster | `.yaml`, `.yml`, `.lobster` | Zuordnungsschlüssel und Sequenzindizes; Kommentare und der Flow-Stil werden von der YAML-Dokument-API verarbeitet.        |
 
 `resolve` gibt einen strukturierten Treffer zurück: `root`, `node`, `leaf` oder
-`insertion-point`, jeweils mit einer 1-basierten Zeilennummer. Blattwerte werden als
-Text zusammen mit einem `leafType` bereitgestellt, damit Plugin-Autoren Vorschauen
-darstellen können, ohne von der AST-Struktur des jeweiligen Dateityps abhängig zu sein.
+`insertion-point`, mit einer 1-basierten Zeilennummer. Blattwerte werden als
+Text zusammen mit einem `leafType` bereitgestellt, sodass Plugin-Autoren Vorschauen rendern können, ohne
+von der AST-Struktur des jeweiligen Dateityps abhängig zu sein.
 
-## Änderungsvertrag
+## Mutationsvertrag
 
-`set` schreibt ein einzelnes konkretes Ziel:
+`set` schreibt ein konkretes Ziel:
 
-- Markdown-Frontmatter-Werte und Elementfelder im Format `- key: value` sind
-  Zeichenfolgen-Blattwerte. Markdown-Einfügungen hängen Abschnitte, Frontmatter-Schlüssel
-  oder Abschnittselemente an und erzeugen für die geänderte Datei eine kanonische
-  Markdown-Struktur. Abschnittsinhalte können nicht als Ganzes über `set` geschrieben
-  werden.
-- Bei JSONC-Blattschreibvorgängen wird der Zeichenfolgenwert in den bestehenden
-  Blattwerttyp umgewandelt (`string`, endliche `number`, `true`/`false` oder `null`).
-  Verwenden Sie `--value-json`, wenn ein JSONC-/JSON-/JSONL-Blattwert-Ersatz `<value>`
-  als JSON analysieren und seine Struktur ändern können soll, etwa beim Ersetzen einer
-  Kurzschreibweise für eine geheime Referenz durch ein Objekt. Bei JSONC-Objekt- und
-  Array-Einfügungen wird `<value>` als JSON analysiert; gewöhnliche Blattschreibvorgänge
-  verwenden den Bearbeitungspfad von `jsonc-parser`, wodurch Kommentare und benachbarte
-  Formatierung erhalten bleiben.
-- JSONL-Blattschreibvorgänge führen innerhalb einer Zeile dieselbe Typumwandlung wie
-  JSONC durch. Beim Ersetzen oder Anhängen ganzer Zeilen wird `<value>` als JSON
-  analysiert. Ausgegebenes JSONL behält die vorherrschende LF-/CRLF-Zeilenendenkonvention
-  der Datei bei (Mehrheitsentscheidung über alle Zeilenumbrüche der Datei, sodass eine
-  überwiegend CRLF-formatierte Datei auch bei einigen vereinzelten LF-Zeilenumbrüchen
-  CRLF behält).
-- YAML-Blattschreibvorgänge führen eine Typumwandlung in den bestehenden Skalartyp durch
-  (`string`, endliche `number`, `true`/`false` oder `null`). YAML-Einfügungen verwenden
-  die Dokument-API des mitgelieferten Pakets `yaml` für Aktualisierungen von Zuordnungen
-  und Sequenzen. Fehlerhafte YAML-Dokumente mit Parserfehlern werden vor der Änderung
-  mit `parse-error` abgelehnt.
+- Markdown-Frontmatter-Werte und `- key: value`-Elementfelder sind Zeichenfolgen-
+  blätter. Markdown-Einfügungen hängen Abschnitte, Frontmatter-Schlüssel oder Abschnitts-
+  elemente an und rendern eine kanonische Markdown-Struktur für die geänderte Datei. Abschnitts-
+  körper können nicht als Ganzes über `set` geschrieben werden.
+- Beim Schreiben von JSONC-Blättern wird der Zeichenfolgenwert in den vorhandenen Blatttyp
+  umgewandelt (`string`, endlicher `number`, `true`/`false` oder `null`). Verwenden Sie `--value-json`,
+  wenn beim Ersetzen eines JSONC-/JSON-/JSONL-Blatts `<value>` als JSON geparst werden soll und
+  sich die Struktur ändern darf, beispielsweise beim Ersetzen einer Zeichenfolgen-Kurzschreibweise für eine Secret-Referenz durch ein
+  Objekt. Bei Einfügungen in JSONC-Objekte und -Arrays wird `<value>` als JSON geparst und
+  für gewöhnliche Schreibvorgänge an Blättern der Bearbeitungspfad `jsonc-parser` verwendet, wobei Kommentare
+  und die Formatierung in der Umgebung erhalten bleiben.
+- Beim Schreiben von JSONL-Blättern erfolgt die Umwandlung innerhalb einer Zeile wie bei JSONC. Beim Ersetzen
+  und Anhängen ganzer Zeilen wird `<value>` als JSON geparst. Gerendertes JSONL behält die in der Datei
+  vorherrschende LF-/CRLF-Zeilenendekonvention bei (Mehrheitsentscheidung über alle
+  Zeilenumbrüche der Datei, sodass eine überwiegend CRLF-basierte Datei auch bei einigen vereinzelten LFs CRLF beibehält).
+- Beim Schreiben von YAML-Blättern erfolgt die Umwandlung in den vorhandenen Skalartyp (`string`, endlicher
+  `number`, `true`/`false` oder `null`). YAML-Einfügungen verwenden die Dokument-API des mitgelieferten
+  Pakets `yaml` für Aktualisierungen von Zuordnungen und Sequenzen. Fehlerhafte YAML-
+  Dokumente mit Parserfehlern werden vor der Mutation mit
+  `parse-error` abgelehnt.
 
-Verwenden Sie vor benutzersichtbaren Schreibvorgängen `--dry-run`, wenn die genauen Bytes
-wichtig sind. JSONC- und YAML-Bearbeitungen ändern das bestehende Dokument punktuell
-(über `jsonc-parser` beziehungsweise die Dokument-API von `yaml`), sodass unveränderte
-Bytes normalerweise erhalten bleiben. Markdown erstellt die Datei bei jeder Bearbeitung
-aus ihrer analysierten Struktur neu, wodurch nebensächliche Formatierung außerhalb des
-geänderten Blattwerts normalisiert werden kann. Fügen Sie `--diff` hinzu, wenn Sie die
-Vorschau als gezielten Vorher-/Nachher-Patch statt als vollständige ausgegebene Datei
-anzeigen möchten.
+Verwenden Sie `--dry-run` vor benutzersichtbaren Schreibvorgängen, wenn die exakten Bytes wichtig sind. JSONC-
+und YAML-Bearbeitungen patchen das vorhandene Dokument (über `jsonc-parser` oder die Dokument-API von `yaml`),
+sodass unveränderte Bytes normalerweise erhalten bleiben; Markdown erstellt die Datei bei jeder Bearbeitung
+aus ihrer geparsten Struktur neu, wodurch beiläufige Formatierungen außerhalb
+des geänderten Blatts normalisiert werden können. Fügen Sie `--diff` hinzu, wenn Sie die Vorschau
+als fokussierten Vorher-/Nachher-Patch statt als vollständig gerenderte Datei anzeigen möchten.
 
 ## Beispiele
 
@@ -255,109 +247,108 @@ anzeigen möchten.
 # Einen Pfad validieren (kein Dateisystemzugriff)
 openclaw path validate 'oc://AGENTS.md/Tools/$last/risk'
 
-# Einen Blattwert lesen
+# Ein Blatt lesen
 openclaw path resolve 'oc://gateway.jsonc/version'
 
 # Platzhaltersuche
 openclaw path find 'oc://session.jsonl/*/event' --file ./logs/session.jsonl
 
-# Einen Schreibvorgang als Probelauf ausführen
+# Einen Schreibvorgang testweise ausführen
 openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run
 
-# Einen Schreibvorgang als vereinheitlichten Diff im Probelauf ausführen
+# Einen Schreibvorgang testweise als Unified Diff ausführen
 openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run --diff
 
 # Den Schreibvorgang anwenden
 openclaw path set 'oc://gateway.jsonc/version' '2.0'
 
-# Bytegetreuer Durchlauf (Diagnose)
+# Bytegetreuer Roundtrip (Diagnose)
 openclaw path emit ./AGENTS.md
 ```
 
 Weitere Grammatikbeispiele:
 
 ```bash
-# Quote keys containing / or .
+# Schlüssel in Anführungszeichen setzen, die / oder . enthalten
 openclaw path resolve 'oc://config.jsonc/agents.defaults.models/"anthropic/claude-opus-4-7"/alias'
 
-# Deep JSON/JSONC paths can use slash segments; they normalize to dotted subsegments
+# Tiefe JSON-/JSONC-Pfade können Schrägstrichsegmente verwenden; sie werden zu punktgetrennten Untersegmenten normalisiert
 openclaw path set 'oc://openclaw.json/agents/list/0/tools/exec/security' 'allowlist' --dry-run
 
-# Replace a JSONC leaf with a parsed object
+# Ein JSONC-Blatt durch ein geparstes Objekt ersetzen
 openclaw path set 'oc://openclaw.json/gateway/auth/token' '{"source":"file","provider":"secrets","id":"/test"}' --value-json --dry-run
 
-# Predicate search over JSONC children
+# Prädikatssuche über untergeordnete JSONC-Elemente
 openclaw path find 'oc://config.jsonc/plugins/[enabled=true]/id'
 
-# Insert into a JSONC array
+# In ein JSONC-Array einfügen
 openclaw path set 'oc://config.jsonc/items/+1' '{"id":"new","enabled":true}' --dry-run
 
-# Insert a JSONC object key
+# Einen JSONC-Objektschlüssel einfügen
 openclaw path set 'oc://config.jsonc/plugins/+github' '{"enabled":true}' --dry-run
 
-# Append a JSONL event
+# Ein JSONL-Ereignis anhängen
 openclaw path set 'oc://session.jsonl/+' '{"event":"checkpoint","ok":true}' --file ./logs/session.jsonl
 
-# Resolve the last JSONL value line
+# Die letzte JSONL-Wertzeile auflösen
 openclaw path resolve 'oc://session.jsonl/$last/event' --file ./logs/session.jsonl
 
-# Resolve a YAML workflow step
+# Einen YAML-Workflow-Schritt auflösen
 openclaw path resolve 'oc://workflow.yaml/steps/0/id'
 
-# Update a YAML scalar
+# Einen YAML-Skalar aktualisieren
 openclaw path set 'oc://workflow.yaml/steps/$last/id' 'classify-renamed' --dry-run
 
-# Address markdown frontmatter
+# Markdown-Frontmatter adressieren
 openclaw path resolve 'oc://AGENTS.md/[frontmatter]/name'
 
-# Insert markdown frontmatter
+# Markdown-Frontmatter einfügen
 openclaw path set 'oc://AGENTS.md/[frontmatter]/+description' 'Agent instructions' --dry-run
 
-# Find markdown item fields
+# Markdown-Elementfelder suchen
 openclaw path find 'oc://SKILL.md/Tools/*/send_email'
 
-# Validate a session-scoped path
+# Einen sitzungsbezogenen Pfad validieren
 openclaw path validate 'oc://AGENTS.md/Tools/$last/risk?session=cron-daily'
 ```
 
-## Rezepte nach Dateityp
+## Rezepte nach Dateiart
 
-Dieselben fünf Verben funktionieren für alle Dateitypen; das Adressierungsschema
-wählt anhand der Dateierweiterung die passende Verarbeitung aus.
+Dieselben fünf Verben funktionieren für alle Arten; das Adressierungsschema wählt anhand
+der Dateierweiterung die passende Verarbeitung aus.
 
 ### Markdown
 
 ```text
 <!-- frontmatter.md -->
 ---
-name: drafter
-description: email drafting agent
-tier: core
+name: Entwurfsagent
+description: Agent zum Verfassen von E-Mail-Entwürfen
+tier: Kern
 ---
-## Tools
+## Werkzeuge
 - gh: GitHub CLI
-- curl: HTTP client
-- send_email: enabled
+- curl: HTTP-Client
+- send_email: aktiviert
 ```
 
 ```bash
 $ openclaw path resolve 'oc://x.md/[frontmatter]/tier' --file frontmatter.md --human
-leaf @ L4: "core" (string)
+Blatt @ L4: "core" (Zeichenfolge)
 
 $ openclaw path resolve 'oc://x.md/tools/gh/gh' --file frontmatter.md --human
-leaf @ L9: "GitHub CLI" (string)
+Blatt @ L9: "GitHub CLI" (Zeichenfolge)
 
 $ openclaw path find 'oc://x.md/tools/*' --file frontmatter.md --human
-3 matches for oc://x.md/tools/*:
-  oc://x.md/tools/gh           →  node @ L9 [md-item]
-  oc://x.md/tools/curl         →  node @ L10 [md-item]
-  oc://x.md/tools/send-email   →  node @ L11 [md-item]
+3 Treffer für oc://x.md/tools/*:
+  oc://x.md/tools/gh           →  Knoten @ L9 [md-item]
+  oc://x.md/tools/curl         →  Knoten @ L10 [md-item]
+  oc://x.md/tools/send-email   →  Knoten @ L11 [md-item]
 ```
 
 Das Prädikat `[frontmatter]` adressiert den YAML-Frontmatter-Block; `tools`
-entspricht über den Slug der Überschrift `## Tools`, und die Blätter der
-Einträge behalten ihre Slug-Form bei, selbst wenn die Quelle Unterstriche
-verwendet (`send_email` wird zu `send-email`).
+entspricht der Überschrift `## Tools` über ihren Slug, und Elementblätter behalten ihre Slug-Form bei,
+selbst wenn die Quelle Unterstriche verwendet (`send_email` wird zu `send-email`).
 
 ### JSONC
 
@@ -373,10 +364,10 @@ verwendet (`send_email` wird zu `send-email`).
 
 ```bash
 $ openclaw path resolve 'oc://config.jsonc/plugins/github/enabled' --file config.jsonc --human
-leaf @ L4: "true" (boolean)
+Blatt @ L4: "true" (boolesch)
 
 $ openclaw path set 'oc://config.jsonc/plugins/slack/enabled' 'true' --file config.jsonc --dry-run
---dry-run: would write 142 bytes to /…/config.jsonc
+--dry-run: würde 142 Bytes nach /…/config.jsonc schreiben
 {
   "plugins": {
     "github": {"enabled": true, "role": "vcs"},
@@ -385,10 +376,9 @@ $ openclaw path set 'oc://config.jsonc/plugins/slack/enabled' 'true' --file conf
 }
 ```
 
-JSONC-Änderungen werden über `jsonc-parser` ausgeführt, sodass Kommentare und
-Leerraum bei einem `set` erhalten bleiben. Führen Sie den Befehl zuerst mit
-`--dry-run` aus, um die Bytes vor dem Schreiben zu prüfen. `.json`-Dateien
-verwenden denselben Adapter und denselben Änderungspfad wie `.jsonc`.
+JSONC-Bearbeitungen laufen über `jsonc-parser`, sodass Kommentare und Leerraum einen
+`set` überstehen. Führen Sie den Befehl zunächst mit `--dry-run` aus, um die Bytes vor dem Übernehmen zu prüfen.
+`.json`-Dateien verwenden denselben Adapter und Bearbeitungspfad wie `.jsonc`.
 
 ### JSONL
 
@@ -400,17 +390,16 @@ verwenden denselben Adapter und denselben Änderungspfad wie `.jsonc`.
 
 ```bash
 $ openclaw path find 'oc://session.jsonl/[event=action]/userId' --file session.jsonl --human
-1 match for oc://session.jsonl/[event=action]/userId:
-  oc://session.jsonl/L2/userId  →  leaf @ L2: "u1" (string)
+1 Treffer für oc://session.jsonl/[event=action]/userId:
+  oc://session.jsonl/L2/userId  →  Blatt @ L2: "u1" (Zeichenfolge)
 
 $ openclaw path resolve 'oc://session.jsonl/L2/ts' --file session.jsonl --human
-leaf @ L2: "2" (number)
+Blatt @ L2: "2" (Zahl)
 ```
 
-Jede Zeile ist ein Datensatz. Adressieren Sie ihn über ein Prädikat
-(`[event=action]`), wenn Sie die Zeilennummer nicht kennen, oder andernfalls
-über das kanonische Segment `LN`. `.ndjson`-Dateien verwenden denselben
-Adapter wie `.jsonl`.
+Jede Zeile ist ein Datensatz. Adressieren Sie ihn über ein Prädikat (`[event=action]`), wenn Sie
+die Zeilennummer nicht kennen, oder andernfalls über das kanonische Segment `LN`.
+`.ndjson`-Dateien verwenden denselben Adapter wie `.jsonl`.
 
 ### YAML
 
@@ -426,10 +415,10 @@ steps:
 
 ```bash
 $ openclaw path resolve 'oc://workflow.yaml/steps/0/id' --file workflow.yaml --human
-leaf @ L3: "fetch" (string)
+Blatt @ L3: "fetch" (Zeichenfolge)
 
 $ openclaw path set 'oc://workflow.yaml/steps/$last/id' 'classify-renamed' --file workflow.yaml --dry-run
---dry-run: would write 99 bytes to /…/workflow.yaml
+--dry-run: würde 99 Bytes nach /…/workflow.yaml schreiben
 name: inbox-triage
 steps:
   - id: fetch
@@ -438,21 +427,18 @@ steps:
     command: openclaw.invoke
 ```
 
-YAML verwendet die `Document`-API des Pakets `yaml` statt eines selbst
-entwickelten Parsers. Dadurch bleiben bei gewöhnlichen Parse-/Ausgabezyklen
-Kommentare und die ursprüngliche Form erhalten, während aufgelöste Pfade
-dasselbe Modell aus Zuordnungsschlüsseln und Sequenzindizes wie JSONC
-verwenden. Derselbe Adapter verarbeitet `.yaml`-, `.yml`- und
-`.lobster`-Dateien.
+YAML verwendet die `Document`-API des Pakets `yaml` statt eines selbst entwickelten
+Parsers, sodass gewöhnliche Parse-/Ausgabe-Roundtrips Kommentare und die vom Autor erstellte
+Struktur erhalten, während aufgelöste Pfade dasselbe Modell aus Zuordnungsschlüsseln und Sequenzindizes wie
+JSONC verwenden. Derselbe Adapter verarbeitet `.yaml`-, `.yml`- und `.lobster`-Dateien.
 
 ## Unterbefehlsreferenz
 
 ### `resolve <oc-path>`
 
-Liest ein einzelnes Blatt oder einen einzelnen Knoten. Platzhalter werden
-abgelehnt – verwenden Sie dafür `find`. Der Befehl wird bei einem Treffer mit
-`0`, bei einem regulären Fehlschlag mit `1` und bei einem Parsefehler oder
-abgelehnten Muster mit `2` beendet.
+Ein einzelnes Blatt oder einen einzelnen Knoten lesen. Platzhalter werden abgelehnt – verwenden Sie dafür `find`.
+Beendet sich bei einem Treffer mit `0`, bei einem regulären Fehltreffer mit `1` und bei einem Parserfehler oder abgelehnten
+Muster mit `2`.
 
 ```bash
 openclaw path resolve 'oc://AGENTS.md/tools/gh/risk' --human
@@ -461,11 +447,10 @@ openclaw path resolve 'oc://gateway.jsonc/server/port' --json
 
 ### `find <pattern>`
 
-Listet jeden Treffer für ein Platzhalter-, Prädikat- oder Vereinigungsmuster
-auf. Der Befehl wird bei mindestens einem Treffer mit `0`, bei keinem Treffer
-mit `1` beendet. Platzhalter im Dateisegment werden mit
-`OC_PATH_FILE_WILDCARD_UNSUPPORTED` abgelehnt – geben Sie eine konkrete Datei
-an (Globbing über mehrere Dateien ist eine geplante Folgefunktion).
+Alle Treffer für ein Platzhalter-, Prädikats- oder Vereinigungsmuster aufzählen. Beendet sich mit `0`,
+wenn mindestens ein Treffer vorliegt, andernfalls mit `1`. Platzhalter im Dateifeld werden mit
+`OC_PATH_FILE_WILDCARD_UNSUPPORTED` abgelehnt – übergeben Sie eine konkrete Datei (Globbing
+über mehrere Dateien ist eine spätere Funktion).
 
 ```bash
 openclaw path find 'oc://AGENTS.md/tools/**/risk'
@@ -475,13 +460,10 @@ openclaw path find 'oc://config.jsonc/plugins/{github,slack}/enabled'
 
 ### `set <oc-path> <value>`
 
-Schreibt ein Blatt. Verwenden Sie zusätzlich `--dry-run`, um die zu
-schreibenden Bytes in einer Vorschau anzuzeigen, ohne die Datei zu verändern.
-Fügen Sie `--diff` hinzu, um eine Vorschau als vereinheitlichte
-Differenzdarstellung zu erhalten. Der Befehl wird nach erfolgreichem Schreiben
-mit `0`, bei einer Ablehnung durch die zugrunde liegende Verarbeitung
-(beispielsweise beim Auslösen einer Wächterprüfung für Sentinel-Werte) mit `1`
-und bei Parsefehlern mit `2` beendet.
+Ein Blatt schreiben. Kombinieren Sie den Befehl mit `--dry-run`, um eine Vorschau der zu schreibenden Bytes anzuzeigen,
+ohne die Datei zu verändern. Fügen Sie `--diff` für eine Vorschau als Unified Diff hinzu.
+Beendet sich nach einem erfolgreichen Schreibvorgang mit `0`, mit `1`, wenn das Substrat den Vorgang ablehnt (beispielsweise
+wenn ein Sentinel-Schutz ausgelöst wird), und bei Parserfehlern mit `2`.
 
 ```bash
 openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run
@@ -490,75 +472,66 @@ openclaw path set 'oc://gateway.jsonc/version' '2.0'
 openclaw path set 'oc://AGENTS.md/Tools/+gh/risk' 'low'
 ```
 
-Die Einfügemarkierung `+key` erstellt das benannte untergeordnete Element,
-sofern es noch nicht vorhanden ist; `+nnn` und ein einzelnes `+` dienen
-entsprechend zum indizierten Einfügen und zum Anhängen.
+Die Einfügungsmarkierung `+key` erstellt das benannte untergeordnete Element, sofern es noch nicht
+vorhanden ist; `+nnn` und das alleinstehende `+` dienen entsprechend zur indexbasierten Einfügung und zum Anhängen.
 
 ### `validate <oc-path>`
 
-Prüfung ausschließlich durch Parsen. Kein Dateisystemzugriff. Dies ist
-nützlich, wenn Sie vor dem Ersetzen von Variablen bestätigen möchten, dass ein
-Vorlagenpfad korrekt aufgebaut ist, oder wenn Sie zur Fehlerdiagnose die
-strukturelle Aufschlüsselung benötigen:
+Reine Parse-Prüfung. Kein Dateisystemzugriff. Nützlich, wenn Sie vor dem Ersetzen von Variablen
+bestätigen möchten, dass ein Vorlagenpfad wohlgeformt ist, oder wenn Sie
+die strukturelle Aufschlüsselung zur Fehlersuche benötigen:
 
 ```bash
 $ openclaw path validate 'oc://AGENTS.md/tools/gh' --human
-valid: oc://AGENTS.md/tools/gh
-  file:    AGENTS.md
-  section: tools
-  item:    gh
+gültig: oc://AGENTS.md/tools/gh
+  Datei:     AGENTS.md
+  Abschnitt: tools
+  Element:   gh
 ```
 
-Der Befehl wird bei einem gültigen Pfad mit `0`, bei einem ungültigen Pfad
-(mit strukturiertem `code` und `message`) mit `1` und bei Argumentfehlern mit
-`2` beendet.
+Beendet sich bei einem gültigen Pfad mit `0`, bei einem ungültigen Pfad mit `1` (mit einem strukturierten `code` und
+`message`) und bei Argumentfehlern mit `2`.
 
 ### `emit <file>`
 
-Verarbeitet eine Datei mit dem Parser und der Ausgabeimplementierung des
-jeweiligen Dateityps. Bei einer fehlerfreien Datei sollte die Ausgabe
-bytegenau mit der Eingabe übereinstimmen; Abweichungen weisen auf einen
-Parserfehler oder das Auslösen einer Sentinel-Prüfung hin. Dies ist nützlich,
-um das Verhalten der zugrunde liegenden Verarbeitung anhand realer Eingaben
-zu diagnostizieren.
+Eine Datei durch den Parser und Emitter der jeweiligen Art schleusen. Bei einer fehlerfreien Datei sollte die Ausgabe
+byteidentisch mit der Eingabe sein; eine Abweichung weist auf einen
+Parserfehler oder das Auslösen eines Sentinels hin. Nützlich zur Fehlersuche im Verhalten des Substrats bei
+realen Eingaben.
 
 ```bash
 openclaw path emit ./AGENTS.md
 openclaw path emit ./gateway.jsonc --json
 ```
 
-## Beendigungscodes
+## Exitcodes
 
-| Code | Bedeutung                                                                                       |
-| ---- | ----------------------------------------------------------------------------------------------- |
-| `0`  | Erfolg. (`resolve` / `find`: mindestens ein Treffer. `set`: Schreiben erfolgreich.)             |
-| `1`  | Kein Treffer oder `set` wurde von der zugrunde liegenden Verarbeitung abgelehnt (kein Systemfehler). |
-| `2`  | Argument- oder Parsefehler.                                                                     |
+| Code | Bedeutung                                                                  |
+| ---- | -------------------------------------------------------------------------- |
+| `0`  | Erfolg. (`resolve` / `find`: mindestens ein Treffer. `set`: Schreibvorgang erfolgreich.) |
+| `1`  | Kein Treffer oder `set` wurde vom Substrat abgelehnt (kein Fehler auf Systemebene). |
+| `2`  | Argument- oder Parserfehler.                                                |
 
 ## Ausgabemodus
 
-`openclaw path` erkennt TTYs: Auf einem Terminal erfolgt eine
-menschenlesbare Ausgabe, bei weitergeleiteter oder umgeleiteter
-Standardausgabe wird JSON verwendet. `--json` und `--human` überschreiben die
+`openclaw path` berücksichtigt TTY: menschenlesbare Ausgabe in einem Terminal, JSON, wenn
+stdout über eine Pipe weitergeleitet oder umgeleitet wird. `--json` und `--human` überschreiben die
 automatische Erkennung.
 
 ## Hinweise
 
-- `set` schreibt Bytes über den Ausgabepfad der zugrunde liegenden
-  Verarbeitung, der automatisch die Wächterprüfung für
-  Schwärzungs-Sentinel-Werte anwendet. Ein Blatt, das
-  `__OPENCLAW_REDACTED__` enthält (wortwörtlich oder als Teilzeichenfolge),
-  wird beim Schreiben abgelehnt.
-- Das Parsen von JSONC und Änderungen an Blättern verwenden die lokale
-  Plugin-Abhängigkeit `jsonc-parser`. Dadurch bleiben Kommentare und
-  Formatierung bei gewöhnlichen Schreibvorgängen an Blättern erhalten, statt
-  einen selbst entwickelten Parser- und Neudarstellungspfad zu durchlaufen.
-- `path` berücksichtigt weder die Nachverfolgung noch die Wiederherstellung
-  der letzten als funktionsfähig bekannten Konfiguration (LKG); dieser
-  Lebenszyklus wird an anderer Stelle verwaltet. Wenn eine über `path`
-  bearbeitete Datei auch per LKG nachverfolgt wird, entscheidet der nächste
-  Konfigurationslesevorgang, ob sie übernommen oder wiederhergestellt wird.
-  Behandeln Sie eine Änderung über `path` wie jeden anderen direkten
+- `set` schreibt Bytes über den Emit-Pfad des Substrats, der den
+  Schutz durch den Schwärzungs-Sentinel automatisch anwendet. Ein Blatt, das
+  `__OPENCLAW_REDACTED__` enthält (wortgetreu oder als Teilzeichenfolge), wird zum
+  Schreibzeitpunkt abgelehnt.
+- Das JSONC-Parsing und Blattänderungen verwenden die Plugin-lokale Abhängigkeit `jsonc-parser`,
+  sodass Kommentare und Formatierung bei gewöhnlichen Schreibvorgängen auf Blattebene erhalten bleiben,
+  anstatt einen manuell erstellten Parser-/Neurendering-Pfad zu durchlaufen.
+- `path` berücksichtigt weder die Verfolgung noch die Wiederherstellung der letzten
+  als funktionsfähig bekannten Konfiguration (LKG); dieser Lebenszyklus wird an anderer Stelle verwaltet.
+  Wenn eine über `path` bearbeitete Datei ebenfalls per LKG verfolgt wird,
+  entscheidet der nächste Konfigurationslesevorgang, ob sie übernommen oder
+  wiederhergestellt wird; behandeln Sie eine Änderung mit `path` wie jeden anderen direkten
   Schreibvorgang in diese Datei.
 
 ## Verwandte Themen

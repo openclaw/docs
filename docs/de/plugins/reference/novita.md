@@ -4,7 +4,7 @@ read_when:
 summary: Fügt Unterstützung für die Modell-Provider Novita, Novita AI und Novitaai zu OpenClaw hinzu.
 title: Novita-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:57Z"
+    generated_at: "2026-07-24T04:33:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Novita-Plugin
 
-Fügt OpenClaw Unterstützung für die Modell-Provider Novita, Novita AI und Novitaai hinzu.
+Fügt Unterstützung für die Modell-Provider Novita, Novita AI und Novitaai zu OpenClaw hinzu.
 
 ## Distribution
 
@@ -29,4 +29,4 @@ Provider: `novita`, `novita-ai`, `novitaai`
 
 ## Zugehörige Dokumentation
 
-- [Novita](/de/providers/novita)
+- [novita](/de/providers/novita)

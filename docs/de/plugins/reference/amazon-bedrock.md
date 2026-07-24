@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw-Provider-Plugin für Amazon Bedrock mit Modellerkennung, Embeddings und Guardrail-Unterstützung.
 title: Amazon-Bedrock-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:08:03Z"
+    generated_at: "2026-07-24T05:14:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Amazon-Bedrock-Plugin
 
-OpenClaw-Provider-Plugin für Amazon Bedrock mit Modellerkennung, Embeddings und Guardrail-Unterstützung.
+OpenClaw Amazon-Bedrock-Provider-Plugin mit Modellerkennung, Embeddings und Guardrail-Unterstützung.
 
 ## Distribution
 
@@ -29,4 +29,4 @@ Provider: `amazon-bedrock`; Verträge: `memoryEmbeddingProviders`
 
 ## Zugehörige Dokumentation
 
-- [Amazon Bedrock](/de/providers/bedrock)
+- [amazon-bedrock](/de/providers/bedrock)

@@ -1,175 +1,179 @@
 ---
 read_when:
-    - OpenClaw-Laufzeitdaten, Cache, Transkripte, Aufgabenstatus oder Arbeitsdateien nach SQLite verschieben
-    - Doctor-Migrationen aus veralteten JSON- oder JSONL-Dateien entwerfen
-    - Backup-, Wiederherstellungs-, VFS- oder Worker-Speicherverhalten ändern
+    - OpenClaw-Laufzeitdaten, Cache, Transkripte, Aufgabenstatus oder temporäre Dateien nach SQLite verschieben
+    - Entwicklung von Doctor-Migrationen aus veralteten JSON- oder JSONL-Dateien
+    - Ändern des Verhaltens von Sicherung, Wiederherstellung, VFS oder Worker-Speicher
     - Entfernen von Sitzungssperren, Bereinigung, Kürzung oder JSON-Kompatibilitätspfaden
-summary: Migrationsplan, um SQLite zur primären dauerhaften Zustands- und Cache-Schicht zu machen und die Konfiguration weiterhin dateibasiert zu halten
-title: Database-first-Zustandsrefaktorierung
+summary: Migrationsplan, um SQLite zur primären dauerhaften Zustands- und Cache-Schicht zu machen, während die Konfiguration dateibasiert bleibt
+title: Datenbankzentrierte Zustandsrefaktorierung
 x-i18n:
-    generated_at: "2026-07-01T20:19:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-24T04:04:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 566e6aacfaa6aff0db2d1d143ef313d0ce97b82428152bc8940856e317a149ff
+    source_hash: 47557804ab49074e9368d304bb8facf75e63a390c65891b8a41b4f2c79583b66
     source_path: refactor/database-first.md
     workflow: 16
 ---
 
-# Database-First-State-Refactor
+# Datenbankzentriertes Zustands-Refactoring
 
 ## Entscheidung
 
-Verwenden Sie ein zweistufiges SQLite-Layout:
+Verwenden Sie eine zweistufige SQLite-Struktur:
 
 - Globale Datenbank: `~/.openclaw/state/openclaw.sqlite`
-- Agent-Datenbank: eine SQLite-Datenbank pro Agent für agent-eigene Workspaces,
-  Transkripte, VFS, Artefakte und große agent-spezifische Runtime-Zustände
-- Die Konfiguration bleibt dateibasiert: `openclaw.json` bleibt außerhalb der
-  Datenbank. Runtime-Auth-Profile wechseln zu SQLite; externe Provider- oder
-  CLI-Anmeldedateien bleiben eigentümerverwaltet außerhalb der OpenClaw-Datenbank.
+- Agent-Datenbank: eine SQLite-Datenbank pro Agent für agenteneigene Arbeitsbereiche,
+  Transkripte, VFS, Artefakte und umfangreiche agentenspezifische Laufzeitzustände
+- Die Konfiguration bleibt dateibasiert: `openclaw.json` verbleibt außerhalb der
+  Datenbank. Laufzeit-Authentifizierungsprofile werden nach SQLite verschoben; externe Provider- oder CLI-
+  Anmeldedatendateien verbleiben eigentümerverwaltet außerhalb der OpenClaw-Datenbank.
 
-Die globale Datenbank ist die Control-Plane-Datenbank. Sie verwaltet Agent-Erkennung,
-gemeinsamen Gateway-Zustand, Pairing, Geräte-/Node-Zustand, Aufgaben- und Flow-Ledger,
-Plugin-Zustand, Scheduler-Runtime-Zustand, Backup-Metadaten und Migrationszustand.
+Die globale Datenbank ist die Control-Plane-Datenbank. Sie verwaltet die Agent-Erkennung,
+den gemeinsam genutzten Gateway-Zustand, Kopplungen, Geräte-/Node-Zustände, Aufgaben- und Ablaufprotokolle, Plugin-
+Zustände, Scheduler-Laufzeitzustände, Sicherungsmetadaten und den Migrationszustand.
 
 Die Agent-Datenbank ist die Data-Plane-Datenbank. Sie verwaltet die Sitzungsmetadaten
-des Agents, den Transkript-Eventstream, den VFS-Workspace oder Scratch-Namespace,
-Tool-Artefakte, Run-Artefakte und durchsuchbare/indizierbare agent-lokale Cache-Daten.
+des Agenten, den Transkriptereignisstrom, den VFS-Arbeitsbereich oder Scratch-Namespace, Tool-
+Artefakte, Ausführungsartefakte und durchsuchbare bzw. indexierbare agentenlokale Cache-Daten.
 
-Damit entsteht eine dauerhafte globale Sicht, ohne große Agent-Workspaces,
-Transkripte und binäre Scratch-Daten in die gemeinsame Gateway-Schreibspur zu zwingen.
+Dies ermöglicht eine dauerhafte globale Sicht, ohne umfangreiche Agent-Arbeitsbereiche,
+Transkripte und binäre Scratch-Daten in die gemeinsam genutzte Schreibspur des Gateways zu zwingen.
 
-## Harter Vertrag
+## Verbindlicher Vertrag
 
-Diese Migration hat eine kanonische Runtime-Form:
+Diese Migration hat genau eine kanonische Laufzeitstruktur:
 
-- Sitzungszeilen speichern nur Sitzungsmetadaten. Sie dürfen nicht
-  `transcriptLocator`, Transkript-Dateipfade, benachbarte JSONL-Pfade, Lock-Pfade,
-  Pruning-Metadaten oder Kompatibilitätszeiger aus der Datei-Ära speichern.
-- Transkriptidentität ist immer SQLite-Identität: `{agentId, sessionId}` plus
-  optionale Themenmetadaten, wo das Protokoll sie benötigt.
-- `sqlite-transcript://...` ist keine Runtime- oder Protokollidentität. Neuer Code darf
-  Transkript-Locators nicht ableiten, speichern, übergeben, parsen oder migrieren.
-  Runtime und Tests sollten überhaupt keine Pseudo-Locators enthalten; Dokumentation
-  darf die Zeichenfolge nur erwähnen, um sie zu verbieten.
-- Legacy-`sessions.json`, Transkript-JSONL, `.jsonl.lock`, Pruning, Trunkierung
-  und alte Sitzungspfadlogik gehören nur in den doctor-Migrations-/Importpfad.
-- Legacy-Sitzungskonfigurations-Aliasse gehören nur in die doctor-Migration. Die
-  Runtime interpretiert weder `session.idleMinutes`, `session.resetByType.dm` noch
-  agent-übergreifende `agent:main:*`-Hauptsitzungs-Aliasse für einen anderen
-  konfigurierten Agent.
-- Sitzungsrouting-Identität ist typisierter relationaler Zustand. Heiße Runtime- und
-  UI-Pfade sollten `sessions.session_scope`, `sessions.account_id`,
+- Sitzungszeilen speichern ausschließlich Sitzungsmetadaten. Sie dürfen weder
+  `transcriptLocator` noch Transkriptdateipfade, zugehörige JSONL-Pfade, Sperrpfade,
+  Bereinigungsmetadaten oder Kompatibilitätsverweise aus der Dateiära speichern.
+- Die Transkriptidentität ist immer eine SQLite-Identität: `{agentId, sessionId}` sowie
+  optionale Themenmetadaten, sofern das Protokoll diese benötigt.
+- `sqlite-transcript://...` ist keine Laufzeit- oder Protokollidentität. Neuer Code darf
+  Transkript-Locators weder ableiten noch speichern, übergeben, parsen oder migrieren. Laufzeit und
+  Tests dürfen überhaupt keine Pseudo-Locators enthalten; Dokumentation darf die Zeichenfolge
+  nur erwähnen, um sie zu verbieten.
+- Veraltete `sessions.json`, Transkript-JSONL, `.jsonl.lock`, Bereinigung, Kürzung
+  und alte Sitzungspfadlogik gehören ausschließlich in den Doctor-Migrations-/Importpfad.
+- Veraltete Aliasse der Sitzungskonfiguration gehören ausschließlich in die Doctor-Migration. Die Laufzeit
+  interpretiert weder `session.idleMinutes` noch `session.resetByType.dm` oder
+  agentenübergreifende `agent:main:*`-Hauptsitzungsaliasse für einen anderen konfigurierten Agenten.
+- Die Sitzungsroutingidentität ist typisierter relationaler Zustand. Häufig ausgeführte Laufzeit- und UI-Pfade
+  sollten `sessions.session_scope`, `sessions.account_id`,
   `sessions.primary_conversation_id`, `conversations` und
-  `session_conversations` lesen; sie dürfen nicht `session_key` parsen oder
-  `session_entries.entry_json` nach Provider-Identität durchsuchen, außer als
-  Kompatibilitätsschatten, während alte Aufrufstellen gelöscht werden.
-- Direct-Message-Markierungen auf Kanalebene wie `dm` gegenüber `direct` sind
-  Routing-Vokabular, keine Transkript-Locators oder Kompatibilitäts-Handles für
-  Dateispeicher.
-- Legacy-Hook-Handler-Konfiguration gehört nur in doctor-Warn-/Migrationsflächen.
-  Die Runtime darf `hooks.internal.handlers` nicht laden; Hooks laufen nur über
-  erkannte Hook-Verzeichnisse und `HOOK.md`-Metadaten.
-- Runtime-Start, heiße Antwortpfade, Compaction, Reset, Wiederherstellung,
-  Diagnosen, TTS, Memory-Hooks, Subagents, Plugin-Befehlsrouting,
-  Protokollgrenzen und Hooks müssen `{agentId, sessionId}` durch die Runtime
-  übergeben.
-- Tests sollten SQLite-Transkriptzeilen über `{agentId, sessionId}` vorbereiten und
-  prüfen. Tests, die nur JSONL-Pfadweiterleitung, Erhalt von vom Aufrufer gelieferten
-  Locators oder Transkriptdatei-Kompatibilität belegen, sollten gelöscht werden, sofern
-  sie nicht doctor-Import, Nicht-Sitzungs-Support-/Debug-Materialisierung oder
-  Protokollform abdecken.
-- `runEmbeddedPiAgent(...)`, vorbereitete Worker-Runs und der innere eingebettete
-  Versuch dürfen keine Transkript-Locators akzeptieren. Sie öffnen den
-  SQLite-Transkriptmanager über `{agentId, sessionId}` und übergeben diesen Manager
-  an die internalisierte PI-kompatible Agent-Sitzung, damit veraltete Aufrufer den
-  Runner nicht dazu bringen können, JSON/JSONL-Transkripte zu schreiben.
-- Runner-Diagnosen müssen Runtime-/Cache-/Payload-Trace-Datensätze in SQLite
-  speichern. Runtime-Diagnosen dürfen keine Override-Regler für JSONL-Dateien oder
-  generischen Exporthelfer für Transkript-JSONL offenlegen; benutzerseitige Exporte
-  können explizite Artefakte aus Datenbankzeilen materialisieren, ohne Dateinamen
-  zurück in die Runtime zu speisen.
-- Raw-Stream-Logging verwendet `OPENCLAW_RAW_STREAM=1` plus SQLite-Diagnosezeilen.
-  Der alte pi-mono-Dateilogger-Vertrag `PI_RAW_STREAM`, `PI_RAW_STREAM_PATH` und
-  `raw-openai-completions.jsonl` ist nicht Teil der OpenClaw-Runtime oder -Tests.
-- QMD-Memory-Indizierung darf SQLite-Transkripte nicht in Markdown-Dateien exportieren.
-  QMD indiziert nur konfigurierte Memory-Dateien; Sitzungstranskriptsuche bleibt
-  SQLite-gestützt.
-- Der QMD-SDK-Unterpfad ist für neuen Code ausschließlich QMD. SQLite-Helfer zur
-  Indizierung von Sitzungstranskripten leben auf
-  `memory-core-host-engine-session-transcripts`; jeder QMD-Re-Export ist nur
-  Kompatibilität und darf nicht von Runtime-Code verwendet werden.
-- Eingebaute Memory-Indizes leben in der besitzenden Agent-Datenbank.
-  Runtime-Konfiguration und aufgelöste Runtime-Verträge dürfen
-  `memorySearch.store.path` nicht offenlegen; doctor löscht diesen Legacy-Konfigurationsschlüssel,
-  und aktueller Code übergibt den Agent-`databasePath` intern.
+  `session_conversations` lesen; sie dürfen `session_key` nicht parsen und
+  `session_entries.entry_json` nicht nach der Provider-Identität durchsuchen, außer vorübergehend
+  als Kompatibilitätsschatten, während alte Aufrufstellen entfernt werden.
+- Direktnachrichtenmarkierungen auf Kanalebene wie `dm` gegenüber `direct` sind Routing-
+  Vokabular, keine Transkript-Locators oder Kompatibilitäts-Handles für Dateispeicher.
+- Veraltete Hook-Handler-Konfiguration gehört ausschließlich in Doctor-Warnungs-/Migrationsoberflächen.
+  Die Laufzeit darf `hooks.internal.handlers` nicht laden; Hooks werden ausschließlich über erkannte
+  Hook-Verzeichnisse und `HOOK.md`-Metadaten ausgeführt.
+- Laufzeitstart, häufig ausgeführte Antwortpfade, Compaction, Zurücksetzung, Wiederherstellung, Diagnose,
+  TTS, Speicher-Hooks, Subagenten, Plugin-Befehlsrouting, Protokollgrenzen und
+  Hooks müssen `{agentId, sessionId}` durch die Laufzeit übergeben.
+- Tests sollten SQLite-Transkriptzeilen über
+  `{agentId, sessionId}` anlegen und prüfen. Tests, die lediglich die Weiterleitung von JSONL-Pfaden,
+  den Erhalt aufruferbereitgestellter Locators oder die Transkriptdateikompatibilität belegen, sollten
+  gelöscht werden, sofern sie nicht den Doctor-Import, die Materialisierung von Support-/Debug-
+  Daten außerhalb von Sitzungen oder die Protokollstruktur abdecken.
+- `runEmbeddedPiAgent(...)`, vorbereitete Worker-Ausführungen und der innere eingebettete
+  Versuch dürfen keine Transkript-Locators akzeptieren. Sie öffnen den SQLite-Transkript-
+  Manager anhand von `{agentId, sessionId}` und übergeben diesen Manager an die internalisierte
+  PI-kompatible Agent-Sitzung, sodass veraltete Aufrufer den Runner nicht zum Schreiben
+  von JSON-/JSONL-Transkripten veranlassen können.
+- Runner-Diagnosen müssen Laufzeit-/Cache-/Payload-Ablaufverfolgungsdatensätze in SQLite speichern.
+  Laufzeitdiagnosen dürfen keine Überschreibungsoptionen für JSONL-Dateien oder generische
+  Transkript-JSONL-Exporthilfen bereitstellen; benutzerseitige Exporte können explizite
+  Artefakte aus Datenbankzeilen materialisieren, ohne Dateinamen wieder in die Laufzeit einzuspeisen.
+- Die Rohdatenstromprotokollierung verwendet `OPENCLAW_RAW_STREAM=1` sowie SQLite-Diagnosezeilen.
+  Der alte pi-mono-Dateiprotokollierungsvertrag `PI_RAW_STREAM`, `PI_RAW_STREAM_PATH` und
+  `raw-openai-completions.jsonl` ist nicht Teil der OpenClaw-
+  Laufzeit oder ihrer Tests.
+- Die QMD-Speicherindexierung darf SQLite-Transkripte nicht in Markdown-Dateien exportieren.
+  QMD indexiert ausschließlich konfigurierte Speicherdateien; die Suche in Sitzungstranskripten bleibt
+  SQLite-basiert.
+- Der QMD-SDK-Unterpfad ist für neuen Code ausschließlich für QMD bestimmt. Hilfen zur Indexierung
+  von SQLite-Sitzungstranskripten befinden sich unter `memory-core-host-engine-session-transcripts`; jeder
+  QMD-Reexport dient ausschließlich der Kompatibilität und darf nicht von Laufzeitcode verwendet werden.
+- Integrierte Speicherindizes befinden sich in der Datenbank des jeweiligen Agenten. Laufzeitkonfiguration und
+  aufgelöste Laufzeitverträge dürfen `memorySearch.store.path` nicht bereitstellen; Doctor
+  löscht diesen veralteten Konfigurationsschlüssel, und aktueller Code übergibt dem Agenten
+  `databasePath` intern.
 
-Implementierungsarbeit sollte weiter Code löschen, bis diese Aussagen ohne Ausnahmen
-außerhalb von doctor-/Import-/Export-/Debug-Grenzen wahr sind.
+Bei der Implementierung sollte weiterhin Code gelöscht werden, bis diese Aussagen
+ohne Ausnahmen außerhalb der Doctor-/Import-/Export-/Debug-Grenzen zutreffen.
 
 ## Zielzustand und Fortschritt
 
-### Hartes Ziel
+### Verbindliches Ziel
 
-- Eine globale SQLite-Datenbank verwaltet Control-Plane-Zustand:
+- Eine globale SQLite-Datenbank verwaltet den Control-Plane-Zustand:
   `state/openclaw.sqlite`.
-- Eine SQLite-Datenbank pro Agent verwaltet Data-Plane-Zustand:
+- Eine SQLite-Datenbank pro Agent verwaltet den Data-Plane-Zustand:
   `agents/<agentId>/agent/openclaw-agent.sqlite`.
-- Die Konfiguration bleibt dateibasiert. `openclaw.json` ist nicht Teil dieses
-  Datenbank-Refactors.
-- Legacy-Dateien sind nur Eingaben für doctor-Migrationen.
-- Die Runtime schreibt oder liest Sitzungs- oder Transkript-JSONL nie als aktiven Zustand.
+- Die Konfiguration bleibt dateibasiert. `openclaw.json` ist nicht Teil dieses Datenbank-
+  Refactorings.
+- Veraltete Dateien dienen ausschließlich als Eingaben für die Doctor-Migration.
+- Die Laufzeit schreibt oder liest Sitzungs- oder Transkript-JSONL niemals als aktiven Zustand.
 
 ### Zielzustände
 
-- `not-started`: Runtime-Code aus der Datei-Ära schreibt noch aktiven Zustand.
-- `migrating`: doctor-/Importcode kann Dateidaten nach SQLite verschieben.
-- `dual-read`: temporäre Brücke liest sowohl SQLite als auch Legacy-Dateien. Dieser
-  Zustand ist für diesen Refactor verboten, sofern er nicht ausdrücklich als
-  ausschließlich doctor-bezogen dokumentiert ist.
-- `sqlite-runtime`: Runtime liest und schreibt nur SQLite.
-- `clean`: Legacy-Runtime-APIs und Tests sind entfernt, und die Guard verhindert
+- `not-started`: Laufzeitcode aus der Dateiära schreibt weiterhin aktiven Zustand.
+- `migrating`: Doctor-/Importcode kann Dateidaten nach SQLite verschieben.
+- `dual-read`: Eine temporäre Brücke liest sowohl SQLite als auch veraltete Dateien. Dieser Zustand
+  ist für dieses Refactoring verboten, sofern er nicht ausdrücklich als ausschließlich für Doctor
+  bestimmt dokumentiert ist.
+- `sqlite-runtime`: Die Laufzeit liest und schreibt ausschließlich SQLite.
+- `clean`: Veraltete Laufzeit-APIs und Tests sind entfernt, und die Schutzprüfung verhindert
   Regressionen.
-- `done`: Dokumentation, Tests, Backup, doctor-Migration und geänderte Prüfungen
-  belegen den sauberen Zustand.
+- `done`: Dokumentation, Tests, Sicherung, Doctor-Migration und Prüfungen der Änderungen belegen den
+  bereinigten Zustand.
 
 ### Aktueller Zustand
 
-- Sitzungen: `clean` für Runtime. Sitzungszeilen leben in der pro-Agent-Datenbank,
-  Runtime-APIs verwenden `{agentId, sessionId}` oder `{agentId, sessionKey}`, und
-  `sessions.json` ist nur doctor-Legacy-Eingabe.
-- Transkripte: `clean` für Runtime. Transkript-Events, Identitäten, Snapshots und
-  Trajectory-Runtime-Events leben in der pro-Agent-Datenbank. Die Runtime akzeptiert
-  keine Transkript-Locators oder JSONL-Transkriptpfade mehr.
-- Eingebetteter PI-Runner: `clean`. Eingebettete PI-Runs, vorbereitete Worker,
-  Compaction und Retry-Schleifen verwenden SQLite-Sitzungsscope und lehnen veraltete
-  Transkript-Handles ab.
-- Cron: `clean` für Runtime. Die Runtime verwendet `cron_jobs` und `cron_run_logs`;
-  Runtime-Tests verwenden SQLite-`storeKey`-Benennung, und Cron-Pfade aus der
-  Datei-Ära bleiben nur in doctor-Legacy-Migrationstests.
-- Aufgabenregistrierung: `clean`. Aufgaben- und Task-Flow-Runtime-Zeilen leben in
-  `state/openclaw.sqlite`; nicht ausgelieferte Sidecar-SQLite-Importer sind gelöscht.
-- Plugin-Zustand: `clean`. Plugin-Zustands-/Blob-Zeilen leben in der gemeinsamen
-  globalen Datenbank; alte Plugin-Zustands-Sidecar-SQLite-Helfer sind geschützt.
-- Memory: `sqlite-runtime` für eingebautes Memory und Sitzungstranskript-Indizierung.
-  Memory-Indextabellen leben in der pro-Agent-Datenbank, Plugin-Memory-Zustand
-  verwendet gemeinsame Plugin-Zustandszeilen, und Legacy-Memory-Dateien sind
-  doctor-Migrationseingaben oder Benutzer-Workspace-Inhalt.
-- Backup: `sqlite-runtime`. Backup-Stufen komprimieren SQLite-Snapshots, lassen live
-  WAL-/SHM-Sidecars aus, prüfen SQLite-Integrität und erfassen Backup-Runs in der
-  globalen Datenbank.
-- doctor-Migration: `migrating`, absichtlich. doctor importiert Legacy-JSON, JSONL
-  und zurückgezogene Sidecar-Stores in SQLite, erfasst Migrationsläufe/-quellen und
-  entfernt erfolgreiche Quellen.
-- E2E-Skripte: `clean` für Runtime-Abdeckung. Docker-MCP-Seeding schreibt SQLite-Zeilen.
-  Das Runtime-Kontext-Docker-Skript erstellt Legacy-JSONL nur innerhalb des
-  doctor-Migrations-Seeds und benennt den Legacy-Sitzungsindexpfad ausdrücklich.
+- Sitzungen: `clean` für die Laufzeit. Sitzungszeilen befinden sich in der Datenbank pro Agent,
+  Laufzeit-APIs verwenden `{agentId, sessionId}` oder `{agentId, sessionKey}`, und
+  `sessions.json` ist eine veraltete Eingabe ausschließlich für Doctor.
+- Transkripte: `clean` für die Laufzeit. Transkriptereignisse, Identitäten, Snapshots
+  und Laufzeitereignisse von Trajektorien befinden sich in der Datenbank pro Agent. Die Laufzeit
+  akzeptiert keine Transkript-Locators oder JSONL-Transkriptpfade mehr.
+- Eingebetteter PI-Runner: `clean`. Eingebettete PI-Ausführungen, vorbereitete Worker, Compaction
+  und Wiederholungsschleifen verwenden den SQLite-Sitzungsbereich und weisen veraltete Transkript-Handles zurück.
+- Cron: `clean` für die Laufzeit. Die Laufzeit verwendet `cron_jobs` und Cron-eigene `task_runs`;
+  Laufzeittests verwenden die SQLite-Namensgebung `storeKey`, und Cron-Pfade aus der Dateiära verbleiben
+  ausschließlich in Tests zur veralteten Doctor-Migration.
+- Aufgabenregister: `clean`. Laufzeitzeilen für Aufgaben und Task Flow befinden sich in
+  `state/openclaw.sqlite`; nicht ausgelieferte SQLite-Importer für Sidecars sind gelöscht.
+- Plugin-Zustand: `clean`. Zeilen für Plugin-Zustände/-Blobs befinden sich in der gemeinsam genutzten globalen
+  Datenbank; Schutzprüfungen verhindern die Verwendung alter SQLite-Hilfen für Plugin-Zustands-Sidecars.
+- Speicher: `sqlite-runtime` für den integrierten Speicher und die Indexierung von Sitzungstranskripten.
+  Speicherindextabellen befinden sich in der Datenbank pro Agent, Plugin-Speicherzustände verwenden
+  gemeinsam genutzte Plugin-Zustandszeilen, und veraltete Speicherdateien sind Eingaben für die Doctor-Migration
+  oder Inhalte des Benutzerarbeitsbereichs.
+- Sicherung: `sqlite-runtime`. Die Sicherung stellt kompaktierte SQLite-Snapshots bereit, lässt aktive
+  WAL-/SHM-Sidecars aus, überprüft die SQLite-Integrität und zeichnet Sicherungsläufe in der
+  globalen Datenbank auf.
+- Arbeitsbereichseinrichtung: `sqlite-runtime`. Abschluss der Einrichtung, Arbeitsbereichsattestierungen
+  und generierte Bootstrap-Hashes befinden sich in typisierten gemeinsam genutzten SQLite-Tabellen. Die Laufzeit
+  liest oder schreibt weder die eingestellte Arbeitsbereichs-JSON noch `.attested`-Sidecars;
+  Doctor verwaltet ihren validierten Import und ihre verifizierte Entfernung.
+- Doctor-Migration: `migrating`, absichtlich. Doctor importiert veraltete JSON-,
+  JSONL- und eingestellte Sidecar-Speicher nach SQLite, zeichnet Migrationsläufe/-quellen auf
+  und entfernt erfolgreich importierte Quellen.
+- Ausführungsgenehmigungen: `file-runtime`. TypeScript und macOS lesen und schreiben weiterhin
+  `exec-approvals.json` im Verzeichnis für den aktiven Zustand; das reservierte
+  Schema `exec_approvals_config` hat noch keinen Laufzeiteigentümer. Eine zukünftige Umstellung muss
+  einen Doctor-Import im selben Zustand hinzufügen und beide Laufzeiten gemeinsam migrieren.
+- E2E-Skripte: `clean` für die Laufzeitabdeckung. Docker-MCP-Seeding schreibt SQLite-
+  Zeilen. Das Docker-Laufzeitkontextskript erstellt veraltetes JSONL ausschließlich innerhalb des
+  Doctor-Migrations-Seeds und benennt den Pfad des veralteten Sitzungsindex ausdrücklich.
 
-### Verbleibende Arbeit
+### Verbleibende Arbeiten
 
-- [x] Cron-Runtime-Test-Store-Variablen weg von `storePath` umbenennen, sofern
-      sie keine doctor-Legacy-Eingaben sind.
+- [x] Cron-Speichervariablen in Laufzeittests umbenennen, sodass sie nicht mehr `storePath` verwenden, sofern
+      sie keine veralteten Doctor-Eingaben sind.
       Dateien: `src/cron/service.test-harness.ts`,
       `src/cron/service.runs-one-shot-main-job-disables-it.test.ts`,
       `src/cron/service/timer.regression.test.ts`,
@@ -178,1309 +182,1236 @@ außerhalb von doctor-/Import-/Export-/Debug-Grenzen wahr sind.
       `src/cron/service.main-job-passes-heartbeat-target-last.test.ts`,
       `src/cron/store.test.ts`.
       Nachweis: `pnpm check:database-first-legacy-stores`; `rg -n 'storePath' src/cron --glob '!**/commands/doctor/**'`.
-- [x] Veraltete Export-Test-Mocks aus der Datei-Ära entfernen oder umbenennen.
+- [x] Veraltete Export-Test-Mocks aus der Dateiära entfernen oder umbenennen.
       Datei: `src/auto-reply/reply/commands-export-test-mocks.ts`.
       Nachweis: `rg -n 'resolveSessionFilePath|sessionFile|storePath|transcriptLocator' src/auto-reply/reply`.
-- [x] Den Legacy-JSONL-Seed des Docker-Runtime-Kontexts eindeutig doctor-only machen.
+- [x] Den veralteten JSONL-Seed des Docker-Laufzeitkontexts eindeutig als ausschließlich für Doctor bestimmt kennzeichnen.
       Datei: `scripts/e2e/session-runtime-context-docker-client.ts`.
-      Nachweis: `rg -n 'sessions\\.json|sessionFile|\\.jsonl' scripts/e2e/session-runtime-context-docker-client.ts` zeigt nur
+      Nachweis: `rg -n 'sessions\\.json|sessionFile|\\.jsonl' scripts/e2e/session-runtime-context-docker-client.ts` zeigt ausschließlich
       `seedBrokenLegacySessionForDoctorMigration`.
-- [x] Kysely-generierte Typen nach jeder Schemaänderung synchron halten.
+- [x] Nach jeder Schemaänderung die generierten Kysely-Typen synchron halten.
       Dateien: `src/state/openclaw-state-schema.sql`,
       `src/state/openclaw-agent-schema.sql`,
       `src/state/*generated*`.
       Nachweis: keine Schemaänderung in diesem Durchlauf; `pnpm db:kysely:check`;
       `pnpm lint:kysely`.
-- [x] Fokussierte Tests für berührte Stores, Befehle und Skripte erneut ausführen.
-      Nachweis: `pnpm test src/cron/service/store.test.ts src/cron/store.test.ts src/cron/service.heartbeat-ok-summary-suppressed.test.ts src/cron/service.main-job-passes-heartbeat-target-last.test.ts src/cron/service.every-jobs-fire.test.ts src/cron/service.persists-delivered-status.test.ts src/cron/service.runs-one-shot-main-job-disables-it.test.ts src/cron/service/ops.test.ts src/cron/service/timer.regression.test.ts src/auto-reply/reply/commands-export-trajectory.test.ts extensions/telegram/src/thread-bindings.test.ts extensions/slack/src/monitor/message-handler/prepare.test.ts src/acp/translator.session-lineage-meta.test.ts`; `git diff --check`.
-- [x] Vor der Erklärung von `done` das Changed-Gate oder breiten Remote-Nachweis ausführen.
-      Nachweis: `pnpm check:changed --timed -- <changed extension paths>` bestand auf
-      Hetzner-Crabbox-Run `run_3f1cabf6b25c` nach temporärem Node-24-/pnpm-Setup und
-      explizitem Pfad-Routing für den synchronisierten Workspace ohne `.git`.
+- [x] Fokussierte Tests für geänderte Speicher, Befehle und Skripte erneut ausführen.
+      Nachweis: `pnpm test src/cron/service/store.test.ts src/cron/store.test.ts src/cron/service.heartbeat-ok-summary-suppressed.test.ts src/cron/service.main-job-passes-heartbeat-target-last.test.ts src/cron/service.every-jobs-fire.test.ts src/cron/service.persists-delivered-status.test.ts src/cron/service.runs-one-shot-main-job-disables-it.test.ts src/cron/service/ops.test.ts src/cron/service/timer.regression.test.ts src/auto-reply/reply/commands-export-session.test.ts extensions/telegram/src/thread-bindings.test.ts extensions/slack/src/monitor/message-handler/prepare.test.ts src/acp/translator.session-lineage-meta.test.ts`; `git diff --check`.
+- [x] Vor der Feststellung von `done` die Änderungsprüfung oder einen umfassenden Remote-Nachweis ausführen.
+      Nachweis: `pnpm check:changed --timed -- <changed extension paths>` wurde beim
+      Hetzner-Crabbox-Lauf `run_3f1cabf6b25c` nach einer temporären Node-24-/pnpm-Einrichtung und
+      explizitem Pfadrouting für den synchronisierten Arbeitsbereich ohne `.git` erfolgreich abgeschlossen.
 
-### Nicht regressieren
+### Keine Regressionen zulassen
 
 - Keine Transkript-Locators.
 - Keine aktiven Sitzungsdateien.
-- Keine unechten JSONL-Test-Fixtures außer doctor-Legacy-Migrationstests.
-- Kein direkter SQLite-Zugriff, wo Kysely erwartet wird.
-- Keine neuen Legacy-DB-Migrationen. Dieses Layout wurde nicht ausgeliefert; die
-  Schemaversion bleibt bei `1`, sofern es keinen starken Grund gibt.
+- Keine fingierten JSONL-Test-Fixtures außer in Tests zur veralteten Doctor-Migration.
+- Kein direkter SQLite-Zugriff, wenn Kysely erwartet wird.
+- Keine neuen Datenbankmigrationen aus der Dateiära. Das globale Schema verbleibt bei Version `1`.
+  Das ausgelieferte Schema der Version `1` pro Agent verfügt über genau eine begrenzte Laufzeitmigration auf
+  Version `2` für stabile Speicherquellenidentitäten.
 
-## Code-Read-Annahmen
+## Annahmen auf Grundlage der Codeanalyse
 
-Keine Folgeentscheidungen zum Produkt blockieren diesen Plan. Die Implementierung sollte
-mit diesen Annahmen fortfahren:
+Keine nachgelagerten Produktentscheidungen blockieren diesen Plan. Die Implementierung sollte
+unter folgenden Annahmen fortgesetzt werden:
 
-- Verwenden Sie `node:sqlite` direkt und setzen Sie die Node-22+-Runtime für diesen
-  Speicherpfad voraus.
-- Behalten Sie genau eine normale Konfigurationsdatei bei. Verschieben Sie
-  Konfiguration, Plugin-Manifeste oder Git-Workspaces in diesem Refactor nicht
-  nach SQLite.
-- Runtime-Kompatibilitätsdateien sind nicht erforderlich. Alte JSON- und
-  JSONL-Dateien sind nur Migrationseingaben. Die branch-lokalen SQLite-Sidecars
-  wurden nie ausgeliefert und werden gelöscht statt importiert.
-- `openclaw doctor --fix` besitzt den alten Migrationsschritt von Dateien zur
-  Datenbank. Runtime-Start und `openclaw migrate` sollten keine alten
-  OpenClaw-Datenbank-Upgrade-Pfade tragen.
-- Die Kompatibilität für Anmeldedaten folgt derselben Regel:
-  Runtime-Anmeldedaten liegen in SQLite. Alte Dateien `auth-profiles.json`,
-  agent-spezifische `auth.json` und gemeinsame
-  `credentials/oauth.json`-Dateien sind Migrationseingaben für doctor und werden
+- Verwenden Sie `node:sqlite` direkt und setzen Sie für diesen Speicherpfad eine Node-Laufzeit voraus, die ein sicheres Zurücksetzen des WAL unterstützt
+  (22.22.3+, 24.15+ oder 25.9+).
+- Behalten Sie genau eine normale Konfigurationsdatei bei. Verschieben Sie bei diesem Refactoring weder die Konfiguration noch Plugin-
+  Manifeste oder Git-Arbeitsbereiche nach SQLite.
+- Kompatibilitätsdateien für die Laufzeit sind nicht erforderlich. Ältere JSON- und JSONL-Dateien dienen
+  ausschließlich als Migrationseingaben. Die branch-lokalen SQLite-Begleitdateien wurden nie ausgeliefert und werden
+  gelöscht, statt importiert zu werden.
+- `openclaw doctor --fix` ist für die Migration älterer Dateien in die Datenbank zuständig. Der Start der Laufzeit
+  ist ausschließlich für begrenzte Upgrades zwischen ausgelieferten SQLite-Schemaversionen zuständig;
+  dabei darf kein Zustand aus der Dateiära importiert werden.
+- Für die Kompatibilität von Anmeldedaten gilt dieselbe Regel: Laufzeitanmeldedaten befinden sich in
+  SQLite. Alte `auth-profiles.json`-, agentenspezifische `auth.json`- und gemeinsam genutzte
+  `credentials/oauth.json`-Dateien dienen dem Doctor als Migrationseingaben und werden
   nach dem Import entfernt.
-- Der generierte Modellkatalogzustand ist datenbankgestützt. Runtime-Code darf
-  `agents/<agentId>/agent/models.json` nicht schreiben; vorhandene
-  `models.json`-Dateien sind alte doctor-Eingaben und werden nach dem Import in
-  `agent_model_catalogs` entfernt.
-- Die Runtime darf Transcript-Locators nicht migrieren, normalisieren oder
-  überbrücken. Die aktive Transcript-Identität ist `{agentId, sessionId}` in
-  SQLite. Dateipfade sind nur alte doctor-Eingaben, und
-  `sqlite-transcript://...` muss aus Runtime-, Protokoll-, Hook- und
-  Plugin-Oberflächen verschwinden, statt als Boundary-Handle behandelt zu werden.
-- Runtime-SQLite-Transcript-Lesevorgänge führen keine alten Migrationen für die
-  JSONL-Eintragsform aus und schreiben keine ganzen Transcripts aus
-  Kompatibilitätsgründen neu. Die Normalisierung alter Einträge bleibt in
-  expliziten doctor-/Import-Hilfsprogrammen. Doctor normalisiert alte
-  JSONL-Transcript-Dateien, bevor SQLite-Zeilen eingefügt werden; aktuelle
-  Runtime-Zeilen werden bereits im aktuellen Transcript-Schema geschrieben.
-  Trajectory-/Session-Export liest diese Zeilen unverändert und darf keine
-  Alt-Migrationen zum Exportzeitpunkt ausführen.
-- Alte JSONL-Parse-/Migrationshelfer für Transcripts sind nur für doctor
-  vorgesehen. Runtime-Transcript-Formatcode erstellt nur aktuellen
-  SQLite-Transcript-Kontext; doctor besitzt alte JSONL-Eintrags-Upgrades, bevor
-  Zeilen eingefügt werden.
-- Der alte Runtime-eigene JSONL-Streaming-Helfer für Transcripts wurde gelöscht.
-  Doctor-Importcode besitzt explizite alte Dateilesevorgänge; die
-  Runtime-Session-Historie liest SQLite-Zeilen.
-- Codex-App-Server-Bindings verwenden die OpenClaw-`sessionId` als
-  kanonischen Schlüssel im Codex-Plugin-State-Namespace. `sessionKey` ist
-  Metadaten für Routing/Anzeige und darf weder die dauerhafte Session-ID
-  ersetzen noch die Transcript-Dateiidentität wiederbeleben.
-- Context-Engines erhalten den aktuellen Runtime-Vertrag direkt. Die Registry
-  darf Engines nicht mit Retry-Shims umhüllen, die `sessionKey`,
+- Der generierte Zustand des Modellkatalogs wird in der Datenbank gespeichert. Laufzeitcode darf
+  `agents/<agentId>/agent/models.json` nicht schreiben; vorhandene `models.json`-Dateien sind ältere
+  Doctor-Eingaben und werden nach dem Import in `agent_model_catalogs` entfernt.
+- Die Laufzeit darf Transkript-Locators weder migrieren noch normalisieren oder überbrücken. Die aktive
+  Transkriptidentität ist `{agentId, sessionId}` in SQLite. Dateipfade sind
+  ausschließlich ältere Doctor-Eingaben, und `sqlite-transcript://...` muss aus
+  Laufzeit-, Protokoll-, Hook- und Plugin-Oberflächen entfernt werden, statt als
+  Boundary-Handle behandelt zu werden.
+- SQLite-Transkriptlesevorgänge der Laufzeit führen keine Migrationen alter JSONL-Eintragsstrukturen aus und
+  schreiben nicht aus Kompatibilitätsgründen ganze Transkripte neu. Die Normalisierung älterer Einträge verbleibt in
+  expliziten Doctor-/Import-Dienstprogrammen. Der Doctor normalisiert ältere JSONL-Transkriptdateien,
+  bevor er SQLite-Zeilen einfügt; aktuelle Laufzeitzeilen werden bereits
+  im aktuellen Transkriptschema geschrieben. Der Trajektorien-/Sitzungsexport
+  liest diese Zeilen unverändert und darf beim Export keine älteren Migrationen durchführen.
+- Parser und Migrationshelfer für ältere Transkript-JSONL-Dateien sind ausschließlich für den Doctor bestimmt. Der Laufzeitcode
+  für das Transkriptformat erstellt nur den aktuellen SQLite-Transkriptkontext; der Doctor
+  ist für Upgrades alter JSONL-Einträge vor dem Einfügen der Zeilen zuständig.
+- Der alte, von der Laufzeit verwaltete Streaming-Helfer für JSONL-Transkripte wurde gelöscht. Der Doctor-
+  Importcode ist für explizite Lesevorgänge älterer Dateien zuständig; der Laufzeit-Sitzungsverlauf liest
+  SQLite-Zeilen.
+- Codex-App-Server-Bindings verwenden den OpenClaw-`sessionId` als kanonischen
+  Schlüssel im Codex-Namensraum für den Plugin-Zustand. `sessionKey` enthält Metadaten für
+  Routing und Anzeige und darf weder die dauerhafte Sitzungs-ID ersetzen noch
+  die Identität der Transkriptdatei wiederherstellen.
+- Kontext-Engines erhalten den aktuellen Laufzeitvertrag direkt. Die Registry
+  darf Engines nicht mit Wiederholungs-Shims umhüllen, die `sessionKey`,
   `transcriptScope` oder `prompt` löschen; Engines, die die aktuellen
-  datenbankorientierten Parameter nicht akzeptieren können, sollten deutlich
-  fehlschlagen, statt überbrückt zu werden.
-- Die Backup-Ausgabe sollte weiterhin eine Archivdatei bleiben.
-  Datenbankinhalte sollten als kompakte SQLite-Snapshots in dieses Archiv
-  gelangen, nicht als rohe Live-WAL-Sidecars.
-- Transcript-Suche ist nützlich, aber für den ersten datenbankorientierten
-  Schnitt nicht erforderlich. Entwerfen Sie das Schema so, dass FTS später
-  hinzugefügt werden kann.
-- Worker-Ausführung sollte experimentell hinter Einstellungen bleiben, während
-  sich die Datenbankgrenze stabilisiert.
+  datenbankorientierten Parameter nicht akzeptieren können, sollten deutlich fehlschlagen, statt überbrückt zu werden.
+- Die Sicherungsausgabe sollte weiterhin aus einer einzigen Archivdatei bestehen. Datenbankinhalte sollten
+  als kompakte SQLite-Snapshots in dieses Archiv aufgenommen werden, nicht als rohe Live-WAL-Begleitdateien.
+- Die Transkriptsuche ist nützlich, aber für die erste datenbankorientierte
+  Umstellung nicht erforderlich. Gestalten Sie das Schema so, dass FTS später hinzugefügt werden kann.
+- Die Worker-Ausführung sollte über Einstellungen experimentell bleiben, während sich die Datenbank-
+  grenze stabilisiert.
 
-## Ergebnisse der Code-Lektüre
+## Erkenntnisse aus der Codeanalyse
 
-Der aktuelle Branch ist bereits über die Proof-of-Concept-Phase hinaus. Die
-gemeinsame Datenbank existiert, Node-`node:sqlite` ist über einen kleinen
-Runtime-Helfer verdrahtet, und frühere Stores schreiben jetzt in
-`state/openclaw.sqlite` oder in die zuständige `openclaw-agent.sqlite`-Datenbank.
+Der aktuelle Branch hat die Proof-of-Concept-Phase bereits hinter sich. Die gemeinsam genutzte
+Datenbank ist vorhanden, Node-`node:sqlite` ist über einen kleinen Laufzeithelfer eingebunden und
+frühere Speicher schreiben nun in `state/openclaw.sqlite` oder in die zuständige
+`openclaw-agent.sqlite`-Datenbank.
 
-Die verbleibende Arbeit besteht nicht darin, SQLite auszuwählen, sondern darin,
-die neue Grenze sauber zu halten und alle kompatibilitätsförmigen Schnittstellen
-zu löschen, die noch wie die alte Dateiwelt aussehen:
+Bei den verbleibenden Arbeiten geht es nicht um die Entscheidung für SQLite, sondern darum, die neue Grenze sauber zu halten
+und alle kompatibilitätsorientierten Schnittstellen zu löschen, die noch der alten
+Dateiwelt ähneln:
 
-- Session-`storePath` ist keine Runtime-Identität, Test-Fixture-Form oder
-  Status-Payload-Feld mehr. Runtime- und Bridge-Tests enthalten den
-  Vertragsnamen `storePath` nicht mehr; doctor-/Migrationscode besitzt dieses
-  alte Vokabular.
-- Session-Schreibvorgänge laufen nicht mehr über die alte In-Process-Queue
-  `store-writer.ts`. SQLite-Patch-Schreibvorgänge verwenden stattdessen
-  Konflikterkennung und begrenzte Wiederholungen.
-- Alte Pfaderkennung hat weiterhin gültige Migrationszwecke, aber Runtime-Code
-  sollte aufhören, `sessions.json` und Transcript-JSONL-Dateien als mögliche
-  Schreibziele zu behandeln.
-- Agent-eigene Tabellen liegen in agent-spezifischen SQLite-Datenbanken. Die
-  globale Datenbank hält Registry-/Control-Plane-Zeilen; die
-  Transcript-Identität ist `{agentId, sessionId}` in den agent-spezifischen
-  Transcript-Zeilen. Runtime-Code darf keine Transcript-Dateipfade persistieren
-  oder Transcript-Locators migrieren.
-- Doctor importiert bereits mehrere alte Dateien. Die Bereinigung besteht darin,
-  daraus eine einzelne explizite Migrationsimplementierung zu machen, die doctor
-  aufruft, mit einem dauerhaften Migrationsbericht.
+- Sitzungs-`storePath` ist weder eine Laufzeitidentität noch eine Test-Fixture-Struktur oder
+  ein Feld der Statusnutzlast. Laufzeit- und Bridge-Tests enthalten den
+  Vertragsnamen `storePath` nicht mehr; Doctor-/Migrationscode ist für dieses ältere Vokabular zuständig.
+- Sitzungsschreibvorgänge durchlaufen nicht mehr die alte prozessinterne `store-writer.ts`-
+  Warteschlange. SQLite-Patch-Schreibvorgänge werden außerhalb der Transaktion vorbereitet und verwenden anschließend eine kurze,
+  synchrone Validierungs-/Anwendungstransaktion mit expliziter Konflikterkennung.
+- Die Ermittlung älterer Pfade hat weiterhin gültige Migrationszwecke, aber Laufzeitcode sollte
+  `sessions.json` und Transkript-JSONL-Dateien nicht länger als mögliche Schreibziele
+  behandeln.
+- Agenteneigene Tabellen befinden sich in agentenspezifischen SQLite-Datenbanken. Die globale Datenbank enthält
+  Registry-/Control-Plane-Zeilen; die Transkriptidentität ist `{agentId, sessionId}` in
+  den agentenspezifischen Transkriptzeilen. Laufzeitcode darf weder Transkriptdateipfade
+  speichern noch Transkript-Locators migrieren.
+- Der Doctor importiert bereits mehrere ältere Dateien. Die Bereinigung besteht darin, daraus eine
+  einzige explizite Migrationsimplementierung zu machen, die der Doctor aufruft und die einen dauerhaften
+  Migrationsbericht erstellt.
 
-Keine zusätzlichen Produktfragen blockieren die Implementierung.
+Keine weiteren Produktfragen blockieren die Implementierung.
 
-## Aktuelle Code-Form
+## Aktuelle Codestruktur
 
-Der Branch hat bereits eine echte gemeinsame SQLite-Basis:
+Der Branch verfügt bereits über eine echte gemeinsam genutzte SQLite-Basis:
 
-- Die Runtime-Untergrenze ist jetzt Node 22+: `package.json`, die CLI-Runtime-Prüfung,
-  Installer-Defaults, macOS-Runtime-Locator, CI und öffentliche Installationsdokumentation
-  stimmen alle überein. Die alte Node-22-Kompatibilitäts-Lane wurde entfernt.
-- `src/state/openclaw-state-db.ts` öffnet `openclaw.sqlite`, setzt WAL,
+- Die Runtime-Mindestversion erfordert jetzt einen WAL-Reset-sicheren Node-Build: 22.22.3+,
+  24.15+ oder 25.9+. `package.json`, die Runtime-Prüfung der CLI, die Installer-Standardwerte,
+  die macOS-Runtime-Suche, CI und die öffentliche Installationsdokumentation stimmen nun überein.
+- `src/state/openclaw-state-db.ts` öffnet `openclaw.sqlite`, aktiviert WAL,
   `synchronous=NORMAL`, `busy_timeout=30000`, `foreign_keys=ON` und wendet
   das generierte Schemamodul an, das aus
-  `src/state/openclaw-state-schema.sql` abgeleitet wird.
-- Kysely-Tabellentypen und Runtime-Schemamodule werden aus wegwerfbaren
-  SQLite-Datenbanken generiert, die aus den committeten `.sql`-Dateien erstellt
-  werden; Runtime-Code hält keine kopierten Schemastrings mehr für globale,
-  agentenspezifische oder Proxy-Capture-Datenbanken vor.
-- Runtime-Stores leiten ausgewählte und eingefügte Zeilentypen aus diesen
-  generierten Kysely-`DB`-Interfaces ab, statt SQLite-Zeilenformen manuell zu
-  spiegeln. Raw SQL bleibt auf Schemaanwendung, Pragmas und migrationsreines DDL
-  beschränkt.
-- Die SQLite-Schemas sind auf `user_version = 1` zusammengeführt, weil dieses
-  Datenbanklayout noch nicht ausgeliefert wurde. Runtime-Öffner erstellen nur
-  das aktuelle Schema; Datei-zu-Datenbank-Import bleibt im Doctor-Code, und
-  branch-lokale Datenbank-Upgrade-Helfer wurden gelöscht.
-- Relationale Zuständigkeit wird dort durchgesetzt, wo die Zuständigkeitsgrenze
-  kanonisch ist: Quellmigrationszeilen kaskadieren von `migration_runs`,
-  Task-Zustellstatus kaskadiert von `task_runs`, und
-  Transkript-Identitätszeilen kaskadieren von Transkriptereignissen.
-- Aktuelle Shared-Tabellen umfassen `agent_databases`,
+  `src/state/openclaw-state-schema.sql` abgeleitet wurde.
+- Kysely-Tabellentypen und Runtime-Schemamodule werden aus temporären
+  SQLite-Datenbanken generiert, die anhand der versionierten `.sql`-Dateien erstellt werden; der Runtime-Code
+  enthält keine kopierten Schemazeichenfolgen mehr für globale, agentenspezifische oder
+  Proxy-Erfassungsdatenbanken.
+- Runtime-Speicher leiten die Typen ausgewählter und eingefügter Zeilen aus diesen generierten
+  Kysely-`DB`-Schnittstellen ab, statt SQLite-Zeilenstrukturen manuell nachzubilden. Rohes SQL
+  bleibt auf die Schemaanwendung, Pragmas und ausschließlich für Migrationen verwendete DDL beschränkt.
+- Das globale SQLite-Schema bleibt bei `user_version = 1`. Das agentenspezifische Schema
+  hat Version `2`; seine Öffnungsroutine migriert den ausgelieferten Memory-Source-Schlüssel der Version `1`
+  atomar zu einer stabilen ganzzahligen Identität. Der Import aus Dateien
+  in die Datenbank verbleibt im Doctor-Code.
+- Relationale Eigentümerschaft wird dort durchgesetzt, wo die Eigentumsgrenze kanonisch ist:
+  Zeilen zur Quellmigration werden von `migration_runs` kaskadiert, der Task-Zustellungsstatus
+  von `task_runs` und Zeilen zur Transkriptidentität
+  von Transkriptereignissen.
+- Zu den aktuellen gemeinsam genutzten Tabellen gehören `agent_databases`,
   `auth_profile_stores`, `auth_profile_state`,
   `plugin_state_entries`, `plugin_blob_entries`, `media_blobs`,
   `skill_uploads`, `capture_sessions`, `capture_events`, `capture_blobs`,
-  `sandbox_registry_entries`, `cron_run_logs`, `cron_jobs`, `commitments`,
+  `sandbox_registry_entries`, `cron_jobs`, `commitments`,
   `delivery_queue_entries`, `model_capability_cache`,
-  `workspace_setup_state`, `native_hook_relay_bridges`,
+  `workspace_setup_state`, `workspace_path_aliases`, `workspace_attestations`,
+  `workspace_generated_bootstrap_hashes`, `native_hook_relay_bridges`,
   `current_conversation_bindings`, `plugin_binding_approvals`,
   `tui_last_sessions`, `acp_sessions`, `acp_replay_sessions`,
   `acp_replay_events`, `task_runs`, `task_delivery_state`, `flow_runs`,
   `subagent_runs`, `migration_runs` und `backup_runs`.
-- Beliebiger Plugin-eigener State erhält keine host-eigenen typisierten Tabellen.
-  Installierte Plugins verwenden `plugin_state_entries` für versionierte
-  JSON-Payloads und `plugin_blob_entries` für Bytes, mit
-  Namespace-/Key-Zuständigkeit, TTL-Bereinigung, Backup und
-  Plugin-Migrationsdatensätzen. Host-eigener Plugin-Orchestrierungs-State kann
-  weiterhin typisierte Tabellen haben, wenn der Host den Abfragevertrag besitzt,
-  etwa `plugin_binding_approvals`.
-- Plugin-Migrationen sind Datenmigrationen über Plugin-eigene Namespaces, keine
-  Host-Schemamigrationen. Ein Plugin kann seine eigenen versionierten
-  State-/Blob-Einträge über einen Migrations-Provider migrieren, und der Host
-  erfasst Quell-/Ausführungsstatus im normalen Migrationsledger. Neue
-  Plugin-Installationen erfordern keine Änderung an
-  `openclaw-state-schema.sql`, sofern nicht der Host selbst die Zuständigkeit
-  für einen neuen Plugin-übergreifenden Vertrag übernimmt.
+- Beliebiger Plugin-eigener Zustand erhält keine Host-eigenen typisierten Tabellen. Installierte
+  Plugins verwenden `plugin_state_entries` für versionierte JSON-Nutzdaten und
+  `plugin_blob_entries` für Bytes, einschließlich Namespace-/Schlüsseleigentümerschaft, TTL-Bereinigung,
+  Sicherung und Plugin-Migrationsdatensätzen. Host-eigener Plugin-Orchestrierungszustand kann
+  weiterhin typisierte Tabellen besitzen, wenn der Host Eigentümer des Abfragevertrags ist, etwa
+  `plugin_binding_approvals`.
+- Plugin-Migrationen sind Datenmigrationen über Plugin-eigene Namespaces und keine
+  Host-Schemamigrationen. Ein Plugin kann seine eigenen versionierten Zustands-/Blob-Einträge
+  über einen Migrations-Provider migrieren, und der Host erfasst den Quell-/Ausführungsstatus im
+  regulären Migrationsprotokoll. Neue Plugin-Installationen erfordern keine Änderung von
+  `openclaw-state-schema.sql`, sofern nicht der Host selbst die Eigentümerschaft für einen
+  neuen Plugin-übergreifenden Vertrag übernimmt.
 - `src/state/openclaw-agent-db.ts` öffnet
-  `agents/<agentId>/agent/openclaw-agent.sqlite`, registriert die Datenbank in
-  der globalen DB und besitzt agentenlokale Sitzungs-, Transkript-, VFS-,
-  Artefakt-, Cache- und Memory-Index-Tabellen. Shared-Runtime-Discovery liest
-  jetzt die generiert typisierte `agent_databases`-Registry, statt diese Abfrage
-  an jedem Callsite erneut zu implementieren.
-- Globale und agentenspezifische Datenbanken erfassen eine `schema_meta`-Zeile
-  mit Datenbankrolle, Schemaversion, Zeitstempeln und Agent-ID für
-  Agent-Datenbanken. Das Layout bleibt weiterhin bei `user_version = 1`, weil
-  dieses SQLite-Schema noch nicht ausgeliefert wurde.
-- Agentenspezifische Sitzungsidentität hat jetzt eine kanonische
-  `sessions`-Root-Tabelle mit Schlüssel `session_id`, mit `session_key`,
-  `session_scope`, `account_id`, `primary_conversation_id`, Zeitstempeln,
-  Anzeigefeldern, Modellmetadaten, Harness-ID und Parent-/Spawn-Verknüpfung als
-  abfragbaren Spalten. `session_routes` ist der eindeutige aktive Routenindex von
-  `session_key` zur aktuellen `session_id`, sodass ein Routenschlüssel in eine
-  frische dauerhafte Sitzung wechseln kann, ohne dass Hot Reads zwischen
-  duplizierten `sessions.session_key`-Zeilen wählen müssen. Der alte
-  kompatibilitätsförmige Payload `session_entries.entry_json` hängt per
-  Fremdschlüssel an der dauerhaften `session_id`-Root; er ist nicht mehr die
-  einzige Darstellung einer Sitzung auf Schemaebene.
-- Agentenspezifische externe Konversationsidentität ist ebenfalls relational:
-  `conversations` speichert normalisierte Provider-/Account-/Konversationsidentität,
-  und `session_conversations` verknüpft eine OpenClaw-Sitzung mit einer oder
-  mehreren externen Konversationen. Dies deckt Shared-Main-DM-Sitzungen ab, bei
-  denen mehrere Peers absichtlich auf eine Sitzung abgebildet werden können,
-  ohne in `session_key` zu lügen. SQLite erzwingt außerdem Eindeutigkeit für die
-  natürliche Provider-Identität, sodass dasselbe
-  Channel-/Account-/Kind-/Peer-/Thread-Tupel nicht über Konversations-IDs hinweg
-  aufgespalten werden kann. Shared-Main-Direkt-Peers werden mit einer
-  `participant`-Rolle verknüpft, sodass eine OpenClaw-Sitzung mehrere externe
-  DM-Peers darstellen kann, ohne ältere Peers in vage verwandte Zeilen
-  herabzustufen. `sessions.primary_conversation_id` zeigt weiterhin auf das
-  aktuelle typisierte Zustellziel. Geschlossene Routing-/Statusspalten werden
-  mit SQLite-`CHECK`-Constraints erzwungen, statt sich nur auf TypeScript-Unions
-  zu verlassen.
-  Die Runtime-Sitzungsprojektion bereinigt Kompatibilitäts-Routing-Schatten aus
+  `agents/<agentId>/agent/openclaw-agent.sqlite`, registriert die Datenbank in der
+  globalen DB und ist für agentenlokale Sitzungs-, Transkript-, VFS-, Artefakt-, Cache-
+  und Speicherindextabellen zuständig. Die gemeinsame Runtime-Erkennung liest jetzt die generiert typisierte
+  `agent_databases`-Registry, statt diese Abfrage an jeder Aufrufstelle
+  erneut zu implementieren.
+- Globale und agentenspezifische Datenbanken erfassen eine `schema_meta`-Zeile mit Datenbankrolle,
+  Schemaversion, Zeitstempeln und Agenten-ID bei Agentendatenbanken. Die globale DB
+  bleibt bei `user_version = 1`; agentenspezifische DBs verwenden nach der begrenzten
+  Migration der Memory-Source-Identität Version `2`.
+- Die agentenspezifische Sitzungsidentität besitzt jetzt eine kanonische `sessions`-Stammtabelle mit
+  `session_id` als Schlüssel sowie `session_key`, `session_scope`, `account_id`,
+  `primary_conversation_id`, Zeitstempeln, Anzeigefeldern, Modellmetadaten,
+  Harness-ID und Eltern-/Erzeugungsverknüpfung als abfragbaren Spalten. `session_routes`
+  ist der eindeutige aktive Routenindex von `session_key` zur aktuellen
+  `session_id`, sodass ein Routenschlüssel zu einer neuen dauerhaften Sitzung wechseln kann, ohne
+  dass Hot Reads zwischen doppelten `sessions.session_key`-Zeilen wählen müssen. Die alte
+  kompatibilitätsgeformte `session_entries.entry_json`-Nutzlast hängt per Fremdschlüssel an der
+  dauerhaften `session_id`-Wurzel; sie ist nicht mehr die einzige
+  Darstellung einer Sitzung auf Schemaebene.
+- Die agentenspezifische externe Konversationsidentität ist ebenfalls relational:
+  `conversations` speichert die normalisierte Provider-/Konto-/Konversationsidentität und
+  `session_conversations` verknüpft eine OpenClaw-Sitzung mit einer oder mehreren externen
+  Konversationen. Dies deckt gemeinsam genutzte Haupt-DM-Sitzungen ab, bei denen mehrere Gegenstellen
+  absichtlich derselben Sitzung zugeordnet werden können, ohne falsche Angaben in `session_key` zu hinterlegen. SQLite
+  erzwingt außerdem die Eindeutigkeit der natürlichen Provider-Identität, sodass dasselbe
+  Kanal-/Konto-/Art-/Gegenstellen-/Thread-Tupel nicht auf mehrere Konversations-IDs aufgeteilt werden kann.
+  Direkte Gegenstellen der gemeinsam genutzten Hauptsitzung werden mit der Rolle `participant` verknüpft, sodass eine
+  OpenClaw-Sitzung mehrere externe DM-Gegenstellen darstellen kann, ohne
+  ältere Gegenstellen zu unspezifischen zugehörigen Zeilen herabzustufen. `sessions.primary_conversation_id`
+  verweist weiterhin auf das aktuelle typisierte Zustellungsziel. Geschlossene Routing-/Statusspalten
+  werden mit SQLite-`CHECK`-Beschränkungen durchgesetzt, statt sich ausschließlich auf
+  TypeScript-Unions zu verlassen.
+  Die Runtime-Sitzungsprojektion entfernt Routing-Schattenfelder zur Kompatibilität aus
   `session_entries.entry_json`, bevor typisierte Sitzungs-/Konversationsspalten
-  angewendet werden, sodass veraltete JSON-Payloads keine Zustellziele wieder
-  hervorholen können.
-  Subagent-Ankündigungsrouting erfordert ebenfalls den typisierten
-  SQLite-Zustellkontext; es fällt nicht mehr auf
-  Kompatibilitäts-`SessionEntry`-Routenfelder zurück.
-  Gateway-`chat.send`-explizite Zustellvererbung liest den typisierten
-  SQLite-Zustellkontext statt `origin`-/`last*`-Kompatibilitätsfeldern.
-  `tools.effective` leitet Provider-/Account-/Thread-Kontext ebenfalls aus
-  typisierten SQLite-Zustell-/Routingzeilen ab, nicht aus veralteten
-  `last*`-Schatten in Sitzungseinträgen.
-  Systemereignis-Prompt-Kontext baut Channel-/To-/Account-/Thread-Felder aus
-  typisierten Zustellfeldern statt aus `origin`-Schatten neu auf.
-  Der gemeinsame Helfer `deliveryContextFromSession` und der
-  Sitzung-zu-Konversation-Mapper ignorieren `SessionEntry.origin` jetzt
-  vollständig; nur typisierte Zustellfelder und relationale Konversationszeilen
-  können Hot-Route-Identität erzeugen.
-  Die Runtime-Normalisierung von Sitzungseinträgen entfernt `origin`, bevor
-  `entry_json` persistiert oder projiziert wird, und eingehende Metadaten
-  schreiben typisierte Channel-/Chat-Felder plus relationale Konversationszeilen,
-  statt neue Origin-Schatten zu erstellen.
-- Transkriptereignisse, Transkriptsnapshots und Trajectory-Runtime-Ereignisse
-  referenzieren jetzt die kanonische agentenspezifische `sessions`-Root und
-  kaskadieren bei Sitzungs deletion. Transkript-Identitäts-/Idempotenzzeilen
-  kaskadieren weiterhin von der exakten Transkriptereigniszeile.
-- Memory-Core-Indizes verwenden jetzt explizite Agent-Datenbanktabellen
+  angewendet werden, sodass veraltete JSON-Nutzdaten keine Zustellungsziele reaktivieren können.
+  Das Ankündigungs-Routing von Subagenten erfordert ebenfalls den typisierten SQLite-Zustellungskontext;
+  es greift nicht mehr auf kompatibilitätsbezogene `SessionEntry`-Routenfelder zurück.
+  Die explizite Zustellungsvererbung von Gateway-`chat.send` liest den typisierten SQLite-
+  Zustellungskontext statt der Kompatibilitätsfelder `origin`/`last*`.
+  `tools.effective` leitet den Provider-/Konto-/Thread-Kontext ebenfalls aus typisierten
+  SQLite-Zustellungs-/Routingzeilen ab und nicht aus veralteten Schattenfeldern des Sitzungseintrags `last*`.
+  Der Prompt-Kontext für Systemereignisse rekonstruiert Kanal-/Ziel-/Konto-/Thread-Felder aus
+  typisierten Zustellungsfeldern statt aus `origin`-Schattenfeldern.
+  Der gemeinsam genutzte `deliveryContextFromSession`-Helper und die Zuordnung von Sitzungen zu Konversationen
+  ignorieren `SessionEntry.origin` jetzt vollständig; nur typisierte Zustellungsfelder
+  und relationale Konversationszeilen können eine Identität für Hot Routing erzeugen.
+  Die Normalisierung von Runtime-Sitzungseinträgen entfernt `origin`, bevor
+  `entry_json` gespeichert oder projiziert wird, und eingehende Metadaten schreiben typisierte Kanal-/Chat-
+  Felder sowie relationale Konversationszeilen, statt neue Ursprungsschattenfelder
+  zu erzeugen.
+- Transkriptereignisse, Transkript-Snapshots und Trajektorien-Runtime-Ereignisse
+  referenzieren jetzt die kanonische agentenspezifische `sessions`-Wurzel und werden beim Löschen einer Sitzung
+  kaskadiert. Zeilen für Transkriptidentität/-idempotenz werden weiterhin von der
+  exakten Transkriptereigniszeile kaskadiert.
+- Memory-Core-Indizes verwenden jetzt die expliziten Agentendatenbanktabellen
   `memory_index_meta`, `memory_index_sources`, `memory_index_chunks` und
-  `memory_embedding_cache`, wobei `memory_index_state` Revisionsänderungen
-  verfolgt. Optionale FTS-/Vektor-Side-Indizes heißen
-  `memory_index_chunks_fts` und `memory_index_chunks_vec` statt generischer
-  Tabellen `meta`, `files`, `chunks`, `chunks_fts` oder `chunks_vec`. Die
-  kanonischen Namen behalten die aktuelle Pfad-/Quellzeilenform und
-  serialisierte Embedding-Kompatibilität bei. Diese Tabellen sind abgeleiteter
-  Such-Cache, kein kanonischer Transkriptspeicher; sie können gelöscht und aus
-  Memory-Workspace-Dateien und konfigurierten Quellen neu aufgebaut werden.
-  Beim Öffnen eines ausgelieferten Memory-Index mit generischem Namen werden
-  dessen Metadaten, Quellen, Chunks und Embedding-Cache in die kanonischen
-  Tabellen migriert; abgeleitete FTS-/Vektortabellen werden unter ihren
-  kanonischen Namen neu aufgebaut.
-- Subagent-Ausführungswiederherstellungs-State lebt jetzt in typisierten Shared-
-  `subagent_runs`-Zeilen mit indizierten Child-, Requester- und
-  Controller-Sitzungsschlüsseln. Die alte Datei `subagents/runs.json` ist nur
-  noch Doctor-Migrationseingabe.
-- Aktuelle Konversationsbindungen leben jetzt in typisierten Shared-
-  `current_conversation_bindings`-Zeilen mit Schlüssel nach normalisierter
-  Konversations-ID, mit Ziel-Agent-/Sitzungsspalten, Konversationsart, Status,
-  Ablauf und Metadaten als relationale Spalten statt als dupliziertem opakem
-  Bindungsdatensatz. Der dauerhafte Bindungsschlüssel enthält die normalisierte
-  Konversationsart, sodass Direct-/Group-/Channel-Refs nicht kollidieren können,
-  und SQLite weist ungültige Binding-Kind-/Statuswerte zurück. Die alte Datei
-  `bindings/current-conversations.json` ist nur noch Doctor-Migrationseingabe.
-- Die Zustellwarteschlangen-Wiederherstellung legt jetzt typisierte
-  Warteschlangenspalten für Channel, Ziel, Account, Sitzung, Retry, Fehler,
-  Plattformversand und Wiederherstellungsstatus über das Replay-JSON.
-  `entry_json` behält die Replay-Payloads, Hooks und Formatierungs-Payloads,
-  aber typisierte Spalten sind maßgeblich für Hot-Queue-Routing/-State.
-- TUI-Zeiger für die Wiederherstellung der letzten Sitzung leben jetzt in
-  typisierten Shared-`tui_last_sessions`-Zeilen mit Schlüssel nach dem gehashten
-  TUI-Verbindungs-/Sitzungs-Scope. Die alte TUI-JSON-Datei ist nur noch
-  Doctor-Migrationseingabe.
-- Standard-TTS-Einstellungen leben jetzt in Shared-Plugin-State-SQLite-Zeilen
-  mit Schlüssel unter dem `speech-core`-Plugin. Die alte Datei
-  `settings/tts.json` ist nur noch Doctor-Migrationseingabe; die Runtime liest
-  oder schreibt keine TTS-Einstellungs-JSON-Dateien mehr, und der Legacy-
-  Pfadauflöser lebt im Doctor-Migrationsmodul.
-- Secret-Zielmetadaten sprechen jetzt von Stores, statt vorzugeben, jedes
-  Credential-Ziel sei eine Konfigurationsdatei. `openclaw.json` bleibt der
-  Konfigurations-Store; Auth-Profile-Ziele verwenden typisierte
-  SQLite-`auth_profile_stores`-Zeilen mit providerförmigen Credentials als
-  JSON-Payloads.
-- Secret-Audit scannt keine ausgemusterten agentenspezifischen `auth.json`-
-  Dateien mehr. Doctor ist für Warnung vor, Import von und Entfernung dieser
-  Legacy-Datei zuständig.
-- Legacy-Helfer für Auth-Profilpfade leben jetzt im Doctor-Legacy-Code. Core-
-  Helfer für Auth-Profilpfade stellen SQLite-Auth-Store-Identität und
-  Anzeigeorte bereit, nicht Runtime-Pfade `auth-profiles.json` oder
-  `auth-state.json`.
-- Runtime-Module für Subagent-Ausführungswiederherstellung und OpenRouter-
-  Modellfähigkeits-Cache halten SQLite-Snapshot-Reader/-Writer jetzt getrennt
-  von doctorreinen Legacy-JSON-Importhelfern. OpenRouter-Fähigkeiten verwenden
-  die typisierten generischen `model_capability_cache`-Zeilen unter
-  `provider_id = "openrouter"` statt eines opaken Cache-Blobs oder einer
-  provider-spezifischen Host-Tabelle. Subagent-Ausführungs-`taskName` wird in
-  der typisierten Spalte `subagent_runs.task_name` gespeichert; die
-  `payload_json`-Kopie ist Replay-/Debug-Daten, nicht die Quelle für
-  Hot-Anzeige- oder Lookup-Felder.
-- `src/agents/filesystem/virtual-agent-fs.sqlite.ts` implementiert ein SQLite-
-  VFS über der Agent-Datenbanktabelle `vfs_entries`. Verzeichnislesevorgänge,
-  rekursive Exporte, Löschungen und Umbenennungen verwenden indizierte
-  `(namespace, path)`-Präfixbereiche, statt einen ganzen Namespace zu scannen
-  oder sich auf `LIKE`-Pfadabgleiche zu verlassen.
-- `src/agents/runtime-worker.entry.ts` erstellt pro Ausführung SQLite-VFS-,
-  Tool-Artefakt-, Ausführungsartefakt- und scoped Cache-Stores für Worker.
-- Abschlussmarker für Workspace-Bootstrap leben jetzt in typisierten Shared-
-  `workspace_setup_state`-Zeilen mit Schlüssel nach aufgelöstem Workspace-Pfad
-  statt in `.openclaw/workspace-state.json`; die Runtime liest oder überschreibt
-  den Legacy-Workspace-Marker nicht mehr, und Helfer-APIs reichen keinen
-  falschen `.openclaw/setup-state`-Pfad mehr herum, nur um Speicheridentität
-  abzuleiten.
-- Exec-Genehmigungen leben jetzt in der typisierten Shared-SQLite-
-  `exec_approvals_config`-Singleton-Zeile. Doctor importiert das Legacy-
-  `~/.openclaw/exec-approvals.json`; Runtime-Schreibvorgänge erstellen,
-  überschreiben oder melden diese Datei nicht mehr als aktiven Store-Speicherort.
-  Der macOS-Companion liest und schreibt dieselbe
-  `state/openclaw.sqlite`-Tabellenzeile; er behält nur den Unix-Prompt-Socket
-  auf der Festplatte, weil das IPC ist, kein dauerhafter Runtime-State.
-- Device-Identity-, Device-Auth- und Bootstrap-Runtime-Module halten ihre
-  SQLite-Snapshot-Reader/-Writer jetzt getrennt von doctorreinen
-  Legacy-JSON-Importhelfern. Device-Identity verwendet typisierte
-  `device_identities`-Zeilen, und Device-Auth-Token verwenden typisierte
-  `device_auth_tokens`-Zeilen. Device-Auth-Schreibvorgänge gleichen Zeilen nach
-  Gerät/Rolle ab, statt die Token-Tabelle zu leeren, und die Runtime leitet
-  Einzel-Token-Updates nicht mehr durch den alten Whole-Store-Adapter. Das Legacy
-  Version-1-JSON-Payloads existieren nur als Doctor-Import-/Export-Formate.
-- Der GitHub Copilot-Cache für den Token-Austausch verwendet die gemeinsame SQLite-Plugin-State-Tabelle
-  unter `github-copilot/token-cache/default`. Es handelt sich um Provider-eigenen Cache-State,
-  daher wird absichtlich keine Host-Schematabelle hinzugefügt.
-- GitHub Copilot-Compaction schreibt keine `openclaw-compaction-*.json`-
-  Workspace-Sidecars mehr. Das Harness ruft die SDK-History-Compaction-RPC für die
-  verfolgte SDK-Sitzung auf, und OpenClaw speichert dauerhaften Sitzungs-/Transkript-State in
-  SQLite statt in Kompatibilitäts-Markierungsdateien.
-- Die gemeinsame Swift-Runtime (`OpenClawKit`) verwendet dieselben
-  `state/openclaw.sqlite`-Zeilen für Geräteidentität und Geräteauthentifizierung. macOS-App-
-  Helfer importieren die gemeinsamen SQLite-Helfer, statt einen zweiten JSON- oder
-  SQLite-Pfad zu besitzen. Eine übrig gebliebene veraltete `identity/device.json` blockiert die Identitätserstellung,
-  bis Doctor sie in SQLite importiert, entsprechend dem TypeScript- und Android-
-  Startup-Gate.
-- Die Android-Geräteidentität verwendet dasselbe TypeScript-kompatible Schlüsselmaterial,
-  das in typisierten `state/openclaw.sqlite#table/device_identities`-Zeilen gespeichert ist. Sie liest oder schreibt niemals
-  `openclaw/identity/device.json`; eine übrig gebliebene veraltete Datei blockiert
-  den Start, bis Doctor sie in SQLite importiert.
-- Auch zwischengespeicherte Android-Geräteauthentifizierungstoken verwenden typisierte
-  `state/openclaw.sqlite#table/device_auth_tokens`-Zeilen und teilen dieselbe
-  Version-1-Token-Semantik wie TypeScript und Swift. Die Runtime liest keine `SecurePrefs`-
-  `gateway.deviceToken*`-Kompatibilitätsschlüssel mehr; diese gehören nur in die Migrations-/Doctor-
-  Logik.
-- Der Android-Benachrichtigungsverlauf für zuletzt verwendete Pakete verwendet typisierte
-  `android_notification_recent_packages`-Zeilen. Die Runtime migriert oder liest die alten SharedPreferences-CSV-Schlüssel nicht mehr.
-- Die Erstellung der Geräteidentität schlägt fail-closed fehl, wenn eine veraltete `identity/device.json`
-  existiert, wenn die SQLite-Identitätszeile ungültig ist oder wenn der SQLite-Identitäts-
-  Store nicht geöffnet werden kann. Doctor importiert und entfernt diese Datei zuerst, sodass der Runtime-
-  Start die Pairing-Identität vor der Migration nicht stillschweigend rotieren kann.
-- Die Auswahl der Geräteidentität ist ein SQLite-Zeilenschlüssel, kein JSON-Datei-Locator. Tests
-  und Gateway-Helfer übergeben explizite Identitätsschlüssel; nur die Doctor-Migration und das
-  fail-closed-Startup-Gate kennen den stillgelegten Dateinamen `identity/device.json`.
-- Die Kompatibilität für Sitzungszurücksetzungen liegt jetzt in der Doctor-Konfigurationsmigration:
-  `session.idleMinutes` wird nach `session.reset.idleMinutes` verschoben,
-  `session.resetByType.dm` wird nach `session.resetByType.direct` verschoben, und die
-  Runtime-Zurücksetzungsrichtlinie liest nur kanonische Zurücksetzungsschlüssel.
-- Die Kompatibilität für veraltete Konfigurationen liegt jetzt unter `src/commands/doctor/`. Die normale
-  `readConfigFileSnapshot()`-Validierung importiert keine veralteten Doctor-Detektoren
-  und annotiert keine veralteten Probleme; `runDoctorConfigPreflight()` fügt diese Probleme für
-  Doctor-Reparatur/-Berichterstattung hinzu. Der Doctor-Konfigurationsablauf importiert
-  `src/commands/doctor/legacy-config.ts`, und die alte Reparatur von OAuth-Profil-IDs liegt
-  unter
-  `src/commands/doctor/legacy/oauth-profile-ids.ts`.
-- Nicht-Doctor-Befehle führen keine veraltete Konfigurationsreparatur automatisch aus. Zum Beispiel
-  schlägt `openclaw update --channel` jetzt bei ungültiger veralteter Konfiguration fehl und fordert
-  Benutzer auf, Doctor auszuführen, statt stillschweigend Doctor-Migrationscode zu importieren.
-- Web Push, APNs, Voice Wake, Update-Prüfungen und Konfigurationszustand verwenden jetzt typisierte gemeinsame SQLite-
-  Tabellen für Abonnements, VAPID-Schlüssel, Node-Registrierungen, Trigger-Zeilen,
-  Routing-Zeilen, Update-Benachrichtigungs-State und Konfigurationszustandseinträge statt
-  vollständig undurchsichtiger JSON-Blobs. Snapshot-Schreibvorgänge für Web Push und APNs gleichen
-  Abonnements/Registrierungen jetzt nach Primärschlüssel ab, statt ihre Tabellen zu leeren;
-  der Konfigurationszustand macht dasselbe nach Konfigurationspfad.
-  Ihre Runtime-Module halten SQLite-Snapshot-Leser/-Schreiber getrennt von
-  nur für Doctor bestimmten Importhelfern für veraltetes JSON.
-- Die Node-Host-Konfiguration verwendet jetzt eine typisierte Singleton-Zeile in der gemeinsamen SQLite-Datenbank;
-  Doctor importiert die alte `node.json`-Datei vor der normalen Runtime-Nutzung.
-- Geräte-/Node-Pairing, Channel-Pairing, Channel-Allowlists und Bootstrap-State
-  verwenden jetzt typisierte SQLite-Zeilen statt vollständig undurchsichtiger JSON-Blobs. Plugin-Binding-
-  Genehmigungen und Cron-Job-State folgen derselben Aufteilung: Runtime-Module stellen
-  SQLite-gestützte Operationen und neutrale Snapshot-Helfer bereit, und Pairing/Bootstrap
-  sowie Snapshot-Schreibvorgänge für Plugin-Binding-Genehmigungen gleichen Zeilen nach Primärschlüssel
-  ab, statt Tabellen zu leeren, während Doctor die alten JSON-Dateien über
-  `src/commands/doctor/legacy/*`-Module importiert/entfernt.
-- Installierte Plugin-Datensätze liegen jetzt im SQLite-Index für installierte Plugins.
-  Runtime-Konfigurationslesen/-schreiben migriert oder bewahrt alte
-  `plugins.installs`-Authoring-Konfigurationsdaten nicht mehr; Doctor importiert diese veraltete Konfigurations-
-  Form vor der normalen Runtime-Nutzung in SQLite.
-- QQBot-Snapshots zur Wiederherstellung von Anmeldedaten liegen jetzt im SQLite-Plugin-State unter
-  `qqbot/credential-backups`. Die Runtime schreibt keine
-  `qqbot/data/credential-backup*.json` mehr; der QQBot-Doctor-Vertrag importiert und
-  archiviert diese veralteten Backup-Dateien aus dem aktiven State-Verzeichnis.
-- Die Gateway-Neuladeplanung vergleicht Snapshots des SQLite-Index für installierte Plugins unter
-  einem internen Diff-Namespace `installedPluginIndex.installRecords.*`. Runtime-
-  Neuladeentscheidungen verpacken diese Zeilen nicht mehr in künstliche `plugins.installs`-Konfigurations-
-  Objekte.
-- Das Upgrade von Anmeldedaten für benannte Matrix-Konten erfolgt nicht mehr während Runtime-
-  Lesevorgängen. Doctor besitzt die alte Umbenennung von `credentials/matrix/credentials.json`
-  auf oberster Ebene, wenn ein einzelnes/standardmäßiges Matrix-Konto aufgelöst werden kann.
-- Core-Pairing- und Cron-Runtime-Module exportieren keine Builder für veraltete JSON-Pfade
-  mehr. Doctor-eigene Legacy-Module erstellen `pending.json`-, `paired.json`-,
-  `bootstrap.json`- und `cron/jobs.json`-Quellpfade nur für Importtests und
-  Migration. Die Normalisierung veralteter Cron-Job-Formen und der Import von Cron-Ausführungslogs
-  liegen unter `src/commands/doctor/legacy/cron*.ts`.
-- `src/commands/doctor/legacy/runtime-state.ts` importiert veraltete JSON-State-
-  Dateien, einschließlich Node-Host-Konfiguration, aus Doctor in SQLite. Neue Importer für veraltete Dateien
-  bleiben unter `src/commands/doctor/legacy/`.
-- `src/commands/doctor/state-migrations.ts` importiert veraltete `sessions.json`- und
-  `*.jsonl`-Transkripte direkt in SQLite und entfernt erfolgreiche Quellen. Es
-  stellt Root-Legacy-Transkripte nicht mehr über
-  `agents/<agentId>/sessions/*.jsonl` bereit und erstellt vor dem Import kein kanonisches JSONL-Ziel mehr.
-- Doctor-Prüfungen der State-Integrität scannen keine veralteten Sitzungsverzeichnisse mehr und
-  bieten keine Löschung verwaister JSONL-Dateien an. Veraltete Transkriptdateien sind nur
-  Migrationseingaben, und der Migrationsschritt besitzt Import plus Quellenentfernung.
-- Der Import der veralteten Sandbox-Registry liegt unter
-  `src/commands/doctor/legacy/sandbox-registry.ts`; aktive Sandbox-Registry-
-  Lese- und Schreibvorgänge bleiben ausschließlich SQLite-basiert.
-- Die Reparatur für veraltete Sitzungstranskript-Zustandsprüfung/-Import liegt unter
-  `src/commands/doctor/legacy/session-transcript-health.ts`; Runtime-Befehls-
-  Module enthalten keine JSONL-Transkriptanalyse oder Reparaturcode für aktive Branches mehr.
+  `memory_embedding_cache`, wobei `memory_index_state` Revisionsänderungen nachverfolgt.
+  Optionale FTS-/Vektor-Nebenindizes heißen `memory_index_chunks_fts` und
+  `memory_index_chunks_vec` statt der generischen Tabellen `meta`, `files`, `chunks`,
+  `chunks_fts` oder `chunks_vec`. Die kanonischen Namen behalten die aktuelle
+  Pfad-/Quellzeilenstruktur und die Kompatibilität serialisierter Einbettungen bei. Diese Tabellen
+  sind abgeleitete Such-Caches und kein kanonischer Transkriptspeicher; sie können
+  gelöscht und aus Memory-Workspace-Dateien und konfigurierten Quellen neu aufgebaut werden.
+  Beim Öffnen eines ausgelieferten Memory-Index mit generischen Namen werden dessen Metadaten, Quellen,
+  Chunks und Einbettungs-Cache in die kanonischen Tabellen migriert; abgeleitete FTS-/Vektor-
+  Tabellen werden unter ihren kanonischen Namen neu aufgebaut.
+- Der Wiederherstellungszustand von Subagent-Ausführungen befindet sich jetzt in typisierten gemeinsam genutzten `subagent_runs`-Zeilen
+  mit indizierten Sitzungsschlüsseln für untergeordnete Sitzung, Anforderer und Controller. Die alte
+  `subagents/runs.json`-Datei dient nur als Eingabe für die Doctor-Bereinigung. Ihre Ausführungseinträge sind
+  vorübergehender Wiederherstellungszustand, daher erfasst Doctor den Stilllegungsbeleg und
+  verwirft die Datei, ohne sie zu importieren. Da eine Datei nach dem Bereinigen von SQLite-Zeilen
+  nicht belegen kann, ob ihre Einträge aktiv oder veraltet sind, müssen Betreiber
+  aktive Ausführungen aus der Dateiära abschließen lassen, bevor sie über diese Grenze hinweg aktualisieren.
+- Aktuelle Konversationsbindungen befinden sich jetzt in typisierten gemeinsam genutzten
+  `current_conversation_bindings`-Zeilen mit der normalisierten Konversations-ID als Schlüssel und
+  Zielagenten-/Sitzungsspalten, Konversationsart, Status, Ablaufzeit und Metadaten,
+  die als relationale Spalten statt als duplizierter undurchsichtiger Bindungsdatensatz gespeichert werden.
+  Der dauerhafte Bindungsschlüssel enthält die normalisierte Konversationsart, sodass
+  Direkt-/Gruppen-/Kanalreferenzen nicht kollidieren können, und SQLite weist ungültige Werte für Bindungsart
+  und -status zurück. Die alte
+  `bindings/current-conversations.json`-Datei dient nur als Eingabe für die Doctor-Migration.
+- Die Wiederherstellung der Zustellungswarteschlange legt jetzt typisierte Warteschlangenspalten für Kanal, Ziel,
+  Konto, Sitzung, Wiederholungsversuch, Fehler, Plattformversand und Wiederherstellungszustand über das
+  Replay-JSON. `entry_json` behält die Replay-Nutzdaten, Hooks und Formatierungs-
+  nutzdaten bei, aber typisierte Spalten sind für das Hot Routing und den Status der Warteschlange maßgeblich.
+- Zeiger zur Wiederherstellung der letzten TUI-Sitzung befinden sich jetzt in typisierten gemeinsam genutzten
+  `tui_last_sessions`-Zeilen mit dem gehashten TUI-Verbindungs-/Sitzungsbereich als Schlüssel.
+  Die Runtime liest und schreibt ausschließlich SQLite, führt für jeden Bereich ein atomares Upsert durch und
+  schließt Heartbeat-Sitzungen aus. `openclaw doctor --fix` validiert die
+  alte TUI-JSON-Datei strikt, behält neuere SQLite-Zeilen bei, überprüft das kanonische Ergebnis
+  und entfernt die unveränderte Legacy-Datei, statt ein Archiv zu hinterlassen.
+- Hashes für die Bereitstellung von Discord-Befehlen befinden sich jetzt im gemeinsam genutzten SQLite-
+  Speicher für Plugin-Zustand. Die Runtime liest und schreibt ausschließlich exakte anwendungsbezogene Schlüssel. Doctor
+  löscht die neu erstellbare Legacy-Datei `discord/command-deploy-cache.json`,
+  ohne sie zu importieren, sodass beim nächsten Start ein einmaliger kanonischer Abgleich erfolgt.
+- Standardmäßige TTS-Einstellungen befinden sich jetzt in gemeinsam genutzten SQLite-Zeilen für Plugin-Zustand unter dem
+  Plugin `speech-core`. Die alte Datei `settings/tts.json` dient nur als Eingabe für die Doctor-Migration;
+  die Runtime liest oder schreibt keine JSON-Dateien mit TTS-Einstellungen mehr, und die
+  Auflösung des Legacy-Pfads befindet sich im Doctor-Migrationsmodul.
+- Metadaten zu Secret-Zielen beziehen sich jetzt auf Speicher, statt vorzugeben, dass jedes
+  Anmeldedatenziel eine Konfigurationsdatei sei. `openclaw.json` bleibt der Konfigurationsspeicher;
+  Authentifizierungsprofilziele verwenden typisierte SQLite-`auth_profile_stores`-Zeilen, wobei
+  Provider-spezifische Anmeldedaten als JSON-Nutzdaten gespeichert werden.
+- Das Secret-Audit durchsucht die stillgelegten agentenspezifischen `auth.json`-Dateien nicht mehr. Doctor ist
+  für die Warnung vor dieser Legacy-Datei sowie für ihren Import und ihre Entfernung zuständig.
+- Legacy-Pfad-Helper für Authentifizierungsprofile befinden sich jetzt im Doctor-Legacy-Code. Zentrale
+  Pfad-Helper für Authentifizierungsprofile stellen die SQLite-Authentifizierungsspeicheridentität und Anzeigeorte bereit,
+  nicht die Runtime-Pfade `auth-profiles.json` oder `auth-state.json`.
+- Die Runtime-Module zur Wiederherstellung von Subagent-Ausführungen und zum Cache der OpenRouter-Modellfähigkeiten
+  trennen jetzt SQLite-Snapshot-Lese-/Schreiboperationen von ausschließlich für Doctor vorgesehenen Legacy-JSON-
+  Import-Helpern. OpenRouter-Fähigkeiten verwenden die typisierten generischen
+  `model_capability_cache`-Zeilen unter `provider_id = "openrouter"` statt
+  eines einzelnen undurchsichtigen Cache-Blobs oder einer Provider-spezifischen Host-Tabelle. Der
+  `taskName`-Wert einer Subagent-Ausführung wird in der typisierten Spalte `subagent_runs.task_name` gespeichert; die
+  Kopie in `payload_json` sind Replay-/Debug-Daten und nicht die Quelle für häufig verwendete Anzeige-
+  oder Suchfelder.
+- `src/agents/filesystem/virtual-agent-fs.sqlite.ts` implementiert ein SQLite-VFS
+  über der Agentendatenbanktabelle `vfs_entries`. Verzeichnislesevorgänge, rekursive
+  Exporte, Löschungen und Umbenennungen verwenden indizierte `(namespace, path)`-Präfixbereiche,
+  statt einen gesamten Namespace zu durchsuchen oder sich auf die Pfadübereinstimmung von `LIKE` zu verlassen.
+- `src/agents/runtime-worker.entry.ts` erstellt für jeden Lauf SQLite-VFS-, Tool-Artefakt-, Laufartefakt- und bereichsgebundene Cache-Speicher für Worker.
+- Der Abschluss des Workspace-Bootstrappings, die Aktualität der Attestierung und die generierten Bootstrap-Hashes befinden sich jetzt in typisierten gemeinsam genutzten `workspace_setup_state`-, `workspace_path_aliases`-, `workspace_attestations`- und `workspace_generated_bootstrap_hashes`-Zeilen, deren Schlüssel die kanonische Workspace-Identität ist. Persistierte lexikalische und Realpfad-Aliasse gewährleisten auch nach dem Verschwinden eines konfigurierten Symlinks einen stabilen Schutz vor verschwundenen Workspaces; neu ausgerichtete Aliasse führen zu einem geschlossenen Fehlschlag. Die Laufzeit liest oder schreibt `openclaw-workspace-state.json`, `.openclaw/workspace-state.json`, `workspace-attestations/*.attested` im Zustandsverzeichnis oder gleichgeordnete `<workspace>.attested`-Sidecars nicht mehr. `openclaw doctor --fix` validiert und beansprucht Legacy-Quellen, importiert sie mit Migrationsbelegen in SQLite, überprüft die kanonischen Zeilen und entfernt erst danach die beanspruchten Dateien.
+- Das gemeinsam genutzte Schema reserviert eine `exec_approvals_config`-Singleton-Zeile, die Laufzeitumstellung steht jedoch noch aus. TypeScript und die macOS-Begleitanwendung verwenden weiterhin die zustandsbezogene JSON-Datei und müssen gemeinsam zu SQLite migriert werden.
+- Die TypeScript-Geräteidentität verwendet jetzt typisierte `device_identities`-Zeilen, wobei der ausschließlich für Doctor bestimmte Import von Legacy-JSON außerhalb des Laufzeit-Owners verbleibt. Die Geräteauthentifizierung bleibt bis zu einer koordinierten Schema- und laufzeitübergreifenden Migration dateibasiert; `device_auth_tokens` bleibt für diese Folgearbeit reserviert.
+- Der Cache für den GitHub-Copilot-Tokenaustausch verwendet die gemeinsam genutzte SQLite-Plugin-Zustandstabelle unter `github-copilot/token-cache/default`. Es handelt sich um Provider-eigenen Cache-Zustand, weshalb absichtlich keine Host-Schematabelle hinzugefügt wird.
+- Die GitHub-Copilot-Compaction schreibt keine `openclaw-compaction-*.json`-Workspace-Sidecars mehr. Das Harness ruft den RPC zur SDK-Verlaufs-Compaction für die verfolgte SDK-Sitzung auf, und OpenClaw speichert dauerhafte Sitzungs-/Transkriptzustände in SQLite statt in Kompatibilitätsmarkierungsdateien.
+- Die gemeinsam genutzte Swift-Laufzeit (`OpenClawKit`) verwendet für die Geräteidentität dieselbe `state/openclaw.sqlite#table/device_identities`-Struktur und dieselben Zeilenschlüssel. Legacy-Dateien in Apple-Containern werden vom Swift-Migrations-Owner importiert, da der TypeScript-Doctor nicht auf diese Container zugreifen kann. Die Swift-Geräteauthentifizierung bleibt bis zur koordinierten Authentifizierungs-Folgearbeit dateibasiert.
+- Die Android-Geräteidentität und die zwischengespeicherte Geräteauthentifizierung bleiben anwendungslokale Speicher. Sie erfordern eine separate, Android-eigene Migration; die Host-SQLite-Ansprüche beschreiben nicht das aktuelle Android-Verhalten.
+- Der Verlauf kürzlich verwendeter Pakete für Android-Benachrichtigungen verwendet typisierte `android_notification_recent_packages`-Zeilen. Die Laufzeit migriert oder liest die alten SharedPreferences-CSV-Schlüssel nicht mehr.
+- Die Erstellung der Geräteidentität schlägt geschlossen fehl, wenn das Legacy-Element `identity/device.json` vorhanden ist, die SQLite-Identitätszeile ungültig ist oder der SQLite-Identitätsspeicher nicht geöffnet werden kann. Doctor importiert und entfernt diese Datei zuerst, sodass der Laufzeitstart die Kopplungsidentität vor der Migration nicht unbemerkt wechseln kann.
+- Die Auswahl der Geräteidentität ist ein SQLite-Zeilenschlüssel und kein Locator für eine JSON-Datei. Tests und Gateway-Hilfsfunktionen übergeben explizite Identitätsschlüssel; nur die Doctor-Migration und die geschlossen fehlschlagende Startprüfung kennen den ausgemusterten Dateinamen `identity/device.json`.
+- Die Kompatibilität beim Zurücksetzen von Sitzungen befindet sich jetzt in der Doctor-Konfigurationsmigration: `session.idleMinutes` wird nach `session.reset.idleMinutes` verschoben, `session.resetByType.dm` wird nach `session.resetByType.direct` verschoben, und die Laufzeitrichtlinie zum Zurücksetzen liest nur kanonische Zurücksetzungsschlüssel.
+- Die Kompatibilität mit Legacy-Konfigurationen befindet sich jetzt unter `src/commands/doctor/`. Die normale `readConfigFileSnapshot()`-Validierung importiert keine Doctor-Detektoren für Legacy-Konfigurationen und versieht Legacy-Probleme nicht mit Anmerkungen; `runDoctorConfigPreflight()` fügt diese Probleme für die Doctor-Reparatur und -Berichterstattung hinzu. Der Doctor-Konfigurationsablauf importiert `src/commands/doctor/legacy-config.ts`, und die Reparatur alter OAuth-Profil-IDs befindet sich unter `src/commands/doctor/legacy/oauth-profile-ids.ts`.
+- Befehle außerhalb von Doctor führen die Reparatur von Legacy-Konfigurationen nicht automatisch aus. Beispielsweise schlägt `openclaw update --channel` jetzt bei einer ungültigen Legacy-Konfiguration fehl und fordert die Person auf, Doctor auszuführen, statt unbemerkt Doctor-Migrationscode zu importieren.
+- Web-Push, APNs, Voice Wake, Updateprüfungen und Konfigurationszustand verwenden jetzt typisierte gemeinsam genutzte SQLite-Tabellen für Abonnements, VAPID-Schlüssel, Node-Registrierungen, Triggerzeilen, Routingzeilen, den Zustand von Updatebenachrichtigungen und Einträge zum Konfigurationszustand statt vollständiger undurchsichtiger JSON-Blobs. Schreibvorgänge von Web Push und APNs führen nur für die betroffene Primärschlüsselzeile einen Upsert durch; der Konfigurationszustand wird anhand des Konfigurationspfads abgeglichen. Ihre Laufzeitmodule bleiben von den ausschließlich für Doctor bestimmten Hilfsfunktionen zum Import von Legacy-JSON getrennt.
+- Die APNs-Laufzeit liest und schreibt ausschließlich `apns_registrations`. Das explizite `openclaw doctor --fix` importiert das ausgemusterte `push/apns-registrations.json` strikt, bewahrt vorhandene kanonische Zeilen, überprüft die Transaktion, zeichnet einen Beleg auf und entfernt die geheimnishaltige JSON-Datei. Beleggestützte Wiederholungsversuche führen ausschließlich die Bereinigung durch, während `apns_registration_tombstones` Invalidierungen vor der ersten Reparatur abdecken, sodass veraltete Relay-Berechtigungen oder Gerätetoken nicht wiederhergestellt werden können.
+- Die Node-Host-Konfiguration verwendet jetzt eine typisierte Singleton-Zeile in der gemeinsam genutzten SQLite-Datenbank. Die Laufzeit schlägt geschlossen fehl, solange die alte Datei `node.json` oder ein unterbrochener Anspruch vorhanden ist; das explizite `openclaw doctor --fix` importiert und entfernt sie strikt vor der normalen Laufzeitverwendung.
+- Geräte-/Node-Kopplung, Kanalkopplung, Kanal-Zulassungslisten und Bootstrap-Zustand verwenden jetzt typisierte SQLite-Zeilen statt vollständiger undurchsichtiger JSON-Blobs. Genehmigungen für Plugin-Bindungen und der Zustand von Cron-Aufträgen folgen derselben Aufteilung: Laufzeitmodule stellen SQLite-gestützte Operationen und neutrale Snapshot-Hilfsfunktionen bereit, und Snapshot-Schreibvorgänge für Kopplung/Bootstrap sowie Genehmigungen von Plugin-Bindungen gleichen Zeilen anhand des Primärschlüssels ab, statt Tabellen zu leeren, während Doctor die alten JSON-Dateien über `src/commands/doctor/legacy/*`-Module importiert und entfernt.
+- Datensätze installierter Plugins befinden sich jetzt im SQLite-Index installierter Plugins. Das Lesen/Schreiben der Laufzeitkonfiguration migriert oder bewahrt alte, in `plugins.installs` erstellte Konfigurationsdaten nicht mehr; Doctor importiert diese Legacy-Konfigurationsstruktur vor der normalen Laufzeitverwendung in SQLite.
+- Snapshots zur Wiederherstellung von QQBot-Anmeldedaten befinden sich jetzt im SQLite-Plugin-Zustand unter `qqbot/credential-backups`. Die Laufzeit schreibt `qqbot/data/credential-backup*.json` nicht mehr; der QQBot-Doctor-Vertrag importiert und archiviert diese Legacy-Sicherungsdateien aus dem aktiven Zustandsverzeichnis.
+- Die Planung von Gateway-Neuladungen vergleicht Snapshots des SQLite-Index installierter Plugins unter einem internen `installedPluginIndex.installRecords.*`-Diff-Namensraum. Entscheidungen über Laufzeitneuladungen verpacken diese Zeilen nicht mehr in fingierte `plugins.installs`-Konfigurationsobjekte.
+- Matrix-Kontoanmeldedaten befinden sich jetzt im SQLite-Plugin-Zustand. Die Laufzeit liest nur aus diesem kanonischen Speicher; Doctor importiert, überprüft und archiviert ausgemusterte `credentials/matrix/credentials*.json`-Dateien, wenn das zugehörige Konto aufgelöst werden kann.
+- Die Kernlaufzeitmodule für Kopplung und Cron verwenden keine Legacy-JSON-Pfadgeneratoren mehr. Die veraltete SDK-Hilfsfunktion für Kopplungspfade bleibt als ausschließlich migrationsbezogene Kompatibilität erhalten; die Doctor-Zustandsmigration ist für ihre Dateilese- und Importvorgänge zuständig. Doctor-eigene Legacy-Module erstellen die Quellpfade `pending.json`, `paired.json`, `bootstrap.json` und `cron/jobs.json` ausschließlich für Importtests und Migrationen. Die Normalisierung von Legacy-Strukturen für Cron-Aufträge und der Import des JSONL-Verlaufs befinden sich unter `src/commands/doctor/cron/`; die Finalisierung des Legacy-SQLite-Verlaufs erfolgt beim Öffnen der Zustandsdatenbank.
+- `src/commands/doctor/legacy/runtime-state.ts` importiert Legacy-JSON-Zustandsdateien einschließlich der Node-Host-Konfiguration über Doctor in SQLite. Neue Importer für Legacy-Dateien verbleiben unter `src/commands/doctor/legacy/`.
+- `src/commands/doctor/state-migrations.ts` importiert Legacy-Transkripte aus `sessions.json` und `*.jsonl` direkt in SQLite und entfernt erfolgreich importierte Quellen. Stammverzeichnisbezogene Legacy-Transkripte werden nicht mehr über `agents/<agentId>/sessions/*.jsonl` bereitgestellt, und vor dem Import wird kein kanonisches JSONL-Ziel mehr erstellt.
+- Doctor-Prüfungen der Zustandsintegrität durchsuchen keine Legacy-Sitzungsverzeichnisse mehr und bieten keine Löschung verwaister JSONL-Dateien mehr an. Legacy-Transkriptdateien dienen ausschließlich als Migrationseingaben, und der Migrationsschritt ist sowohl für den Import als auch für das Entfernen der Quelle zuständig.
+- Der Import der Legacy-Sandbox-Registry befindet sich unter `src/commands/doctor/legacy/sandbox-registry.ts`; aktive Lese- und Schreibvorgänge der Sandbox-Registry verwenden weiterhin ausschließlich SQLite.
+- Die Reparatur des Zustands und Imports von Legacy-Sitzungstranskripten befindet sich unter `src/commands/doctor/legacy/session-transcript-health.ts`; Laufzeit-Befehlsmodule enthalten keinen Code mehr zum Parsen von JSONL-Transkripten oder zum Reparieren aktiver Branches.
 
-Abgeschlossene Highlights zu Konsolidierung/Löschung:
+Highlights der abgeschlossenen Konsolidierungen/Löschungen:
 
-- Der Plugin-Zustand verwendet jetzt die gemeinsame Datenbank `state/openclaw.sqlite`. Der alte
-  branch-lokale Sidecar-Importer `plugin-state/state.sqlite` wurde entfernt, weil
-  dieses SQLite-Layout nie ausgeliefert wurde. Probe-/Test-Helper melden den gemeinsamen
-  `databasePath`, statt einen Plugin-Zustand-spezifischen SQLite-Pfad offenzulegen.
-- Task- und TaskFlow-Runtime-Tabellen liegen jetzt in der gemeinsamen
-  Datenbank `state/openclaw.sqlite` statt in `tasks/runs.sqlite` und
-  `tasks/flows/registry.sqlite`; die alten Sidecar-Importer wurden aus demselben
-  Grund des nicht ausgelieferten Layouts entfernt.
+- Der Plugin-Zustand verwendet jetzt die gemeinsam genutzte `state/openclaw.sqlite`-Datenbank. Der alte
+  branch-lokale `plugin-state/state.sqlite`-Sidecar-Importer wurde entfernt, weil
+  dieses SQLite-Layout nie veröffentlicht wurde. Prüf-/Test-Hilfsfunktionen melden die gemeinsam genutzte
+  `databasePath`, statt einen Plugin-Zustands-spezifischen SQLite-Pfad offenzulegen.
+- Die Laufzeittabellen für Aufgaben und TaskFlow befinden sich jetzt in der gemeinsam genutzten
+  `state/openclaw.sqlite`-Datenbank statt in `tasks/runs.sqlite` und
+  `tasks/flows/registry.sqlite`; die alten Sidecar-Importer wurden aus demselben Grund
+  des nie veröffentlichten Layouts entfernt.
 - `src/config/sessions/store.ts` benötigt `storePath` nicht mehr für eingehende
-  Metadaten, Routenaktualisierungen oder updated-at-Lesezugriffe. Befehls-Persistenz, CLI-
-  Sitzungsbereinigung, Subagent-Tiefe, Auth-Überschreibungen und Transkript-Sitzungsidentität
-  verwenden Agent-/Sitzungszeilen-APIs. Schreibvorgänge werden als SQLite-Zeilen-Patches
-  mit optimistischer Konflikt-Wiederholung angewendet.
-- Die Sitzungszielauflösung stellt jetzt Datenbankziele pro Agent bereit, keine Legacy-
-  `sessions.json`-Pfade. Gemeinsamer Gateway, ACP-Metadaten, Doctor-Routenreparatur und
-  `openclaw sessions` listen `agent_databases` plus konfigurierte Agenten auf.
-- Gateway-Sitzungsrouting verwendet jetzt `resolveGatewaySessionDatabaseTarget`; das
-  zurückgegebene Ziel enthält `databasePath` und mögliche SQLite-Zeilenschlüssel statt
-  eines Legacy-Dateipfads zum Sitzungsspeicher.
-- Channel-Sitzungs-Runtime-Typen legen jetzt `{agentId, sessionKey}` für
-  updated-at-Lesezugriffe, eingehende Metadaten und letzte Routenaktualisierungen offen.
-  Der alte Kompatibilitätstyp `saveSessionStore(storePath, store)` ist entfernt.
-- Plugin-Runtime, Erweiterungs-API und `config/sessions`-Barrel-Oberflächen lenken
-  Plugin-Code jetzt zu SQLite-gestützten Helpern für Sitzungszeilen. Kompatibilitäts-
-  Exporte der Root-Bibliothek (`loadSessionStore`, `saveSessionStore`, `resolveStorePath`)
-  bleiben als veraltete Shims für bestehende Consumer erhalten. Der alte
-  Helper `resolveLegacySessionStorePath` ist entfernt; die Legacy-
-  `sessions.json`-Pfadkonstruktion ist jetzt lokal auf Migrationen und Test-Fixtures begrenzt.
-- `src/config/sessions/session-entries.sqlite.ts` speichert kanonische Sitzungseinträge
-  jetzt in der Datenbank pro Agent und unterstützt zeilenbezogene read/upsert/delete-Patches.
-  Runtime-Upsert/-Patch/-Delete sucht nicht mehr nach Groß-/Kleinschreibungsvarianten und
-  entfernt keine Legacy-Alias-Schlüssel; Doctor ist für die Kanonisierung zuständig. Der
-  eigenständige JSON-Import-Helper ist entfernt, und Migrationen führen neuere Zeilen per Upsert
-  zusammen, statt die gesamte Sitzungstabelle zu ersetzen. Öffentliche read/list/load-Helper
-  projizieren aktuelle Sitzungsmetadaten aus typisierten `sessions`- und `conversations`-Zeilen;
+  Metadaten, Routenaktualisierungen oder Lesezugriffe auf den Aktualisierungszeitpunkt. Befehlspersistenz, Bereinigung von CLI-
+  Sitzungen, Subagent-Tiefe, Authentifizierungsüberschreibungen und die Sitzungsidentität
+  von Transkripten verwenden APIs für Agenten-/Sitzungszeilen. Schreibvorgänge werden als SQLite-Zeilen-Patches
+  mit optimistischer Konfliktwiederholung angewendet.
+- Die Auflösung von Sitzungszielen stellt jetzt Datenbankziele pro Agent bereit, nicht veraltete
+  `sessions.json`-Pfade. Gemeinsam genutztes Gateway, ACP-Metadaten, Doctor-Routenreparatur und
+  `openclaw sessions` führen `agent_databases` sowie konfigurierte Agenten auf.
+- Das Gateway-Sitzungsrouting verwendet jetzt `resolveGatewaySessionDatabaseTarget`; das
+  zurückgegebene Ziel enthält `databasePath` und mögliche SQLite-Zeilenschlüssel
+  statt eines veralteten Dateipfads zum Sitzungsspeicher.
+- Die Laufzeittypen für Kanalsitzungen stellen jetzt `{agentId, sessionKey}` für
+  Lesezugriffe auf den Aktualisierungszeitpunkt, eingehende Metadaten und Aktualisierungen der letzten Route bereit. Der alte
+  `saveSessionStore(storePath, store)`-Kompatibilitätstyp wurde entfernt.
+- Die Sitzungsschnittstellen der Plugin-Laufzeit, Erweiterungs-API und des Plugin-SDK stellen jetzt
+  SQLite-gestützte Hilfsfunktionen für Sitzungszeilen statt Kompatibilitätshilfen
+  für den gesamten aktiven Sitzungsspeicher bzw. Dateien bereit. Kompatibilitätsexporte der Root-Bibliothek bleiben
+  nur außerhalb des Plugin-SDK für veraltete interne Aufrufer und Migrationsaufrufer verfügbar. Die alte
+  `resolveLegacySessionStorePath`-Hilfsfunktion wurde entfernt; die veraltete Konstruktion von
+  `sessions.json`-Pfaden erfolgt jetzt lokal in Migrationen und Test-Fixtures.
+- `src/config/sessions/session-entries.sqlite.ts` speichert kanonische Sitzungseinträge jetzt
+  in der Datenbank des jeweiligen Agenten und unterstützt Lesen, Upsert, Löschen und Patchen
+  auf Zeilenebene. Upsert-, Patch- und Löschvorgänge der Laufzeit suchen nicht mehr nach Varianten
+  der Groß-/Kleinschreibung und bereinigen keine veralteten Aliasschlüssel mehr; Doctor übernimmt die Kanonisierung. Die
+  eigenständige Hilfsfunktion für JSON-Importe wurde entfernt, und die Migration führt neuere Zeilen per Upsert zusammen,
+  statt die gesamte Sitzungstabelle zu ersetzen. Öffentliche Hilfsfunktionen zum Lesen, Auflisten und Laden
+  projizieren häufig benötigte Sitzungsmetadaten aus typisierten `sessions`- und `conversations`-Zeilen;
   `entry_json` ist ein Kompatibilitäts-/Debug-Schatten und kann veraltet oder ungültig sein,
   ohne dass typisierte Sitzungsidentität oder Zustellungskontext verloren gehen.
 - `src/config/sessions/delivery-info.ts` löst den Zustellungskontext jetzt aus den
-  typisierten Zeilen `sessions` + `conversations` + `session_conversations` pro Agent auf.
-  Es rekonstruiert die Runtime-Zustellungsidentität nicht mehr aus
-  `session_entries.entry_json`; eine fehlende typisierte Konversationszeile ist ein Doctor-
-  Migrations-/Reparaturproblem, kein Runtime-Fallback.
-- Entscheidungen zum Zurücksetzen gespeicherter Sitzungen bevorzugen jetzt typisierte Metadaten
-  aus `sessions.session_scope`, `sessions.chat_type` und `sessions.channel`. `sessionKey`-
-  Parsing bleibt nur für explizite Thread-/Topic-Suffixe bei Befehlszielen erhalten; die
-  Klassifizierung Gruppe vs. direkt stammt nicht mehr aus der Schlüsselstruktur.
-- Die Klassifizierung der Sitzungslisten-/Statusanzeige verwendet jetzt typisierte Chat-
-  Metadaten und die Gateway-Sitzungsart. Sie behandelt `:group:`- oder `:channel:`-
-  Teilstrings in `session_key` nicht mehr als dauerhafte Wahrheit für Gruppe/direkt.
-- Die Auswahl der Silent-Reply-Richtlinie verwendet jetzt nur explizite Konversationstypen
-  oder Oberflächenmetadaten. Sie errät die Direkt-/Gruppenrichtlinie nicht mehr aus
-  `session_key`-Teilstrings.
-- Die Modellauflösung für die Sitzungsanzeige erhält jetzt die Agent-ID aus dem SQLite-
-  Sitzungsdatenbankziel, statt sie aus `session_key` herauszutrennen.
-- Die Hydratisierung von Agent-zu-Agent-Ankündigungszielen verwendet jetzt nur typisierte
-  `deliveryContext` aus `sessions.list`. Sie stellt Channel-/Konto-/Thread-Routing nicht
-  mehr aus Legacy-`origin`, gespiegelten `last*`-Feldern oder der `session_key`-Struktur wieder her.
-- Die Thread-Zielablehnung von `sessions_send` liest jetzt typisierte SQLite-Routing-
-  Metadaten. Sie lehnt Ziele nicht mehr ab und akzeptiert sie nicht mehr, indem Thread-Suffixe
-  aus dem Zielschlüssel geparst werden.
-- Die Validierung gruppenbezogener Tool-Richtlinien liest jetzt typisiertes SQLite-
-  Konversationsrouting für die aktuelle oder erzeugte Sitzung. Sie vertraut der Gruppen-/
-  Channel-Identität nicht mehr durch Dekodieren von `sessionKey`; vom Aufrufer bereitgestellte
-  Gruppen-IDs werden verworfen, wenn keine typisierte Sitzungszeile für sie bürgt.
-- Der Abgleich von Channel-Modellüberschreibungen verwendet jetzt explizite Gruppen- und
-  Eltern-Konversationsmetadaten. Er dekodiert Eltern-Konversations-IDs nicht mehr aus
-  `parentSessionKey`.
-- Die Vererbung gespeicherter Modellüberschreibungen erfordert jetzt einen expliziten
-  Eltern-Sitzungsschlüssel aus typisiertem Sitzungskontext. Sie leitet Eltern-Überschreibungen
-  nicht mehr aus `:thread:`- oder `:topic:`-Suffixen in `sessionKey` ab.
-- Der alte Sitzungs-Thread-Info-Wrapper und der Thread-Parser für geladene Plugins sind entfernt;
-  kein Runtime-Code importiert mehr `config/sessions/thread-info`.
-- Der Channel-Konversations-Helper legt keine Brücken mehr für das Parsen vollständiger
-  Sitzungsschlüssel offen. Core normalisiert weiterhin Provider-eigene rohe Konversations-IDs
-  über `resolveSessionConversation(...)`, rekonstruiert aber keine Routenfakten aus `sessionKey`.
-- Abschlusszustellung, Senderegel und Task-Wartung leiten den Chat-Typ nicht mehr aus der
-  Form von `session_key` ab. Der alte Chat-Typ-Schlüsselparser wurde gelöscht; diese Pfade
-  benötigen typisierte Sitzungsmetadaten, typisierten Zustellungskontext oder explizites
-  Zustellungsziel-Vokabular.
-- Sitzungslisten/-status, Diagnosen, Genehmigungs-Kontobindung, TUI-Heartbeat-Filterung
-  und Nutzungszusammenfassungen werten `SessionEntry.origin` nicht mehr nach
-  Provider-/Konto-/Thread-/Anzeige-Routing aus. Die einzigen verbleibenden Runtime-
-  `origin`-Lesezugriffe betreffen Nicht-Sitzungskonzepte oder Zustellungsobjekte des aktuellen Turns.
-- Die native Konversationssuche für Genehmigungsanfragen liest jetzt typisierte
-  Sitzungsrouting-Zeilen pro Agent. Sie parst Channel-/Gruppen-/Thread-Konversationsidentität
-  nicht mehr aus `sessionKey`; fehlende typisierte Metadaten sind ein Migrations-/Reparaturproblem.
-- Gateway-Nutzlasten für Sitzungsänderungs-/Chat-/Sitzungsereignisse spiegeln
-  `SessionEntry.origin` oder `last*`-Routenschatten nicht mehr zurück; Clients erhalten typisierte
+  typisierten agentenspezifischen Zeilen `sessions` + `conversations` + `session_conversations` auf.
+  Die Laufzeit-Zustellungsidentität wird nicht mehr aus
+  `session_entries.entry_json` rekonstruiert; eine fehlende typisierte Konversationszeile ist ein
+  Migrations-/Reparaturproblem für Doctor und kein Laufzeit-Fallback.
+- Entscheidungen zum Zurücksetzen gespeicherter Sitzungen bevorzugen jetzt typisierte Metadaten aus `sessions.session_scope`,
+  `sessions.chat_type` und `sessions.channel`. Das Parsen von `sessionKey`
+  bleibt nur für explizite Thread-/Themen-Suffixe an Befehlszielen bestehen; die Klassifizierung
+  des Zurücksetzens als Gruppe oder Direktnachricht wird nicht mehr aus der Schlüsselform abgeleitet.
+- Die Anzeigeklassifizierung von Sitzungsliste und -status verwendet jetzt typisierte Chat-Metadaten und
+  die Gateway-Sitzungsart. Teilzeichenfolgen `:group:` oder `:channel:`
+  innerhalb von `session_key` gelten nicht mehr als dauerhafte Wahrheit über Gruppen- oder Direktnachrichten.
+- Die Auswahl der Richtlinie für stille Antworten verwendet jetzt ausschließlich den expliziten Konversationstyp oder
+  Oberflächenmetadaten. Die Richtlinie für Direktnachrichten bzw. Gruppen wird nicht mehr anhand von
+  `session_key`-Teilzeichenfolgen geschätzt.
+- Die Modellauflösung für die Sitzungsanzeige erhält die Agenten-ID jetzt aus dem Ziel der SQLite-
+  Sitzungsdatenbank, statt sie aus `session_key` herauszutrennen.
+- Die Hydrierung des Ankündigungsziels von Agent zu Agent verwendet jetzt ausschließlich typisierte
+  `sessions.list` `deliveryContext`. Kanal-/Konto-/Thread-Routing wird nicht mehr
+  aus dem veralteten `origin`, gespiegelten `last*`-Feldern oder der Form von `session_key`
+  wiederhergestellt.
+- Die Ablehnung von `sessions_send`-Thread-Zielen liest jetzt typisierte SQLite-Routing-
+  Metadaten. Ziele werden nicht mehr durch Parsen von Thread-Suffixen
+  aus dem Zielschlüssel abgelehnt oder akzeptiert.
+- Die Validierung von gruppenspezifischen Werkzeugrichtlinien liest jetzt das typisierte SQLite-Konversations-
+  routing für die aktuelle oder erzeugte Sitzung. Der Gruppen-/Kanalidentität wird nicht mehr
+  durch Dekodieren von `sessionKey` vertraut; vom Aufrufer bereitgestellte Gruppen-IDs werden verworfen, wenn
+  keine typisierte Sitzungszeile sie bestätigt.
+- Der Abgleich von Kanalmodellüberschreibungen verwendet jetzt explizite Metadaten
+  der Gruppen- und übergeordneten Konversation. Übergeordnete Konversations-IDs werden nicht mehr aus
+  `parentSessionKey` dekodiert.
+- Die Vererbung gespeicherter Modellüberschreibungen erfordert jetzt einen expliziten Schlüssel der übergeordneten Sitzung
+  aus dem typisierten Sitzungskontext. Übergeordnete Überschreibungen werden nicht mehr aus
+  `:thread:`- oder `:topic:`-Suffixen in `sessionKey` abgeleitet.
+- Der alte Wrapper für Sitzungs-Thread-Informationen und der Thread-Parser für geladene Plugins wurden entfernt;
+  kein Laufzeitcode importiert `config/sessions/thread-info`.
+- Die Hilfsfunktion für Kanalkonversationen stellt keine Parsing-Brücken
+  für vollständige Sitzungsschlüssel mehr bereit. Der Kern normalisiert weiterhin Provider-eigene rohe Konversations-IDs über
+  `resolveSessionConversation(...)`, rekonstruiert jedoch keine Routenfakten
+  aus `sessionKey`.
+- Abschlusszustellung, Senderichtlinie und Aufgabenwartung leiten den Chat-
+  typ nicht mehr aus der Form von `session_key` ab. Der alte Chattyp-Schlüsselparser wurde gelöscht;
+  diese Pfade erfordern typisierte Sitzungsmetadaten, typisierten Zustellungskontext oder
+  ein explizites Vokabular für Zustellungsziele.
+- Sitzungsliste/-status, Diagnose, Kontobindung für Genehmigungen, TUI-Heartbeat-
+  Filterung und Nutzungszusammenfassungen durchsuchen `SessionEntry.origin` nicht mehr nach
+  Provider-/Konto-/Thread-/Anzeige-Routing. Die einzigen verbleibenden Laufzeit-
+  Lesezugriffe auf `origin` betreffen sitzungsfremde Konzepte oder Zustellungsobjekte des aktuellen Durchlaufs.
+- Die native Konversationssuche für Genehmigungsanfragen liest jetzt typisierte agentenspezifische Sitzungs-
+  Routingzeilen. Die Kanal-/Gruppen-/Thread-Konversationsidentität wird nicht mehr
+  aus `sessionKey` geparst; fehlende typisierte Metadaten sind ein Migrations-/Reparaturproblem.
+- Nutzdaten für Gateway-Ereignisse zu Sitzungsänderungen, Chats und Sitzungen spiegeln keine
+  `SessionEntry.origin`- oder `last*`-Routenschatten mehr; Clients erhalten typisierte
   `channel`, `chatType` und `deliveryContext`.
-- Die Heartbeat-Zustellungsauflösung kann jetzt den typisierten SQLite-
-  `deliveryContext` direkt erhalten, und die Heartbeat-Runtime übergibt die Zustellungszeile
-  pro Agent, statt sich für aktuelles Routing auf Kompatibilitäts-Schatten in `session_entries`
-  zu verlassen.
-- Die Zielauflösung für isolierte Cron-Agent-Zustellung hydratisiert ihre aktuelle
-  Route ebenfalls aus der typisierten Zustellungszeile der Sitzung pro Agent, bevor sie auf die
-  Kompatibilitäts-Eintragsnutzlast zurückfällt.
-- Die Ursprungsauflösung für Subagent-Ankündigungen schleust jetzt den typisierten
-  Zustellungskontext der Anforderer-Sitzung durch `loadRequesterSessionEntry` und bevorzugt diese
-  Zeile gegenüber Kompatibilitäts-Schatten `last*`/`deliveryContext`.
-- Aktualisierungen eingehender Sitzungsmetadaten werden jetzt zuerst mit der typisierten
-  Zustellungszeile pro Agent zusammengeführt; alte Zustellungsfelder von `SessionEntry` sind nur
-  der Fallback, wenn keine typisierte Konversationszeile existiert.
-- Die Zustellungsextraktion bei Neustart/Aktualisierung lässt jetzt die typisierte SQLite-
-  Zustellungs-`threadId` gegenüber Topic-/Thread-Fragmenten gewinnen, die aus `sessionKey`
-  geparst werden; Parsing ist nur ein Fallback für Legacy-Schlüssel mit Thread-Form.
-- Channel-IDs im Hook-Agent-Kontext bevorzugen jetzt typisierte SQLite-Konversationsidentität,
-  danach explizite Nachrichtenmetadaten. Sie parsen keine Provider-/Gruppen-/Channel-
-  Fragmente mehr aus `sessionKey`.
-- Gateway-`chat.send`-Vererbung externer Routen liest jetzt typisierte SQLite-
-  Sitzungsrouting-Metadaten, statt Channel-/Direkt-/Gruppenumfang aus
-  `sessionKey`-Teilen abzuleiten. Channel-bezogene Sitzungen erben nur, wenn der typisierte
-  Sitzungs-Channel und Chat-Typ zum gespeicherten Zustellungskontext passen; gemeinsame Haupt-
-  Sitzungen behalten ihre strengere CLI-/Keine-Client-Metadaten-Regel.
-- Neustart-Sentinel-Wake und Fortsetzungsrouting lesen jetzt typisierte SQLite-
-  Zustellungs-/Routing-Zeilen, bevor Heartbeat-Wakes oder geroutete Agent-Turn-
-  Fortsetzungen eingereiht werden. Es rekonstruiert den Zustellungskontext nicht mehr aus dem
-  JSON-Schatten des Sitzungseintrags.
-- Gateway-`tools.effective`-Kontextauflösung liest jetzt typisierte SQLite-
-  Zustellungs-/Routing-Zeilen für Provider-, Konto-, Ziel-, Thread- und Reply-Mode-
-  Eingaben. Sie stellt diese aktuellen Routing-Felder nicht mehr aus veralteten
-  `session_entries.entry_json`-Ursprungsschatten wieder her.
-- Realtime-Voice-Consult-Routing löst Eltern-/Anrufzustellung jetzt aus typisierten
-  SQLite-Sitzungszeilen pro Agent auf. Es fällt bei der Auswahl der eingebetteten Agent-
-  Nachrichtenroute nicht mehr auf Kompatibilitäts-Schatten `SessionEntry.deliveryContext` zurück.
-- ACP-Spawn-Heartbeat-Relay und Eltern-Stream-Routing lesen Elternzustellung jetzt aus
-  typisierten SQLite-Sitzungszeilen. Sie rekonstruieren den Eltern-Zustellungskontext nicht mehr
-  aus Kompatibilitäts-Schatten von Sitzungseinträgen.
-- Die Erhaltung von Sitzungszustellungsrouten folgt jetzt typisierten Chat-Metadaten und
-  persistierten Zustellungsspalten. Sie extrahiert keine Channel-Hinweise, Direkt-/Main-
-  Marker oder Thread-Formen mehr aus `sessionKey`; interne Webchat-Routen erben ein externes Ziel
-  nur, wenn SQLite bereits eine typisierte/persistierte Zustellungsidentität für die Sitzung hat.
-- Die generische Sitzungszustellungsextraktion liest nur noch die exakte typisierte SQLite-
-  Zustellungszeile der Sitzung. Sie parst keine Thread-/Topic-Suffixe mehr und fällt nicht von
-  einem Schlüssel mit Thread-Form auf einen Basis-Sitzungsschlüssel zurück.
-- Antwort-Dispatch, Neustart-Sentinel-Wiederherstellung und Realtime-Voice-Consult-Routing
-  verwenden jetzt exakte typisierte SQLite-Sitzungs-/Konversationszeilen für Thread-Routing. Sie
-  stellen Thread-IDs oder Zustellungskontext der Basissitzung nicht mehr durch Parsen
-  von Sitzungsschlüsseln mit Thread-Form wieder her.
-- Die Begrenzung des Embedded-PI-Verlaufs verwendet jetzt die typisierte SQLite-
-  Sitzungsrouting-Projektion (`sessions` + primäre `conversations`) für Provider, Chat-Typ
-  und Peer-Identität. Sie parst Provider, DM, Gruppe oder Thread-Form nicht mehr aus
-  `sessionKey`.
-- Die Cron-Tool-Zustellungsinferenz verwendet jetzt nur explizite Zustellung oder den aktuellen
-  typisierten Zustellungskontext. Sie dekodiert keine Channel-, Peer-, Konto- oder Thread-
-  Ziele mehr aus `agentSessionKey`.
-- Runtime-Sitzungszeilen enthalten nicht mehr den alten Routenalias `lastProvider`.
-  Helper und Tests verwenden typisierte Felder `lastChannel` und `deliveryContext`;
-  Doctor-Migration ist der einzige Ort, der ältere Routenaliase oder persistierte
-  `origin`-Schatten übersetzen sollte.
-- Transkriptereignisse, VFS-Zeilen und Tool-Artefaktzeilen schreiben jetzt in die Datenbank
-  pro Agent. Die nicht ausgelieferte globale Zuordnungstabelle für Transkriptdateien ist entfernt;
-  Doctor zeichnet Legacy-Quellpfade stattdessen in dauerhaften Migrationszeilen auf.
-- Runtime-Transkriptsuche scannt keine JSONL-Byte-Offsets mehr und sondiert keine Legacy-
-  Transkriptdateien. Gateway-Chat-/Medien-/Verlaufspfade lesen Transkriptzeilen aus
-  SQLite; Sitzungs-JSONL ist jetzt nur noch eine Legacy-Eingabe für Doctor, kein Runtime-Zustand
-  und kein Exportformat.
-- Eltern- und Branch-Beziehungen von Transkripten verwenden strukturierte
-  `parentTranscriptScope: {agentId, sessionId}`-Metadaten in SQLite-Transkript-Headern,
-  keine pfadähnlichen Locator-Strings `agent-db:...transcript_events...`.
-- Der Vertrag des Transkript-Managers legt keine implizit persistierten Konstruktoren
-  `create(cwd)` oder `continueRecent(cwd)` mehr offen. Persistierte Transkript-Manager
-  werden mit einem expliziten Scope `{agentId, sessionId}` geöffnet; nur In-Memory-Manager
-  bleiben für Tests und reine Transkript-Transformationen scope-frei.
-- Runtime-Transkript-Store-APIs lösen den SQLite-Scope auf, keine Dateisystempfade. Der
-  alte Helper `resolve...ForPath` und ungenutzte Schreiboptionen `transcriptPath` sind aus
-  Runtime-Aufrufern entfernt.
-- Runtime-Sitzungsauflösung verwendet jetzt `{agentId, sessionId}` und darf keine
-  `sqlite-transcript://<agent>/<session>`-Strings für externe Grenzen ableiten.
-  Legacy-absolute JSONL-Pfade sind nur Eingaben für die Doctor-Migration.
-- Direkte Bridge-Datensätze des nativen Hook-Relays liegen jetzt in typisierten gemeinsamen
-  `native_hook_relay_bridges`-Zeilen, indiziert nach Relay-ID. Runtime schreibt keine
-  `/tmp`-JSON-Registry und keine opaken generischen Datensätze mehr für diese kurzlebigen
-  Bridge-Datensätze.
-- `runEmbeddedPiAgent(...)` hat keinen Transkript-Locator-Parameter mehr.
-  Vorbereitete Worker-Deskriptoren lassen außerdem Transkript-Locators aus. Laufzeit-Sitzungsstatus
-  und eingereihte Nachlauf-Ausführungen tragen `{agentId, sessionId}` statt
-  abgeleiteter Transkript-Handles.
-- Eingebettete Compaction übernimmt den SQLite-Bereich jetzt aus `agentId` und `sessionId`.
-  Compaction-Hooks, Context-Engine-Aufrufe, CLI-Delegation und Protokollantworten
+- Die Auflösung der Heartbeat-Zustellung kann jetzt die typisierte SQLite-
+  `deliveryContext` direkt empfangen, und die Heartbeat-Laufzeit übergibt die agentenspezifische
+  Sitzungszustellungszeile, statt sich für das aktuelle Routing auf Kompatibilitäts-
+  schatten von `session_entries` zu verlassen.
+- Die Auflösung des Zustellungsziels für isolierte Cron-Agenten hydriert ihre aktuelle
+  Route ebenfalls aus der typisierten agentenspezifischen Sitzungszustellungszeile, bevor auf die
+  kompatible Eintragsnutzlast zurückgegriffen wird.
+- Die Auflösung des Ursprungs von Subagent-Ankündigungen führt jetzt den typisierten Zustellungs-
+  kontext der anfordernden Sitzung durch `loadRequesterSessionEntry` und bevorzugt diese Zeile gegenüber
+  den Kompatibilitätsschatten `last*`/`deliveryContext`.
+- Aktualisierungen eingehender Sitzungsmetadaten werden jetzt zuerst mit der typisierten agentenspezifischen
+  Zustellungszeile zusammengeführt; alte `SessionEntry`-Zustellungsfelder dienen nur als Fallback,
+  wenn keine typisierte Konversationszeile vorhanden ist.
+- Bei der Extraktion der Zustellung für Neustart/Aktualisierung hat die typisierte SQLite-Zustellung
+  `threadId` jetzt Vorrang vor Themen-/Thread-Fragmenten, die aus `sessionKey` geparst werden; das Parsen
+  dient nur als Fallback für veraltete threadförmige Schlüssel.
+- Kanal-IDs des Agentenkontexts für Hooks bevorzugen jetzt die typisierte SQLite-Konversationsidentität,
+  danach explizite Nachrichtenmetadaten. Provider-/Gruppen-/Kanal-
+  fragmente werden nicht mehr aus `sessionKey` geparst.
+- Die Vererbung externer Routen durch Gateway `chat.send` liest jetzt typisierte SQLite-Sitzungs-
+  Routingmetadaten, statt Kanal-/Direkt-/Gruppenumfang aus
+  Bestandteilen von `sessionKey` abzuleiten. Kanalspezifische Sitzungen erben nur, wenn der typisierte
+  Sitzungskanal und der Chattyp mit dem gespeicherten Zustellungskontext übereinstimmen; gemeinsam genutzte Haupt-
+  sitzungen behalten ihre strengere Regel für CLI/fehlende Client-Metadaten.
+- Aufwecken durch Neustart-Sentinel und Fortsetzungsrouting lesen jetzt typisierte SQLite-
+  Zustellungs-/Routingzeilen, bevor Heartbeat-Aufweckvorgänge oder geroutete Fortsetzungen
+  von Agentendurchläufen in die Warteschlange gestellt werden. Der Zustellungskontext wird nicht mehr aus dem
+  JSON-Schatten des Sitzungseintrags rekonstruiert.
+- Die Kontextauflösung von Gateway `tools.effective` liest jetzt typisierte SQLite-
+  Zustellungs-/Routingzeilen für Provider-, Konto-, Ziel-, Thread- und Antwortmodus-
+  Eingaben. Diese häufig benötigten Routingfelder werden nicht mehr aus veralteten
+  `session_entries.entry_json`-Ursprungsschatten wiederhergestellt.
+- Das Routing für Echtzeit-Sprachkonsultationen löst die Zustellung für übergeordnete Sitzung/Anruf jetzt aus typisierten
+  agentenspezifischen SQLite-Sitzungszeilen auf. Bei der Auswahl der eingebetteten Agenten-
+  Nachrichtenroute wird nicht mehr auf Kompatibilitätsschatten von `SessionEntry.deliveryContext`
+  zurückgegriffen.
+- ACP-Spawn-Heartbeat-Weiterleitung und das Routing des übergeordneten Streams lesen die übergeordnete Zustellung jetzt
+  aus typisierten SQLite-Sitzungszeilen. Der Zustellungskontext der übergeordneten Sitzung wird nicht mehr
+  aus Kompatibilitätsschatten von Sitzungseinträgen rekonstruiert.
+- Die Beibehaltung der Sitzungszustellungsroute folgt jetzt typisierten Chat-Metadaten und
+  persistenten Zustellungsspalten. Kanalhinweise, Direkt-/Haupt-
+  marker oder Thread-Form werden nicht mehr aus `sessionKey` extrahiert; interne Webchat-Routen
+  erben ein externes Ziel nur, wenn SQLite bereits über eine typisierte/persistierte Zustellungs-
+  identität für die Sitzung verfügt.
+- Die generische Extraktion der Sitzungszustellung liest nur noch die exakt passende typisierte SQLite-
+  Sitzungszustellungszeile. Thread-/Themen-Suffixe werden nicht mehr geparst, und es wird
+  nicht mehr von einem threadförmigen Schlüssel auf einen Basissitzungsschlüssel zurückgegriffen.
+- Antwortweiterleitung, Wiederherstellung durch Neustart-Sentinel und Routing für Echtzeit-Sprachkonsultationen
+  verwenden jetzt exakt passende typisierte SQLite-Sitzungs-/Konversationszeilen für das Thread-Routing. Thread-
+  IDs oder der Zustellungskontext der Basissitzung werden nicht mehr durch Parsen
+  threadförmiger Sitzungsschlüssel wiederhergestellt.
+- Die Begrenzung des Verlaufs für eingebettetes PI verwendet jetzt die typisierte SQLite-Sitzungsrouting-
+  projektion (`sessions` + primäres `conversations`) für Provider, Chattyp
+  und Peer-Identität. Provider-, DM-, Gruppen- oder Thread-Form werden nicht mehr
+  aus `sessionKey` geparst.
+- Die Ableitung der Cron-Werkzeugzustellung verwendet jetzt nur die explizite Zustellung oder den aktuellen typisierten
+  Zustellungskontext. Kanal-, Peer-, Konto- oder Thread-
+  ziele werden nicht mehr aus `agentSessionKey` dekodiert.
+- Laufzeit-Sitzungszeilen enthalten den alten Routenalias `lastProvider` nicht mehr.
+  Hilfsfunktionen und Tests verwenden typisierte `lastChannel`- und `deliveryContext`-Felder;
+  nur die Doctor-Migration sollte ältere Routenaliase
+  oder persistente `origin`-Schatten übersetzen.
+- Transkriptereignisse, VFS-Zeilen und Zeilen für Werkzeugartefakte werden jetzt in die agentenspezifische
+  Datenbank geschrieben. Die nie veröffentlichte globale Zuordnungstabelle für Transkriptdateien wurde entfernt; Doctor
+  zeichnet stattdessen veraltete Quellpfade in dauerhaften Migrationszeilen auf.
+- Die Laufzeit-Transkriptsuche durchsucht keine JSONL-Byte-Offsets mehr und prüft keine veralteten
+  Transkriptdateien. Gateway-Pfade für Chat/Medien/Verlauf lesen Transkriptzeilen aus
+  SQLite; Sitzungs-JSONL dient jetzt nur noch als veraltete Eingabe für Doctor, nicht als Laufzeitzustand
+  oder Exportformat.
+- Übergeordnete und Verzweigungsbeziehungen von Transkripten verwenden strukturierte
+  `parentTranscriptScope: {agentId, sessionId}`-Metadaten in SQLite-Transkript-
+  headern statt pfadähnlicher `agent-db:...transcript_events...`-Locator-Zeichenfolgen.
+- Der Vertrag des Transkriptmanagers stellt keine impliziten persistenten
+  `create(cwd)`- oder `continueRecent(cwd)`-Konstruktoren mehr bereit. Persistente Transkript-
+  manager werden mit einem expliziten `{agentId, sessionId}`-Geltungsbereich geöffnet; nur
+  In-Memory-Manager bleiben für Tests und reine Transkripttransformationen ohne Scope.
+- Runtime-Transkriptspeicher-APIs lösen den SQLite-Scope auf, keine Dateisystempfade. Der
+  alte `resolve...ForPath`-Helper und die nicht verwendeten `transcriptPath`-Schreiboptionen sind
+  aus Runtime-Aufrufern entfernt.
+- Die Runtime-Sitzungsauflösung verwendet jetzt `{agentId, sessionId}` und darf keine
+  `sqlite-transcript://<agent>/<session>`-Zeichenfolgen für externe Grenzen ableiten.
+  Veraltete absolute JSONL-Pfade dienen ausschließlich als Eingaben für die Doctor-Migration.
+- Direkt-Bridge-Datensätze der nativen Hook-Weiterleitung befinden sich jetzt in typisierten gemeinsamen
+  `native_hook_relay_bridges`-Zeilen, die nach Weiterleitungs-ID indiziert sind. Die Runtime schreibt für diese kurzlebigen Bridge-
+  Datensätze keine `/tmp`-JSON-Registry oder undurchsichtigen generischen Datensätze mehr.
+- `runEmbeddedPiAgent(...)` besitzt keinen Transkript-Locator-Parameter mehr.
+  Vorbereitete Worker-Deskriptoren enthalten ebenfalls keine Transkript-Locators mehr. Der Runtime-Sitzungs-
+  zustand und in die Warteschlange gestellte Folgeläufe führen `{agentId, sessionId}` anstelle
+  abgeleiteter Transkript-Handles mit.
+- Die eingebettete Compaction übernimmt den SQLite-Scope jetzt aus `agentId` und `sessionId`.
+  Compaction-Hooks, Context-Engine-Aufrufe, CLI-Delegierung und Protokollantworten
   dürfen keine abgeleiteten `sqlite-transcript://...`-Handles erhalten. Export-/Debug-Code
-  kann explizite Benutzerartefakte aus Zeilen materialisieren, stellt aber keinen
-  generischen JSONL-Exportpfad für Sitzungen bereit und speist Dateinamen nicht zurück in die Laufzeitidentität.
-- `/export-session` liest Transkriptzeilen aus SQLite und schreibt nur die angeforderte
-  eigenständige HTML-Ansicht. Der eingebettete Viewer rekonstruiert oder lädt Sitzungs-JSONL
-  nicht mehr aus diesen Zeilen herunter.
-- Context-Engine-Delegation parst keinen Transkript-Locator mehr, um
-  Agent-Identität wiederherzustellen. Der vorbereitete Laufzeitkontext trägt die aufgelöste `agentId`
-  in den eingebauten Compaction-Adapter.
-- Transkript-Neuschreibung und Live-Kürzung von Tool-Ergebnissen lesen und persistieren
-  Transkriptstatus jetzt über `{agentId, sessionId}` und leiten keine temporären
+  kann explizite Benutzerartefakte aus Zeilen materialisieren, stellt jedoch keinen
+  generischen JSONL-Exportpfad für Sitzungen bereit und führt Dateinamen nicht wieder
+  in die Runtime-Identität ein.
+- `/export-session` liest Transkriptzeilen aus SQLite und schreibt ausschließlich die angeforderte
+  eigenständige HTML-Ansicht. Der eingebettete Viewer rekonstruiert oder
+  lädt Sitzungs-JSONL nicht mehr aus diesen Zeilen herunter.
+- Die Context-Engine-Delegierung analysiert keinen Transkript-Locator mehr, um die
+  Agentenidentität wiederherzustellen. Der vorbereitete Runtime-Kontext übergibt den aufgelösten `agentId`
+  an den integrierten Compaction-Adapter.
+- Das Umschreiben von Transkripten und die Live-Kürzung von Tool-Ergebnissen lesen und speichern
+  den Transkriptzustand jetzt anhand von `{agentId, sessionId}` und leiten keine temporären
   Locators für Ereignis-Payloads von Transkriptaktualisierungen ab.
-- Die Hilfsoberfläche für Transkriptstatus hat keine Locator-basierten Varianten
-  `readTranscriptState`, `replaceTranscriptStateEvents` oder
-  `persistTranscriptStateMutation` mehr. Laufzeitaufrufer müssen die
-  `{agentId, sessionId}`-APIs verwenden. Doctor-Import liest Legacy-Dateien über explizite Dateipfade
-  und schreibt SQLite-Zeilen; Locator-Strings werden nicht migriert.
-- Der Vertrag des Laufzeit-Sitzungsmanagers stellt `open(locator)`,
-  `forkFrom(locator)` oder `setTranscriptLocator(...)` nicht mehr bereit. Persistierte Sitzungsmanager
-  öffnen nur über `{agentId, sessionId}`; Listen-/Fork-Helfer leben auf
-  zeilenorientierten Sitzungs- und Checkpoint-APIs statt auf der Transkriptmanager-Fassade.
-- Gateway-Transkriptleser-APIs sind bereichszuerst. Sie nehmen
-  `{agentId, sessionId}` entgegen und akzeptieren keinen positionalen Transkript-Locator,
-  der versehentlich zur Laufzeitidentität werden könnte. Das Parsen aktiver Transkript-Locators
-  entfällt; Legacy-Quellpfade werden nur von Doctor-Importcode gelesen.
-- Transkriptaktualisierungsereignisse sind ebenfalls bereichszuerst. `emitSessionTranscriptUpdate`
-  akzeptiert keinen bloßen Locator-String mehr, und Listener routen über
-  `{agentId, sessionId}`, ohne ein Handle zu parsen.
-- Gateway-Broadcasts für Sitzungsnachrichten lösen Sitzungsschlüssel aus Agent-/Sitzungsbereich
-  auf, nicht aus einem Transkript-Locator. Der alte Resolver/Cache von Transkript-Locator zu Sitzungsschlüssel
-  ist entfernt.
-- Gateway-Sitzungsverlaufs-SSE filtert Live-Aktualisierungen nach Agent-/Sitzungsbereich. Es
-  kanonisiert keine Transkript-Locator-Kandidaten, Realpaths oder dateiförmigen
+- Die Oberfläche der Transkriptzustands-Helper besitzt keine Locator-basierten
+  Varianten `readTranscriptState`, `replaceTranscriptStateEvents` oder
+  `persistTranscriptStateMutation` mehr. Runtime-Aufrufer müssen die
+  `{agentId, sessionId}`-APIs verwenden. Der Doctor-Import liest veraltete Dateien über einen expliziten Datei-
+  pfad und schreibt SQLite-Zeilen; Locator-Zeichenfolgen werden nicht migriert.
+- Der Runtime-Sitzungsmanager-Vertrag stellt `open(locator)`,
+  `forkFrom(locator)` oder `setTranscriptLocator(...)` nicht mehr bereit. Persistierte Sitzungs-
+  manager werden ausschließlich über `{agentId, sessionId}` geöffnet; Listen-/Fork-Helper befinden sich
+  auf zeilenorientierten Sitzungs- und Checkpoint-APIs statt auf der Fassade des Transkript-
+  managers.
+- Gateway-Transkriptleser-APIs sind Scope-first. Sie übernehmen
+  `{agentId, sessionId}` und akzeptieren keinen positionellen Transkript-Locator, der
+  versehentlich zur Runtime-Identität werden könnte. Die aktive Analyse von Transkript-Locators
+  wurde entfernt; veraltete Quellpfade werden ausschließlich vom Doctor-Importcode gelesen.
+- Auch Transkriptaktualisierungsereignisse sind Scope-first. `emitSessionTranscriptUpdate`
+  akzeptiert keine bloße Locator-Zeichenfolge mehr, und Listener leiten anhand von
+  `{agentId, sessionId}` weiter, ohne ein Handle zu analysieren.
+- Der Gateway-Broadcast von Sitzungsnachrichten löst Sitzungsschlüssel aus dem Agenten-/Sitzungs-
+  Scope auf, nicht aus einem Transkript-Locator. Der alte Resolver/Cache für die Zuordnung von Transkript-Locators zu Sitzungs-
+  schlüsseln wurde entfernt.
+- Die SSE-Filter des Gateway-Sitzungsverlaufs filtern Live-Aktualisierungen nach Agenten-/Sitzungs-Scope. Sie
+  kanonisieren keine Transkript-Locator-Kandidaten, Realpaths oder dateiförmigen
   Transkriptidentitäten mehr, um zu entscheiden, ob ein Stream eine Aktualisierung erhalten soll.
-- Sitzungslebenszyklus-Hooks leiten auf `session_end` keine Transkript-Locators mehr ab
-  und stellen sie nicht mehr bereit. Hook-Konsumenten erhalten `sessionId`, `sessionKey`,
-  nächste Sitzungs-IDs und Agent-Kontext; Transkriptdateien sind nicht Teil des Lebenszyklusvertrags.
-- Reset-Hooks leiten ebenfalls keine Transkript-Locators mehr ab und stellen sie nicht bereit. Die
-  `before_reset`-Payload enthält wiederhergestellte SQLite-Nachrichten plus den Reset-Grund,
-  während die Sitzungsidentität im Hook-Kontext bleibt.
-- Agent-Harness-Reset akzeptiert keinen Transkript-Locator mehr. Reset-Dispatch ist
-  nach `sessionId`/`sessionKey` plus Grund begrenzt.
-- Sitzungstypen für Agent-Erweiterungen stellen `transcriptLocator` nicht mehr bereit; Erweiterungen
-  sollten Sitzungskontext und Laufzeit-APIs verwenden, statt nach einer
-  dateiförmigen Transkriptidentität zu greifen.
+- Sitzungslebenszyklus-Hooks leiten keine Transkript-Locators mehr für
+  `session_end` ab und stellen sie nicht mehr bereit. Hook-Konsumenten erhalten `sessionId`, `sessionKey`, IDs der nächsten Sitzung
+  und Agentenkontext; Transkriptdateien sind nicht Teil des Lebenszyklus-
+  vertrags.
+- Reset-Hooks leiten ebenfalls keine Transkript-Locators mehr ab und stellen sie nicht mehr bereit. Der
+  `before_reset`-Payload enthält wiederhergestellte SQLite-Nachrichten sowie den Reset-
+  Grund, während die Sitzungsidentität im Hook-Kontext verbleibt.
+- Der Reset des Agenten-Harness akzeptiert keinen Transkript-Locator mehr. Die Reset-Weiterleitung ist
+  anhand von `sessionId`/`sessionKey` sowie dem Grund begrenzt.
+- Sitzungstypen von Agentenerweiterungen stellen `transcriptLocator` nicht mehr bereit; Erweiterungen
+  sollten Sitzungskontext und Runtime-APIs verwenden, statt auf eine
+  dateiförmige Transkriptidentität zuzugreifen.
 - Plugin-Compaction-Hooks stellen keine Transkript-Locators mehr bereit. Der Hook-Kontext
-  trägt bereits die Sitzungsidentität, und Transkriptlesevorgänge müssen über SQLite-
-  bereichsbewusste APIs statt über dateiförmige Handles laufen.
+  enthält bereits die Sitzungsidentität, und Transkripte müssen über SQLite-
+  Scope-fähige APIs statt über dateiförmige Handles gelesen werden.
 - `before_agent_finalize`-Hooks stellen `transcriptPath` nicht mehr bereit, einschließlich
-  nativer Hook-Relay-Payloads. Finalisierungs-Hooks verwenden nur Sitzungskontext.
+  der Payloads nativer Hook-Weiterleitungen. Finalisierungs-Hooks verwenden ausschließlich den Sitzungskontext.
 - Gateway-Reset-Antworten synthetisieren keinen Transkript-Locator mehr für den
-  zurückgegebenen Eintrag. Der Reset erstellt SQLite-Transkriptzeilen, gibt den sauberen
-  Sitzungseintrag zurück und überlässt Transkriptzugriff bereichsbewussten Lesern.
-- Ergebnisse eingebetteter Ausführungen und Compaction-Ergebnisse legen keine Transkript-Locators mehr für
-  Sitzungsabrechnung offen. Automatische Compaction aktualisiert nur die aktive `sessionId`,
+  zurückgegebenen Eintrag. Der Reset erstellt SQLite-Transkriptzeilen, gibt den bereinigten
+  Sitzungseintrag zurück und überlässt den Transkriptzugriff Scope-fähigen Lesern.
+- Ergebnisse eingebetteter Läufe und der Compaction stellen keine Transkript-Locators mehr für
+  die Sitzungsabrechnung bereit. Die automatische Compaction aktualisiert nur die aktive `sessionId`,
   Compaction-Zähler und Token-Metadaten.
 - Ergebnisse eingebetteter Versuche geben `transcriptLocatorUsed` nicht mehr zurück, und
-  Context-Engine-`compact()`-Ergebnisse geben keine Transkript-Locators mehr zurück.
-  Laufzeit-Wiederholungsschleifen akzeptieren nur eine Nachfolger-`sessionId`.
-- Transkript-Anfügeergebnisse des Delivery-Mirror geben keine Transkript-Locators mehr zurück.
-  Aufrufer erhalten die angefügte `messageId`; Transkriptaktualisierungssignale verwenden
-  SQLite-Bereich.
-- Parent-Session-Fork-Helfer geben nur die geforkte `sessionId` zurück. Subagent-
-  Vorbereitung übergibt den Child-Agent-/Sitzungsbereich an Engines.
-- CLI-Runner-Parameter und das erneute Einspeisen von Verlauf akzeptieren keine Transkript-Locators mehr.
-  CLI-Verlaufslesevorgänge lösen den SQLite-Transkriptbereich aus `{agentId,
-sessionId}` und Sitzungsschlüsselkontext auf.
-- CLI- und Embedded-Runner-Testfixtures säen und lesen SQLite-Transkriptzeilen jetzt
-  nach Sitzungs-ID, statt aktive Sitzungen als `*.jsonl`-Dateien auszugeben oder
-  einen `sqlite-transcript://...`-String durch Laufzeitparameter zu reichen.
-- Guard-Ereignisse für Sitzungs-Tool-Ergebnisse werden aus bekanntem Sitzungsbereich emittiert, auch wenn ein
-  In-Memory-Manager keinen abgeleiteten Locator hat. Seine Tests fälschen keine aktiven
-  `/tmp/*.jsonl`-Transkriptdateien mehr.
-- BTW- und Compaction-Checkpoint-Helfer lesen und forken Transkriptzeilen jetzt nach
-  SQLite-Bereich. Checkpoint-Metadaten speichern jetzt nur Sitzungs-IDs und Leaf-/Entry-IDs;
+  `compact()`-Ergebnisse der Context-Engine geben keine Transkript-Locators mehr zurück.
+  Runtime-Wiederholungsschleifen akzeptieren nur eine nachfolgende `sessionId`.
+- Ergebnisse beim Anhängen von Transkripten für die Zustellungsspiegelung geben keine Transkript-
+  Locators mehr zurück. Aufrufer erhalten die angehängte `messageId`; Signale für Transkriptaktualisierungen verwenden
+  den SQLite-Scope.
+- Fork-Helper für übergeordnete Sitzungen geben nur die geforkte `sessionId` zurück. Die Vorbereitung von Subagenten
+  übergibt den untergeordneten Agenten-/Sitzungs-Scope an Engines.
+- CLI-Runner-Parameter und das erneute Befüllen des Verlaufs akzeptieren keine Transkript-Locators mehr.
+  CLI-Verlaufslesevorgänge lösen den SQLite-Transkript-Scope aus `{agentId,
+sessionId}` und dem Sitzungsschlüsselkontext auf.
+- Test-Fixtures für CLI und eingebettete Runner befüllen und lesen SQLite-Transkriptzeilen jetzt
+  anhand der Sitzungs-ID, statt vorzugeben, aktive Sitzungen seien `*.jsonl`-Dateien, oder
+  eine `sqlite-transcript://...`-Zeichenfolge durch Runtime-Parameter zu übergeben.
+- Ereignisse des Schutzmechanismus für Sitzungstool-Ergebnisse werden aus dem bekannten Sitzungs-Scope ausgegeben, selbst wenn ein
+  In-Memory-Manager keinen abgeleiteten Locator besitzt. Die Tests täuschen keine aktiven
+  `/tmp/*.jsonl`-Transkriptdateien mehr vor.
+- BTW- und Compaction-Checkpoint-Helper lesen und forken Transkriptzeilen jetzt anhand des
+  SQLite-Scopes. Checkpoint-Metadaten speichern jetzt ausschließlich Sitzungs-IDs und Blatt-/Eintrags-IDs;
   abgeleitete Locators werden nicht mehr in Checkpoint-Payloads geschrieben.
-- Gateway-Transkript-Schlüsselsuche verwendet SQLite-Transkriptbereich an Protokollgrenzen
-  und führt keine Realpaths oder Stat-Aufrufe für Transkriptdateinamen mehr aus.
-- Automatische Transkriptrotation bei Compaction schreibt Nachfolger-Transkriptzeilen
-  direkt über den SQLite-Transkriptspeicher. Sitzungszeilen behalten nur die
-  Nachfolger-Sitzungsidentität, keinen dauerhaften JSONL-Pfad oder persistierten Locator.
-- Eingebettete Context-Engine-Compaction verwendet SQLite-benannte Helfer für Transkriptrotation.
-  Die Rotationstests konstruieren keine JSONL-Nachfolgerpfade mehr und modellieren
-  aktive Sitzungen nicht als Dateien.
-- Verwaltete ausgehende Bildaufbewahrung schlüsselt ihren Transkript-Nachrichten-Cache aus
-  SQLite-Transkriptstatistiken statt aus Dateisystem-Stat-Aufrufen.
-- Laufzeit-Sitzungssperren und der eigenständige Legacy-Doctor-Pfad für `.jsonl.lock`
-  wurden entfernt.
-- Der Microsoft Teams-Laufzeit-Barrel und das öffentliche Plugin SDK re-exportieren
-  den alten Dateisperren-Helfer nicht mehr; dauerhafte Plugin-Statuspfade sind SQLite-gestützt.
-- Sitzungsbereinigung nach Alter/Anzahl und explizite Sitzungsbereinigung wurden entfernt.
-  Doctor besitzt Legacy-Import; veraltete Sitzungen werden explizit zurückgesetzt oder gelöscht.
-- Doctor-Integritätsprüfungen zählen eine Legacy-JSONL-Datei nicht mehr als gültiges aktives
-  Transkript für eine SQLite-Sitzungszeile. Aktive Transkriptgesundheit ist nur SQLite;
-  Legacy-JSONL-Dateien werden als Eingaben für Migration/Orphan-Bereinigung gemeldet.
-- Doctor behandelt `agents/<agent>/sessions/` nicht mehr als erforderlichen Laufzeitstatus.
-  Es scannt dieses Verzeichnis nur, wenn es bereits existiert, als Legacy-Import-
-  oder Orphan-Bereinigungseingabe.
-- Gateway `sessions.resolve`, Sitzungspatch-/Reset-/Compact-Pfade, Subagent-
-  Spawning, schneller Abbruch, ACP-Metadaten, Heartbeat-isolierte Sitzungen und TUI-
-  Patching migrieren oder bereinigen Legacy-Sitzungsschlüssel nicht mehr als Nebeneffekt
-  normaler Laufzeitarbeit.
-- CLI-Befehlssitzungsauflösung gibt jetzt die besitzende `agentId` statt eines
-  `storePath` zurück, und sie kopiert keine Legacy-Hauptsitzungszeilen mehr während normaler
-  `--to`- oder `--session-id`-Auflösung. Legacy-Hauptzeilen-Kanonisierung gehört
-  ausschließlich zu Doctor.
-- Laufzeit-Subagent-Tiefenauflösung liest nicht mehr `sessions.json` oder JSON5-
-  Sitzungsspeicher. Sie liest SQLite-`session_entries` nach Agent-ID, und Legacy-
-  Tiefen-/Sitzungsmetadaten können nur über den Doctor-Importpfad eintreten.
-- Sitzungsoverrides für Auth-Profile werden über direkte `{agentId, sessionKey}`-
-  Zeilen-Upserts persistiert, statt eine dateiförmige Sitzungsspeicher-Laufzeit lazy zu laden.
-- Auto-Reply-Verbose-Gating und Sitzungsaktualisierungshelfer lesen/upserten SQLite-
-  Sitzungszeilen jetzt nach Sitzungsidentität und benötigen keinen Legacy-Speicherpfad mehr,
-  bevor sie persistierten Zeilenstatus anfassen.
-- Metadatenhelfer für Befehlsausführungs-Sitzungen verwenden jetzt eintragsorientierte Namen und Modulpfade;
-  die alte `session-store`-Befehlshilfsoberfläche wurde entfernt.
-- Bootstrap-Header-Seeding und Härtung manueller Compaction-Grenzen mutieren jetzt
-  SQLite-Transkriptzeilen direkt. Laufzeitaufrufer übergeben Sitzungsidentität, keine
-  schreibbaren `.jsonl`-Pfade.
-- Stille Sitzungsrotations-Wiedergabe kopiert aktuelle Benutzer-/Assistenten-Turns über
+- Die Gateway-Transkriptschlüsselsuche verwendet den SQLite-Transkript-Scope an Protokoll-
+  grenzen und führt keine Realpath- oder Stat-Aufrufe für Transkriptdateinamen mehr aus.
+- Die Transkriptrotation der automatischen Compaction schreibt nachfolgende Transkriptzeilen
+  direkt über den SQLite-Transkriptspeicher. Sitzungszeilen enthalten nur die
+  nachfolgende Sitzungsidentität, keinen dauerhaften JSONL-Pfad oder persistierten Locator.
+- Die eingebettete Context-Engine-Compaction verwendet nach SQLite benannte Helper für die Transkriptrotation.
+  Die Rotationstests erstellen keine JSONL-Pfade für Nachfolger mehr und
+  modellieren aktive Sitzungen nicht mehr als Dateien.
+- Die verwaltete Aufbewahrung ausgehender Bilder indiziert ihren Transkriptnachrichten-Cache anhand von
+  SQLite-Transkriptstatistiken statt anhand von Dateisystem-Stat-Aufrufen.
+- Runtime-Sitzungssperren und der eigenständige veraltete `.jsonl.lock`-Doctor-
+  Pfad wurden entfernt.
+- Das Runtime-Barrel von Microsoft Teams und das öffentliche Plugin-SDK exportieren
+  den alten Dateisperren-Helper nicht mehr erneut; dauerhafte Plugin-Zustandspfade sind SQLite-gestützt.
+- Das Bereinigen von Sitzungen nach Alter/Anzahl und die explizite Sitzungsbereinigung wurden entfernt.
+  Doctor ist für den Legacy-Import zuständig; veraltete Sitzungen werden explizit zurückgesetzt oder gelöscht.
+- Doctor-Integritätsprüfungen zählen eine veraltete JSONL-Datei nicht mehr als gültiges aktives
+  Transkript für eine SQLite-Sitzungszeile. Die Integrität aktiver Transkripte basiert ausschließlich auf SQLite;
+  veraltete JSONL-Dateien werden als Eingaben für Migration/Verwaistenbereinigung gemeldet.
+- Doctor behandelt `agents/<agent>/sessions/` nicht mehr als erforderlichen Runtime-
+  Zustand. Dieses Verzeichnis wird nur durchsucht, wenn es bereits existiert, und dient dann als Eingabe
+  für Legacy-Import oder Verwaistenbereinigung.
+- Gateway-`sessions.resolve`-, Sitzungspatch-/Reset-/Compact-Pfade, das Erzeugen von Subagenten,
+  der schnelle Abbruch, ACP-Metadaten, Heartbeat-isolierte Sitzungen und TUI-
+  Patching migrieren oder bereinigen veraltete Sitzungsschlüssel nicht mehr als Nebeneffekt
+  normaler Runtime-Arbeit.
+- Die Sitzungauflösung von CLI-Befehlen gibt jetzt die zugehörige `agentId` statt eines
+  `storePath` zurück und kopiert während der normalen
+  Auflösung von `--to` oder `--session-id` keine veralteten Hauptsitzungszeilen mehr. Die Kanonisierung veralteter Hauptzeilen obliegt
+  ausschließlich Doctor.
+- Die Runtime-Auflösung der Subagententiefe liest `sessions.json` oder JSON5-
+  Sitzungsspeicher nicht mehr. Sie liest SQLite-`session_entries` anhand der Agenten-ID, und veraltete
+  Tiefen-/Sitzungsmetadaten können nur über den Doctor-Importpfad eingebracht werden.
+- Sitzungsüberschreibungen von Authentifizierungsprofilen werden durch direkte Upserts von `{agentId, sessionKey}`-
+  Zeilen persistiert, statt eine dateiförmige Sitzungsspeicher-Runtime verzögert zu laden.
+- Die ausführliche Steuerung automatischer Antworten und Helper für Sitzungsaktualisierungen lesen/aktualisieren SQLite-
+  Sitzungszeilen jetzt anhand der Sitzungsidentität und benötigen keinen veralteten Speicherpfad mehr,
+  bevor sie den persistierten Zeilenzustand bearbeiten.
+- Helper für Sitzungsmetadaten von Befehlsläufen verwenden jetzt eintragsorientierte Namen und Modul-
+  pfade; die alte `session-store`-Oberfläche für Befehls-Helper wurde entfernt.
+- Das initiale Befüllen von Bootstrap-Headern und die Härtung manueller Compaction-Grenzen verändern
+  SQLite-Transkriptzeilen jetzt direkt. Runtime-Aufrufer übergeben die Sitzungsidentität, keine
+  beschreibbaren `.jsonl`-Pfade.
+- Die stille Wiedergabe bei der Sitzungsrotation kopiert die letzten Benutzer-/Assistenten-Interaktionen anhand von
   `{agentId, sessionId}` aus SQLite-Transkriptzeilen. Sie akzeptiert keine
   Quell- oder Ziel-Transkript-Locators mehr.
-- Frische Laufzeit-Sitzungszeilen speichern keine Transkript-Locators mehr. Aufrufer verwenden
-  `{agentId, sessionId}` direkt; Export-/Debug-Befehle können Ausgabedateinamen wählen,
-  wenn sie Zeilen materialisieren.
-- Das Starten einer neuen persistierten Transkriptsitzung öffnet jetzt immer SQLite-Zeilen nach
-  Bereich. Der Sitzungsmanager verwendet keinen vorherigen Transkriptpfad oder Locator aus der
-  Datei-Ära mehr als Identität für die neue Sitzung.
+- Neue Runtime-Sitzungszeilen speichern keine Transkript-Locators mehr. Aufrufer verwenden
+  `{agentId, sessionId}` direkt; Export-/Debug-Befehle können Ausgabedatei-
+  namen wählen, wenn sie Zeilen materialisieren.
+- Beim Start einer neuen persistierten Transkriptsitzung werden SQLite-Zeilen jetzt immer anhand des
+  Scopes geöffnet. Der Sitzungsmanager verwendet einen früheren Transkript-
+  pfad oder Locator aus der Dateiära nicht mehr als Identität der neuen Sitzung.
 - Persistierte Transkriptsitzungen verwenden die explizite
   `openTranscriptSessionManagerForSession({agentId, sessionId})`-API. Die alten
-  statischen `SessionManager.create/openForSession/list/forkFromSession`-Fassaden sind
-  entfernt, damit Tests und Laufzeitcode nicht versehentlich Sitzungsermittlung aus der Datei-Ära
-  wiederherstellen können.
-- Plugin-Laufzeit stellt `api.runtime.agent.session.resolveTranscriptLocatorPath` nicht mehr bereit;
-  Plugin-Code verwendet SQLite-Zeilenhelfer und Bereichswerte.
-- Die öffentliche `session-store-runtime`-SDK-Oberfläche exportiert jetzt nur noch Sitzungszeilen-
-  und Transkriptzeilenhelfer. Fokussierte SQLite-Schema-/Pfad-/Transaktionshelfer
-  leben in `sqlite-runtime`; rohe Open-/Close-/Reset-Helfer bleiben lokal nur für
-  First-Party-Tests.
-- Legacy-Dateinamenklassifizierer für `.jsonl`-Trajektorien/Checkpoints leben jetzt im
-  Doctor-Legacy-Sitzungsdateimodul. Kern-Sitzungsvalidierung importiert keine
-  Dateiartefakt-Helfer mehr, um normale SQLite-Sitzungs-IDs zu entscheiden.
-- Active Memory-blockierende Subagent-Ausführungen verwenden SQLite-Transkriptzeilen statt
-  temporäre oder persistierte `session.jsonl`-Dateien unter Plugin-Status zu erstellen. Die
-  alte Option `transcriptDir` wurde entfernt.
-- Einmalige Slug-Generierung und Crestodian-Planner-Ausführungen verwenden SQLite-Transkriptzeilen,
+  statischen `SessionManager.create/openForSession/list/forkFromSession`-Fassaden wurden
+  entfernt, damit Tests und Runtime-Code nicht versehentlich die Sitzungs-
+  erkennung der Dateiära wiederherstellen können.
+- Die Plugin-Runtime stellt `api.runtime.agent.session.resolveTranscriptLocatorPath` nicht mehr bereit;
+  Plugin-Code verwendet SQLite-Zeilen-Helper und Scope-Werte.
+- Die öffentliche `session-store-runtime`-SDK-Oberfläche exportiert jetzt ausschließlich Helper für Sitzungszeilen
+  und Transkriptzeilen. Fokussierte SQLite-Schema-/Pfad-/Transaktions-Helper
+  befinden sich in `sqlite-runtime`; rohe Öffnen-/Schließen-/Reset-Helper bleiben ausschließlich lokal für
+  eigene Tests.
+- Veraltete `.jsonl`-Klassifikatoren für Trajektorien-/Checkpoint-Dateinamen befinden sich jetzt im
+  Doctor-Modul für veraltete Sitzungsdateien. Die zentrale Sitzungsvalidierung importiert keine
+  Helper für Dateiartefakte mehr, um normale SQLite-Sitzungs-IDs zu bestimmen.
+- Blockierende Subagentenläufe von Active Memory verwenden SQLite-Transkriptzeilen, statt
+  temporäre oder persistierte `session.jsonl`-Dateien im Plugin-Zustand zu erstellen. Die
+  alte `transcriptDir`-Option wurde entfernt.
+- Einmalige Slug-Generierung und Planner-Läufe des Systemagenten verwenden SQLite-Transkriptzeilen,
   statt temporäre `session.jsonl`-Dateien zu erstellen.
-- `llm-task`-Helferausführungen und versteckte Commitment-Extraktion verwenden ebenfalls SQLite-
-  Transkriptzeilen, sodass diese rein modellbezogenen Helfersitzungen keine
-  temporären JSON-/JSONL-Transkriptdateien mehr erstellen.
+- `llm-task`-Hilfsläufe und die Extraktion verborgener Festlegungen verwenden ebenfalls SQLite-
+  Transkriptzeilen, sodass diese ausschließlich modellseitigen Hilfssitzungen keine
+  temporären JSON/JSONL-Transkriptdateien mehr erstellen.
 - `TranscriptSessionManager` ist jetzt nur noch ein geöffneter SQLite-Transkriptbereich.
-  Laufzeitcode öffnet ihn mit `openTranscriptSessionManagerForSession({agentId,
-sessionId})`; Erstellungs-, Branch-, Fortsetzungs-, Listen- und Fork-Flows leben in ihren
-  besitzenden SQLite-Zeilenhelfern statt in statischen Manager-Fassaden.
-  Doctor-/Import-/Debug-Code behandelt explizite Legacy-Quelldateien außerhalb des
-  Laufzeit-Sitzungsmanagers.
+  Der Runtime-Code öffnet ihn mit `openTranscriptSessionManagerForSession({agentId,
+sessionId})`; Abläufe zum Erstellen, Verzweigen, Fortsetzen, Auflisten und Forken befinden sich in den
+  jeweils zuständigen SQLite-Zeilenhelfern statt in statischen Manager-Fassaden.
+  Doctor-/Import-/Debug-Code verarbeitet explizite Legacy-Quelldateien außerhalb des
+  Runtime-Sitzungsmanagers.
 - Die veralteten Fassadenmethoden `SessionManager.newSession()` und
   `SessionManager.createBranchedSession()` wurden entfernt. Neue
-  Sitzungen und Transkript-Nachfahren werden von ihrem besitzenden SQLite-
+  Sitzungen und Transkriptnachfolger werden von ihrem jeweils zuständigen SQLite-
   Workflow erstellt, statt einen bereits geöffneten Manager in eine andere
-  persistierte Sitzung zu mutieren.
-- Parent-Transkript-Fork-Entscheidungen und Fork-Erstellung akzeptieren keine
-  `storePath` oder `sessionsDir` mehr; sie verwenden `{agentId, sessionId}`-
-  SQLite-Transkriptbereich statt beibehaltener Dateisystempfad-Metadaten.
-- Memory-Host exportiert keine No-op-Helfer zur Klassifizierung von Sitzungsverzeichnis-Transkripten
-  mehr; Transkriptfilterung wird jetzt während der Eintragskonstruktion aus SQLite-Zeilenmetadaten
-  abgeleitet.
-- Memory-Host- und QMD-Sitzungsexporttests verwenden SQLite-Transkriptbereiche. Alte
+  persistierte Sitzung umzuwandeln.
+- Entscheidungen zum Forken übergeordneter Transkripte und die Fork-Erstellung akzeptieren
+  `storePath` oder `sessionsDir` nicht mehr; sie verwenden den SQLite-
+  Transkriptbereich `{agentId, sessionId}` statt beibehaltener Dateisystempfad-Metadaten.
+- Memory-host exportiert keine wirkungslosen Hilfsfunktionen zur Klassifizierung von
+  Sitzungsverzeichnis-Transkripten mehr; die Transkriptfilterung wird nun beim Erstellen von Einträgen aus
+  SQLite-Zeilenmetadaten abgeleitet.
+- Memory-host- und QMD-Sitzungsexporttests verwenden SQLite-Transkriptbereiche. Alte
   `agents/<agentId>/sessions/*.jsonl`-Pfade bleiben nur dort abgedeckt, wo ein Test
-  absichtlich Doctor-/Import-/Export-Kompatibilität belegt.
-- Rohsitzungsinspektion in QA-lab verwendet jetzt `sessions.list` über das Gateway
-  anstatt `agents/qa/sessions/sessions.json` zu lesen; MSteams-Feedback
-  wird direkt an SQLite-Transkripte angehängt, ohne einen JSONL-Pfad zu fingieren.
-- Gemeinsame eingehende Kanal-Turns tragen jetzt `{agentId, sessionKey}` statt eines
-  Legacy-`storePath`. LINE, WhatsApp, Slack, Discord, Telegram, Matrix, Signal,
+  absichtlich die Kompatibilität von Doctor, Import oder Export nachweist.
+- Die Rohdatenprüfung von Sitzungen in QA Lab verwendet jetzt `sessions.list` über das Gateway,
+  statt `agents/qa/sessions/sessions.json` zu lesen; MSteams-Feedback
+  wird direkt an SQLite-Transkripte angehängt, ohne einen JSONL-Pfad vorzutäuschen.
+- Gemeinsam verarbeitete eingehende Channel-Turns enthalten jetzt `{agentId, sessionKey}` statt eines
+  veralteten `storePath`. Die Aufzeichnungspfade von LINE, WhatsApp, Slack, Discord, Telegram, Matrix, Signal,
   iMessage, BlueBubbles, Feishu, Google Chat, IRC, Nextcloud Talk, Zalo,
   Zalo Personal, QA Channel, Microsoft Teams, Mattermost, Synology Chat, Tlon,
-  Twitch und QQBot-Aufzeichnungspfade lesen jetzt updated-at-Metadaten und
-  zeichnen eingehende Sitzungszeilen über die SQLite-Identität auf.
-- Die Persistenz des Transkript-Locators wird aus aktiven Sitzungszeilen entfernt.
+  Twitch und QQBot lesen jetzt Aktualisierungszeit-Metadaten und zeichnen
+  eingehende Sitzungszeilen über die SQLite-Identität auf.
+- Die Persistierung von Transkript-Locators wurde aus aktiven Sitzungszeilen entfernt.
   `resolveSessionTranscriptTarget` gibt `agentId`, `sessionId` und optionale
-  Themenmetadaten zurück; Doctor ist der einzige Code, der Legacy-Transkriptdateinamen
+  Themenmetadaten zurück; Doctor ist der einzige Code, der veraltete Transkriptdateinamen
   importiert.
-- Laufzeit-Transkript-Header beginnen bei SQLite-Version `1`. Alte JSONL-V1/V2/V3-
-  Shape-Upgrades existieren nur im Doctor-Import und normalisieren importierte Header
-  auf die aktuelle SQLite-Transkriptversion, bevor Zeilen gespeichert werden.
-- Der database-first-Guard verbietet jetzt `SessionManager.listAll` und
-  `SessionManager.forkFromSession`; Workflows für Sitzungsauflistung und
-  Fork/Wiederherstellung müssen auf zeilen-/scope-basierten SQLite-APIs bleiben.
-- Der Guard verbietet außerdem Legacy-Hilfsnamen zum Parsen von Transkript-JSONL und
-  zur Reparatur aktiver Branches außerhalb von Doctor-/Importcode, sodass die
-  Laufzeit keinen zweiten Legacy-Transkript-Migrationspfad erhalten kann.
-- Eingebettete PI-Läufe lehnen eingehende Transkript-Handles ab. Sie verwenden die
-  SQLite-Identität `{agentId, sessionId}` vor dem Worker-Start und erneut, bevor der
-  Versuch den Transkriptzustand berührt. Eine veraltete `/tmp/*.jsonl`-Eingabe kann
-  kein Laufzeit-Schreibziel auswählen.
-- Cache-Trace-, Anthropic-Payload-, Raw-Stream- und Diagnose-Timeline-Datensätze
-  schreiben jetzt in typisierte SQLite-`diagnostic_events`-Zeilen. Gateway-
-  Stabilitäts-Bundles schreiben jetzt in typisierte SQLite-
-  `diagnostic_stability_bundles`-Zeilen. Die alten JSONL-Override-Pfade
-  `diagnostics.cacheTrace.filePath`, `OPENCLAW_CACHE_TRACE_FILE`,
+- Runtime-Transkript-Header beginnen bei SQLite-Version `1`. Upgrades alter JSONL-V1/V2/V3-
+  Strukturen befinden sich ausschließlich im Doctor-Import und normalisieren importierte Header auf
+  die aktuelle SQLite-Transkriptversion, bevor Zeilen gespeichert werden.
+- Der Database-first-Guard verbietet jetzt `SessionManager.listAll` und
+  `SessionManager.forkFromSession`; Sitzungsauflistung sowie Fork-/Wiederherstellungsworkflows
+  müssen zeilenbasierte bzw. bereichsgebundene SQLite-APIs verwenden.
+- Der Guard verbietet außerhalb von Doctor-/Import-Code außerdem Namen veralteter Hilfsfunktionen zum Parsen von Transkript-JSONL und Reparieren aktiver Branches,
+  sodass die Runtime keinen zweiten Legacy-
+  Transkriptmigrationspfad entwickeln kann.
+- Eingebettete PI-Läufe lehnen eingehende Transkript-Handles ab. Sie verwenden die SQLite-
+  Identität `{agentId, sessionId}` vor dem Start des Workers und erneut, bevor der
+  Versuch auf den Transkriptstatus zugreift. Eine veraltete `/tmp/*.jsonl`-Eingabe kann kein
+  Runtime-Schreibziel auswählen.
+- Cache-Trace-, Anthropic-Payload-, Rohdatenstrom- und Diagnose-Zeitleistendatensätze
+  werden jetzt in typisierte SQLite-Zeilen des Typs `diagnostic_events` geschrieben. Gateway-Stabilitätspakete
+  werden jetzt in typisierte SQLite-Zeilen des Typs `diagnostic_stability_bundles` geschrieben. Die alten
+  JSONL-Überschreibungspfade `diagnostics.cacheTrace.filePath`, `OPENCLAW_CACHE_TRACE_FILE`,
   `OPENCLAW_ANTHROPIC_PAYLOAD_LOG_FILE` und
-  `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` wurden entfernt, und die normale
-  Stabilitätserfassung schreibt keine `logs/stability/*.json`-Dateien mehr.
-- Cron-Persistenz gleicht jetzt SQLite-`cron_jobs`-Zeilen ab, statt bei jedem
-  Speichern die gesamte Job-Tabelle zu löschen und neu einzufügen. Plugin-Target-
-  Writebacks aktualisieren passende Cron-Zeilen direkt und halten den Laufzeit-
-  Cron-Zustand in derselben State-Datenbanktransaktion.
-- Cron-Laufzeitaufrufer verwenden jetzt einen stabilen SQLite-Cron-Store-Schlüssel.
-  Legacy-`cron.store`-Pfade sind nur Doctor-Importeingaben; Produktions-Gateway,
-  Task-Wartung, Status, Run-Log und Telegram-Target-Writeback-Pfade verwenden
-  `resolveCronStoreKey` und normalisieren den Schlüssel nicht mehr als Pfad. Der
-  Cron-Status meldet jetzt `storeKey` statt des alten dateiförmigen Felds
-  `storePath`.
-- Cron-Laufzeitladen und -Planung normalisieren keine Legacy-persistierten Job-Shapes
-  wie `jobId`, `schedule.cron`, numerische `atMs`, String-Booleans oder fehlende
-  `sessionTarget` mehr. Der Doctor-Legacy-Import besitzt diese Reparaturen, bevor
-  Zeilen in SQLite eingefügt werden.
-- ACP-Spawn löst keine Transkript-JSONL-Dateipfade mehr auf und persistiert sie nicht
-  mehr. Spawn- und Thread-Bind-Einrichtung persistieren die SQLite-Sitzungszeile
-  direkt und behalten die Sitzungs-ID als beibehaltene Transkriptidentität.
-- ACP-Sitzungsmetadaten-APIs lesen/listen/upserten jetzt SQLite-Zeilen nach
-  `agentId` und legen `storePath` nicht mehr als Teil des ACP-Sitzungseintrag-
-  Vertrags offen.
-- Sitzungsnutzungsabrechnung und Gateway-Nutzungsaggregation lösen Transkripte jetzt
-  nur noch über `{agentId, sessionId}` auf. Der Kosten-/Nutzungscache und
-  Zusammenfassungen erkannter Sitzungen synthetisieren oder geben keine
-  Transkript-Locator-Strings mehr zurück.
-- Gateway-Chat-Append, Persistenz abgebrochener Teilergebnisse, `/sessions.send` und
-  Webchat-Medien-Transkriptschreibvorgänge hängen direkt über den SQLite-
-  Transkriptscope an. Der Gateway-Transkript-Injection-Helper akzeptiert keinen
+  `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` wurden entfernt, und
+  die normale Stabilitätserfassung schreibt keine `logs/stability/*.json`-Dateien mehr.
+- Die Cron-Persistierung gleicht jetzt SQLite-Zeilen des Typs `cron_jobs` ab, statt
+  bei jedem Speichern die gesamte Jobtabelle zu löschen und neu einzufügen. Rückschreibungen von Plugin-Zielen
+  aktualisieren passende Cron-Zeilen direkt und halten den Runtime-Cron-Status in
+  derselben Zustandsdatenbanktransaktion.
+- Cron-Runtime-Aufrufer verwenden jetzt einen stabilen SQLite-Cron-Speicherschlüssel. Veraltete
+  `cron.store`-Pfade dienen nur als Doctor-Importeingaben; Produktions-Gateway, Aufgaben-
+  wartung, Status, Laufhistorie und Telegram-Zielrückschreibungen verwenden
+  `resolveCronStoreKey` und normalisieren den Schlüssel nicht mehr als Pfad. Der Cron-Status
+  meldet jetzt `storeKey` statt des alten dateiförmigen Felds `storePath`.
+- Das Laden und Planen der Cron-Runtime normalisiert keine veralteten persistierten Job-
+  Strukturen wie `jobId`, `schedule.cron`, numerisches `atMs`, String-Boolesche Werte oder
+  fehlendes `sessionTarget` mehr. Der Doctor-Legacy-Import übernimmt diese Reparaturen, bevor Zeilen
+  in SQLite eingefügt werden.
+- ACP-Spawn löst oder persistiert keine Transkript-JSONL-Dateipfade mehr. Spawn-
+  und Thread-Bind-Einrichtung persistieren die SQLite-Sitzungszeile direkt und behalten die
+  Sitzungs-ID als Transkriptidentität bei.
+- ACP-Sitzungsmetadaten-APIs lesen, listen und aktualisieren jetzt SQLite-Zeilen anhand von `agentId`
+  und legen `storePath` nicht mehr als Teil des Vertrags für ACP-Sitzungseinträge offen.
+- Die Abrechnung der Sitzungsnutzung und die Gateway-Nutzungsaggregation lösen Transkripte jetzt
+  ausschließlich anhand von `{agentId, sessionId}` auf. Der Kosten-/Nutzungs-Cache und Zusammenfassungen erkannter Sitzungen
+  erzeugen oder geben keine Transkript-Locator-Strings mehr zurück.
+- Gateway-Chat-Anhängen, die Persistierung teilweise abgebrochener Vorgänge, `/sessions.send` und
+  Webchat-Medien-Transkriptschreibvorgänge hängen Daten direkt über den SQLite-Transkriptbereich
+  an. Die Gateway-Hilfsfunktion zur Transkriptinjektion akzeptiert keinen
   `transcriptLocator`-Parameter mehr.
-- SQLite-Transkripterkennung listet jetzt nur Transkriptscopes und Statistiken auf:
-  `{agentId, sessionId, updatedAt, eventCount}`. Der tote
-  Kompatibilitäts-Helper `listSqliteSessionTranscriptLocators` und das
-  zeilenbezogene Feld `locator` sind entfernt.
-- Die Transkriptreparatur-Laufzeit stellt jetzt nur noch
-  `repairTranscriptSessionStateIfNeeded({agentId, sessionId})` bereit. Der alte
-  locator-basierte Reparatur-Helper wurde gelöscht; Doctor-/Debug-Code liest
-  explizite Quelldateipfade und migriert niemals Locator-Strings.
-- Die ACP-Replay-Ledger-Laufzeit speichert sitzungsbezogene Replay-Zeilen jetzt in
-  der gemeinsamen SQLite-State-Datenbank statt in `acp/event-ledger.json`; Doctor
-  importiert und entfernt die Legacy-Datei.
-- Gateway-Transkriptlese-Helper befinden sich jetzt in
-  `src/gateway/session-transcript-readers.ts` statt unter dem alten Modulnamen
-  `session-utils.fs`. Die Fallback-Retry-History-Prüfung ist nach SQLite-
-  Transkriptinhalt benannt statt nach der alten Datei-Helper-Oberfläche.
-- Gateway-Injected-Chat- und Compaction-Helper übergeben den SQLite-Transkriptscope
-  jetzt über interne Helper-APIs, statt Werte als Transkriptpfade oder Quelldateien
-  zu benennen.
-- Die Bootstrap-Fortsetzungserkennung prüft jetzt SQLite-Transkriptzeilen über
-  `hasCompletedBootstrapTranscriptTurn`; sie legt keinen dateiförmigen Helper-Namen
-  mehr offen.
-- Embedded-Runner-Tests verwenden jetzt die SQLite-Transkriptidentität, und das
-  Öffnen eines neuen Transkriptmanagers erfordert immer eine explizite `sessionId`.
-- Memory-Indexing-Helper verwenden jetzt durchgehend SQLite-Transkriptterminologie:
+- Die SQLite-Transkripterkennung listet jetzt nur noch Transkriptbereiche und Statistiken auf:
+  `{agentId, sessionId, updatedAt, eventCount}`. Die nicht mehr verwendete
+  Kompatibilitätshilfsfunktion `listSqliteSessionTranscriptLocators` und das zeilenbezogene
+  Feld `locator` wurden entfernt.
+- Die Runtime für Transkriptreparaturen legt nur noch
+  `repairTranscriptSessionStateIfNeeded({agentId, sessionId})` offen. Die alte
+  Locator-basierte Reparaturhilfsfunktion wurde gelöscht; Doctor-/Debug-Code liest explizite
+  Quelldateipfade und migriert niemals Locator-Strings.
+- Die ACP-Replay-Ledger-Runtime speichert sitzungsbezogene Replay-Zeilen jetzt in der gemeinsamen
+  SQLite-Zustandsdatenbank statt in `acp/event-ledger.json`; Doctor importiert und
+  entfernt die Legacy-Datei.
+- Gateway-Hilfsfunktionen zum Lesen von Transkripten befinden sich jetzt in
+  `src/gateway/session-transcript-readers.ts` statt unter dem alten
+  Modulnamen `session-utils.fs`. Die Prüfung des Fallback-Wiederholungsverlaufs ist nach
+  SQLite-Transkriptinhalten statt nach der alten Datei-Hilfsoberfläche benannt.
+- Gateway-Hilfsfunktionen für injizierten Chat und Compaction übergeben jetzt den SQLite-Transkriptbereich
+  über interne Hilfs-APIs, statt Werte als Transkriptpfade oder
+  Quelldateien zu bezeichnen.
+- Die Erkennung von Bootstrap-Fortsetzungen prüft SQLite-Transkriptzeilen jetzt über
+  `hasCompletedBootstrapTranscriptTurn`; sie legt keinen dateiförmigen
+  Hilfsfunktionsnamen mehr offen.
+- Embedded-runner-Tests verwenden jetzt die SQLite-Transkriptidentität, und das Öffnen eines neuen
+  Transkriptmanagers erfordert immer ein explizites `sessionId`.
+- Hilfsfunktionen zur Speicherindizierung verwenden jetzt durchgängig SQLite-Transkriptterminologie:
   Der Host exportiert `listSessionTranscriptScopesForAgent` und
-  `sessionTranscriptKeyForScope`, zielgerichtete Sync-Warteschlangen
-  `sessionTranscripts`, öffentliche Sitzungssuchtreffer legen opake
-  `transcript:<agent>:<session>`-Pfade offen, und der interne DB-Quellschlüssel ist
-  `session:<session>` unter `source_kind='sessions'` statt eines fingierten
-  Dateipfads.
-- Der generische Plugin-SDK-Helper für persistente Deduplizierung legt keine
-  dateiförmigen Optionen mehr offen. Aufrufer stellen SQLite-Scope-Schlüssel bereit,
-  und dauerhafte Dedupe-Zeilen leben im gemeinsamen Plugin-State.
-- Microsoft Teams-SSO-Tokens wurden von gesperrten JSON-Dateien in SQLite-Plugin-
-  State verschoben. Doctor importiert `msteams-sso-tokens.json`, erstellt
-  kanonische SSO-Token-Schlüssel aus Payloads neu und entfernt die Quelldatei.
-  Delegierte OAuth-Tokens bleiben auf ihrer bestehenden privaten
-  Anmeldedaten-Dateigrenze.
-- Matrix-Sync-Cache-Zustand wurde von `bot-storage.json` in SQLite-Plugin-State
-  verschoben. Doctor importiert alte rohe oder gewrappte Sync-Payloads und entfernt
-  die Quelldatei. Aktive Matrix- und QA-Matrix-Clients übergeben ein SQLite-
-  Sync-Store-Stammverzeichnis, keinen fingierten Pfad `sync-store.json` oder
-  `bot-storage.json`.
-- Matrix-Legacy-Krypto-Migrationsstatus wurde von
-  `legacy-crypto-migration.json` in SQLite-Plugin-State verschoben. Doctor
-  importiert die alte Statusdatei; Matrix-SDK-IndexedDB-Snapshots wurden von
-  `crypto-idb-snapshot.json` in SQLite-Plugin-Blobs verschoben. Matrix-
-  Wiederherstellungsschlüssel und Anmeldedaten sind SQLite-Plugin-State-Zeilen;
-  ihre alten JSON-Dateien sind nur Doctor-Migrationseingaben.
-- Memory-Wiki-Aktivitätslogs verwenden jetzt SQLite-Plugin-State statt
+  `sessionTranscriptKeyForScope`, die gezielte Synchronisierung stellt `sessionTranscripts` in die Warteschlange,
+  Treffer der öffentlichen Sitzungssuche legen undurchsichtige `transcript:<agent>:<session>`-Pfade offen,
+  und der interne DB-Quellschlüssel lautet `session:<session>` unter
+  `source_kind='sessions'` statt eines vorgetäuschten Dateipfads.
+- Die generische Hilfsfunktion des Plugin-SDK für persistente Deduplizierung legt keine dateiförmigen
+  Optionen mehr offen. Aufrufer stellen SQLite-Bereichsschlüssel bereit, und dauerhafte Deduplizierungszeilen befinden sich im
+  gemeinsamen Plugin-Status.
+- Microsoft-Teams-SSO-Token wurden aus gesperrten JSON-Dateien in den SQLite-Plugin-
+  Status verschoben. Doctor importiert `msteams-sso-tokens.json`, rekonstruiert kanonische SSO-Token-
+  Schlüssel aus Payloads und entfernt die Quelldatei. Delegierte OAuth-Token verbleiben
+  an ihrer bestehenden Grenze für private Anmeldedatendateien.
+- Der Matrix-Synchronisierungs-Cache-Status wurde von `bot-storage.json` in den SQLite-Plugin-
+  Status verschoben. Doctor importiert veraltete rohe oder umschlossene Synchronisierungs-Payloads und entfernt die
+  Quelldatei. Aktive Matrix- und QA-Lab-Matrix-Adapter-Clients übergeben ein SQLite-Synchronisierungsspeicher-Stammverzeichnis,
+  keinen vorgetäuschten `sync-store.json`- oder `bot-storage.json`-Pfad.
+- Der Status der Matrix-Legacy-Kryptomigration wurde von
+  `legacy-crypto-migration.json` in den SQLite-Plugin-Status verschoben. Doctor importiert die
+  alte Statusdatei; Matrix-SDK-IndexedDB-Snapshots wurden von
+  `crypto-idb-snapshot.json` in SQLite-Plugin-Blobs verschoben. Matrix-Wiederherstellungsschlüssel und
+  Anmeldedaten sind Zeilen des SQLite-Plugin-Status; ihre alten JSON-Dateien dienen nur als Doctor-
+  Migrationseingaben.
+- Memory-Wiki-Aktivitätsprotokolle verwenden jetzt den SQLite-Plugin-Status statt
   `.openclaw-wiki/log.jsonl`. Der Memory-Wiki-Migrations-Provider importiert alte
-  JSONL-Logs; Wiki-Markdown und Benutzer-Vault-Inhalte bleiben als Workspace-Inhalte
-  dateibasiert.
-- Memory Wiki erstellt `.openclaw-wiki/state.json` oder das ungenutzte Verzeichnis
-  `.openclaw-wiki/locks` nicht mehr. Der Migrations-Provider entfernt diese
-  ausgemusterten Plugin-Metadatendateien, wenn ein älterer Vault sie noch enthält.
-- Crestodian-Audit-Einträge verwenden jetzt Core-SQLite-Plugin-State statt
-  `audit/crestodian.jsonl`. Doctor importiert das Legacy-JSONL-Audit-Log und
+  JSONL-Protokolle; Wiki-Markdown und Inhalte des Benutzer-Vaults bleiben als
+  Workspace-Inhalte dateibasiert.
+- Memory Wiki erstellt weder `.openclaw-wiki/state.json` noch das ungenutzte
+  Verzeichnis `.openclaw-wiki/locks` mehr. Der Migrations-Provider entfernt diese ausgemusterten
+  Plugin-Metadatendateien, falls ein älterer Vault sie noch enthält.
+- System-Agent-Audit-Einträge verwenden jetzt den zentralen SQLite-Plugin-Status statt
+  `audit/crestodian.jsonl`. Doctor importiert das veraltete JSONL-Audit-Protokoll und
   entfernt es nach erfolgreichem Import.
-- Config-Schreib-/Beobachtungs-Audit-Einträge verwenden jetzt Core-SQLite-Plugin-
-  State statt `logs/config-audit.jsonl`. Doctor importiert das Legacy-JSONL-
-  Audit-Log und entfernt es nach erfolgreichem Import.
-- Der macOS-Companion schreibt beim Bearbeiten von `openclaw.json` keine app-lokalen
-  Sidecars `logs/config-audit.jsonl` oder `logs/config-health.json` mehr. Die
-  Konfigurationsdatei bleibt dateibasiert, Wiederherstellungs-Snapshots bleiben
-  neben der Konfigurationsdatei, und dauerhafter Config-Audit-/Health-State gehört
-  zum Gateway-SQLite-Store.
-- Ausstehende Crestodian-Rescue-Genehmigungen verwenden jetzt Core-SQLite-Plugin-
-  State statt `crestodian/rescue-pending/*.json`. Doctor importiert alte Dateien
-  mit ausstehenden Genehmigungen und entfernt sie nach erfolgreichem Import.
-- Der temporäre Arm-Zustand von Phone Control verwendet jetzt SQLite-Plugin-State
-  statt `plugins/phone-control/armed.json`. Doctor importiert die Legacy-Datei für
-  den Arm-Zustand in den Namespace `phone-control/arm-state` und entfernt die Datei.
-- Doctor repariert JSONL-Transkripte nicht mehr in place und erstellt keine
-  Backup-JSONL-Dateien mehr. Er importiert den aktiven Branch in SQLite und entfernt
-  die Legacy-Quelle.
-- Die Transkriptsuche des Session-Memory-Hooks verwendet scope-only SQLite-Lesevorgänge
-  mit `{agentId, sessionId}`. Sein Helper akzeptiert oder leitet keine
-  Transkript-Locators, Legacy-Dateilesevorgänge oder Datei-Rewrite-Optionen mehr ab.
-- Codex-App-Server-Konversationsbindungen schlüsseln SQLite-Plugin-State jetzt nach
-  OpenClaw-Sitzungsschlüssel oder explizitem `{agentId, sessionId}`-Scope. Sie dürfen
-  keine Fallback-Bindungen für Transkriptpfade beibehalten.
-- Codex-App-Server-Lesevorgänge für gespiegelte History verwenden nur den SQLite-
-  Transkriptscope; sie dürfen Identität nicht aus Transkriptdateipfaden wiederherstellen.
-- Role-Ordering- und Compaction-Reset-Pfade unlinken keine alten Transkriptdateien
-  mehr; Reset rotiert nur die SQLite-Sitzungszeile und Transkriptidentität.
-- Gateway-Reset- und Checkpoint-Antworten geben saubere Sitzungszeilen plus
-  Sitzungs-IDs zurück. Sie synthetisieren keine SQLite-Transkript-Locators mehr für
-  Clients.
-- Memory-Core-Dreaming entfernt Sitzungszeilen nicht mehr durch Prüfen auf fehlende
-  JSONL-Dateien. Subagent-Cleanup läuft über die Sitzungs-Laufzeit-API statt über
-  Dateisystem-Existenzprüfungen. Seine Transkript-Ingestion-Tests seeden SQLite-
-  Zeilen direkt, statt `agents/<id>/sessions`-Fixtures oder Locator-Platzhalter zu
-  erstellen.
-- Memory-Transkriptindexierung kann `transcript:<agentId>:<sessionId>` als virtuellen
-  Suchtrefferpfad für Zitier-/Lese-Helper offenlegen. Die dauerhafte Indexquelle ist
+- Audit-Einträge zum Schreiben und Beobachten der Konfiguration verwenden jetzt den zentralen SQLite-Plugin-Status statt
+  `logs/config-audit.jsonl`. Doctor importiert das veraltete JSONL-Audit-Protokoll und
+  entfernt es nach erfolgreichem Import.
+- Die macOS-Begleitanwendung schreibt beim Bearbeiten von `openclaw.json` keine anwendungslokalen Sidecars
+  `logs/config-audit.jsonl` oder `logs/config-health.json` mehr. Die Konfigurations-
+  datei bleibt dateibasiert, Wiederherstellungs-Snapshots verbleiben neben der Konfigurationsdatei,
+  und der dauerhafte Audit-/Integritätsstatus der Konfiguration gehört in den SQLite-Speicher des Gateways.
+- Ausstehende Genehmigungen zur System-Agent-Rettung verwenden jetzt den zentralen SQLite-Plugin-Status statt
+  `crestodian/rescue-pending/*.json` oder `openclaw/rescue-pending/*.json`.
+  Diese kurzlebigen Sicherheitsberechtigungen werden niemals importiert; Doctor verwirft
+  beide ausgemusterten Verzeichnisse, damit ein Upgrade keinen veralteten Schreibzugriff reaktivieren kann.
+- Der temporäre Aktivierungsstatus von Phone Control verwendet jetzt den SQLite-Plugin-Status statt
+  `plugins/phone-control/armed.json`. Doctor importiert die veraltete Datei mit dem Aktivierungsstatus
+  in den Namespace `phone-control/arm-state` und entfernt die Datei.
+- Doctor repariert JSONL-Transkripte nicht mehr direkt und erstellt keine JSONL-
+  Sicherungsdateien mehr. Er importiert den aktiven Branch in SQLite und entfernt die Legacy-Quelle.
+- Die Transkriptsuche des Session-Memory-Hooks verwendet auf den `{agentId, sessionId}`-Bereich beschränkte
+  SQLite-Lesevorgänge. Die Hilfsfunktion akzeptiert oder ermittelt keine Transkript-Locators,
+  Legacy-Dateilesevorgänge oder Optionen zum Neuschreiben von Dateien mehr.
+- Konversationsbindungen des Codex-App-Servers verwenden jetzt den OpenClaw-Sitzungsschlüssel oder einen expliziten
+  `{agentId, sessionId}`-Bereich als Schlüssel für den SQLite-Plugin-Status. Sie dürfen keine
+  Fallback-Bindungen für Transkriptpfade beibehalten.
+- Lesevorgänge des gespiegelten Verlaufs des Codex-App-Servers verwenden ausschließlich den SQLite-Transkriptbereich;
+  sie dürfen die Identität nicht aus Transkriptdateipfaden wiederherstellen.
+- Pfade für Rollenanordnung und Compaction-Zurücksetzung löschen keine alten Transkript-
+  dateien mehr; das Zurücksetzen rotiert nur die SQLite-Sitzungszeile und die Transkriptidentität.
+- Gateway-Antworten für Zurücksetzungen und Checkpoints geben bereinigte Sitzungszeilen sowie Sitzungs-
+  IDs zurück. Sie erzeugen keine SQLite-Transkript-Locators mehr für Clients.
+- Memory-Core-Dreaming bereinigt Sitzungszeilen nicht mehr, indem es nach fehlenden
+  JSONL-Dateien sucht. Die Subagent-Bereinigung erfolgt über die Sitzungs-Runtime-API statt über
+  Existenzprüfungen im Dateisystem. Die Transkript-Ingestion-Tests legen SQLite-Zeilen
+  direkt an, statt `agents/<id>/sessions`-Fixtures oder Locator-
+  Platzhalter zu erstellen.
+- Die Memory-Transkriptindizierung kann `transcript:<agentId>:<sessionId>` als
+  virtuellen Suchtrefferpfad für Hilfsfunktionen zum Zitieren und Lesen offenlegen. Die dauerhafte Indexquelle ist
   relational (`source_kind='sessions'`, `source_key='session:<sessionId>'`,
   `session_id=<sessionId>`), daher ist der Wert kein Laufzeit-Transkript-Locator,
-  kein Dateisystempfad und darf niemals an Sitzungs-Laufzeit-APIs zurückgegeben werden.
-- Gateway-Doctor-Memory-Status liest Short-Term-Recall- und Phase-Signal-Zählungen
-  aus SQLite-Plugin-State-Zeilen statt aus `memory/.dreams/*.json`; CLI- und
-  Doctor-Ausgabe bezeichnen diesen Speicher jetzt als SQLite-Store, nicht als Pfad.
-- Memory-Core-Laufzeit, CLI-Status, Gateway-Doctor-Methoden und Plugin-SDK-Fassaden
-  auditieren oder archivieren keine Legacy-`.dreams/session-corpus`-Dateien mehr.
-  Diese Dateien sind nur Migrationseingaben; Doctor importiert sie in SQLite und
-  löscht die Quelle nach Verifikation. Aktive Evidence-Zeilen für Session-Ingestion
-  verwenden jetzt den virtuellen SQLite-Pfad `memory/session-ingestion/<day>.txt`;
-  die Laufzeit schreibt oder leitet niemals Zustand aus `.dreams/session-corpus` ab.
-- Öffentliche Memory-Core-Artefakte legen SQLite-Host-Events als das virtuelle JSON-
-  Artefakt `memory/events/memory-host-events.json` offen; sie verwenden den Legacy-
-  Quellpfad `.dreams/events.jsonl` nicht mehr wieder.
-- Sandbox-Container-/Browser-Registries verwenden jetzt die gemeinsame SQLite-Tabelle
-  `sandbox_registry_entries` mit typisierten Spalten für Sitzung, Image, Zeitstempel,
-  Backend/Config und Browser-Port. Doctor importiert Legacy-JSON-Registry-Dateien in
-  monolithischer und geshardeter Form und entfernt erfolgreiche Quellen. Laufzeit-
-  Lesevorgänge verwenden die typisierten Zeilenspalten als Source of Truth;
-  `entry_json` ist nur eine Replay-/Debug-Kopie.
-- Commitments verwenden jetzt eine typisierte gemeinsame Tabelle `commitments` statt
-  eines JSON-Blobs für den gesamten Store. Snapshot-Speicherungen upserten nach
-  Commitment-ID und löschen nur fehlende Zeilen, statt die Tabelle zu leeren und neu
-  einzufügen. Die Laufzeit lädt Commitments aus typisierten Scope-, Delivery-Window-,
-  Status-, Attempt- und Textspalten; `record_json` ist nur eine Replay-/Debug-Kopie.
-  Doctor importiert das Legacy-`commitments.json` und entfernt es nach erfolgreichem
-  Import.
-- Cron-Jobdefinitionen, Schedule-State und Run-History haben keine Laufzeit-JSON-
-  Writer oder -Reader mehr. Die Laufzeit verwendet `cron_jobs`-Zeilen mit typisiertem
-  Schedule,
-  Payload-, Zustellungs-, Fehleralarm-, Sitzungs-, Status- und Laufzeitstatus-Spalten sowie typisierte
-  `cron_run_logs`-Metadaten für Status, Diagnosezusammenfassung, Zustellungsstatus/-fehler,
-  Sitzung/Ausführung, Modell und Token-Gesamtsummen. `job_json` ist nur eine Wiedergabe-/Debug-Kopie; `state_json` enthält verschachtelte
-  Laufzeitdiagnosen, die noch keine Felder für schnelle Abfragen haben, während die Laufzeitumgebung
-  heiße Statusfelder aus typisierten Spalten rehydriert. Doctor importiert
-  Legacy-Dateien `jobs.json`, `jobs-state.json` und `runs/*.jsonl` und entfernt
-  die importierten Quellen. Plugin-Ziel-Rückschreibungen aktualisieren passende `cron_jobs`-
+  kein Dateisystempfad und darf niemals wieder an Sitzungs-Laufzeit-APIs übergeben werden.
+- Der Speicherstatus von Gateway Doctor liest Kurzzeitabruf- und Phasensignal-Zählwerte
+  aus SQLite-Plugin-Statuszeilen statt aus `memory/.dreams/*.json`; die Ausgabe der CLI und
+  von Doctor bezeichnet diesen Speicher nun als SQLite-Speicher, nicht als Pfad.
+- Memory-Core-Laufzeit, CLI-Status, Gateway-Doctor-Methoden und Plugin-SDK-
+  Fassaden prüfen oder archivieren veraltete `.dreams/session-corpus`-Dateien nicht mehr.
+  Diese Dateien dienen ausschließlich als Migrationseingaben; Doctor importiert sie in SQLite und
+  löscht die Quelle nach der Überprüfung. Aktive Sitzungsaufnahme-Nachweiszeilen
+  verwenden nun den virtuellen SQLite-Pfad `memory/session-ingestion/<day>.txt`; die Laufzeit
+  schreibt niemals Status in `.dreams/session-corpus` und leitet daraus auch keinen Status ab.
+- Öffentliche Memory-Core-Artefakte stellen SQLite-Hostereignisse als virtuelles JSON-
+  Artefakt `memory/events/memory-host-events.json` bereit; sie verwenden den
+  veralteten Quellpfad `.dreams/events.jsonl` nicht mehr erneut.
+- Sandbox-Container-/Browser-Registrierungen verwenden nun die gemeinsame
+  SQLite-Tabelle `sandbox_registry_entries` mit typisierten Spalten für Sitzung, Image, Zeitstempel,
+  Backend/Konfiguration und Browser-Port. Doctor importiert veraltete monolithische und
+  fragmentierte JSON-Registrierungsdateien und entfernt erfolgreich importierte Quellen. Laufzeit-Lesevorgänge verwenden
+  die typisierten Zeilenspalten als maßgebliche Datenquelle; `entry_json` ist nur eine Wiedergabe-/Debug-
+  Kopie.
+- Verpflichtungen verwenden nun eine typisierte gemeinsame Tabelle `commitments` statt eines
+  JSON-Blobs für den gesamten Speicher. Die Laufzeit verwendet indizierte Abfragen für Geltungsbereich, Zustellfenster, gleitende
+  Obergrenze, Status und Versuche sowie synchrone SQLite-Transaktionen;
+  `record_json` ist nur eine Wiedergabe-/Debug-Kopie. Eine explizite Doctor-Reparatur validiert
+  die vollständige veraltete `commitments.json`, behält neuere SQLite-Zeilen bei, überprüft das
+  Ergebnis und entfernt erst dann die unveränderte Quelle. Die Laufzeit liest oder
+  schreibt die ausgemusterte Datei niemals.
+- Web-Push-Abonnements und die generierte VAPID-Identität verwenden nun typisierte gemeinsame
+  Zeilen `web_push_subscriptions` und `web_push_vapid_keys`. Laufzeitregistrierung,
+  Ablaufbereinigung und Schlüsselerzeugung bei der ersten Verwendung nutzen SQLite-
+  Transaktionen auf Zeilenebene. Eine explizite Doctor-Reparatur validiert beide ausgemusterten JSON-Speicher,
+  beansprucht sie vor dem SQLite-Schreibvorgang, importiert sie atomar, lehnt
+  widersprüchliche VAPID-Identitäten ab, überprüft das Ergebnis und entfernt erst dann die
+  Beanspruchungen. Doctor hält während des gesamten Imports die Wartungssperre des
+  Statusverzeichnisses, damit ein älterer Gateway die ausgemusterten Dateien nicht neu erstellen kann. Registrierung,
+  Zustellung, Löschung und Schlüsselauflösung schlagen sicher geschlossen fehl, bis Doctor
+  ausstehende veraltete Quellen oder unterbrochene Beanspruchungen auflöst.
+- Cron-Auftragsdefinitionen, Zeitplanstatus und Ausführungsverlauf haben keine JSON-
+  Schreiber oder -Leser mehr zur Laufzeit. Die Laufzeit verwendet `cron_jobs`-Zeilen mit typisierten Spalten für Zeitplan,
+  Nutzlast, Zustellung, Fehlerwarnung, Sitzung, Status und Laufzeitstatus sowie
+  Cron-eigene `task_runs`-Details für Diagnose, Zustellung, Sitzung/Ausführung, Modell
+  und Token-Gesamtwerte. `job_json` ist nur eine Wiedergabe-/Debug-Kopie; `state_json` bewahrt verschachtelte
+  Laufzeitdiagnosen auf, für die noch keine häufig abgefragten Felder vorhanden sind, während die Laufzeit
+  häufig verwendete Statusfelder aus typisierten Spalten wiederherstellt. Doctor importiert
+  veraltete Dateien `jobs.json`, `jobs-state.json` und `runs/*.jsonl` und entfernt
+  die importierten Quellen. Rückschreibungen von Plugin-Zielen aktualisieren übereinstimmende `cron_jobs`-
   Zeilen, statt den gesamten Cron-Speicher zu laden und zu ersetzen.
-- Der Gateway-Start ignoriert Legacy-`notify: true`-Marker in der Laufzeitprojektion.
-  Doctor übersetzt sie in eine explizite SQLite-Zustellung, wenn
-  `cron.webhook` gültig ist, entfernt inaktive Marker, wenn er nicht gesetzt ist, und behält
-  sie mit einer Warnung bei, wenn der konfigurierte Webhook ungültig ist.
-- Ausgehende und Sitzungs-Zustellungswarteschlangen speichern jetzt Warteschlangenstatus, Eintragsart,
+- Der Gateway-Start ignoriert veraltete `notify: true`-Markierungen in der Laufzeit-
+  Projektion. Doctor liest die ausgemusterte Rohquelle `cron.webhook` nur, während
+  diese Markierungen in eine explizite SQLite-Zustellung übersetzt werden, und entfernt anschließend den Konfigurationsschlüssel.
+- Ausgehende und sitzungsbezogene Zustellwarteschlangen speichern nun Warteschlangenstatus, Eintragstyp,
   Sitzungsschlüssel, Kanal, Ziel, Konto-ID, Wiederholungsanzahl, letzten Versuch/Fehler,
   Wiederherstellungsstatus und Plattform-Sendemarkierungen als typisierte Spalten in der gemeinsamen
-  Tabelle `delivery_queue_entries`. Die Laufzeitwiederherstellung liest diese heißen Felder aus
+  Tabelle `delivery_queue_entries`. Die Laufzeitwiederherstellung liest diese häufig verwendeten Felder aus
   den typisierten Spalten, und Wiederholungs-/Wiederherstellungsmutationen aktualisieren diese Spalten direkt,
-  ohne Wiedergabe-JSON neu zu schreiben. Die vollständige JSON-Payload bleibt nur als
-  Wiedergabe-/Debug-Blob für Nachrichtentexte und andere kalte Wiedergabedaten erhalten.
-- Verwaltete ausgehende Bilddatensätze verwenden jetzt typisierte gemeinsame
-  `managed_outgoing_image_records`-Zeilen, wobei Medienbytes weiterhin in
-  `media_blobs` gespeichert werden. Der JSON-Datensatz bleibt nur als Wiedergabe-/Debug-Kopie erhalten.
-- Discord-Modellauswahl-Einstellungen, Command-Deploy-Hashes und Thread-Bindungen
-  verwenden jetzt gemeinsamen SQLite-Plugin-Status. Ihre Legacy-JSON-Importpläne liegen in der
-  Setup-/Doctor-Migrationsoberfläche des Discord-Plugins, nicht im Kernmigrationscode.
-- Plugin-Legacy-Importdetektoren verwenden Doctor-benannte Module wie
+  ohne Wiedergabe-JSON neu zu schreiben. Die vollständige JSON-Nutzlast bleibt nur als
+  Wiedergabe-/Debug-Blob für Nachrichteninhalte und andere selten verwendete Wiedergabedaten erhalten.
+- Verwaltete Datensätze ausgehender Bilder verwenden nun typisierte gemeinsame
+  Zeilen `managed_outgoing_image_records`. Die Laufzeit liest ausschließlich typisierte Spalten; die
+  JSON-Spalte ist eine Wiedergabe-/Debug-Kopie. Die ursprünglichen Bildbytes bleiben benannte
+  Anhangsartefakte im Verzeichnis für verwaltete Medien.
+- Discord-Einstellungen für die Modellauswahl, Hashes für die Befehlsbereitstellung und Thread-Bindungen
+  verwenden nun den gemeinsamen SQLite-Plugin-Status. Ihre veralteten JSON-Importpläne befinden sich in der
+  Einrichtungs-/Doctor-Migrationsoberfläche des Discord-Plugins, nicht im Kern-Migrationscode.
+- Detektoren für veraltete Plugin-Importe verwenden nach Doctor benannte Module wie
   `doctor-legacy-state.ts` oder `doctor-state-imports.ts`; normale Kanal-Laufzeitmodule
-  dürfen keine Legacy-JSON-Detektoren importieren.
-- BlueBubbles-Aufhol-Cursor und eingehende Dedupe-Marker verwenden jetzt gemeinsamen SQLite-
-  Plugin-Status. Ihre Legacy-JSON-Importpläne liegen in der BlueBubbles-Plugin-
-  Setup-/Doctor-Migrationsoberfläche, nicht im Kernmigrationscode.
-- Telegram-Update-Offsets, Sticker-Cache-Zeilen, Cache-Zeilen für gesendete Nachrichten,
-  Topic-Namens-Cache-Zeilen und Thread-Bindungen verwenden jetzt gemeinsamen SQLite-Plugin-
-  Status. Ihre Legacy-JSON-Importpläne liegen in der Telegram-Plugin-
-  Setup-/Doctor-Migrationsoberfläche, nicht im Kernmigrationscode.
-- iMessage-Aufhol-Cursor, Reply-Short-ID-Zuordnungen und Sent-Echo-Dedupe-Zeilen
-  verwenden jetzt gemeinsamen SQLite-Plugin-Status. Die alten Dateien `imessage/catchup/*.json`,
-  `imessage/reply-cache.jsonl` und `imessage/sent-echoes.jsonl` sind
-  nur Doctor-Eingaben.
-- Feishu-Nachrichten-Dedupe-Zeilen verwenden jetzt gemeinsamen SQLite-Plugin-Status statt
-  `feishu/dedup/*.json`-Dateien. Der Legacy-JSON-Importplan liegt in der Feishu-
-  Plugin-Setup-/Doctor-Migrationsoberfläche, nicht im Kernmigrationscode.
-- Microsoft Teams-Konversationen, Umfragen, ausstehende Upload-Puffer und Feedback-
-  Learnings verwenden jetzt gemeinsame SQLite-Plugin-Status-/Blob-Tabellen. Der Pfad für ausstehende Uploads
+  dürfen keine Detektoren für veraltetes JSON importieren.
+- BlueBubbles-Nachholcursor und Deduplizierungsmarkierungen für eingehende Nachrichten verwenden nun den gemeinsamen SQLite-
+  Plugin-Status. Ihre veralteten JSON-Importpläne befinden sich in der Einrichtungs-/Doctor-Migrationsoberfläche
+  des BlueBubbles-Plugins, nicht im Kern-Migrationscode.
+- Telegram-Aktualisierungs-Offsets, Sticker-Cache-Zeilen, Cache-Zeilen gesendeter Nachrichten,
+  Cache-Zeilen für Themennamen und Thread-Bindungen verwenden nun den gemeinsamen SQLite-Plugin-
+  Status. Ihre veralteten JSON-Importpläne befinden sich in der Einrichtungs-/Doctor-Migrationsoberfläche
+  des Telegram-Plugins, nicht im Kern-Migrationscode.
+- iMessage-Nachholcursor, Zuordnungen kurzer Antwort-IDs und Deduplizierungszeilen für Sende-Echos
+  verwenden nun den gemeinsamen SQLite-Plugin-Status. Die alten Dateien `imessage/catchup/*.json`,
+  `imessage/reply-cache.jsonl` und `imessage/sent-echoes.jsonl` dienen
+  ausschließlich als Doctor-Eingaben.
+- Feishu-Zeilen zur Nachrichtendeduplizierung nutzen nun die beanspruchbare Kerndeduplizierung
+  (`feishu.dedup.*`-Namespaces im gemeinsamen SQLite-Plugin-Status) statt
+  `feishu/dedup/*.json`-Dateien oder des ausgemusterten manuell implementierten Speichers `dedup.*`, ohne
+  veralteten Import, da der Cache für den Wiedergabeschutz nach dem Upgrade neu aufgebaut wird.
+- Microsoft Teams-Unterhaltungen, Umfragen, ausstehende Upload-Puffer und Feedback-
+  Erkenntnisse verwenden nun gemeinsame SQLite-Tabellen für Plugin-Status/Blobs. Der Pfad für ausstehende Uploads
   verwendet `plugin_blob_entries`, sodass Medienpuffer als SQLite-BLOBs
-  statt als base64-JSON gespeichert werden. Die Laufzeit-Helper-Namen verwenden jetzt SQLite-/Statusbenennung
-  statt `*-fs`-Dateispeicherbenennung, und der alte `storePath`-Shim ist aus
-  diesen Speichern entfernt. Der Legacy-JSON-Importplan liegt in der Microsoft Teams-
-  Plugin-Setup-/Doctor-Migrationsoberfläche.
-- Von Zalo gehostete ausgehende Medien verwenden jetzt gemeinsame SQLite-`plugin_blob_entries`
-  statt `openclaw-zalo-outbound-media`-JSON/bin-Temporär-Sidecars.
-- HTML und Metadaten des Diffs-Viewers verwenden jetzt gemeinsame SQLite-`plugin_blob_entries`
-  statt temporärer `meta.json`-/`viewer.html`-Dateien. Gerenderte PNG/PDF-Ausgaben bleiben
-  temporäre Materialisierungen, weil die Kanalzustellung weiterhin einen Dateipfad benötigt.
-- Von Canvas verwaltete Dokumente verwenden jetzt gemeinsame SQLite-`plugin_blob_entries` statt
+  statt als Base64-JSON gespeichert werden. Die Namen der Laufzeithelfer verwenden nun SQLite-/Statusbenennungen
+  statt der `*-fs`-Dateispeicherbenennung, und der alte `storePath`-Shim ist
+  aus diesen Speichern entfernt. Sein veralteter JSON-Importplan befindet sich in der Einrichtungs-/Doctor-Migrationsoberfläche
+  des Microsoft Teams-Plugins.
+- Von Zalo gehostete ausgehende Medien verwenden nun das gemeinsame SQLite-Element `plugin_blob_entries`
+  statt temporärer JSON-/bin-Begleitdateien `openclaw-zalo-outbound-media`.
+- HTML und Metadaten des Diff-Viewers verwenden nun das gemeinsame SQLite-Element `plugin_blob_entries`
+  statt temporärer Dateien `meta.json`/`viewer.html`. Viewer-HTML wird als
+  gzip-Blob gespeichert, und nur der Hash des URL-Tokens wird persistiert. Gerenderte PNG-/PDF-Ausgaben
+  bleiben temporäre Materialisierungen, da die Kanalzustellung weiterhin einen Dateipfad benötigt;
+  ihre Ablaufmetadaten werden von SQLite verwaltet, ohne JSON-Begleitdateien.
+- Verwaltete Canvas-Dokumente verwenden nun das gemeinsame SQLite-Element `plugin_blob_entries` statt
   eines standardmäßigen Verzeichnisses `state/canvas/documents`. Der Canvas-Host stellt diese
-  Blobs direkt bereit; lokale Dateien werden nur für explizite Operator-Inhalte unter `host.root`
-  oder temporäre Materialisierung erstellt, wenn ein nachgelagerter Medienleser
+  Blobs direkt bereit; lokale Dateien werden nur für explizite `host.root`-
+  Betreiberinhalte oder zur temporären Materialisierung erstellt, wenn ein nachgelagerter Medienleser
   einen Pfad benötigt.
-- File-Transfer-Audit-Entscheidungen verwenden jetzt gemeinsame SQLite-`plugin_state_entries`
+- Prüfentscheidungen für Dateiübertragungen verwenden nun das gemeinsame SQLite-Element `plugin_state_entries`
   statt des unbegrenzten Laufzeitprotokolls `audit/file-transfer.jsonl`. Doctor
-  importiert die Legacy-JSONL-Audit-Datei in den Plugin-Status und entfernt die Quelle
-  nach einem sauberen Import.
-- ACPX-Prozess-Leases und Gateway-Instanzidentität verwenden jetzt gemeinsamen SQLite-Plugin-
-  Status. Doctor importiert die Legacy-Datei `gateway-instance-id` in den Plugin-Status
+  importiert die veraltete JSONL-Prüfdatei in den Plugin-Status und entfernt die Quelle
+  nach einem fehlerfreien Import.
+- ACPX-Prozess-Leases und die Identität der Gateway-Instanz verwenden nun den gemeinsamen SQLite-Plugin-
+  Status. Doctor importiert die veraltete Datei `gateway-instance-id` in den Plugin-Status
   und entfernt die Quelle.
 - Von ACPX generierte Wrapper-Skripte und das isolierte Codex-Home sind temporäre
-  Materialisierung unter dem OpenClaw-Temporärstamm, kein dauerhafter OpenClaw-Status. Die
+  Materialisierungen unter dem OpenClaw-Temp-Stammverzeichnis und kein dauerhafter OpenClaw-Status. Die
   dauerhaften ACPX-Laufzeitdatensätze sind die SQLite-Lease- und Gateway-Instanzzeilen;
-  die alte ACPX-`stateDir`-Konfigurationsoberfläche wurde entfernt, weil dort kein Laufzeitstatus
+  die alte ACPX-Konfigurationsoberfläche `stateDir` wurde entfernt, da dort kein Laufzeitstatus
   mehr geschrieben wird.
-- Gateway-Medienanhänge verwenden jetzt die gemeinsame SQLite-Tabelle `media_blobs` als
-  kanonischen Byte-Speicher. Lokale Pfade, die an Kanal- und Sandbox-
-  Kompatibilitätsoberflächen zurückgegeben werden, sind temporäre Materialisierungen der Datenbankzeile,
-  nicht der dauerhafte Medienspeicher. Laufzeit-Medien-Allowlisten enthalten keine Legacy-
-  `$OPENCLAW_STATE_DIR/media`- oder Konfigurationsverzeichnis-`media`-Stämme mehr; diese Verzeichnisse sind
-  nur Doctor-Importquellen.
-- Shell-Vervollständigung schreibt keine `$OPENCLAW_STATE_DIR/completions/*`-Cache-
-  Dateien mehr. Installations-, Doctor-, Update- und Release-Smoke-Pfade verwenden generierte
-  Vervollständigungsausgabe oder Profil-Sourcing statt dauerhafter Vervollständigungs-Cache-
+- Gateway-Medienanhänge verwenden nun die gemeinsame SQLite-Tabelle `media_blobs` als
+  kanonischen Byte-Speicher. Lokale Pfade, die an Kompatibilitätsoberflächen für Kanäle und Sandboxen
+  zurückgegeben werden, sind temporäre Materialisierungen der Datenbankzeile und nicht der
+  dauerhafte Medienspeicher. Laufzeit-Medienfreigabelisten enthalten die veralteten
+  Stammverzeichnisse `$OPENCLAW_STATE_DIR/media` oder `media` des Konfigurationsverzeichnisses nicht mehr; diese Verzeichnisse dienen
+  ausschließlich als Doctor-Importquellen.
+- Die Shell-Vervollständigung schreibt keine `$OPENCLAW_STATE_DIR/completions/*`-Cache-
+  Dateien mehr. Installations-, Doctor-, Aktualisierungs- und Release-Smoke-Pfade verwenden generierte
+  Vervollständigungsausgaben oder das Einlesen von Profilen statt dauerhafter Vervollständigungs-Cache-
   Dateien.
-- Gateway-Skill-Upload-Staging verwendet jetzt gemeinsame `skill_uploads`-Zeilen. Upload-
-  Metadaten, Idempotenzschlüssel und Archivbytes liegen in SQLite; der Installer
-  erhält nur einen temporär materialisierten Archivpfad, während eine Installation
-  läuft.
-- Inline-Anhänge von Subagenten werden nicht mehr unter Workspace-
+- Das Staging für Gateway-Skill-Uploads verwendet nun gemeinsame Zeilen `skill_uploads` und
+  `skill_upload_chunks`. Chunks bleiben während des Uploads einzeln transaktional;
+  beim Commit werden sie dann zu einem verifizierten Archiv-BLOB zusammengesetzt und die Chunk-
+  Zeilen entfernt. Das Installationsprogramm erhält nur während einer laufenden Installation
+  einen temporär materialisierten Archivpfad. Doctor verwirft den ausgemusterten einstündigen Dateisystem-
+  Staging-Baum, statt flüchtige Uploads zu importieren.
+- Inline-Anhänge von Subagenten werden nicht mehr unter dem Workspace-Pfad
   `.openclaw/attachments/*` materialisiert. Der Spawn-Pfad bereitet SQLite-VFS-Seed-Einträge vor,
-  Inline-Ausführungen säen diese Einträge in den Scratch-Namespace der jeweiligen Agenten-Laufzeit ein,
-  und festplattenbasierte Tools legen diesen SQLite-Scratch für Anhangspfade darüber. Die
-  alten Registry-Spalten für Anhangsverzeichnisse von Subagent-Ausführungen und Cleanup-Hooks wurden entfernt.
-- CLI-Bildhydration verwaltet keine stabilen `openclaw-cli-images`-Cache-
-  Dateien mehr. Externe CLI-Backends erhalten weiterhin Dateipfade, aber diese Pfade sind
-  temporäre Materialisierungen pro Ausführung mit Bereinigung.
-- Cache-Trace-Diagnosen, Anthropic-Payload-Diagnosen, Rohmodellstream-
-  Diagnosen, Diagnose-Zeitachsenereignisse und Gateway-Stabilitätsbündel schreiben jetzt
-  SQLite-Zeilen statt `logs/*.jsonl`- oder
-  `logs/stability/*.json`-Dateien.
-  Laufzeit-Pfadüberschreibungs-Flags und Umgebungsvariablen wurden entfernt; Export-/Debug-
+  Inline-Ausführungen übernehmen diese Einträge in den Laufzeit-Scratch-Namespace des jeweiligen Agenten,
+  und datenträgergestützte Tools überlagern diesen SQLite-Scratch für Anhangspfade. Die
+  alten Registrierungsspalten für Anhangsverzeichnisse von Subagent-Ausführungen und die Bereinigungs-Hooks wurden entfernt.
+- Die CLI-Bildhydratisierung verwaltet keine stabilen `openclaw-cli-images`-Cache-
+  Dateien mehr. Externe CLI-Backends erhalten weiterhin Dateipfade, diese Pfade sind jedoch
+  temporäre Materialisierungen pro Ausführung mit anschließender Bereinigung.
+- Cache-Trace-Diagnosen, Anthropic-Nutzlastdiagnosen, Rohmodell-Stream-
+  Diagnosen, Diagnose-Zeitachsenereignisse und Gateway-Stabilitätspakete schreiben nun
+  SQLite-Zeilen statt Dateien `logs/*.jsonl` oder
+  `logs/stability/*.json`.
+  Laufzeit-Flags und Umgebungsvariablen zum Überschreiben von Pfaden wurden entfernt; Export-/Debug-
   Befehle können Dateien explizit aus Datenbankzeilen materialisieren.
-- Der macOS Companion hat keinen fortlaufenden `diagnostics.jsonl`-Writer mehr. App-
-  Protokolle gehen an Unified Logging, und dauerhafte Gateway-Diagnosen bleiben SQLite-gestützt.
-- Die macOS-Port-Guardian-Datensatzliste verwendet jetzt typisierte gemeinsame SQLite-
-  `macos_port_guardian_records`-Zeilen statt einer JSON-Datei in Application Support
-  oder eines opaken Singleton-Blobs.
-- Gateway-Singleton-Sperren verwenden jetzt typisierte gemeinsame SQLite-`state_leases`-Zeilen unter
-  dem Scope `gateway_locks` statt Sperrdateien im temporären Verzeichnis. Fly- und OAuth-
-  Troubleshooting-Dokumentation verweist jetzt auf die SQLite-Lease-/Auth-Refresh-Sperre statt
-  auf veraltete Dateisperren-Bereinigung.
-- Gateway-Neustart-Sentinel-Status verwendet jetzt typisierte gemeinsame SQLite-
-  `gateway_restart_sentinel`-Zeilen statt `restart-sentinel.json`; die Laufzeit
+- Die macOS-Begleitanwendung verfügt nicht mehr über einen rollierenden `diagnostics.jsonl`-Schreiber. App-
+  Protokolle werden in die vereinheitlichte Protokollierung geschrieben, und dauerhafte Gateway-Diagnosen bleiben SQLite-gestützt.
+- Die Datensatzliste des macOS-Port-Guardians verwendet nun typisierte gemeinsame SQLite-
+  Zeilen `macos_port_guardian_records` statt einer JSON-Datei in Application Support
+  oder eines undurchsichtigen Singleton-Blobs. Alle macOS-App-Profile verwenden dieselbe hostglobale native
+  Datenbank, da sie maschinenlokale Ports koordinieren. Jeder Ledger-Vorgang
+  blockiert, solange eine ältere JSON-schreibende App-Kopie ausgeführt wird. Die Migration tritt dem stabilen
+  Dateisperrprotokoll des alten Ledgers nur bei, um die Quelle als Momentaufnahme zu erfassen und später erneut zu validieren.
+  Sie löst jede veraltete Zeile anhand aktueller Befehls- und Prozessstartfakten auf,
+  ohne diese Sperre zu halten, liest dann die maßgeblichen SQLite-Zeilen erneut, wendet den
+  Plan an, überprüft jeden Beleg und entfernt die Quelle. Entfernungswiederholungen planen
+  fehlende Zeilen neu, damit ausgemusterte veraltete Belege nicht wiederhergestellt werden können. Die Sperre bleibt
+  kurzlebig, damit sie einen älteren Schreiber nach dem Start durch SSH nicht blockieren kann. Die Umstellung ist
+  absichtlich unumkehrbar: Die Laufzeit im Normalbetrieb liest, projiziert oder schreibt niemals JSON,
+  und ein Rollback auf reine JSON-Builds bewahrt neuere SQLite-Belege nicht.
+- Gateway-Singleton-Sperren verwenden nun typisierte gemeinsame SQLite-Zeilen `state_leases` unter
+  dem Geltungsbereich `gateway_locks` statt Sperrdateien im Temp-Verzeichnis. Dokumentationen zur Fehlerbehebung für Fly und OAuth
+  verweisen nun auf die SQLite-Lease-/Authentifizierungsaktualisierungssperre statt
+  auf die Bereinigung veralteter Dateisperren.
+- Der Zustand des Gateway-Neustart-Sentinels verwendet jetzt typisierte gemeinsame SQLite-
+  `gateway_restart_sentinel`-Zeilen anstelle von `restart-sentinel.json`; die Laufzeit
   liest Sentinel-Art, Status, Routing, Nachricht, Fortsetzung und Statistiken aus
-  typisierten Spalten. `payload_json` ist nur eine Wiedergabe-/Debug-Kopie. Laufzeitcode löscht
-  die SQLite-Zeile direkt und führt keine Dateibereinigungslogik mehr mit.
-- Gateway-Neustartabsicht und Supervisor-Handoff-Status verwenden jetzt typisierte gemeinsame
-  SQLite-Zeilen `gateway_restart_intent` und `gateway_restart_handoff` statt
-  der Sidecars `gateway-restart-intent.json` und
+  typisierten Spalten. Diese Spalten sind maßgeblich; `payload_json` ist nur ein
+  Replay-/Debug-Schatten. Die Lese-, Schreib- und Löschpfade der Laufzeit verwenden ausschließlich SQLite.
+  Ein begrenztes Zustandsmigrationsmodul wird beim Start und durch Doctor ausgeführt, um einen
+  validierten älteren Post-Update-Sentinel vor der normalen Neustartwiederherstellung zu importieren, die
+  typisierte Zeile zu überprüfen und die Quelldatei zu entfernen. Kein Laufzeitmodul im
+  Normalbetrieb liest oder schreibt die Legacy-Datei oder bereinigt sie.
+- Die Gateway-Neustartabsicht und der Übergabezustand des Supervisors verwenden jetzt typisierte gemeinsame
+  SQLite-Zeilen `gateway_restart_intent` und `gateway_restart_handoff` anstelle der
+  Sidecar-Dateien `gateway-restart-intent.json` und
   `gateway-supervisor-restart-handoff.json`.
-- Gateway-Singleton-Koordination verwendet jetzt typisierte `state_leases`-Zeilen unter
-  `gateway_locks` statt `gateway.<hash>.lock`-Dateien zu schreiben. Die Lease-Zeile
-  besitzt Sperreninhaber, Ablauf, Heartbeat und Debug-Payload; SQLite besitzt die
-  atomare Acquire-/Release-Grenze. Die entfernte Option für das Dateisperrenverzeichnis ist
-  verschwunden; Tests verwenden die SQLite-Zeilenidentität direkt.
-- Der alte nicht referenzierte Cron-Nutzungsbericht-Helper, der `cron/runs/*.jsonl`-
-  Dateien scannte, wurde gelöscht. Cron-Ausführungsverlaufsberichte sollten die typisierten
-  SQLite-Zeilen `cron_run_logs` lesen.
-- Die Neustartwiederherstellung der Hauptsitzung entdeckt Kandidaten-Agenten jetzt über die
-  SQLite-Registry `agent_databases` statt `agents/*/sessions`-
-  Verzeichnisse zu scannen.
-- Die Gemini-Sitzungsbeschädigungswiederherstellung löscht jetzt nur die SQLite-Sitzungszeile;
-  sie benötigt keinen Legacy-`storePath`-Gate mehr und versucht nicht mehr, einen abgeleiteten
-  Transcript-JSONL-Pfad zu entfernen.
-- Die Verarbeitung von Pfadüberschreibungen behandelt literale `undefined`-/`null`-Umgebungs-
-  werte jetzt als nicht gesetzt und verhindert dadurch versehentliche Datenbanken unter
-  `undefined/state/*.sqlite` im Repo-Stamm während Tests oder Shell-Handoffs.
-- Konfigurationszustands-Fingerprints verwenden jetzt typisierte gemeinsame SQLite-`config_health_entries`-
-  Zeilen statt `logs/config-health.json`, wodurch die normale Konfigurationsdatei
-  das einzige Nicht-Anmeldeinformations-Konfigurationsdokument bleibt. Der macOS Companion hält nur
-  prozesslokalen Zustandsstatus und erstellt den alten JSON-Sidecar nicht neu.
-- Die Laufzeit für Auth-Profile importiert oder schreibt keine Credential-JSON-Dateien mehr. Der
-  kanonische Credential-Speicher ist SQLite; `auth-profiles.json`, agentenspezifische
-  `auth.json` und gemeinsame `credentials/oauth.json` sind Doctor-Migrationseingaben,
+- Die Gateway-Singleton-Koordination verwendet jetzt typisierte `state_leases`-Zeilen unter
+  `gateway_locks`, anstatt `gateway.<hash>.lock`-Dateien zu schreiben. Die Lease-Zeile
+  enthält den Sperrinhaber, den Ablaufzeitpunkt, den Heartbeat und die Debug-Nutzlast; SQLite verwaltet die
+  atomare Grenze für Erwerb und Freigabe. Die eingestellte Verzeichnisoption für Dateisperren
+  wurde entfernt; Tests verwenden direkt die Identität der SQLite-Zeile.
+- Der alte, nicht referenzierte Cron-Helfer für Nutzungsberichte, der `cron/runs/*.jsonl`-
+  Dateien durchsuchte, wurde gelöscht. Berichte zum Cron-Ausführungsverlauf lesen Cron-eigene `task_runs`-Zeilen.
+- Die Neustartwiederherstellung der Hauptsitzung ermittelt mögliche Agenten jetzt über die
+  SQLite-Registry `agent_databases`, anstatt `agents/*/sessions`-
+  Verzeichnisse zu durchsuchen.
+- Die Wiederherstellung nach beschädigten Gemini-Sitzungen löscht jetzt nur die SQLite-Sitzungszeile;
+  sie benötigt kein Legacy-`storePath`-Gate mehr und versucht nicht mehr, einen abgeleiteten
+  JSONL-Transkriptpfad zu entfernen.
+- Die Verarbeitung von Pfadüberschreibungen behandelt literale `undefined`-/`null`-Umgebungswerte
+  jetzt als nicht gesetzt und verhindert dadurch bei Tests oder Shell-Übergaben versehentlich im
+  Repository-Stammverzeichnis angelegte `undefined/state/*.sqlite`-Datenbanken.
+- Fingerabdrücke des Konfigurationszustands verwenden jetzt typisierte gemeinsame SQLite-
+  `config_health_entries`-Zeilen anstelle von `logs/config-health.json`, sodass die normale Konfigurationsdatei
+  das einzige Konfigurationsdokument ohne Anmeldedaten bleibt. Die macOS-Begleitanwendung behält nur
+  prozesslokalen Zustandsstatus und erstellt die alte JSON-Sidecar-Datei nicht erneut.
+- Die Laufzeit für Authentifizierungsprofile importiert oder schreibt keine JSON-Dateien mit Anmeldedaten mehr. Der
+  kanonische Speicher für Anmeldedaten ist SQLite; `auth-profiles.json`, agentenspezifische
+  `auth.json` und gemeinsame `credentials/oauth.json` sind Migrationseingaben für Doctor,
   die nach dem Import entfernt werden.
-- Tests für Auth-Profil-Speichern/-Status prüfen jetzt direkt typisierte SQLite-Auth-Tabellen
-  und verwenden Legacy-Auth-Profil-Dateinamen nur für Doctor-Migrationseingaben.
-- `openclaw secrets apply` bereinigt nur die Konfigurationsdatei, Env-Datei und den SQLite-
-  Auth-Profil-Speicher. Es enthält keine Kompatibilitätslogik mehr, die
-  entfernte agentenspezifische `auth.json` bearbeitet; Doctor ist für Import und Löschung dieser Datei zuständig.
-- Hermes-Secret-Migrationspläne und -Anwendungen importierten API-Schlüsselprofile direkt
-  in den SQLite-Auth-Profil-Speicher. Sie schreiben oder verifizieren
-  `auth-profiles.json` nicht mehr als Zwischenziel.
-- Benutzerorientierte Auth-Dokumentation beschreibt jetzt
-  `state/openclaw.sqlite#table/auth_profile_stores/<agentDir>` statt
-  Benutzer anzuweisen, `auth-profiles.json` zu prüfen oder zu kopieren; Legacy-OAuth-/Auth-JSON-
-  Namen bleiben nur als Doctor-Importeingaben dokumentiert.
-- Kern-Statuspfad-Helper stellen die entfernte Datei `credentials/oauth.json` nicht mehr bereit.
-  Der Legacy-Dateiname ist lokal auf den Doctor-Auth-Importpfad beschränkt.
-- Installations-, Sicherheits-, Onboarding-, Modell-Auth- und SecretRef-Dokumentation beschreibt jetzt
-  SQLite-Auth-Profil-Zeilen und Gesamtstatus-Backup/-Migration statt
-  agentenspezifischer Auth-Profil-JSON-Dateien.
-- PI-Modellerkennung übergibt jetzt kanonische Anmeldeinformationen an den In-Memory-
-  `pi-coding-agent`-Auth-Speicher. Sie erstellt, bereinigt oder schreibt
-  während der Erkennung keine agentenspezifische `auth.json` mehr.
-- Voice-Wake-Trigger und Routing-Einstellungen verwenden jetzt typisierte gemeinsame SQLite-Tabellen
-  statt `settings/voicewake.json`, `settings/voicewake-routing.json` oder
-  opaker generischer Zeilen; Doctor importiert die Legacy-JSON-Dateien und entfernt sie nach einer
+- Tests zum Speichern und Zustand von Authentifizierungsprofilen prüfen jetzt direkt typisierte SQLite-Authentifizierungstabellen
+  und verwenden Legacy-Dateinamen für Authentifizierungsprofile nur als Migrationseingaben für Doctor.
+- `openclaw secrets apply` bereinigt nur die Konfigurationsdatei, die Umgebungsdatei und den SQLite-
+  Speicher für Authentifizierungsprofile. Es enthält keine Kompatibilitätslogik mehr, die die eingestellte agentenspezifische
+  Datei `auth.json` bearbeitet; Doctor ist für den Import und das Löschen dieser Datei zuständig.
+- Hermes-Pläne zur Migration von Secrets planen und übernehmen importierte API-Schlüsselprofile direkt
+  in den SQLite-Speicher für Authentifizierungsprofile. `auth-profiles.json` wird nicht mehr als Zwischenziel
+  geschrieben oder überprüft.
+- Benutzerorientierte Dokumentation zur Authentifizierung beschreibt jetzt
+  `state/openclaw.sqlite#table/auth_profile_stores/<agentDir>`, anstatt Benutzer anzuweisen,
+  `auth-profiles.json` zu prüfen oder zu kopieren; Legacy-Namen für OAuth-/Authentifizierungs-JSON
+  bleiben nur als Importeingaben für Doctor dokumentiert.
+- MCP-OAuth-Sitzungen verwenden jetzt versionierte `mcp_oauth_stores`-Zeilen im gemeinsamen
+  `state/openclaw.sqlite`. SDK-eigene Token-, Clientregistrierungs- und Discovery-
+  Objekte bleiben eine einzige validierte JSON-Nutzlast, damit Erweiterungsfelder von Abhängigkeiten
+  erhalten bleiben, während jeder Lese-/Änderungs-/Schreibvorgang in einer kurzen Kysely-
+  Transaktion festgeschrieben wird. Eine gemeinsame SQLite-Lease serialisiert Aktualisierung, Anmeldung und Abmeldung;
+  eingebettete MCP-Transporte lassen das MCP SDK Aktualisierungen nicht mehr außerhalb dieser
+  Lease durchführen. Doctor importiert und entfernt ausschließlich die eingestellten `mcp-oauth/*.json`-
+  Speicher mit Quellbelegen, und die Laufzeit besitzt keinen Datei-Fallback.
+- Hilfsfunktionen für Kernzustandspfade stellen die eingestellte Datei `credentials/oauth.json`
+  nicht mehr bereit. Der Legacy-Dateiname ist lokal auf den Authentifizierungsimportpfad von Doctor beschränkt.
+- Dokumentation zu Installation, Sicherheit, Onboarding, Modellauthentifizierung und SecretRef beschreibt jetzt
+  SQLite-Zeilen für Authentifizierungsprofile und Sicherung/Migration des gesamten Zustands anstelle
+  agentenspezifischer JSON-Dateien für Authentifizierungsprofile.
+- Die PI-Modellerkennung übergibt jetzt kanonische Anmeldedaten an den speicherinternen
+  Authentifizierungsspeicher `pi-coding-agent`. Sie erstellt, bereinigt oder schreibt während der Erkennung
+  keine agentenspezifischen `auth.json` mehr.
+- Auslöse- und Routing-Einstellungen für Voice Wake verwenden jetzt typisierte gemeinsame SQLite-Tabellen
+  anstelle von `settings/voicewake.json`, `settings/voicewake-routing.json` oder
+  undurchsichtigen generischen Zeilen; Doctor importiert die Legacy-JSON-Dateien und entfernt sie nach einer
   erfolgreichen Migration.
-- Update-Check-Status verwendet jetzt eine typisierte gemeinsame `update_check_state`-Zeile statt
-  `update-check.json` oder eines opaken generischen Blobs; Doctor importiert
+- Der Zustand der Update-Prüfung verwendet jetzt eine typisierte gemeinsame `update_check_state`-Zeile anstelle von
+  `update-check.json` oder einem undurchsichtigen generischen Blob; Doctor importiert
   die Legacy-JSON-Datei und entfernt sie nach einer erfolgreichen Migration.
-- Konfigurationszustandsstatus verwendet jetzt typisierte gemeinsame `config_health_entries`-Zeilen statt
-  `logs/config-health.json` oder eines opaken generischen Blobs; Doctor
+- Der Zustand der Konfigurationsintegrität verwendet jetzt typisierte gemeinsame `config_health_entries`-Zeilen anstelle
+  von `logs/config-health.json` oder einem undurchsichtigen generischen Blob; Doctor
   importiert die Legacy-JSON-Datei und entfernt sie nach einer erfolgreichen Migration.
 - Genehmigungen für Plugin-Konversationsbindungen verwenden jetzt typisierte
-  `plugin_binding_approvals`-Zeilen statt opakem gemeinsamem SQLite-Status oder
-  `plugin-binding-approvals.json`; die Legacy-Datei ist eine Eingabe für die doctor-Migration.
-- Generische Bindings der aktuellen Konversation speichern jetzt typisierte
+  `plugin_binding_approvals`-Zeilen anstelle eines undurchsichtigen gemeinsamen SQLite-Zustands oder
+  `plugin-binding-approvals.json`; die Legacy-Datei ist eine Migrationseingabe für Doctor.
+- Generische Bindungen der aktuellen Konversation speichern jetzt typisierte
   `current_conversation_bindings`-Zeilen, anstatt
-  `bindings/current-conversations.json` neu zu schreiben; doctor importiert die Legacy-JSON-Datei und
+  `bindings/current-conversations.json` neu zu schreiben; Doctor importiert die Legacy-JSON-Datei und
   entfernt sie nach einer erfolgreichen Migration.
-- Synchronisierungsjournale für importierte Quellen im Memory Wiki speichern jetzt eine SQLite-Plugin-State-Zeile
-  pro Vault-/Quellschlüssel, anstatt `.openclaw-wiki/source-sync.json` neu zu schreiben;
-  der Migrations-Provider importiert und entfernt das Legacy-JSON-Journal.
-- Importlauf-Datensätze für Memory Wiki ChatGPT speichern jetzt eine SQLite-Plugin-State-Zeile
-  pro Vault-/Lauf-ID, anstatt `.openclaw-wiki/import-runs/*.json` zu schreiben.
-  Rollback-Snapshots bleiben explizite Vault-Dateien, bis die Snapshot-Archivierung
-  für Importläufe in den Blob-Speicher verschoben wird.
-- Kompilierte Memory Wiki-Digests speichern jetzt SQLite-Plugin-Blob-Zeilen, anstatt
-  `.openclaw-wiki/cache/agent-digest.json` und
-  `.openclaw-wiki/cache/claims.jsonl` zu schreiben. Der Migrations-Provider importiert alte Cache-
-  Dateien und entfernt das Cache-Verzeichnis, wenn es leer wird.
-- ClawHub Skill-Installationsverfolgung speichert jetzt eine SQLite-Plugin-State-Zeile pro
-  Workspace/Skill, anstatt zur Laufzeit `.clawhub/lock.json` und
-  `.clawhub/origin.json`-Sidecars zu schreiben oder zu lesen. Runtime-Code verwendet Tracked-Install-
-  State-Objekte statt dateiförmiger Lockfile-/Origin-Abstraktionen. Doctor
-  importiert die Legacy-Sidecars aus konfigurierten Agent-Workspaces und entfernt sie
-  nach einem sauberen Import.
-- Der installierte Plugin-Index liest und schreibt jetzt die typisierte gemeinsam genutzte SQLite-
-  Singleton-Zeile `installed_plugin_index` statt `plugins/installs.json`; die
-  Legacy-JSON-Datei ist nur eine Eingabe für die doctor-Migration und wird nach dem Import entfernt.
-- Der Legacy-Pfadhelfer `plugins/installs.json` lebt jetzt im doctor-Legacy-
-  Code. Runtime-Plugin-Index-Module stellen nur SQLite-gestützte Persistenz-
-  Optionen bereit, keinen JSON-Dateipfad.
-- Gateway-Neustart-Sentinel, Neustart-Intent und Supervisor-Handoff-State verwenden jetzt
-  typisierte gemeinsam genutzte SQLite-Zeilen (`gateway_restart_sentinel`,
-  `gateway_restart_intent` und `gateway_restart_handoff`) statt generischer
-  opaker Blobs. Runtime-Neustartcode hat keinen dateiförmigen Sentinel-/Intent-/Handoff-
+- Synchronisations-Ledger für importierte Quellen von Memory Wiki speichern jetzt je Vault-/Quellschlüssel eine SQLite-Plugin-Zustandszeile,
+  anstatt `.openclaw-wiki/source-sync.json` neu zu schreiben;
+  der Migrations-Provider importiert und entfernt das Legacy-JSON-Ledger.
+- Datensätze zu ChatGPT-Importläufen von Memory Wiki speichern jetzt je Vault-/Lauf-ID eine SQLite-Plugin-Zustandszeile,
+  anstatt `.openclaw-wiki/import-runs/*.json` zu schreiben.
+  Rollback-Snapshots bleiben explizite Vault-Dateien, bis die Archivierung von Snapshots der
+  Importläufe in den Blob-Speicher verschoben wird.
+- Kompilierte Digests von Memory Wiki speichern jetzt komprimierte SQLite-Plugin-Blob-Zeilen,
+  anstatt `.openclaw-wiki/cache/agent-digest.json` und
+  `.openclaw-wiki/cache/claims.jsonl` zu schreiben. Der Cache kann neu aufgebaut werden, daher löscht Doctor
+  alte Cache-Dateien, ohne sie zu importieren.
+- Die Nachverfolgung installierter ClawHub-Skills speichert jetzt je Workspace/Skill eine SQLite-Plugin-Zustandszeile,
+  anstatt zur Laufzeit die Sidecar-Dateien `.clawhub/lock.json` und
+  `.clawhub/origin.json` zu schreiben oder zu lesen. Laufzeitcode verwendet Zustandsobjekte
+  für nachverfolgte Installationen anstelle dateiförmiger Lockfile-/Ursprungsabstraktionen. Doctor
+  importiert die Legacy-Sidecar-Dateien aus konfigurierten Agenten-Workspaces und entfernt sie
+  nach einem fehlerfreien Import.
+- Der Index installierter Plugins liest und schreibt jetzt die typisierte gemeinsame SQLite-
+  Singleton-Zeile `installed_plugin_index` anstelle von `plugins/installs.json`; die
+  Legacy-JSON-Datei dient nur als Migrationseingabe für Doctor und wird nach dem Import entfernt.
+- Die Legacy-Pfadhilfsfunktion `plugins/installs.json` befindet sich jetzt im Legacy-
+  Code von Doctor. Laufzeitmodule des Plugin-Index stellen nur SQLite-gestützte Persistenzoptionen
+  bereit, keinen JSON-Dateipfad.
+- Gateway-Neustart-Sentinel, Neustartabsicht und Übergabezustand des Supervisors verwenden jetzt
+  typisierte gemeinsame SQLite-Zeilen (`gateway_restart_sentinel`,
+  `gateway_restart_intent` und `gateway_restart_handoff`) anstelle generischer
+  undurchsichtiger Blobs. Der Laufzeitcode für Neustarts besitzt keinen dateiförmigen Sentinel-/Absichts-/Übergabe-
   Vertrag.
-- Matrix-Sync-Cache, Storage-Metadaten, Thread-Bindings, eingehende Dedupe-Marker,
-  Cooldown-State für Startverifizierung, SDK-IndexedDB-Krypto-Snapshots,
-  Anmeldedaten und Wiederherstellungsschlüssel verwenden jetzt gemeinsam genutzte SQLite-Plugin-State-/Blob-
-  Tabellen. Runtime-Pfadstrukturen stellen keinen Metadatenpfad `storage-meta.json` mehr bereit;
-  dieser Dateiname ist nur eine Legacy-Migrationseingabe. Ihr Legacy-JSON-Import-
-  Plan lebt in der Setup-/doctor-Migrationsoberfläche des Matrix-Plugins.
-- Matrix-Start scannt, meldet oder vervollständigt Legacy-Matrix-Datei-
-  State nicht mehr. Matrix-Dateierkennung, Legacy-Krypto-Snapshot-Erstellung, Migrationsstatus für Room-Key-
-  Wiederherstellung, Import und Quellenentfernung gehören vollständig doctor.
-- Matrix-Runtime-Migrations-Barrels wurden entfernt. Legacy-State-/Krypto-Erkennungs-
-  und Mutationshelfer werden direkt von Matrix doctor importiert, statt
-  Teil der Runtime-API-Oberfläche zu sein.
-- Marker für Matrix-Migrations-Snapshot-Wiederverwendung leben jetzt im SQLite-Plugin-State
-  statt in `matrix/migration-snapshot.json`; doctor kann weiterhin dasselbe
-  verifizierte Vor-Migrationsarchiv wiederverwenden, ohne eine Sidecar-State-Datei zu schreiben.
-- Nostr-Bus-Cursor und Profilveröffentlichungs-State verwenden jetzt gemeinsam genutzten SQLite-Plugin-
-  State. Ihr Legacy-JSON-Importplan lebt in der Setup-/doctor-
+- Matrix-Synchronisationscache, Speichermetadaten, Thread-Bindungen, Deduplizierungsmarkierungen für eingehende Nachrichten,
+  Cooldown-Zustand der Startüberprüfung, IndexedDB-Kryptografie-Snapshots des SDK,
+  Anmeldedaten und Wiederherstellungsschlüssel verwenden jetzt gemeinsame SQLite-Tabellen für Plugin-Zustand und -Blobs.
+  Laufzeit-Pfadstrukturen stellen keinen Metadatenpfad `storage-meta.json` mehr bereit;
+  dieser Dateiname dient nur als Legacy-Migrationseingabe. Ihr Legacy-JSON-Importplan
+  befindet sich in der Setup-/Doctor-Migrationsoberfläche des Matrix-Plugins. Deduplizierungsmarkierungen
+  für eingehende Nachrichten verwenden die beanspruchbare Deduplizierung des Kerns (`matrix.inbound-dedupe.*`-
+  Namespaces in der gemeinsamen Zustandsdatenbank); die Matrix-Zustandsmigration von Doctor importiert
+  einmalig die eingestellten root-spezifischen `inbound-dedupe`-Zeilen und `inbound-dedupe.json`,
+  anschließend liest die Laufzeit nur noch den Speicher für beanspruchbare Deduplizierung.
+- Der Matrix-Start durchsucht oder meldet keinen Legacy-Matrix-Dateizustand mehr und
+  vervollständigt ihn auch nicht. Matrix-Dateierkennung, Erstellung von Legacy-Kryptografie-Snapshots, Migrationszustand
+  für die Wiederherstellung von Raumschlüsseln, Import und Entfernung der Quelle liegen vollständig in der Zuständigkeit von Doctor.
+- Die Matrix-Barrels für Laufzeitmigrationen wurden entfernt. Hilfsfunktionen zur Erkennung und
+  Änderung von Legacy-Zustand und -Kryptografie werden direkt von Matrix Doctor importiert, anstatt
+  Teil der Laufzeit-API-Oberfläche zu sein.
+- Markierungen zur Wiederverwendung von Matrix-Migrations-Snapshots befinden sich jetzt im SQLite-Plugin-Zustand
+  anstelle von `matrix/migration-snapshot.json`; Doctor kann dasselbe
+  verifizierte Archiv vor der Migration weiterhin verwenden, ohne eine Sidecar-Zustandsdatei zu schreiben.
+- Nostr-Bus-Cursor und der Zustand der Profilveröffentlichung verwenden jetzt gemeinsamen SQLite-Plugin-
+  Zustand. Ihr Legacy-JSON-Importplan befindet sich in der Setup-/Doctor-
   Migrationsoberfläche des Nostr-Plugins.
-- Active Memory-Sitzungsschalter verwenden jetzt gemeinsam genutzten SQLite-Plugin-State statt
-  `session-toggles.json`; erneutes Einschalten von Memory löscht die Zeile, anstatt
+- Sitzungsumschalter von Active Memory verwenden jetzt gemeinsamen SQLite-Plugin-Zustand anstelle von
+  `session-toggles.json`; beim erneuten Aktivieren des Speichers wird die Zeile gelöscht, anstatt
   ein JSON-Objekt neu zu schreiben.
-- Skill Workshop-Vorschläge und Review-Zähler verwenden jetzt gemeinsam genutzten SQLite-Plugin-
-  State statt workspace-spezifischer `skill-workshop/<workspace>.json`-Stores. Jeder
-  Vorschlag ist eine eigene Zeile unter `skill-workshop/proposals`, und der Review-
-  Zähler ist eine eigene Zeile unter `skill-workshop/reviews`.
-- Skill Workshop-Reviewer-Subagent-Läufe verwenden jetzt den Runtime-Session-Transcript-
-  Resolver, statt `skill-workshop/<sessionId>.json`-Sidecar-Session-
-  Pfade zu erstellen.
-- ACPX-Prozess-Leases verwenden jetzt gemeinsam genutzten SQLite-Plugin-State unter
-  `acpx/process-leases` statt einer dateibasierten Gesamt-Registry `process-leases.json`.
-  Jede Lease wird als eigene Zeile gespeichert, wodurch das Entfernen veralteter Prozesse beim Start
-  ohne Runtime-JSON-Neuschreibpfad erhalten bleibt.
-- ACPX-Wrapper-Skripte und das isolierte Codex-Home werden im temporären
-  OpenClaw-Root erzeugt. Sie werden bei Bedarf neu erstellt und sind keine Backup- oder
+- Vorschläge und Prüfungszähler von Skill Workshop verwenden jetzt gemeinsamen SQLite-Plugin-
+  Zustand anstelle von Workspace-spezifischen `skill-workshop/<workspace>.json`-Speichern. Jeder
+  Vorschlag ist eine separate Zeile unter `skill-workshop/proposals`, und der Prüfungszähler
+  ist eine separate Zeile unter `skill-workshop/reviews`.
+- Subagent-Ausführungen des Skill-Workshop-Prüfers verwenden jetzt den Laufzeit-Resolver für Sitzungstranskripte,
+  anstatt Sidecar-Sitzungspfade `skill-workshop/<sessionId>.json` zu erstellen.
+- ACPX-Prozess-Leases verwenden jetzt gemeinsamen SQLite-Plugin-Zustand unter
+  `acpx/process-leases` anstelle einer vollständigen dateibasierten `process-leases.json`-Registry.
+  Jede Lease wird als eigene Zeile gespeichert, wodurch das Bereinigen veralteter Prozesse beim Start
+  ohne einen Laufzeitpfad zum Neuschreiben von JSON erhalten bleibt.
+- ACPX-Wrapper-Skripte und das isolierte Codex-Home-Verzeichnis werden im temporären
+  Stammverzeichnis von OpenClaw erzeugt. Sie werden bei Bedarf neu erstellt und sind keine Sicherungs- oder
   Migrationseingaben.
-- Die Persistenz der Subagent-Lauf-Registry verwendet typisierte gemeinsam genutzte `subagent_runs`-Zeilen. Der
-  alte Pfad `subagents/runs.json` ist jetzt nur eine doctor-Migrationseingabe, und
-  Runtime-Helfernamen beschreiben die State-Schicht nicht mehr als disk-backed.
-  Runtime-Tests erstellen keine ungültigen oder leeren `runs.json`-Fixtures mehr, um
-  Registry-Verhalten nachzuweisen; sie setzen/lesen SQLite-Zeilen direkt.
-- Backup stellt das State-Verzeichnis vor der Archivierung bereit, kopiert Nicht-Datenbankdateien,
-  snapshotet `*.sqlite`-Datenbanken mit `VACUUM INTO`, lässt Live-WAL/SHM-
-  Sidecars aus, erfasst Snapshot-Metadaten im Archivmanifest und erfasst
-  abgeschlossene Backup-Läufe in SQLite mit dem Archivmanifest. `openclaw backup
+- Die Persistenz der Subagent-Ausführungs-Registry verwendet typisierte gemeinsame `subagent_runs`-Zeilen. Der
+  alte Pfad `subagents/runs.json` dient jetzt nur als Bereinigungseingabe für Doctor. Doctor
+  beansprucht ihn unter der Sperre für die Zustandswartung, zeichnet die Verwerfungsentscheidung in
+  SQLite auf und entfernt ihn, ohne den vorübergehenden Ausführungszustand zu importieren. Es verbleiben keine
+  Laufzeit-JSON-Leser, -Schreiber, -Caches oder -Fallbacks; die versionsübergreifende Wiederherstellung von ausschließlich
+  dateibasierten laufenden Ausführungen wird an dieser Einstellungsgrenze absichtlich nicht unterstützt.
+  Laufzeittests erstellen keine ungültigen oder leeren `runs.json`-Fixtures mehr, um das
+  Registry-Verhalten nachzuweisen; sie befüllen und lesen SQLite-Zeilen direkt.
+- Die Sicherung stellt das Zustandsverzeichnis vor der Archivierung bereit, kopiert Dateien, die keine Datenbanken sind,
+  erstellt Snapshots von Datenbanken mit `VACUUM INTO`, lässt aktive WAL-/SHM-Sidecar-Dateien aus, zeichnet
+  Snapshot-Metadaten im Archivmanifest auf und speichert
+  abgeschlossene Sicherungsläufe zusammen mit dem Archivmanifest in SQLite. `openclaw backup
 create` validiert das geschriebene Archiv standardmäßig; `--no-verify` ist der
-  explizite schnelle Pfad.
+  explizite Schnellpfad.
 - `openclaw backup restore` validiert das Archiv vor der Extraktion, verwendet das
-  normalisierte Manifest des Verifiers wieder und stellt verifizierte Manifest-Assets an ihren
-  aufgezeichneten Quellpfaden wieder her. Es erfordert `--yes` für Schreibvorgänge und unterstützt `--dry-run`
-  für einen Wiederherstellungsplan.
-- Der alte Backup-Filter für flüchtige Pfade wurde gelöscht. Backup benötigt keine
-  Live-Tar-Überspringliste für Legacy-Session- oder Cron-JSON/JSONL-Dateien mehr, weil SQLite-
+  normalisierte Manifest des Prüfers erneut und stellt verifizierte Manifestressourcen unter ihren
+  aufgezeichneten Quellpfaden wieder her. Für Schreibvorgänge ist `--yes` erforderlich; `--dry-run`
+  wird für einen Wiederherstellungsplan unterstützt.
+- Der alte Filter für flüchtige Sicherungspfade wurde gelöscht. Die Sicherung benötigt keine
+  Ausschlussliste für die Live-Archivierung von Legacy-JSON-/JSONL-Dateien für Sitzungen oder Cron mehr, da SQLite-
   Snapshots vor der Archiverstellung bereitgestellt werden.
-- Vorbereitung von Plain-Setup- und Onboarding-Workspaces erstellt keine
-  `agents/<agentId>/sessions/`-Verzeichnisse mehr. Sie erstellen nur config/workspace;
-  SQLite-Session-Zeilen und Transcript-Zeilen werden bei Bedarf in der
-  agentenspezifischen Datenbank erstellt.
-- Sicherheitsberechtigungsreparatur zielt jetzt auf die globalen und agentenspezifischen SQLite-
-  Datenbanken plus WAL/SHM-Sidecars statt auf `sessions.json` und Transcript-
+- Die einfache Einrichtung und die Vorbereitung des Arbeitsbereichs beim Onboarding erstellen keine
+  `agents/<agentId>/sessions/`-Verzeichnisse mehr. Sie erstellen nur die Konfiguration und den Arbeitsbereich;
+  SQLite-Sitzungszeilen und Transkriptzeilen werden bei Bedarf in der
+  agentspezifischen Datenbank erstellt.
+- Die Reparatur von Sicherheitsberechtigungen zielt jetzt auf die globale und die agentspezifischen SQLite-
+  Datenbanken sowie auf WAL/SHM-Begleitdateien statt auf `sessions.json` und Transkript-
   JSONL-Dateien.
-- Sandbox-Registry-Runtime-Namen beschreiben jetzt SQLite-Registry-Arten direkt,
-  statt Legacy-JSON-Registry-Terminologie durch den aktiven Store zu tragen.
-- `openclaw reset --scope config+creds+sessions` entfernt agentenspezifische
-  `openclaw-agent.sqlite`-Datenbanken plus WAL/SHM-Sidecars, nicht nur Legacy-
+- Die Laufzeitnamen der Sandbox-Registry beschreiben jetzt direkt die Arten der SQLite-Registry,
+  statt die veraltete JSON-Registry-Terminologie im aktiven Speicher weiterzuführen.
+- `openclaw reset --scope config+creds+sessions` entfernt agentspezifische
+  `openclaw-agent.sqlite`-Datenbanken sowie WAL/SHM-Begleitdateien und nicht nur veraltete
   `sessions/`-Verzeichnisse.
-- Gateway-Aggregat-Session-Helfer verwenden jetzt eintragsorientierte Namen:
+- Die aggregierten Sitzungshilfsfunktionen des Gateway verwenden jetzt eintragsorientierte Namen:
   `loadCombinedSessionEntriesForGateway` gibt `{ databasePath, entries }` zurück.
-  Die alte Combined-Store-Benennung wurde aus Runtime-Aufrufern entfernt.
-- Docker-MCP-Channel-Seeding schreibt jetzt die Haupt-Session-Zeile und Transcript-
-  Ereignisse in die agentenspezifische SQLite-Datenbank, statt
-  `sessions.json` und ein JSONL-Transcript zu erstellen.
-- Der gebündelte Session-Memory-Hook löst Kontext aus vorherigen Sessions jetzt aus
-  SQLite per `{agentId, sessionId}` auf. Er scannt, speichert oder synthetisiert
-  keine Transcript-Pfade oder `workspace/sessions`-Verzeichnisse mehr.
-- Der gebündelte Command-Logger-Hook schreibt Command-Audit-Zeilen jetzt in die gemeinsam genutzte
-  SQLite-Tabelle `command_log_entries`, statt an
+  Die alte Benennung des kombinierten Speichers wurde aus den Laufzeitaufrufern entfernt.
+- Das Seeding des Docker-MCP-Kanals schreibt jetzt die Hauptsitzungszeile und Transkript-
+  ereignisse in die agentspezifische SQLite-Datenbank, statt
+  `sessions.json` und ein JSONL-Transkript zu erstellen.
+- Der gebündelte Session-Memory-Hook löst den Kontext der vorherigen Sitzung jetzt anhand von
+  `{agentId, sessionId}` aus SQLite auf. Er durchsucht, speichert oder synthetisiert keine
+  Transkriptpfade oder `workspace/sessions`-Verzeichnisse mehr.
+- Der gebündelte Command-Logger-Hook schreibt Befehlsauditzeilen jetzt in die gemeinsame
+  SQLite-Tabelle `command_log_entries`, statt sie an
   `logs/commands.log` anzuhängen.
-- Channel-Pairing-Allowlists stellen zur Laufzeit und im Plugin SDK nur noch
-  SQLite-gestützte Lese-/Schreibhelfer bereit. Der alte `*-allowFrom.json`-Pfad-Resolver und
-  Dateileser leben nur noch unter doctor-Legacy-Importcode.
-- `migration_runs` erfasst Legacy-State-Migrationsausführungen mit Status,
-  Zeitstempeln und JSON-Berichten.
-- `migration_sources` erfasst jede importierte Legacy-Dateiquelle mit Hash, Größe,
-  Datensatzanzahl, Zieltabelle, Lauf-ID, Status und Quellenentfernungsstatus.
-- `backup_runs` erfasst Backup-Archivpfade, Status und JSON-Manifeste.
-- Das globale Schema behält keine ungenutzte `agents`-Registry-Tabelle. Agent-
-  Datenbankerkennung ist die kanonische `agent_databases`-Registry, bis die Runtime
-  einen echten Agent-Record-Owner hat.
-- Generierte Model-Catalog-Konfiguration wird in typisierten globalen SQLite-
-  `agent_model_catalogs`-Zeilen gespeichert, die nach Agent-Verzeichnis geschlüsselt sind. Runtime-Aufrufer verwenden
-  `ensureOpenClawModelCatalog`; es gibt keine `models.json`-Kompatibilitäts-API im
-  Runtime-Code. Die Implementierung schreibt SQLite, und die eingebettete PI-Registry wird
-  aus dieser gespeicherten Payload hydriert, ohne eine `models.json`-Datei zu erstellen.
-- QMD-Session-Transcript-Markdown-Export und `memory.qmd.sessions`-Konfiguration wurden
-  entfernt. Es gibt keine QMD-Transcript-Sammlung, keinen `qmd/sessions*`-Runtime-
-  Pfad und keine dateigestützte Session-Memory-Bridge.
-- Memory-Core-Runtime importiert SQLite-Transcript-Indizierungshelfer aus
-  `openclaw/plugin-sdk/memory-core-host-engine-session-transcripts`, nicht aus dem
-  QMD-SDK-Subpfad. Der QMD-Subpfad behält nur für externe Aufrufer einen Kompatibilitäts-Re-Export,
-  bis eine größere SDK-Bereinigung ihn entfernen kann.
-- QMDs eigenes `index.sqlite` ist jetzt eine temporäre Runtime-Materialisierung, die durch die
-  Haupt-SQLite-Tabelle `plugin_blob_entries` gestützt wird. Die Runtime erstellt kein dauerhaftes
-  `~/.openclaw/agents/<agentId>/qmd`-Sidecar mehr.
+- Zulassungslisten für die Kanalkopplung stellen zur Laufzeit jetzt nur noch SQLite-gestützte Lese-/Schreibhilfsfunktionen
+  bereit. Der veraltete Pfadauflöser des Plugin-SDK bleibt zur
+  Migrationskompatibilität erhalten; Dateileser befinden sich ausschließlich im Doctor-Code für die Zustandsmigration.
+- `migration_runs` zeichnet Ausführungen der Migration veralteter Zustände mit Status,
+  Zeitstempeln und JSON-Berichten auf.
+- `migration_sources` zeichnet jede importierte Quelle einer veralteten Datei mit Hash, Größe,
+  Datensatzanzahl, Zieltabelle, Ausführungs-ID, Status und Zustand der Quellentfernung auf.
+- `backup_runs` zeichnet Pfade von Sicherungsarchiven, Status und JSON-Manifeste auf.
+- Das globale Schema enthält keine ungenutzte Registry-Tabelle `agents`. Die Ermittlung von Agent-
+  Datenbanken ist die kanonische `agent_databases`-Registry, bis die Laufzeit
+  einen echten Besitzer für Agent-Datensätze hat.
+- Die generierte Konfiguration des Modellkatalogs wird in typisierten globalen SQLite-
+  Zeilen `agent_model_catalogs` gespeichert, die nach Agent-Verzeichnis verschlüsselt sind. Laufzeitaufrufer verwenden
+  `ensureOpenClawModelCatalog`; im Laufzeitcode gibt es keine Kompatibilitäts-API
+  `models.json`. Die Implementierung schreibt in SQLite, und die eingebettete PI-Registry wird
+  aus dieser gespeicherten Nutzlast initialisiert, ohne eine `models.json`-Datei zu erstellen.
+- Der optionale Export `memory.qmd.sessions` liest kanonische Transkriptzeilen aus
+  der agentspezifischen Datenbank und materialisiert bereinigtes Markdown unter dem QMD-Ausgangsverzeichnis
+  als explizites QMD-Eingabeartefakt. QMD-Sitzungssammlungen und Zuordnungen von
+  Artefaktidentitäten bleiben daher Teil der konfigurierten Brücke zum externen Werkzeug;
+  sie sind kein zweiter kanonischer Transkriptspeicher.
+- QMDs eigene `index.sqlite`, YAML-Sammlungskonfiguration und Modelldownloads bleiben
+  Artefakte des externen Werkzeugs unter `~/.openclaw/agents/<agentId>/qmd`; sie werden nicht
+  nach `plugin_blob_entries` gespiegelt. Die OpenClaw-eigene QMD-Koordination ist
+  datenbankorientiert: gemeinsame `state_leases` serialisieren Einbettungen global und agentspezifische
+  `state_leases` serialisieren Schreiber für Sammlung, Aktualisierung und Einbettung. Die Laufzeit erstellt keine
+  QMD-Sperrbegleitdateien.
 - Das optionale Plugin `memory-lancedb` erstellt
-  `~/.openclaw/memory/lancedb` nicht mehr als impliziten von OpenClaw verwalteten Store. Es ist ein
-  externes LanceDB-Backend und bleibt deaktiviert, bis der Operator einen
-  expliziten `dbPath` konfiguriert.
-- `check:database-first-legacy-stores` schlägt bei neuem Runtime-Quellcode fehl, der
-  Legacy-Store-Namen mit schreibenden Dateisystem-APIs kombiniert. Es schlägt auch bei Runtime-
-  Quellcode fehl, der die ausgemusterten Transcript-Bridge-Marker
-  `transcriptLocator` oder `sqlite-transcript://...` wieder einführt. Migration, doctor, Import
-  und expliziter Nicht-Session-Exportcode bleiben erlaubt. Breitere Legacy-Vertrags-
-  Namen wie `sessionFile`, `storePath` und alte dateiära-spezifische `SessionManager`-
-  Fassaden haben noch aktuelle Owner und benötigen separate Migration-Guard-Arbeit,
-  bevor sie zu einem erforderlichen Preflight-Check werden können. Der Guard deckt jetzt auch
-  Runtime-`cache/*.json`-Stores, generische
-  `thread-bindings.json`-Sidecars, Cron-State-/Run-Log-JSON, Config-Health-JSON,
-  Neustart- und Lock-Sidecars, Voice-Wake-Einstellungen, Plugin-Binding-Genehmigungen,
-  JSON für den installierten Plugin-Index, File-Transfer-Audit-JSONL, Memory-Wiki-Aktivitäts-
-  Logs, das alte Textlog des gebündelten `command-logger` und pi-mono-Raw-Stream-JSONL-
-  Diagnoseoptionen ab. Er verbietet außerdem alte Root-Level-doctor-Legacy-Modulnamen, damit
-  Kompatibilitätscode unter `src/commands/doctor/` bleibt. Android-Debug-Handler
-  verwenden außerdem logcat-/In-Memory-Ausgabe, statt `camera_debug.log`- oder
+  `~/.openclaw/memory/lancedb` nicht mehr als impliziten, von OpenClaw verwalteten Speicher. Es handelt sich um ein
+  externes LanceDB-Backend, das deaktiviert bleibt, bis der Betreiber ein
+  explizites `dbPath` konfiguriert.
+- `check:database-first-legacy-stores` schlägt bei neuem Laufzeitquellcode fehl, der
+  veraltete Speichernamen mit schreibenden Dateisystem-APIs kombiniert. Die Prüfung schlägt außerdem bei Laufzeit-
+  quellcode fehl, der die außer Betrieb genommenen Transkriptbrücken-Markierungen
+  `transcriptLocator` oder `sqlite-transcript://...` erneut einführt. Code für Migration, Doctor, Import
+  und expliziten Export außerhalb von Sitzungen bleibt zulässig. Umfassendere veraltete Vertragsnamen
+  wie `sessionFile`, `storePath` und alte Fassaden aus der `SessionManager`-Dateiära
+  haben weiterhin aktuelle Besitzer und benötigen separate Schutzmaßnahmen für die Migration,
+  bevor sie zu einer erforderlichen Vorabprüfung werden können. Die Schutzprüfung deckt jetzt außerdem
+  Laufzeitspeicher `cache/*.json`, generische
+  `thread-bindings.json`-Begleitdateien, Cron-Zustands-/Ausführungsprotokoll-JSON, Konfigurationszustands-JSON,
+  Neustart- und Sperrbegleitdateien, Voice-Wake-Einstellungen, Genehmigungen von Plugin-Bindungen,
+  JSON des Indexes installierter Plugins, File-Transfer-Audit-JSONL, Memory-Wiki-Aktivitäts-
+  protokolle, das alte gebündelte Textprotokoll `command-logger` und JSONL-
+  Diagnoseoptionen für den pi-mono-Rohdatenstrom ab. Sie verbietet außerdem alte Namen veralteter Doctor-Module auf Stammebene, damit
+  Kompatibilitätscode unter `src/commands/doctor/` verbleibt. Android-Debug-Handler
+  verwenden außerdem logcat/In-Memory-Ausgaben, statt `camera_debug.log`- oder
   `debug_logs.txt`-Cache-Dateien bereitzustellen.
 
-## Ziel-Schemastruktur
+## Form des Zielschemas
 
-Halten Sie Schemas explizit. Host-eigener Runtime-Zustand verwendet typisierte Tabellen. Plugin-eigener
-opaker Zustand verwendet `plugin_state_entries` / `plugin_blob_entries`; es gibt keine
-generische Host-`kv`-Tabelle.
+Halten Sie Schemas explizit. Vom Host verwalteter Laufzeitstatus verwendet typisierte Tabellen. Plugin-eigener
+opaker Status verwendet `plugin_state_entries` / `plugin_blob_entries`; es gibt keine
+generische Host-Tabelle `kv`.
 
 Globale Datenbank:
 
@@ -1500,18 +1431,23 @@ plugin_state_entries(plugin_id, namespace, entry_key, value_json, created_at, ex
 plugin_blob_entries(plugin_id, namespace, entry_key, metadata_json, blob, created_at, expires_at)
 media_blobs(subdir, id, content_type, size_bytes, blob, created_at, updated_at)
 skill_uploads(upload_id, kind, slug, force, size_bytes, sha256, actual_sha256, received_bytes, archive_blob, created_at, expires_at, committed, committed_at, idempotency_key_hash)
+skill_upload_chunks(upload_id, byte_offset, size_bytes, chunk_blob)
 web_push_subscriptions(endpoint_hash, subscription_id, endpoint, p256dh, auth, created_at_ms, updated_at_ms)
 web_push_vapid_keys(key_id, public_key, private_key, subject, updated_at_ms)
-apns_registrations(node_id, transport, token, relay_handle, send_grant, installation_id, topic, environment, distribution, token_debug_suffix, updated_at_ms)
-node_host_config(config_key, version, node_id, token, display_name, gateway_host, gateway_port, gateway_tls, gateway_tls_fingerprint, updated_at_ms)
+apns_registrations(node_id, transport, token, relay_handle, send_grant, installation_id, relay_origin, topic, environment, distribution, token_debug_suffix, updated_at_ms)
+apns_registration_tombstones(node_id, deleted_at_ms)
+node_host_config(config_key, version, node_id, token, display_name, gateway_host, gateway_port, gateway_tls, gateway_tls_fingerprint, gateway_context_path, updated_at_ms)
 device_identities(identity_key, device_id, public_key_pem, private_key_pem, created_at_ms, updated_at_ms)
 device_auth_tokens(device_id, role, token, scopes_json, updated_at_ms)
 macos_port_guardian_records(pid, port, command, mode, timestamp)
 workspace_setup_state(workspace_key, workspace_path, version, bootstrap_seeded_at, setup_completed_at, updated_at)
+workspace_path_aliases(alias_key, alias_path, workspace_key, workspace_path, updated_at_ms)
+workspace_attestations(workspace_key, attested_at_ms, updated_at_ms)
+workspace_generated_bootstrap_hashes(workspace_key, filename, sha256)
 native_hook_relay_bridges(relay_id, pid, hostname, port, token, expires_at_ms, updated_at_ms)
 model_capability_cache(provider_id, model_id, name, input_text, input_image, reasoning, supports_tools, context_window, max_tokens, cost_input, cost_output, cost_cache_read, cost_cache_write, updated_at_ms)
 agent_model_catalogs(catalog_key, agent_dir, raw_json, updated_at)
-managed_outgoing_image_records(attachment_id, session_key, message_id, created_at, updated_at, retention_class, alt, original_media_id, original_media_subdir, original_content_type, original_width, original_height, original_size_bytes, original_filename, record_json)
+managed_outgoing_image_records(attachment_id, session_key, agent_id, message_id, created_at, updated_at, retention_class, alt, original_media_id, original_media_subdir, original_content_type, original_width, original_height, original_size_bytes, original_filename, record_json, cleanup_pending)
 gateway_restart_sentinel(sentinel_key, version, kind, status, ts, session_key, thread_id, delivery_channel, delivery_to, delivery_account_id, message, continuation_json, doctor_hint, stats_json, payload_json, updated_at_ms)
 channel_pairing_requests(channel_key, account_id, request_id, code, created_at, last_seen_at, meta_json)
 channel_pairing_allow_entries(channel_key, account_id, entry, sort_order, updated_at)
@@ -1521,7 +1457,6 @@ voicewake_routing_routes(config_key, position, trigger, target_mode, target_agen
 update_check_state(state_key, last_checked_at, last_notified_version, last_notified_tag, last_available_version, last_available_tag, auto_install_id, auto_first_seen_version, auto_first_seen_tag, auto_first_seen_at, auto_last_attempt_version, auto_last_attempt_at, auto_last_success_version, auto_last_success_at, updated_at_ms)
 config_health_entries(config_path, last_known_good_json, last_promoted_good_json, last_observed_suspicious_signature, updated_at_ms)
 sandbox_registry_entries(registry_kind, container_name, session_key, backend_id, runtime_label, image, created_at_ms, last_used_at_ms, config_label_kind, config_hash, cdp_port, no_vnc_port, entry_json, updated_at)
-cron_run_logs(store_key, job_id, seq, ts, status, error, summary, diagnostics_summary, delivery_status, delivery_error, delivered, session_id, session_key, run_id, run_at_ms, duration_ms, next_run_at_ms, model, provider, total_tokens, entry_json, created_at)
 cron_jobs(store_key, job_id, name, description, enabled, delete_after_run, created_at_ms, agent_id, session_key, schedule_kind, schedule_expr, schedule_tz, every_ms, anchor_ms, at, stagger_ms, session_target, wake_mode, payload_kind, payload_message, payload_model, payload_fallbacks_json, payload_thinking, payload_timeout_seconds, payload_allow_unsafe_external_content, payload_external_content_source_json, payload_light_context, payload_tools_allow_json, delivery_mode, delivery_channel, delivery_to, delivery_thread_id, delivery_account_id, delivery_best_effort, failure_delivery_mode, failure_delivery_channel, failure_delivery_to, failure_delivery_account_id, failure_alert_disabled, failure_alert_after, failure_alert_channel, failure_alert_to, failure_alert_cooldown_ms, failure_alert_include_skipped, failure_alert_mode, failure_alert_account_id, next_run_at_ms, running_at_ms, last_run_at_ms, last_run_status, last_error, last_duration_ms, consecutive_errors, consecutive_skipped, schedule_error_count, last_delivery_status, last_delivery_error, last_delivered, last_failure_alert_at_ms, job_json, state_json, runtime_updated_at_ms, schedule_identity, sort_order, updated_at)
 delivery_queue_entries(queue_name, id, status, entry_kind, session_key, channel, target, account_id, retry_count, last_attempt_at, last_error, recovery_state, platform_send_started_at, entry_json, enqueued_at, updated_at, failed_at)
 commitments(id, agent_id, session_key, channel, account_id, recipient_id, thread_id, sender_id, kind, sensitivity, source, status, reason, suggested_text, dedupe_key, confidence, due_earliest_ms, due_latest_ms, due_timezone, source_message_id, source_run_id, created_at_ms, updated_at_ms, attempts, last_attempt_at_ms, sent_at_ms, dismissed_at_ms, snoozed_until_ms, expired_at_ms, record_json)
@@ -1547,643 +1482,644 @@ tool_artifacts(run_id, artifact_id, kind, metadata_json, blob, created_at)
 run_artifacts(run_id, path, kind, metadata_json, blob, created_at)
 trajectory_runtime_events(session_id, run_id, seq, event_json, created_at)
 memory_index_meta(key, value)
-memory_index_sources(path, source, hash, mtime, size)
+memory_index_sources(id, path, source, hash, mtime, size)
 memory_index_chunks(id, path, source, start_line, end_line, hash, model, text, embedding, updated_at)
 memory_embedding_cache(provider, model, provider_key, hash, embedding, dims, updated_at)
 memory_index_state(id, revision)
 cache_entries(scope, key, value_json, blob, expires_at, updated_at)
 ```
 
-Eine künftige Suche kann FTS-Tabellen hinzufügen, ohne die kanonischen Ereignistabellen zu ändern:
+`memory_index_sources.id` ist der stabile ganzzahlige Primärschlüssel; `(path, source)` bleibt eindeutig.
+
+Eine zukünftige Suche kann FTS-Tabellen hinzufügen, ohne die kanonischen Ereignistabellen zu ändern:
 
 ```text
 transcript_events_fts(session_id, seq, text)
 vfs_entries_fts(namespace, path, text)
 ```
 
-Große Werte sollten `blob`-Spalten verwenden, keine JSON-String-Codierung. Behalten Sie
-`value_json` für kleine strukturierte Daten bei, die mit einfachem
-SQLite-Werkzeug inspizierbar bleiben müssen.
+Große Werte sollten `blob`-Spalten statt JSON-Zeichenfolgenkodierung verwenden. Behalten Sie
+`value_json` für kleine strukturierte Daten bei, die mit einfachen
+SQLite-Werkzeugen einsehbar bleiben müssen.
 
 `agent_databases` ist die kanonische Registry für diesen Branch. Fügen Sie keine
-`agents`-Tabelle hinzu, bis ein echter Owner für Agent-Datensätze existiert; die Agent-Konfiguration bleibt in
+Tabelle `agents` hinzu, bis ein echter Eigentümer für Agent-Datensätze vorhanden ist; die Agent-Konfiguration verbleibt in
 `openclaw.json`.
 
-## Doctor-Migrationsstruktur
+## Form der Doctor-Migration
 
-Doctor sollte einen expliziten Migrationsschritt aufrufen, der berichtbar ist und sicher
+Doctor sollte einen expliziten Migrationsschritt aufrufen, über den berichtet werden kann und der sicher
 erneut ausgeführt werden kann:
 
 ```bash
 openclaw doctor --fix
 ```
 
-`openclaw doctor --fix` ruft die Implementierung der Zustandsmigration nach
-dem normalen Konfigurations-Preflight auf und erstellt vor dem Import ein verifiziertes Backup. Der Runtime-Start
-und `openclaw migrate` dürfen keine Legacy-OpenClaw-Zustandsdateien importieren.
+`openclaw doctor --fix` ruft die Implementierung der Statusmigration nach
+der üblichen Vorabprüfung der Konfiguration auf und erstellt vor dem Import eine verifizierte Sicherung. Der Start der
+Laufzeit und `openclaw migrate` dürfen keine veralteten OpenClaw-Statusdateien importieren.
 
 Migrationseigenschaften:
 
-- Ein Migrationsdurchlauf entdeckt alle Legacy-Dateiquellen und erstellt einen Plan,
-  bevor etwas verändert wird.
-- Doctor erstellt vor dem Import von Legacy-Dateien ein verifiziertes Backup-Archiv.
-- Importe sind idempotent und nach Quellpfad, mtime, Größe, Hash und Ziel-
-  tabelle geschlüsselt.
-- Erfolgreiche Quelldateien werden entfernt oder archiviert, nachdem die Zieldatenbank
-  committed wurde.
+- Ein Migrationsdurchlauf ermittelt alle veralteten Dateiquellen und erstellt einen Plan,
+  bevor Änderungen vorgenommen werden.
+- Doctor erstellt vor dem Import
+  veralteter Dateien ein verifiziertes Sicherungsarchiv des Zustands vor der Migration.
+- Importe sind idempotent und werden anhand von Quellpfad, mtime, Größe, Hash und Zieltabelle
+  bestimmt.
+- Erfolgreich verarbeitete Quelldateien werden entfernt oder archiviert, nachdem die Zieldatenbank
+  den Commit durchgeführt hat.
 - Fehlgeschlagene Importe lassen die Quelle unverändert und zeichnen eine Warnung in
   `migration_runs` auf.
-- Runtime-Code liest erst SQLite, nachdem die Migration existiert.
-- Es ist kein Downgrade- oder Export-zurück-in-Runtime-Dateien-Pfad erforderlich.
+- Der Laufzeitcode liest nur aus SQLite, nachdem die Migration vorhanden ist.
+- Es ist kein Downgrade- oder Exportpfad zu Laufzeitdateien erforderlich.
 
 ## Migrationsinventar
 
-Verschieben Sie diese in die globale Datenbank:
+Verschieben Sie Folgendes in die globale Datenbank:
 
-- Laufzeit-Schreibvorgänge der Aufgabenregistrierung verwenden jetzt die gemeinsame Datenbank; der nicht ausgelieferte
-  `tasks/runs.sqlite`-Sidecar-Importer wurde gelöscht. Snapshot-Speicherungen führen Upserts nach Aufgaben-
-  ID aus und löschen nur fehlende Aufgaben-/Zustellungszeilen.
-- Laufzeit-Schreibvorgänge von TaskFlow verwenden jetzt die gemeinsame Datenbank; der nicht ausgelieferte
+- Laufzeitschreibvorgänge der Task-Registry verwenden jetzt die gemeinsame Datenbank; der nicht veröffentlichte
+  `tasks/runs.sqlite`-Sidecar-Importer wurde gelöscht. Snapshot-Speicherungen führen anhand der Task-
+  ID ein Upsert durch und löschen nur fehlende Task-/Auslieferungszeilen.
+- Laufzeitschreibvorgänge von Task Flow verwenden jetzt die gemeinsame Datenbank; der nicht veröffentlichte
   `tasks/flows/registry.sqlite`-Sidecar-Importer wurde gelöscht. Snapshot-Speicherungen
-  führen Upserts nach Flow-ID aus und löschen nur fehlende Flow-Zeilen.
-- Laufzeit-Schreibvorgänge des Plugin-Zustands verwenden jetzt die gemeinsame Datenbank; der nicht ausgelieferte
+  führen anhand der Flow-ID ein Upsert durch und löschen nur fehlende Flow-Zeilen.
+- Laufzeitschreibvorgänge des Plugin-Zustands verwenden jetzt die gemeinsame Datenbank; der nicht veröffentlichte
   `plugin-state/state.sqlite`-Sidecar-Importer wurde gelöscht.
 - Die integrierte Speichersuche verwendet nicht mehr standardmäßig `memory/<agentId>.sqlite`; ihre
-  Indextabellen liegen in der zugehörigen Agent-Datenbank, und die explizite
-  `memorySearch.store.path`-Sidecar-Opt-in-Option wurde in die Doctor-Konfigurationsmigration verschoben.
-- Die integrierte Speicher-Neuindizierung setzt nur speichereigene Tabellen in der Agent-Datenbank zurück.
+  Indextabellen befinden sich in der Datenbank des zuständigen Agenten, und die explizite
+  Aktivierung des `memorySearch.store.path`-Sidecars wurde in die doctor-Konfigurationsmigration
+  verlagert.
+- Die integrierte Neuindizierung des Speichers setzt nur speichereigene Tabellen in der Agentendatenbank zurück.
   Sie darf nicht die gesamte SQLite-Datei ersetzen, da dieselbe Datenbank
   Sitzungen, Transkripte, VFS-Zeilen, Artefakte und Laufzeit-Caches enthält.
-- Sandbox-Container-/Browser-Registrierungen aus monolithischem und fragmentiertem JSON. Laufzeit-
-  Schreibvorgänge verwenden jetzt die gemeinsame Datenbank; der Import von Legacy-JSON bleibt bestehen.
-- Cron-Jobdefinitionen, Zeitplanstatus und Ausführungshistorie verwenden jetzt gemeinsames SQLite;
-  Doctor importiert/entfernt Legacy-Dateien `jobs.json`, `jobs-state.json` und
+- Sandbox-Container-/Browser-Registrys wurden aus monolithischem und aufgeteiltem JSON migriert. Laufzeit-
+  schreibvorgänge verwenden jetzt die gemeinsame Datenbank; der Import älterer JSON-Daten bleibt bestehen.
+- Cron-Auftragsdefinitionen, Zeitplanzustand und Ausführungsverlauf verwenden jetzt gemeinsames SQLite;
+  doctor importiert/entfernt ältere Dateien vom Typ `jobs.json`, `jobs-state.json` und
   `cron/runs/*.jsonl`
-- Geräteidentität/-authentifizierung, Push, Updateprüfung, Commitments, OpenRouter-Modell-
-  Cache, installierter Plugin-Index und App-Server-Bindings
-- Geräte-/Node-Kopplung und Bootstrap-Datensätze verwenden jetzt typisierte SQLite-Tabellen
-- Device-Pair-Benachrichtigungsabonnenten und Marker für zugestellte Anfragen verwenden jetzt die
-  gemeinsame SQLite-Plugin-State-Tabelle statt `device-pair-notify.json`.
-- Voice-Call-Anrufdatensätze verwenden jetzt die gemeinsame SQLite-Plugin-State-Tabelle unter dem
-  Namespace `voice-call` / `calls` statt `calls.jsonl`; die Plugin-CLI
-  verfolgt und fasst SQLite-gestützte Anrufhistorie zusammen.
-- QQBot-Gateway-Sitzungen, bekannte Benutzerdatensätze und Ref-Index-Zitatcache verwenden jetzt
-  SQLite-Plugin-Zustand unter `qqbot`-Namespaces (`gateway-sessions`,
-  `known-users`, `ref-index`) statt `session-*.json`, `known-users.json`
-  und `ref-index.jsonl`. Diese Legacy-Dateien sind Caches und werden nicht migriert.
-- Discord-Modellauswahlpräferenzen, Command-Deploy-Hashes und Thread-Bindings
-  verwenden jetzt SQLite-Plugin-Zustand unter `discord`-Namespaces
+- Geräteidentität/-authentifizierung, Push, Aktualisierungsprüfung, Commitments, OpenRouter-Modell-
+  Cache, Index installierter Plugins und App-Server-Bindungen
+- Geräte-/Node-Kopplungs- und Bootstrap-Datensätze verwenden jetzt typisierte SQLite-Tabellen
+- Abonnenten von Benachrichtigungen zur Gerätekopplung und Markierungen zugestellter Anfragen verwenden jetzt die
+  gemeinsame SQLite-Tabelle für den Plugin-Zustand anstelle von `device-pair-notify.json`.
+- Anrufdatensätze für Sprachanrufe verwenden jetzt die gemeinsame SQLite-Tabelle für den Plugin-Zustand im
+  Namensraum `voice-call` / `calls` anstelle von `calls.jsonl`; die Plugin-CLI
+  verfolgt und fasst den SQLite-gestützten Anrufverlauf zusammen.
+- QQBot-Gateway-Sitzungen, Datensätze bekannter Benutzer und der Ref-Index-Zitat-Cache verwenden jetzt
+  den SQLite-Plugin-Zustand in `qqbot`-Namensräumen (`gateway-sessions`,
+  `known-users`, `ref-index`) anstelle von `session-*.json`, `known-users.json`
+  und `ref-index.jsonl`. Diese älteren Dateien sind Caches und werden nicht migriert.
+- Discord-Modellauswahl-Einstellungen, Hashes der Befehlsbereitstellung und Thread-Bindungen
+  verwenden jetzt den SQLite-Plugin-Zustand in `discord`-Namensräumen
   (`model-picker-preferences`, `command-deploy-hashes`, `thread-bindings`)
-  statt `model-picker-preferences.json`, `command-deploy-cache.json` und
-  `thread-bindings.json`; die Discord-Doctor-/Setup-Migration importiert und
-  entfernt die Legacy-Dateien.
-- BlueBubbles-Catchup-Cursor und eingehende Dedupe-Marker verwenden jetzt SQLite-Plugin-
-  Zustand unter `bluebubbles`-Namespaces (`catchup-cursors`, `inbound-dedupe`)
-  statt `bluebubbles/catchup/*.json` und
-  `bluebubbles/inbound-dedupe/*.json`; die BlueBubbles-Doctor-/Setup-Migration
-  importiert und entfernt die Legacy-Dateien.
-- Telegram-Update-Offsets, Sticker-Cache-Einträge, Reply-Chain-Nachrichten-Cache-
-  Einträge, Gesendete-Nachrichten-Cache-Einträge, Themenname-Cache-Einträge und Thread-
-  Bindings verwenden jetzt SQLite-Plugin-Zustand unter `telegram`-Namespaces
+  anstelle von `model-picker-preferences.json`, `command-deploy-cache.json` und
+  `thread-bindings.json`; die Discord-doctor-/Einrichtungsmigration importiert und
+  entfernt die älteren Dateien.
+- BlueBubbles-Aufhol-Cursor und Markierungen zur Deduplizierung eingehender Daten verwenden jetzt den SQLite-Plugin-
+  Zustand in `bluebubbles`-Namensräumen (`catchup-cursors`, `inbound-dedupe`)
+  anstelle von `bluebubbles/catchup/*.json` und
+  `bluebubbles/inbound-dedupe/*.json`; die BlueBubbles-doctor-/Einrichtungsmigration
+  importiert und entfernt die älteren Dateien.
+- Telegram-Aktualisierungs-Offsets, Sticker-Cache-Einträge, Nachrichten-Cache-
+  Einträge für Antwortketten, Cache-Einträge gesendeter Nachrichten, Cache-Einträge für Themennamen und Thread-
+  Bindungen verwenden jetzt den SQLite-Plugin-Zustand in `telegram`-Namensräumen
   (`update-offsets`, `sticker-cache`, `message-cache`, `sent-messages`,
-  `topic-names`, `thread-bindings`) statt `update-offset-*.json`,
+  `topic-names`, `thread-bindings`) anstelle von `update-offset-*.json`,
   `sticker-cache.json`, `*.telegram-messages.json`,
   `*.telegram-sent-messages.json`, `*.telegram-topic-names.json` und
-  `thread-bindings-*.json`; die Telegram-Doctor-/Setup-Migration importiert und
-  entfernt die Legacy-Dateien.
-- iMessage-Catchup-Cursor, Reply-Short-ID-Zuordnungen und Sent-Echo-Dedupe-Zeilen
-  verwenden jetzt SQLite-Plugin-Zustand unter `imessage`-Namespaces (`catchup-cursors`,
-  `reply-cache`, `sent-echoes`) statt `imessage/catchup/*.json`,
+  `thread-bindings-*.json`; die Telegram-doctor-/Einrichtungsmigration importiert und
+  entfernt die älteren Dateien.
+- iMessage-Aufhol-Cursor, Zuordnungen kurzer Antwort-IDs und Deduplizierungszeilen für gesendete Echos
+  verwenden jetzt den SQLite-Plugin-Zustand in `imessage`-Namensräumen (`catchup-cursors`,
+  `reply-cache`, `sent-echoes`) anstelle von `imessage/catchup/*.json`,
   `imessage/reply-cache.jsonl` und `imessage/sent-echoes.jsonl`; die iMessage-
-  Doctor-/Setup-Migration importiert und entfernt die Legacy-Dateien.
-- Microsoft Teams-Unterhaltungen, Umfragen, SSO-Token und Feedback-Learnings verwenden jetzt
-  SQLite-Plugin-State-Namespaces (`conversations`, `polls`, `sso-tokens`,
-  `feedback-learnings`) statt `msteams-conversations.json`,
+  doctor-/Einrichtungsmigration importiert und entfernt die älteren Dateien.
+- Microsoft Teams-Unterhaltungen, Umfragen, SSO-Token und Feedback-Erkenntnisse
+  verwenden jetzt SQLite-Namensräume für den Plugin-Zustand (`conversations`, `polls`, `sso-tokens`,
+  `feedback-learnings`) anstelle von `msteams-conversations.json`,
   `msteams-polls.json`, `msteams-sso-tokens.json` und `*.learnings.json`; die
-  Microsoft Teams-Doctor-/Setup-Migration importiert und archiviert die Legacy-Dateien.
-  Ausstehende Uploads sind ein kurzlebiger SQLite-Cache, und alte JSON-Cache-Dateien werden
+  Microsoft Teams-doctor-/Einrichtungsmigration importiert und archiviert die älteren Dateien.
+  Ausstehende Uploads sind ein kurzlebiger SQLite-Cache, und ältere JSON-Cache-Dateien werden
   nicht migriert.
-- Matrix-Sync-Cache, Speichermetadaten, Thread-Bindings, eingehende Dedupe-Marker,
-  Startup-Verifizierungs-Cooldown-Status, Zugangsdaten, Wiederherstellungsschlüssel und SDK-
-  IndexedDB-Krypto-Snapshots verwenden jetzt SQLite-Plugin-State-/Blob-Namespaces unter
-  `matrix` (`sync-store`, `storage-meta`, `thread-bindings`, `inbound-dedupe`,
+- Matrix-Synchronisierungs-Cache, Speichermetadaten, Thread-Bindungen, Markierungen zur Deduplizierung eingehender Daten,
+  Abklingzustand der Startüberprüfung, Anmeldedaten, Wiederherstellungsschlüssel und
+  IndexedDB-Krypto-Snapshots des SDK verwenden jetzt SQLite-Namensräume für Plugin-Zustand/-Blobs unter
+  `matrix` (`sync-store`, `storage-meta`, `thread-bindings`,
+  `matrix.inbound-dedupe.*` über die beanspruchbare Deduplizierung im Kern,
   `startup-verification`, `credentials`, `recovery-key`, `idb-snapshots`)
-  statt `bot-storage.json`, `storage-meta.json`, `thread-bindings.json`,
+  anstelle von `bot-storage.json`, `storage-meta.json`, `thread-bindings.json`,
   `inbound-dedupe.json`, `startup-verification.json`, `credentials.json`,
-  `recovery-key.json` und `crypto-idb-snapshot.json`; die Matrix-Doctor-/Setup-
-  Migration importiert und entfernt diese Legacy-Dateien aus account-bezogenen Matrix-
-  Speicherwurzeln.
-- Nostr-Bus-Cursor und Profilveröffentlichungsstatus verwenden jetzt SQLite-Plugin-Zustand unter
-  `nostr`-Namespaces (`bus-state`, `profile-state`) statt
-  `bus-state-*.json` und `profile-state-*.json`; die Nostr-Doctor-/Setup-
-  Migration importiert und entfernt die Legacy-Dateien.
-- Active Memory-Sitzungsumschalter verwenden jetzt SQLite-Plugin-Zustand unter
-  `active-memory/session-toggles` statt `session-toggles.json`.
-- Skill-Workshop-Vorschlagswarteschlangen und Review-Zähler verwenden jetzt SQLite-Plugin-Zustand
-  unter `skill-workshop/proposals` und `skill-workshop/reviews` statt
+  `recovery-key.json` und `crypto-idb-snapshot.json`; die Matrix-doctor-/Einrichtungs-
+  migration importiert und entfernt diese älteren Dateien (sowie die ausgemusterten wurzelspezifischen
+  SQLite-Zeilen `inbound-dedupe`) aus kontobezogenen Matrix-Speicherwurzeln.
+- Nostr-Bus-Cursor und der Veröffentlichungszustand von Profilen verwenden jetzt den SQLite-Plugin-Zustand in
+  `nostr`-Namensräumen (`bus-state`, `profile-state`) anstelle von
+  `bus-state-*.json` und `profile-state-*.json`; die Nostr-doctor-/Einrichtungs-
+  migration importiert und entfernt die älteren Dateien.
+- Active Memory-Sitzungsumschalter verwenden jetzt den SQLite-Plugin-Zustand unter
+  `active-memory/session-toggles` anstelle von `session-toggles.json`.
+- Vorschlagswarteschlangen und Überprüfungszähler von Skill Workshop verwenden jetzt den SQLite-Plugin-Zustand
+  unter `skill-workshop/proposals` und `skill-workshop/reviews` anstelle
   arbeitsbereichsspezifischer `skill-workshop/<workspace>.json`-Dateien.
-- Ausgehende Zustellungs- und Sitzungszustellungswarteschlangen teilen sich jetzt die globale SQLite-
+- Warteschlangen für ausgehende Zustellungen und Sitzungszustellungen verwenden jetzt gemeinsam die globale SQLite-
   Tabelle `delivery_queue_entries` unter getrennten Warteschlangennamen
-  (`outbound-delivery`, `session-delivery`) statt dauerhafter Dateien
-  `delivery-queue/*.json`, `delivery-queue/failed/*.json` und
-  `session-delivery-queue/*.json`. Der Doctor-Schritt für Legacy-Zustand importiert
-  ausstehende und fehlgeschlagene Zeilen, entfernt veraltete Zustellmarker und löscht die alten
-  JSON-Dateien nach dem Import. Hot-Routing- und Wiederholungsfelder sind typisierte Spalten; die
-  JSON-Payload bleibt nur für Replay/Debug erhalten.
-- ACPX-Prozessleases verwenden jetzt SQLite-Plugin-Zustand unter `acpx/process-leases`
-  statt `process-leases.json`.
-- Backup- und Migrationsausführungsmetadaten
+  (`outbound-delivery`, `session-delivery`) anstelle dauerhafter
+  Dateien vom Typ `delivery-queue/*.json`, `delivery-queue/failed/*.json` und
+  `session-delivery-queue/*.json`. Der doctor-Schritt für ältere Zustände importiert
+  ausstehende und fehlgeschlagene Zeilen, entfernt veraltete Zustellungsmarkierungen und löscht nach dem Import die alten
+  JSON-Dateien. Felder für aktives Routing und Wiederholungsversuche sind typisierte Spalten; die
+  JSON-Nutzlast bleibt nur für Wiedergabe/Debugging erhalten.
+- ACPX-Prozess-Leases verwenden jetzt den SQLite-Plugin-Zustand unter `acpx/process-leases`
+  anstelle von `process-leases.json`.
+- Metadaten von Sicherungs- und Migrationsläufen
 
-Verschieben Sie diese in Agent-Datenbanken:
+Folgendes in Agentendatenbanken verschieben:
 
-- Agent-Sitzungswurzeln und kompatibilitätsförmige Sitzungs-Eintrags-Payloads. Für
-  Laufzeit-Schreibvorgänge erledigt: Hot-Sitzungsmetadaten sind in `sessions` abfragbar, während die
-  Legacy-förmige vollständige `SessionEntry`-Payload in `session_entries` bleibt.
-- Agent-Transkriptereignisse. Für Laufzeit-Schreibvorgänge erledigt.
-- Compaction-Checkpoints und Transkript-Snapshots. Für Laufzeit-Schreibvorgänge erledigt:
-  Checkpoint-Transkriptkopien sind SQLite-Transkriptzeilen, und Checkpoint-
-  Metadaten werden in `transcript_snapshots` erfasst. Gateway-Checkpoint-Helfer
-  benennen diese Werte jetzt als Transkript-Snapshots statt als Quelldateien.
-- Scratch-/Workspace-Namespaces des Agent-VFS. Für Laufzeit-VFS-Schreibvorgänge erledigt.
-- Subagent-Anhang-Payloads. Für Laufzeit-Schreibvorgänge erledigt: Sie sind SQLite-VFS-
-  Seed-Einträge und niemals dauerhafte Workspace-Dateien.
-- Tool-Artefakte. Für Laufzeit-Schreibvorgänge erledigt.
-- Ausführungsartefakte. Für Worker-Laufzeit-Schreibvorgänge über die agentenspezifische
-  Tabelle `run_artifacts` erledigt.
-- Agent-lokale Laufzeit-Caches. Für Worker-Laufzeit-Schreibvorgänge mit Geltungsbereich über
-  die agentenspezifische Tabelle `cache_entries` erledigt. Gateway-weite Modell-Caches bleiben in der
+- Agentensitzungswurzeln und kompatibilitätsförmige Nutzlasten von Sitzungseinträgen. Für
+  Laufzeitschreibvorgänge abgeschlossen: Aktive Sitzungsmetadaten können in `sessions` abgefragt werden, während die
+  vollständige ältere Nutzlast `SessionEntry` in `session_entries` verbleibt.
+- Agententranskriptereignisse. Für Laufzeitschreibvorgänge abgeschlossen.
+- Compaction-Prüfpunkte und Transkript-Snapshots. Für Laufzeitschreibvorgänge abgeschlossen:
+  Transkriptkopien von Prüfpunkten sind SQLite-Transkriptzeilen, und Prüfpunkt-
+  metadaten werden in `transcript_snapshots` aufgezeichnet. Gateway-Prüfpunkt-Hilfsfunktionen
+  bezeichnen diese Werte jetzt als Transkript-Snapshots statt als Quelldateien.
+- Scratch-/Arbeitsbereichs-Namensräume des Agenten-VFS. Für VFS-Laufzeitschreibvorgänge abgeschlossen.
+- Nutzlasten von Unteragenten-Anhängen. Für Laufzeitschreibvorgänge abgeschlossen: Sie sind SQLite-VFS-
+  Seed-Einträge und niemals dauerhafte Arbeitsbereichsdateien.
+- Werkzeugartefakte. Für Laufzeitschreibvorgänge abgeschlossen.
+- Ausführungsartefakte. Für Worker-Laufzeitschreibvorgänge über die agentenspezifische
+  Tabelle `run_artifacts` abgeschlossen.
+- Agentenlokale Laufzeit-Caches. Für bereichsbezogene Cache-Schreibvorgänge der Worker-Laufzeit über
+  die agentenspezifische Tabelle `cache_entries` abgeschlossen. Gateway-weite Modell-Caches bleiben in der
   globalen Datenbank, sofern sie nicht agentenspezifisch werden.
-- ACP-Parent-Stream-Protokolle. Für Laufzeit-Schreibvorgänge erledigt.
-- ACP-Replay-Ledger-Sitzungen. Für Laufzeit-Schreibvorgänge über
-  `acp_replay_sessions` und `acp_replay_events` erledigt; Legacy-`acp/event-ledger.json`
-  bleibt nur als Doctor-Eingabe bestehen.
-- ACP-Sitzungsmetadaten. Für Laufzeit-Schreibvorgänge über `acp_sessions` erledigt; Legacy-
-  `entry.acp`-Blöcke in `sessions.json` sind nur Eingaben für die Doctor-Migration.
-- Trajectory-Sidecars, wenn sie keine expliziten Exportdateien sind. Für Laufzeit-
-  Schreibvorgänge erledigt: Trajectory-Erfassung schreibt `trajectory_runtime_events`-
-  Zeilen in die Agent-Datenbank und spiegelt ausführungsspezifische Artefakte in SQLite. Legacy-Sidecars
-  sind nur Doctor-Importeingaben; Export kann frische JSONL-Support-Bundle-Ausgaben
-  materialisieren, liest oder migriert aber alte Trajectory-/Transkript-Sidecars nicht zur Laufzeit.
-  Die Laufzeit-Trajectory-Erfassung stellt SQLite-Geltungsbereich bereit; JSONL-Pfadhelfer sind
-  auf Export-/Debug-Unterstützung isoliert und werden nicht erneut aus dem Laufzeitmodul exportiert.
-  Embedded-Runner-Trajectory-Metadaten erfassen `{agentId, sessionId, sessionKey}`-
-  Identität, statt einen Transkript-Locator dauerhaft zu speichern.
+- ACP-Protokolle übergeordneter Streams. Für Laufzeitschreibvorgänge abgeschlossen.
+- ACP-Sitzungen des Wiedergabe-Ledgers. Für Laufzeitschreibvorgänge über
+  `acp_replay_sessions` und `acp_replay_events` abgeschlossen; das ältere `acp/event-ledger.json`
+  bleibt nur als doctor-Eingabe bestehen.
+- ACP-Sitzungsmetadaten. Für Laufzeitschreibvorgänge über `acp_sessions` abgeschlossen; ältere
+  `entry.acp`-Blöcke in `sessions.json` dienen nur als Eingabe für die doctor-Migration.
+- Trajektorien-Sidecars, wenn es sich nicht um explizite Exportdateien handelt. Für Laufzeit-
+  schreibvorgänge abgeschlossen: Die Trajektorienerfassung schreibt `trajectory_runtime_events`-Zeilen
+  in die Agentendatenbank und spiegelt ausführungsbezogene Artefakte in SQLite. Ältere Sidecars dienen nur als doctor-
+  Importeingaben; der Export kann neue JSONL-Ausgaben für Support-Pakete erzeugen,
+  liest oder migriert ältere Trajektorien-/Transkript-Sidecars jedoch nicht zur Laufzeit.
+  Die Trajektorienerfassung zur Laufzeit stellt den SQLite-Bereich bereit; JSONL-Pfad-Hilfsfunktionen sind
+  auf Export-/Debug-Unterstützung beschränkt und werden nicht erneut aus dem Laufzeitmodul exportiert.
+  Trajektorienmetadaten des eingebetteten Runners zeichnen die Identität `{agentId, sessionId, sessionKey}`
+  auf, statt einen Transkript-Locator dauerhaft zu speichern.
 
-Diese bleiben vorerst dateigestützt:
+Folgendes vorerst dateibasiert belassen:
 
 - `openclaw.json`
-- Provider- oder CLI-Zugangsdaten-Dateien
-- Plugin-/Paket-Manifeste
-- Benutzer-Workspaces und Git-Repositorys, wenn der Datenträgermodus ausgewählt ist
-- Protokolle, die für Operator-Tailing vorgesehen sind, sofern keine spezifische Protokolloberfläche verschoben wird
+- Provider- oder CLI-Anmeldedatendateien
+- Plugin-/Paketmanifeste
+- Benutzerarbeitsbereiche und Git-Repositorys, wenn der Festplattenmodus ausgewählt ist
+- Protokolle, die für die laufende Überwachung durch Bediener vorgesehen sind, sofern keine bestimmte Protokolloberfläche verschoben wird
 
 ## Migrationsplan
 
 ### Phase 0: Grenze einfrieren
 
-Machen Sie die Grenze für dauerhaften Zustand explizit, bevor weitere Zeilen verschoben werden:
+Die Grenze für dauerhaften Zustand explizit festlegen, bevor weitere Zeilen verschoben werden:
 
-- Fügen Sie der globalen Datenbank eine Tabelle `migration_runs` hinzu.
-  Für Ausführungsberichte der Legacy-Zustandsmigration erledigt.
-- Fügen Sie einen einzelnen, Doctor-eigenen Zustandsmigrationsdienst für Datei-zu-Datenbank-Import hinzu.
-  Erledigt: `openclaw doctor --fix` verwendet die Implementierung der Legacy-Zustandsmigration.
-- Machen Sie `plan` schreibgeschützt und lassen Sie `apply` ein Backup erstellen, importieren, verifizieren und
-  dann alte Dateien löschen oder quarantänisieren.
-  Erledigt: Doctor erstellt ein verifiziertes Backup vor der Migration, übergibt den Backup-Pfad
-  an `migration_runs` und verwendet die Importer-/Entfernungspfade wieder.
-- Fügen Sie statische Verbote hinzu, damit neuer Laufzeitcode keine Legacy-Zustandsdateien schreiben kann, während
-  Migrationscode und Tests sie weiterhin anlegen/lesen können.
-  Für die derzeit migrierten Legacy-Speicher erledigt; der Guard scannt auch verschachtelte
-  Tests auf verbotene Laufzeit-Transkript-Locator-Verträge.
+- Eine Tabelle `migration_runs` zur globalen Datenbank hinzufügen.
+  Für Ausführungsberichte zur Migration älterer Zustände abgeschlossen.
+- Einen einzigen doctor-eigenen Zustandsmigrationsdienst für den Import von Dateien in die Datenbank hinzufügen.
+  Abgeschlossen: `openclaw doctor --fix` verwendet die Implementierung für die Migration älterer Zustände.
+- `plan` schreibgeschützt machen und `apply` eine Sicherung erstellen, importieren und verifizieren lassen sowie
+  anschließend alte Dateien löschen oder unter Quarantäne stellen.
+  Abgeschlossen: doctor erstellt eine verifizierte Sicherung vor der Migration, übergibt den Sicherungspfad
+  an `migration_runs` und verwendet die Importer-/Entfernungspfade erneut.
+- Statische Verbote hinzufügen, damit neuer Laufzeitcode keine älteren Zustandsdateien schreiben kann,
+  während Migrationscode und Tests sie weiterhin anlegen/lesen können.
+  Für die derzeit migrierten älteren Speicher abgeschlossen; die Schutzprüfung durchsucht außerdem verschachtelte
+  Tests nach verbotenen Verträgen für Laufzeit-Transkript-Locators.
 
 ### Phase 1: Globale Steuerungsebene fertigstellen
 
-Behalten Sie gemeinsamen Koordinationszustand in `state/openclaw.sqlite`:
+Gemeinsamen Koordinationszustand in `state/openclaw.sqlite` belassen:
 
-- Agenten und Agent-Datenbankregistrierung
-- Aufgaben- und TaskFlow-Ledger
+- Agenten und Registrierung der Agentendatenbanken
+- Task- und Task Flow-Ledger
 - Plugin-Zustand
-- Sandbox-Container-/Browser-Registrierung
-- Cron-/Scheduler-Ausführungshistorie
-- Kopplung, Gerät, Push, Updateprüfung, TUI, OpenRouter-/Modell-Caches und anderer
+- Sandbox-Container-/Browser-Registry
+- Ausführungsverlauf von Cron/Zeitplaner
+- Kopplung, Gerät, Push, Aktualisierungsprüfung, TUI, OpenRouter-/Modell-Caches und anderer
   kleiner Gateway-bezogener Laufzeitzustand
-- Backup- und Migrationsmetadaten
-- Gateway-Medienanhangsbytes. Für Laufzeit-Schreibvorgänge erledigt; direkte Dateipfade
-  sind temporäre Materialisierungen für Kompatibilität mit Channel-Sendern und Sandbox-
-  Staging. Laufzeit-Allowlists akzeptieren SQLite-Materialisierungspfade, keine Legacy-
-  State-/Config-Medienwurzeln. Doctor importiert Legacy-Mediendateien in
+- Sicherungs- und Migrationsmetadaten
+- Bytes von Gateway-Medienanhängen. Für Laufzeitschreibvorgänge abgeschlossen; direkte Dateipfade
+  sind temporäre Materialisierungen für die Kompatibilität mit Kanal-Absendern und Sandbox-
+  Staging. Laufzeit-Zulassungslisten akzeptieren SQLite-Materialisierungspfade, nicht ältere
+  Zustands-/Konfigurations-Medienwurzeln. doctor importiert ältere Mediendateien in
   `media_blobs` und entfernt die Quelldateien nach erfolgreichen Zeilenschreibvorgängen.
-- Debug-Proxy-Erfassungssitzungen, Ereignisse und Payload-Blobs. Erledigt: Erfassungen liegen
-  in der gemeinsamen Zustandsdatenbank und öffnen über das gemeinsame Zustandsdatenbank-Bootstrap, Schema,
-  WAL und Busy-Timeout-Einstellungen. Payload-Bytes werden in `capture_blobs.data` gzip-komprimiert;
-  es gibt keine Debug-Proxy-Laufzeit-Sidecar-DB-Überschreibung,
-  kein Blob-Verzeichnis und kein nur für Proxy-Erfassung generiertes Schema-/Codegen-Ziel.
-  Die Doctor-/Startup-Migration importiert ausgelieferte `debug-proxy/capture.sqlite`-Zeilen
-  und referenzierte Payload-Blobs, einschließlich aktiver Legacy-DB-/Blob-Umgebungs-
-  Überschreibungen, und archiviert diese Quellen anschließend, während CA-Zertifikate unverändert bleiben.
+- Debug-Proxy-Erfassungssitzungen, Ereignisse und Nutzlast-Blobs. Abgeschlossen: Erfassungen befinden sich
+  in der gemeinsamen Zustandsdatenbank und werden über Bootstrap, Schema,
+  WAL und Einstellungen für das Zeitlimit bei Belegung der gemeinsamen Zustandsdatenbank geöffnet. Nutzlast-Bytes werden in
+  `capture_blobs.data` mit gzip komprimiert; es gibt keine Laufzeit-Sidecar-Datenbanküberschreibung für den Debug-Proxy,
+  kein Blob-Verzeichnis und kein ausschließlich für Proxy-Erfassungen generiertes Schema-/Codegen-Ziel.
+  Die doctor-/Startmigration importiert veröffentlichte `debug-proxy/capture.sqlite`-Zeilen
+  und referenzierte Nutzlast-Blobs einschließlich aktiver älterer Umgebungsüberschreibungen für Datenbank/Blobs
+  und archiviert anschließend diese Quellen, während CA-Zertifikate erhalten bleiben.
 
-Diese Phase löscht außerdem doppelte Sidecar-Opener, Berechtigungshelfer, WAL-
-Setup, Dateisystembereinigung und Kompatibilitäts-Writer aus diesen Subsystemen.
+Diese Phase entfernt außerdem doppelte Sidecar-Öffnungsfunktionen, Berechtigungs-Helper, die WAL-Einrichtung, Dateisystembereinigung und Kompatibilitätsschreiber aus diesen Subsystemen.
 
-### Phase 2: Agentenspezifische Datenbanken einführen
+### Phase 2: Datenbanken pro Agent einführen
 
-Erstellen Sie eine Datenbank pro Agent und registrieren Sie sie aus der globalen DB:
+Erstellen Sie eine Datenbank pro Agent und registrieren Sie sie über die globale DB:
 
 ```text
 ~/.openclaw/state/openclaw.sqlite
 ~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite
 ```
 
-Die globale Zeile `agent_databases` speichert den Pfad, die Schemaversion, den Zeitstempel
-der letzten Sichtung und grundlegende Größen-/Integritätsmetadaten. Laufzeitcode fragt die Registrierung nach
-der Agent-DB ab, statt Dateipfade direkt abzuleiten.
+Die globale `agent_databases`-Zeile speichert den Pfad, die Schemaversion, den Zeitstempel der letzten Sichtung sowie grundlegende Größen- und Integritätsmetadaten. Laufzeitcode fragt die Registry nach der Agent-DB, statt Dateipfade direkt abzuleiten.
 
-Die Agent-DB enthält:
+Die Agent-DB verwaltet:
 
-- `sessions` als kanonische Sitzungswurzel, mit `session_entries` als an
-  diese Wurzel angehängte, kompatibilitätsgeformte Nutzlasttabelle und
-  `session_routes` als eindeutiger aktiver `session_key`-Lookup
-- `conversations` und `session_conversations` als normalisierte
-  Provider-Routing-Identität, die an Sitzungen angehängt ist
+- `sessions` als kanonischen Sitzungsstamm, wobei `session_entries` die an diesen Stamm angehängte Payload-Tabelle in Kompatibilitätsform ist und
+  `session_routes` als eindeutige aktive `session_key`-Suche dient
+- `conversations` und `session_conversations` als normalisierte, Sitzungen zugeordnete
+  Provider-Routing-Identität
 - `transcript_events`
-- Transcript-Snapshots und Compaction-Prüfpunkte. Für Runtime-Schreibvorgänge erledigt.
+- Transkript-Snapshots und Compaction-Prüfpunkte. Für Laufzeitschreibvorgänge erledigt.
 - `vfs_entries`
-- `tool_artifacts` und Run-Artefakte
-- agent-lokale Runtime-/Cache-Zeilen. Für Worker-scoped Caches erledigt.
-- ACP-Eltern-Stream-Ereignisse
-- Laufbahn-Runtime-Ereignisse, wenn sie keine expliziten Exportartefakte sind
+- `tool_artifacts` und Ausführungsartefakte
+- Agent-lokale Laufzeit-/Cache-Zeilen. Für Worker-bezogene Caches erledigt.
+- Ereignisse des übergeordneten ACP-Streams
+- Trajektorien-Laufzeitereignisse, wenn sie keine expliziten Exportartefakte sind
 
-### Phase 3: Session-Store-APIs ersetzen
+### Phase 3: Sitzungs-Store-APIs ersetzen
 
-Für die Runtime erledigt. Die dateiförmige Session-Store-Oberfläche ist kein aktiver
-Runtime-Vertrag:
+Für die Laufzeit erledigt. Die dateiförmige Oberfläche des Sitzungs-Stores ist kein aktiver Laufzeitvertrag:
 
-- Die Runtime ruft `loadSessionStore(storePath)` nicht mehr auf und behandelt `storePath` nicht als
+- Die Laufzeit ruft `loadSessionStore(storePath)` nicht mehr auf und behandelt `storePath` nicht mehr als
   Sitzungsidentität.
-- Runtime-Zeilenoperationen sind `getSessionEntry`, `upsertSessionEntry`,
+- Laufzeit-Zeilenoperationen sind `getSessionEntry`, `upsertSessionEntry`,
   `patchSessionEntry`, `deleteSessionEntry` und `listSessionEntries`.
-- Hilfsfunktionen zum Umschreiben des gesamten Stores, Dateischreiber, Queue-Tests, Alias-Pruning und
-  Parameter zum Löschen veralteter Schlüssel wurden aus der Runtime entfernt.
-- Veraltete Kompatibilitätsexporte des Root-Pakets adaptieren weiterhin kanonische
-  `sessions.json`-Pfade auf die SQLite-Zeilen-APIs.
-- Das Parsen von `sessions.json` bleibt nur in Doctor-Migrations-/Importcode und
-  Doctor-Tests.
-- Runtime-Lifecycle-Fallbacks lesen SQLite-Transcript-Header, nicht zuerst JSONL-Erstzeilen.
+- Helper zum vollständigen Neuschreiben des Stores, Dateischreiber, Warteschlangentests, Alias-Bereinigung und
+  Parameter zum Löschen veralteter Schlüssel wurden aus der Laufzeit entfernt.
+- Veraltete Kompatibilitätsexporte des Root-Pakets delegieren bis zum 2026-10-12 an den ausschließlich für Doctor vorgesehenen
+  `sessions.json`-Importer; Kompatibilitätslesevorgänge des Plugin SDK
+  projizieren weiterhin kanonische SQLite-Zeilen.
+- Das Parsen von `sessions.json` verbleibt ausschließlich im Doctor-Migrations-/Importcode und
+  in Doctor-Tests.
+- Fallback-Lesevorgänge des Laufzeitlebenszyklus lesen SQLite-Transkript-Header, nicht die ersten
+  JSONL-Zeilen.
 
-Löschen Sie weiter alles, was Dateisperrparameter,
-Pruning-/Trunkierung-als-Dateiwartung-Vokabular, Store-Pfad-Identität oder Tests
-wiedereinführt, deren einzige Assertion JSON-Persistenz ist.
+Entfernen Sie weiterhin alles, was Dateisperrparameter, Begriffe zur Bereinigung/Kürzung als Dateiwartung, Store-Pfade als Identität oder Tests wieder einführt, deren einzige Aussage die JSON-Persistenz betrifft.
 
-### Phase 4: Transcripts, ACP-Streams, Laufbahnen und VFS verschieben
+### Phase 4: Transkripte, ACP-Streams, Trajektorien und VFS verschieben
 
-Machen Sie jeden Agent-Datenstream datenbanknativ:
+Machen Sie jeden Agent-Datenstrom datenbanknativ:
 
-- Transcript-Append-Schreibvorgänge laufen über eine SQLite-Transaktion, die den
-  Sitzungs-Header sicherstellt, Nachrichten-Idempotenz prüft, den Eltern-Tail auswählt, in
+- Schreibvorgänge zum Anhängen an Transkripte erfolgen über eine einzelne SQLite-Transaktion, die den
+  Sitzungs-Header sicherstellt, die Nachrichtenidempotenz prüft, das übergeordnete Ende auswählt, in
   `transcript_events` einfügt und abfragbare Identitätsmetadaten in
-  `transcript_event_identities` aufzeichnet. Erledigt für direkte Transcript-Nachrichten-Appends und
-  normale persistierte `TranscriptSessionManager`-Appends; explizite Branch-
-  Operationen behalten ihre explizite Elternauswahl bei und schreiben weiterhin SQLite-Zeilen,
+  `transcript_event_identities` erfasst. Für direktes Anhängen von Transkriptnachrichten und
+  normales persistiertes Anhängen von `TranscriptSessionManager` erledigt; explizite Branch-
+  Operationen behalten ihre explizite Wahl des übergeordneten Elements bei und schreiben weiterhin SQLite-Zeilen,
   ohne einen Dateilokator abzuleiten.
-- ACP-Eltern-Stream-Logs werden zu Zeilen, nicht zu `.acp-stream.jsonl`-Dateien. Erledigt.
-- ACP-Spawn-Setup persistiert keine Transcript-JSONL-Pfade mehr. Erledigt.
-- Runtime-Laufbahnerfassung schreibt Ereigniszeilen/Artefakte direkt. Der explizite
-  Support-/Exportbefehl kann weiterhin Support-Bundle-JSONL-Artefakte als
-  Exportformat erzeugen, aber der Sitzungsexport erstellt keine Sitzungs-JSONL neu. Erledigt.
-- Disk-Workspaces bleiben auf der Festplatte, wenn sie als Disk-Modus konfiguriert sind.
-- VFS-Scratch und der experimentelle reine VFS-Workspace-Modus verwenden die Agent-DB.
+- Protokolle übergeordneter ACP-Streams werden zu Zeilen statt zu `.acp-stream.jsonl`-Dateien. Erledigt.
+- Die ACP-Spawn-Einrichtung persistiert keine Transkript-JSONL-Pfade mehr. Erledigt.
+- Die Laufzeit-Trajektorienerfassung schreibt Ereigniszeilen/Artefakte direkt. Der explizite
+  Support-/Exportbefehl kann weiterhin JSONL-Artefakte für Support-Pakete als
+  Exportformat erzeugen, aber der Sitzungsexport erstellt kein Sitzungs-JSONL neu. Erledigt.
+- Festplattenbasierte Arbeitsbereiche verbleiben auf der Festplatte, wenn der Festplattenmodus konfiguriert ist.
+- VFS-Scratch und der experimentelle, ausschließlich VFS-basierte Arbeitsbereichsmodus verwenden die Agent-DB.
 
-Die Migration importiert alte JSONL-Dateien einmalig, zeichnet Zählwerte/Hashes in
+Die Migration importiert alte JSONL-Dateien einmalig, zeichnet Anzahlen/Hashes in
 `migration_runs` auf und entfernt importierte Dateien nach Integritätsprüfungen.
 
-### Phase 5: Backup, Restore, Vacuum und Verify
+### Phase 5: Sicherung, Wiederherstellung, Vacuum und Verifizierung
 
-Backups bleiben eine Archivdatei:
+Sicherungen bleiben eine einzelne Archivdatei:
 
-- Für jede globale und Agent-Datenbank einen Checkpoint ausführen.
-- Jede DB mit SQLite-Backup-Semantik oder `VACUUM INTO` snapshotten.
-- Kompakte DB-Snapshots, Konfiguration, externe Zugangsdaten und angeforderte
-  Workspace-Exporte archivieren.
-- Rohe Live-Dateien `*.sqlite-wal` und `*.sqlite-shm` auslassen.
-- Verifizieren, indem jeder DB-Snapshot geöffnet und `PRAGMA integrity_check` ausgeführt wird.
+- Erstellen Sie einen Prüfpunkt für jede globale und jede Agent-Datenbank.
+- Erstellen Sie einen Snapshot jeder DB mit SQLite-Sicherungssemantik oder `VACUUM INTO`.
+- Archivieren Sie kompakte DB-Snapshots, Konfiguration, externe Anmeldedaten und angeforderte
+  Arbeitsbereichsexporte.
+- Lassen Sie unverarbeitete aktive `*.sqlite-wal`- und `*.sqlite-shm`-Dateien aus.
+- Verifizieren Sie, indem Sie jeden DB-Snapshot öffnen und `PRAGMA integrity_check` ausführen.
   `openclaw backup create` führt diese Archivverifizierung standardmäßig durch;
-  `--no-verify` überspringt nur den nachträglichen Archivdurchlauf, nicht die
-  Integritätsprüfung bei der Snapshot-Erstellung.
-- Restore kopiert Snapshots zurück an ihre Zielpfade. Dieser Branch setzt das
-  noch nicht ausgelieferte SQLite-Layout auf `user_version = 1` zurück; künftige ausgelieferte Schemaänderungen
-  können explizite Migrationen hinzufügen, wenn sie benötigt werden.
+  `--no-verify` überspringt nur den Archivdurchlauf nach dem Schreiben, nicht die Integritätsprüfung
+  bei der Snapshot-Erstellung.
+- Die Wiederherstellung kopiert Snapshots an ihre Zielpfade zurück. Wiederhergestellte globale DBs verwenden
+  Version `1`; wiederhergestellte Agent-DBs verwenden Version `2`, wobei Snapshots der Version `1`
+  beim Öffnen atomar aktualisiert werden.
 
-### Phase 6: Worker-Runtime
+### Phase 6: Worker-Laufzeit
 
-Halten Sie den Worker-Modus experimentell, während die Datenbankaufteilung landet:
+Belassen Sie den Worker-Modus im experimentellen Zustand, während die Datenbankaufteilung umgesetzt wird:
 
-- Worker erhalten Agent-ID, Run-ID, Dateisystemmodus und DB-Registry-Identität.
+- Worker erhalten Agent-ID, Ausführungs-ID, Dateisystemmodus und DB-Registry-Identität.
 - Jeder Worker öffnet seine eigene SQLite-Verbindung.
-- Der Parent behält Channel-Zustellung, Freigaben, Konfiguration und Abbruchautorität.
-- Beginnen Sie mit einem Worker pro aktivem Run; fügen Sie Pooling erst hinzu, nachdem Lifecycle und DB-
-  Verbindungszuständigkeit stabil sind.
+- Der übergeordnete Prozess behält die Zuständigkeit für Kanalauslieferung, Genehmigungen, Konfiguration und Abbruch.
+- Beginnen Sie mit einem Worker pro aktiver Ausführung; fügen Sie Pooling erst hinzu, nachdem Lebenszyklus und
+  Eigentümerschaft der DB-Verbindung stabil sind.
 
-### Phase 7: Die alte Welt löschen
+### Phase 7: Die alte Welt entfernen
 
-Für Runtime-Sitzungsverwaltung erledigt. Die alte Welt ist nur als explizite
-Doctor-Eingabe oder Support-/Exportausgabe erlaubt:
+Für die Laufzeit-Sitzungsverwaltung erledigt. Die alte Welt ist nur als explizite
+Doctor-Eingabe oder Support-/Exportausgabe zulässig:
 
-- Keine Runtime-Schreibvorgänge für `sessions.json`, Transcript-JSONL, Sandbox-Registry-JSON, Task-
-  Sidecar-SQLite oder Plugin-State-Sidecar-SQLite.
-- Kein JSON-/Sitzungsdatei-Pruning, keine Datei-Transcript-Trunkierung, keine Sitzungsdateisperren
-  oder sperrenförmigen Sitzungstests.
-- Keine Runtime-Kompatibilitätsexporte, deren Zweck darin besteht, alte Sitzungsdateien
+- Keine Laufzeitschreibvorgänge für `sessions.json`, Transkript-JSONL, Sandbox-Registry-JSON, Task-
+  Sidecar-SQLite oder Plugin-Zustands-Sidecar-SQLite.
+- Keine Bereinigung von JSON-/Sitzungsdateien, Kürzung von Transkriptdateien, Sperren von Sitzungsdateien
+  oder sitzungssperrenförmige Tests.
+- Keine Laufzeit-Kompatibilitätsexporte, deren Zweck darin besteht, alte Sitzungsdateien
   aktuell zu halten.
-- Explizite Support-Exporte bleiben vom Benutzer angeforderte Archiv-/Materialisierungsformate
-  und dürfen Dateinamen nicht zurück in Runtime-Identität einspeisen.
+- Explizite Support-Exporte bleiben vom Benutzer angeforderte Archivierungs-/Materialisierungsformate
+  und dürfen Dateinamen nicht in die Laufzeitidentität zurückführen.
 
-## Backup und Restore
+## Sicherung und Wiederherstellung
 
-Backups sollten eine Archivdatei sein, aber die Datenbankerfassung sollte
-SQLite-nativ sein:
+Sicherungen sollten eine einzelne Archivdatei sein, die Datenbankerfassung sollte jedoch
+SQLite-nativ erfolgen:
 
-1. Stoppen Sie lang laufende Schreibaktivität oder treten Sie in eine kurze Backup-Barriere ein.
-2. Führen Sie für jede globale und Agent-Datenbank einen Checkpoint aus.
-3. Snapshotten Sie jede Datenbank mit SQLite-Backup-Semantik oder `VACUUM INTO` in ein
-   temporäres Backup-Verzeichnis.
-4. Archivieren Sie die kompaktierten Datenbank-Snapshots, die Konfigurationsdatei, das Zugangsdatenverzeichnis,
-   ausgewählte Workspaces und ein Manifest.
-5. Verifizieren Sie das Archiv, indem Sie jeden enthaltenen SQLite-Snapshot öffnen und
-   `PRAGMA integrity_check` ausführen.
-   `openclaw backup create` tut dies standardmäßig; `--no-verify` ist nur dafür vorgesehen,
-   den nachträglichen Archivdurchlauf absichtlich zu überspringen.
+1. Beenden Sie lang andauernde Schreibaktivitäten oder richten Sie eine kurze Sicherungsbarriere ein.
+2. Führen Sie für jede globale und jede Agent-Datenbank einen Prüfpunkt aus.
+3. Erstellen Sie mit `VACUUM INTO` Snapshots der Datenbanken in einem temporären Sicherungsverzeichnis.
+   Plugin-Schemas, die vom Eigentümer definierte SQLite-Funktionen erfordern, schlagen geschlossen fehl,
+   bis der Eigentümer einen sicheren Snapshot-Vertrag bereitstellt.
+4. Archivieren Sie die Datenbank-Snapshots, die Konfigurationsdatei, das Anmeldedatenverzeichnis, ausgewählte
+   Arbeitsbereiche und ein Manifest.
+5. Verifizieren Sie die Dateiform jedes SQLite-Snapshots, öffnen Sie anschließend kanonische OpenClaw-
+   Datenbanken und führen Sie `PRAGMA integrity_check` sowie eine Rollenvalidierung aus. Dedizierte
+   Plugin-Schemas bleiben undurchsichtig, sofern ihr Eigentümer keinen Verifizierer bereitstellt.
+   `openclaw backup create` führt dies standardmäßig durch; `--no-verify` dient nur zum
+   absichtlichen Überspringen des Archivdurchlaufs nach dem Schreiben.
 
-Verlassen Sie sich nicht auf rohe Live-Kopien von `*.sqlite`, `*.sqlite-wal` und `*.sqlite-shm` als
-primäres Backup-Format. Das Archivmanifest sollte Datenbankrolle,
-Agent-ID, Schemaversion, Quellpfad, Snapshot-Pfad, Byte-Größe und Integritätsstatus
+Verlassen Sie sich nicht auf unverarbeitete Kopien aktiver `*.sqlite`-, `*.sqlite-wal`- und `*.sqlite-shm`-Dateien als
+primäres Sicherungsformat. Das Archivmanifest sollte Datenbankrolle,
+Agent-ID, Schemaversion, Quellpfad, Snapshot-Pfad, Bytegröße und Integritätsstatus
 aufzeichnen.
 
-Restore sollte die globale Datenbank und Agent-Datenbankdateien aus den
-Archiv-Snapshots neu aufbauen. Da das SQLite-Layout noch nicht ausgeliefert wurde, behält dieser Refactor
-nur das Version-1-Schema plus Doctor-Datei-zu-Datenbank-Import bei. Der Restore-
-Befehl validiert zuerst das Archiv und ersetzt dann jedes Manifest-Asset aus der
-verifizierten extrahierten Nutzlast.
+Die Wiederherstellung sollte die globale Datenbank und die Agent-Datenbankdateien aus den
+Archiv-Snapshots neu aufbauen. Das globale Schema bleibt bei Version `1`; Agent-Snapshots der Version `1`
+erhalten das begrenzte Laufzeit-Upgrade auf Version `2`. Doctor bleibt
+der einzige Eigentümer des Datei-zu-Datenbank-Imports. Der Wiederherstellungsbefehl validiert zunächst das
+Archiv und ersetzt anschließend jedes Manifest-Asset durch die verifizierte extrahierte
+Payload.
 
-## Runtime-Refactor-Plan
+## Plan zur Laufzeit-Refaktorierung
 
-1. Datenbank-Registry-APIs hinzufügen.
-   - Globale DB- und Pro-Agent-DB-Pfade auflösen.
-   - Die noch nicht ausgelieferten Schemata bei `user_version = 1` halten; keinen Schema-
-     Migrations-Runner-Code hinzufügen, bis ein ausgeliefertes Schema ihn benötigt.
-   - Close-/Checkpoint-/Integritäts-Hilfsfunktionen hinzufügen, die von Tests, Backup und Doctor verwendet werden.
+1. Fügen Sie Datenbank-Registry-APIs hinzu.
+   - Lösen Sie globale DB- und Agent-DB-Pfade auf.
+   - Belassen Sie das globale Schema bei `user_version = 1`. Agent-DBs verwenden Version `2`
+     mit einer atomaren Migration von der ausgelieferten Memory-Source-Form der Version `1`.
+   - Fügen Sie Schließ-, Prüfpunkt- und Integritäts-Helper hinzu, die von Tests, Sicherung und Doctor verwendet werden.
 
-2. Sidecar-SQLite-Stores zusammenführen.
-   - Plugin-State-Tabellen in die globale Datenbank verschieben. Für Runtime-
-     Schreibvorgänge erledigt; der noch nicht ausgelieferte Legacy-Sidecar-Importer ist gelöscht.
-   - Task-Registry-Tabellen in die globale Datenbank verschieben. Für Runtime-
-     Schreibvorgänge erledigt; der noch nicht ausgelieferte Legacy-Sidecar-Importer ist gelöscht.
-   - TaskFlow-Tabellen in die globale Datenbank verschieben. Für Runtime-Schreibvorgänge erledigt;
-     der noch nicht ausgelieferte Legacy-Sidecar-Importer ist gelöscht.
-   - Eingebaute Memory-Search-Tabellen in jede Agent-Datenbank verschieben. Erledigt; explizites
-     benutzerdefiniertes `memorySearch.store.path` wird jetzt von der Doctor-Konfigurationsmigration entfernt.
-     Vollständige Neuindizierung läuft direkt gegen Memory-Tabellen; der alte Whole-File-
-     Swap-Pfad und die Sidecar-Index-Swap-Hilfsfunktion sind gelöscht.
-   - Doppelte Datenbank-Opener, WAL-Setup, Berechtigungs-Hilfsfunktionen und
-     Close-Pfade aus diesen Subsystemen löschen.
+2. Fassen Sie Sidecar-SQLite-Stores zusammen.
+   - Verschieben Sie Plugin-Zustandstabellen in die globale Datenbank. Für Laufzeit-
+     schreibvorgänge erledigt; der nicht ausgelieferte veraltete Sidecar-Importer wurde entfernt.
+   - Verschieben Sie Task-Registry-Tabellen in die globale Datenbank. Für Laufzeit-
+     schreibvorgänge erledigt; der nicht ausgelieferte veraltete Sidecar-Importer wurde entfernt.
+   - Verschieben Sie Task-Flow-Tabellen in die globale Datenbank. Für Laufzeitschreibvorgänge erledigt;
+     der nicht ausgelieferte veraltete Sidecar-Importer wurde entfernt.
+   - Verschieben Sie integrierte Memory-Search-Tabellen in jede Agent-Datenbank. Erledigt; explizites
+     benutzerdefiniertes `memorySearch.store.path` wird nun durch die Doctor-Konfigurationsmigration entfernt.
+     Die vollständige Neuindizierung wird direkt ausschließlich für Memory-Tabellen ausgeführt; der alte Pfad zum Austausch
+     der gesamten Datei und der Sidecar-Indexaustausch-Helper wurden entfernt.
+   - Entfernen Sie doppelte Datenbank-Öffnungsfunktionen, WAL-Einrichtung, Berechtigungs-Helper und
+     Schließpfade aus diesen Subsystemen.
 
-3. Agent-eigene Tabellen in Pro-Agent-Datenbanken verschieben.
-   - Agent-DB bei Bedarf über die globale Datenbank-Registry erstellen. Erledigt.
-   - Runtime-Sitzungseinträge, Transcript-Ereignisse, VFS-Zeilen und Tool-
-     Artefakte in Agent-DBs verschieben. Erledigt.
-   - Branch-lokale Shared-DB-Sitzungseinträge, Transcript-Ereignisse,
-     VFS-Zeilen oder Tool-Artefakte nicht migrieren; dieses Layout wurde nie ausgeliefert. Nur Legacy-
-     Datei-zu-Datenbank-Import in Doctor behalten.
+3. Verschieben Sie Agent-eigene Tabellen in Agent-Datenbanken.
+   - Erstellen Sie die Agent-DB bei Bedarf über die Registry der globalen Datenbank. Erledigt.
+   - Verschieben Sie Laufzeit-Sitzungseinträge, Transkriptereignisse, VFS-Zeilen und Tool-
+     Artefakte in Agent-DBs. Erledigt.
+   - Migrieren Sie keine Branch-lokalen Sitzungs-
+     einträge, Transkriptereignisse, VFS-Zeilen oder Tool-Artefakte aus gemeinsam genutzten DBs; dieses Layout wurde nie ausgeliefert. Behalten Sie ausschließlich den veralteten
+     Datei-zu-Datenbank-Import in Doctor bei.
 
-4. Session-Store-APIs ersetzen.
-   - `storePath` als Runtime-Identität entfernen. Für Runtime erledigt und durch
-     `check:database-first-legacy-stores` abgesichert: Sitzungsmetadaten, Route-Updates,
-     Befehlspersistenz, CLI-Sitzungsbereinigung, Feishu-Reasoning-Previews,
-     Transcript-State-Persistenz, Subagent-Tiefe, Auth-Profil-Sitzungs-
-     Overrides, Parent-Fork-Logik und QA-Lab-Inspektion lösen die
-     Datenbank jetzt aus kanonischen Agent-/Sitzungsschlüsseln auf.
-     Gateway-/TUI-/UI-/macOS-Sitzungslisten-Antworten legen jetzt `databasePath`
-     statt des Legacy-`path` offen; macOS-Debug-Oberflächen zeigen die Pro-Agent-Datenbank
-     als schreibgeschützten Zustand, statt `session.store`-Konfiguration zu schreiben.
-     `/status`, chatgesteuerter Laufbahnexport und CLI-Abhängigkeits-Proxys propagieren keine
-     Legacy-Store-Pfade mehr; Transcript-Nutzungsfallback liest
-     SQLite per Agent-/Sitzungsidentität. Runtime- und Bridge-Tests legen
-     `storePath` nicht mehr offen; Doctor-/Migrationseingaben besitzen diesen Legacy-Feldnamen.
-     Gateway-Combined-Session-Loading hat keinen speziellen Runtime-Branch mehr für
-     nicht vorlagenbasierte `session.store`-Werte; es aggregiert Pro-Agent-SQLite-Zeilen.
-     Die Legacy-Session-Lock-Doctor-Lane und ihre `.jsonl.lock`-Cleanup-Hilfsfunktion
-     wurden entfernt; SQLite ist jetzt die Sitzungs-Parallelitätsgrenze.
-     Heiße Runtime-Aufrufstellen verwenden zeilenorientierte Hilfsnamen wie
-     `resolveSessionRowEntry`; der alte Kompatibilitätsalias `resolveSessionStoreEntry`
-     wurde aus Runtime- und Plugin-SDK-Exporten entfernt.
+4. Ersetzen Sie die Sitzungs-Store-APIs.
+   - Entfernen Sie `storePath` als Laufzeitidentität. Für die Laufzeit erledigt und durch
+     `check:database-first-legacy-stores` abgesichert: Sitzungsmetadaten, Routenaktualisierungen,
+     Befehlspersistenz, CLI-Sitzungsbereinigung, Feishu-Vorschauen für Schlussfolgerungen,
+     Persistenz des Transkriptzustands, Subagent-Tiefe, sitzungsbezogene
+     Überschreibungen von Authentifizierungsprofilen, Parent-Fork-Logik und QA-Lab-Inspektion lösen nun die
+     Datenbank anhand kanonischer Agent-/Sitzungsschlüssel auf.
+     Gateway-/TUI-/UI-/macOS-Antworten für Sitzungslisten stellen nun `databasePath`
+     statt des veralteten `path` bereit; macOS-Debug-Oberflächen zeigen die Agent-Datenbank
+     als schreibgeschützten Zustand an, statt die `session.store`-Konfiguration zu schreiben.
+     `/status`, chatgesteuerter Trajektorienexport und CLI-Abhängigkeits-Proxys
+     geben veraltete Store-Pfade nicht mehr weiter; die Fallback-Ermittlung der Transkriptnutzung liest
+     SQLite anhand der Agent-/Sitzungsidentität. Laufzeit- und Bridge-Tests stellen
+     `storePath` nicht mehr bereit; Doctor-/Migrationseingaben besitzen diesen veralteten Feldnamen.
+     Das kombinierte Laden von Sitzungen im Gateway hat keinen speziellen Laufzeit-Branch mehr für
+     nicht vorlagenbasierte `session.store`-Werte; stattdessen werden Agent-SQLite-Zeilen aggregiert.
+     Der veraltete Doctor-Pfad für Sitzungssperren und sein `.jsonl.lock`-Bereinigungs-Helper
+     wurden entfernt; SQLite bildet nun die Nebenläufigkeitsgrenze für Sitzungen.
+     Häufig verwendete Laufzeit-Aufrufstellen nutzen zeilenorientierte Helper-Namen wie
+     `resolveSessionRowEntry`; der alte `resolveSessionStoreEntry`-Kompatibilitätsalias
+     wurde aus den Laufzeit- und Plugin-SDK-Exporten entfernt.
 
-- `{ agentId, sessionKey }`-Zeilenoperationen verwenden.
+- Verwenden Sie `{ agentId, sessionKey }`-Zeilenoperationen.
   Erledigt: `getSessionEntry`, `upsertSessionEntry`, `deleteSessionEntry`,
-  `patchSessionEntry` und `listSessionEntries` sind SQLite-first-APIs, die
-  keinen Sitzungs-Store-Pfad erfordern. Statuszusammenfassung, lokaler Agent-Status, Health
-  und der Listing-Befehl `openclaw sessions` lesen jetzt Pro-Agent-Zeilen direkt
-  und zeigen Pro-Agent-SQLite-Datenbankpfade statt `sessions.json`-Pfaden an.
-- Whole-Store-Löschen/-Einfügen durch `upsertSessionEntry`,
-  `deleteSessionEntry`, `listSessionEntries` und SQL-Cleanup-Abfragen ersetzen.
-  Für Runtime erledigt: Heiße Pfade verwenden jetzt Zeilen-APIs und konfliktwiederholte Zeilen-Patches;
-  verbleibende Whole-Store-Import-/Replace-Hilfsfunktionen sind auf Migrationsimport-
-  Code und SQLite-Backend-Tests beschränkt.
-  - `store-writer.ts` und Writer-Queue-Tests löschen. Erledigt.
-  - Runtime-Legacy-Key-Pruning und Alias-Delete-Parameter aus Session-
-    Row-Upserts/-Patches löschen. Erledigt.
+  `patchSessionEntry` und `listSessionEntries` sind SQLite-zentrierte APIs, die
+  keinen Pfad zum Sitzungsspeicher benötigen. Statusübersicht, lokaler Agent-Status, Integritätsstatus
+  und der Auflistungsbefehl `openclaw sessions` lesen jetzt agentenspezifische Zeilen direkt
+  und zeigen agentenspezifische SQLite-Datenbankpfade statt `sessions.json`-Pfaden an.
+- Ersetzen Sie das Löschen/Einfügen des gesamten Speichers durch `upsertSessionEntry`,
+  `deleteSessionEntry`, `listSessionEntries` und SQL-Bereinigungsabfragen.
+  Für die Laufzeit erledigt: Hotpaths verwenden jetzt Zeilen-APIs und bei Konflikten erneut versuchte Zeilen-Patches;
+  die verbleibenden Hilfsfunktionen zum Importieren/Ersetzen des gesamten Speichers sind auf den Migrationsimportcode
+  und Tests des SQLite-Backends beschränkt.
+  - Löschen Sie `store-writer.ts` und die Tests der Schreibwarteschlange. Erledigt.
+  - Entfernen Sie das laufzeitseitige Bereinigen von Legacy-Schlüsseln und Alias-Löschparameter aus
+    Upserts/Patches für Sitzungszeilen. Erledigt.
 
-5. Runtime-JSON-Registry-Verhalten löschen.
-   - Sandbox-Registry-Lese- und Schreibvorgänge ausschließlich SQLite-basiert machen. Erledigt.
-   - Monolithisches und geshardetes JSON nur aus dem Migrationsschritt importieren. Erledigt.
-   - Geshardete Registry-Sperren und JSON-Schreibvorgänge entfernen. Erledigt.
+5. Entfernen Sie das laufzeitseitige Verhalten der JSON-Registry.
+   - Stellen Sie Lese- und Schreibvorgänge der Sandbox-Registry vollständig auf SQLite um. Erledigt.
+   - Importieren Sie monolithisches und geshardetes JSON ausschließlich im Migrationsschritt. Erledigt.
+   - Entfernen Sie Sperren der geshardeten Registry und JSON-Schreibvorgänge. Erledigt.
 
-- Eine typisierte Registry-Tabelle behalten, statt Registry-Zeilen als generisches
-  opakes JSON zu speichern, wenn die Form heißer operativer Pfadzustand bleibt. Erledigt.
+- Behalten Sie eine typisierte Registry-Tabelle bei, anstatt Registry-Zeilen als generisches
+  undurchsichtiges JSON zu speichern, wenn die Struktur weiterhin Betriebszustand eines Hotpaths ist. Erledigt.
 
-6. Dateisperrenförmige Sitzungsmutation löschen.
-   - Für Runtime-Sperrenerstellung und Runtime-Sperr-APIs erledigt.
-   - Die eigenständige Legacy-`.jsonl.lock`-Doctor-Cleanup-Lane ist entfernt.
-   - `session.writeLock` ist per Doctor migrierte Legacy-Konfiguration, keine typisierte Runtime-
-     Einstellung.
-   - State-Integrität hat keinen separaten Orphan-Transcript-Datei-Pruning-
-     Pfad mehr; Doctor-Migration importiert/entfernt Legacy-JSONL-Quellen an einer Stelle.
-   - Gateway-Singleton-Koordination verwendet typisierte SQLite-`state_leases`-Zeilen unter
-     `gateway_locks` und legt keinen Dateisperren-Verzeichnis-Seam mehr offen.
-   - Generische Plugin-SDK-Dedupe-Persistenz verwendet keine Dateisperren oder JSON-
-     Dateien mehr; sie schreibt gemeinsame SQLite-Plugin-State-Zeilen. Erledigt.
-   - QMD-Embed-Koordination verwendet eine SQLite-State-Lease statt
-     `qmd/embed.lock`. Erledigt.
+6. Entfernen Sie dateisperrenartige Sitzungsmutationen.
+   - Für die Erstellung von Laufzeitsperren und die Laufzeit-Sperr-APIs erledigt.
+   - Der eigenständige Legacy-Bereinigungspfad `.jsonl.lock` von Doctor wurde entfernt.
+   - Die Zustandsintegrität verfügt nicht mehr über einen separaten Bereinigungspfad für verwaiste Transkriptdateien;
+     die Doctor-Migration importiert/entfernt Legacy-JSONL-Quellen zentral.
+   - Die Singleton-Koordination des Gateway verwendet typisierte SQLite-Zeilen `state_leases` unter
+     `gateway_locks` und stellt keine Schnittstelle für ein Dateisperrenverzeichnis mehr bereit.
+   - Die generische Deduplizierungspersistenz des Plugin-SDK verwendet keine Dateisperren oder JSON-Dateien
+     mehr; sie schreibt gemeinsame SQLite-Zeilen für den Plugin-Zustand. Erledigt.
+   - Die QMD-Koordination verwendet eine gemeinsame SQLite-Lease für Einbettungen und eine agentenspezifische
+     SQLite-Lease für jeden Writer für Sammlungen/Aktualisierungen/Einbettungen. Die Laufzeit erstellt
+     `qmd/embed.lock.lock` oder `agents/<agentId>/qmd-write.lock.lock` nicht mehr;
+     Doctor entfernt ausschließlich eindeutig veraltete, außer Betrieb genommene Sidecars. Erledigt.
 
-7. Worker datenbankbewusst machen.
+7. Machen Sie Worker datenbankfähig.
    - Worker öffnen ihre eigenen SQLite-Verbindungen.
-   - Parent besitzt Zustellung, Channel-Callbacks und Konfiguration.
-   - Worker erhält Agent-ID, Run-ID, Dateisystemmodus und DB-Registry-
-     Identität, keine Live-Handles.
-   - `vfs-only` bleibt experimentell und verwendet die Agent-Datenbank als Speicher-
-     Root.
-   - Zunächst einen Worker pro aktivem Run behalten. Pooling kann warten, bis DB-Verbindungs-
-     Lebensdauer und Abbruchverhalten unproblematisch sind.
+   - Der übergeordnete Prozess ist für Zustellung, Channel-Callbacks und Konfiguration verantwortlich.
+   - Der Worker erhält Agent-ID, Ausführungs-ID, Dateisystemmodus und die Identität der DB-Registry,
+     keine aktiven Handles.
+   - `vfs-only` bleibt experimentell und verwendet die Agent-Datenbank als Speicherwurzel.
+   - Behalten Sie zunächst einen Worker pro aktiver Ausführung bei. Pooling kann warten, bis Lebensdauer
+     und Abbruchverhalten der DB-Verbindungen unproblematisch sind.
 
 8. Backup-Integration.
-   - Backup beibringen, globale und Agent-Datenbanken per SQLite-Backup oder
-     `VACUUM INTO` zu snapshotten. Für erkannte `*.sqlite`-Dateien unter dem State-Asset erledigt.
-   - Backup-Verifizierung für SQLite-Integrität und Schemaversion hinzufügen. Für
-     Backup-Erstellung und Integritätsprüfungen der Standard-Archivverifizierung erledigt.
-   - Metadaten zum Backup-Lauf in SQLite erfassen. Über die gemeinsame Tabelle
-     `backup_runs` mit Archivpfad, Status und Manifest-JSON erledigt.
-   - Wiederherstellung aus verifizierten Archiv-Snapshots hinzufügen. Erledigt: `openclaw backup
-restore` validiert vor der Extraktion, verwendet das normalisierte Manifest
-     des Verifizierers, unterstützt `--dry-run` und erfordert `--yes`, bevor
+   - Erweitern Sie das Backup um Snapshots globaler, agentenspezifischer und Plugin-Datenbanken mit
+     `VACUUM INTO`. Für erkannte `*.sqlite`-Dateien unter dem Zustands-Asset erledigt;
+     Plugin-Schemas, die nicht verfügbare Fähigkeiten des Eigentümers erfordern, schlagen sicher geschlossen fehl.
+   - Fügen Sie eine Backup-Verifizierung für die kanonische SQLite-Integrität und Schemaidentität
+     sowie eine generische Prüfung der Dateistruktur für dedizierte Plugin-Snapshots hinzu. Für die
+     Backup-Erstellung und die standardmäßige Archivverifizierung erledigt.
+   - Zeichnen Sie Metadaten der Backup-Ausführung in SQLite auf. Über die gemeinsame Tabelle `backup_runs`
+     mit Archivpfad, Status und Manifest-JSON erledigt.
+   - Fügen Sie die Wiederherstellung aus verifizierten Archiv-Snapshots hinzu. Erledigt: `openclaw backup
+restore` validiert vor dem Extrahieren, verwendet das normalisierte
+     Manifest der Verifizierung, unterstützt `--dry-run` und erfordert `--yes`, bevor
      aufgezeichnete Quellpfade ersetzt werden.
-   - VFS-/Workspace-Export nur bei Anforderung einschließen; Sitzungsinternes
-     nicht als JSON oder JSONL exportieren.
+   - Schließen Sie den VFS-/Workspace-Export nur auf Anforderung ein; exportieren Sie Sitzungsinterna
+     nicht als JSON oder JSONL.
 
-9. Veraltete Tests und veralteten Code löschen. Für die bekannten Runtime-Sitzungsoberflächen erledigt.
+9. Entfernen Sie veraltete Tests und veralteten Code. Für die bekannten Laufzeit-Sitzungsoberflächen erledigt.
 
-- Tests entfernen, die die Runtime-Erstellung von `sessions.json` oder Transcript-
-  JSONL-Dateien prüfen. Erledigt für Core-Sitzungsspeicher, Chat, Gateway-Transcript-Events,
-  Vorschau, Lebenszyklus, Command-Session-Entry-Updates, Auto-Reply-Reset/-Trace und
-  Memory-Core-Dreaming-Fixtures, Approval-Ziel-Routing, Sitzungs-Transcript-
-  Reparatur, Sicherheitsberechtigungs-Reparatur, Trajectory-Export und Sitzungsexport.
-  Active-Memory-Transcript-Tests prüfen jetzt SQLite-Scopes und keine Erstellung
-  temporärer oder persistierter JSONL-Dateien.
-  Die alte Heartbeat-Regression zum Beschneiden von Transcripts wurde entfernt, weil
-  die Runtime JSONL-Transcripts nicht mehr kürzt.
-  Agent-Session-List-Tool-Tests modellieren Legacy-`sessions.json`-Pfade nicht mehr
-  als Gateway-Antwortform; App-/UI-/macOS-Tests verwenden `databasePath`.
-  `/status`-Transcript-Usage-Tests seeden SQLite-Transcript-Zeilen jetzt direkt,
-  statt JSONL-Dateien zu schreiben.
-  Gateway-Session-Lifecycle-Tests verwenden jetzt SQLite-Transcript-Seeding-Helfer
-  direkt; die alte einzeilige Session-File-Fixture-Form ist aus Reset- und
-  Delete-Abdeckung verschwunden.
-  `sessions.delete` gibt kein File-era-Feld `archived: []` mehr zurück; Löschung
-  meldet nur das Ergebnis der Zeilenmutation. Die alte Option `deleteTranscript`
-  ist ebenfalls verschwunden: Das Löschen einer Sitzung entfernt die kanonische
-  `sessions`-Root und lässt SQLite sitzungseigene Transcript-, Snapshot- und
-  Trajectory-Zeilen kaskadierend löschen, sodass kein Caller Transcript-Waisen
-  zurücklassen oder einen Cleanup-Zweig vergessen kann.
-  Context-Engine-Trajectory-Capture-Tests lesen jetzt `trajectory_runtime_events`-
-  Zeilen aus einer isolierten Agent-Datenbank, statt `session.trajectory.jsonl`
-  zu lesen.
-  Docker-MCP-Channel-Seed-Skripte seeden SQLite-Zeilen jetzt direkt. Direkte
-  `sessions.json`-Schreibvorgänge sind auf Doctor-Fixtures begrenzt.
-  Tool Search Gateway E2E liest Tool-Call-Belege aus SQLite-Transcript-Zeilen,
-  statt `agents/<agentId>/sessions/*.jsonl`-Dateien zu scannen.
-  Memory-Core-Host-Events und Session-Corpus-Scratch-Zeilen liegen jetzt im gemeinsamen
-  SQLite-Plugin-State; `events.jsonl` und `session-corpus/*.txt` sind nur noch
-  Legacy-Doctor-Migrationseingaben. Aktive Zeilen verwenden virtuelle Pfade unter
-  `memory/session-ingestion/`, nicht `.dreams/session-corpus`. Das alte Memory-Core-
-  Dreaming-Reparaturmodul und seine CLI-/Gateway-Tests wurden entfernt, weil die
-  Runtime keine File-Archive-Reparatur für diesen Corpus mehr besitzt. Memory-Core-
-  Bridge-/Public-Artifact-Tests zeigen `.dreams/events.jsonl` nicht mehr an; sie
+- Entfernen Sie Tests, die die laufzeitseitige Erstellung von `sessions.json` oder
+  Transkript-JSONL-Dateien voraussetzen. Erledigt für den zentralen Sitzungsspeicher, Chat, Gateway-Transkriptereignisse,
+  Vorschau, Lebenszyklus, Aktualisierungen von Befehlssitzungseinträgen, Zurücksetzen/Tracing automatischer Antworten und
+  Dreaming-Fixtures von Memory-Core, Routing von Genehmigungszielen, Reparatur von Sitzungstranskripten,
+  Reparatur von Sicherheitsberechtigungen, Trajektorienexport und Sitzungsexport.
+  Active-Memory-Transkripttests prüfen jetzt SQLite-Gültigkeitsbereiche und stellen sicher, dass weder temporäre noch
+  persistente JSONL-Dateien erstellt werden.
+  Die alte Heartbeat-Regression zur Transkriptbereinigung wurde entfernt, da
+  die Laufzeit JSONL-Transkripte nicht mehr kürzt.
+  Tests des Werkzeugs für Agent-Sitzungslisten modellieren Legacy-Pfade `sessions.json` nicht mehr
+  als Antwortstruktur des Gateway; App-/UI-/macOS-Tests verwenden `databasePath`.
+  Transkriptnutzungstests für `/status` legen SQLite-Transkriptzeilen jetzt direkt an,
+  anstatt JSONL-Dateien zu schreiben.
+  Tests des Gateway-Sitzungslebenszyklus verwenden jetzt direkt Hilfsfunktionen zum Anlegen von SQLite-Transkripten;
+  die alte Fixture-Struktur einer einzeiligen Sitzungsdatei wurde aus der Abdeckung für Zurücksetzen
+  und Löschen entfernt.
+  `sessions.delete` gibt kein dateizeitliches Feld `archived: []` mehr zurück; Löschvorgänge
+  melden nur das Ergebnis der Zeilenmutation. Die alte Option `deleteTranscript` wurde
+  ebenfalls entfernt: Beim Löschen einer Sitzung wird die kanonische Wurzel `sessions` entfernt und
+  SQLite löscht sitzungseigene Transkript-, Snapshot- und Trajektorienzeilen kaskadierend, sodass kein
+  Aufrufer verwaiste Transkripte hinterlassen oder einen Bereinigungszweig vergessen kann.
+  Tests zur Trajektorienerfassung der Kontext-Engine lesen jetzt `trajectory_runtime_events`-Zeilen
+  aus einer isolierten Agent-Datenbank, anstatt
+  `session.trajectory.jsonl` zu lesen.
+  Seed-Skripte für Docker-MCP-Channels legen SQLite-Zeilen jetzt direkt an. Direkte
+  Schreibvorgänge in `sessions.json` sind auf Doctor-Fixtures beschränkt.
+  Der Tool Search Gateway-E2E-Test liest Belege für Werkzeugaufrufe aus SQLite-Transkriptzeilen,
+  anstatt `agents/<agentId>/sessions/*.jsonl`-Dateien zu durchsuchen.
+  Host-Ereignisse und temporäre Sitzungskorpuszeilen von Memory-Core befinden sich jetzt im gemeinsamen
+  SQLite-Plugin-Zustand; `events.jsonl` und `session-corpus/*.txt` dienen ausschließlich als Eingaben
+  für die Legacy-Migration durch Doctor. Aktive Zeilen verwenden virtuelle Pfade `memory/session-ingestion/`
+  und nicht `.dreams/session-corpus`. Das alte Reparaturmodul für Memory-Core-Dreaming
+  und seine CLI-/Gateway-Tests wurden entfernt, da die Laufzeit nicht mehr für die
+  Reparatur von Dateiarchiven dieses Korpus verantwortlich ist. Bridge-/Public-Artifact-Tests von Memory-Core
+  stellen `.dreams/events.jsonl` nicht mehr bereit; sie
   verwenden den SQLite-gestützten virtuellen JSON-Artefaktnamen.
-  Öffentliche SDK-/Codex-Testdokumentation spricht jetzt von SQLite-Sitzungsstatus
-  statt Sitzungsdateien, und das Channel-Turn-Beispiel legt kein Argument
-  `storePath` mehr offen.
-  Matrix-Sync-Status verwendet jetzt direkt den SQLite-Plugin-State-Store. Aktive
-  Client-/Runtime-Verträge übergeben eine Account-Speicher-Root, keinen
-  `bot-storage.json`-Pfad, und Doctor importiert Legacy-`bot-storage.json` nach
-  SQLite, bevor die Quelle gelöscht wird. QA-Matrix-Restart-/Destructive-Szenarien
-  mutieren jetzt direkt die SQLite-Sync-Zeile, statt gefälschte `bot-storage.json`-
-  Dateien zu erstellen oder zu löschen, und das E2EE-Substrat übergibt eine
-  Sync-Store-Root statt eines gefälschten `sync-store.json`-Pfads.
-  Matrix-Storage-Root-Auswahl bewertet Roots nicht mehr anhand von Legacy-Sync-/Thread-
-  JSON-Dateien; sie verwendet dauerhafte Root-Metadaten plus echten Kryptostatus.
-  Die Runtime-SQLite-Sitzungsbackend-Testsuite erzeugt kein `sessions.json` mehr;
-  Legacy-Quell-Fixtures liegen jetzt in den Doctor-Tests, die sie importieren.
-  Gateway-Sitzungstests legen keinen `createSessionStoreDir`-Helfer und keine
-  ungenutzte Temp-Session-Store-Pfadeinrichtung mehr offen; Fixture-Verzeichnisse
-  sind explizit, und direkte Zeileneinrichtung verwendet SQLite-Session-Row-Naming.
-  Doctor-only-JSON5-Session-Store-Parser-Abdeckung wurde aus Infra-Tests in
-  Doctor-Migrationstests verschoben, sodass Runtime-Testsuites keine Legacy-
-  Session-File-Parsing-Abdeckung mehr besitzen.
-  Microsoft Teams-Runtime-SSO-/Pending-Upload-Tests führen keine JSON-Sidecar-Fixtures
-  oder Parser mehr mit; Legacy-SSO-Token-Parsing liegt nur noch im Plugin-
-  Migrationsmodul. Telegram-Tests seeden keine gefälschten `/tmp/*.json`-Store-
-  Pfade mehr; sie setzen den SQLite-gestützten Message Cache direkt zurück. Der
-  generische OpenClaw-Test-State-Helfer legt keinen Legacy-`auth-profiles.json`-
-  Writer mehr offen; Doctor-Auth-Migrationstests besitzen diese Fixture lokal.
-  Runtime-Tests für TUI-Last-Session-Zeiger, Exec-Approvals, Active-Memory-
-  Toggles, Matrix-Dedupe-/Startup-Verifizierung, Memory-Wiki-Quellsynchronisierung,
-  Current-Conversation-Bindings, Onboarding-Auth und Hermes-Secret-Importe erzeugen
-  keine alten Sidecar-Dateien mehr und prüfen nicht mehr, dass alte Dateinamen
-  fehlen. Sie belegen Verhalten über SQLite-Zeilen und öffentliche Store-APIs;
-  Doctor-/Migrationstests sind der einzige Ort für Legacy-Quelldateinamen.
-  Runtime-Tests für Device-/Node-Pairing, Channel allowFrom, Restart-Intents,
-  Restart-Handoff, Einträge in der Sitzungszustellungsqueue, Config Health, iMessage-
-  Caches, Cron-Jobs, PI-Transcript-Header, Subagent-Registries und verwaltete
-  Bildanhänge erstellen ebenfalls keine ausgemusterten JSON-/JSONL-Dateien mehr,
-  nur um zu belegen, dass sie ignoriert werden oder fehlen.
-  PI-Overflow-Recovery hat keinen SessionManager-Rewrite-/Truncation-Fallback mehr:
-  Tool-Result-Truncation und Context-Engine-Transcript-Rewrites mutieren SQLite-
-  Transcript-Zeilen und aktualisieren anschließend den aktiven Prompt-Zustand aus
-  der Datenbank.
-  Persistierte SessionManager-Message-Appends delegieren für Parent-Auswahl und
-  Idempotenz an den atomaren SQLite-Transcript-Append-Helfer. Normale Metadata-/
-  Custom-Entry-Appends wählen den aktuellen Parent ebenfalls innerhalb von SQLite,
-  sodass veraltete Manager-Instanzen keine Parent-Chain-Races aus der Vor-SQLite-
-  Zeit wiederbeleben.
-  Synthetisches PI-Tail-Cleanup für Mid-Turn-Prechecks und `sessions_yield`
-  beschneidet jetzt SQLite-Transcript-Status direkt; die alte SessionManager-
-  Tail-Removal-Bridge und ihre Tests sind gelöscht.
-  Compaction-Checkpoint-Erfassung snapshotet ebenfalls nur noch aus SQLite; Caller
-  übergeben keinen Live-SessionManager mehr als alternative Transcript-Quelle.
-- Tests behalten, die Legacy-Dateien nur für Migration seeden.
-- JSON-Datei-Belege wurden für aktive Runtime-Oberflächen durch SQL-Zeilen-Belege ersetzt.
+  Öffentliche SDK-/Codex-Testdokumentation spricht jetzt vom SQLite-Sitzungszustand statt von Sitzungsdateien,
+  und das Channel-Turn-Beispiel stellt kein Argument `storePath` mehr bereit.
+  Der Matrix-Synchronisierungszustand verwendet jetzt direkt den SQLite-Speicher für den Plugin-Zustand. Aktive
+  Client-/Laufzeitverträge übergeben eine Kontospeicherwurzel, keinen Pfad `bot-storage.json`,
+  und Doctor importiert das Legacy-Element `bot-storage.json` vor dem Löschen der Quelle in SQLite.
+  Destruktive und Neustartszenarien für Matrix in QA Lab ändern jetzt direkt die SQLite-Synchronisierungszeile,
+  anstatt fingierte `bot-storage.json`-Dateien zu erstellen oder zu löschen, und
+  die E2EE-Grundlage übergibt eine Synchronisierungsspeicherwurzel statt eines fingierten
+  Pfads `sync-store.json`.
+  Bei der Auswahl der Matrix-Speicherwurzel werden Wurzeln nicht mehr anhand von Legacy-JSON-Dateien
+  für Synchronisierung/Threads bewertet; sie verwendet dauerhafte Wurzelmetadaten sowie echten Kryptozustand.
+  Die Testsuite des SQLite-Sitzungsbackends der Laufzeit erzeugt kein fingiertes
+  `sessions.json` mehr; Legacy-Quell-Fixtures befinden sich jetzt in den Doctor-Tests,
+  die sie importieren.
+  Gateway-Sitzungstests stellen keine Hilfsfunktion `createSessionStoreDir` und
+  keine ungenutzte Einrichtung temporärer Sitzungsspeicherpfade mehr bereit; Fixture-Verzeichnisse sind explizit,
+  und die direkte Zeileneinrichtung verwendet die SQLite-Namensgebung für Sitzungszeilen.
+  Die ausschließlich für Doctor bestimmte Abdeckung des JSON5-Parsers für Sitzungsspeicher wurde aus Infrastrukturtests
+  in Doctor-Migrationstests verschoben, sodass Laufzeit-Testsuites nicht mehr für das Parsen
+  von Legacy-Sitzungsdateien verantwortlich sind.
+  Laufzeit-SSO-/Pending-Upload-Tests von Microsoft Teams enthalten keine JSON-Sidecar-Fixtures
+  oder Parser mehr; das Parsen von Legacy-SSO-Token befindet sich ausschließlich im
+  Plugin-Migrationsmodul. Telegram-Tests legen keine fingierten Speicherpfade `/tmp/*.json`
+  mehr an; sie setzen den SQLite-gestützten Nachrichtencache direkt zurück. Die generische
+  OpenClaw-Hilfsfunktion für den Testzustand stellt keinen Legacy-Writer `auth-profiles.json`
+  mehr bereit; Doctor-Tests für die Authentifizierungsmigration verwalten dieses Fixture lokal.
+  Laufzeittests für TUI-Zeiger auf die letzte Sitzung, Ausführungsgenehmigungen, Active-Memory-
+  Umschalter, Matrix-Deduplizierung/Startverifizierung, Memory-Wiki-Quellsynchronisierung,
+  Bindungen der aktuellen Konversation, Onboarding-Authentifizierung und Hermes-Secret-Importe
+  erstellen keine alten Sidecar-Dateien mehr und prüfen nicht mehr, ob alte Dateinamen fehlen. Sie
+  weisen das Verhalten anhand von SQLite-Zeilen und öffentlichen Speicher-APIs nach; ausschließlich Doctor-/Migrationstests
+  dürfen Legacy-Quelldateinamen enthalten.
+  Laufzeittests für Geräte-/Node-Kopplung, Channel-allowFrom, Neustartabsichten,
+  Neustartübergabe, Einträge der Sitzungszustellungswarteschlange, Konfigurationsintegrität, iMessage-
+  Caches, Cron-Aufträge, PI-Transkriptkopfzeilen, Subagent-Registries und verwaltete
+  Bildanhänge erstellen ebenfalls keine außer Betrieb genommenen JSON-/JSONL-Dateien mehr, nur um nachzuweisen,
+  dass sie ignoriert werden oder fehlen.
+  Die PI-Überlaufwiederherstellung verfügt nicht mehr über einen SessionManager-Fallback zum Umschreiben/Kürzen:
+  Das Kürzen von Werkzeugergebnissen und Umschreibungen von Transkripten durch die Kontext-Engine ändern
+  SQLite-Transkriptzeilen und aktualisieren anschließend den aktiven Prompt-Zustand aus der Datenbank.
+  Persistente SessionManager-Nachrichtenanhänge delegieren die Auswahl des übergeordneten Elements
+  und die Idempotenz an die atomare SQLite-Hilfsfunktion zum Anhängen an Transkripte. Normale Anhänge
+  von Metadaten/benutzerdefinierten Einträgen wählen das aktuelle übergeordnete Element ebenfalls innerhalb von SQLite aus,
+  sodass veraltete Manager-Instanzen keine Parent-Chain-Race-Conditions aus der Zeit vor SQLite wiederbeleben.
+  Die synthetische PI-Bereinigung am Ende für Zwischenprüfungen während eines Turns und `sessions_yield`
+  kürzt den SQLite-Transkriptzustand jetzt direkt; die alte SessionManager-Brücke zum Entfernen
+  des Endes und ihre Tests wurden gelöscht.
+  Die Erfassung von Compaction-Prüfpunkten erstellt ebenfalls ausschließlich Snapshots aus SQLite; Aufrufer
+  übergeben keinen aktiven SessionManager mehr als alternative Transkriptquelle.
+- Behalten Sie Tests, die Legacy-Dateien anlegen, ausschließlich für die Migration bei.
+- Der Nachweis anhand von JSON-Dateien wurde für aktive Laufzeitoberflächen durch
+  Nachweise anhand von SQL-Zeilen ersetzt.
 
-- Statische Verbote für Runtime-Schreibvorgänge in Legacy-Session-/Cache-JSON-Pfade hinzufügen.
-  Für den Repo-Guard erledigt.
+- Fügen Sie statische Verbote für Laufzeit-Schreibvorgänge in Legacy-JSON-Pfade für Sitzungen/Caches hinzu.
+  Für den Repository-Guard erledigt.
 
-10. Den Migrationsbericht auditierbar machen.
-    - Migrationsläufe in SQLite mit Start-/Endzeitstempeln, Quellpfaden,
-      Quell-Hashes, Zählwerten, Warnungen und Backup-Pfad erfassen.
-      Erledigt: Legacy-State-Migrationsausführungen persistieren jetzt einen
-      `migration_runs`-Bericht mit Quellpfad-/Tabelleninventar, SHA-256 der
-      Quelldatei, Größen, Datensatzzahlen, Warnungen und Backup-Pfad.
-      Erledigt: Legacy-State-Migrationsausführungen persistieren außerdem
-      `migration_sources`-Zeilen für Audits auf Quellebene und künftige
-      Skip-/Backfill-Entscheidungen.
-    - Apply idempotent machen. Erneutes Ausführen nach einem Teilimport sollte
-      eine bereits importierte Quelle entweder überspringen oder per stabilem
-      Schlüssel zusammenführen.
-      Erledigt: Sitzungsindizes, Transcripts, Zustellungsqueues, Plugin-State,
-      Task-Ledger und Agent-eigene globale SQLite-Zeilen werden über stabile
-      Schlüssel oder Upsert-/Replace-Semantik importiert, sodass Wiederholungen
-      zusammenführen, ohne dauerhafte Zeilen zu duplizieren.
-    - Fehlgeschlagene Importe müssen die ursprüngliche Quelldatei an Ort und Stelle lassen.
-      Erledigt: Fehlgeschlagene Transcript-Importe lassen die ursprüngliche JSONL-
-      Quelle jetzt an ihrem erkannten Pfad, und `migration_sources` erfasst die
-      Quelle als `warning` mit `removed_source=0` für den nächsten Doctor-Lauf.
+10. Machen Sie den Migrationsbericht auditierbar.
+    - Zeichnen Sie Migrationsausführungen in SQLite mit Start-/Endzeitstempeln, Quellpfaden,
+      Quell-Hashes, Anzahlen, Warnungen und Backup-Pfad auf.
+      Erledigt: Ausführungen der Legacy-Zustandsmigration speichern jetzt einen Bericht `migration_runs`
+      mit Inventar der Quellpfade/-tabellen, SHA-256 der Quelldateien, Größen,
+      Datensatzanzahlen, Warnungen und Backup-Pfad.
+      Erledigt: Ausführungen der Legacy-Zustandsmigration speichern außerdem Zeilen `migration_sources`
+      für Audits auf Quellebene und zukünftige Entscheidungen zum Überspringen/Nachtragen.
+    - Gestalten Sie die Anwendung idempotent. Eine erneute Ausführung nach einem Teilimport sollte
+      entweder eine bereits importierte Quelle überspringen oder anhand eines stabilen Schlüssels zusammenführen.
+      Erledigt: Sitzungsindizes, Transkripte, Zustellungswarteschlangen, Plugin-Zustand, Task-
+      Ledger und agenteigene globale SQLite-Zeilen werden anhand stabiler Schlüssel oder
+      mit Upsert-/Ersetzungssemantik importiert, sodass erneute Ausführungen ohne Duplizierung dauerhafter
+      Zeilen zusammengeführt werden.
+    - Fehlgeschlagene Importe müssen die ursprüngliche Quelldatei unverändert belassen.
+      Erledigt: Fehlgeschlagene Transkriptimporte belassen die ursprüngliche JSONL-Quelle jetzt
+      an ihrem erkannten Pfad, und `migration_sources` zeichnet die Quelle als
+      `warning` mit `removed_source=0` für die nächste Doctor-Ausführung auf.
 
-## Performance-Regeln
+## Leistungsregeln
 
-- Eine Verbindung pro Thread/Prozess ist in Ordnung; Handles nicht über
-  Worker hinweg teilen.
-- WAL, `foreign_keys=ON`, ein 30-s-Busy-Timeout und kurze `BEGIN IMMEDIATE`-
-  Schreibtransaktionen verwenden.
-- Schreibtransaktions-Helfer synchron halten, sofern/bis eine asynchrone
-  Transaktions-API explizite Mutex-/Backpressure-Semantik hinzufügt.
-- Parent-Delivery-Schreibvorgänge klein und transaktional halten.
-- Whole-Store-Rewrites vermeiden; Upsert/Delete auf Zeilenebene verwenden.
-- Indizes für List-by-Agent, List-by-Session, Updated-at, Run-ID und
-  Ablaufpfade hinzufügen, bevor Hot Code verschoben wird.
-- Große Artefakte, Medien und Vektoren als BLOBs oder gechunkte BLOB-Zeilen
-  speichern, nicht als Base64- oder Numeric-Array-JSON.
-- Opaque Plugin-State-Einträge klein und scoped halten.
-- SQL-Cleanup für TTL/Ablauf statt Dateisystem-Pruning hinzufügen.
-  Für datenbankeigene Runtime-Stores erledigt: Medien, Plugin-State, Plugin-Blobs,
-  persistente Dedupe und Agent-Cache laufen alle über SQLite-Zeilen ab. Verbleibendes
-  Dateisystem-Cleanup ist auf temporäre Materialisierungen oder explizite
-  Entfernungsbefehle begrenzt.
+- Eine Verbindung pro Thread/Prozess ist ausreichend; Handles dürfen nicht von mehreren
+  Workern gemeinsam verwendet werden.
+- Verwenden Sie WAL, `foreign_keys=ON`, ein Busy-Timeout von 5s und kurze `BEGIN IMMEDIATE`
+  Schreibtransaktionen. Legen Sie keine synchronen Wiederholungsversuche für Sperren über
+  den einzelnen Busy-Wartevorgang von SQLite.
+- Halten Sie Hilfsfunktionen für Schreibtransaktionen synchron, solange keine asynchrone Transaktions-
+  API explizite Mutex-/Backpressure-Semantik bereitstellt.
+- Halten Sie Schreibvorgänge für die übergeordnete Zustellung klein und transaktional.
+- Vermeiden Sie vollständige Neuschreibungen des Speichers; verwenden Sie Upsert/Löschen auf Zeilenebene.
+- Fügen Sie Indizes für die Auflistung nach Agent, die Auflistung nach Sitzung, den Aktualisierungszeitpunkt, die Ausführungs-ID und
+  Ablaufpfade hinzu, bevor Sie häufig ausgeführten Code verschieben.
+- Speichern Sie große Artefakte, Medien und Vektoren als BLOBs oder aufgeteilte BLOB-Zeilen, nicht
+  als Base64 oder JSON mit numerischen Arrays.
+- Halten Sie undurchsichtige Plugin-Zustandseinträge klein und klar abgegrenzt.
+- Fügen Sie eine SQL-Bereinigung für TTL/Ablauf hinzu, statt das Dateisystem zu bereinigen.
+  Für datenbankeigene Laufzeitspeicher abgeschlossen: Medien, Plugin-Zustand, Plugin-BLOBs,
+  persistente Deduplizierung und Agent-Cache laufen sämtlich über SQLite-Zeilen ab. Die verbleibende
+  Dateisystembereinigung ist auf temporäre Materialisierungen oder explizite
+  Entfernungsbefehle beschränkt.
 
 ## Statische Verbote
 
-Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-Pfade fehlschlagen lässt:
+Fügen Sie eine Repository-Prüfung hinzu, bei der neue Laufzeitschreibvorgänge in veraltete Zustandspfade fehlschlagen:
 
 - `sessions.json`
-- `*.trajectory.jsonl` außer materialisierten Support-Bundle-Ausgaben
+- `*.trajectory.jsonl` außer materialisierten Ausgaben von Support-Paketen
 - `.acp-stream.jsonl`
 - `acp/event-ledger.json`
-- `cache/*.json` Runtime-Cache-Dateien
+- `cache/*.json` Laufzeit-Cache-Dateien
 - `agents/<agentId>/agent/auth.json`
 - `agents/<agentId>/agent/models.json`
 - `credentials/oauth.json`
@@ -2192,22 +2128,25 @@ Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-
 - `auth-profiles.json`
 - `auth-state.json`
 - `exec-approvals.json`
+- `openclaw-workspace-state.json`
 - `workspace-state.json`
+- `workspace-attestations/*.attested`
+- benachbarte `<workspace>.attested`
 - Matrix `credentials*.json` und `recovery-key.json`
 - `cron/runs/*.jsonl`
 - `cron/jobs.json`
 - `jobs-state.json`
 - `device-pair-notify.json`
-- `devices/pending.json`
-- `devices/paired.json`
-- `devices/bootstrap.json`
-- `nodes/pending.json`
-- `nodes/paired.json`
+- `devices/pending.json` / `devices/paired.json` / `devices/bootstrap.json`
+  (seit 2026.7 außer Betrieb: Laufzeitspeicher ist `device_pairing_*` /
+  `device_bootstrap_tokens` in der gemeinsamen Zustandsdatenbank; gekoppelte Datensätze werden beim
+  Gateway-Start importiert, transiente ausstehende/Bootstrap-Zeilen werden verworfen)
+- `nodes/pending.json` / `nodes/paired.json` (seit 2026.7 außer Betrieb: beim Gateway-Start in gekoppelte Gerätedatensätze integriert)
 - `identity/device.json`
-- `identity/device-auth.json`
-- `push/web-push-subscriptions.json`
-- `push/vapid-keys.json`
-- `push/apns-registrations.json`
+- `identity/device-auth.json` (außer Betrieb; Import ausschließlich durch Doctor in `device_auth_tokens`)
+- `push/web-push-subscriptions.json` (außer Betrieb; Import ausschließlich durch Doctor in `web_push_subscriptions`)
+- `push/vapid-keys.json` (außer Betrieb; Import ausschließlich durch Doctor in `web_push_vapid_keys`)
+- `push/apns-registrations.json` (außer Betrieb; Import ausschließlich durch Doctor in `apns_registrations`)
 - `process-leases.json`
 - `gateway-instance-id`
 - `session-toggles.json`
@@ -2250,10 +2189,9 @@ Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-
 - Matrix `crypto-idb-snapshot.json`
 - Discord `model-picker-preferences.json`
 - Discord `command-deploy-cache.json`
-- Sandbox-Registry-Shard-JSON-Dateien
-- native Hook-Relay-Bridge-JSON-Dateien unter `/tmp`
+- JSON-Dateien für Sandbox-Registry-Shards
 - `plugin-state/state.sqlite`
-- Ad-hoc-`openclaw-state.sqlite`-Runtime-Sidecars
+- Ad-hoc-Laufzeit-Sidecars für `openclaw-state.sqlite`
 - `tasks/runs.sqlite`
 - `tasks/flows/registry.sqlite`
 - `bindings/current-conversations.json`
@@ -2261,7 +2199,8 @@ Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-
 - `gateway-restart-intent.json`
 - `gateway-supervisor-restart-handoff.json`
 - `gateway.<hash>.lock`
-- `qmd/embed.lock`
+- `qmd/embed.lock.lock`
+- `agents/<agentId>/qmd-write.lock.lock`
 - `commands.log`
 - `config-health.json`
 - `port-guard.json`
@@ -2272,6 +2211,7 @@ Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-
 - `audit/file-transfer.jsonl`
 - `audit/crestodian.jsonl`
 - `crestodian/rescue-pending/*.json`
+- `openclaw/rescue-pending/*.json`
 - `plugins/phone-control/armed.json`
 - Memory Wiki `.openclaw-wiki/log.jsonl`
 - Memory Wiki `.openclaw-wiki/state.json`
@@ -2282,25 +2222,29 @@ Einen Repo-Check hinzufügen, der neue Runtime-Schreibvorgänge in Legacy-State-
 - Memory Wiki `.openclaw-wiki/cache/claims.jsonl`
 - ClawHub `.clawhub/lock.json`
 - ClawHub `.clawhub/origin.json`
-- Browser-Profildekoration `.openclaw-profile-decorated`
-- `SessionManager.open(...)` dateibasierte Sitzungs-Opener
-- `SessionManager.listAll(...)` und `TranscriptSessionManager.listAll(...)`
-  Transcript-Auflistungsfassaden
-- `SessionManager.forkFromSession(...)` und
-  `TranscriptSessionManager.forkFromSession(...)` Transcript-Fork-Fassaden
-- `SessionManager.newSession(...)` und `TranscriptSessionManager.newSession(...)`
-  Fassaden für austauschbare Sitzungsersetzung
-- `SessionManager.createBranchedSession(...)` und
-  `TranscriptSessionManager.createBranchedSession(...)` Branch-Session-Fassaden
+- Browserprofil-Dekoration `.openclaw-profile-decorated`
+- dateibasierte Sitzungsöffner für `SessionManager.open(...)`
+- Fassaden für die Transkriptauflistung von `SessionManager.listAll(...)` und `TranscriptSessionManager.listAll(...)`
+- Fassaden für Transkriptverzweigungen von `SessionManager.forkFromSession(...)` und
+  `TranscriptSessionManager.forkFromSession(...)`
+- Fassaden für den veränderlichen Sitzungsersatz von `SessionManager.newSession(...)` und `TranscriptSessionManager.newSession(...)`
+- Fassaden für Zweigsitzungen von `SessionManager.createBranchedSession(...)` und
+  `TranscriptSessionManager.createBranchedSession(...)`
 
-Das Verbot sollte Tests das Erstellen von Legacy-Fixtures erlauben und Migrationscode das Lesen/Importieren/Entfernen von Legacy-Dateiquellen ermöglichen. Nicht ausgelieferte SQLite-Sidecars bleiben verboten und erhalten keine Doctor-Import-Freigaben.
+Das Verbot sollte Tests das Erstellen veralteter Fixtures und Migrationscode das
+Lesen/Importieren/Entfernen veralteter Dateiquellen erlauben. Nicht ausgelieferte SQLite-Sidecars bleiben verboten
+und erhalten keine Importausnahmen für Doctor.
 
-## Erledigungskriterien
+## Abschlusskriterien
 
-- Runtime-Daten- und Cache-Schreibvorgänge gehen in die globale oder agentenbezogene SQLite-Datenbank.
-- Die Runtime schreibt keine Sitzungsindizes, Transcript-JSONL, Sandbox-Registry-JSON, Task-Sidecar-SQLite oder Plugin-State-Sidecar-SQLite mehr. Die nicht ausgelieferten Importer für Task- und Plugin-State-Sidecar-SQLite sind gelöscht.
-- Legacy-Dateiimport erfolgt nur über Doctor.
-- Backup erzeugt ein Archiv mit kompakten SQLite-Snapshots und Integritätsnachweis.
-- Agent-Worker können mit Datenträger-, VFS-Scratch- oder experimentellem reinem VFS-Speicher ausgeführt werden.
-- Konfigurations- und explizite Anmeldedatendateien bleiben die einzigen erwarteten persistenten Nicht-Datenbank-Steuerdateien.
-- Repo-Prüfungen verhindern die Wiedereinführung von Legacy-Runtime-Dateispeichern.
+- Laufzeitdaten und Cache-Schreibvorgänge werden in die globale oder die Agent-SQLite-Datenbank geschrieben.
+- Die Laufzeit schreibt keine Sitzungsindizes, Transkript-JSONL-Dateien, Sandbox-Registry-
+  JSON-Dateien, SQLite-Aufgaben-Sidecars oder SQLite-Plugin-Zustands-Sidecars mehr. Die nicht ausgelieferten SQLite-Importer
+  für Aufgaben- und Plugin-Zustands-Sidecars sind gelöscht.
+- Der Import veralteter Dateien erfolgt ausschließlich durch Doctor.
+- Die Sicherung erzeugt ein Archiv mit kompakten SQLite-Snapshots und Integritätsnachweis.
+- Agent-Worker können mit Festplattenspeicher, VFS-Arbeitsspeicher oder experimentellem reinem VFS-
+  Speicher ausgeführt werden.
+- Konfigurationsdateien und explizite Anmeldedatendateien bleiben die einzigen erwarteten persistenten
+  Steuerdateien außerhalb der Datenbank.
+- Repository-Prüfungen verhindern die Wiedereinführung veralteter Laufzeit-Dateispeicher.

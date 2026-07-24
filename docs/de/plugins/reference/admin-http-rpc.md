@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das admin-http-rpc-Plugin.
-summary: OpenClaw-HTTP-RPC-Endpunkt für die Administration.
+summary: OpenClaw-Admin-HTTP-RPC-Endpunkt.
 title: Admin-HTTP-RPC-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:07:43Z"
+    generated_at: "2026-07-24T04:32:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

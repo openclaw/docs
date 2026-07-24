@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Informationen zu Betriebssystemunterstützung oder Installationspfaden gesucht
+    - Suchen Sie nach Betriebssystemunterstützung oder Installationspfaden?
     - Entscheidung, wo das Gateway ausgeführt werden soll
 summary: Übersicht der Plattformunterstützung (Gateway + Begleit-Apps)
 title: Plattformen
 x-i18n:
-    generated_at: "2026-07-16T12:56:15Z"
+    generated_at: "2026-07-24T05:09:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -15,15 +15,15 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw Core ist in TypeScript geschrieben. **Node ist die erforderliche Laufzeitumgebung**, da
-der kanonische Zustandsspeicher `node:sqlite` verwendet. Bun steht weiterhin für die
-Installation von Abhängigkeiten und Paketskripte zur Verfügung; siehe [Bun](/de/install/bun).
+Der OpenClaw-Kern ist in TypeScript geschrieben. **Node ist die erforderliche Runtime**, da
+der kanonische Zustandsspeicher `node:sqlite` verwendet. Bun kann weiterhin für die
+Installation von Abhängigkeiten und Paketskripte verwendet werden; siehe [Bun](/de/install/bun).
 
 Begleit-Apps sind für Windows Hub, macOS (Menüleisten-App) und mobile Nodes
-(iOS/Android) verfügbar. Begleit-Apps für Linux sind geplant, aber der Gateway wird bereits
-vollständig unterstützt. Wählen Sie unter Windows Windows Hub als Desktop-App, die native
-PowerShell-Installation für die primäre Verwendung im Terminal oder WSL2 für die
-Linux-kompatibelste Gateway-Laufzeitumgebung.
+(iOS/Android) verfügbar. Begleit-Apps für Linux sind geplant, der Gateway wird jedoch bereits
+vollständig unterstützt. Unter Windows können Sie Windows Hub als Desktop-App, die native
+PowerShell-Installation für die primäre Nutzung im Terminal oder WSL2 für eine möglichst
+Linux-kompatible Gateway-Runtime wählen.
 
 ## Betriebssystem auswählen
 
@@ -51,20 +51,20 @@ Linux-kompatibelste Gateway-Laufzeitumgebung.
 - Gateway-Konfiguration: [Konfiguration](/de/gateway/configuration)
 - Dienststatus: `openclaw gateway status`
 
-## Installation des Gateway-Dienstes (CLI)
+## Gateway-Dienst installieren (CLI)
 
 Verwenden Sie eine der folgenden Optionen (alle werden unterstützt):
 
 - Assistent (empfohlen): `openclaw onboard --install-daemon`
 - Direkt: `openclaw gateway install`
-- Konfigurationsablauf: `openclaw configure` → wählen Sie **Gateway-Dienst**
-- Reparieren/migrieren: `openclaw doctor` (bietet die Installation oder Reparatur des Dienstes an)
+- Konfigurationsablauf: `openclaw configure` → **Gateway service** auswählen
+- Reparieren/Migrieren: `openclaw doctor` (bietet an, den Dienst zu installieren oder zu reparieren)
 
 Das Dienstziel hängt vom Betriebssystem ab:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` oder `ai.openclaw.<profile>` für ein benanntes Profil)
 - Linux/WSL2: systemd-Benutzerdienst (`openclaw-gateway[-<profile>].service`)
-- Natives Windows: Geplante Aufgabe (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`), mit einem benutzerspezifischen Anmeldeelement im Autostartordner als Fallback, wenn das Erstellen der Aufgabe verweigert wird
+- Natives Windows: Geplante Aufgabe (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`); falls die Erstellung der Aufgabe verweigert wird, dient ein Anmeldeelement im benutzerspezifischen Autostartordner als Ausweichlösung
 
 ## Verwandte Themen
 

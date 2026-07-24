@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das fal-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das fal-Plugin
 summary: Fügt Unterstützung für den Modell-Provider fal zu OpenClaw hinzu.
 title: fal-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:05:46Z"
+    generated_at: "2026-07-24T05:15:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # fal-Plugin
 
-Fügt OpenClaw Unterstützung für den fal-Modell-Provider hinzu.
+Fügt OpenClaw Unterstützung für den Modell-Provider fal hinzu.
 
 ## Distribution
 

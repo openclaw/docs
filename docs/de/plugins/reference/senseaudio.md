@@ -4,7 +4,7 @@ read_when:
 summary: Fügt Unterstützung für Provider zur Medienanalyse hinzu.
 title: Senseaudio-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:24:21Z"
+    generated_at: "2026-07-24T05:08:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

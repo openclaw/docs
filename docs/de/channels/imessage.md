@@ -1,33 +1,33 @@
 ---
 read_when:
     - iMessage-Unterstützung einrichten
-    - Fehlerbehebung beim Senden/Empfangen von iMessage
-summary: Native iMessage-Unterstützung über imsg (JSON-RPC über stdio) mit Aktionen über private APIs für Antworten, Tapbacks, Effekte, Umfragen, Anhänge und Gruppenverwaltung. Bevorzugt für neue OpenClaw-iMessage-Einrichtungen, wenn die Hostanforderungen erfüllt sind.
+    - Fehlerbehebung beim Senden/Empfangen mit iMessage
+summary: Native iMessage-Unterstützung über imsg (JSON-RPC über stdio) mit privaten API-Aktionen für Antworten, Tapbacks, Effekte, Umfragen, Anhänge und Gruppenverwaltung. Bevorzugt für neue OpenClaw-iMessage-Einrichtungen, wenn die Hostanforderungen erfüllt sind.
 title: iMessage
 x-i18n:
-    generated_at: "2026-07-16T12:22:21Z"
+    generated_at: "2026-07-24T04:15:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 78b7ff7621e66e3b0122b5581c097140b7f62998b78981741bd3edbc0e1608bd
+    source_hash: f3e8b1a65c76b25d03615c06a976f86a8af555cd96d5bfdb10cef9c955893ddc
     source_path: channels/imessage.md
     workflow: 16
 ---
 
 <Note>
-Für die übliche OpenClaw-iMessage-Bereitstellung führen Sie den Gateway und `imsg` auf demselben angemeldeten macOS-Messages-Host aus. Wenn Ihr Gateway an anderer Stelle ausgeführt wird, verweisen Sie `channels.imessage.cliPath` auf einen transparenten SSH-Wrapper, der `imsg` auf dem Mac ausführt.
+Für die übliche OpenClaw-iMessage-Bereitstellung führen Sie den Gateway und `imsg` auf demselben bei macOS Messages angemeldeten Host aus. Wenn Ihr Gateway an einem anderen Ort ausgeführt wird, verweisen Sie `channels.imessage.cliPath` auf einen transparenten SSH-Wrapper, der `imsg` auf dem Mac ausführt.
 
-**Die Wiederherstellung eingehender Nachrichten erfolgt automatisch.** Nach einem Neustart der Bridge oder des Gateways spielt iMessage die während des Ausfalls verpassten Nachrichten erneut ab und unterdrückt den veralteten „Backlog-Bombardement“, den Apple nach einer Push-Wiederherstellung ausgeben kann. Dabei werden Duplikate entfernt, sodass nichts zweimal weitergeleitet wird. Es muss keine Konfiguration aktiviert werden – siehe [Wiederherstellung eingehender Nachrichten nach einem Neustart der Bridge oder des Gateways](#inbound-recovery-after-a-bridge-or-gateway-restart).
+**Die Wiederherstellung eingehender Nachrichten erfolgt automatisch.** Nach einem Neustart der Bridge oder des Gateways spielt iMessage die während des Ausfalls verpassten Nachrichten erneut ab und unterdrückt die veraltete „Backlog-Bombe“, die Apple nach einer Push-Wiederherstellung ausgeben kann. Durch Deduplizierung wird nichts zweimal weitergeleitet. Es muss keine Konfiguration aktiviert werden – siehe [Wiederherstellung eingehender Nachrichten nach einem Neustart der Bridge oder des Gateways](#inbound-recovery-after-a-bridge-or-gateway-restart).
 </Note>
 
 <Warning>
-Die Unterstützung für BlueBubbles wurde entfernt. Migrieren Sie `channels.bluebubbles`-Konfigurationen zu `channels.imessage`; OpenClaw unterstützt iMessage ausschließlich über `imsg`. Beginnen Sie mit [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) für die kurze Ankündigung oder mit [Wechsel von BlueBubbles](/de/channels/imessage-from-bluebubbles) für die vollständige Migrationstabelle.
+Die Unterstützung für BlueBubbles wurde entfernt. Migrieren Sie `channels.bluebubbles`-Konfigurationen zu `channels.imessage`; OpenClaw unterstützt iMessage ausschließlich über `imsg`. Lesen Sie zunächst [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) für die kurze Ankündigung oder [Umstieg von BlueBubbles](/de/channels/imessage-from-bluebubbles) für die vollständige Migrationstabelle.
 </Warning>
 
-Status: native Integration einer externen CLI. Der Gateway startet `imsg rpc` und kommuniziert über stdio mittels JSON-RPC – ohne separaten Daemon oder Port. Der Modus für die private API wird für einen vollständigen iMessage-Kanal dringend empfohlen; Antworten, Tapbacks, Effekte, Umfragen, Antworten auf Anhänge und Gruppenaktionen erfordern `imsg launch` sowie eine erfolgreiche Prüfung der privaten API.
+Status: native Integration einer externen CLI. Der Gateway startet `imsg rpc` und kommuniziert über stdio mittels JSON-RPC – ohne separaten Daemon oder Port. Der Modus der privaten API wird für einen vollständigen iMessage-Kanal dringend empfohlen; Antworten, Tapbacks, Effekte, Umfragen, Antworten auf Anhänge und Gruppenaktionen erfordern `imsg launch` sowie eine erfolgreiche Prüfung der privaten API.
 
-Für die übliche lokale Einrichtung kann die OpenClaw-Einrichtung eine vom Benutzer bestätigte Homebrew-Installation oder -Aktualisierung von `imsg` auf dem angemeldeten Messages-Mac anbieten. Die manuelle Einrichtung und Topologien mit SSH-Wrapper werden weiterhin vom Betreiber verwaltet: Installieren oder aktualisieren Sie `imsg` im selben Benutzerkontext, in dem der Gateway oder Wrapper ausgeführt wird.
+Für die gängige lokale Einrichtung kann die OpenClaw-Einrichtung eine vom Benutzer bestätigte Homebrew-Installation oder -Aktualisierung von `imsg` auf dem bei Messages angemeldeten Mac anbieten. Die manuelle Einrichtung und Topologien mit SSH-Wrappern werden weiterhin vom Betreiber verwaltet: Installieren oder aktualisieren Sie `imsg` in demselben Benutzerkontext, in dem der Gateway oder Wrapper ausgeführt wird.
 
 <CardGroup cols={3}>
   <Card title="Aktionen der privaten API" icon="wand-sparkles" href="#private-api-actions">
@@ -101,7 +101,7 @@ openclaw pairing approve imessage <CODE>
   </Tab>
 
   <Tab title="Entfernter Mac über SSH">
-    Die meisten Einrichtungen benötigen kein SSH. Verwenden Sie diese Topologie nur, wenn der Gateway nicht auf dem angemeldeten Messages-Mac ausgeführt werden kann. OpenClaw benötigt lediglich ein stdio-kompatibles `cliPath`, sodass Sie `cliPath` auf ein Wrapper-Skript verweisen können, das per SSH eine Verbindung zu einem entfernten Mac herstellt und `imsg` ausführt.
+    Die meisten Einrichtungen benötigen kein SSH. Verwenden Sie diese Topologie nur, wenn der Gateway nicht auf dem bei Messages angemeldeten Mac ausgeführt werden kann. OpenClaw benötigt lediglich ein stdio-kompatibles `cliPath`, daher können Sie `cliPath` auf ein Wrapper-Skript verweisen lassen, das eine SSH-Verbindung zu einem entfernten Mac herstellt und dort `imsg` ausführt.
     Installieren und aktualisieren Sie `imsg` auf diesem entfernten Mac, nicht auf dem Gateway-Host:
 
 ```bash
@@ -121,10 +121,10 @@ exec ssh -T messages-mac imsg "$@"
     imessage: {
       enabled: true,
       cliPath: "~/.openclaw/scripts/imsg-ssh",
-      remoteHost: "user@gateway-host", // für das Abrufen von Anhängen per SCP verwendet
+      remoteHost: "user@gateway-host", // wird für den Abruf von Anhängen per SCP verwendet
       includeAttachments: true,
-      // Optional: zusätzliche zulässige Stammverzeichnisse für Anhänge (werden mit dem
-      // Standardverzeichnis /Users/*/Library/Messages/Attachments zusammengeführt).
+      // Optional: zusätzliche zulässige Stammverzeichnisse für Anhänge (werden mit dem Standardpfad
+      // /Users/*/Library/Messages/Attachments zusammengeführt).
       attachmentRoots: ["/Users/*/Library/Messages/Attachments"],
       remoteAttachmentRoots: ["/Users/*/Library/Messages/Attachments"],
     },
@@ -132,21 +132,21 @@ exec ssh -T messages-mac imsg "$@"
 }
 ```
 
-    Wenn `remoteHost` nicht festgelegt ist, versucht OpenClaw, es durch Analysieren des SSH-Wrapper-Skripts automatisch zu erkennen.
+    Wenn `remoteHost` nicht festgelegt ist, versucht OpenClaw, es durch Analyse des SSH-Wrapper-Skripts automatisch zu erkennen.
     `remoteHost` muss `host` oder `user@host` sein (keine Leerzeichen oder SSH-Optionen); unsichere Werte werden ignoriert.
-    OpenClaw verwendet für SCP eine strenge Hostschlüsselprüfung, daher muss der Hostschlüssel des Relay-Hosts bereits in `~/.ssh/known_hosts` vorhanden sein.
+    OpenClaw verwendet für SCP eine strikte Hostschlüsselprüfung, daher muss der Hostschlüssel des Relay-Hosts bereits in `~/.ssh/known_hosts` vorhanden sein.
     Anhangspfade werden anhand der zulässigen Stammverzeichnisse (`attachmentRoots` / `remoteAttachmentRoots`) validiert.
 
 <Warning>
 Jeder `cliPath`-Wrapper oder SSH-Proxy, den Sie `imsg` vorschalten, MUSS sich für langlebiges JSON-RPC wie eine transparente stdio-Pipe verhalten. OpenClaw tauscht während der gesamten Lebensdauer des Kanals kleine, durch Zeilenumbrüche begrenzte JSON-RPC-Nachrichten über stdin/stdout des Wrappers aus:
 
 - Leiten Sie jeden stdin-Block bzw. jede stdin-Zeile **sofort weiter, sobald Bytes verfügbar sind** – warten Sie nicht auf EOF.
-- Leiten Sie jeden stdout-Block bzw. jede stdout-Zeile umgehend in die Gegenrichtung weiter.
+- Leiten Sie jeden stdout-Block bzw. jede stdout-Zeile unverzüglich in die Gegenrichtung weiter.
 - Behalten Sie Zeilenumbrüche bei.
 - Vermeiden Sie blockierende Lesevorgänge mit fester Größe (`read(4096)`, `cat | buffer`, standardmäßiges Shell-`read`), durch die kleine Frames nicht verarbeitet werden können.
 - Halten Sie stderr vom JSON-RPC-stdout-Datenstrom getrennt.
 
-Ein Wrapper, der stdin puffert, bis ein großer Block gefüllt ist, verursacht Symptome, die wie ein iMessage-Ausfall wirken – `imsg rpc timeout (chats.list)` oder wiederholte Kanalneustarts –, obwohl `imsg rpc` selbst ordnungsgemäß funktioniert. `ssh -T host imsg "$@"` (oben) ist sicher, da es die `cliPath`-Argumente von OpenClaw wie `rpc` und `--db` weiterleitet. Pipelines wie `ssh host imsg | grep -v '^DEBUG'` sind NICHT sicher – zeilengepufferte Tools können Frames dennoch zurückhalten; verwenden Sie `stdbuf -oL -eL` in jeder Stufe, wenn Sie filtern müssen.
+Ein Wrapper, der stdin puffert, bis ein großer Block gefüllt ist, verursacht Symptome, die wie ein iMessage-Ausfall wirken – `imsg rpc timeout (chats.list)` oder wiederholte Neustarts des Kanals –, obwohl `imsg rpc` selbst ordnungsgemäß funktioniert. `ssh -T host imsg "$@"` (oben) ist sicher, da es die `cliPath`-Argumente von OpenClaw wie `rpc` und `--db` weiterleitet. Pipelines wie `ssh host imsg | grep -v '^DEBUG'` sind NICHT sicher – auch zeilengepufferte Tools können Frames zurückhalten; verwenden Sie `stdbuf -oL -eL` in jeder Stufe, wenn Sie filtern müssen.
 </Warning>
 
   </Tab>
@@ -155,12 +155,12 @@ Ein Wrapper, der stdin puffert, bis ein großer Block gefüllt ist, verursacht S
 ## Anforderungen und Berechtigungen (macOS)
 
 - Messages muss auf dem Mac angemeldet sein, auf dem `imsg` ausgeführt wird.
-- Vollzugriff auf die Festplatte ist für den Prozesskontext erforderlich, in dem OpenClaw/`imsg` ausgeführt wird (Zugriff auf die Messages-Datenbank).
+- Festplattenvollzugriff ist für den Prozesskontext erforderlich, in dem OpenClaw/`imsg` ausgeführt wird (Zugriff auf die Messages-Datenbank).
 - Die Automatisierungsberechtigung ist erforderlich, um Nachrichten über Messages.app zu senden.
-- Für erweiterte Aktionen (Reaktion / Bearbeiten / Senden rückgängig machen / Antwort im Thread / Effekte / Umfragen / Gruppenaktionen) muss der Systemintegritätsschutz deaktiviert sein – siehe [Private API von imsg aktivieren](#enabling-the-imsg-private-api). Das grundlegende Senden und Empfangen von Text und Medien funktioniert ohne diese Deaktivierung.
+- Für erweiterte Aktionen (Reaktion / Bearbeiten / Senden rückgängig machen / Antwort im Thread / Effekte / Umfragen / Gruppenaktionen) muss der Systemintegritätsschutz deaktiviert sein – siehe [Private API von imsg aktivieren](#enabling-the-imsg-private-api). Das grundlegende Senden und Empfangen von Text und Medien funktioniert auch ohne diese Deaktivierung.
 
 <Tip>
-Berechtigungen werden pro Prozesskontext erteilt. Wenn der Gateway ohne Benutzeroberfläche ausgeführt wird (LaunchAgent/SSH), führen Sie einmalig einen interaktiven Befehl im selben Kontext aus, um die Eingabeaufforderungen auszulösen:
+Berechtigungen werden pro Prozesskontext erteilt. Wenn der Gateway ohne Benutzeroberfläche ausgeführt wird (LaunchAgent/SSH), führen Sie einmalig einen interaktiven Befehl in demselben Kontext aus, um die Aufforderungen auszulösen:
 
 ```bash
 imsg chats --limit 1
@@ -171,45 +171,45 @@ imsg send <handle> "test"
 </Tip>
 
 <Accordion title="Senden über SSH-Wrapper schlägt mit AppleEvents -1743 fehl">
-  Eine Einrichtung mit entferntem SSH-Zugriff kann Chats lesen, `channels status --probe` bestehen und eingehende Nachrichten verarbeiten, während ausgehende Sendungen weiterhin mit einem AppleEvents-Autorisierungsfehler fehlschlagen:
+  Eine Einrichtung über Remote-SSH kann Chats lesen, `channels status --probe` bestehen und eingehende Nachrichten verarbeiten, während das Senden ausgehender Nachrichten weiterhin mit einem AppleEvents-Autorisierungsfehler fehlschlägt:
 
 ```text
-Nicht autorisiert, Apple-Ereignisse an Messages zu senden. (-1743)
+Nicht zum Senden von Apple-Ereignissen an Messages autorisiert. (-1743)
 ```
 
-Überprüfen Sie die TCC-Datenbank des angemeldeten Mac-Benutzers oder System Settings > Privacy & Security > Automation. Wenn der Automatisierungseintrag für `/usr/libexec/sshd-keygen-wrapper` anstelle des `imsg`- oder lokalen Shell-Prozesses erfasst ist, zeigt macOS möglicherweise keinen verwendbaren Messages-Schalter für diesen serverseitigen SSH-Client an:
+Überprüfen Sie die TCC-Datenbank des auf dem Mac angemeldeten Benutzers oder System Settings > Privacy & Security > Automation. Wenn der Automation-Eintrag für `/usr/libexec/sshd-keygen-wrapper` statt für den `imsg`- oder lokalen Shell-Prozess erfasst wurde, stellt macOS für diesen serverseitigen SSH-Client möglicherweise keinen nutzbaren Messages-Schalter bereit:
 
 ```text
 kTCCServiceAppleEvents | /usr/libexec/sshd-keygen-wrapper | auth_value=0 | com.apple.MobileSMS
 ```
 
-In diesem Zustand können die Wiederholung von `tccutil reset AppleEvents` oder die erneute Ausführung von `imsg send` über denselben SSH-Wrapper weiterhin fehlschlagen, da der Prozesskontext, der die Messages-Automatisierung benötigt, der SSH-Wrapper ist und keine App, der die Benutzeroberfläche die Berechtigung erteilen kann.
+In diesem Zustand können das Wiederholen von `tccutil reset AppleEvents` oder das erneute Ausführen von `imsg send` über denselben SSH-Wrapper weiterhin fehlschlagen, da nicht eine Anwendung, der die Benutzeroberfläche die Berechtigung erteilen kann, sondern der SSH-Wrapper der Prozesskontext ist, der die Messages-Automatisierung benötigt.
 
 Verwenden Sie stattdessen einen der unterstützten `imsg`-Prozesskontexte:
 
-- Führen Sie den Gateway oder zumindest die `imsg`-Bridge in der lokalen Sitzung des angemeldeten Messages-Benutzers aus.
-- Starten Sie den Gateway mit einem LaunchAgent für diesen Benutzer, nachdem Sie in derselben Sitzung Vollzugriff auf die Festplatte und die Automatisierungsberechtigung erteilt haben.
-- Wenn Sie die SSH-Topologie mit zwei Benutzern beibehalten, überprüfen Sie, dass ein tatsächlicher ausgehender `imsg send`-Vorgang über genau diesen Wrapper erfolgreich ist, bevor Sie den Kanal aktivieren. Wenn ihm die Automatisierungsberechtigung nicht erteilt werden kann, konfigurieren Sie stattdessen eine `imsg`-Einrichtung mit einem einzelnen Benutzer, anstatt sich beim Senden auf den SSH-Wrapper zu verlassen.
+- Führen Sie den Gateway oder zumindest die `imsg`-Bridge in der lokalen Sitzung des bei Messages angemeldeten Benutzers aus.
+- Starten Sie den Gateway mit einem LaunchAgent für diesen Benutzer, nachdem Sie in derselben Sitzung Festplattenvollzugriff und Automatisierung gewährt haben.
+- Wenn Sie die SSH-Topologie mit zwei Benutzern beibehalten, überprüfen Sie vor der Aktivierung des Kanals, dass ein echter ausgehender `imsg send`-Vorgang über genau diesen Wrapper erfolgreich ist. Wenn ihm keine Automatisierungsberechtigung erteilt werden kann, konfigurieren Sie stattdessen eine `imsg`-Einrichtung mit einem einzelnen Benutzer, anstatt sich beim Senden auf den SSH-Wrapper zu verlassen.
 
 </Accordion>
 
 ## Private API von imsg aktivieren
 
-`imsg` wird mit zwei Betriebsmodi ausgeliefert. Für OpenClaw ist der Modus für die private API die empfohlene Einrichtung, da er dem Kanal die nativen iMessage-Aktionen bereitstellt, die Benutzer erwarten. Der Basismodus bleibt für Installationen mit geringem Risiko, die erste Überprüfung oder Hosts nützlich, auf denen SIP nicht deaktiviert werden kann.
+`imsg` wird mit zwei Betriebsmodi ausgeliefert. Für OpenClaw wird der Modus der privaten API empfohlen, da er dem Kanal die nativen iMessage-Aktionen bereitstellt, die Benutzer erwarten. Der Basismodus ist weiterhin für risikoarme Installationen, die erste Überprüfung oder Hosts nützlich, auf denen SIP nicht deaktiviert werden kann.
 
-- **Basismodus** (Standard, keine SIP-Änderungen erforderlich): ausgehende Texte und Medien über `send`, Überwachung/Verlauf eingehender Nachrichten, Chatliste. Dies erhalten Sie standardmäßig mit einem neuen `brew install steipete/tap/imsg` und den oben genannten standardmäßigen macOS-Berechtigungen.
-- **Modus für die private API**: `imsg` injiziert eine Hilfs-Dylib in `Messages.app`, um interne `IMCore`-Funktionen aufzurufen. Dadurch werden `react`, `edit`, `unsend`, `reply` (in Threads), `sendWithEffect`, `poll` und `poll-vote` (native Messages-Umfragen), `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup` sowie Tippindikatoren und Lesebestätigungen freigeschaltet.
+- **Basismodus** (Standard, keine SIP-Änderungen erforderlich): ausgehende Texte und Medien über `send`, Überwachung und Verlauf eingehender Nachrichten, Chatliste. Dies steht direkt nach einer Neuinstallation von `brew install steipete/tap/imsg` und der Erteilung der oben genannten standardmäßigen macOS-Berechtigungen zur Verfügung.
+- **Modus der privaten API**: `imsg` injiziert eine Hilfs-Dylib in `Messages.app`, um interne `IMCore`-Funktionen aufzurufen. Dadurch werden `react`, `edit`, `unsend`, `reply` (im Thread), `sendWithEffect`, `poll` und `poll-vote` (native Messages-Umfragen), `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup` sowie Tippindikatoren und Lesebestätigungen freigeschaltet.
 
-Der auf dieser Seite empfohlene Aktionsumfang erfordert den Modus für die private API. Die README zu `imsg` beschreibt die Anforderung ausdrücklich:
+Der auf dieser Seite empfohlene Aktionsumfang erfordert den Modus der privaten API. Die README von `imsg` beschreibt diese Anforderung ausdrücklich:
 
-> Erweiterte Funktionen wie `read`, `typing`, `launch`, durch die Bridge unterstütztes Senden angereicherter Inhalte, Nachrichtenänderungen und Chatverwaltung müssen explizit aktiviert werden. Sie erfordern, dass SIP deaktiviert und eine Hilfs-Dylib in `Messages.app` injiziert wird. `imsg launch` verweigert die Injektion, wenn SIP aktiviert ist.
+> Erweiterte Funktionen wie `read`, `typing`, `launch`, Bridge-gestütztes Senden umfangreicher Inhalte, Nachrichtenänderungen und Chatverwaltung sind optional. Sie erfordern, dass SIP deaktiviert und eine Hilfs-Dylib in `Messages.app` injiziert wird. `imsg launch` verweigert die Injektion, wenn SIP aktiviert ist.
 
-Die Technik zur Injektion der Hilfskomponente verwendet die eigene Dylib von `imsg`, um auf private Messages-APIs zuzugreifen. Im OpenClaw-iMessage-Pfad gibt es keinen Drittanbieterserver und keine BlueBubbles-Laufzeit.
+Die Technik zur Injektion der Hilfsbibliothek verwendet die eigene Dylib von `imsg`, um auf private Messages-APIs zuzugreifen. Der OpenClaw-iMessage-Pfad verwendet weder einen Drittanbieterserver noch eine BlueBubbles-Laufzeitumgebung.
 
 <Warning>
-**Das Deaktivieren von SIP ist mit einem echten Sicherheitskompromiss verbunden.** SIP ist einer der zentralen Schutzmechanismen von macOS gegen die Ausführung veränderten Systemcodes; seine systemweite Deaktivierung eröffnet zusätzliche Angriffsflächen und Nebenwirkungen. Insbesondere gilt: **Durch das Deaktivieren von SIP auf Macs mit Apple Silicon wird auch die Möglichkeit deaktiviert, iOS-Apps auf Ihrem Mac zu installieren und auszuführen**.
+**Die Deaktivierung von SIP ist ein echter Sicherheitskompromiss.** SIP ist einer der zentralen macOS-Schutzmechanismen gegen die Ausführung veränderten Systemcodes. Eine systemweite Deaktivierung eröffnet zusätzliche Angriffsflächen und hat weitere Nebenwirkungen. Insbesondere **deaktiviert das Ausschalten von SIP auf Macs mit Apple Silicon außerdem die Möglichkeit, iOS-Apps auf Ihrem Mac zu installieren und auszuführen**.
 
-Betrachten Sie dies als bewusste betriebliche Entscheidung, insbesondere auf einem primären privaten Mac. Für eine produktionsgerechte OpenClaw-iMessage-Umgebung sollten Sie einen dedizierten Mac oder einen macOS-Bot-Benutzer bevorzugen, bei dem Sie die Bridge bedenkenlos aktivieren können. Wenn Ihr Bedrohungsmodell nicht zulässt, dass SIP irgendwo deaktiviert ist, ist das integrierte iMessage auf den Basismodus beschränkt – nur das Senden und Empfangen von Text und Medien, keine Reaktionen / Bearbeitungen / Rücknahme des Sendens / Effekte / Gruppenaktionen.
+Behandeln Sie dies als bewusste betriebliche Entscheidung, insbesondere auf einem primär privat genutzten Mac. Für eine produktionsreife OpenClaw-iMessage-Einrichtung empfiehlt sich ein dedizierter Mac oder ein macOS-Bot-Benutzer, bei dem die Aktivierung der Bridge vertretbar ist. Wenn Ihr Bedrohungsmodell eine Deaktivierung von SIP an keinem Ort zulässt, ist das integrierte iMessage auf den Basismodus beschränkt – ausschließlich Senden und Empfangen von Text und Medien, keine Reaktionen / Bearbeitung / Rückgängigmachen des Sendens / Effekte / Gruppenaktionen.
 </Warning>
 
 ### Einrichtung
@@ -223,32 +223,32 @@ Betrachten Sie dies als bewusste betriebliche Entscheidung, insbesondere auf ein
    imsg status --json
    ```
 
-   Die Ausgabe von `imsg status --json` meldet `bridge_version`, `rpc_methods` und `selectors` pro Methode, sodass Sie vor dem Start sehen können, was der aktuelle Build unterstützt.
+   Die Ausgabe von `imsg status --json` enthält `bridge_version`, `rpc_methods` und `selectors` für jede Methode, sodass Sie vor dem Start erkennen können, was der aktuelle Build unterstützt.
 
-2. **Deaktivieren Sie den Systemintegritätsschutz und (auf modernen macOS-Versionen) die Bibliotheksvalidierung.** Das Einschleusen einer nicht von Apple stammenden Hilfs-Dylib in die von Apple signierte `Messages.app` erfordert, dass SIP deaktiviert **und** die Bibliotheksvalidierung gelockert ist. Der SIP-Schritt im Wiederherstellungsmodus hängt von der macOS-Version ab:
-   - **macOS 10.13-10.15 (Sierra-Catalina):** Deaktivieren Sie die Bibliotheksvalidierung über das Terminal, starten Sie im Wiederherstellungsmodus neu, führen Sie `csrutil disable` aus und starten Sie erneut.
-   - **macOS 11+ (Big Sur und neuer), Intel:** Öffnen Sie den Wiederherstellungsmodus (oder die Internetwiederherstellung), führen Sie `csrutil disable` aus und starten Sie neu.
-   - **macOS 11+, Apple Silicon:** Verwenden Sie die Startsequenz über den Ein-/Ausschalter, um die Wiederherstellung aufzurufen; halten Sie bei neueren macOS-Versionen beim Klicken auf Continue die Taste **Left Shift** gedrückt und führen Sie anschließend `csrutil disable` aus. Für virtuelle Maschinen gilt ein separater Ablauf; erstellen Sie daher zuerst einen VM-Snapshot.
+2. **Deaktivieren Sie den Systemintegritätsschutz und (unter modernem macOS) die Bibliotheksvalidierung.** Das Einschleusen einer nicht von Apple stammenden Hilfs-dylib in die von Apple signierte `Messages.app` erfordert, dass SIP deaktiviert **und** die Bibliotheksvalidierung gelockert ist. Der SIP-Schritt im Wiederherstellungsmodus ist von der macOS-Version abhängig:
+   - **macOS 10.13–10.15 (Sierra–Catalina):** Deaktivieren Sie die Bibliotheksvalidierung über das Terminal, starten Sie im Wiederherstellungsmodus neu, führen Sie `csrutil disable` aus und starten Sie erneut.
+   - **macOS 11+ (Big Sur und neuer), Intel:** Wechseln Sie in den Wiederherstellungsmodus (oder die Internetwiederherstellung), führen Sie `csrutil disable` aus und starten Sie neu.
+   - **macOS 11+, Apple Silicon:** Verwenden Sie die Startsequenz über den Ein-/Ausschalter, um die Wiederherstellung aufzurufen; halten Sie bei aktuellen macOS-Versionen die Taste **Left Shift** gedrückt, wenn Sie auf Continue klicken, und führen Sie anschließend `csrutil disable` aus. Für Konfigurationen mit virtuellen Maschinen gilt ein separater Ablauf; erstellen Sie daher zuerst einen VM-Snapshot.
 
-   **Unter macOS 11 und neuer reicht `csrutil disable` allein normalerweise nicht aus.** Apple erzwingt für `Messages.app` als Plattformbinärdatei weiterhin die Bibliotheksvalidierung, sodass eine ad hoc signierte Hilfskomponente selbst bei deaktiviertem SIP abgelehnt wird (`Library Validation failed: ... platform binary, but mapped file is not`). Deaktivieren Sie nach SIP auch die Bibliotheksvalidierung und starten Sie neu:
+   **Unter macOS 11 und neuer reicht `csrutil disable` allein normalerweise nicht aus.** Apple erzwingt für `Messages.app` als Plattformbinärdatei weiterhin die Bibliotheksvalidierung, sodass ein ad hoc signierter Helfer (`Library Validation failed: ... platform binary, but mapped file is not`) selbst bei deaktiviertem SIP abgewiesen wird. Deaktivieren Sie nach SIP auch die Bibliotheksvalidierung und starten Sie neu:
 
    ```bash
    sudo defaults write /Library/Preferences/com.apple.security.libraryvalidation.plist DisableLibraryValidation -bool true
    ```
 
-   **macOS 26 (Tahoe), unter 26.5.1 verifiziert:** Deaktiviertes SIP **zusammen mit** dem obigen Befehl `DisableLibraryValidation` reicht aus, um die Hilfskomponente unter allen Versionen von 26.0 bis 26.5.x einzuschleusen. **Es sind keine Boot-Argumente erforderlich.** Die plist ist der entscheidende Faktor und der am häufigsten fehlende Schritt, wenn das Einschleusen unter Tahoe fehlschlägt:
-   - **Mit der plist:** `imsg launch` schleust die Komponente ein und `imsg status` meldet `advanced_features: true`.
-   - **Ohne die plist (selbst bei deaktiviertem SIP):** `imsg launch` schlägt mit `Failed to launch: Timeout waiting for Messages.app to initialize` fehl. AMFI lehnt die ad hoc signierte Hilfskomponente beim Laden ab, sodass die Bridge nie bereit wird und der Start wegen Zeitüberschreitung fehlschlägt. Diese Zeitüberschreitung tritt bei den meisten Personen unter Tahoe auf; die Lösung ist die obige plist und keine drastischere Maßnahme.
+   **macOS 26 (Tahoe), unter 26.5.1 verifiziert:** Deaktiviertes SIP **zusammen mit** dem obigen Befehl `DisableLibraryValidation` genügt, um den Helfer unter allen Versionen von 26.0 bis 26.5.x einzuschleusen. **Es sind keine Boot-Argumente erforderlich.** Die plist ist der entscheidende Faktor und der am häufigsten fehlende Schritt, wenn das Einschleusen unter Tahoe fehlschlägt:
+   - **Mit der plist:** `imsg launch` schleust den Helfer ein und `imsg status` meldet `advanced_features: true`.
+   - **Ohne die plist (selbst bei deaktiviertem SIP):** `imsg launch` schlägt mit `Failed to launch: Timeout waiting for Messages.app to initialize` fehl. AMFI weist den ad hoc signierten Helfer beim Laden ab, sodass die Bridge nie bereit wird und der Start wegen einer Zeitüberschreitung fehlschlägt. Diese Zeitüberschreitung ist das Symptom, auf das die meisten Personen unter Tahoe stoßen; die Lösung ist die obige plist und keine drastischere Maßnahme.
 
-   Wenn das Einschleusen von `imsg launch` oder bestimmte `selectors` nach einem macOS-Upgrade beginnen, „false“ zurückzugeben, ist diese Sperre gewöhnlich die Ursache. Prüfen Sie den Zustand von SIP und Bibliotheksvalidierung, bevor Sie annehmen, dass der SIP-Schritt selbst fehlgeschlagen ist. Wenn diese Einstellungen korrekt sind und die Bridge weiterhin nichts einschleusen kann, erfassen Sie `imsg status --json` sowie die Ausgabe von `imsg launch` und melden Sie dies dem Projekt `imsg`, statt weitere systemweite Sicherheitskontrollen zu schwächen.
+   Wenn das Einschleusen von `imsg launch` oder bestimmte `selectors` nach einem macOS-Upgrade beginnen, false zurückzugeben, ist diese Sperre normalerweise die Ursache. Prüfen Sie den Status von SIP und der Bibliotheksvalidierung, bevor Sie davon ausgehen, dass der SIP-Schritt selbst fehlgeschlagen ist. Wenn diese Einstellungen korrekt sind und die Bridge weiterhin nichts einschleusen kann, erfassen Sie `imsg status --json` sowie die Ausgabe von `imsg launch` und melden Sie dies dem Projekt `imsg`, anstatt weitere systemweite Sicherheitskontrollen zu schwächen.
 
-3. **Schleusen Sie die Hilfskomponente ein.** Wenn SIP deaktiviert und Messages.app angemeldet ist:
+3. **Schleusen Sie den Helfer ein.** Bei deaktiviertem SIP und angemeldeter Messages.app:
 
    ```bash
    imsg launch
    ```
 
-   `imsg launch` verweigert das Einschleusen, solange SIP aktiviert ist. Dies dient daher zugleich als Bestätigung, dass Schritt 2 wirksam wurde.
+   `imsg launch` verweigert das Einschleusen, solange SIP aktiviert ist. Dies dient daher zugleich als Bestätigung, dass Schritt 2 wirksam war.
 
 4. **Überprüfen Sie die Bridge über OpenClaw:**
 
@@ -256,22 +256,22 @@ Betrachten Sie dies als bewusste betriebliche Entscheidung, insbesondere auf ein
    openclaw channels status --probe
    ```
 
-   Der iMessage-Eintrag sollte `works` melden, und `imsg status --json | jq '{rpc_methods, selectors}'` sollte die von Ihrem macOS-Build bereitgestellten Fähigkeiten anzeigen. Das Erstellen von Umfragen erfordert `selectors.pollPayloadMessage`; das Abstimmen erfordert sowohl `selectors.pollVoteMessage` als auch die RPC-Methode `poll.vote`. Das OpenClaw-Plugin bietet nur Aktionen an, die von der zwischengespeicherten Prüfung unterstützt werden; ein leerer Cache bleibt dagegen optimistisch und prüft beim ersten Versand.
+   Der iMessage-Eintrag sollte `works` melden, und `imsg status --json | jq '{rpc_methods, selectors}'` sollte die von Ihrem macOS-Build bereitgestellten Funktionen anzeigen. Das Erstellen von Umfragen erfordert `selectors.pollPayloadMessage`; Abstimmungen erfordern sowohl `selectors.pollVoteMessage` als auch die RPC-Methode `poll.vote`. Das OpenClaw-Plugin bietet nur Aktionen an, die von der zwischengespeicherten Prüfung unterstützt werden. Bei einem leeren Cache bleibt es dagegen optimistisch und prüft beim ersten Versand.
 
-Wenn `openclaw channels status --probe` den Kanal als `works` meldet, bestimmte Aktionen bei der Ausführung jedoch „iMessage `<action>` requires the imsg private API bridge“ auslösen, führen Sie `imsg launch` erneut aus — die Hilfskomponente kann ausfallen (Neustart von Messages.app, Betriebssystemaktualisierung usw.), während der zwischengespeicherte Status `available: true` weiterhin Aktionen anbietet, bis die nächste Prüfung ihn aktualisiert.
+Wenn `openclaw channels status --probe` den Kanal als `works` meldet, bestimmte Aktionen jedoch beim Versand den Fehler „iMessage `<action>` requires the imsg private API bridge“ auslösen, führen Sie `imsg launch` erneut aus – der Helfer kann ausfallen (Neustart von Messages.app, Betriebssystemaktualisierung usw.), und der zwischengespeicherte Status `available: true` bietet weiterhin Aktionen an, bis die nächste Prüfung ihn aktualisiert.
 
 ### Wenn SIP aktiviert bleibt
 
 Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
 
-- `imsg` wechselt in den Basismodus zurück — nur Text, Medien und Empfang.
-- Das OpenClaw-Plugin bietet weiterhin den Versand von Text und Medien sowie die Überwachung eingehender Nachrichten an; es blendet `react`, `edit`, `unsend`, `reply`, `sendWithEffect` und Gruppenoperationen aus der Aktionsoberfläche aus (entsprechend der Fähigkeitssperre pro Methode).
-- Sie können für die iMessage-Arbeitslast einen separaten Mac ohne Apple Silicon (oder einen dedizierten Bot-Mac) mit deaktiviertem SIP betreiben und SIP auf Ihren primären Geräten aktiviert lassen. Siehe unten [Dedizierter macOS-Bot-Benutzer (separate iMessage-Identität)](#deployment-patterns).
+- `imsg` wechselt in den Basismodus – nur Text, Medien und Empfang.
+- Das OpenClaw-Plugin bietet weiterhin das Senden von Text und Medien sowie die Überwachung eingehender Nachrichten an; `react`, `edit`, `unsend`, `reply`, `sendWithEffect` und Gruppenoperationen werden auf der Aktionsoberfläche ausgeblendet (entsprechend der funktionsbezogenen Sperre jeder Methode).
+- Sie können einen separaten Mac ohne Apple Silicon (oder einen dedizierten Bot-Mac) mit deaktiviertem SIP für die iMessage-Arbeitslast betreiben, während SIP auf Ihren primären Geräten aktiviert bleibt. Siehe unten [Dedizierter macOS-Benutzer für den Bot (separate iMessage-Identität)](#deployment-patterns).
 
 ## Zugriffskontrolle und Routing
 
 <Tabs>
-  <Tab title="Richtlinie für Direktnachrichten">
+  <Tab title="DM-Richtlinie">
     `channels.imessage.dmPolicy` steuert Direktnachrichten:
 
     - `pairing` (Standard)
@@ -279,13 +279,13 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
     - `open` (erfordert, dass `allowFrom` den Wert `"*"` enthält)
     - `disabled`
 
-    Zulassungslistenfeld: `channels.imessage.allowFrom`.
+    Feld für die Zulassungsliste: `channels.imessage.allowFrom`.
 
-    Einträge in der Zulassungsliste müssen Absender identifizieren: Handles oder statische Absenderzugriffsgruppen (`accessGroup:<name>`). Verwenden Sie `channels.imessage.groupAllowFrom` für Chatziele wie `chat_id:*`, `chat_guid:*` oder `chat_identifier:*`; verwenden Sie `channels.imessage.groups` für numerische Registrierungsschlüssel von `chat_id`.
+    Einträge der Zulassungsliste müssen Absender identifizieren: Handles oder statische Absenderzugriffsgruppen (`accessGroup:<name>`). Verwenden Sie `channels.imessage.groupAllowFrom` für Chat-Ziele wie `chat_id:*`, `chat_guid:*` oder `chat_identifier:*`; verwenden Sie `channels.imessage.groups` für numerische Registrierungsschlüssel vom Typ `chat_id`.
 
   </Tab>
 
-  <Tab title="Gruppenrichtlinie + Erwähnungen">
+  <Tab title="Gruppenrichtlinie und Erwähnungen">
     `channels.imessage.groupPolicy` steuert die Gruppenverarbeitung:
 
     - `allowlist` (Standard)
@@ -296,21 +296,21 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
 
     Einträge in `groupAllowFrom` können auch auf statische Absenderzugriffsgruppen (`accessGroup:<name>`) verweisen.
 
-    Laufzeit-Fallback: Wenn `groupAllowFrom` nicht festgelegt ist, verwenden die Prüfungen von iMessage-Gruppenabsendern `allowFrom`; legen Sie `groupAllowFrom` fest, wenn für Direktnachrichten und Gruppen unterschiedliche Zulassungsregeln gelten sollen. Ein ausdrücklich leeres `groupAllowFrom: []` verwendet keinen Fallback — es blockiert unter `allowlist` alle Gruppenabsender.
-    Laufzeithinweis: Wenn `channels.imessage` vollständig fehlt, fällt die Laufzeit auf `groupPolicy="allowlist"` zurück und protokolliert eine Warnung (selbst wenn `channels.defaults.groupPolicy` festgelegt ist).
+    Laufzeit-Fallback: Wenn `groupAllowFrom` nicht gesetzt ist, verwenden die Prüfungen von iMessage-Gruppenabsendern `allowFrom`; setzen Sie `groupAllowFrom`, wenn sich die Zulassung für DMs und Gruppen unterscheiden soll. Ein ausdrücklich leeres `groupAllowFrom: []` verwendet keinen Fallback – es blockiert unter `allowlist` alle Gruppenabsender.
+    Laufzeithinweis: Wenn `channels.imessage` vollständig fehlt, greift die Laufzeit auf `groupPolicy="allowlist"` zurück und protokolliert eine Warnung (selbst wenn `channels.defaults.groupPolicy` gesetzt ist).
 
     <Warning>
-    Das Gruppen-Routing unter `groupPolicy: "allowlist"` führt **zwei** Prüfungen unmittelbar nacheinander aus:
+    Das Gruppen-Routing unter `groupPolicy: "allowlist"` durchläuft **zwei** unmittelbar aufeinanderfolgende Sperren:
 
-    1. **Absender-Zulassungsliste** (`channels.imessage.groupAllowFrom`) — Handle, `accessGroup:<name>`, `chat_guid`, `chat_identifier` oder `chat_id`. Eine leere effektive Liste (kein `groupAllowFrom` und kein Fallback auf `allowFrom`) blockiert jeden Gruppenabsender.
-    2. **Gruppenregister** (`channels.imessage.groups`) — wird erzwungen, sobald die Zuordnung Einträge enthält: Der Chat muss mit einem expliziten Eintrag pro `chat_id` oder einem Platzhalter `groups: { "*": { ... } }` übereinstimmen. Wenn `groups` leer ist oder fehlt, entscheidet allein die Absender-Zulassungsliste über den Zugriff.
+    1. **Absender-Zulassungsliste** (`channels.imessage.groupAllowFrom`) – Handle, `accessGroup:<name>`, `chat_guid`, `chat_identifier` oder `chat_id`. Eine leere effektive Liste (kein `groupAllowFrom` und kein Fallback auf `allowFrom`) blockiert jeden Gruppenabsender.
+    2. **Gruppenregistrierung** (`channels.imessage.groups`) – wird erzwungen, sobald die Zuordnung Einträge enthält: Der Chat muss mit einem expliziten Eintrag je `chat_id` oder dem Platzhalter `groups: { "*": { ... } }` übereinstimmen. Wenn `groups` leer ist oder fehlt, entscheidet allein die Absender-Zulassungsliste über die Zulassung.
 
-    Wenn keine wirksame Zulassungsliste für Gruppenabsender konfiguriert ist, wird jede Gruppennachricht vor der Registerprüfung verworfen. Jede Prüfung verfügt auf der standardmäßigen Protokollierungsstufe über ein eigenes Signal der Stufe `warn`, und jede nennt eine andere Fehlerbehebung:
+    Wenn keine effektive Zulassungsliste für Gruppenabsender konfiguriert ist, wird jede Gruppennachricht vor der Registrierungssperre verworfen. Jede Sperre besitzt auf der standardmäßigen Protokollierungsstufe ein eigenes Signal auf `warn`-Ebene, und jedes nennt eine andere Lösung:
 
-    - einmal pro Account beim Start, wenn die effektive Absender-Positivliste für Gruppen leer ist: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...` — beheben Sie dies, indem Sie `channels.imessage.groupAllowFrom` (oder `allowFrom`) festlegen; wenn Sie ausschließlich `groups`-Einträge hinzufügen, blockiert Gate 1 weiterhin jeden Absender.
-    - einmal pro `chat_id` zur Laufzeit, wenn ein Absender Gate 1 passiert hat, der Chat jedoch in einer befüllten `groups`-Registry fehlt: `imessage: dropping group message from chat_id=<id> ...` — beheben Sie dies, indem Sie diese `chat_id` (oder `"*"`) unter `channels.imessage.groups` hinzufügen.
+    - einmal pro Konto beim Start, wenn die effektive Zulassungsliste für Gruppenabsender leer ist: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...` – beheben Sie dies, indem Sie `channels.imessage.groupAllowFrom` (oder `allowFrom`) festlegen; allein das Hinzufügen von Einträgen in `groups` führt dazu, dass Sperre 1 weiterhin jeden Absender blockiert.
+    - einmal pro `chat_id` zur Laufzeit, wenn ein Absender Sperre 1 passiert hat, der Chat aber in einer befüllten `groups`-Registrierung fehlt: `imessage: dropping group message from chat_id=<id> ...` – beheben Sie dies, indem Sie diesen `chat_id` (oder `"*"`) unter `channels.imessage.groups` hinzufügen.
 
-    DMs sind nicht betroffen — sie verwenden einen anderen Codepfad.
+    DMs sind nicht betroffen – sie verwenden einen anderen Codepfad.
 
     Empfohlene Konfiguration für den Gruppenablauf unter `groupPolicy: "allowlist"`:
 
@@ -326,22 +326,22 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
     }
     ```
 
-    `groupAllowFrom` allein lässt diese Absender in jeder Gruppe zu; fügen Sie den `groups`-Block hinzu, um festzulegen, welche Chats zulässig sind (und um chatspezifische Optionen wie `requireMention` festzulegen).
+    `groupAllowFrom` allein lässt diese Absender in jeder Gruppe zu; fügen Sie den Block `groups` hinzu, um festzulegen, welche Chats erlaubt sind (und um chatspezifische Optionen wie `requireMention` festzulegen).
     </Warning>
 
-    Erwähnungs-Gating für Gruppen:
+    Erwähnungssperre für Gruppen:
 
-    - iMessage verfügt über keine nativen Metadaten für Erwähnungen
-    - die Erkennung von Erwähnungen verwendet Regex-Muster (`agents.list[].groupChat.mentionPatterns`, ersatzweise `messages.groupChat.mentionPatterns`)
-    - wenn keine Muster konfiguriert sind, kann das Erwähnungs-Gating nicht erzwungen werden
-    - Steuerbefehle autorisierter Absender umgehen das Erwähnungs-Gating
+    - iMessage besitzt keine nativen Metadaten für Erwähnungen
+    - die Erkennung von Erwähnungen verwendet reguläre Ausdrücke (`agents.entries.*.groupChat.mentionPatterns`, Fallback `messages.groupChat.mentionPatterns`)
+    - ohne konfigurierte Muster kann die Erwähnungssperre nicht erzwungen werden
+    - Steuerbefehle autorisierter Absender umgehen die Erwähnungssperre
 
     Gruppenspezifisches `systemPrompt`:
 
-    Jeder Eintrag unter `channels.imessage.groups.*` akzeptiert eine optionale `systemPrompt`-Zeichenfolge, die bei jedem Turn, der eine Nachricht in dieser Gruppe verarbeitet, in den System-Prompt des Agenten eingefügt wird. Die Auflösung entspricht `channels.whatsapp.groups`:
+    Jeder Eintrag unter `channels.imessage.groups.*` akzeptiert eine optionale Zeichenfolge `systemPrompt`, die bei jedem Durchlauf, der eine Nachricht dieser Gruppe verarbeitet, in den System-Prompt des Agenten eingefügt wird. Die Auflösung entspricht `channels.whatsapp.groups`:
 
-    1. **Gruppenspezifischer System-Prompt** (`groups["<chat_id>"].systemPrompt`): wird verwendet, wenn der spezifische Gruppeneintrag in der Zuordnung vorhanden **und** sein `systemPrompt`-Schlüssel definiert ist. Wenn `systemPrompt` eine leere Zeichenfolge (`""`) ist, wird der Platzhalter unterdrückt und auf diese Gruppe kein System-Prompt angewendet.
-    2. **System-Prompt für den Gruppenplatzhalter** (`groups["*"].systemPrompt`): wird verwendet, wenn der spezifische Gruppeneintrag vollständig in der Zuordnung fehlt oder wenn er vorhanden ist, aber keinen `systemPrompt`-Schlüssel definiert.
+    1. **Gruppenspezifischer System-Prompt** (`groups["<chat_id>"].systemPrompt`): wird verwendet, wenn der spezifische Gruppeneintrag in der Zuordnung vorhanden **und** sein Schlüssel `systemPrompt` definiert ist. Wenn `systemPrompt` eine leere Zeichenfolge (`""`) ist, wird der Platzhalter unterdrückt und für diese Gruppe kein System-Prompt angewendet.
+    2. **System-Prompt des Gruppenplatzhalters** (`groups["*"].systemPrompt`): wird verwendet, wenn der spezifische Gruppeneintrag vollständig in der Zuordnung fehlt oder wenn er vorhanden ist, aber keinen Schlüssel `systemPrompt` definiert.
 
     ```json5
     {
@@ -353,7 +353,7 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
             "*": { systemPrompt: "Verwenden Sie britische Rechtschreibung." },
             "8421": {
               requireMention: true,
-              systemPrompt: "Dies ist der Chat für den Bereitschaftsdienst. Beschränken Sie Antworten auf weniger als 3 Sätze.",
+              systemPrompt: "Dies ist der Chat für den Bereitschaftsdienst. Beschränken Sie Antworten auf höchstens 3 Sätze.",
             },
             "9907": {
               // explizite Unterdrückung: Der Platzhalter "Verwenden Sie britische Rechtschreibung." gilt hier nicht
@@ -365,7 +365,7 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
     }
     ```
 
-    Gruppenspezifische Prompts gelten nur für Gruppennachrichten — Direktnachrichten sind nicht betroffen.
+    Gruppenspezifische Prompts gelten nur für Gruppennachrichten – Direktnachrichten sind nicht betroffen.
 
   </Tab>
 
@@ -373,12 +373,12 @@ Wenn das Deaktivieren von SIP für Ihr Bedrohungsmodell nicht akzeptabel ist:
     - DMs verwenden direktes Routing; Gruppen verwenden Gruppen-Routing.
     - Mit dem standardmäßigen `session.dmScope=main` werden iMessage-DMs in der Hauptsitzung des Agenten zusammengeführt.
     - Gruppensitzungen sind isoliert (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Antworten werden mithilfe der Metadaten des ursprünglichen Kanals und Ziels zurück an iMessage geleitet.
+    - Antworten werden anhand der Metadaten des ursprünglichen Kanals und Ziels an iMessage zurückgeleitet.
 
-    Verhalten von gruppenähnlichen Threads:
+    Verhalten gruppenähnlicher Threads:
 
-    Einige iMessage-Threads mit mehreren Teilnehmern können mit `is_group=false` eingehen.
-    Wenn diese `chat_id` explizit unter `channels.imessage.groups` konfiguriert ist, behandelt OpenClaw sie als Gruppenverkehr (Gruppen-Gating und Isolation der Gruppensitzung).
+    Einige iMessage-Threads mit mehreren Teilnehmern können mit `is_group=false` eintreffen.
+    Wenn dieser `chat_id` ausdrücklich unter `channels.imessage.groups` konfiguriert ist, behandelt OpenClaw ihn als Gruppenverkehr (Gruppensperren und Isolation der Gruppensitzung).
 
   </Tab>
 </Tabs>
@@ -389,12 +389,12 @@ iMessage-Chats können an ACP-Sitzungen gebunden werden.
 
 Schneller Ablauf für Operatoren:
 
-- Führen Sie `/acp spawn codex --bind here` innerhalb der DM oder des zulässigen Gruppenchats aus.
-- Künftige Nachrichten in derselben iMessage-Konversation werden an die erzeugte ACP-Sitzung weitergeleitet.
-- `/new` und `/reset` setzen dieselbe gebundene ACP-Sitzung direkt zurück.
+- Führen Sie `/acp spawn codex --bind here` innerhalb der DM oder des zugelassenen Gruppenchats aus.
+- Künftige Nachrichten in derselben iMessage-Konversation werden an die gestartete ACP-Sitzung weitergeleitet.
+- `/new` und `/reset` setzen dieselbe gebundene ACP-Sitzung an Ort und Stelle zurück.
 - `/acp close` schließt die ACP-Sitzung und entfernt die Bindung.
 
-Konfigurierte persistente Bindungen verwenden `bindings[]`-Einträge auf oberster Ebene mit `type: "acp"` und `match.channel: "imessage"`.
+Konfigurierte persistente Bindungen verwenden Einträge im obersten `bindings[]` mit `type: "acp"` und `match.channel: "imessage"`.
 
 `match.peer.id` kann Folgendes verwenden:
 
@@ -438,28 +438,28 @@ Informationen zum gemeinsamen Verhalten von ACP-Bindungen finden Sie unter [ACP-
 ## Bereitstellungsmuster
 
 <AccordionGroup>
-  <Accordion title="Dedizierter macOS-Bot-Benutzer (separate iMessage-Identität)">
-    Verwenden Sie eine dedizierte Apple-ID und einen dedizierten macOS-Benutzer, damit der Bot-Datenverkehr von Ihrem persönlichen Nachrichtenprofil getrennt bleibt.
+  <Accordion title="Dedizierter macOS-Benutzer für den Bot (separate iMessage-Identität)">
+    Verwenden Sie eine dedizierte Apple-ID und einen eigenen macOS-Benutzer, damit der Bot-Datenverkehr von Ihrem persönlichen Messages-Profil isoliert bleibt.
 
     Typischer Ablauf:
 
     1. Erstellen Sie einen dedizierten macOS-Benutzer bzw. melden Sie sich bei diesem an.
-    2. Melden Sie sich in diesem Benutzer mit der Bot-Apple-ID bei Messages an.
-    3. Installieren Sie `imsg` in diesem Benutzer.
+    2. Melden Sie sich unter diesem Benutzer mit der Apple-ID des Bots bei Messages an.
+    3. Installieren Sie `imsg` unter diesem Benutzer.
     4. Erstellen Sie einen SSH-Wrapper, damit OpenClaw `imsg` im Kontext dieses Benutzers ausführen kann.
-    5. Verweisen Sie `channels.imessage.accounts.<id>.cliPath` und `.dbPath` auf dieses Benutzerprofil.
+    5. Verweisen Sie mit `channels.imessage.accounts.<id>.cliPath` und `.dbPath` auf dieses Benutzerprofil.
 
-    Beim ersten Start können in der Sitzung dieses Bot-Benutzers GUI-Genehmigungen (Automation + Full Disk Access) erforderlich sein.
+    Bei der ersten Ausführung sind möglicherweise GUI-Genehmigungen (Automation + Full Disk Access) in der Sitzung dieses Bot-Benutzers erforderlich.
 
   </Accordion>
 
   <Accordion title="Entfernter Mac über Tailscale (Beispiel)">
     Übliche Topologie:
 
-    - Der Gateway läuft unter Linux/in einer VM
-    - iMessage + `imsg` laufen auf einem Mac in Ihrem Tailnet
+    - Das Gateway wird unter Linux/in einer VM ausgeführt
+    - iMessage + `imsg` werden auf einem Mac in Ihrem Tailnet ausgeführt
     - Der `cliPath`-Wrapper verwendet SSH, um `imsg` auszuführen
-    - `remoteHost` ermöglicht den Abruf von Anhängen per SCP
+    - `remoteHost` ermöglicht das Abrufen von Anhängen per SCP
 
     Beispiel:
 
@@ -483,21 +483,21 @@ Informationen zum gemeinsamen Verhalten von ACP-Bindungen finden Sie unter [ACP-
     ```
 
     Verwenden Sie SSH-Schlüssel, damit sowohl SSH als auch SCP nicht interaktiv ausgeführt werden.
-    Stellen Sie zuerst sicher, dass dem Hostschlüssel vertraut wird (zum Beispiel `ssh bot@mac-mini.tailnet-1234.ts.net`), damit `known_hosts` befüllt ist.
+    Stellen Sie zunächst sicher, dass dem Hostschlüssel vertraut wird (zum Beispiel `ssh bot@mac-mini.tailnet-1234.ts.net`), damit `known_hosts` befüllt ist.
 
   </Accordion>
 
   <Accordion title="Muster für mehrere Konten">
     iMessage unterstützt eine kontospezifische Konfiguration unter `channels.imessage.accounts`.
 
-    Jedes Konto kann Felder wie `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, Verlaufseinstellungen und Positivlisten für Anhangsstammverzeichnisse überschreiben.
+    Jedes Konto kann Felder wie `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, Verlaufseinstellungen und Zulassungslisten für Stammverzeichnisse von Anhängen überschreiben.
 
   </Accordion>
 
   <Accordion title="Direktnachrichtenverlauf">
-    Legen Sie `channels.imessage.dmHistoryLimit` fest, um neue Direktnachrichtensitzungen mit dem zuletzt dekodierten `imsg`-Verlauf dieser Unterhaltung zu initialisieren. Verwenden Sie `channels.imessage.dms["<sender>"].historyLimit` für absenderspezifische Überschreibungen, einschließlich `0`, um den Verlauf für einen Absender zu deaktivieren.
+    Legen Sie `channels.imessage.dmHistoryLimit` fest, um neue Direktnachrichtensitzungen mit dem zuletzt decodierten `imsg`-Verlauf dieser Unterhaltung zu initialisieren. Verwenden Sie `channels.imessage.dms["<sender>"].historyLimit` für absenderspezifische Überschreibungen, einschließlich `0`, um den Verlauf für einen Absender zu deaktivieren.
 
-    Der iMessage-Direktnachrichtenverlauf wird bei Bedarf aus `imsg` abgerufen. Wenn `dmHistoryLimit` nicht festgelegt ist, wird die globale Initialisierung mit dem Direktnachrichtenverlauf deaktiviert; ein positiver absenderspezifischer Wert für `channels.imessage.dms["<sender>"].historyLimit` aktiviert die Initialisierung für diesen Absender dennoch.
+    Der iMessage-DM-Verlauf wird bei Bedarf aus `imsg` abgerufen. Wenn `dmHistoryLimit` nicht festgelegt ist, ist die globale Initialisierung mit dem DM-Verlauf deaktiviert; ein positiver absenderspezifischer Wert für `channels.imessage.dms["<sender>"].historyLimit` aktiviert die Initialisierung für diesen Absender jedoch weiterhin.
 
   </Accordion>
 </AccordionGroup>
@@ -506,24 +506,24 @@ Informationen zum gemeinsamen Verhalten von ACP-Bindungen finden Sie unter [ACP-
 
 <AccordionGroup>
   <Accordion title="Anhänge und Medien">
-    - Die Verarbeitung eingehender Anhänge ist **standardmäßig deaktiviert** — legen Sie `channels.imessage.includeAttachments: true` fest, um Fotos, Sprachmemos, Videos und andere Anhänge an den Agenten weiterzuleiten. Wenn sie deaktiviert ist, werden iMessages, die nur Anhänge enthalten, verworfen, bevor sie den Agenten erreichen, und erzeugen möglicherweise überhaupt keine `Inbound message`-Protokollzeile.
-    - Entfernte Anhangspfade können per SCP abgerufen werden, wenn `remoteHost` festgelegt ist
-    - Anhangspfade müssen zulässigen Stammverzeichnissen entsprechen:
+    - Die Verarbeitung eingehender Anhänge ist **standardmäßig deaktiviert** — legen Sie `channels.imessage.includeAttachments: true` fest, um Fotos, Sprachmemos, Videos und andere Anhänge an den Agenten weiterzuleiten. Ist diese Option deaktiviert, werden iMessages, die ausschließlich Anhänge enthalten, verworfen, bevor sie den Agenten erreichen, und erzeugen möglicherweise überhaupt keine `Inbound message`-Protokollzeile.
+    - Pfade zu entfernten Anhängen können per SCP abgerufen werden, wenn `remoteHost` festgelegt ist
+    - Anhangspfade müssen mit den zulässigen Stammverzeichnissen übereinstimmen:
       - `channels.imessage.attachmentRoots` (lokal)
       - `channels.imessage.remoteAttachmentRoots` (entfernter SCP-Modus)
-      - Konfigurierte Stammverzeichnisse erweitern das standardmäßige Stammverzeichnismuster `/Users/*/Library/Messages/Attachments` (zusammengeführt, nicht ersetzt)
+      - Konfigurierte Stammverzeichnisse erweitern das standardmäßige Stammverzeichnismuster `/Users/*/Library/Messages/Attachments` (sie werden zusammengeführt, nicht ersetzt)
     - SCP verwendet eine strikte Hostschlüsselprüfung (`StrictHostKeyChecking=yes`)
-    - Die Größe ausgehender Medien verwendet `channels.imessage.mediaMaxMb` (Standard: 16 MB)
+    - Die Größe ausgehender Medien wird durch `channels.imessage.mediaMaxMb` bestimmt (Standardwert 16 MB)
 
   </Accordion>
 
   <Accordion title="Ausgehender Text und Aufteilung">
-    - Textsegmentlimit: `channels.imessage.textChunkLimit` (Standard: 4000)
+    - Textabschnittslimit: `channels.imessage.textChunkLimit` (Standardwert 4000)
     - Aufteilungsmodus: `channels.imessage.streaming.chunkMode`
-      - `length` (Standard)
-      - `newline` (absatzorientierte Aufteilung)
-    - Ausgehende Markdown-Formatierungen für Fett, Kursiv, Unterstrichen und Durchgestrichen werden in nativen formatierten Text konvertiert (Empfänger unter macOS 15+ stellen die Formatierung dar; ältere Empfänger sehen Klartext ohne die Markierungen); Markdown-Tabellen werden entsprechend dem Markdown-Tabellenmodus des Kanals konvertiert
-    - `channels.imessage.sendTransport` (`auto` als Standard, `bridge`, `applescript`) legt fest, wie `imsg` Sendungen zustellt
+      - `length` (Standardwert)
+      - `newline` (Aufteilung bevorzugt nach Absätzen)
+    - Ausgehende Markdown-Formatierungen für Fett, Kursiv, Unterstrichen und Durchgestrichen werden in nativen formatierten Text umgewandelt (Empfänger unter macOS 15+ stellen die Formatierung dar; ältere Empfänger sehen reinen Text ohne die Markierungen); Markdown-Tabellen werden gemäß dem Markdown-Tabellenmodus des Kanals umgewandelt
+    - `channels.imessage.sendTransport` (Standardwert `auto`, `bridge`, `applescript`) legt fest, wie `imsg` Nachrichten zustellt
 
   </Accordion>
 
@@ -549,7 +549,7 @@ Informationen zum gemeinsamen Verhalten von ACP-Bindungen finden Sie unter [ACP-
 
 ## Aktionen der privaten API
 
-Wenn `imsg launch` ausgeführt wird und `openclaw channels status --probe` den Wert `privateApi.available: true` meldet, kann das Nachrichtenwerkzeug zusätzlich zum normalen Textversand native iMessage-Aktionen verwenden.
+Wenn `imsg launch` ausgeführt wird und `openclaw channels status --probe` den Wert `privateApi.available: true` meldet, kann das Nachrichtenwerkzeug zusätzlich zum normalen Textversand iMessage-native Aktionen verwenden.
 
 Alle Aktionen sind standardmäßig aktiviert; verwenden Sie `channels.imessage.actions`, um einzelne Aktionen zu deaktivieren:
 
@@ -578,32 +578,32 @@ Alle Aktionen sind standardmäßig aktiviert; verwenden Sie `channels.imessage.a
 
 <AccordionGroup>
   <Accordion title="Verfügbare Aktionen">
-    - **react**: iMessage-Tapbacks hinzufügen/entfernen (`messageId`, `emoji`, `remove`). Unterstützte Tapbacks entsprechen „Liebe“, „Gefällt mir“, „Gefällt mir nicht“, „Lachen“, „Hervorheben“ und „Frage“. Beim Entfernen ohne Emoji wird das jeweils gesetzte Tapback gelöscht.
-    - **reply**: Eine Thread-Antwort auf eine vorhandene Nachricht senden (`messageId`, `text` oder `message`, zusätzlich `chatGuid`, `chatId`, `chatIdentifier` oder `to`). Für eine Antwort mit Anhang ist zusätzlich ein `imsg`-Build erforderlich, dessen `send-rich` `--file` unterstützt.
+    - **react**: iMessage-Tapbacks hinzufügen/entfernen (`messageId`, `emoji`, `remove`). Unterstützte Tapbacks werden den Bedeutungen Liebe, Gefällt mir, Gefällt mir nicht, Lachen, Hervorheben und Frage zugeordnet. Beim Entfernen ohne Emoji wird das jeweils festgelegte Tapback gelöscht.
+    - **reply**: Eine Antwort in einem Thread auf eine vorhandene Nachricht senden (`messageId`, `text` oder `message` sowie `chatGuid`, `chatId`, `chatIdentifier` oder `to`). Für eine Antwort mit Anhang ist zusätzlich ein `imsg`-Build erforderlich, dessen `send-rich` `--file` unterstützt.
     - **sendWithEffect**: Text mit einem iMessage-Effekt senden (`text` oder `message`, `effect` oder `effectId`). Kurznamen: slam, loud, gentle, invisibleink, confetti, lasers, fireworks, balloon, heart, echo, happybirthday, shootingstar, sparkles, spotlight.
-    - **edit**: Eine gesendete Nachricht unter unterstützten macOS-/privaten API-Versionen bearbeiten (`messageId`, `text` oder `newText`). Nur Nachrichten, die der Gateway selbst gesendet hat, können bearbeitet werden.
-    - **unsend**: Eine gesendete Nachricht unter unterstützten macOS-/privaten API-Versionen zurückziehen (`messageId`). Nur Nachrichten, die der Gateway selbst gesendet hat, können zurückgezogen werden.
-    - **upload-file**: Medien/Dateien senden (`buffer` als Base64 oder ein hydratisiertes `media`/`path`/`filePath`, `filename`, optional `asVoice`). Veralteter Alias: `sendAttachment`.
-    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Gruppenchats verwalten, wenn das aktuelle Ziel eine Gruppenunterhaltung ist. Diese Aktionen ändern die Messages-Identität des Hosts und erfordern daher einen Eigentümer als Absender oder einen `operator.admin`-Gateway-Client.
-    - **poll**: Eine native Umfrage in Apple Messages erstellen (`pollQuestion`, `pollOption` 2- bis 12-mal wiederholt, zusätzlich `chatGuid`, `chatId`, `chatIdentifier` oder `to`). Empfänger unter iOS/iPadOS/macOS 26+ sehen die Umfrage nativ und können darin abstimmen; ältere Betriebssystemversionen erhalten als Ersatz den Text „Sent a poll“. Erfordert `selectors.pollPayloadMessage`.
-    - **poll-vote**: In einer vorhandenen Umfrage abstimmen (`pollId` oder `messageId`, zusätzlich genau eines von `pollOptionIndex`, `pollOptionId` oder `pollOptionText`). Erfordert `selectors.pollVoteMessage` und die RPC-Methode `poll.vote`.
+    - **edit**: Eine gesendete Nachricht unter unterstützten macOS-/privaten API-Versionen bearbeiten (`messageId`, `text` oder `newText`). Nur Nachrichten, die das Gateway selbst gesendet hat, können bearbeitet werden.
+    - **unsend**: Eine gesendete Nachricht unter unterstützten macOS-/privaten API-Versionen zurückziehen (`messageId`). Nur Nachrichten, die das Gateway selbst gesendet hat, können zurückgezogen werden.
+    - **upload-file**: Medien/Dateien senden (`buffer` als Base64 oder ein aufgelöstes `media`/`path`/`filePath`, `filename`, optional `asVoice`). Veralteter Alias: `sendAttachment`.
+    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Gruppenchats verwalten, wenn das aktuelle Ziel eine Gruppenunterhaltung ist. Diese Aktionen ändern die Messages-Identität des Hosts und erfordern daher einen als Eigentümer festgelegten Absender oder einen `operator.admin`-Gateway-Client.
+    - **poll**: Eine native Apple-Messages-Umfrage erstellen (`pollQuestion`, `pollOption` 2- bis 12-mal wiederholt sowie `chatGuid`, `chatId`, `chatIdentifier` oder `to`). Empfänger unter iOS/iPadOS/macOS 26+ können sie nativ sehen und darüber abstimmen; ältere Betriebssystemversionen erhalten als Ausweichlösung den Text „Umfrage gesendet“. Erfordert `selectors.pollPayloadMessage`.
+    - **poll-vote**: Über eine vorhandene Umfrage abstimmen (`pollId` oder `messageId` sowie genau eines von `pollOptionIndex`, `pollOptionId` oder `pollOptionText`). Erfordert `selectors.pollVoteMessage` und die RPC-Methode `poll.vote`.
 
     Akzeptierte eingehende Umfragen werden für den Agenten mit der Frage, nummerierten Optionsbeschriftungen, Stimmenzahlen und der für `poll-vote` erforderlichen Umfragenachrichten-ID dargestellt.
 
   </Accordion>
 
   <Accordion title="Nachrichten-IDs">
-    Der Kontext eingehender iMessages enthält sowohl kurze `MessageSid`-Werte als auch vollständige Nachrichten-GUIDs (`MessageSidFull`), sofern verfügbar. Kurze IDs sind auf den aktuellen SQLite-gestützten Antwortcache beschränkt und werden vor der Verwendung gegen den aktuellen Chat geprüft. Wenn eine kurze ID abläuft, wiederholen Sie den Versuch mit ihrem `MessageSidFull` und geben Sie dabei die Unterhaltung als Ziel an, aus der sie stammt. Vollständige IDs umgehen weder die Bindung an die Unterhaltung noch an das Konto; ersetzen Sie daher eine ID aus einem anderen Chat durch eine aus dem aktuellen Ziel. Entfernt delegierte Aufrufe können veraltete vollständige IDs ablehnen, wenn keine Nachweise zur aktuellen Unterhaltung verfügbar sind.
+    Der Kontext eingehender iMessages enthält sowohl kurze `MessageSid`-Werte als auch vollständige Nachrichten-GUIDs (`MessageSidFull`), sofern verfügbar. Kurze IDs sind auf den aktuellen SQLite-basierten Antwortcache beschränkt und werden vor der Verwendung anhand des aktuellen Chats geprüft. Wenn eine kurze ID abläuft, versuchen Sie es erneut mit ihrem `MessageSidFull` und geben Sie dabei die Unterhaltung als Ziel an, aus der sie stammt. Vollständige IDs umgehen weder die Unterhaltungs- noch die Kontobindung. Ersetzen Sie daher eine ID aus einem anderen Chat durch eine ID aus dem aktuellen Ziel. Entfernt delegierte Aufrufe können veraltete vollständige IDs ablehnen, wenn keine Nachweise zur aktuellen Unterhaltung verfügbar sind.
 
   </Accordion>
 
   <Accordion title="Funktionserkennung">
-    OpenClaw blendet Aktionen der privaten API nur aus, wenn der zwischengespeicherte Prüfstatus angibt, dass die Bridge nicht verfügbar ist. Ist der Status unbekannt, bleiben die Aktionen sichtbar und führen Prüfungen bei der Ausführung verzögert aus, sodass die erste Aktion nach `imsg launch` ohne separate manuelle Statusaktualisierung erfolgreich sein kann.
+    OpenClaw blendet Aktionen der privaten API nur aus, wenn der zwischengespeicherte Prüfstatus angibt, dass die Bridge nicht verfügbar ist. Wenn der Status unbekannt ist, bleiben die Aktionen sichtbar und führen Prüfungen bei der Ausführung verzögert durch, sodass die erste Aktion nach `imsg launch` ohne separate manuelle Statusaktualisierung erfolgreich sein kann.
 
   </Accordion>
 
-  <Accordion title="Lesebestätigungen und Tippanzeige">
-    Wenn die Bridge der privaten API aktiv ist, werden akzeptierte eingehende Chats als gelesen markiert, und direkte Chats zeigen eine Tippblase an, sobald der Durchlauf akzeptiert wurde, während der Agent den Kontext vorbereitet und die Antwort generiert. Deaktivieren Sie das Markieren als gelesen mit:
+  <Accordion title="Lesebestätigungen und Eingabeanzeige">
+    Wenn die Bridge der privaten API aktiv ist, werden akzeptierte eingehende Chats als gelesen markiert, und in direkten Chats wird eine Eingabeanzeige eingeblendet, sobald die Anfrage angenommen wurde, während der Agent den Kontext vorbereitet und die Antwort generiert. Deaktivieren Sie das Markieren als gelesen mit:
 
     ```json5
     {
@@ -615,7 +615,7 @@ Alle Aktionen sind standardmäßig aktiviert; verwenden Sie `channels.imessage.a
     }
     ```
 
-    Ältere `imsg`-Builds, die älter als die Liste der methodenspezifischen Funktionen sind, deaktivieren Tippanzeige und Lesebestätigungen stillschweigend; OpenClaw protokolliert einmal pro Neustart eine Warnung, damit die fehlende Bestätigung zugeordnet werden kann.
+    Ältere `imsg`-Builds, die vor der Liste methodenspezifischer Funktionen erstellt wurden, deaktivieren Eingabeanzeige und Lesebestätigungen stillschweigend. OpenClaw protokolliert pro Neustart einmalig eine Warnung, damit sich die fehlende Bestätigung zuordnen lässt.
 
   </Accordion>
 
@@ -624,7 +624,7 @@ Alle Aktionen sind standardmäßig aktiviert; verwenden Sie `channels.imessage.a
 
     Der Benachrichtigungsmodus wird durch `channels.imessage.reactionNotifications` gesteuert:
 
-    - `"own"` (Standard): Nur benachrichtigen, wenn Benutzer auf vom Bot verfasste Nachrichten reagieren.
+    - `"own"` (Standardwert): Nur benachrichtigen, wenn Benutzer auf vom Bot verfasste Nachrichten reagieren.
     - `"all"`: Bei allen eingehenden Tapbacks autorisierter Absender benachrichtigen.
     - `"off"`: Eingehende Tapbacks ignorieren.
 
@@ -633,28 +633,35 @@ Alle Aktionen sind standardmäßig aktiviert; verwenden Sie `channels.imessage.a
   </Accordion>
 
   <Accordion title="Genehmigungsreaktionen (👍 / 👎)">
-    Wenn `approvals.exec.enabled` oder `approvals.plugin.enabled` auf true gesetzt ist und die Anfrage an iMessage weitergeleitet wird, stellt der Gateway eine Genehmigungsaufforderung nativ zu und akzeptiert ein Tapback, um sie zu beantworten:
+    Wenn `approvals.exec.enabled` oder `approvals.plugin.enabled` den Wert „true“ hat und die Anfrage an iMessage weitergeleitet wird, stellt das Gateway eine Genehmigungsaufforderung nativ zu und akzeptiert ein Tapback, um sie zu beantworten:
 
-    - `👍` (Gefällt-mir-Tapback) → `allow-once`
-    - `👎` (Gefällt-mir-nicht-Tapback) → `deny`
+    - `👍` („Gefällt mir“-Tapback) → `allow-once`
+    - `👎` („Gefällt mir nicht“-Tapback) → `deny`
     - `allow-always` bleibt eine manuelle Ausweichmöglichkeit: Senden Sie `/approve <id> allow-always` als reguläre Antwort.
 
-    Die Verarbeitung von Reaktionen setzt voraus, dass das Handle des reagierenden Benutzers explizit als genehmigungsberechtigt eingetragen ist. Die Liste der Genehmigungsberechtigten wird aus `channels.imessage.allowFrom` (oder `channels.imessage.accounts.<id>.allowFrom`) gelesen; fügen Sie die Telefonnummer des Benutzers im E.164-Format oder seine Apple-ID-E-Mail-Adresse hinzu (Chatziele wie `chat_id:*` sind keine gültigen Einträge für Genehmigungsberechtigte). Der Platzhaltereintrag `"*"` wird berücksichtigt, erlaubt jedoch jedem Absender die Genehmigung; eine leere Liste der Genehmigungsberechtigten deaktiviert die Reaktionsabkürzung vollständig. Die Reaktionsabkürzung umgeht bewusst `reactionNotifications`, `dmPolicy` und `groupAllowFrom`, da die explizite Positivliste der Genehmigungsberechtigten die einzige relevante Zugriffsprüfung für die Auflösung von Genehmigungen ist.
+    Für die Verarbeitung von Reaktionen muss das Handle des reagierenden Benutzers ausdrücklich als genehmigungsberechtigt eingetragen sein. Die Liste der Genehmigungsberechtigten wird aus `channels.imessage.allowFrom` (oder `channels.imessage.accounts.<id>.allowFrom`) gelesen. Fügen Sie die Telefonnummer des Benutzers im E.164-Format oder seine Apple-ID-E-Mail-Adresse hinzu (Chatziele wie `chat_id:*` sind keine gültigen Einträge für Genehmigungsberechtigte). Der Platzhaltereintrag `"*"` wird berücksichtigt, erlaubt jedoch jedem Absender die Genehmigung; eine leere Liste der Genehmigungsberechtigten deaktiviert die Reaktionsverknüpfung vollständig. Die Reaktionsverknüpfung umgeht absichtlich `reactionNotifications`, `dmPolicy` und `groupAllowFrom`, da ausschließlich die explizite Zulassungsliste der Genehmigungsberechtigten für die Auflösung von Genehmigungen maßgeblich ist.
 
-    Die Autorisierung des Textbefehls `/approve` folgt derselben Liste: Wenn `channels.imessage.allowFrom` nicht leer ist, wird `/approve <id> <decision>` anhand dieser Liste der Genehmigungsberechtigten autorisiert (nicht anhand der umfassenderen Direktnachrichten-Positivliste), und Absender, die in der Direktnachrichten-Positivliste zugelassen sind, aber nicht in `allowFrom` stehen, erhalten eine ausdrückliche Ablehnung. Wenn `allowFrom` leer ist, bleibt die Ausweichregel für denselben Chat wirksam und `/approve` autorisiert alle Personen, die von der Direktnachrichten-Positivliste zugelassen werden. Fügen Sie jeden Operator, der Genehmigungen erteilen soll — über `/approve` oder über Reaktionen — zu `allowFrom` hinzu.
+    Die Autorisierung des Textbefehls `/approve` folgt derselben Liste: Wenn `channels.imessage.allowFrom` nicht leer ist, wird `/approve <id> <decision>` anhand dieser Liste der Genehmigungsberechtigten autorisiert (nicht anhand der umfassenderen DM-Zulassungsliste), und Absender, die in der DM-Zulassungsliste, aber nicht in `allowFrom` zugelassen sind, erhalten eine ausdrückliche Ablehnung. Wenn `allowFrom` leer ist, bleibt die Ausweichregel für denselben Chat aktiv und `/approve` autorisiert alle Personen, die von der DM-Zulassungsliste zugelassen werden. Fügen Sie jeden Operator, der Genehmigungen erteilen soll – über `/approve` oder über Reaktionen –, zu `allowFrom` hinzu.
 
     Hinweise für Betreiber:
-    - Die Reaktionszuordnung wird sowohl im Arbeitsspeicher als auch im persistenten schlüsselbasierten Speicher des Gateways gespeichert (die TTL entspricht dem Ablauf der Genehmigung). Das Gateway fragt außerdem ausstehende Aufforderungen auf Tapbacks ab, sodass ein Tapback, das kurz nach einem Neustart des Gateways eintrifft, die Genehmigung weiterhin auflöst.
-    - Das eigene `is_from_me=true`-Tapback des Betreibers (beispielsweise von einem gekoppelten Apple-Gerät) löst die Genehmigung auf, wenn dieses Handle ausdrücklich als genehmigungsberechtigt konfiguriert ist.
-    - Genehmigungsaufforderungen werden nur dann an eine Gruppenunterhaltung weitergeleitet, wenn ausdrücklich Genehmigungsberechtigte konfiguriert sind; andernfalls könnte jedes Gruppenmitglied die Genehmigung erteilen.
-    - Ältere Tapbacks im Textformat (`Liked "…"`-Klartext von sehr alten Apple-Clients) können Genehmigungen nicht auflösen, da sie keine Nachrichten-GUID enthalten; die Reaktionsauflösung erfordert die strukturierten Tapback-Metadaten, die aktuelle macOS-/iOS-Clients ausgeben.
+    - Die Reaktionszuordnung wird sowohl im Arbeitsspeicher als auch im persistenten schlüsselbasierten Speicher des Gateways gespeichert (die TTL entspricht dem Ablaufzeitpunkt der Genehmigung). Außerdem fragt das Gateway ausstehende Eingabeaufforderungen auf Tapbacks ab, sodass ein Tapback, das kurz nach einem Neustart des Gateways eingeht, die Genehmigung weiterhin auflöst.
+    - Das eigene `is_from_me=true`-Tapback des Betreibers (beispielsweise von einem gekoppelten Apple-Gerät) löst die Genehmigung auf, wenn dieses Handle ausdrücklich als genehmigungsberechtigt festgelegt ist.
+    - Genehmigungsaufforderungen werden nur dann an eine Gruppenunterhaltung weitergeleitet, wenn ausdrücklich Genehmigungsberechtigte konfiguriert sind; andernfalls könnte jedes Gruppenmitglied genehmigen.
+    - Ältere textbasierte Tapbacks (`Liked "…"`-Klartext von sehr alten Apple-Clients) können Genehmigungen nicht auflösen, da sie keine Nachrichten-GUID enthalten; die Reaktionsauflösung erfordert die strukturierten Tapback-Metadaten, die aktuelle macOS-/iOS-Clients ausgeben.
+
+  </Accordion>
+
+  <Accordion title="Reaktionen auf Fragen (1️⃣ / 2️⃣ / 3️⃣ / 4️⃣)">
+    Für eine `ask_user`-Eingabeaufforderung mit einer einzelnen, nicht geheimen Einfachauswahlfrage und ein bis vier Optionen fügt OpenClaw nummerierte Emoji-Auswahlmöglichkeiten hinzu. Reagieren Sie auf die zugestellte Eingabeaufforderung mit der entsprechenden Nummer, um die Frage zu beantworten. Die Reaktion muss die stabile GUID der vom Bot verfassten Nachricht enthalten; OpenClaw ordnet die Nummer anschließend über das Gateway der kanonischen Option zu. Veraltete oder doppelte Tippaktionen werden ignoriert.
+
+    Eingabeaufforderungen mit mehreren Fragen, Mehrfachauswahl oder Freitext können weiterhin nur per Textantwort beantwortet werden. Reaktionen auf Fragen unterliegen den normalen Zulassungsregeln für iMessage-Direktnachrichten und -Gruppen. Sie werden auch erkannt, wenn die allgemeine Einstellung `reactionNotifications` den Wert `"off"` hat, ohne dass dadurch nicht zugehörige Reaktionen in Agentenereignisse umgewandelt werden.
 
   </Accordion>
 </AccordionGroup>
 
-## Konfigurationsschreibvorgänge
+## Konfigurationsänderungen
 
-iMessage erlaubt standardmäßig vom Kanal initiierte Konfigurationsschreibvorgänge (für `/config set|unset`, wenn `commands.config: true`).
+iMessage erlaubt standardmäßig vom Kanal initiierte Konfigurationsänderungen (für `/config set|unset`, wenn `commands.config: true`).
 
 Deaktivieren:
 
@@ -670,111 +677,45 @@ Deaktivieren:
 
 <a id="coalescing-split-send-dms-command--url-in-one-composition"></a>
 
-## Zusammenführen aufgeteilter Direktnachrichten (Befehl und URL in einer Eingabe)
+## Zusammenführen aufgeteilter Direktnachrichten (Befehl + URL in einer Nachricht)
 
-Wenn ein Benutzer einen Befehl und eine URL gemeinsam eingibt — z. B. `Dump https://example.com/article` — teilt Apples Nachrichten-App den Sendevorgang in **zwei separate `chat.db`-Zeilen** auf:
+Apple kann einen Befehl und dessen URL-Vorschau als separate physische `chat.db`-Zeilen speichern. `imsg` 0.13.1 und neuer führt diese Zeilen zusammen, bevor die Nachricht von der Überwachung, dem Verlauf oder der Suche zurückgegeben wird. Dadurch empfängt OpenClaw eine einzige logische eingehende Nachricht, ohne kanalspezifische Latenz für Direktnachrichten hinzuzufügen.
 
-1. Eine Textnachricht (`"Dump"`).
-2. Eine URL-Vorschau-Sprechblase (`"https://..."`) mit OG-Vorschaubildern als Anhänge.
+Für iMessage ist keine Einstellung zum Zusammenführen erforderlich. Der stillgelegte Schlüssel `channels.imessage.coalesceSameSenderDms` wird von `openclaw doctor --fix` entfernt. Die generische `messages.inbound`-Entprellung bleibt verfügbar, wenn Sie schnelle aufeinanderfolgende Textnachrichten kanalweit absichtlich bündeln möchten.
 
-Bei den meisten Konfigurationen treffen die beiden Zeilen mit einem Abstand von etwa 0,8–2,0 s bei OpenClaw ein. Ohne Zusammenführung erhält der Agent in Durchlauf 1 nur den Befehl (und antwortet häufig „Senden Sie mir die URL“), bevor die URL in Durchlauf 2 eintrifft. Dies ist Apples Sendepipeline und wird weder von OpenClaw noch von `imsg` verursacht.
+Wenn Sendungen aus Befehl und URL als separate Agentendurchläufe eingehen, aktualisieren Sie `imsg` auf dem Messages-Mac:
 
-`channels.imessage.coalesceSameSenderDms` aktiviert für eine Direktnachricht die Pufferung aufeinanderfolgender Zeilen desselben Absenders. Wenn `imsg` in einer der Quellzeilen die strukturelle URL-Vorschaumarkierung `balloon_bundle_id: "com.apple.messages.URLBalloonProvider"` bereitstellt, führt OpenClaw nur diesen tatsächlichen aufgeteilten Sendevorgang zusammen und behält alle anderen gepufferten Zeilen als separate Durchläufe bei. Bei älteren `imsg`-Builds, die keinerlei Sprechblasenmetadaten ausgeben, kann OpenClaw einen aufgeteilten Sendevorgang nicht von separaten Sendevorgängen unterscheiden und greift daher auf das Zusammenführen des Buckets zurück. Dadurch bleibt das Verhalten vor Einführung der Metadaten erhalten, statt `Dump <url>`-Sendevorgänge wieder in zwei Durchläufe aufzuteilen. Gruppenchats werden weiterhin pro Nachricht verarbeitet, damit die Durchlaufstruktur mit mehreren Benutzern erhalten bleibt.
-
-<Tabs>
-  <Tab title="Wann aktivieren">
-    Aktivieren Sie diese Option, wenn:
-
-    - Sie Skills bereitstellen, die `command + payload` in einer einzigen Nachricht erwarten (Dump, Einfügen, Speichern, Einreihen usw.).
-    - Ihre Benutzer URLs zusammen mit Befehlen einfügen.
-    - Sie die zusätzliche Latenz bei Direktnachrichten akzeptieren können (siehe unten).
-
-    Lassen Sie sie deaktiviert, wenn:
-
-    - Sie bei aus einzelnen Wörtern bestehenden Auslösern in Direktnachrichten eine minimale Befehlslatenz benötigen.
-    - Alle Ihre Abläufe einmalige Befehle ohne nachfolgende Nutzlast sind.
-
-  </Tab>
-  <Tab title="Aktivierung">
-    ```json5
-    {
-      channels: {
-        imessage: {
-          coalesceSameSenderDms: true, // explizit aktivieren (Standard: false)
-        },
-      },
-    }
-    ```
-
-    Wenn die Option aktiviert ist und weder `messages.inbound.byChannel.imessage` noch das globale `messages.inbound.debounceMs` ausdrücklich festgelegt wurde, wird das Entprellfenster auf **7000 ms** erweitert (der bisherige Standardwert ist 0 ms — keine Entprellung). Das größere Fenster ist erforderlich, da Apples Sendeintervall bei aufgeteilten URL-Vorschauen mehrere Sekunden betragen kann, während Messages.app die Vorschauzeile ausgibt.
-
-    So passen Sie das Fenster selbst an:
-
-    ```json5
-    {
-      messages: {
-        inbound: {
-          byChannel: {
-            // 7000 ms decken die beobachteten Verzögerungen bei URL-Vorschauen in Messages.app ab.
-            imessage: 7000,
-          },
-        },
-      },
-    }
-    ```
-
-  </Tab>
-  <Tab title="Abwägungen">
-    - **Eine präzise Zusammenführung erfordert aktuelle `imsg`-Nutzlastmetadaten.** Wenn `balloon_bundle_id` vorhanden ist, wird nur der tatsächliche aufgeteilte Sendevorgang zusammengeführt; die oben beschriebene ersatzweise Zusammenführung ohne Metadaten dient vorübergehend der Abwärtskompatibilität und wird entfernt, sobald `imsg` aufgeteilte Sendevorgänge vorgelagert zusammenführt.
-    - **Zusätzliche Latenz bei Direktnachrichten.** Wenn die Option aktiviert ist, wartet jede Direktnachricht (einschließlich eigenständiger Steuerungsbefehle und nachfolgender einzelner Textnachrichten) bis zum Ablauf des Entprellfensters auf die Verarbeitung, falls noch eine URL-Vorschauzeile eintrifft. Nachrichten in Gruppenchats werden weiterhin sofort verarbeitet.
-    - **Die zusammengeführte Ausgabe ist begrenzt.** Zusammengeführter Text ist auf 4000 Zeichen begrenzt und erhält eine ausdrückliche `…[truncated]`-Markierung; Anhänge sind auf 20 und Quelleinträge auf 10 begrenzt (bei einer Überschreitung bleiben der erste und die neuesten erhalten). Jede Quell-GUID wird für nachgelagerte Telemetrie in `coalescedMessageGuids` erfasst.
-    - **Nur Direktnachrichten.** Gruppenchats werden weiterhin pro Nachricht verarbeitet, damit der Bot reaktionsfähig bleibt, wenn mehrere Personen schreiben.
-    - **Explizite Aktivierung pro Kanal.** Andere Kanäle (Discord, Slack, Telegram, WhatsApp, …) sind nicht betroffen. Ältere BlueBubbles-Konfigurationen, die `channels.bluebubbles.coalesceSameSenderDms` festlegen, sollten diesen Wert nach `channels.imessage.coalesceSameSenderDms` migrieren.
-
-  </Tab>
-</Tabs>
-
-### Szenarien und Agentensicht
-
-Die Spalte „Option aktiviert“ zeigt das Verhalten eines `imsg`-Builds, der `balloon_bundle_id` ausgibt. Bei älteren `imsg`-Builds, die keinerlei Sprechblasenmetadaten ausgeben, greifen die unten mit „Zwei Durchläufe“ bzw. „N Durchläufe“ gekennzeichneten Zeilen stattdessen auf die bisherige Zusammenführung zurück (ein Durchlauf): OpenClaw kann einen aufgeteilten Sendevorgang strukturell nicht von separaten Sendevorgängen unterscheiden und behält daher die Zusammenführung aus der Zeit vor den Metadaten bei. Die präzise Trennung wird aktiviert, sobald der Build Sprechblasenmetadaten ausgibt.
-
-| Benutzereingabe                                                      | `chat.db` erzeugt                  | Option deaktiviert (Standard)                      | Option aktiviert + Fenster (imsg gibt Sprechblasenmetadaten aus)                                                      |
-| ------------------------------------------------------------------ | ----------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `Dump https://example.com` (ein Sendevorgang)                              | 2 Zeilen im Abstand von etwa 1 s                   | Zwei Agentendurchläufe: nur „Dump“, dann URL | Ein Durchlauf: zusammengeführter Text `Dump https://example.com`                                                    |
-| `Save this 📎image.jpg caption` (Anhang und Text)                | 2 Zeilen ohne Metadaten der URL-Sprechblase | Zwei Durchläufe                               | Zwei Durchläufe, nachdem Metadaten erkannt wurden; ein zusammengeführter Durchlauf in alten Sitzungen bzw. Sitzungen ohne Metadaten vor der Erkennung       |
-| `/status` (eigenständiger Befehl)                                     | 1 Zeile                               | Sofortige Verarbeitung                        | **Bis zum Ablauf des Fensters warten, dann verarbeiten**                                                                |
-| Nur eine eingefügte URL                                                   | 1 Zeile                               | Sofortige Verarbeitung                        | Bis zum Ablauf des Fensters warten, dann verarbeiten                                                                    |
-| Text und URL werden im Abstand von mehreren Minuten absichtlich als zwei separate Nachrichten gesendet | 2 Zeilen außerhalb des Fensters               | Zwei Durchläufe                               | Zwei Durchläufe (das Fenster läuft dazwischen ab)                                                             |
-| Schnelle Folge (>10 kleine Direktnachrichten innerhalb des Fensters)                          | N Zeilen ohne Metadaten der URL-Sprechblase | N Durchläufe                                 | N Durchläufe, nachdem Metadaten erkannt wurden; ein begrenzter zusammengeführter Durchlauf in alten Sitzungen bzw. Sitzungen ohne Metadaten vor der Erkennung |
-| Zwei Personen schreiben in einem Gruppenchat                                  | N Zeilen von M Absendern               | M+ Durchläufe (einer pro Absender-Bucket)        | M+ Durchläufe — Gruppenchats werden nicht zusammengeführt                                                            |
+```bash
+brew update && brew upgrade imsg
+```
 
 ## Wiederherstellung eingehender Nachrichten nach einem Neustart der Bridge oder des Gateways
 
-iMessage stellt Nachrichten wieder her, die während des Gateway-Ausfalls verpasst wurden, und unterdrückt gleichzeitig die veraltete „Backlog-Bombe“, die Apple nach einer Push-Wiederherstellung ausgeben kann. Dieses auf der Deduplizierung eingehender Nachrichten basierende Standardverhalten ist immer aktiviert.
+iMessage stellt Nachrichten wieder her, die während des Ausfalls des Gateways verpasst wurden, und unterdrückt gleichzeitig die veraltete „Backlog-Bombe“, die Apple nach einer Push-Wiederherstellung ausgeben kann. Dieses Standardverhalten ist immer aktiviert und basiert auf dauerhaftem Eingangsspeicher sowie einer Altersgrenze.
 
-- **Deduplizierung bei der Wiedergabe.** Jede verarbeitete eingehende Nachricht wird anhand ihrer Apple-GUID im persistenten Plugin-Zustand (`imessage.inbound-dedupe`) erfasst, bei der Aufnahme beansprucht und nach der Verarbeitung bestätigt (bei einem vorübergehenden Fehler wird sie freigegeben, damit ein erneuter Versuch möglich ist). Bereits verarbeitete Nachrichten werden verworfen, statt zweimal verarbeitet zu werden. Dadurch kann die Wiederherstellung Nachrichten ohne Buchführung pro Nachricht umfassend wiedergeben.
-- **Wiederherstellung nach Ausfallzeit.** Beim Start merkt sich der Monitor die zuletzt verarbeitete `chat.db`-Zeilen-ID (einen persistenten Cursor pro Konto) und übergibt sie als `since_rowid` an `imsg watch.subscribe`, sodass imsg die während des Gateway-Ausfalls eingegangenen Zeilen wiedergibt und anschließend Live-Nachrichten verfolgt. Die Wiedergabe ist auf die neuesten 500 Zeilen und auf Nachrichten mit einem Alter von bis zu etwa 2 Stunden begrenzt; die Deduplizierung verwirft alle bereits verarbeiteten Nachrichten.
-- **Altersgrenze für veralteten Rückstand.** Zeilen oberhalb der Startgrenze sind tatsächlich live; wenn ihr Sendedatum mehr als etwa 15 Minuten vor ihrer Ankunft liegt, stammen sie aus dem durch Push verursachten Rückstand und werden unterdrückt. Wiedergegebene Zeilen (an oder unterhalb der Grenze) verwenden stattdessen das größere Wiederherstellungsfenster, sodass eine kürzlich verpasste Nachricht zugestellt wird, während ältere Verlaufsdaten nicht zugestellt werden.
+- **Dauerhafter Schutz vor wiederholter Verarbeitung.** Bevor OpenClaw den Wiederherstellungszeiger weitersetzt, protokolliert es jede Rohzeile in der gemeinsamen SQLite-Eingangswarteschlange und verwendet deren Apple-GUID als Ereignis-ID. Eine abgeschlossene Zeile hinterlässt für etwa 4 Stunden einen Tombstone; die Anzahl ist auf 10.000 Einträge begrenzt. Dadurch wird eine Wiederholung mit derselben GUID auch nach einem Neustart verworfen. Eine ausstehende Zeile bleibt wiederherstellbar, bis die Weiterleitung sie übernimmt.
+- **Wiederherstellung nach Ausfallzeiten.** Beim Start merkt sich die Überwachung die Zeilen-ID der zuletzt dauerhaft zugelassenen `chat.db`-Zeile (ein persistenter Cursor pro Konto) und übergibt sie als `since_rowid` an `imsg watch.subscribe`, sodass imsg Zeilen wiedergibt, die noch nicht protokolliert wurden, und anschließend neue Ereignisse fortlaufend verfolgt. Vor einem Absturz protokollierte Zeilen werden aus SQLite fortgesetzt. Die Wiedergabe ist auf die neuesten 500 Zeilen und auf Nachrichten beschränkt, die höchstens etwa 2 Stunden alt sind; GUID-Tombstones verwerfen alle bereits verarbeiteten Einträge.
+- **Altersgrenze für veralteten Rückstau.** Zeilen oberhalb der Startgrenze sind tatsächlich aktuell; wenn das Sendedatum einer solchen Zeile mehr als etwa 15 Minuten vor ihrem Eingangszeitpunkt liegt, handelt es sich um den durch den Push-Flush verursachten Rückstau und die Zeile wird unterdrückt. Wiedergegebene Zeilen (an oder unterhalb der Grenze) verwenden stattdessen das größere Wiederherstellungsfenster. Dadurch wird eine kürzlich verpasste Nachricht zugestellt, während sehr alte Verlaufsdaten nicht zugestellt werden.
 
-Die Wiederherstellung funktioniert sowohl mit lokalen als auch mit entfernten `cliPath`-Konfigurationen, da die Wiedergabe durch `since_rowid` über dieselbe `imsg`-RPC-Verbindung erfolgt. Der Unterschied liegt im Fenster: Wenn das Gateway `chat.db` lesen kann (lokal), verankert es die Zeilen-ID-Grenze beim Start, begrenzt den Wiedergabeumfang und stellt verpasste Nachrichten mit einem Alter von bis zu einigen Stunden zu. Über ein entferntes SSH-`cliPath` kann es die Datenbank nicht lesen; daher ist die Wiedergabe unbegrenzt und jede Zeile verwendet die Live-Altersgrenze. Kürzlich verpasste Nachrichten werden weiterhin wiederhergestellt und alte Rückstände weiterhin unterdrückt, jedoch mit dem kleineren Live-Fenster. Führen Sie das Gateway auf dem Messages-Mac aus, um das größere Wiederherstellungsfenster zu nutzen.
+Die Wiederherstellung funktioniert sowohl bei lokalen als auch bei entfernten `cliPath`-Konfigurationen, da die `since_rowid`-Wiedergabe über dieselbe `imsg`-RPC-Verbindung erfolgt. Der Unterschied liegt im Zeitfenster: Wenn das Gateway `chat.db` lesen kann (lokal), verankert es die Zeilen-ID-Startgrenze, begrenzt den Wiedergabebereich und stellt verpasste Nachrichten zu, die bis zu einigen Stunden alt sind. Bei einer entfernten SSH-`cliPath`-Verbindung kann es die Datenbank nicht lesen. Daher ist die Wiedergabe nicht begrenzt und jede Zeile verwendet die Altersgrenze für aktuelle Nachrichten. Kürzlich verpasste Nachrichten werden weiterhin wiederhergestellt und alter Rückstau weiterhin unterdrückt, allerdings mit dem kleineren Zeitfenster für aktuelle Nachrichten. Führen Sie das Gateway auf dem Messages-Mac aus, um das größere Wiederherstellungsfenster zu verwenden.
 
 ### Für Betreiber sichtbares Signal
 
-Unterdrückter Rückstand wird auf der Standardprotokollierungsstufe protokolliert und niemals stillschweigend verworfen (das Flag `recovery` zeigt, welches Fenster angewendet wurde):
+Unterdrückter Rückstau wird auf der standardmäßigen Protokollierungsstufe erfasst und niemals stillschweigend verworfen (das Flag `recovery` zeigt, welches Fenster angewendet wurde):
 
 ```text
-imessage: veralteter Rückstand eingehender Nachrichten unterdrückt account=<id> sent=<iso> recovery=<bool> (<N> seit dem Start unterdrückt)
+imessage: veralteter eingehender Rückstau unterdrückt account=<id> sent=<iso> recovery=<bool> (<N> seit dem Start unterdrückt)
 ```
 
 ### Migration
 
-`channels.imessage.catchup.*` ist veraltet — die Wiederherstellung nach Ausfallzeiten erfolgt automatisch und benötigt bei neuen Konfigurationen keine Konfiguration. Vorhandene Konfigurationen mit `catchup.enabled: true` werden weiterhin als Kompatibilitätsprofil für das Wiederherstellungs-Wiedergabefenster berücksichtigt. Deaktivierte Catchup-Blöcke (`enabled: false` oder ohne `enabled: true`) werden nicht mehr unterstützt; `openclaw doctor --fix` entfernt sie.
+`channels.imessage.catchup.*` ist veraltet – die Wiederherstellung nach Ausfallzeiten erfolgt automatisch und erfordert bei neuen Konfigurationen keine Einstellungen. Vorhandene Konfigurationen mit `catchup.enabled: true` werden weiterhin als Kompatibilitätsprofil für das Wiederherstellungs-Wiedergabefenster berücksichtigt. Deaktivierte Nachholblöcke (`enabled: false` oder ohne `enabled: true`) sind stillgelegt; `openclaw doctor --fix` entfernt sie.
 
 ## Fehlerbehebung
 
 <AccordionGroup>
   <Accordion title="imsg nicht gefunden oder RPC nicht unterstützt">
-    Überprüfen Sie das Binärprogramm und die RPC-Unterstützung:
+    Überprüfen Sie die Binärdatei und die RPC-Unterstützung:
 
     ```bash
     imsg rpc --help
@@ -782,7 +723,7 @@ imessage: veralteter Rückstand eingehender Nachrichten unterdrückt account=<id
     openclaw channels status --probe
     ```
 
-    Wenn die Prüfung meldet, dass RPC nicht unterstützt wird, aktualisieren Sie `imsg`. Wenn Aktionen über die private API nicht verfügbar sind, führen Sie `imsg launch` in der Sitzung des angemeldeten macOS-Benutzers aus und prüfen Sie erneut. Wenn das Gateway nicht unter macOS ausgeführt wird, verwenden Sie die oben beschriebene Einrichtung eines entfernten Macs über SSH anstelle des lokalen Standardpfads `imsg`.
+    Wenn die Prüfung meldet, dass RPC nicht unterstützt wird, aktualisieren Sie `imsg`. Wenn Aktionen der privaten API nicht verfügbar sind, führen Sie `imsg launch` in der Sitzung des angemeldeten macOS-Benutzers aus und prüfen Sie erneut. Wenn das Gateway nicht unter macOS ausgeführt wird, verwenden Sie stattdessen die oben beschriebene Einrichtung eines entfernten Macs über SSH und nicht den standardmäßigen lokalen `imsg`-Pfad.
 
   </Accordion>
 
@@ -796,7 +737,7 @@ sqlite3 ~/Library/Messages/chat.db \
   "select datetime(max(date)/1000000000 + 978307200, 'unixepoch', 'localtime'), max(ROWID) from message;"
 ```
 
-    Wenn vom Telefon gesendete Nachrichten keine neuen Zeilen erzeugen, reparieren Sie die macOS-Nachrichten- und Apple-Push-Schicht, bevor Sie die OpenClaw-Konfiguration ändern. Eine einmalige Aktualisierung des Dienstes reicht häufig aus:
+    Wenn vom Telefon gesendete Nachrichten keine neuen Zeilen erzeugen, reparieren Sie die macOS-Nachrichten- und Apple-Push-Schicht, bevor Sie die OpenClaw-Konfiguration ändern. Eine einmalige Aktualisierung der Dienste reicht häufig aus:
 
 ```bash
 launchctl kickstart -k system/com.apple.apsd
@@ -807,12 +748,12 @@ imsg launch
 openclaw gateway restart
 ```
 
-    Senden Sie eine neue iMessage vom Telefon und bestätigen Sie eine neue `chat.db`-Zeile oder ein `imsg watch`-Ereignis, bevor Sie OpenClaw-Sitzungen debuggen. Führen Sie dies nicht als regelmäßige Schleife zum Neustarten der Bridge aus; wiederholte `imsg launch` sowie Gateway-Neustarts während der aktiven Arbeit können Zustellungen unterbrechen und laufende Kanalausführungen blockieren.
+    Senden Sie eine neue iMessage vom Telefon und bestätigen Sie eine neue `chat.db`-Zeile oder ein neues `imsg watch`-Ereignis, bevor Sie OpenClaw-Sitzungen debuggen. Führen Sie dies nicht als regelmäßige Schleife zum Neustart der Bridge aus. Wiederholte `imsg launch` zusammen mit Gateway-Neustarts während aktiver Vorgänge können Zustellungen unterbrechen und laufende Kanalausführungen blockieren.
 
   </Accordion>
 
   <Accordion title="Gateway wird unter macOS nicht ausgeführt">
-    Der standardmäßige `cliPath: "imsg"` muss auf dem Mac ausgeführt werden, der bei Messages angemeldet ist. Legen Sie unter Linux oder Windows `channels.imessage.cliPath` auf ein Wrapper-Skript fest, das per SSH eine Verbindung zu diesem Mac herstellt und `imsg "$@"` ausführt.
+    Der standardmäßige `cliPath: "imsg"` muss auf dem Mac ausgeführt werden, der bei Nachrichten angemeldet ist. Legen Sie unter Linux oder Windows `channels.imessage.cliPath` auf ein Wrapper-Skript fest, das per SSH eine Verbindung zu diesem Mac herstellt und `imsg "$@"` ausführt.
 
 ```bash
 #!/usr/bin/env bash
@@ -828,7 +769,7 @@ openclaw channels status --probe --channel imessage
   </Accordion>
 
   <Accordion title="Direktnachrichten werden ignoriert">
-    Prüfen Sie:
+    Prüfen Sie Folgendes:
 
     - `channels.imessage.dmPolicy`
     - `channels.imessage.allowFrom`
@@ -841,13 +782,13 @@ openclaw channels status --probe --channel imessage
 
     - `channels.imessage.groupPolicy`
     - `channels.imessage.groupAllowFrom`
-    - `channels.imessage.groups`-Verhalten der Zulassungsliste
-    - Konfiguration des Erwähnungsmusters (`agents.list[].groupChat.mentionPatterns`)
+    - `channels.imessage.groups` Verhalten der Positivliste
+    - Konfiguration des Erwähnungsmusters (`agents.entries.*.groupChat.mentionPatterns`)
 
   </Accordion>
 
   <Accordion title="Remote-Anhänge schlagen fehl">
-    Prüfen Sie Folgendes:
+    Prüfen Sie:
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
@@ -865,7 +806,7 @@ openclaw channels status --probe --channel imessage
     imsg send <handle> "test"
     ```
 
-    Vergewissern Sie sich, dass Full Disk Access und Automation für den Prozesskontext gewährt sind, in dem OpenClaw/`imsg` ausgeführt wird.
+    Vergewissern Sie sich, dass Festplattenvollzugriff und Automation für den Prozesskontext gewährt sind, in dem OpenClaw/`imsg` ausgeführt wird.
 
   </Accordion>
 </AccordionGroup>
@@ -879,9 +820,9 @@ openclaw channels status --probe --channel imessage
 ## Verwandte Themen
 
 - [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
-- [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) — Ankündigung und Migrationsübersicht
-- [Umstieg von BlueBubbles](/de/channels/imessage-from-bluebubbles) — Tabelle zur Konfigurationsübertragung und schrittweise Umstellung
+- [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) — Ankündigung und Zusammenfassung der Migration
+- [Wechsel von BlueBubbles](/de/channels/imessage-from-bluebubbles) — Tabelle zur Konfigurationsübertragung und schrittweise Umstellung
 - [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
-- [Gruppen](/de/channels/groups) — Verhalten von Gruppenchats und Erwähnungssteuerung
+- [Gruppen](/de/channels/groups) — Verhalten von Gruppenchats und Steuerung durch Erwähnungen
 - [Kanal-Routing](/de/channels/channel-routing) — Sitzungs-Routing für Nachrichten
-- [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung
+- [Sicherheit](/de/gateway/security) — Zugriffsmodell und Absicherung

@@ -4,7 +4,7 @@ read_when:
 summary: Fügt Unterstützung für Text-to-Speech-Provider hinzu.
 title: Gradium-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:49Z"
+    generated_at: "2026-07-24T04:33:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -18,7 +18,7 @@ x-i18n:
 
 Fügt Unterstützung für einen Text-to-Speech-Provider hinzu.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/gradium-speech`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
@@ -29,4 +29,4 @@ Verträge: `speechProviders`
 
 ## Zugehörige Dokumentation
 
-- [Gradium](/de/providers/gradium)
+- [gradium](/de/providers/gradium)

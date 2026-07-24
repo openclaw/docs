@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das pixverse-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das pixverse-Plugin
 summary: OpenClaw-Provider-Plugin für die PixVerse-Videogenerierung.
 title: PixVerse-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:07:11Z"
+    generated_at: "2026-07-24T04:00:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

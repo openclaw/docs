@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das memory-core-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das memory-core-Plugin
 summary: Fügt Tools hinzu, die von Agenten aufgerufen werden können.
 title: Memory-Core-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:33Z"
+    generated_at: "2026-07-24T04:04:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

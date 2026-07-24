@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das Chutes-Plugin.
-summary: Fügt Unterstützung für den Chutes-Modell-Provider zu OpenClaw hinzu.
+summary: Fügt Unterstützung für den Modell-Provider Chutes zu OpenClaw hinzu.
 title: Chutes-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:05:15Z"
+    generated_at: "2026-07-24T04:46:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Chutes-Plugin
 
-Fügt OpenClaw Unterstützung für den Chutes-Modell-Provider hinzu.
+Fügt Unterstützung für den Chutes-Modell-Provider zu OpenClaw hinzu.
 
 ## Distribution
 
@@ -27,6 +27,6 @@ Fügt OpenClaw Unterstützung für den Chutes-Modell-Provider hinzu.
 
 Provider: `chutes`
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [Chutes](/de/providers/chutes)

@@ -1,43 +1,58 @@
 ---
 read_when:
     - Sie benötigen einen einsteigerfreundlichen Überblick über die Protokollierung in OpenClaw
-    - Sie möchten Protokollierungsstufen, Formate oder Schwärzungen konfigurieren
-    - Sie führen eine Fehlerbehebung durch und müssen schnell Protokolle finden.
-summary: Dateiprotokolle, Konsolenausgabe, Protokollverfolgung über die CLI und die Registerkarte „Protokolle“ in der Control UI
+    - Sie möchten Protokollierungsstufen, Formate oder Schwärzung konfigurieren
+    - Sie führen eine Fehlerbehebung durch und müssen schnell Protokolle finden
+summary: Dateiprotokolle, Konsolenausgabe, CLI-Live-Anzeige und die Registerkarte „Protokolle“ der Control UI
 title: Protokollierung
 x-i18n:
-    generated_at: "2026-07-12T01:49:49Z"
+    generated_at: "2026-07-24T04:29:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: add41e125c22ca1b2343a3a1fb1e88e94ef9c81a07c48b9eb67f4d4b2510dd08
+    source_hash: 2c9303c4bc9c0797ca9c5775a281dce95229661b61d710425b2f7bec182b2e75
     source_path: logging.md
     workflow: 16
 ---
 
-OpenClaw verfügt über zwei zentrale Protokolloberflächen:
+OpenClaw verfügt über zwei zentrale Protokollierungsoberflächen:
 
 - **Dateiprotokolle** (JSON-Zeilen), die vom Gateway geschrieben werden.
 - **Konsolenausgabe** im Terminal, in dem das Gateway ausgeführt wird.
 
-Die Registerkarte **Protokolle** der Steuerungsoberfläche verfolgt das Gateway-Dateiprotokoll fortlaufend. Auf dieser Seite wird erläutert, wo sich
-Protokolle befinden, wie Sie sie lesen und wie Sie Protokollierungsstufen und -formate konfigurieren.
+Der Tab **Protokolle** der Control UI verfolgt das Gateway-Dateiprotokoll fortlaufend. Auf dieser Seite wird erläutert, wo sich
+Protokolle befinden, wie sie gelesen werden und wie Protokollstufen und -formate konfiguriert werden.
 
 ## Speicherort der Protokolle
 
-Standardmäßig schreibt das Gateway pro Tag eine fortlaufende Protokolldatei:
+Standardmäßig schreibt das Gateway pro Tag eine fortlaufende Protokolldatei. Das Standardprofil
+behält den bisherigen Pfad bei:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
+Benannte Profile verwenden im selben Verzeichnis einen durch das Profil qualifizierten Dateinamen:
+
+`/tmp/openclaw/openclaw-<profile>-YYYY-MM-DD.log`
+
+Das Profilsegment des Dateinamens besteht aus Kleinbuchstaben und ist auf Buchstaben, Zahlen und
+Bindestriche beschränkt. Einfache kleingeschriebene Namen bleiben lesbar, sodass die Kurzform `--dev`
+in `openclaw-dev-YYYY-MM-DD.log` schreibt. Groß-/Kleinschreibung, Unterstriche und literale Bindestriche verwenden eine
+umkehrbare Bindestrich-Escapesequenz, damit unterschiedliche Profilnamen niemals dieselbe Protokolldatei verwenden.
+Übergroße Werte, die direkt über die Umgebung festgelegt werden, erhalten ein begrenztes Hash-Suffix,
+um die Dateinamensbeschränkungen des Dateisystems einzuhalten. Eine explizite Angabe von `logging.file` überschreibt
+diese Standardwerte.
+
 Das Datum verwendet die lokale Zeitzone des Gateway-Hosts. Wenn `/tmp/openclaw` unsicher
-oder nicht verfügbar ist (und immer unter Windows), verwendet OpenClaw stattdessen ein benutzerbezogenes
-Verzeichnis `openclaw-<uid>` im temporären Verzeichnis des Betriebssystems. Datierte Protokolldateien werden
+oder nicht verfügbar ist (und unter Windows grundsätzlich), verwendet OpenClaw stattdessen ein benutzerspezifisches
+Verzeichnis `openclaw-<uid>` unter dem temporären Verzeichnis des Betriebssystems. Datierte Protokolldateien werden
 nach 24 Stunden bereinigt.
 
 Jede Datei wird rotiert, wenn der nächste Schreibvorgang `logging.maxFileBytes`
-überschreiten würde (Standard: 100 MB). OpenClaw bewahrt bis zu fünf nummerierte Archive neben der
-aktiven Datei auf, beispielsweise `openclaw-YYYY-MM-DD.1.log`, und schreibt in ein neues
-aktives Protokoll weiter, statt Diagnoseinformationen zu unterdrücken.
+überschreiten würde (Standard: 100 MB). OpenClaw behält neben der
+aktiven Datei bis zu fünf nummerierte Archive bei, etwa `openclaw-YYYY-MM-DD.1.log` oder
+`openclaw-dev-YYYY-MM-DD.1.log`, und schreibt in eine neue aktive Protokolldatei weiter,
+anstatt Diagnoseinformationen zu unterdrücken.
 
 Sie können den Pfad in `~/.openclaw/openclaw.json` überschreiben:
 
@@ -51,70 +66,75 @@ Sie können den Pfad in `~/.openclaw/openclaw.json` überschreiben:
 
 ## Protokolle lesen
 
-### CLI: fortlaufende Live-Anzeige (empfohlen)
+### CLI: Live-Verfolgung (empfohlen)
 
 Verfolgen Sie die Gateway-Protokolldatei über RPC:
 
 ```bash
 openclaw logs --follow
+openclaw --dev logs --follow
+openclaw --profile work logs --follow
 ```
+
+Die Profilauswahl auf Stammebene löst dieselbe profilspezifische Datei auf, die vom
+Gateway verwendet wird, einschließlich CLI-Fallback-Lesevorgängen, wenn lokales RPC nicht verfügbar ist.
 
 Optionen:
 
-| Flag                | Standard | Verhalten                                                                                                  |
-| ------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
-| `--follow`          | aus      | Verfolgt das Protokoll weiter; stellt die Verbindung nach einem Abbruch mit ansteigender Wartezeit wieder her |
-| `--limit <n>`       | `200`    | Maximale Zeilenanzahl pro Abruf                                                                            |
-| `--max-bytes <n>`   | `250000` | Maximale Anzahl zu lesender Bytes pro Abruf                                                                |
-| `--interval <ms>`   | `1000`   | Abfrageintervall während der fortlaufenden Anzeige                                                         |
-| `--json`            | aus      | Zeilengetrenntes JSON (ein Ereignis pro Zeile)                                                             |
-| `--plain`           | aus      | Erzwingt Klartext in TTY-Sitzungen                                                                         |
-| `--no-color`        | —        | Deaktiviert ANSI-Farben                                                                                    |
-| `--utc`             | aus      | Stellt Zeitstempel in UTC dar (standardmäßig wird die lokale Zeit verwendet)                               |
-| `--local-time`      | aus      | Akzeptierte Kompatibilitätsschreibweise für die Standardeinstellung „lokale Zeit“; darüber hinaus ohne Wirkung |
-| `--url` / `--token` | —        | Standardmäßige Gateway-RPC-Flags                                                                           |
-| `--timeout <ms>`    | `30000`  | Zeitüberschreitung für Gateway-RPC                                                                         |
-| `--expect-final`    | aus      | Warte-Flag für die endgültige Antwort eines agentengestützten RPC (wird hier über die gemeinsame Clientebene akzeptiert) |
+| Flag                | Standard | Verhalten                                                                             |
+| ------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `--follow`          | aus      | Verfolgung fortsetzen; stellt bei Trennung mit Backoff erneut eine Verbindung her     |
+| `--limit <n>`       | `200`    | Maximale Zeilenanzahl pro Abruf                                                       |
+| `--max-bytes <n>`   | `250000` | Maximale Anzahl zu lesender Bytes pro Abruf                                           |
+| `--interval <ms>`   | `1000`   | Abfrageintervall während der Verfolgung                                               |
+| `--json`            | aus      | Zeilenbegrenztes JSON (ein Ereignis pro Zeile)                                        |
+| `--plain`           | aus      | Erzwingt Klartext in TTY-Sitzungen                                                    |
+| `--no-color`        | —        | Deaktiviert ANSI-Farben                                                              |
+| `--utc`             | aus      | Stellt Zeitstempel in UTC dar (Standard ist die lokale Zeit)                          |
+| `--local-time`      | aus      | Akzeptierte Kompatibilitätsschreibweise für die lokale Zeit als Standard; keine darüber hinausgehende Wirkung |
+| `--url` / `--token` | —        | Standardmäßige Gateway-RPC-Flags                                                      |
+| `--timeout <ms>`    | `30000`  | Gateway-RPC-Zeitüberschreitung                                                        |
+| `--expect-final`    | aus      | Flag zum Warten auf die endgültige Antwort bei agentengestütztem RPC (wird hier über die gemeinsame Client-Schicht akzeptiert) |
 
 Ausgabemodi:
 
-- **TTY-Sitzungen**: übersichtliche, farbige und strukturierte Protokollzeilen.
+- **TTY-Sitzungen**: übersichtliche, farbige, strukturierte Protokollzeilen.
 - **Nicht-TTY-Sitzungen**: Klartext.
 
-Wenn Sie ausdrücklich `--url` angeben, wendet die CLI weder Zugangsdaten aus der Konfiguration noch aus
-der Umgebung automatisch an. Geben Sie `--token` selbst an, andernfalls schlägt der Aufruf mit
+Wenn Sie eine explizite Angabe für `--url` übergeben, wendet die CLI Konfigurations- oder
+Umgebungszugangsdaten nicht automatisch an. Geben Sie `--token` selbst an, andernfalls schlägt der Aufruf mit
 `gateway url override requires explicit credentials` fehl.
 
 Im JSON-Modus gibt die CLI mit `type` gekennzeichnete Objekte aus:
 
 - `meta`: Stream-Metadaten (Datei, Quelle, Quellenart, Dienst, Cursor, Größe)
 - `log`: analysierter Protokolleintrag
-- `notice`: Hinweise auf Kürzung oder Rotation
+- `notice`: Hinweise auf Abschneiden/Rotation
 - `raw`: nicht analysierte Protokollzeile
 - `error`: Gateway-Verbindungsfehler (werden nach stderr geschrieben)
 
-Wenn das implizite local loopback Gateway eine Kopplung verlangt, während des Verbindungsaufbaus geschlossen wird
-oder eine Zeitüberschreitung auftritt, bevor `logs.tail` antwortet, greift `openclaw logs` automatisch auf das
-konfigurierte Gateway-Dateiprotokoll zurück. Ausdrückliche `--url`-Ziele verwenden
-diesen Rückgriff nicht. `openclaw logs --follow` ist strenger: Unter Linux verwendet es, sofern verfügbar,
-das aktive benutzerbezogene systemd-Journal des Gateway anhand der PID und versucht andernfalls mit
-ansteigender Wartezeit erneut, eine Verbindung zum aktiven Gateway herzustellen, statt eine möglicherweise veraltete,
-parallel gespeicherte Datei zu verfolgen.
+Wenn das implizite lokale Loopback-Gateway eine Kopplung anfordert, während des Verbindungsaufbaus
+geschlossen wird oder eine Zeitüberschreitung auftritt, bevor `logs.tail` antwortet, greift `openclaw logs`
+automatisch auf das konfigurierte Gateway-Dateiprotokoll zurück. Explizite Ziele für `--url` verwenden
+dieses Fallback nicht. `openclaw logs --follow` ist strenger: Unter Linux verwendet es, sofern verfügbar, das aktive
+user-systemd-Gateway-Journal anhand der PID und versucht andernfalls mit Backoff erneut, eine Verbindung zum
+aktiven Gateway herzustellen, anstatt einer möglicherweise veralteten parallel vorhandenen
+Datei zu folgen.
 
-Wenn das Gateway nicht erreichbar ist, zeigt die CLI einen kurzen Hinweis an, folgenden Befehl auszuführen:
+Wenn das Gateway nicht erreichbar ist, gibt die CLI einen kurzen Hinweis aus, folgenden Befehl auszuführen:
 
 ```bash
 openclaw doctor
 ```
 
-### Steuerungsoberfläche (Web)
+### Control UI (Web)
 
-Die Registerkarte **Protokolle** der Steuerungsoberfläche verfolgt dieselbe Datei mithilfe von `logs.tail`.
-Unter [Steuerungsoberfläche](/de/web/control-ui) erfahren Sie, wie Sie sie öffnen.
+Der Tab **Protokolle** der Control UI verfolgt dieselbe Datei mithilfe von `logs.tail`.
+Unter [Control UI](/de/web/control-ui) erfahren Sie, wie sie geöffnet wird.
 
-### Kanalspezifische Protokolle
+### Nur kanalbezogene Protokolle
 
-Um Kanalaktivitäten (WhatsApp/Telegram usw.) zu filtern, verwenden Sie:
+Verwenden Sie Folgendes, um Kanalaktivitäten (WhatsApp/Telegram/usw.) zu filtern:
 
 ```bash
 openclaw channels logs --channel whatsapp
@@ -127,42 +147,43 @@ verfügbar.
 
 ### Dateiprotokolle (JSONL)
 
-Jede Zeile in der Protokolldatei ist ein JSON-Objekt. Die CLI und die Steuerungsoberfläche analysieren diese
-Einträge, um eine strukturierte Ausgabe darzustellen (Zeit, Stufe, Subsystem, Meldung).
+Jede Zeile der Protokolldatei ist ein JSON-Objekt. Die CLI und Control UI analysieren diese
+Einträge, um eine strukturierte Ausgabe darzustellen (Zeit, Stufe, Subsystem, Nachricht).
 
-JSONL-Datensätze im Dateiprotokoll enthalten außerdem, sofern verfügbar, maschinenfilterbare Felder auf oberster Ebene:
+JSONL-Datensätze des Dateiprotokolls enthalten, sofern verfügbar, auch maschinell filterbare
+Felder auf oberster Ebene:
 
-- `hostname`: Hostname des Gateway.
-- `message`: zusammengefasster Text der Protokollmeldung für die Volltextsuche.
-- `agent_id`: ID des aktiven Agenten, wenn der Protokollaufruf einen Agentenkontext enthält.
-- `session_id`: ID/Schlüssel der aktiven Sitzung, wenn der Protokollaufruf einen Sitzungskontext enthält.
+- `hostname`: Hostname des Gateways.
+- `message`: vereinfachter Protokollnachrichtentext für die Volltextsuche.
+- `agent_id`: aktive Agent-ID, wenn der Protokollaufruf einen Agentenkontext enthält.
+- `session_id`: aktive Sitzungs-ID bzw. aktiver Sitzungsschlüssel, wenn der Protokollaufruf einen Sitzungskontext enthält.
 - `channel`: aktiver Kanal, wenn der Protokollaufruf einen Kanalkontext enthält.
 
-OpenClaw bewahrt die ursprünglichen strukturierten Protokollargumente zusammen mit diesen Feldern auf,
-damit vorhandene Parser, die nummerierte tslog-Argumentschlüssel lesen, weiterhin funktionieren.
+OpenClaw behält die ursprünglichen strukturierten Protokollargumente neben diesen Feldern bei,
+damit bestehende Parser, die nummerierte tslog-Argumentschlüssel lesen, weiterhin funktionieren.
 
-Aktivitäten von Talk, Echtzeit-Sprachkommunikation und verwalteten Räumen erzeugen begrenzte Lebenszyklus-Protokolldatensätze
-über dieselbe Dateiprotoll-Pipeline. Diese Datensätze enthalten Ereignistyp,
-Modus, Transport, Provider sowie Größen- und Zeitmessungen, sofern verfügbar, lassen jedoch
+Talk-, Echtzeitsprach- und verwaltete Raumaktivitäten geben begrenzte Lebenszyklus-Protokolldatensätze
+über dieselbe Dateiprotokoll-Pipeline aus. Diese Datensätze enthalten, sofern verfügbar, Ereignistyp,
+Modus, Transport, Provider sowie Größen- und Zeitmessungen, lassen jedoch
 Transkripttext, Audionutzdaten, Turn-IDs, Anruf-IDs und Provider-Element-IDs aus.
 
 ### Konsolenausgabe
 
-Konsolenprotokolle berücksichtigen **TTY** und sind zur besseren Lesbarkeit formatiert:
+Konsolenprotokolle sind **TTY-bewusst** und für eine gute Lesbarkeit formatiert:
 
 - Subsystempräfixe (z. B. `gateway/channels/whatsapp`)
-- Farbliche Kennzeichnung der Stufen (Information/Warnung/Fehler)
+- Farbliche Kennzeichnung der Stufen (Info/Warnung/Fehler)
 - Optionaler kompakter oder JSON-Modus
 
-Die Konsolenformatierung wird über `logging.consoleStyle` gesteuert.
+Die Konsolenformatierung wird durch `logging.consoleStyle` gesteuert.
 
 ### Gateway-WebSocket-Protokolle
 
-`openclaw gateway` bietet außerdem eine WebSocket-Protokollierung des RPC-Datenverkehrs:
+`openclaw gateway` bietet außerdem eine WebSocket-Protokollierung für RPC-Datenverkehr:
 
-- normaler Modus: nur relevante Ergebnisse (Fehler, Analysefehler, langsame Aufrufe)
+- Normalmodus: nur relevante Ergebnisse (Fehler, Analysefehler, langsame Aufrufe)
 - `--verbose`: gesamter Anfrage-/Antwortdatenverkehr
-- `--ws-log auto|compact|full`: Darstellungsstil für die ausführliche Ausgabe auswählen
+- `--ws-log auto|compact|full`: Auswahl des ausführlichen Darstellungsstils
 - `--compact`: Alias für `--ws-log compact`
 
 Beispiele:
@@ -181,7 +202,7 @@ Die gesamte Protokollierungskonfiguration befindet sich unter `logging` in `~/.o
 {
   "logging": {
     "level": "info",
-    "file": "/tmp/openclaw/openclaw-YYYY-MM-DD.log",
+    "file": "/path/to/openclaw.log",
     "consoleLevel": "info",
     "consoleStyle": "pretty",
     "redactSensitive": "tools",
@@ -190,21 +211,21 @@ Die gesamte Protokollierungskonfiguration befindet sich unter `logging` in `~/.o
 }
 ```
 
-### Protokollierungsstufen
+### Protokollstufen
 
 Stufen: `silent`, `fatal`, `error`, `warn`, `info`, `debug`, `trace`.
 
-- `logging.level`: Stufe der **Dateiprotokolle** (JSONL; Standard: `info`).
+- `logging.level`: Stufe der **Dateiprotokolle** (JSONL) (Standard: `info`).
 - `logging.consoleLevel`: Ausführlichkeitsstufe der **Konsole**.
 
-Sie können beide über die Umgebungsvariable **`OPENCLAW_LOG_LEVEL`** überschreiben (z. B. `OPENCLAW_LOG_LEVEL=debug`). Die Umgebungsvariable hat Vorrang vor der Konfigurationsdatei, sodass Sie die Ausführlichkeit für einen einzelnen Lauf erhöhen können, ohne `openclaw.json` zu bearbeiten. Sie können außerdem die globale CLI-Option **`--log-level <level>`** übergeben (beispielsweise `openclaw --log-level debug gateway run`), die für diesen Befehl die Umgebungsvariable überschreibt.
+Sie können beide über die Umgebungsvariable **`OPENCLAW_LOG_LEVEL`** überschreiben (z. B. `OPENCLAW_LOG_LEVEL=debug`). Die Umgebungsvariable hat Vorrang vor der Konfigurationsdatei, sodass Sie die Ausführlichkeit für einen einzelnen Durchlauf erhöhen können, ohne `openclaw.json` zu bearbeiten. Sie können auch die globale CLI-Option **`--log-level <level>`** übergeben (beispielsweise `openclaw --log-level debug gateway run`), die für diesen Befehl die Umgebungsvariable überschreibt.
 
 `--verbose` wirkt sich nur auf die Konsolenausgabe und die Ausführlichkeit des WS-Protokolls aus; die
 Stufen der Dateiprotokolle werden dadurch nicht geändert.
 
 ### Gezielte Diagnose des Modelltransports
 
-Verwenden Sie beim Debuggen von Provider-Aufrufen gezielte Umgebungs-Flags, statt
+Verwenden Sie beim Debuggen von Provider-Aufrufen gezielte Umgebungs-Flags, anstatt
 alle Protokolle auf `debug` zu setzen:
 
 ```bash
@@ -214,65 +235,65 @@ OPENCLAW_DEBUG_MODEL_PAYLOAD=tools OPENCLAW_DEBUG_SSE=events openclaw gateway
 
 Verfügbare Flags:
 
-- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: protokolliert den Anfragestart, die Fetch-Antwort, SDK-
-  Header, das erste Streaming-Ereignis, den Stream-Abschluss und Transportfehler auf der
-  Stufe `info`.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: fügt den Protokollen für Modellanfragen eine begrenzte Zusammenfassung
-  der Anfragenutzdaten hinzu.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: nimmt alle für das Modell sichtbaren Werkzeugnamen in
+- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: gibt Anfragestart, Fetch-Antwort, SDK-
+  Header, erstes Streaming-Ereignis, Stream-Abschluss und Transportfehler auf der
+  Stufe `info` aus.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: nimmt eine begrenzte Zusammenfassung der Anfragenutzdaten
+  in Modellanfrageprotokolle auf.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: nimmt alle modellseitigen Tool-Namen in
   die Nutzdatenzusammenfassung auf.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: fügt eine redigierte, größenbegrenzte Momentaufnahme der JSON-
-  Nutzdaten hinzu. Verwenden Sie dies nur während der Fehlersuche; Geheimnisse werden redigiert, Eingabeaufforderungen
-  und Nachrichtentext können jedoch weiterhin enthalten sein.
-- `OPENCLAW_DEBUG_SSE=events`: protokolliert die Zeitmessung des ersten Ereignisses und des Stream-Abschlusses.
-- `OPENCLAW_DEBUG_SSE=peek`: protokolliert zusätzlich die ersten fünf redigierten SSE-Ereignis-
-  nutzdaten, jeweils größenbegrenzt.
-- `OPENCLAW_DEBUG_CODE_MODE=1`: protokolliert Diagnoseinformationen zur Modelloberfläche im Code-Modus,
-  einschließlich der Fälle, in denen native Provider-Werkzeuge ausgeblendet werden, weil der Code-Modus die
-  Werkzeugoberfläche verwaltet.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: nimmt einen redigierten, größenbegrenzten JSON-
+  Schnappschuss der Nutzdaten auf. Verwenden Sie dies nur während des Debuggens; Geheimnisse werden redigiert,
+  Prompts und Nachrichtentext können jedoch weiterhin enthalten sein.
+- `OPENCLAW_DEBUG_SSE=events`: gibt Zeitmessungen für das erste Ereignis und den Stream-Abschluss aus.
+- `OPENCLAW_DEBUG_SSE=peek`: gibt außerdem die ersten fünf redigierten SSE-Ereignis-
+  Nutzdaten aus, jeweils größenbegrenzt.
+- `OPENCLAW_DEBUG_CODE_MODE=1`: gibt Diagnoseinformationen zur Modelloberfläche im Code-Modus aus,
+  einschließlich der Fälle, in denen native Provider-Tools ausgeblendet werden, weil der Code-Modus die
+  Tool-Oberfläche besitzt.
 
 Diese Flags protokollieren über die normale OpenClaw-Protokollierung, sodass `openclaw logs --follow`
-und die Registerkarte „Protokolle“ der Steuerungsoberfläche sie anzeigen. Ohne die Flags sind dieselben Diagnoseinformationen
-weiterhin auf der Stufe `debug` verfügbar.
+und der Tab „Protokolle“ der Control UI sie anzeigen. Ohne die Flags bleiben dieselben Diagnoseinformationen
+auf der Stufe `debug` verfügbar.
 
-Start- und Antwortmetadaten von `[model-fetch]` (Provider, API, Modell, Status,
-Latenz sowie Anfragefelder wie Methode, URL, Zeitüberschreitung, Proxy und Richtlinie)
-werden unabhängig von `OPENCLAW_DEBUG_MODEL_TRANSPORT` stets auf der Stufe `info`
-protokolliert, sodass grundlegende Informationen zum Modelltransport
-ohne Debug-Flags sichtbar sind.
+`[model-fetch]`-Start- und Antwortmetadaten (Provider, API, Modell, Status,
+Latenz und Anfragefelder wie Methode, URL, Zeitüberschreitung, Proxy und Richtlinie)
+werden unabhängig von `OPENCLAW_DEBUG_MODEL_TRANSPORT` immer auf der Stufe `info` ausgegeben,
+sodass eine grundlegende Überprüfung des Modelltransports
+ohne Debug-Flags möglich ist.
 
-### Ablaufverfolgungskorrelation
+### Trace-Korrelation
 
-Dateiprotokolle verwenden JSONL. Wenn ein Protokollaufruf einen gültigen Diagnose-Ablaufverfolgungskontext enthält,
-schreibt OpenClaw die Ablaufverfolgungsfelder als JSON-Schlüssel auf oberster Ebene (`traceId`, `spanId`,
-`parentSpanId`, `traceFlags`), damit externe Protokollverarbeiter die Zeile
-mit OTEL-Spans und der Weitergabe von Provider-`traceparent` korrelieren können.
+Dateiprotokolle sind im JSONL-Format. Wenn ein Protokollaufruf einen gültigen Diagnose-Trace-Kontext enthält,
+schreibt OpenClaw die Trace-Felder als JSON-Schlüssel auf oberster Ebene (`traceId`, `spanId`,
+`parentSpanId`, `traceFlags`), damit externe Protokollprozessoren die Zeile
+mit OTEL-Spans und der Provider-Weitergabe von `traceparent` korrelieren können.
 
-Gateway-HTTP-Anfragen und Gateway-WebSocket-Frames erstellen einen internen
-Ablaufverfolgungsbereich für die Anfrage. Protokolle und Diagnoseereignisse, die innerhalb dieses asynchronen Bereichs ausgegeben werden, übernehmen
-die Anfrageablaufverfolgung, wenn sie keinen ausdrücklichen Ablaufverfolgungskontext übergeben. Ablaufverfolgungen von Agentenläufen und
-Modellaufrufen werden zu untergeordneten Elementen der aktiven Anfrageablaufverfolgung, sodass lokale Protokolle,
-Diagnosemomentaufnahmen, OTEL-Spans und vertrauenswürdige Provider-`traceparent`-Header
-über `traceId` verknüpft werden können, ohne rohe Anfrage- oder Modellinhalte zu protokollieren.
+Gateway-HTTP-Anfragen und Gateway-WebSocket-Frames richten einen internen Anfrage-
+Trace-Bereich ein. Protokolle und Diagnoseereignisse, die innerhalb dieses asynchronen Bereichs ausgegeben werden, übernehmen
+den Anfrage-Trace, wenn sie keinen expliziten Trace-Kontext übergeben. Traces von Agentenausführungen und
+Modellaufrufen werden untergeordnete Elemente des aktiven Anfrage-Traces, sodass lokale Protokolle,
+Diagnoseschnappschüsse, OTEL-Spans und vertrauenswürdige Provider-Header für `traceparent` über
+`traceId` verknüpft werden können, ohne unverarbeitete Anfrage- oder Modellinhalte zu protokollieren.
 
-Lebenszyklus-Protokolldatensätze von Talk werden ebenfalls in den diagnostics-otel-Protokollexport übernommen, wenn
-der OpenTelemetry-Protokollexport aktiviert ist, und verwenden dieselben begrenzten Attribute wie Dateiprotokolle.
-Konfigurieren Sie `diagnostics.otel.logsExporter`, um OTLP, stdout-JSONL oder
-beide Ziele auszuwählen.
+Talk-Lebenszyklus-Protokolldatensätze werden auch in den diagnostics-otel-Protokollexport aufgenommen, wenn
+der OpenTelemetry-Protokollexport aktiviert ist. Dabei werden dieselben begrenzten Attribute wie in Dateiprotokollen
+verwendet. Konfigurieren Sie `diagnostics.otel.logsExporter`, um OTLP, stdout-JSONL oder
+beide Senken auszuwählen.
 
 ### Größe und Zeitmessung von Modellaufrufen
 
-Diagnoseinformationen zu Modellaufrufen erfassen begrenzte Anfrage-/Antwortmesswerte, ohne
-rohe Inhalte von Eingabeaufforderungen oder Antworten zu erfassen:
+Diagnoseinformationen zu Modellaufrufen erfassen begrenzte Anfrage-/Antwortmessungen, ohne
+unverarbeitete Prompt- oder Antwortinhalte zu erfassen:
 
-- `requestPayloadBytes`: UTF-8-Bytegröße der endgültigen Nutzdaten der Modellanfrage
-- `responseStreamBytes`: UTF-8-Bytegröße der gestreamten Nutzdatenblöcke der Modellantwort.
-  Häufige Text-, Denk- und Werkzeugaufruf-Delta-Ereignisse zählen
-  nur die inkrementellen `delta`-Bytes statt vollständiger `partial`-Momentaufnahmen.
+- `requestPayloadBytes`: UTF-8-Bytegröße der endgültigen Modellanfrage-Nutzlast
+- `responseStreamBytes`: UTF-8-Bytegröße des gestreamten Modellantwort-Fragments
+  Nutzlasten. Hochfrequente Text-, Denk- und Tool-Aufruf-Delta-Ereignisse zählen
+  nur die inkrementellen `delta`-Bytes anstelle vollständiger `partial`-Momentaufnahmen.
 - `timeToFirstByteMs`: verstrichene Zeit bis zum ersten gestreamten Antwortereignis
 - `durationMs`: Gesamtdauer des Modellaufrufs
 
-Diese Felder stehen Diagnosemomentaufnahmen, Plugin-Hooks für Modellaufrufe sowie
+Diese Felder stehen Diagnose-Momentaufnahmen, Plugin-Hooks für Modellaufrufe und
 OTEL-Spans/-Metriken für Modellaufrufe zur Verfügung, wenn der Diagnoseexport aktiviert ist.
 
 ### Konsolenstile
@@ -281,49 +302,64 @@ OTEL-Spans/-Metriken für Modellaufrufe zur Verfügung, wenn der Diagnoseexport 
 
 - `pretty`: benutzerfreundlich, farbig und mit Zeitstempeln.
 - `compact`: kompaktere Ausgabe (am besten für lange Sitzungen).
-- `json`: JSON pro Zeile (für Protokollverarbeiter).
+- `json`: JSON pro Zeile (für Log-Prozessoren).
 
-### Redigierung
+### Schwärzung
 
-OpenClaw kann sensible Token redigieren, bevor sie in der Konsolenausgabe, in Dateiprotokollen,
-OTLP-Protokolldatensätzen, im gespeicherten Text von Sitzungstranskripten oder in Werkzeug-
-Ereignisnutzdaten der Steuerungsoberfläche erscheinen (Werkzeugstartargumente, partielle/endgültige Ergebnisnutzdaten, abgeleitete
-exec-Ausgabe und Patch-Zusammenfassungen):
+OpenClaw kann sensible Token schwärzen, bevor sie in der Konsolenausgabe, in Dateiprotokollen,
+in OTLP-Protokolldatensätzen, im Text persistierter Sitzungstranskripte oder in Tool-
+Ereignisnutzlasten der Control UI erscheinen (Tool-Startargumente, partielle/endgültige Ergebnisnutzlasten, abgeleitete
+Ausführungsausgaben und Patch-Zusammenfassungen):
 
-- `logging.redactSensitive`: `off` | `tools` (Standard: `tools`)
-- `logging.redactPatterns`: Liste von Regex-Zeichenfolgen, die den Standardsatz für die Protokoll-/Transkriptausgabe ersetzt. Für Werkzeugnutzdaten der Steuerungsoberfläche werden benutzerdefinierte Muster zusätzlich zu den integrierten Standardmustern angewendet, sodass das Hinzufügen eines Musters die Redigierung von Werten, die bereits von den Standardmustern erfasst werden, niemals abschwächt.
+- Die Schwärzung sensibler Werte ist immer aktiviert.
+- `logging.redactPatterns`: Liste regulärer Ausdrücke als Zeichenfolgen, die den Standardsatz für die Log-/Transkriptausgabe ersetzt. Bei Tool-Nutzlasten der Control UI werden benutzerdefinierte Muster zusätzlich zu den integrierten Standardmustern angewendet, sodass das Hinzufügen eines Musters niemals die Schwärzung von Werten abschwächt, die bereits von den Standardmustern erfasst werden.
 
 Dateiprotokolle und Sitzungstranskripte bleiben im JSONL-Format, übereinstimmende geheime Werte werden jedoch
-maskiert, bevor die Zeile oder Meldung auf den Datenträger geschrieben wird. Die Redigierung erfolgt nach bestem Bemühen:
-Sie wird auf textbasierte Nachrichteninhalte und Protokollzeichenfolgen angewendet, nicht auf jedes
-Bezeichner- oder Binärnutzdatenfeld.
+maskiert, bevor die Zeile oder Nachricht auf den Datenträger geschrieben wird. Die Schwärzung erfolgt nach bestem Bemühen:
+Sie gilt für texttragende Nachrichteninhalte und Log-Zeichenfolgen, nicht für jedes
+Bezeichner- oder Binärnutzlastfeld.
 
-Die integrierten Standardwerte decken gängige API-Anmeldedaten und Feldnamen für Zahlungsanmeldedaten ab, beispielsweise Kartennummer, CVC/CVV, gemeinsam verwendetes Zahlungstoken und Zahlungsanmeldedaten, wenn sie als JSON-Felder, URL-Parameter, CLI-Flags oder Zuweisungen vorkommen.
+Die integrierten Standardmuster decken gängige API-Anmeldedaten und Feldnamen für Zahlungsdaten
+wie Kartennummer, CVC/CVV, gemeinsam verwendetes Zahlungs-Token und Zahlungsanmeldedaten ab,
+wenn sie als JSON-Felder, URL-Parameter, CLI-Flags oder Zuweisungen erscheinen.
 
-`logging.redactSensitive: "off"` deaktiviert nur diese allgemeine Richtlinie für Protokolle und Transkripte. OpenClaw schwärzt weiterhin Nutzdaten an Sicherheitsgrenzen, die UI-Clients, Support-Paketen, Diagnosebeobachtern, Genehmigungsaufforderungen oder Agentenwerkzeugen angezeigt werden können. Beispiele hierfür sind Werkzeugaufrufereignisse der Control UI, die Ausgabe von `sessions_history`, Diagnose-Support-Exporte, Beobachtungen von Provider-Fehlern, die Anzeige von Befehlen zur Ausführungsgenehmigung und Gateway-WebSocket-Protokolle. Benutzerdefinierte `logging.redactPatterns` können auf diesen Oberflächen weiterhin projektspezifische Muster hinzufügen.
+OpenClaw schwärzt außerdem Nutzlasten an Sicherheitsgrenzen, die UI-Clients, Support-
+Paketen, Diagnosebeobachtern, Genehmigungsaufforderungen oder Agenten-Tools angezeigt werden. Benutzerdefinierte
+`logging.redactPatterns` können diesen Oberflächen projektspezifische Muster hinzufügen.
 
 ## Diagnose und OpenTelemetry
 
-Diagnosen sind strukturierte, maschinenlesbare Ereignisse für Modellausführungen und die Telemetrie des Nachrichtenflusses (Webhooks, Warteschlangenbildung, Sitzungsstatus). Sie ersetzen **keine** Protokolle, sondern speisen Metriken, Ablaufverfolgungen und Exporteure. Ereignisse werden standardmäßig prozessintern ausgegeben (setzen Sie `diagnostics.enabled: false`, um sie zu deaktivieren); ihr Export wird separat konfiguriert.
+Diagnosen sind strukturierte, maschinenlesbare Ereignisse für Modellläufe und
+Nachrichtenfluss-Telemetrie (Webhooks, Warteschlangenbildung, Sitzungsstatus). Sie ersetzen **keine**
+Protokolle, sondern speisen Metriken, Traces und Exporter. Ereignisse werden
+standardmäßig prozessintern ausgegeben (setzen Sie `diagnostics.enabled: false`, um sie zu deaktivieren);
+ihr Export wird separat konfiguriert.
 
-Zwei benachbarte Bereiche:
+Zwei benachbarte Oberflächen:
 
-- **OpenTelemetry-Export** — sendet Metriken, Ablaufverfolgungen und Protokolle über OTLP/HTTP an beliebige OpenTelemetry-kompatible Kollektoren oder Backends (Datadog, Grafana, Honeycomb, New Relic, Tempo usw.). Die vollständige Konfiguration, der Signalkatalog, die Namen von Metriken und Spans, Umgebungsvariablen und das Datenschutzmodell befinden sich auf einer eigenen Seite:
+- **OpenTelemetry-Export** — Metriken, Traces und Protokolle per OTLP/HTTP an
+  jeden OpenTelemetry-kompatiblen Collector oder jedes entsprechende Backend senden (Datadog, Grafana,
+  Honeycomb, New Relic, Tempo usw.). Die vollständige Konfiguration, der Signalkatalog,
+  Metrik-/Span-Namen, Umgebungsvariablen und das Datenschutzmodell befinden sich auf einer eigenen Seite:
   [OpenTelemetry-Export](/de/gateway/opentelemetry).
-- **Diagnose-Flags** — gezielte Debug-Protokoll-Flags, die zusätzliche Protokolle an `logging.file` weiterleiten, ohne `logging.level` zu erhöhen. Bei den Flags wird nicht zwischen Groß- und Kleinschreibung unterschieden und sie unterstützen Platzhalter (`telegram.*`, `*`). Konfigurieren Sie sie unter `diagnostics.flags` oder über die Umgebungsvariablen-Überschreibung `OPENCLAW_DIAGNOSTICS=...`. Vollständige Anleitung:
+- **Diagnose-Flags** — gezielte Debug-Protokoll-Flags, die zusätzliche Protokolle an
+  `logging.file` weiterleiten, ohne `logging.level` zu erhöhen. Bei Flags wird nicht zwischen Groß- und Kleinschreibung unterschieden;
+  zudem unterstützen sie Platzhalter (`telegram.*`, `*`). Konfigurieren Sie sie unter `diagnostics.flags`
+  oder über die Umgebungsüberschreibung `OPENCLAW_DIAGNOSTICS=...`. Vollständige Anleitung:
   [Diagnose-Flags](/de/diagnostics/flags).
 
-Informationen zum OTLP-Export an einen Kollektor finden Sie unter [OpenTelemetry-Export](/de/gateway/opentelemetry).
+Informationen zum OTLP-Export an einen Collector finden Sie unter [OpenTelemetry-Export](/de/gateway/opentelemetry).
 
 ## Tipps zur Fehlerbehebung
 
 - **Gateway nicht erreichbar?** Führen Sie zuerst `openclaw doctor` aus.
-- **Protokolle leer?** Prüfen Sie, ob der Gateway ausgeführt wird und in den unter `logging.file` angegebenen Dateipfad schreibt.
+- **Protokolle leer?** Prüfen Sie, ob das Gateway ausgeführt wird und in den Dateipfad
+  unter `logging.file` schreibt.
 - **Benötigen Sie weitere Details?** Setzen Sie `logging.level` auf `debug` oder `trace` und versuchen Sie es erneut.
 
 ## Verwandte Themen
 
-- [OpenTelemetry-Export](/de/gateway/opentelemetry) — OTLP/HTTP-Export, Katalog der Metriken und Spans, Datenschutzmodell
+- [OpenTelemetry-Export](/de/gateway/opentelemetry) — OTLP/HTTP-Export, Metrik-/Span-Katalog, Datenschutzmodell
 - [Diagnose-Flags](/de/diagnostics/flags) — gezielte Debug-Protokoll-Flags
 - [Interna der Gateway-Protokollierung](/de/gateway/logging) — WS-Protokollstile, Subsystempräfixe und Konsolenerfassung
 - [Konfigurationsreferenz](/de/gateway/configuration-reference#diagnostics) — vollständige Referenz der `diagnostics.*`-Felder

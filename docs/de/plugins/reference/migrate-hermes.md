@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das migrate-hermes-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das migrate-hermes-Plugin
 summary: Importiert Hermes-Konfiguration, Erinnerungen, Skills und unterstützte Anmeldedaten in OpenClaw.
 title: Hermes-Plugin migrieren
 x-i18n:
-    generated_at: "2026-07-16T13:23:03Z"
+    generated_at: "2026-07-24T04:04:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

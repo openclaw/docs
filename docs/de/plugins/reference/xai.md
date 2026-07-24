@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das xai-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das xai-Plugin.
 summary: Fügt Unterstützung für den xAI-Modell-Provider zu OpenClaw hinzu.
 title: xAI-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:25:14Z"
+    generated_at: "2026-07-24T05:16:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

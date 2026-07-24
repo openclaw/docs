@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder überprüfen das iMessage-Plugin
-summary: Fügt die iMessage-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+summary: Fügt die iMessage-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: iMessage-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:55Z"
+    generated_at: "2026-07-24T05:15:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

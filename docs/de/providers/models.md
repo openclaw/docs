@@ -1,24 +1,25 @@
 ---
 read_when:
     - Sie möchten einen Modell-Provider auswählen
-    - Sie wünschen schnelle Einrichtungsbeispiele für die LLM-Authentifizierung und Modellauswahl
+    - Sie möchten kurze Einrichtungsbeispiele für die LLM-Authentifizierung und Modellauswahl
 summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
 title: Schnellstart für Modell-Provider
 x-i18n:
-    generated_at: "2026-07-12T02:04:30Z"
+    generated_at: "2026-07-24T05:13:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
+    source_hash: 3988d6985cbe203a6a3357d59160190990b1b53245ea25f1538dbc6f567afec1
     source_path: providers/models.md
     workflow: 16
 ---
 
-Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie anschließend das Standardmodell als `provider/model` fest.
+Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie anschließend das Standardmodell auf `provider/model` fest.
 
 ## Schnellstart (zwei Schritte)
 
-1. Authentifizieren Sie sich beim Provider (üblicherweise über `openclaw onboard`).
+1. Authentifizieren Sie sich beim Provider (normalerweise über `openclaw onboard`).
 2. Legen Sie das Standardmodell fest:
 
 ```json5
@@ -27,11 +28,12 @@ Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie anschlie
 }
 ```
 
-## Unterstützte Provider (Einstiegsauswahl)
+## Unterstützte Provider (Auswahl für den Einstieg)
 
 - [Alibaba Model Studio](/de/providers/alibaba)
 - [Amazon Bedrock](/de/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/de/providers/anthropic)
+- [Baseten (Inkling + Modell-APIs)](/providers/baseten)
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
 - [Chutes](/de/providers/chutes)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
@@ -62,9 +64,9 @@ Den vollständigen Provider-Katalog und die erweiterte Konfiguration finden Sie 
 
 ## Zusätzliche Provider-Varianten
 
-- `anthropic-vertex` – installieren Sie `@openclaw/anthropic-vertex-provider` für implizite Anthropic-Unterstützung auf Google Vertex, wenn Vertex-Anmeldedaten verfügbar sind; keine separate Authentifizierungsoption beim Onboarding
-- `copilot-proxy` – lokale VS Code Copilot Proxy-Bridge; verwenden Sie `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` – inoffizieller Gemini CLI-OAuth-Ablauf; erfordert eine lokale Installation von `gemini` (`brew install gemini-cli` oder `npm install -g @google/gemini-cli`); Standardmodell `google-gemini-cli/gemini-3-flash-preview`; verwenden Sie `openclaw onboard --auth-choice google-gemini-cli` oder `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` – installieren Sie `@openclaw/anthropic-vertex-provider`, um implizite Anthropic-Unterstützung auf Google Vertex zu erhalten, wenn Vertex-Anmeldedaten verfügbar sind; keine separate Authentifizierungsoption beim Onboarding
+- `copilot-proxy` – lokale VS-Code-Copilot-Proxy-Bridge; verwenden Sie `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` – inoffizieller OAuth-Ablauf der Gemini CLI; erfordert eine lokale Installation von `gemini` (`brew install gemini-cli` oder `npm install -g @google/gemini-cli`); Standardmodell `google-gemini-cli/gemini-3-flash-preview`; verwenden Sie `openclaw onboard --auth-choice google-gemini-cli` oder `openclaw models auth login --provider google-gemini-cli --set-default`
 
 ## Verwandte Themen
 

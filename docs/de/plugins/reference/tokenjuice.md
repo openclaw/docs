@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Tokenjuice-Plugin.
+    - Sie installieren, konfigurieren oder überprüfen das Tokenjuice-Plugin
 summary: Komprimiert Ergebnisse der exec- und bash-Tools mit Tokenjuice-Reducern.
 title: Tokenjuice-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:12:18Z"
+    generated_at: "2026-07-24T05:08:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

@@ -4,7 +4,7 @@ read_when:
 summary: Fügt OpenClaw Unterstützung für den Modell-Provider Together hinzu.
 title: Together-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:24:46Z"
+    generated_at: "2026-07-24T04:48:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

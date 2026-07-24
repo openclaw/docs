@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das memory-wiki-Plugin.
-summary: Persistenter Wiki-Compiler und Obsidian-kompatibler Wissensspeicher für OpenClaw.
+    - Sie installieren, konfigurieren oder prüfen das memory-wiki-Plugin
+summary: Persistenter Wiki-Compiler und Obsidian-freundlicher Wissensspeicher für OpenClaw.
 title: Memory-Wiki-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:10:38Z"
+    generated_at: "2026-07-24T04:47:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Memory-Wiki-Plugin
 
-Persistenter Wiki-Compiler und Obsidian-freundlicher Wissensspeicher für OpenClaw.
+Persistenter Wiki-Compiler und Obsidian-kompatibler Wissensspeicher für OpenClaw.
 
 ## Distribution
 
@@ -29,4 +29,4 @@ Verträge: `tools`; Skills
 
 ## Zugehörige Dokumentation
 
-- [memory-wiki](/de/plugins/memory-wiki)
+- [Memory Wiki](/de/plugins/memory-wiki)

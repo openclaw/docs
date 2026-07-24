@@ -1,17 +1,18 @@
 ---
 read_when:
-    - Ein Benutzer berichtet, dass Agenten in einer Schleife wiederholt Tool-Aufrufe ausführen.
-    - Sie müssen den Schutz vor wiederholten Aufrufen optimieren.
-    - Sie bearbeiten Richtlinien für Agenten-Tools und -Laufzeitumgebungen
-    - Nach einem Wiederholungsversuch wegen Kontextüberlaufs treten `compaction_loop_persisted` Abbrüche auf
-summary: So aktivieren und optimieren Sie Schutzmechanismen, die sich wiederholende Tool-Aufrufschleifen erkennen
-title: Tool-Schleifenerkennung
+    - Ein Benutzer meldet, dass Agenten in einer Schleife wiederholter Tool-Aufrufe stecken bleiben
+    - Sie müssen den Schutz vor wiederholten Aufrufen steuern
+    - Sie bearbeiten Richtlinien für Agenten-Tools und -Laufzeiten
+    - Nach einem Wiederholungsversuch aufgrund eines Kontextüberlaufs treten `compaction_loop_persisted` Abbrüche auf
+summary: So aktivieren Sie Schutzmechanismen, die sich wiederholende Tool-Aufrufschleifen erkennen
+title: Tool-Schleifen-Erkennung
 x-i18n:
-    generated_at: "2026-07-12T02:16:36Z"
+    generated_at: "2026-07-24T05:20:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fccbb81281b6c6921e6dad50d15295c1be3f59c664f2caed900bf3dce14bc40a
+    source_hash: 79b5aa1d85e02b8cf46a95b3bcebb255178b91456517cab804cce77b8f3b818e
     source_path: tools/loop-detection.md
     workflow: 16
 ---
@@ -19,52 +20,39 @@ x-i18n:
 OpenClaw verfügt über zwei zusammenwirkende Schutzmechanismen gegen sich wiederholende Tool-Aufrufmuster,
 die beide unter `tools.loopDetection` konfiguriert werden:
 
-1. **Schleifenerkennung** (`enabled`) – standardmäßig deaktiviert. Überwacht den gleitenden
-   Verlauf der Tool-Aufrufe auf wiederholte Muster und Wiederholungsversuche mit unbekannten Tools.
-2. **Schutz nach Compaction** (`postCompactionGuard`) – aktiviert, solange
-   `enabled` nicht ausdrücklich auf `false` gesetzt ist. Wird nach jedem Wiederholungsversuch infolge einer Compaction
-   aktiviert und bricht den Lauf ab, wenn der Agent innerhalb des Fensters dasselbe Tripel
-   `(tool, args, result)` wiederholt.
+1. **Schleifenerkennung** (`enabled`) – standardmäßig deaktiviert. Überwacht den fortlaufenden
+   Tool-Aufrufverlauf auf wiederholte Muster und erneute Versuche mit unbekannten Tools.
+2. **Schutz nach Compaction** – aktiviert, solange
+   `enabled` nicht ausdrücklich auf `false` gesetzt ist. Wird nach jedem erneuten Versuch infolge einer Compaction aktiviert und
+   bricht den Lauf ab, wenn der Agent dasselbe `(tool, args, result)`-Tripel
+   innerhalb des Zeitfensters wiederholt.
 
 Setzen Sie `tools.loopDetection.enabled: false`, um beide Schutzmechanismen zu deaktivieren.
 
-## Zweck
+## Warum dies existiert
 
-- Sich wiederholende Sequenzen erkennen, die keinen Fortschritt erzielen.
-- Hochfrequente Schleifen ohne Ergebnis erkennen (gleiches Tool, gleiche Eingaben, wiederholte
+- Erkennt sich wiederholende Sequenzen, die keinen Fortschritt erzielen.
+- Erkennt hochfrequente Schleifen ohne Ergebnis (gleiches Tool, gleiche Eingaben, wiederholte
   Fehler).
-- Bestimmte wiederholte Aufrufmuster bekannter Polling-Tools erkennen.
-- Zyklen aus Kontextüberlauf -> Compaction -> gleicher Schleife unterbrechen, statt sie
+- Erkennt bestimmte wiederholte Aufrufmuster bei bekannten Polling-Tools.
+- Unterbricht Zyklen aus Kontextüberlauf -> Compaction -> derselben Schleife, statt sie
   unbegrenzt weiterlaufen zu lassen.
 
 ## Konfigurationsblock
 
-Globale Standardwerte mit allen dokumentierten Feldern:
+Globale Einstellung:
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: false, // Hauptschalter für die Detektoren des gleitenden Verlaufs
-      historySize: 30,
-      warningThreshold: 10,
-      criticalThreshold: 20,
-      unknownToolThreshold: 10,
-      globalCircuitBreakerThreshold: 30,
-      detectors: {
-        genericRepeat: true,
-        knownPollNoProgress: true,
-        pingPong: true,
-      },
-      postCompactionGuard: {
-        windowSize: 3, // nach einem Compaction-Wiederholungsversuch aktiviert; läuft, sofern enabled nicht ausdrücklich false ist
-      },
+      enabled: false, // Hauptschalter für die Detektoren des fortlaufenden Verlaufs
     },
   },
 }
 ```
 
-Optionale Überschreibung pro Agent unter `agents.list[].tools.loopDetection`:
+Optionale agentenspezifische Überschreibung unter `agents.entries.*.tools.loopDetection`:
 
 ```json5
 {
@@ -75,8 +63,6 @@ Optionale Überschreibung pro Agent unter `agents.list[].tools.loopDetection`:
         tools: {
           loopDetection: {
             enabled: true,
-            warningThreshold: 8,
-            criticalThreshold: 16,
           },
         },
       },
@@ -85,115 +71,88 @@ Optionale Überschreibung pro Agent unter `agents.list[].tools.loopDetection`:
 }
 ```
 
-Die Einstellungen pro Agent überlagern den globalen Block Feld für Feld (einschließlich der verschachtelten
-Felder `detectors` und `postCompactionGuard`), sodass ein Agent nur die
-Felder festlegen muss, die er ändern soll.
+Die agentenspezifische Einstellung überschreibt die globale Einstellung.
 
-### Verhalten der Felder
+### Verhalten des Felds
 
-| Feld                             | Standardwert | Wirkung                                                                                                                                                                                  |
-| -------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                        | `false`      | Hauptschalter für die Detektoren des gleitenden Verlaufs. `false` deaktiviert außerdem den Schutz nach Compaction.                                                                        |
-| `historySize`                    | `30`         | Anzahl der für die Analyse vorgehaltenen letzten Tool-Aufrufe.                                                                                                                           |
-| `warningThreshold`               | `10`         | Anzahl der Wiederholungen, ab der ein Muster ausschließlich als Warnung eingestuft wird.                                                                                                 |
-| `criticalThreshold`              | `20`         | Anzahl der Wiederholungen, ab der ein Schleifenmuster ohne Fortschritt blockiert wird. Bei einer Fehlkonfiguration setzt die Laufzeit diesen Wert oberhalb von `warningThreshold`.         |
-| `unknownToolThreshold`           | `10`         | Blockiert wiederholte Aufrufe desselben nicht verfügbaren Tools nach dieser Anzahl von Fehlschlägen. Wird nicht durch `detectors` gesteuert.                                              |
-| `globalCircuitBreakerThreshold`  | `30`         | Globaler Unterbrecher für fehlenden Fortschritt über alle Detektoren hinweg. Bei einer Fehlkonfiguration setzt die Laufzeit diesen Wert oberhalb von `criticalThreshold`. Wird nicht durch `detectors` gesteuert. |
-| `detectors.genericRepeat`        | `true`       | Warnt bei wiederholten Aufrufen mit demselben Tool und denselben Argumenten; blockiert, sobald diese Aufrufe außerdem identische Ergebnisse zurückgeben.                                  |
-| `detectors.knownPollNoProgress`  | `true`       | Erkennt bekannte Polling-Muster ohne Fortschritt (`process` mit `action: "poll"`/`"log"`, `command_status`).                                                                              |
-| `detectors.pingPong`             | `true`       | Erkennt alternierende Pingpong-Muster ohne Fortschritt zwischen zwei Aufrufen.                                                                                                           |
-| `postCompactionGuard.windowSize` | `3`          | Anzahl der Versuche, für die der Schutz nach einer Compaction aktiviert bleibt, sowie Anzahl identischer Tripel, nach der der Lauf abgebrochen wird.                                      |
+| Feld     | Standardwert | Wirkung                                                                                            |
+| --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `enabled` | `false` | Hauptschalter für die Detektoren des fortlaufenden Verlaufs. `false` deaktiviert auch den Schutz nach Compaction. |
 
-Bei `exec` vergleicht der Hash für fehlenden Fortschritt stabile Befehlsergebnisse (Status,
+Bei `exec` vergleicht das Hashing bei fehlendem Fortschritt stabile Befehlsergebnisse (Status,
 Exit-Code, Zeitüberschreitungskennzeichen, Ausgabe) und ignoriert veränderliche Laufzeitmetadaten wie
-Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis. Ergebnisse ausgehender Nachrichtenversendungen
-werden ohne veränderliche aufrufspezifische IDs (Nachrichten-ID, Datei-ID, Zeitstempel)
-gehasht, sodass ein Ergebnis „gesendet“ nicht mit einem anderen Ergebnis „gesendet“
-identisch erscheint. Wenn eine Lauf-ID verfügbar ist, wird der Verlauf ausschließlich innerhalb dieses Laufs
-ausgewertet, sodass geplante Heartbeat-Zyklen und neue Läufe keine veralteten Schleifenzähler
+Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis. Ergebnisse ausgehender Nachrichtenversände
+werden gehasht, nachdem veränderliche aufrufspezifische IDs (Nachrichten-ID, Datei-ID, Zeitstempel)
+entfernt wurden, sodass ein „gesendet“-Ergebnis nicht identisch mit einem anderen „gesendet“-
+Ergebnis erscheint. Wenn eine Lauf-ID verfügbar ist, wird der Verlauf nur innerhalb dieses Laufs ausgewertet,
+sodass geplante Heartbeat-Zyklen und neue Läufe keine veralteten Schleifenzähler
 aus früheren Läufen übernehmen.
 
 ## Empfohlene Einrichtung
 
-- Setzen Sie bei kleineren Modellen `enabled: true` und belassen Sie die Schwellenwerte auf ihren
-  Standardwerten. Führende Modelle benötigen die Erkennung anhand des gleitenden Verlaufs nur selten und können
+- Setzen Sie für kleinere Modelle `enabled: true`. Spitzenmodelle benötigen die Erkennung anhand des fortlaufenden Verlaufs nur selten und können
   den Hauptschalter auf `false` belassen, während sie weiterhin vom
   Schutz nach Compaction profitieren.
-- Halten Sie die Schwellenwerte in der Reihenfolge `warningThreshold < criticalThreshold <
-globalCircuitBreakerThreshold`; die Laufzeit erhöht `criticalThreshold` und
-  `globalCircuitBreakerThreshold`, wenn Sie sie auf oder unter den jeweils zu
-  überschreitenden Schwellenwert setzen.
-- Wenn Fehlalarme auftreten:
-  - Erhöhen Sie `warningThreshold` und/oder `criticalThreshold`.
-  - Erhöhen Sie optional `globalCircuitBreakerThreshold`.
-  - Deaktivieren Sie nur den jeweiligen Detektor, der Probleme verursacht (`detectors.<name>: false`).
-  - Verringern Sie `historySize`, um ein kürzeres Verlaufsfenster zu verwenden.
 - Um alles einschließlich des Schutzes nach Compaction zu deaktivieren, setzen Sie
   `tools.loopDetection.enabled: false` ausdrücklich.
 
 ## Schutz nach Compaction
 
-Nach einem Compaction-Wiederholungsversuch infolge eines Kontextüberlaufs aktiviert der Runner für die
-nächsten Tool-Aufrufe einen Schutz mit kurzem Fenster. Wenn der Agent dasselbe
-Tripel `(toolName, argsHash, resultHash)` innerhalb dieses Fensters
-`postCompactionGuard.windowSize`-mal ausgibt, folgert der Schutz, dass die Compaction die
-Schleife nicht unterbrochen hat, und bricht den Lauf mit einem Fehler vom Typ `compaction_loop_persisted` ab.
+Nach einem erneuten Versuch infolge einer Compaction nach einem Kontextüberlauf aktiviert der Runner für die
+nächsten Tool-Aufrufe einen Schutz mit kurzem Zeitfenster. Wenn der Agent dasselbe
+`(toolName, argsHash, resultHash)`-Tripel innerhalb dieses Zeitfensters oft genug ausgibt, schließt der Schutz daraus, dass die Compaction die
+Schleife nicht unterbrochen hat, und bricht den Lauf mit einem `compaction_loop_persisted`-Fehler ab.
 
-Der Schutz wird durch den Hauptschalter `tools.loopDetection.enabled` gesteuert, jedoch mit einer
-Besonderheit: Er bleibt **aktiviert, wenn der Schalter nicht gesetzt oder auf `true` gesetzt ist**,
-und wird nur deaktiviert, wenn der Schalter ausdrücklich auf `false` gesetzt wird. Dies ist beabsichtigt – der Schutz
-dient dazu, Compaction-Schleifen zu verlassen, die andernfalls unbegrenzt Tokens verbrauchen würden,
+Der Schutz wird mit einer Besonderheit durch das zentrale `tools.loopDetection.enabled`-Flag gesteuert:
+Er bleibt **aktiviert, wenn das Flag nicht gesetzt oder `true` ist**, und wird nur
+deaktiviert, wenn das Flag ausdrücklich auf `false` gesetzt ist. Dies ist beabsichtigt – der Schutz
+dient dazu, Compaction-Schleifen zu beenden, die andernfalls unbegrenzt Tokens verbrauchen würden,
 sodass auch Benutzer ohne Konfiguration geschützt sind.
 
 ```json5
 {
   tools: {
     loopDetection: {
-      // Hauptschalter; auf false setzen, um den Schutz zusammen mit den Detektoren des gleitenden Verlaufs zu deaktivieren
+      // Hauptschalter; auf false setzen, um den Schutz zusammen mit den fortlaufenden Detektoren zu deaktivieren
       enabled: true,
-      postCompactionGuard: {
-        windowSize: 3, // Standardwert
-      },
     },
   },
 }
 ```
 
-- Ein niedrigerer Wert für `windowSize` ist strenger (weniger Versuche vor dem Abbruch).
-- Ein höherer Wert für `windowSize` gewährt dem Agent mehr Wiederherstellungsversuche.
 - Der Schutz bricht niemals ab, solange sich die Ergebnisse ändern; nur byteidentische
-  Ergebnisse im gesamten Fenster lösen ihn aus.
-- Er wird nur unmittelbar nach einem Compaction-Wiederholungsversuch aktiviert, nicht an anderen
+  Ergebnisse im gesamten Zeitfenster lösen ihn aus.
+- Er wird nur unmittelbar nach einem erneuten Versuch infolge einer Compaction aktiviert, nicht an anderen
   Stellen eines Laufs.
 
 <Note>
-  Der Schutz nach Compaction wird immer ausgeführt, wenn der Hauptschalter nicht ausdrücklich auf `false` gesetzt ist, selbst wenn Sie nie einen `tools.loopDetection`-Block erstellt haben. Suchen Sie zur Überprüfung unmittelbar nach einem Compaction-Ereignis im Gateway-Protokoll nach `post-compaction guard armed for N attempts`.
+  Der Schutz nach Compaction wird immer ausgeführt, wenn das zentrale Flag nicht ausdrücklich auf `false` gesetzt ist, selbst wenn Sie nie einen `tools.loopDetection`-Block angelegt haben. Suchen Sie zur Überprüfung unmittelbar nach einem Compaction-Ereignis im Gateway-Protokoll nach `post-compaction guard armed for N attempts`.
 </Note>
 
 ## Protokolle und erwartetes Verhalten
 
 Wenn eine Schleife erkannt wird, protokolliert OpenClaw ein Schleifenereignis und warnt entweder oder blockiert
-abhängig vom Schweregrad den nächsten Tool-Zyklus. Dadurch werden unkontrollierter Token-Verbrauch
-und Blockierungen verhindert, während der normale Tool-Zugriff erhalten bleibt.
+abhängig vom Schweregrad den nächsten Tool-Zyklus. Dadurch wird ein unkontrollierter Token-
+Verbrauch sowie ein Stillstand verhindert, während der normale Tool-Zugriff erhalten bleibt.
 
 - Zuerst werden Warnungen ausgegeben.
-- Die Blockierung erfolgt, sobald ein Muster über den Warnschwellenwert hinaus fortbesteht.
-- Kritische Schwellenwerte blockieren den nächsten Tool-Zyklus und geben im Datensatz des Laufs einen eindeutigen
+- Die Blockierung erfolgt, sobald ein Muster über den Warnschwellenwert hinaus bestehen bleibt.
+- Kritische Schwellenwerte blockieren den nächsten Tool-Zyklus und zeigen im Laufdatensatz einen eindeutigen
   Grund für die Schleifenerkennung an.
-- Der Schutz nach Compaction gibt Fehler vom Typ `compaction_loop_persisted` aus, die
+- Der Schutz nach Compaction gibt `compaction_loop_persisted`-Fehler aus, die
   das verursachende Tool und die Anzahl identischer Aufrufe nennen.
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Genehmigungen für Exec" href="/de/tools/exec-approvals" icon="shield">
-    Zulassungs- und Ablehnungsrichtlinie für die Shell-Ausführung.
+  <Card title="Ausführungsgenehmigungen" href="/de/tools/exec-approvals" icon="shield">
+    Zulassungs-/Ablehnungsrichtlinie für die Shell-Ausführung.
   </Card>
   <Card title="Denkstufen" href="/de/tools/thinking" icon="brain">
-    Stufen des Denkaufwands und Zusammenspiel mit Provider-Richtlinien.
+    Stufen des Schlussfolgerungsaufwands und Zusammenspiel mit Provider-Richtlinien.
   </Card>
-  <Card title="Untergeordnete Agents" href="/de/tools/subagents" icon="users">
-    Starten isolierter Agents zur Begrenzung unkontrollierten Verhaltens.
+  <Card title="Unteragenten" href="/de/tools/subagents" icon="users">
+    Starten isolierter Agenten, um unkontrolliertes Verhalten zu begrenzen.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/config-tools#toolsloopdetection" icon="gear">
     Vollständiges `tools.loopDetection`-Schema und Zusammenführungssemantik.

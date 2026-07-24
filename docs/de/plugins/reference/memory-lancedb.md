@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw-Plugin für LanceDB-gestütztes Langzeitgedächtnis mit automatischem Abruf, automatischer Erfassung und Vektorsuche.
 title: Memory-LanceDB-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:22:49Z"
+    generated_at: "2026-07-24T04:33:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Memory-LanceDB-Plugin
 
-LanceDB-gestütztes OpenClaw-Plugin für Langzeitspeicher mit automatischem Abruf, automatischer Erfassung und Vektorsuche.
+LanceDB-gestütztes Plugin für das Langzeitgedächtnis von OpenClaw mit automatischem Abruf, automatischer Erfassung und Vektorsuche.
 
 ## Distribution
 

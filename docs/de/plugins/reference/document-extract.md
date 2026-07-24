@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das document-extract-Plugin.
-summary: Extrahieren Sie Text und ersatzweise Seitenbilder aus lokalen Dokumentanhängen.
-title: Plugin zur Dokumentenextraktion
+summary: Text und ersatzweise Seitenbilder aus lokalen Dokumentanhängen extrahieren.
+title: Dokumentenextraktions-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:09:16Z"
+    generated_at: "2026-07-24T04:03:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ Extrahiert Text und ersatzweise Seitenbilder aus lokalen Dokumentanhängen.
 
 Verträge: `documentExtractors`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [Dokumentextraktion](/de/tools/pdf)

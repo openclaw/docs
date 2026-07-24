@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw-Slack-Kanal-Plugin für Kanäle, Direktnachrichten, Befehle und App-Ereignisse.
 title: Slack-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:24:22Z"
+    generated_at: "2026-07-24T04:00:32Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32

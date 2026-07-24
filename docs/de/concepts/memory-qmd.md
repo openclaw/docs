@@ -5,21 +5,21 @@ read_when:
 summary: Local-First-Such-Sidecar mit BM25, Vektoren, Reranking und Abfrageerweiterung
 title: QMD-Speicher-Engine
 x-i18n:
-    generated_at: "2026-07-16T12:55:36Z"
+    generated_at: "2026-07-24T04:22:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: b13017ead7e7340624a35e603a18216a5c23405cbab09e7f53b1e15d74d59d23
+    source_hash: c0e54dc9a18d834036e4c79d6b7bdecb268a29976d9f30ea6e82a56ca5d71fda
     source_path: concepts/memory-qmd.md
     workflow: 16
 ---
 
 [QMD](https://github.com/tobi/qmd) ist ein Local-First-Such-Sidecar, der parallel zu
-OpenClaw ausgeführt wird. Er kombiniert BM25, Vektorsuche und Reranking in einer einzigen
-Binärdatei und kann Inhalte außerhalb der Arbeitsbereich-Speicherdateien indizieren.
+OpenClaw ausgeführt wird. Er kombiniert BM25, Vektorsuche und Reranking in einer
+einzigen Binärdatei und kann Inhalte über die Speicherdateien Ihres Arbeitsbereichs hinaus indizieren.
 
-## Vorteile gegenüber der integrierten Engine
+## Vorteile gegenüber der integrierten Lösung
 
 - **Reranking und Abfrageerweiterung** für eine bessere Trefferquote.
 - **Zusätzliche Verzeichnisse indizieren** – Projektdokumentation, Teamnotizen und beliebige Inhalte auf dem Datenträger.
@@ -36,7 +36,7 @@ Binärdatei und kann Inhalte außerhalb der Arbeitsbereich-Speicherdateien indiz
 - QMD installieren: `npm install -g @tobilu/qmd` oder `bun install -g @tobilu/qmd`
 - SQLite-Build, der Erweiterungen zulässt (`brew install sqlite` unter macOS).
 - QMD muss sich im `PATH` des Gateways befinden.
-- macOS und Linux funktionieren ohne weitere Konfiguration. Windows wird am besten über WSL2 unterstützt.
+- macOS und Linux funktionieren ohne weitere Einrichtung. Windows wird am besten über WSL2 unterstützt.
 
 ### Aktivieren
 
@@ -48,57 +48,57 @@ Binärdatei und kann Inhalte außerhalb der Arbeitsbereich-Speicherdateien indiz
 }
 ```
 
-OpenClaw erstellt unter
-`~/.openclaw/agents/<agentId>/qmd/` ein eigenständiges QMD-Basisverzeichnis und verwaltet den Lebenszyklus des Sidecars
-automatisch – Sammlungen, Aktualisierungen und Einbettungsläufe werden für Sie abgewickelt.
-Es bevorzugt aktuelle QMD-Sammlungs- und MCP-Abfrageformate, greift bei Bedarf jedoch auf
-alternative Flags für Sammlungsmuster und ältere MCP-Werkzeugnamen zurück.
-Beim Start werden außerdem veraltete verwaltete Sammlungen mit ihren
-kanonischen Mustern neu erstellt, wenn noch eine ältere QMD-Sammlung mit demselben Namen
+OpenClaw erstellt eine eigenständige QMD-Home-Umgebung unter
+`~/.openclaw/agents/<agentId>/qmd/` und verwaltet den Lebenszyklus des Sidecars
+automatisch – Sammlungen, Aktualisierungen und Einbettungsläufe werden für Sie verwaltet.
+Dabei werden aktuelle QMD-Sammlungs- und MCP-Abfrageformate bevorzugt, bei Bedarf erfolgt jedoch ein Fallback auf
+alternative Flags für Sammlungsmuster und ältere MCP-Werkzeugnamen.
+Die Abstimmung beim Start erstellt außerdem veraltete verwaltete Sammlungen erneut mit ihren
+kanonischen Mustern, wenn noch eine ältere QMD-Sammlung mit demselben Namen
 vorhanden ist.
 
 ## Funktionsweise des Sidecars
 
-- OpenClaw erstellt Sammlungen aus den Speicherdateien Ihres Arbeitsbereichs und allen
-  konfigurierten `memory.qmd.paths`, führt beim Öffnen des QMD-Managers `qmd update`
-  und anschließend regelmäßig aus (`memory.qmd.update.interval`, Standard:
-  `5m`). Aktualisierungen werden über QMD-Unterprozesse ausgeführt, nicht durch eine
-  prozessinterne Dateisystemdurchsuchung. Semantische Suchmodi führen außerdem `qmd embed`
-  aus (`memory.qmd.update.embedInterval`, Standard: `60m`).
-- Die standardmäßige Arbeitsbereichssammlung verfolgt `MEMORY.md` sowie den `memory/`-Verzeichnisbaum.
-  Das kleingeschriebene `memory.md` wird nicht als Stamm-Speicherdatei indiziert.
-- Der QMD-eigene Scanner ignoriert verborgene Pfade sowie gängige Abhängigkeits- und Build-
+- OpenClaw erstellt Sammlungen aus den Speicherdateien des Arbeitsbereichs und den konfigurierten
+  `memory.qmd.paths`. Der QMD-Adapter ist für Aktualisierungs-, Einbettungs-, Entprellungs- und
+  Zeitüberschreitungsheuristiken zuständig; diese können nicht durch Benutzer konfiguriert werden.
+- QMD verwaltet weiterhin seine `index.sqlite`, die YAML-Sammlungskonfiguration und die Modelldownloads
+  in der agentenspezifischen QMD-Home-Umgebung; hierbei handelt es sich um Artefakte eines externen Werkzeugs,
+  nicht um OpenClaw-Statustabellen. Die OpenClaw-eigene Koordination erfolgt ausschließlich in SQLite:
+  Eine gemeinsam genutzte Lease begrenzt die Einbettungsarbeit agentenübergreifend, während jeweils eine Lease in der
+  Datenbank eines Agenten dessen Schreibvorgänge für Sammlungen, Aktualisierungen und Einbettungen serialisiert.
+  Die Laufzeit erstellt keine QMD-Dateisperren-Sidecars mehr. `openclaw doctor --fix`
+  entfernt außer Betrieb genommene Sidecars erst, nachdem nachgewiesen wurde, dass deren früherer Prozesseigentümer nicht mehr aktiv ist.
+  Upgrades erfolgen als sauberer Übergang: Stoppen Sie alle OpenClaw-Prozesse, die dasselbe
+  Statusverzeichnis verwenden, und starten Sie sie neu, bevor Sie die neue Version verwenden. Gemischte alte und neue QMD-
+  Writer werden nicht unterstützt; die Laufzeit sperrt die außer Betrieb genommenen
+  Sidecars absichtlich nicht parallel.
+- Die standardmäßige Arbeitsbereichssammlung verfolgt `MEMORY.md` sowie den `memory/`-
+  Verzeichnisbaum. `memory.md` in Kleinschreibung wird nicht als Stamm-Speicherdatei indiziert.
+- Der QMD-eigene Scanner ignoriert versteckte Pfade und gängige Abhängigkeits-/Build-
   Verzeichnisse wie `.git`, `.cache`, `node_modules`, `vendor`, `dist` und
-  `build`. Beim Start des Gateways wird QMD standardmäßig nicht initialisiert
-  (`memory.qmd.update.startup` ist standardmäßig `off`), sodass bei einem Kaltstart weder
-  die Speicher-Laufzeitumgebung importiert noch der langlebige Watcher erstellt wird, bevor
-  der Speicher erstmals verwendet wird.
-- Setzen Sie `memory.qmd.update.startup` auf `idle` oder `immediate`, um QMD
-  dennoch beim Start des Gateways zu initialisieren. `memory.qmd.update.onBoot` ist standardmäßig `true` und
-  führt die erste Aktualisierung beim Start aus; setzen Sie es auf `false`, um diese
-  sofortige Aktualisierung zu überspringen. Der langlebige Manager wird weiterhin geöffnet, wenn Aktualisierungs- oder Einbettungsintervalle
-  konfiguriert sind, sodass QMD weiterhin seinen regulären Watcher und seine Timer verwaltet.
-- Suchvorgänge verwenden den konfigurierten `searchMode` (Standard: `search`; unterstützt außerdem
+  `build`. Beim Start des Gateways bleibt QMD verzögert geladen; der Manager wird initialisiert, wenn der Speicher
+  erstmals verwendet wird.
+- Suchen verwenden den konfigurierten `searchMode` (Standard: `search`; unterstützt außerdem
   `vsearch` und `query`). `search` verwendet ausschließlich BM25, daher überspringt OpenClaw in diesem Modus
-  Bereitschaftsprüfungen für semantische Vektoren und die Pflege von Einbettungen. Wenn ein Modus
+  Bereitschaftsprüfungen für semantische Vektoren und die Einbettungswartung. Wenn ein Modus
   fehlschlägt, versucht OpenClaw es erneut mit `qmd query`.
 - Wenn `searchMode` auf `query` gesetzt ist, setzen Sie `memory.qmd.rerank` auf `false`, um
   den hybriden Abfragepfad von QMD ohne Reranker zu verwenden (erfordert QMD 2.1 oder neuer).
   OpenClaw übergibt `--no-rerank` an den direkten QMD-CLI-Pfad und
   `rerank: false` an das MCP-Abfragewerkzeug von QMD.
 - Bei QMD-Versionen, die Filter für mehrere Sammlungen ausweisen, fasst OpenClaw
-  Sammlungen aus derselben Quelle in einem QMD-Suchaufruf zusammen. Ältere QMD-Versionen
-  verwenden weiterhin den kompatiblen Fallback mit einzelnen Sammlungen.
+  Sammlungen mit derselben Quelle in einem QMD-Suchaufruf zusammen. Ältere QMD-Versionen
+  behalten den kompatiblen Fallback pro Sammlung bei.
 - Wenn QMD vollständig ausfällt, wechselt OpenClaw zur integrierten SQLite-Engine.
-  Wiederholte Versuche während Chat-Durchläufen werden nach einem Fehler beim Öffnen kurz verzögert, damit
-  eine fehlende Binärdatei oder defekte Sidecar-Abhängigkeit keinen Wiederholungssturm verursacht;
-  `openclaw memory status` und einmalige CLI-Prüfungen überprüfen QMD dennoch
-  direkt erneut.
+  Wiederholte Versuche in Chat-Durchläufen werden nach einem Öffnungsfehler kurz verzögert, damit eine
+  fehlende Binärdatei oder eine defekte Sidecar-Abhängigkeit keinen Wiederholungssturm verursacht;
+  `openclaw memory status` und einmalige CLI-Prüfungen überprüfen QMD weiterhin
+  direkt.
 
 <Info>
-Die erste Suche kann langsam sein – QMD lädt beim ersten
-`qmd query`-Lauf automatisch GGUF-Modelle (~2 GB) für
-Reranking und Abfrageerweiterung herunter.
+Die erste Suche kann langsam sein – QMD lädt beim ersten `qmd query`-Lauf automatisch
+GGUF-Modelle (~2 GB) für Reranking und Abfrageerweiterung herunter.
 </Info>
 
 ## Suchleistung und Kompatibilität
@@ -106,7 +106,7 @@ Reranking und Abfrageerweiterung herunter.
 OpenClaw hält den QMD-Suchpfad sowohl mit aktuellen als auch mit älteren QMD-
 Installationen kompatibel.
 
-Beim Start prüft OpenClaw den Hilfetext der installierten QMD-Version einmal pro Manager. Wenn
+Beim Start überprüft OpenClaw den Hilfetext des installierten QMD einmal pro Manager. Wenn
 die Binärdatei Unterstützung für mehrere Sammlungsfilter ausweist, durchsucht OpenClaw
 alle Sammlungen derselben Quelle mit einem einzigen Befehl:
 
@@ -115,27 +115,27 @@ qmd search "router notes" --json -n 10 -c memory-root-main -c memory-dir-main
 ```
 
 Dadurch muss nicht für jede dauerhafte Speichersammlung ein eigener QMD-Unterprozess gestartet werden.
-Sammlungen mit Sitzungstranskripten verbleiben in ihrer eigenen Quellgruppe, sodass gemischte
-Suchvorgänge mit `memory` und `sessions` dem Ergebnis-Diversifikator weiterhin Eingaben aus
+Sammlungen von Sitzungstranskripten verbleiben in ihrer eigenen Quellengruppe, sodass gemischte
+Suchen über `memory` und `sessions` dem Ergebnis-Diversifizierer weiterhin Eingaben aus
 beiden Quellen liefern.
 
 Ältere QMD-Builds akzeptieren nur einen Sammlungsfilter. Wenn OpenClaw einen
-solchen Build erkennt, verwendet es weiterhin den Kompatibilitätspfad und durchsucht jede Sammlung
+solchen Build erkennt, behält es den Kompatibilitätspfad bei und durchsucht jede Sammlung
 separat, bevor die Ergebnisse zusammengeführt und dedupliziert werden.
 
-Um den installierten Vertrag manuell zu prüfen, führen Sie Folgendes aus:
+Führen Sie Folgendes aus, um den installierten Vertrag manuell zu überprüfen:
 
 ```bash
 qmd --help | grep -i collection
 ```
 
-Die Hilfe aktueller QMD-Versionen erwähnt die Ausrichtung auf eine oder mehrere Sammlungen. Die Hilfe älterer Versionen
-beschreibt üblicherweise eine einzelne Sammlung.
+Die aktuelle QMD-Hilfe erwähnt die Auswahl einer oder mehrerer Sammlungen. Ältere Hilfetexte
+beschreiben üblicherweise eine einzelne Sammlung.
 
 ## Modellüberschreibungen
 
 QMD-Modellumgebungsvariablen werden unverändert vom Gateway-
-Prozess weitergegeben, sodass Sie QMD global anpassen können, ohne eine neue OpenClaw-Konfiguration hinzuzufügen:
+Prozess weitergegeben, sodass Sie QMD global abstimmen können, ohne eine neue OpenClaw-Konfiguration hinzuzufügen:
 
 ```bash
 export QMD_EMBED_MODEL="hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
@@ -143,12 +143,12 @@ export QMD_RERANK_MODEL="/absolute/path/to/reranker.gguf"
 export QMD_GENERATE_MODEL="/absolute/path/to/generator.gguf"
 ```
 
-Führen Sie nach einer Änderung des Einbettungsmodells die Einbettungen erneut aus, damit der Index mit dem
-neuen Vektorraum übereinstimmt.
+Führen Sie nach dem Ändern des Einbettungsmodells die Einbettungen erneut aus, damit der Index dem
+neuen Vektorraum entspricht.
 
 ## Zusätzliche Pfade indizieren
 
-Verweisen Sie QMD auf zusätzliche Verzeichnisse, um sie durchsuchbar zu machen:
+Richten Sie QMD auf zusätzliche Verzeichnisse, damit diese durchsucht werden können:
 
 ```json5
 {
@@ -161,27 +161,23 @@ Verweisen Sie QMD auf zusätzliche Verzeichnisse, um sie durchsuchbar zu machen:
 }
 ```
 
-Ausschnitte aus zusätzlichen Pfaden erscheinen in Suchergebnissen als `qmd/<collection>/<relative-path>`.
-`memory_get` versteht dieses Präfix und liest aus dem
+Ausschnitte aus zusätzlichen Pfaden erscheinen in den Suchergebnissen als
+`qmd/<collection>/<relative-path>`. `memory_get` erkennt dieses Präfix und liest aus dem
 korrekten Sammlungsstamm.
 
 ## Sitzungstranskripte indizieren
 
 Aktivieren Sie die Sitzungsindizierung, um frühere Unterhaltungen wiederzufinden. QMD benötigt sowohl die
-allgemeine Sitzungsquelle `memorySearch` als auch den QMD-Transkriptexporter:
+allgemeine Sitzungsquelle `memory.search` als auch den QMD-Transkriptexporter:
 
 ```json5
 {
-  agents: {
-    defaults: {
-      memorySearch: {
-        experimental: { sessionMemory: true },
-        sources: ["memory", "sessions"],
-      },
-    },
-  },
   memory: {
     backend: "qmd",
+    search: {
+      experimental: { sessionMemory: true },
+      sources: ["memory", "sessions"],
+    },
     qmd: {
       sessions: { enabled: true },
     },
@@ -189,16 +185,20 @@ allgemeine Sitzungsquelle `memorySearch` als auch den QMD-Transkriptexporter:
 }
 ```
 
-Transkripte werden als bereinigte Benutzer-/Assistenten-Dialogwechsel in eine dedizierte QMD-
+Transkripte werden als bereinigte Benutzer-/Assistentenbeiträge in eine dedizierte QMD-
 Sammlung unter `~/.openclaw/agents/<id>/qmd/sessions/` exportiert. Wenn nur
-`memorySearch.experimental.sessionMemory` gesetzt wird, werden keine Transkripte nach
-QMD exportiert.
+`sources: ["sessions"]` festgelegt wird, werden keine Transkripte in QMD exportiert; aktivieren Sie zusätzlich
+`rememberAcrossConversations` oder den expliziten QMD-Sitzungsexport.
 
 Sitzungstreffer werden weiterhin nach
 [`tools.sessions.visibility`](/de/gateway/config-tools#toolssessions) gefiltert. Die
-standardmäßige Sichtbarkeit `tree` legt keine unabhängigen Sitzungen desselben Agenten offen. Wenn eine
-vom Gateway gestartete Sitzung aus einer separaten Direktnachrichtensitzung wiederauffindbar sein soll,
-setzen Sie `tools.sessions.visibility: "agent"` bewusst.
+standardmäßige Sichtbarkeit `tree` umfasst die aktuelle Sitzung, die daraus gestarteten Sitzungen
+und Gruppensitzungen desselben Agenten, die über die kontextbezogene Gruppenerkennung beobachtet werden. Mit
+`session.dmScope: "main"` teilen sich Benutzer in einer Mehrbenutzer-DM-Konfiguration die Hauptsitzung
+und können Inhalte aus deren beobachteten Gruppen wiederfinden. Verwenden Sie für die DM-Isolierung einen peerbezogenen
+`dmScope` oder setzen Sie die Sichtbarkeit auf `"self"`, um kontextbezogene
+Lesezugriffe auf beobachtete Sitzungen zu deaktivieren. Andere, nicht zusammenhängende Sitzungen desselben Agenten erfordern weiterhin
+die Sichtbarkeit `"agent"`.
 
 ## Suchbereich
 
@@ -218,19 +218,19 @@ in Gruppen- oder Kanalchats. Konfigurieren Sie `memory.qmd.scope`, um dies zu ä
 }
 ```
 
-Der obige Ausschnitt entspricht der tatsächlichen Standardregel. Wenn der Bereich eine Suche ablehnt,
+Der obige Ausschnitt entspricht der tatsächlichen Standardregel. Wenn der Bereich eine Suche verweigert,
 protokolliert OpenClaw eine Warnung mit dem abgeleiteten Kanal und Chattyp, damit sich leere
 Ergebnisse leichter diagnostizieren lassen.
 
 ## Quellenangaben
 
-Wenn `memory.citations` auf `auto` oder `on` gesetzt ist, erhalten Suchausschnitte eine angehängte
-Fußzeile `Source: <path>#L<line>` (oder `#L<start>-L<end>`). Im Modus `auto`
-wird die Fußzeile nur bei Direktchat-Sitzungen hinzugefügt. Setzen Sie
+Wenn `memory.citations` auf `auto` oder `on` gesetzt ist, wird an Suchausschnitte eine
+`Source: <path>#L<line>`- (oder `#L<start>-L<end>`-) Fußzeile angehängt. Im Modus `auto`
+wird die Fußzeile nur für direkte Chatsitzungen hinzugefügt. Setzen Sie
 `memory.citations = "off"`, um die Fußzeile wegzulassen und den Pfad dennoch intern an den
 Agenten zu übergeben.
 
-## Einsatzbereiche
+## Einsatzmöglichkeiten
 
 Wählen Sie QMD, wenn Sie Folgendes benötigen:
 
@@ -248,9 +248,9 @@ ohne zusätzliche Abhängigkeiten.
 als Dienst ausgeführt wird, erstellen Sie einen symbolischen Link:
 `sudo ln -s ~/.bun/bin/qmd /usr/local/bin/qmd`.
 
-Wenn `qmd --version` in Ihrer Shell funktioniert, OpenClaw aber weiterhin
+Wenn `qmd --version` in Ihrer Shell funktioniert, OpenClaw jedoch weiterhin
 `spawn qmd ENOENT` meldet, verwendet der Gateway-Prozess wahrscheinlich einen anderen `PATH` als
-Ihre interaktive Shell. Legen Sie die Binärdatei explizit fest:
+Ihre interaktive Shell. Legen Sie die Binärdatei ausdrücklich fest:
 
 ```json5
 {
@@ -266,44 +266,44 @@ Ihre interaktive Shell. Legen Sie die Binärdatei explizit fest:
 Verwenden Sie `command -v qmd` in der Umgebung, in der QMD installiert ist, und prüfen Sie anschließend erneut
 mit `openclaw memory status --deep`.
 
-**Erste Suche sehr langsam?** QMD lädt bei der ersten Verwendung GGUF-Modelle herunter. Wärmen Sie die Umgebung
-mit `qmd query "test"` unter Verwendung derselben XDG-Verzeichnisse vor, die OpenClaw verwendet.
+**Erste Suche sehr langsam?** QMD lädt bei der ersten Verwendung GGUF-Modelle herunter. Wärmen Sie
+mit `qmd query "test"` und denselben XDG-Verzeichnissen vor, die OpenClaw verwendet.
 
-**Viele QMD-Unterprozesse während der Suche?** Aktualisieren Sie QMD nach Möglichkeit. OpenClaw
-verwendet bei Suchvorgängen über mehrere Sammlungen derselben Quelle nur dann einen einzigen Prozess, wenn die
-installierte QMD-Version Unterstützung für mehrere `-c`-Filter ausweist; andernfalls
-wird aus Gründen der Korrektheit weiterhin der ältere Fallback mit einzelnen Sammlungen verwendet.
+**Viele QMD-Unterprozesse während der Suche?** Aktualisieren Sie QMD, wenn möglich. OpenClaw
+verwendet für Suchvorgänge über mehrere Sammlungen derselben Quelle nur dann einen einzigen Prozess, wenn das
+installierte QMD Unterstützung für mehrere `-c`-Filter ausweist; andernfalls
+behält es aus Korrektheitsgründen den älteren Fallback pro Sammlung bei.
 
 **Versucht QMD im reinen BM25-Modus weiterhin, llama.cpp zu bauen?** Setzen Sie
 `memory.qmd.searchMode = "search"`. OpenClaw behandelt diesen Modus als
-rein lexikalisch, überspringt QMD-Vektorstatusprüfungen sowie die Einbettungspflege und
-überlässt semantische Bereitschaftsprüfungen Konfigurationen mit `vsearch` oder `query`.
+rein lexikalisch, überspringt QMD-Vektorstatusprüfungen und die Einbettungswartung und
+überlässt semantische Bereitschaftsprüfungen den Konfigurationen `vsearch` oder `query`.
 
 **Zeitüberschreitung bei der Suche?** Erhöhen Sie `memory.qmd.limits.timeoutMs` (Standard: 4000ms).
 Legen Sie für langsamere Hardware einen höheren Wert fest, beispielsweise `120000`. Dieses Limit gilt für
 QMD-eigene Suchbefehle während der `memory_search`-Aufrufe des Agenten; Einrichtung, Synchronisierung,
-integrierter Fallback und Arbeiten am ergänzenden Korpus behalten ihre eigenen kürzeren Fristen bei.
+integrierter Fallback und ergänzende Korpusverarbeitung behalten ihre eigenen kürzeren Fristen bei.
 
-**Leere Ergebnisse in Gruppen- oder Kanalchats?** Dies entspricht dem erwarteten Verhalten beim
-standardmäßigen `memory.qmd.scope`, das nur direkte Sitzungen zulässt. Fügen Sie eine
+**Leere Ergebnisse in Gruppen- oder Kanalchats?** Dies ist beim
+standardmäßigen `memory.qmd.scope` zu erwarten, der nur direkte Sitzungen zulässt. Fügen Sie eine
 `allow`-Regel für die Chattypen `group` oder `channel` hinzu, wenn dort QMD-Ergebnisse
 angezeigt werden sollen.
 
-**Ist die Suche im Stammspeicher plötzlich zu weit gefasst?** Starten Sie das Gateway neu oder warten Sie
-bis zur nächsten Abstimmung beim Start. OpenClaw erstellt veraltete verwaltete
-Sammlungen mit den kanonischen Mustern `MEMORY.md` und `memory/` neu, wenn ein
-Konflikt mit demselben Namen erkannt wird.
+**Ist die Stammspeichersuche plötzlich zu weit gefasst?** Starten Sie das Gateway neu oder warten Sie
+auf die nächste Abstimmung beim Start. OpenClaw erstellt veraltete verwaltete
+Sammlungen erneut mit den kanonischen Mustern `MEMORY.md` und `memory/`, wenn ein
+Namenskonflikt erkannt wird.
 
 **Verursachen im Arbeitsbereich sichtbare temporäre Repositorys `ENAMETOOLONG` oder eine fehlerhafte Indizierung?**
-Die QMD-Durchsuchung folgt dem zugrunde liegenden QMD-Scanner und nicht den
-integrierten Symlink-Regeln von OpenClaw. Bewahren Sie temporäre Monorepository-Checkouts in verborgenen
-Verzeichnissen wie `.tmp/` oder außerhalb indizierter QMD-Stammverzeichnisse auf, bis QMD
-zyklussichere Durchsuchung oder explizite Ausschlusssteuerungen bereitstellt.
+Die QMD-Durchquerung folgt dem zugrunde liegenden QMD-Scanner und nicht den
+integrierten OpenClaw-Regeln für symbolische Links. Bewahren Sie temporäre Monorepo-Checkouts in versteckten
+Verzeichnissen wie `.tmp/` oder außerhalb indizierter QMD-Stämme auf, bis QMD eine
+zyklussichere Durchquerung oder explizite Ausschlusssteuerungen bereitstellt.
 
 ## Konfiguration
 
 Die vollständige Konfigurationsoberfläche (`memory.qmd.*`), Suchmodi, Aktualisierungsintervalle,
-Bereichsregeln und alle weiteren Optionen finden Sie in der
+Bereichsregeln und alle weiteren Einstellungen finden Sie in der
 [Referenz zur Speicherkonfiguration](/de/reference/memory-config).
 
 ## Verwandte Themen

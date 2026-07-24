@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie benötigen den Überblick über die Netzwerkarchitektur und Sicherheit.
-    - Sie debuggen den lokalen Zugriff im Vergleich zum Tailnet-Zugriff oder die Kopplung
+    - Sie debuggen den lokalen Zugriff im Vergleich zum Tailnet-Zugriff oder das Pairing
     - Sie möchten die kanonische Liste der Netzwerkdokumentation.
-summary: 'Netzwerkzentrale: Gateway-Schnittstellen, Kopplung, Erkennung und Sicherheit'
+summary: 'Netzwerkzentrale: Gateway-Oberflächen, Kopplung, Erkennung und Sicherheit'
 title: Netzwerk
 x-i18n:
-    generated_at: "2026-07-12T01:49:54Z"
+    generated_at: "2026-07-24T05:07:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
     source_hash: 9751bb0fe71009455b243b109ef7ef4eda08d58f940f7dcef305800a5ed89586
     source_path: network.md
@@ -22,19 +23,19 @@ localhost, LAN und Tailnet hinweg verbindet, koppelt und absichert.
 
 Die meisten Vorgänge laufen über das Gateway (`openclaw gateway`), einen einzelnen dauerhaft ausgeführten Prozess, der die Kanalverbindungen und die WebSocket-Steuerungsebene verwaltet.
 
-- **Zuerst Loopback**: Die Gateway-WS-Verbindung verwendet standardmäßig `ws://127.0.0.1:18789`.
+- **Loopback zuerst**: Für Gateway-WS ist standardmäßig `ws://127.0.0.1:18789` festgelegt.
   Bindungen außerhalb von Loopback verweigern den Start ohne einen gültigen Gateway-Authentifizierungspfad:
   Authentifizierung per gemeinsamem geheimem Token/Passwort oder eine korrekt konfigurierte
   `trusted-proxy`-Bereitstellung außerhalb von Loopback.
-- **Ein Gateway pro Host** wird empfohlen. Führen Sie zur Isolation mehrere Gateways mit getrennten Profilen und Ports aus ([Mehrere Gateways](/de/gateway/multiple-gateways)).
+- **Ein Gateway pro Host** wird empfohlen. Führen Sie zur Isolation mehrere Gateways mit isolierten Profilen und Ports aus ([Mehrere Gateways](/de/gateway/multiple-gateways)).
 - **Canvas-Host** wird über denselben Port wie das Gateway bereitgestellt (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`) und bei einer Bindung über Loopback hinaus durch die Gateway-Authentifizierung geschützt.
-- **Remotezugriff** erfolgt üblicherweise über einen SSH-Tunnel oder ein Tailscale-VPN ([Remotezugriff](/de/gateway/remote)).
+- **Remote-Zugriff** erfolgt üblicherweise über einen SSH-Tunnel oder ein Tailscale-VPN ([Remote-Zugriff](/de/gateway/remote)).
 
 Wichtige Referenzen:
 
 - [Gateway-Architektur](/de/concepts/architecture)
 - [Gateway-Protokoll](/de/gateway/protocol)
-- [Gateway-Betriebshandbuch](/de/gateway)
+- [Gateway-Runbook](/de/gateway)
 - [Weboberflächen und Bindungsmodi](/de/web)
 
 ## Kopplung und Identität
@@ -47,25 +48,25 @@ Wichtige Referenzen:
 Lokales Vertrauen:
 
 - Direkte lokale Loopback-Verbindungen (ohne weitergeleitete Header oder Proxy-Header) können
-  automatisch für die Kopplung genehmigt werden, um eine reibungslose Benutzererfahrung auf demselben Host zu gewährleisten.
-- OpenClaw verfügt außerdem über einen eng begrenzten, Backend- beziehungsweise Container-lokalen Selbstverbindungspfad für
+  automatisch zur Kopplung genehmigt werden, damit die Benutzererfahrung auf demselben Host reibungslos bleibt.
+- OpenClaw verfügt außerdem über einen eng begrenzten Pfad für lokale Selbstverbindungen des Backends/Containers für
   vertrauenswürdige Hilfsabläufe mit gemeinsamem Geheimnis.
-- Tailnet- und LAN-Clients, einschließlich Tailnet-Bindungen auf demselben Host, benötigen weiterhin
+- Tailnet- und LAN-Clients, einschließlich Tailnet-Bindungen auf demselben Host, erfordern weiterhin
   eine ausdrückliche Genehmigung der Kopplung.
 
 ## Erkennung und Transporte
 
 - [Erkennung und Transporte](/de/gateway/discovery)
 - [Bonjour/mDNS](/de/gateway/bonjour)
-- [Remotezugriff (SSH)](/de/gateway/remote)
+- [Remote-Zugriff (SSH)](/de/gateway/remote)
 - [Tailscale](/de/gateway/tailscale)
 
 ## Nodes und Transporte
 
 - [Node-Übersicht](/de/nodes)
-- [Bridge-Protokoll (veraltete Nodes, historisch)](/de/gateway/bridge-protocol)
-- [Node-Betriebshandbuch: iOS](/de/platforms/ios)
-- [Node-Betriebshandbuch: Android](/de/platforms/android)
+- [Bridge-Protokoll (Legacy-Nodes, historisch)](/de/gateway/bridge-protocol)
+- [Node-Runbook: iOS](/de/platforms/ios)
+- [Node-Runbook: Android](/de/platforms/android)
 
 ## Sicherheit
 
@@ -76,5 +77,5 @@ Lokales Vertrauen:
 
 ## Verwandte Themen
 
-- [Gateway-Betriebshandbuch](/de/gateway)
-- [Remotezugriff](/de/gateway/remote)
+- [Gateway-Runbook](/de/gateway)
+- [Remote-Zugriff](/de/gateway/remote)

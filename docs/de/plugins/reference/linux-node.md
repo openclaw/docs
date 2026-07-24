@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das linux-node-Plugin.
-summary: Desktop-Benachrichtigungen, Kameraaufnahmen und Standortzugriff für Linux-Node-Hosts.
+    - Sie installieren, konfigurieren oder prüfen das linux-node-Plugin.
+summary: Desktop-Benachrichtigungen, Kameraaufnahmen und Standort für Linux-Node-Hosts.
 title: Linux-Node-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:06:17Z"
+    generated_at: "2026-07-24T05:15:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Linux-Node-Plugin
 
-Desktop-Benachrichtigungen, Kameraaufnahmen und Standortbestimmung für Linux-Node-Hosts.
+Desktop-Benachrichtigungen, Kameraaufnahmen und Standort für Linux-Node-Hosts.
 
 ## Distribution
 

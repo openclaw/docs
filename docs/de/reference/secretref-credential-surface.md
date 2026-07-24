@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Überprüfen der Abdeckung von SecretRef-Anmeldedaten
-    - Überprüfen, ob eine Anmeldeinformation für `secrets configure` oder `secrets apply` geeignet ist
-    - Überprüfen, warum ein Zugangsdatenobjekt außerhalb des unterstützten Funktionsumfangs liegt
-summary: Kanonische unterstützte bzw. nicht unterstützte SecretRef-Anmeldedatenoberfläche
+    - Überprüfung der Abdeckung von SecretRef-Anmeldedaten
+    - Prüfen, ob Anmeldedaten für `secrets configure` oder `secrets apply` berechtigt sind
+    - Überprüfen, warum Anmeldedaten außerhalb des unterstützten Funktionsumfangs liegen
+summary: Kanonische unterstützte und nicht unterstützte SecretRef-Anmeldedatenoberfläche
 title: SecretRef-Anmeldedatenoberfläche
 x-i18n:
-    generated_at: "2026-07-16T13:16:00Z"
+    generated_at: "2026-07-24T05:16:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: a4c7d8d5baf082f5524b93608584600856e48f9076df915c4db301a4ecd814c9
+    source_hash: cbb1ad6c5045780e5ca8d9c20f2a0e86425317e86ef9aaa59957a2094344dd0d
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Diese Seite definiert die kanonische SecretRef-Oberfläche für Anmeldedaten: welche Anmeldedatenfelder eine `SecretRef` (eine durch env/file/exec gestützte Referenz) anstelle eines geheimen Rohwerts akzeptieren.
+Diese Seite definiert die kanonische SecretRef-Oberfläche für Anmeldedaten: welche Anmeldedatenfelder eine `SecretRef` (eine umgebungsvariablen-/datei-/exec-gestützte Referenz) anstelle eines unverschlüsselten Geheimniswerts akzeptieren.
 
-Umfang:
+Geltungsbereich:
 
-- Im Umfang: ausschließlich vom Benutzer bereitgestellte Anmeldedaten, die OpenClaw nicht ausstellt oder rotiert.
-- Außerhalb des Umfangs: zur Laufzeit ausgestellte oder rotierende Anmeldedaten, OAuth-Aktualisierungsmaterial und sitzungsähnliche Artefakte.
+- Im Geltungsbereich: ausschließlich vom Benutzer bereitgestellte Anmeldedaten, die OpenClaw weder ausstellt noch rotiert.
+- Außerhalb des Geltungsbereichs: zur Laufzeit ausgestellte oder rotierende Anmeldedaten, OAuth-Aktualisierungsmaterial und sitzungsähnliche Artefakte.
 
-Die folgenden Listen werden aus der Quellzielregistrierung generiert und in CI gegen `docs/reference/secretref-user-supplied-credentials-matrix.json` geprüft; bearbeiten Sie die Einträge nicht manuell.
+Die folgenden Listen werden aus der Quell-Zielregistrierung generiert und in der CI anhand von `docs/reference/secretref-user-supplied-credentials-matrix.json` geprüft; bearbeiten Sie die Einträge nicht manuell.
 
 ## Unterstützte Anmeldedaten
 
@@ -45,18 +45,18 @@ Die folgenden Listen werden aus der Quellzielregistrierung generiert und in CI g
 - `models.providers.*.request.tls.key`
 - `models.providers.*.request.tls.passphrase`
 - `skills.entries.*.apiKey`
-- `agents.defaults.memorySearch.remote.apiKey`
-- `agents.list[].tts.providers.*.apiKey`
-- `agents.list[].memorySearch.remote.apiKey`
+- `memory.search.remote.apiKey`
+- `agents.entries.*.tts.providers.*.apiKey`
+- `agents.entries.*.memory.search.remote.apiKey`
 - `talk.providers.*.apiKey`
 - `talk.realtime.providers.*.apiKey`
-- `messages.tts.providers.*.apiKey`
-- `tools.web.fetch.firecrawl.apiKey`
+- `tts.providers.*.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
 - `plugins.entries.codex.config.appServer.authToken`
 - `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.firecrawl.config.webFetch.apiKey`
 - `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -70,8 +70,7 @@ Die folgenden Listen werden aus der Quellzielregistrierung generiert und in CI g
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
-- `tools.web.search.*.apiKey`
-- `tools.web.search.apiKey`
+- `plugins.entries.webhooks.config.routes.*.secret`
 - `gateway.auth.password`
 - `gateway.auth.token`
 - `gateway.remote.token`
@@ -128,8 +127,8 @@ Die folgenden Listen werden aus der Quellzielregistrierung generiert und in CI g
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` über die nebengeordnete `serviceAccountRef` (Kompatibilitätsausnahme)
-- `channels.googlechat.accounts.*.serviceAccount` über die nebengeordnete `serviceAccountRef` (Kompatibilitätsausnahme)
+- `channels.googlechat.serviceAccount` über das benachbarte `serviceAccountRef` (Kompatibilitätsausnahme)
+- `channels.googlechat.accounts.*.serviceAccount` über das benachbarte `serviceAccountRef` (Kompatibilitätsausnahme)
 
 ### `auth-profiles.json`-Ziele (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -140,19 +139,20 @@ Die folgenden Listen werden aus der Quellzielregistrierung generiert und in CI g
 
 Hinweise:
 
-- Ziele von Authentifizierungsprofil-Plänen erfordern `agentId`; Planeinträge zielen auf `profiles.*.key` / `profiles.*.token` und schreiben nebengeordnete Referenzen (`keyRef` / `tokenRef`). Authentifizierungsprofil-Referenzen sind in der Laufzeitauflösung und der Audit-Abdeckung enthalten.
-- In `openclaw.json` müssen SecretRefs strukturierte Objekte wie `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` verwenden. Veraltete `secretref-env:<ENV_VAR>`-Markierungszeichenfolgen werden auf SecretRef-Anmeldedatenpfaden abgelehnt; führen Sie `openclaw doctor --fix` aus, um gültige Markierungen zu migrieren.
-- OAuth-Richtlinienprüfung: `auth.profiles.<id>.mode = "oauth"` kann für dieses Profil nicht mit SecretRef-Eingaben kombiniert werden. Start/Neuladen und die Auflösung des Authentifizierungsprofils schlagen sofort fehl, wenn gegen diese Richtlinie verstoßen wird.
-- Bei von SecretRef verwalteten Modell-Providern speichern generierte `agents/*/agent/models.json`-Einträge nicht geheime Markierungen (keine aufgelösten geheimen Werte) für `apiKey`-/Header-Oberflächen. Die Speicherung der Markierungen richtet sich maßgeblich nach der Quelle: OpenClaw schreibt Markierungen aus dem aktiven Snapshot der Quellkonfiguration (vor der Auflösung), nicht aus aufgelösten geheimen Laufzeitwerten.
-- Für die Websuche gilt: Im expliziten Provider-Modus (`tools.web.search.provider` festgelegt) ist nur der ausgewählte Provider-Schlüssel aktiv. Im automatischen Modus (`tools.web.search.provider` nicht festgelegt) ist nur der erste Provider-Schlüssel aktiv, der gemäß der Rangfolge aufgelöst wird; Referenzen nicht ausgewählter Provider werden bis zu ihrer Auswahl als inaktiv behandelt. Veraltete `tools.web.search.*`-Provider-Pfade werden während des Kompatibilitätszeitraums weiterhin aufgelöst, die kanonische SecretRef-Oberfläche ist jedoch `plugins.entries.<plugin>.config.webSearch.*`.
+- Planziele für Authentifizierungsprofile erfordern `agentId`; Planeinträge zielen auf `profiles.*.key` / `profiles.*.token` und schreiben benachbarte Referenzen (`keyRef` / `tokenRef`). Referenzen von Authentifizierungsprofilen sind in der Laufzeitauflösung und der Audit-Abdeckung enthalten.
+- In `openclaw.json` müssen SecretRefs strukturierte Objekte wie `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` verwenden. Veraltete `secretref-env:<ENV_VAR>`-Markierungszeichenfolgen werden in SecretRef-Anmeldedatenpfaden abgelehnt; führen Sie `openclaw doctor --fix` aus, um gültige Markierungen zu migrieren.
+- OAuth-Richtlinienschutz: `auth.profiles.<id>.mode = "oauth"` kann für dieses Profil nicht mit SecretRef-Eingaben kombiniert werden. Start/Neuladen und die Auflösung von Authentifizierungsprofilen schlagen bei einem Verstoß gegen diese Richtlinie sofort fehl.
+- Bei SecretRef-verwalteten Modell-Providern speichern generierte `agents/*/agent/models.json`-Einträge nicht geheime Markierungen (keine aufgelösten Geheimniswerte) für `apiKey`-/Header-Oberflächen. Die Speicherung der Markierungen richtet sich maßgeblich nach der Quelle: OpenClaw schreibt Markierungen aus dem aktiven Quellkonfigurations-Snapshot (vor der Auflösung), nicht aus aufgelösten Geheimniswerten der Laufzeit.
+- Beim Kaltstart des Gateways können wiederholbare Auflösungsfehler für zugeordnete Eigentümer außerhalb des Gateways isoliert werden. Zu den derzeit zugeordneten Klassen gehören Modell-Provider und Skills, Medien-/TTS-/Cron-Provider, geeignete Authentifizierungsprofile, agentenspezifischer Speicher, Sandbox-SSH, Kanalkonten und im Manifest deklarierte Plugin-Routen. Beim Start bleiben die expliziten Referenzen jedes fehlgeschlagenen Eigentümers im Laufzeit-Snapshot erhalten, der Eigentümer wird über Status und Doctor gemeldet, und Anfragen für diesen Eigentümer werden abgelehnt, ohne Anmeldedaten mit niedrigerer Priorität auszuprobieren. Neuladen und die Vorabprüfung beim Schreiben der Konfiguration verwenden dieselbe eigentümerbezogene Richtlinie: Fehlerfreie Eigentümer werden aktualisiert; ein geeigneter fehlgeschlagener Eigentümer bleibt nur dann veraltet, wenn seine Referenzidentitäten, Provider-Definitionen und sein vollständiger nicht geheimer Eigentümervertrag unverändert sind; ein neuer oder geänderter Fehler führt zu einem Kaltzustand. Gateway-Eingangsauthentifizierung, strukturell ungültige Referenzen oder Werte, bei Fehlern geschlossene Eigentümer und derzeit nicht zugeordnete Eigentümer bleiben strikt.
+- Für die Websuche gilt: Im expliziten Provider-Modus (`tools.web.search.provider` gesetzt) ist nur der Schlüssel des ausgewählten Providers aktiv. Im automatischen Modus (`tools.web.search.provider` nicht gesetzt) ist nur der erste nach Priorität aufgelöste Provider-Schlüssel aktiv; Referenzen nicht ausgewählter Provider werden bis zu ihrer Auswahl als inaktiv behandelt. Provider-Anmeldedaten verwenden `plugins.entries.<plugin>.config.webSearch.*`.
+- Slack `identity: "user"` verwendet `channels.slack.userToken` mit `channels.slack.appToken` für den Socket Mode oder `channels.slack.signingSecret` für den HTTP-Modus. Dieselbe Kombination gilt unter `channels.slack.accounts.*`; für diese Identität ist kein Bot-Token erforderlich.
 
 ## Nicht unterstützte Anmeldedaten
 
-Diese Anmeldedaten gehören zu ausgestellten, rotierten, sitzungstragenden oder dauerhaft für OAuth gespeicherten Klassen, die nicht zur schreibgeschützten externen SecretRef-Auflösung passen:
+Diese Anmeldedaten gehören zu ausgestellten, rotierten, sitzungstragenden oder dauerhaft für OAuth verwendeten Klassen, die nicht zur schreibgeschützten externen SecretRef-Auflösung passen:
 
 [//]: # "secretref-unsupported-list-start"
 
-- `commands.ownerDisplaySecret`
 - `hooks.token`
 - `hooks.gmail.pushToken`
 - `hooks.mappings[].sessionKey`
@@ -167,4 +167,4 @@ Diese Anmeldedaten gehören zu ausgestellten, rotierten, sitzungstragenden oder 
 ## Verwandte Themen
 
 - [Geheimnisverwaltung](/de/gateway/secrets)
-- [Semantik von Authentifizierungsanmeldedaten](/de/auth-credential-semantics)
+- [Semantik von Authentifizierungsdaten](/de/auth-credential-semantics)

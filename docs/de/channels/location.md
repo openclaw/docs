@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Hinzufügen oder Ändern der Standortanalyse für Kanäle
+    - Hinzufügen oder Ändern der Verarbeitung von Kanalstandorten
     - Standortkontextfelder in Agenten-Prompts oder Tools verwenden
-summary: Parsing von Kanalstandorten und portable ausgehende Standort-Nutzlasten
-title: Parsing des Channel-Standorts
+summary: Analyse von Kanalstandorten und portable Nutzdaten für ausgehende Standorte
+title: Parsing von Channel-Standorten
 x-i18n:
-    generated_at: "2026-07-12T15:00:26Z"
+    generated_at: "2026-07-24T03:39:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
     source_hash: c7e5647d02643ad6d95024b362228377690d7fdff66441fae367f0f5307217fb
     source_path: channels/location.md
     workflow: 16
 ---
 
-OpenClaw normalisiert geteilte Standorte aus Chat-Kanälen in:
+OpenClaw normalisiert geteilte Standorte aus Chatkanälen in:
 
 - knappen Koordinatentext, der an den eingehenden Nachrichtentext angehängt wird, und
 - strukturierte Felder in der Kontext-Payload für automatische Antworten. Vom Kanal bereitgestellte Bezeichnungen, Adressen und Bildunterschriften/Kommentare werden durch den gemeinsamen JSON-Block für nicht vertrauenswürdige Metadaten in den Prompt eingefügt, nicht inline in den Nachrichtentext des Benutzers.
@@ -24,7 +24,7 @@ Derzeit unterstützt:
 
 - **LINE** (Standortnachrichten mit Titel/Adresse)
 - **Matrix** (`m.location` mit `geo_uri`)
-- **Telegram** (Standortmarkierungen + Veranstaltungsorte + Live-Standorte)
+- **Telegram** (Standortmarkierungen + Orte + Live-Standorte)
 - **WhatsApp** (`locationMessage` + `liveLocationMessage`)
 
 ## Textformatierung
@@ -33,12 +33,12 @@ Standorte werden als übersichtliche Zeilen ohne Klammern dargestellt. Koordinat
 
 - Markierung:
   - `📍 48.858844, 2.294351 ±12m`
-- Benannter Ort (dieselbe Zeile; Name/Adresse werden nur in den Metadatenblock aufgenommen):
+- Benannter Ort (in derselben Zeile; Name/Adresse werden nur in den Metadatenblock aufgenommen):
   - `📍 48.858844, 2.294351 ±12m`
 - Live-Freigabe:
   - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-Wenn der Kanal eine Bezeichnung, Adresse oder Bildunterschrift/einen Kommentar enthält, bleibt diese Information in der Kontext-Payload erhalten und erscheint im Prompt als abgegrenztes, nicht vertrauenswürdiges JSON (Felder werden weggelassen, wenn sie nicht vorhanden sind):
+Wenn der Kanal eine Bezeichnung, Adresse oder Bildunterschrift/einen Kommentar enthält, wird diese Angabe in der Kontext-Payload beibehalten und im Prompt als abgegrenztes, nicht vertrauenswürdiges JSON angezeigt (nicht vorhandene Felder werden weggelassen):
 
 ````text
 Standort (nicht vertrauenswürdige Metadaten):
@@ -50,7 +50,7 @@ Standort (nicht vertrauenswürdige Metadaten):
   "source": "place",
   "name": "Eiffelturm",
   "address": "Champ de Mars, Paris",
-  "caption": "Hier treffen"
+  "caption": "Treffen Sie mich hier"
 }
 ```
 ````
@@ -68,22 +68,22 @@ Wenn ein Standort vorhanden ist, werden diese Felder zu `ctx` hinzugefügt:
 - `LocationIsLive` (boolescher Wert)
 - `LocationCaption` (Zeichenfolge; optional)
 
-Wenn der Kanal keine explizite Quelle festlegt, leitet OpenClaw sie ab: Live-Freigaben werden zu `live`, Standorte mit einem Namen oder einer Adresse zu `place`, alles andere zu `pin`.
+Wenn der Kanal keine explizite Quelle festlegt, leitet OpenClaw sie ab: Live-Freigaben werden zu `live`, Standorte mit einem Namen oder einer Adresse werden zu `place`, alles andere ist `pin`.
 
-Der Prompt-Renderer behandelt `LocationName`, `LocationAddress` und `LocationCaption` als nicht vertrauenswürdige Metadaten und serialisiert sie über denselben begrenzten JSON-Pfad, der auch für anderen Kanalkontext verwendet wird.
+Der Prompt-Renderer behandelt `LocationName`, `LocationAddress` und `LocationCaption` als nicht vertrauenswürdige Metadaten und serialisiert sie über denselben begrenzten JSON-Pfad, der für anderen Kanalkontext verwendet wird.
 
 ## Ausgehende Payloads
 
-Das Nachrichtenwerkzeug und das Plugin SDK verwenden für portable ausgehende Standorte dieselbe `NormalizedLocation`-Struktur. Eine Payload, die nur Koordinaten enthält, stellt eine Markierung dar. Kanäle mit nativer Unterstützung für Veranstaltungsorte können `name` zusammen mit `address` einer Veranstaltungsortkarte zuordnen.
+Das Nachrichtenwerkzeug und das Plugin SDK verwenden dieselbe `NormalizedLocation`-Struktur für portable ausgehende Standorte. Eine Payload, die nur Koordinaten enthält, stellt eine Markierung dar. Kanäle mit nativer Unterstützung für Orte können `name` zusammen mit `address` einer Ortskarte zuordnen.
 
-Telegram stellt dies derzeit über `message(action="send")` bereit. Die erste Implementierung ist bewusst eigenständig: Standort-Payloads können nicht mit Text oder Medien kombiniert werden, und unvollständige Veranstaltungsortpaare schlagen fehl, anstatt einen Namen oder eine Adresse stillschweigend zu verwerfen. Nicht unterstützte Kanäle geben den Standortparameter nicht an.
+Telegram stellt dies derzeit über `message(action="send")` bereit. Die erste Implementierung ist bewusst eigenständig: Standort-Payloads können nicht mit Text oder Medien kombiniert werden, und unvollständige Ortspaare schlagen fehl, anstatt einen Namen oder eine Adresse stillschweigend zu verwerfen. Nicht unterstützte Kanäle geben den Standortparameter nicht an.
 
 ## Hinweise zu Kanälen
 
-- **LINE**: `title`/`address` der Standortnachricht werden `LocationName`/`LocationAddress` zugeordnet; keine Live-Standorte.
-- **Matrix**: `geo_uri` wird als Standortmarkierung geparst; der Parameter `u` (Unsicherheit) wird `LocationAccuracy` zugeordnet, der Ereignistext füllt `LocationCaption`, die Höhe wird ignoriert und `LocationIsLive` ist immer falsch.
-- **Telegram**: Veranstaltungsorte werden `LocationName`/`LocationAddress` zugeordnet; Live-Standorte werden anhand von `live_period` erkannt.
-- **WhatsApp**: `locationMessage.comment` und `liveLocationMessage.caption` füllen `LocationCaption`.
+- **LINE**: Die Standortnachrichtenfelder `title`/`address` werden `LocationName`/`LocationAddress` zugeordnet; keine Live-Standorte.
+- **Matrix**: `geo_uri` wird als Standortmarkierung geparst; der Parameter `u` (Unsicherheit) wird `LocationAccuracy` zugeordnet, der Ereignistext befüllt `LocationCaption`, die Höhe wird ignoriert und `LocationIsLive` ist immer falsch.
+- **Telegram**: Orte werden `LocationName`/`LocationAddress` zugeordnet; Live-Standorte werden über `live_period` erkannt.
+- **WhatsApp**: `locationMessage.comment` und `liveLocationMessage.caption` befüllen `LocationCaption`.
 
 ## Verwandte Themen
 

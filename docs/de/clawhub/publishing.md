@@ -1,32 +1,34 @@
 ---
 read_when:
     - Einen Skill oder ein Plugin veröffentlichen
-    - Fehler im Zusammenhang mit Owner- oder Paket-Scope debuggen
-    - Veröffentlichungs-UI, CLI oder Backend-Verhalten hinzufügen
-summary: So funktioniert die Veröffentlichung in ClawHub für Skills, Plugins, Verantwortliche, Geltungsbereiche, Releases und Review.
+    - Fehler bei Eigentümer- oder Paketbereichen debuggen
+    - Veröffentlichungsverhalten für Benutzeroberfläche, CLI oder Backend hinzufügen
+summary: So funktioniert die Veröffentlichung auf ClawHub für Skills, Plugins, Verantwortliche, Geltungsbereiche, Releases und Reviews.
 x-i18n:
-    generated_at: "2026-06-27T17:16:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-24T04:49:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5c0270c0bc3316d970feddfc689c1125e1c90a62beeb40d8098dc6a6752cfa70
+    source_hash: 582dffaf4429e9f24d7c38f2809cc7dc05f8471e4ae2f9c6be60153cc8604e3f
     source_path: clawhub/publishing.md
     workflow: 16
 ---
 
-# Veröffentlichung
+# Veröffentlichen
 
-Durch die Veröffentlichung wird ein Skill-Ordner oder ein Plugin-Paket unter dem von Ihnen
-gewählten Owner an ClawHub gesendet. ClawHub prüft, ob Ihr Token für diesen Owner veröffentlichen darf, validiert
-Metadaten, Name, Version, Dateien und Quellinformationen, speichert dann das Release
+Beim Veröffentlichen wird ein Skill-Ordner oder Plugin-Paket unter dem von Ihnen
+ausgewählten Eigentümer an ClawHub gesendet. ClawHub prüft, ob Ihr Token für diesen Eigentümer veröffentlichen darf, validiert
+Metadaten, Namen, Version, Dateien und Quellinformationen, speichert anschließend das Release
 und startet automatisierte Sicherheitsprüfungen.
 
-Wenn die Validierung fehlschlägt, wird nichts veröffentlicht. Neue Releases bleiben möglicherweise auch außerhalb der
-normalen Installations- und Download-Oberflächen, bis die Prüfung abgeschlossen ist.
+Wenn die Validierung fehlschlägt, wird nichts veröffentlicht. Neue Releases erscheinen möglicherweise auch erst nach
+Abschluss der Überprüfung auf den regulären Installations- und Download-Oberflächen.
 
 ## Skills
 
-Der einfachste Veröffentlichungsweg ist die CLI. Melden Sie sich an und veröffentlichen Sie dann einen lokalen Skill-Ordner:
+Der einfachste Veröffentlichungsweg führt über die CLI. Melden Sie sich an und veröffentlichen Sie anschließend einen lokalen Skill-
+Ordner:
 
 ```bash
 clawhub login
@@ -36,14 +38,14 @@ clawhub skill publish ./my-skill \
   --owner <owner>
 ```
 
-Verwenden Sie `--owner <handle>`, wenn Sie unter einem Organisations-Owner veröffentlichen. Lassen Sie es weg, um als
-authentifizierter Benutzer zu veröffentlichen. Beim Veröffentlichen werden unveränderte Inhalte übersprungen. Ein neuer Skill beginnt
-bei `1.0.0`, und spätere Änderungen veröffentlichen automatisch die nächste Patch-Version. Übergeben Sie
+Verwenden Sie `--owner <handle>`, wenn Sie unter einem Organisationseigentümer veröffentlichen. Lassen Sie die Angabe weg, um als
+authentifizierter Benutzer zu veröffentlichen. Unveränderte Inhalte werden beim Veröffentlichen übersprungen. Ein neuer Skill beginnt
+mit `1.0.0`, und spätere Änderungen veröffentlichen automatisch die nächste Patch-Version. Übergeben Sie
 `--version` nur, wenn Sie eine explizite Version benötigen.
 
-Für Katalog-Repos verwenden Sie ClawHubs wiederverwendbaren
-[`skill-publish.yml`-Workflow](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml).
-Er ruft `skill publish` für jeden direkten Skill-Ordner unter `root` auf (Standard:
+Verwenden Sie für Katalog-Repositorys den wiederverwendbaren
+[`skill-publish.yml`-Workflow](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
+von ClawHub. Er ruft `skill publish` für jeden unmittelbar unter `root` liegenden Skill-Ordner auf (Standard:
 `skills`) oder nur für den als `skill_path` angegebenen Ordner.
 
 ```yaml
@@ -61,51 +63,51 @@ Verwenden Sie `dry_run: true`, um neue und geänderte Skills vorab anzuzeigen, o
 
 ## Plugins
 
-Plugins verwenden Paketnamen im npm-Stil. Paketnamen mit Scope enthalten den Owner im
+Plugins verwenden Paketnamen im npm-Stil. Paketnamen mit Gültigkeitsbereich enthalten den Eigentümer im
 ersten Teil des Namens:
 
 ```text
 @owner/package-name
 ```
 
-Der Scope muss mit dem ausgewählten Veröffentlichungs-Owner übereinstimmen. Wenn Ihr Paket
+Der Gültigkeitsbereich muss dem ausgewählten Veröffentlichungseigentümer entsprechen. Wenn Ihr Paket
 `@openclaw/dronzer` heißt, kann es nur als `@openclaw` veröffentlicht werden. Wenn Sie als
 `@vintageayu` veröffentlichen, benennen Sie das Paket in `@vintageayu/dronzer` um.
 
-Das verhindert, dass ein Paket einen Organisations-Namespace beansprucht, den der Herausgeber
-nicht kontrolliert.
+Dadurch wird verhindert, dass ein Paket einen Organisationsnamensraum beansprucht, über den die veröffentlichende Person
+keine Kontrolle hat.
 
-Wenn Sie der rechtmäßige Owner einer Organisation, Marke, eines Paket-Scopes, Owner-Handles oder
-Namespaces sind, der auf ClawHub bereits beansprucht oder reserviert ist, öffnen Sie ein
-[Issue für Organisations-/Namespace-Anspruch](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-mit öffentlichen, nicht sensiblen Nachweisen. Unter
-[Organisations- und Namespace-Ansprüche](/de/clawhub/namespace-claims) erfahren Sie, was Sie angeben und was
-Sie aus öffentlichen Issues heraushalten sollten.
+Wenn Sie der rechtmäßige Eigentümer einer Organisation, Marke, eines Paket-Gültigkeitsbereichs, Eigentümernamens oder
+Namensraums sind, der auf ClawHub bereits beansprucht oder reserviert ist, öffnen Sie ein
+[Anliegen zur Beanspruchung einer Organisation/eines Namensraums](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+mit öffentlichen, nicht vertraulichen Nachweisen. Unter
+[Beanspruchung von Organisationen und Namensräumen](/clawhub/namespace-claims) erfahren Sie, was Sie angeben und was Sie
+aus öffentlichen Anliegen heraushalten sollten.
 
 ### Vor dem Veröffentlichen eines Plugins
 
-- Wählen Sie einen Owner, der zum Paket-Scope passt.
+- Wählen Sie einen Eigentümer, der dem Paket-Gültigkeitsbereich entspricht.
 - Fügen Sie `openclaw.plugin.json` hinzu. Code-Plugins benötigen außerdem `package.json` mit
   `openclaw.compat.pluginApi` und `openclaw.build.openclawVersion`.
-- Um ein eigenes Plugin-Kartensymbol anzuzeigen, fügen Sie `icon` mit
-  einer beliebigen HTTPS-Bild-URL zu `openclaw.plugin.json` hinzu.
-- Fügen Sie das Quell-Repository und genaue Commit-Metadaten hinzu, oder verwenden Sie die CLI aus einem
+- Um auf der Startseite und den Plugin-Listenseiten ein benutzerdefiniertes Plugin-Katalogsymbol anzuzeigen,
+  fügen Sie `icon` mit einer beliebigen HTTPS-Bild-URL zu `openclaw.plugin.json` hinzu.
+- Geben Sie das Quell-Repository und die Metadaten des genauen Commits an oder verwenden Sie die CLI aus einem
   GitHub-basierten Checkout, damit sie diese erkennen kann.
-- Führen Sie vor dem Veröffentlichen `clawhub package validate <source>` aus. Für Befunde zu Paket,
-  Manifest, SDK-Import oder Artefakten siehe
-  [Korrekturen für Plugin-Validierung](/de/clawhub/plugin-validation-fixes).
+- Führen Sie vor dem Veröffentlichen `clawhub package validate <source>` aus. Informationen zu Befunden bezüglich Paket,
+  Manifest, SDK-Import oder Artefakt finden Sie unter
+  [Korrekturen für die Plugin-Validierung](/clawhub/plugin-validation-fixes).
 - Führen Sie `clawhub package publish <source> --dry-run` aus, bevor Sie ein Release erstellen.
-- Rechnen Sie damit, dass neue Releases außerhalb öffentlicher Installationsoberflächen bleiben, bis automatisierte
-  Sicherheitsprüfungen und die Verifizierung abgeschlossen sind.
+- Rechnen Sie damit, dass neue Releases erst nach Abschluss der automatisierten
+  Sicherheitsprüfungen und Verifizierung auf öffentlichen Installationsoberflächen erscheinen.
 
-### Vertrauenswürdige Veröffentlichung für Pakete
+### Vertrauenswürdiges Veröffentlichen von Paketen
 
-Die vertrauenswürdige Veröffentlichung von Paketen ist eine Einrichtung in zwei Schritten:
+Das vertrauenswürdige Veröffentlichen von Paketen wird in zwei Schritten eingerichtet:
 
-1. Veröffentlichen Sie das Paket einmal über normales manuelles oder tokenauthentifiziertes
-   `clawhub package publish`. Dadurch wird der Paketdatensatz erstellt und es werden die
-   Paketmanager festgelegt, die seine Konfiguration für vertrauenswürdige Herausgeber ändern können.
-2. Ein Paketmanager legt die Konfiguration für vertrauenswürdige Herausgeber in GitHub Actions fest:
+1. Veröffentlichen Sie das Paket einmal über das normale manuelle oder Token-authentifizierte
+   `clawhub package publish`. Dadurch wird der Paketdatensatz erstellt und festgelegt,
+   welche Paketverwalter die Konfiguration des vertrauenswürdigen Herausgebers ändern können.
+2. Ein Paketverwalter legt die Konfiguration des vertrauenswürdigen Herausgebers für GitHub Actions fest:
 
 ```bash
 clawhub package trusted-publisher set @owner/package-name \
@@ -114,22 +116,22 @@ clawhub package trusted-publisher set @owner/package-name \
 ```
 
 Nachdem die Konfiguration festgelegt wurde, können zukünftige unterstützte Veröffentlichungen über GitHub Actions
-OIDC/vertrauenswürdige Veröffentlichung verwenden, ohne ein langlebiges ClawHub-Token im
-Repository zu speichern. Das konfigurierte Repository und der Workflow-Dateiname müssen mit dem
-OIDC-Claim von GitHub Actions übereinstimmen. Wenn Sie zusätzlich `--environment <name>` übergeben, muss der
-GitHub-Actions-Environment-Claim exakt diesem Namen entsprechen.
+OIDC beziehungsweise vertrauenswürdiges Veröffentlichen verwenden, ohne ein langlebiges ClawHub-Token im
+Repository zu speichern. Das konfigurierte Repository und der Workflow-Dateiname müssen dem
+GitHub-Actions-OIDC-Claim entsprechen. Wenn Sie zusätzlich `--environment <name>` übergeben, muss der GitHub-
+Actions-Umgebungs-Claim exakt diesem Namen entsprechen.
 
-ClawHub verifiziert das konfigurierte GitHub-Repository, wenn die Konfiguration für vertrauenswürdige Herausgeber
-festgelegt wird. Öffentliche Repositories können über öffentliche GitHub-Metadaten verifiziert werden.
-Private Repositories erfordern, dass ClawHub GitHub-Zugriff auf dieses Repository hat,
-zum Beispiel über eine zukünftige Installation der ClawHub GitHub App oder eine andere
+ClawHub verifiziert das konfigurierte GitHub-Repository, wenn die Konfiguration des vertrauenswürdigen Herausgebers
+festgelegt wird. Öffentliche Repositorys können anhand öffentlicher GitHub-Metadaten verifiziert werden.
+Bei privaten Repositorys benötigt ClawHub GitHub-Zugriff auf das betreffende Repository,
+beispielsweise durch eine zukünftige Installation der ClawHub GitHub App oder eine andere
 autorisierte GitHub-Integration.
 
-Der aktuelle wiederverwendbare Workflow zum Veröffentlichen von Paketen unterstützt geheimefreie vertrauenswürdige
-Veröffentlichung für Veröffentlichungen über `workflow_dispatch`, wenn `id-token: write`
-verfügbar ist. Echte Veröffentlichungen per Tag-Push benötigen weiterhin `clawhub_token`; halten Sie daher
+Der aktuelle wiederverwendbare Workflow zur Paketveröffentlichung unterstützt das geheimnislose vertrauenswürdige
+Veröffentlichen für Veröffentlichungen mit `workflow_dispatch`, wenn `id-token: write`
+verfügbar ist. Echte Veröffentlichungen durch Tag-Push benötigen weiterhin `clawhub_token`. Halten Sie daher
 `CLAWHUB_TOKEN` für Tag-Releases, Erstveröffentlichungen, nicht vertrauenswürdige Pakete
-oder Notfall-Veröffentlichungen verfügbar.
+oder Notfallveröffentlichungen verfügbar.
 
 Prüfen oder entfernen Sie die Konfiguration mit:
 
@@ -138,41 +140,41 @@ clawhub package trusted-publisher get @owner/package-name
 clawhub package trusted-publisher delete @owner/package-name
 ```
 
-Das Löschen der Konfiguration für vertrauenswürdige Herausgeber ist der Rollback-Weg. Es deaktiviert zukünftige
-Token-Erstellung für vertrauenswürdige Veröffentlichungen, bis ein Paketmanager die Konfiguration erneut festlegt.
+Das Löschen der Konfiguration des vertrauenswürdigen Herausgebers dient als Rücksetzpfad. Es deaktiviert die zukünftige
+Ausstellung vertrauenswürdiger Veröffentlichungstoken, bis ein Paketverwalter die Konfiguration erneut festlegt.
 
-## FAQ
+## Häufig gestellte Fragen
 
-### Paket-Scope muss mit ausgewähltem Owner übereinstimmen
+### Der Paket-Gültigkeitsbereich muss dem ausgewählten Eigentümer entsprechen
 
-Wenn Paket-Scope und ausgewählter Owner nicht übereinstimmen, lehnt ClawHub die
+Wenn Paket-Gültigkeitsbereich und ausgewählter Eigentümer nicht übereinstimmen, lehnt ClawHub die
 Veröffentlichung ab:
 
 ```text
-Package scope "@openclaw" must match selected owner "@vintageayu".
-Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
+Der Paket-Gültigkeitsbereich "@openclaw" muss dem ausgewählten Eigentümer "@vintageayu" entsprechen.
+Veröffentlichen Sie als "@openclaw" oder benennen Sie dieses Paket in "@vintageayu/dronzer" um.
 ```
 
-Um das zu beheben, wählen Sie entweder den durch den Paket-Scope benannten Owner aus, oder benennen Sie das
-Paket um, sodass der Scope zu dem Owner passt, als der Sie veröffentlichen können.
+Um dies zu beheben, wählen Sie entweder den im Paket-Gültigkeitsbereich genannten Eigentümer oder benennen das
+Paket so um, dass der Gültigkeitsbereich dem Eigentümer entspricht, unter dem Sie veröffentlichen dürfen.
 
-Wenn der Paketname bereits den richtigen Scope hat, das Paket aber dem falschen Herausgeber gehört,
-übertragen Sie stattdessen die Ownership:
+Wenn der Paketname bereits den richtigen Gültigkeitsbereich hat, das Paket aber der
+falschen veröffentlichenden Person gehört, übertragen Sie stattdessen das Eigentum:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Verwenden Sie die Übertragung von Paketen oder Skills nur, wenn Sie Admin-Zugriff sowohl auf den
-aktuellen Owner als auch auf den Ziel-Herausgeber haben. Mit einer Paketübertragung können Sie nicht
-in einem Scope veröffentlichen, den Sie nicht verwalten können.
+Verwenden Sie die Übertragung von Paketen oder Skills nur, wenn Sie sowohl für den
+aktuellen Eigentümer als auch den Zielherausgeber Administratorzugriff haben. Eine Paketübertragung ermöglicht es Ihnen nicht,
+in einem Gültigkeitsbereich zu veröffentlichen, den Sie nicht verwalten können.
 
-Wenn Sie keinen Zugriff auf den aktuellen Owner haben, aber glauben, dass Ihre Organisation, Ihr Projekt oder
-Ihre Marke der rechtmäßige Namespace-Owner ist, öffnen Sie ein
-[Issue für Organisations-/Namespace-Anspruch](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-mit öffentlichen, nicht sensiblen Nachweisen zur Prüfung durch das Team. Lesen Sie vor dem Einreichen
-[Organisations- und Namespace-Ansprüche](/de/clawhub/namespace-claims).
+Wenn Sie keinen Zugriff auf den aktuellen Eigentümer haben, aber der Ansicht sind, dass Ihre Organisation, Ihr Projekt oder
+Ihre Marke der rechtmäßige Eigentümer des Namensraums ist, öffnen Sie ein
+[Anliegen zur Beanspruchung einer Organisation/eines Namensraums](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+mit öffentlichen, nicht vertraulichen Nachweisen zur Prüfung durch das Team. Lesen Sie vor dem Einreichen
+[Beanspruchung von Organisationen und Namensräumen](/clawhub/namespace-claims).
 
-Dies schützt Organisations-Namespaces. Ein Paket namens `@openclaw/dronzer` beansprucht den
-Namespace `@openclaw`, daher können nur Herausgeber mit Zugriff auf den Owner `@openclaw`
-es veröffentlichen.
+Dies schützt Organisationsnamensräume. Ein Paket namens `@openclaw/dronzer` beansprucht den
+Namensraum `@openclaw`, sodass nur Herausgeber mit Zugriff auf den Eigentümer `@openclaw`
+es veröffentlichen können.

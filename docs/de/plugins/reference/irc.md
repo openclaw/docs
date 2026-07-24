@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das IRC-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das irc-Plugin.
 summary: Fügt die IRC-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: IRC-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:22:11Z"
+    generated_at: "2026-07-24T03:59:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,17 +16,17 @@ x-i18n:
 
 # IRC-Plugin
 
-Fügt die IRC-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+Fügt die IRC-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
 ## Distribution
 
 - Paket: `@openclaw/irc`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/irc`
 
-## Oberfläche
+## Schnittstelle
 
 Kanäle: `irc`
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [IRC](/de/channels/irc)

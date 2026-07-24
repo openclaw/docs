@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das cohere-Plugin.
-summary: OpenClaw-Provider-Plugin für Cohere.
+summary: OpenClaw-Cohere-Provider-Plugin.
 title: Cohere-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:08:49Z"
+    generated_at: "2026-07-24T04:03:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ OpenClaw-Provider-Plugin für Cohere.
 
 Provider: `cohere`
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [Cohere](/de/providers/cohere)

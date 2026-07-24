@@ -1,10 +1,10 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das Synthetic-Plugin.
-summary: Fügt OpenClaw Unterstützung für den Synthetic-Modell-Provider hinzu.
+summary: Fügt Unterstützung für den Modell-Provider Synthetic zu OpenClaw hinzu.
 title: Synthetic-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:12:05Z"
+    generated_at: "2026-07-24T05:08:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -16,7 +16,7 @@ x-i18n:
 
 # Synthetic-Plugin
 
-Fügt Unterstützung für den Synthetic-Modell-Provider zu OpenClaw hinzu.
+Fügt OpenClaw Unterstützung für den Synthetic-Modell-Provider hinzu.
 
 ## Distribution
 
@@ -27,6 +27,6 @@ Fügt Unterstützung für den Synthetic-Modell-Provider zu OpenClaw hinzu.
 
 Provider: `synthetic`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [Synthetic](/de/providers/synthetic)

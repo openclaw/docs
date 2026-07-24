@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das qa-channel-Plugin.
+    - Sie installieren, konfigurieren oder prüfen das qa-channel-Plugin.
 summary: Fügt die QA-Channel-Oberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
-title: QA-Kanal-Plugin
+title: QA-Channel-Plugin
 x-i18n:
-    generated_at: "2026-07-16T13:23:54Z"
+    generated_at: "2026-07-24T04:33:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
@@ -27,6 +27,6 @@ Fügt die QA-Channel-Oberfläche zum Senden und Empfangen von OpenClaw-Nachricht
 
 Kanäle: `qa-channel`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [qa-channel](/de/channels/qa-channel)
