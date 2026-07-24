@@ -1323,6 +1323,37 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('<Z title="Français" />', output["result"]["value"])
         self.assertIn('`<Y default={8n} />`', output["result"]["value"])
 
+    def test_mdx_protected_attribute_repair_preserves_offsets_after_markdown_less_than(self) -> None:
+        checker = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_protected_attributes.mjs"
+        program = f"""
+          import {{ createProcessor }} from "@mdx-js/mdx";
+          import {{ parseMdx, protectedAttributeSignatures }} from {json.dumps(checker.as_uri())};
+          import {{ repairProtectedAttributes }} from {json.dumps(repair.as_uri())};
+          const processor = createProcessor({{ format: "mdx" }});
+          const markdownProcessor = createProcessor({{ format: "md" }});
+          const source = `Plain Markdown says n < 9 before the JSX.\\n<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Prompt" />\\n`;
+          const translated = `Plain Markdown says n < 9 before the JSX.\\n<ParamField label="Eingabe" default="Analysieren Sie dieses PDF-Dokument." type="text" path="eingabe" />\\n`;
+          const result = repairProtectedAttributes(processor, markdownProcessor, source, translated);
+          const expected = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, source));
+          const actual = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, result.value));
+          process.stdout.write(JSON.stringify({{ result, expected, actual }}));
+        """
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            cwd=REPO_ROOT,
+            stdout=subprocess.PIPE,
+        )
+        output = json.loads(result.stdout)
+        self.assertTrue(output["result"]["changed"])
+        self.assertEqual(output["expected"], output["actual"])
+        self.assertIn("n < 9", output["result"]["value"])
+        self.assertIn('label="Eingabe"', output["result"]["value"])
+        self.assertIn('path="prompt"', output["result"]["value"])
+        self.assertIn('default="Analyze this PDF document."', output["result"]["value"])
+
     def test_mdx_protected_attribute_check_includes_spread_only_documents(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp)

@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseMdx, protectedAttributeSignatures } from "./check_mdx_protected_attributes.mjs";
 
 const PROTECTED_ATTRIBUTES = new Set(["className", "id", "path", "type", "default", "aria-hidden", "target", "rel"]);
+const JSX_TAG_START_RE = /[A-Za-z_$\p{ID_Start}/!?>]/u;
 
 function jsxName(node) {
   if (!node || typeof node !== "object") return "";
@@ -21,6 +22,59 @@ function jsxName(node) {
 function closingStart(value, openingEnd) {
   if (value[openingEnd - 1] !== ">") throw new Error("parsed JSX opening element does not end with >");
   return value[openingEnd - 2] === "/" ? openingEnd - 2 : openingEnd - 1;
+}
+
+function literalMarkdownRanges(markdownProcessor, source) {
+  const ranges = [];
+  function visit(node) {
+    if (!node || typeof node !== "object") return;
+    if ((node.type === "code" || node.type === "inlineCode") && Number.isInteger(node.position?.start?.offset)) {
+      ranges.push([node.position.start.offset, node.position.end.offset]);
+    }
+    if (node.type === "link" && Number.isInteger(node.position?.start?.offset)) {
+      const raw = source.slice(node.position.start.offset, node.position.end.offset);
+      if (raw.startsWith("<") && raw.endsWith(">")) ranges.push([node.position.start.offset, node.position.end.offset]);
+    }
+    if (Array.isArray(node.children)) {
+      for (const child of node.children) visit(child);
+    }
+  }
+  visit(markdownProcessor.parse(source));
+  return ranges;
+}
+
+function blankPreservingNewlines(value) {
+  return value.replace(/[^\n]/gu, " ");
+}
+
+function parseMdxForOffsets(processor, markdownProcessor, value) {
+  let prepared = value;
+  for (let attempt = 0; attempt < 1000; attempt += 1) {
+    try {
+      return processor.parse(prepared);
+    } catch (error) {
+      const offset = error.place?.offset;
+      if (!Number.isInteger(offset)) throw error;
+      const opening = prepared.lastIndexOf("<", offset);
+      if (opening < 0 || prepared.slice(opening, offset).includes(">")) throw error;
+      if (prepared.startsWith("<!--", opening)) {
+        const closing = prepared.indexOf("-->", opening + 4);
+        if (closing < 0) throw error;
+        prepared =
+          prepared.slice(0, opening) +
+          blankPreservingNewlines(prepared.slice(opening, closing + 3)) +
+          prepared.slice(closing + 3);
+        continue;
+      }
+
+      const literal = literalMarkdownRanges(markdownProcessor, prepared).some(
+        ([start, end]) => opening >= start && opening < end,
+      );
+      if (!literal && JSX_TAG_START_RE.test(prepared[opening + 1] || "")) throw error;
+      prepared = prepared.slice(0, opening) + " " + prepared.slice(opening + 1);
+    }
+  }
+  throw new Error("too many rejected non-MDX less-than tokens");
 }
 
 function collectElements(tree, value) {
@@ -130,7 +184,7 @@ export function repairProtectedAttributes(processor, markdownProcessor, source, 
 
   // A repair needs byte-accurate parser offsets. Do not use the checker's
   // tolerant less-than masking here because it intentionally changes offsets.
-  const sourceElements = collectElements(processor.parse(source), source);
+  const sourceElements = collectElements(parseMdxForOffsets(processor, markdownProcessor, source), source);
   const sourceByKey = new Map(sourceElements.map((element) => [`${element.name}\0${element.occurrence}`, element]));
   let value = translated;
   const limit = sourceElements.length * 2 + 10;
@@ -138,7 +192,7 @@ export function repairProtectedAttributes(processor, markdownProcessor, source, 
     const actual = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, value));
     if (JSON.stringify(expected) === JSON.stringify(actual)) return { changed: value !== translated, value };
 
-    const translatedElements = collectElements(processor.parse(value), value);
+    const translatedElements = collectElements(parseMdxForOffsets(processor, markdownProcessor, value), value);
     const candidate = translatedElements
       .filter((translatedElement) => {
         const sourceElement = sourceByKey.get(`${translatedElement.name}\0${translatedElement.occurrence}`);
