@@ -16,6 +16,10 @@ on:
         required: false
         default: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th
         type: string
+      resume_run_id:
+        required: false
+        default: ""
+        type: string
 
 permissions:
   actions: write
@@ -52,13 +56,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download locale artifacts
+      - name: Download prior full-run artifacts
+        if: inputs.resume_run_id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.resume_run_id }}
+          pattern: i18n-*-${{ inputs.source_sha }}
+          path: .openclaw-sync/resume-artifacts
+
+      - name: Download current locale artifacts
         id: download
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
           pattern: i18n-*-${{ inputs.source_sha }}
-          path: .openclaw-sync/i18n-artifacts
+          path: .openclaw-sync/current-artifacts
+
+      - name: Merge locale artifacts
+        env:
+          RESUME_RUN_ID: ${{ inputs.resume_run_id }}
+        run: |
+          set -euo pipefail
+          args=(
+            --current-root .openclaw-sync/current-artifacts
+            --output-root .openclaw-sync/i18n-artifacts
+          )
+          if [ -n "${RESUME_RUN_ID}" ]; then
+            args+=(--previous-root .openclaw-sync/resume-artifacts)
+          fi
+          python "${I18N_SCRIPT_DIR}/merge_artifact_roots.py" "${args[@]}"
 
       - name: Apply locale artifacts
         id: apply

@@ -47,11 +47,26 @@ function blankPreservingNewlines(value) {
   return value.replace(/[^\n]/gu, " ");
 }
 
+function replaceWithOffsetMap(prepared, offsets, start, end, replacement) {
+  const originalStart = offsets[start];
+  const originalEnd = offsets[end];
+  const replacementOffsets = [originalStart];
+  for (let index = 1; index < replacement.length; index += 1) {
+    replacementOffsets.push(originalStart);
+  }
+  replacementOffsets.push(originalEnd);
+  return {
+    prepared: prepared.slice(0, start) + replacement + prepared.slice(end),
+    offsets: [...offsets.slice(0, start), ...replacementOffsets, ...offsets.slice(end + 1)],
+  };
+}
+
 function parseMdxForOffsets(processor, markdownProcessor, value) {
   let prepared = value;
+  let offsets = Array.from({ length: value.length + 1 }, (_, index) => index);
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     try {
-      return processor.parse(prepared);
+      return { tree: processor.parse(prepared), offsets };
     } catch (error) {
       const offset = error.place?.offset;
       if (!Number.isInteger(offset)) throw error;
@@ -60,10 +75,13 @@ function parseMdxForOffsets(processor, markdownProcessor, value) {
       if (prepared.startsWith("<!--", opening)) {
         const closing = prepared.indexOf("-->", opening + 4);
         if (closing < 0) throw error;
-        prepared =
-          prepared.slice(0, opening) +
-          blankPreservingNewlines(prepared.slice(opening, closing + 3)) +
-          prepared.slice(closing + 3);
+        ({ prepared, offsets } = replaceWithOffsetMap(
+          prepared,
+          offsets,
+          opening,
+          closing + 3,
+          blankPreservingNewlines(prepared.slice(opening, closing + 3)),
+        ));
         continue;
       }
 
@@ -71,15 +89,21 @@ function parseMdxForOffsets(processor, markdownProcessor, value) {
         ([start, end]) => opening >= start && opening < end,
       );
       if (!literal && JSX_TAG_START_RE.test(prepared[opening + 1] || "")) throw error;
-      prepared = prepared.slice(0, opening) + " " + prepared.slice(opening + 1);
+      ({ prepared, offsets } = replaceWithOffsetMap(prepared, offsets, opening, opening + 1, "&lt;"));
     }
   }
   throw new Error("too many rejected non-MDX less-than tokens");
 }
 
-function collectElements(tree, value) {
+function collectElements(parsed, value) {
+  const { tree, offsets } = parsed;
   const elements = [];
   let sequence = 0;
+
+  function originalOffset(offset) {
+    if (!Number.isInteger(offset) || offset < 0 || offset >= offsets.length) return undefined;
+    return offsets[offset];
+  }
 
   function addElement(name, attributes, offset, nameEnd, openingEnd) {
     if (!name || !Number.isInteger(offset) || !Number.isInteger(nameEnd) || !Number.isInteger(openingEnd)) return;
@@ -99,11 +123,11 @@ function collectElements(tree, value) {
         opening.attributes.map((attribute) => ({
           name: attribute.type === "JSXAttribute" ? jsxName(attribute.name) : "...",
           protected: attribute.type === "JSXSpreadAttribute" || PROTECTED_ATTRIBUTES.has(jsxName(attribute.name)),
-          raw: value.slice(attribute.start, attribute.end),
+          raw: value.slice(originalOffset(attribute.start), originalOffset(attribute.end)),
         })),
-        node.start,
-        opening.name.end,
-        opening.end,
+        originalOffset(node.start),
+        originalOffset(opening.name.end),
+        originalOffset(opening.end),
       );
     }
     for (const [key, child] of Object.entries(node)) {
@@ -115,9 +139,9 @@ function collectElements(tree, value) {
   function visitMdast(node) {
     if (!node || typeof node !== "object") return;
     if ((node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement") && typeof node.name === "string") {
-      const start = node.position?.start?.offset;
+      const start = originalOffset(node.position?.start?.offset);
       const nameEnd = Number.isInteger(start) ? start + 1 + node.name.length : undefined;
-      const lastAttributeEnd = node.attributes.at(-1)?.position?.end?.offset;
+      const lastAttributeEnd = originalOffset(node.attributes.at(-1)?.position?.end?.offset);
       const searchFrom = Number.isInteger(lastAttributeEnd) ? lastAttributeEnd : nameEnd;
       const close = Number.isInteger(searchFrom) ? value.indexOf(">", searchFrom) : -1;
       addElement(
@@ -127,7 +151,10 @@ function collectElements(tree, value) {
           protected:
             attribute.type === "mdxJsxExpressionAttribute" ||
             (attribute.type === "mdxJsxAttribute" && PROTECTED_ATTRIBUTES.has(attribute.name)),
-          raw: value.slice(attribute.position.start.offset, attribute.position.end.offset),
+          raw: value.slice(
+            originalOffset(attribute.position.start.offset),
+            originalOffset(attribute.position.end.offset),
+          ),
         })),
         start,
         nameEnd,

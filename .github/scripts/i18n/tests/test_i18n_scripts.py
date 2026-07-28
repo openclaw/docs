@@ -42,6 +42,7 @@ clear_pending_locale_outputs = load_module("clear_pending_locale_outputs")
 package_artifact = load_module("package_artifact")
 mdx_repair_scope = load_module("mdx_repair_scope")
 apply_artifacts = load_module("apply_artifacts")
+merge_artifact_roots = load_module("merge_artifact_roots")
 read_source_metadata = load_module("read_source_metadata")
 prune_stale_locale_pages = load_module("prune_stale_locale_pages")
 plan_full = load_module("plan_full")
@@ -197,6 +198,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("schedule:", text)
         self.assertIn("workflow_dispatch:", text)
         self.assertIn("target_locale:", text)
+        self.assertIn("resume_run_id:", text)
         self.assertIn("canary_only:", text)
         self.assertIn("cancel-in-progress: false", text)
 
@@ -230,6 +232,10 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("shard_total: ${{ matrix.shard_total }}", text)
         self.assertIn("commit_locale: false", text)
         self.assertIn("translate-finalize-reusable.yml", text)
+        self.assertIn("run-id: ${{ inputs.resume_run_id }}", text)
+        self.assertIn("resume_run_id: ${{ inputs.resume_run_id || '' }}", text)
+        self.assertIn("merge_artifact_roots.py", text)
+        self.assertIn("needs.plan.outputs.translation_required == 'false'", text)
         self.assertNotIn("translate-locale-finalize-reusable.yml", text)
         self.assertRegex(
             text,
@@ -546,6 +552,161 @@ class I18NScriptTests(unittest.TestCase):
             result["batches"][0],
         )
         self.assertEqual("ru=ru", result["expected_locales"])
+
+    def test_full_plan_resume_reruns_only_failed_shards(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp) / "artifacts"
+            base_metadata = {
+                "artifact_role": "locale",
+                "locale": "ru",
+                "locale_slug": "ru",
+                "mode": "full",
+                "shard_total": 2,
+                "source_sha": "source-a",
+                "changed_count": 0,
+                "deleted_count": 0,
+            }
+            self._write_artifact(
+                artifacts,
+                "i18n-ru-s0of2-source-a",
+                metadata={**base_metadata, "shard_index": 0, "failed_reason": ""},
+            )
+            self._write_artifact(
+                artifacts,
+                "i18n-ru-s1of2-source-a",
+                metadata={**base_metadata, "shard_index": 1, "failed_reason": "translation failed"},
+            )
+
+            result = plan_full.plan_full(
+                "ru",
+                4,
+                FIXTURES / "pending-docs" / "docs",
+                target_docs_per_shard=1,
+                max_shards=4,
+                resume_artifacts_root=artifacts,
+                source_sha="source-a",
+            )
+
+            self.assertTrue(result["resume_mode"])
+            self.assertTrue(result["translation_required"])
+            self.assertEqual([{"locale": "ru", "locale_slug": "ru"}], result["selected"])
+            self.assertEqual(
+                [[{"locale": "ru", "locale_slug": "ru", "shard_index": "1", "shard_total": "2"}]],
+                result["batches"],
+            )
+
+    def test_full_resume_keeps_successful_locales_in_finalization_set(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp) / "artifacts"
+            locales = [translation_plan.Locale("fr", "fr"), translation_plan.Locale("ru", "ru")]
+            for locale in locales:
+                for shard_index in range(2):
+                    failed = locale.locale == "ru" and shard_index == 1
+                    self._write_artifact(
+                        artifacts,
+                        f"i18n-{locale.locale_slug}-s{shard_index}of2-source-a",
+                        metadata={
+                            "artifact_role": "locale",
+                            "locale": locale.locale,
+                            "locale_slug": locale.locale_slug,
+                            "mode": "full",
+                            "shard_index": shard_index,
+                            "shard_total": 2,
+                            "source_sha": "source-a",
+                            "failed_reason": "translation failed" if failed else "",
+                            "changed_count": 0,
+                            "deleted_count": 0,
+                        },
+                    )
+
+            batches = plan_full.build_resume_plan(locales, 2, artifacts, "source-a")
+
+            self.assertEqual(
+                [[{"locale": "ru", "locale_slug": "ru", "shard_index": "1", "shard_total": "2"}]],
+                batches,
+            )
+            self.assertEqual(["fr", "ru"], [locale.locale for locale in locales])
+
+    def test_full_resume_without_artifacts_reruns_every_shard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            locales = [translation_plan.Locale("fr", "fr")]
+
+            batches = plan_full.build_resume_plan(locales, 2, Path(tmp), "source-a")
+
+            self.assertEqual(
+                [
+                    [
+                        {"locale": "fr", "locale_slug": "fr", "shard_index": "0", "shard_total": "2"},
+                        {"locale": "fr", "locale_slug": "fr", "shard_index": "1", "shard_total": "2"},
+                    ]
+                ],
+                batches,
+            )
+
+    def test_full_resume_with_all_successful_shards_requires_only_finalization(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp) / "artifacts"
+            for shard_index in range(2):
+                self._write_artifact(
+                    artifacts,
+                    f"i18n-ru-s{shard_index}of2-source-a",
+                    metadata={
+                        "artifact_role": "locale",
+                        "locale": "ru",
+                        "locale_slug": "ru",
+                        "mode": "full",
+                        "shard_index": shard_index,
+                        "shard_total": 2,
+                        "source_sha": "source-a",
+                        "failed_reason": "",
+                        "changed_count": 0,
+                        "deleted_count": 0,
+                    },
+                )
+
+            result = plan_full.plan_full(
+                "ru",
+                4,
+                FIXTURES / "pending-docs" / "docs",
+                target_docs_per_shard=1,
+                max_shards=4,
+                resume_artifacts_root=artifacts,
+                source_sha="source-a",
+            )
+
+            self.assertEqual([], result["batches"])
+            self.assertFalse(result["translation_required"])
+
+    def test_full_plan_resume_rejects_stale_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp) / "artifacts"
+            self._write_artifact(
+                artifacts,
+                "i18n-ru-s0of2-source-old",
+                metadata={
+                    "artifact_role": "locale",
+                    "locale": "ru",
+                    "locale_slug": "ru",
+                    "mode": "full",
+                    "shard_index": 0,
+                    "shard_total": 2,
+                    "source_sha": "source-old",
+                    "failed_reason": "",
+                    "changed_count": 0,
+                    "deleted_count": 0,
+                },
+            )
+
+            with self.assertRaisesRegex(SystemExit, "belongs to source source-old"):
+                plan_full.plan_full(
+                    "ru",
+                    4,
+                    FIXTURES / "pending-docs" / "docs",
+                    target_docs_per_shard=1,
+                    max_shards=4,
+                    resume_artifacts_root=artifacts,
+                    source_sha="source-new",
+                )
 
     def test_full_plan_defaults_to_max_sized_shards(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1398,8 +1559,8 @@ class I18NScriptTests(unittest.TestCase):
           import {{ repairProtectedAttributes }} from {json.dumps(repair.as_uri())};
           const processor = createProcessor({{ format: "mdx" }});
           const markdownProcessor = createProcessor({{ format: "md" }});
-          const source = `Plain Markdown says n < 9 before the JSX.\\n<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Prompt" />\\n`;
-          const translated = `Plain Markdown says n < 9 before the JSX.\\n<ParamField label="Eingabe" default="Analysieren Sie dieses PDF-Dokument." type="text" path="eingabe" />\\n`;
+          const source = `Plain Markdown says n < 9 and m < 12 before the JSX. 🚀\\n<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Prompt" />\\n`;
+          const translated = `Plain Markdown says n < 9 and m < 12 before the JSX. 🚀\\n<ParamField label="Eingabe" default="Analysieren Sie dieses PDF-Dokument." type="text" path="eingabe" />\\n`;
           const result = repairProtectedAttributes(processor, markdownProcessor, source, translated);
           const expected = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, source));
           const actual = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, result.value));
@@ -1415,7 +1576,7 @@ class I18NScriptTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertTrue(output["result"]["changed"])
         self.assertEqual(output["expected"], output["actual"])
-        self.assertIn("n < 9", output["result"]["value"])
+        self.assertIn("n < 9 and m < 12", output["result"]["value"])
         self.assertIn('label="Eingabe"', output["result"]["value"])
         self.assertIn('path="prompt"', output["result"]["value"])
         self.assertIn('default="Analyze this PDF document."', output["result"]["value"])
@@ -2266,6 +2427,39 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(["fr: changed=5 deleted=2"], summary.successful)
             self.assertEqual([], summary.failed)
             self.assertEqual([], summary.skipped)
+
+    def test_merge_artifact_roots_prefers_current_rerun(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            previous = root / "previous"
+            current = root / "current"
+            output = root / "output"
+            metadata = {
+                "locale": "fr",
+                "locale_slug": "fr",
+                "mode": "full",
+                "shard_index": 1,
+                "shard_total": 2,
+                "source_sha": "source-a",
+                "changed_count": 0,
+                "deleted_count": 0,
+            }
+            self._write_artifact(
+                previous,
+                "i18n-fr-s1of2-source-a",
+                metadata={**metadata, "failed_reason": "translation failed"},
+            )
+            self._write_artifact(
+                current,
+                "i18n-fr-s1of2-source-a",
+                metadata={**metadata, "failed_reason": ""},
+            )
+
+            count = merge_artifact_roots.merge_artifact_roots(previous, current, output)
+
+            self.assertEqual(1, count)
+            merged = json.loads((output / "i18n-fr-s1of2-source-a/metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual("", merged["failed_reason"])
 
     def test_apply_artifacts_applies_normal_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
