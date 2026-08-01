@@ -13,11 +13,12 @@ Keep consumer-specific behavior, data, routes, and layout composition local.
 1. Read [tokens.md](references/tokens.md) before choosing colors, spacing, type, radii, or shadows.
 2. Read [consumer-adapters.md](references/consumer-adapters.md) for the current framework.
 3. Read [application-surfaces.md](references/application-surfaces.md) when working on shells, panes, settings, or operational screens.
-4. Read [embedded-surfaces.md](references/embedded-surfaces.md) when the surface renders inside a host frame, such as an MCP app.
-5. Inspect the consumer's existing shared primitives before creating a component.
-6. Use semantic tokens for UI intent; use palette primitives only for documented exceptions.
-7. Keep application behavior, routes, and information architecture unchanged unless the task says otherwise.
-8. Validate the affected routes with existing tests and real browser screenshots.
+4. Read [terminal-ui.md](references/terminal-ui.md) when designing or auditing a terminal interface.
+5. Read [embedded-surfaces.md](references/embedded-surfaces.md) when the surface renders inside a host frame, such as an MCP app.
+6. Inspect the consumer's existing shared primitives before creating a component.
+7. Use semantic tokens for UI intent; use palette primitives only for documented exceptions.
+8. Keep application behavior, routes, and information architecture unchanged unless the task says otherwise.
+9. Validate the affected routes with existing tests and real browser screenshots.
 
 ## Interface Rules
 
