@@ -214,26 +214,7 @@ async function checkDesktop() {
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
-  await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
-  const pageActionPrimary = await page.evaluate(() => {
-    const control = document.querySelector(".page-actions-primary");
-    const label = control?.querySelector("[data-copy-feedback]");
-    const controlRect = control?.getBoundingClientRect();
-    const labelRect = label?.getBoundingClientRect();
-    const iconRect = control?.querySelector(".icon")?.getBoundingClientRect();
-    const style = control ? getComputedStyle(control) : null;
-    return {
-      whiteSpace: style?.whiteSpace,
-      controlHeight: controlRect?.height,
-      labelHeight: labelRect?.height,
-      sameLine: iconRect && labelRect ? Math.abs(iconRect.top - labelRect.top) < 4 : false,
-    };
-  });
-  if (pageActionPrimary.whiteSpace !== "nowrap"
-    || (pageActionPrimary.labelHeight ?? 0) > (pageActionPrimary.controlHeight ?? 0)
-    || !pageActionPrimary.sameLine) {
-    throw new Error(`page action primary wrapping failed: ${JSON.stringify(pageActionPrimary)}`);
-  }
+  await checkPageActions(page, "desktop dark");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
   const searchShortcut = await page.evaluate(() => {
     const key = document.querySelector(".search-shortcut");
@@ -700,6 +681,8 @@ async function checkMobile() {
     || discordOverflow.escaping.length) {
     throw new Error(`discord mobile overflow failed: ${JSON.stringify(discordOverflow)}`);
   }
+  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await checkPageActions(page, "mobile dark");
   await page.close();
 }
 
@@ -808,7 +791,121 @@ async function checkLightMode() {
   if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius !== "0px" || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
+  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await checkPageActions(page, "desktop light");
   await page.close();
+}
+
+async function checkPageActions(page, label) {
+  await expectVisible(page, ".page-actions-primary", `${label} Copy page segment`);
+  await expectVisible(page, ".page-actions-more > summary", `${label} page actions menu segment`);
+  const closed = await page.evaluate(() => {
+    const control = document.querySelector(".page-actions");
+    const primary = document.querySelector(".page-actions-primary");
+    const summary = document.querySelector(".page-actions-more > summary");
+    const copyLabel = primary?.querySelector("[data-copy-feedback]");
+    const copyIcon = primary?.querySelector(".icon");
+    if (!control || !primary || !summary || !copyLabel || !copyIcon) return null;
+    const controlRect = control.getBoundingClientRect();
+    const primaryRect = primary.getBoundingClientRect();
+    const summaryRect = summary.getBoundingClientRect();
+    const labelRect = copyLabel.getBoundingClientRect();
+    const iconRect = copyIcon.getBoundingClientRect();
+    const controlStyle = getComputedStyle(control);
+    const primaryStyle = getComputedStyle(primary);
+    const summaryStyle = getComputedStyle(summary);
+    const radiusProbe = document.createElement("div");
+    radiusProbe.style.borderRadius = "var(--oc-radius-control)";
+    document.body.append(radiusProbe);
+    const controlRadius = getComputedStyle(radiusProbe).borderTopLeftRadius;
+    radiusProbe.remove();
+    const primaryRightBorder = parseFloat(primaryStyle.borderRightWidth);
+    const summaryLeftBorder = parseFloat(summaryStyle.borderLeftWidth);
+    const seamDelta = summaryRect.left - primaryRect.right;
+    const atPrimaryCenter = document.elementFromPoint(
+      (primaryRect.left + primaryRect.right) / 2,
+      (primaryRect.top + primaryRect.bottom) / 2,
+    );
+    const atSummaryCenter = document.elementFromPoint(
+      (summaryRect.left + summaryRect.right) / 2,
+      (summaryRect.top + summaryRect.bottom) / 2,
+    );
+    return {
+      controlDisplay: controlStyle.display,
+      controlWrap: controlStyle.flexWrap,
+      controlHeight: controlRect.height,
+      primaryHeight: primaryRect.height,
+      summaryHeight: summaryRect.height,
+      topDelta: summaryRect.top - primaryRect.top,
+      bottomDelta: summaryRect.bottom - primaryRect.bottom,
+      seamDelta,
+      seamWidth: primaryRightBorder + summaryLeftBorder + seamDelta,
+      primaryRadii: [
+        primaryStyle.borderTopLeftRadius,
+        primaryStyle.borderTopRightRadius,
+        primaryStyle.borderBottomRightRadius,
+        primaryStyle.borderBottomLeftRadius,
+      ],
+      summaryRadii: [
+        summaryStyle.borderTopLeftRadius,
+        summaryStyle.borderTopRightRadius,
+        summaryStyle.borderBottomRightRadius,
+        summaryStyle.borderBottomLeftRadius,
+      ],
+      controlRadius,
+      whiteSpace: primaryStyle.whiteSpace,
+      labelHeight: labelRect.height,
+      sameLine: Math.abs(iconRect.top - labelRect.top) < 4,
+      distinctTargets: atPrimaryCenter?.closest(".page-actions-primary") === primary
+        && atSummaryCenter?.closest(".page-actions-more > summary") === summary,
+    };
+  });
+  const closeEnough = (value, expected) => Math.abs((value ?? Number.NaN) - expected) <= 0.5;
+  if (!closed
+    || closed.controlDisplay !== "flex"
+    || closed.controlWrap !== "nowrap"
+    || !closeEnough(closed.controlHeight, closed.primaryHeight)
+    || !closeEnough(closed.primaryHeight, closed.summaryHeight)
+    || !closeEnough(closed.topDelta, 0)
+    || !closeEnough(closed.bottomDelta, 0)
+    || closed.seamDelta > 0
+    || closed.seamDelta < -1
+    || !closeEnough(closed.seamWidth, 1)
+    || closed.primaryRadii.join(" ") !== `${closed.controlRadius} 0px 0px ${closed.controlRadius}`
+    || closed.summaryRadii.join(" ") !== `0px ${closed.controlRadius} ${closed.controlRadius} 0px`
+    || closed.whiteSpace !== "nowrap"
+    || closed.labelHeight > closed.primaryHeight
+    || !closed.sameLine
+    || !closed.distinctTargets) {
+    throw new Error(`${label} split page actions geometry failed: ${JSON.stringify(closed)}`);
+  }
+
+  await page.locator(".page-actions-more > summary").click();
+  const opened = await page.evaluate(() => {
+    const details = document.querySelector(".page-actions-more");
+    const summary = details?.querySelector(":scope > summary");
+    const menu = details?.querySelector(":scope > .page-actions-menu");
+    const summaryRect = summary?.getBoundingClientRect();
+    const menuRect = menu?.getBoundingClientRect();
+    return {
+      open: details?.hasAttribute("open"),
+      display: menu ? getComputedStyle(menu).display : null,
+      rightDelta: summaryRect && menuRect ? menuRect.right - summaryRect.right : null,
+      topGap: summaryRect && menuRect ? menuRect.top - summaryRect.bottom : null,
+      inViewport: menuRect ? menuRect.left >= 0 && menuRect.right <= innerWidth : false,
+    };
+  });
+  if (!opened.open
+    || opened.display !== "grid"
+    || !closeEnough(opened.rightDelta, 0)
+    || !closeEnough(opened.topGap, 8)
+    || !opened.inViewport) {
+    throw new Error(`${label} page actions menu alignment failed: ${JSON.stringify(opened)}`);
+  }
+  await page.keyboard.press("Escape");
+  if (await page.locator(".page-actions-more[open]").count()) {
+    throw new Error(`${label} page actions menu did not close on Escape`);
+  }
 }
 
 async function expectVisible(page, selector, label) {

@@ -692,11 +692,13 @@ if (!/\.oc-code figcaption button:before/.test(siteCss)
 if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
   || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px;white-space:nowrap/.test(siteCss)
+  || !/\.page-tools \.page-actions-primary\{[^}]*border-radius:var\(--oc-radius-control\) 0 0 var\(--oc-radius-control\);margin-right:-1px/.test(siteCss)
   || !/\.page-tools \.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
+  || !/\.page-tools \.page-actions-more summary\{[^}]*border-radius:0 var\(--oc-radius-control\) var\(--oc-radius-control\) 0/.test(siteCss)
   || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0;z-index:40;display:none/.test(siteCss)
   || !/\.page-tools \.page-actions-more\[open\] \.page-actions-menu\{display:grid\}/.test(siteCss)
   || !/\.page-tools \.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
-  throw new Error("assets: page action trigger should use the split pill button skin");
+  throw new Error("assets: page action trigger should use the split button skin");
 }
 if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more\[open\] summary,\.page-tools \.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
   || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
