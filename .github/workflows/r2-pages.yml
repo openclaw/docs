@@ -52,6 +52,11 @@ on:
         required: false
         type: string
         default: ""
+      smoke_commit_range:
+        description: "Optional <base>..<head> forwarded to docs-live-smoke for added-route assertions."
+        type: string
+        required: false
+        default: ""
 
 permissions:
   actions: write
@@ -221,6 +226,7 @@ jobs:
           set -euo pipefail
           git fetch --quiet origin main
           latest="$(git rev-parse refs/remotes/origin/main)"
+          echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
           expected="${SCOPED_CONTENT_SHA:-${GITHUB_SHA}}"
           if [ "${expected}" = "${latest}" ]; then
             echo "stale=false" >> "${GITHUB_OUTPUT}"
@@ -254,7 +260,23 @@ jobs:
         if: steps.current-main.outputs.dispatch == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run r2-pages.yml --ref main -f artifact_scope=full -f request_id="head-drift-${GITHUB_RUN_ID}"
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
+          LATEST_SHA: ${{ steps.current-main.outputs.latest }}
+        run: |
+          set -euo pipefail
+          base=""
+          if [[ "${EVENT_NAME}" == "push" && "${BEFORE_SHA}" =~ ^[0-9a-f]{7,40}$ && ! "${BEFORE_SHA}" =~ ^0+$ ]]; then
+            base="${BEFORE_SHA}"
+          elif [ -n "${SMOKE_COMMIT_RANGE}" ]; then
+            base="${SMOKE_COMMIT_RANGE%%..*}"
+          fi
+          range=""
+          if [ -n "${base}" ]; then
+            range="${base}..${LATEST_SHA}"
+          fi
+          gh workflow run r2-pages.yml --ref main -f artifact_scope=full -f request_id="head-drift-${GITHUB_RUN_ID}" -f smoke_commit_range="${range}"
 
       - name: Fail stale scoped translation deploy
         if: github.event_name == 'workflow_dispatch' && steps.current-main.outputs.stale == 'true' && (steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
@@ -394,4 +416,16 @@ jobs:
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.deploy_worker == '1' || (steps.artifact-scope.outputs.scope != 'none' && (steps.upload-r2.outputs.changed != '0' || steps.upload-r2.outputs.deleted != '0')))
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run docs-live-smoke.yml --ref main
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          AFTER_SHA: ${{ github.sha }}
+          SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
+        run: |
+          set -euo pipefail
+          range=""
+          if [[ "${EVENT_NAME}" == "push" && "${BEFORE_SHA}" =~ ^[0-9a-f]{7,40}$ && ! "${BEFORE_SHA}" =~ ^0+$ ]]; then
+            range="${BEFORE_SHA}..${AFTER_SHA}"
+          elif [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            range="${SMOKE_COMMIT_RANGE}"
+          fi
+          gh workflow run docs-live-smoke.yml --ref main -f commit_range="${range}"
