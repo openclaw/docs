@@ -10578,6 +10578,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Why use it
   - H2: Quickstart
   - H3: Enable code mode
+  - H3: Override one model
   - H3: What the model does
   - H3: Recover from tool errors
   - H3: Verify the active surface
