@@ -9519,6 +9519,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H2: Agent schema history
+  - H3: Creator namespace migration
   - H3: Participant identity migration
   - H2: State schema history
   - H3: State schema 13
