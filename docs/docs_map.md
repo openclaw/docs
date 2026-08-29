@@ -2698,6 +2698,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/managed-worktrees
 - Headings:
   - H2: Layout and names
+  - H2: Capacity and disk space
   - H2: Provision ignored files
   - H2: Run repository setup
   - H2: Session worktrees
