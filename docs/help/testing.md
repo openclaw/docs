@@ -996,14 +996,14 @@ Run full Mintlify anchor validation when you need in-page heading checks too: `p
 
 These are "real pipeline" regressions without real providers:
 
-- Gateway tool calling (mock OpenAI, real gateway + agent loop): `src/gateway/gateway.test.ts` (case: "runs a mock OpenAI tool call end-to-end via gateway agent loop")
+- Gateway agent admission (real Gateway with a mock OpenAI provider): `src/gateway/gateway.test.ts` (case: "accepts a gateway agent request over ws and returns a run id"; checks acceptance, a run ID, and an abort response).
 - Gateway wizard (WS `wizard.start`/`wizard.next`, writes config + auth enforced): `src/gateway/gateway.test.ts` (case: "runs wizard over ws and writes auth token config")
 
 ## Agent reliability evals (skills)
 
 We already have a few CI-safe tests that behave like "agent reliability evals":
 
-- Mock tool-calling through the real gateway + agent loop (`src/gateway/gateway.test.ts`).
+- Agent admission, run-ID responses, and abort requests through the real Gateway with a mock OpenAI provider (`src/gateway/gateway.test.ts`).
 - End-to-end wizard flows that validate session wiring and config effects (`src/gateway/gateway.test.ts`).
 
 What's still missing for skills (see [Skills](/tools/skills)):
