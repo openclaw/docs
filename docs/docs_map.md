@@ -3554,6 +3554,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Viewing the session desktop
   - H2: Automatic load balancing across devices
   - H2: Sleeping and waking: idle suspension and warm images
+  - H2: Images and PDFs
   - H2: What stays with the Gateway
   - H2: Related
 
