@@ -3550,6 +3550,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Paired devices: your own hardware as session hosts
   - H2: Cloud workers: rented machines through Crabbox
+  - H2: Viewing the session desktop
   - H2: Automatic load balancing across devices
   - H2: Sleeping and waking: idle suspension and warm images
   - H2: What stays with the Gateway
