@@ -351,6 +351,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Reply placement
   - H2: Manual configuration
   - H3: Reply prefix
+  - H3: Multiple bot identities
   - H3: Bot key storage
   - H2: Verify the connection
   - H3: QA Lab round trip
