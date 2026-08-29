@@ -2563,6 +2563,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H2: Auto-compaction
   - H2: Manual compaction
+  - H3: Provider checkpoints
   - H2: Configuration
   - H3: Using a different model
   - H3: Identifier preservation
