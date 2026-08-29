@@ -5859,6 +5859,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/ios
 - Headings:
   - H2: What it does
+  - H2: Session colors
   - H2: Requirements
   - H2: Quick start (pair + connect)
   - H2: Health summaries
@@ -6085,6 +6086,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /platforms/mac/webchat
 - Headings:
+  - H2: Session colors
   - H2: Multiple Gateway windows
   - H3: Gateway picker
   - H2: Quick Chat bar
@@ -11519,6 +11521,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Sidebar navigation
   - H3: Session placement
   - H3: Session icons
+  - H2: Session colors
   - H2: New session page
   - H2: What it can do (today)
   - H2: Import assistant memory
