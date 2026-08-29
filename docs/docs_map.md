@@ -6455,6 +6455,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Compatibility registry
   - H2: Deprecation policy
   - H2: Current compatibility areas
+  - H3: Session agent resolution aliases
   - H3: Auth profile cooldown classifications
   - H3: Channel prompt-context identifier aliases
   - H3: WhatsApp inbound callback retirement
