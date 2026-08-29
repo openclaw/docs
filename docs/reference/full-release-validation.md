@@ -134,8 +134,14 @@ creates or updates repository refs itself.
 Use the non-release `FRV Proof Broker` and `FRV Proof Fixture` workflows only
 after the reviewed SHA lands on protected `main`. The fixture contains one
 fixed no-op job that intentionally fails on attempt one and passes on attempt
-two. The broker validates the exact maintainer, pull request head, protected
+two. The broker validates the exact maintainer, merged pull request, protected
 main SHA, fixture workflow, and run tuple before rerunning only that failed job.
+Supply the merged pull request number and its exact landed commit. The broker
+requires the pull request to be merged into `main`, requires its recorded merge
+commit to equal that landed commit, and requires the landed commit to be
+identical to or an ancestor of the trusted broker workflow SHA. It repeats the
+maintainer, merged pull request, and ancestry checks immediately before the
+fixture rerun.
 
 Accept the hosted mutation proof only when the exact fixture run advances to
 attempt two and passes. The broker emits a receipt and must create no release
