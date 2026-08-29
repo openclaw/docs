@@ -9527,6 +9527,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Creator namespace migration
   - H3: Participant identity migration
   - H2: State schema history
+  - H3: State schema 15
   - H3: State schema 13
   - H3: State schema 11
   - H3: State schema 9
