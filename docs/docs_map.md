@@ -3573,6 +3573,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Bundle installation
   - H3: Verify the profile
   - H2: Dispatching a session
+  - H3: Cloud child sessions
   - H3: Runtime support
   - H3: Codex on a paired device
   - H3: Codex or OpenClaw on a cloud profile
