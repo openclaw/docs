@@ -3563,8 +3563,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What runs where
   - H2: Requirements
-  - H3: Coordinator-backed Crabbox
-  - H3: Daytona
+  - H3: Crabbox provider support
   - H2: Configuration
   - H3: Warm images
   - H3: Per-project default profiles
