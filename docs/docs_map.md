@@ -6356,6 +6356,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-runtime
 - Headings:
   - H2: Overview
+  - H2: Recovery after a hard Gateway stop
   - H2: Thread bindings and model changes
   - H2: Supervision and safe continuation
   - H2: Visible replies and heartbeats
