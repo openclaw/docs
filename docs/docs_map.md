@@ -11632,12 +11632,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Which surface you get
   - H2: Enable browser notifications
+  - H3: Choose what reaches each device
+  - H3: Use more than one Gateway on one phone
   - H2: Enable notifications in the macOS app
   - H2: Troubleshooting
   - H3: Enable is unavailable
   - H3: Browser permission is blocked
   - H3: Service worker is not ready
   - H3: Web Push asks for a Doctor migration
+  - H3: Tests arrive but approval requests do not
   - H2: Related
 
 ## web/tui.md
