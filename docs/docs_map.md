@@ -1469,6 +1469,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Inbound dead letters
   - H2: Add / remove accounts
   - H2: Login and logout (interactive)
+  - H2: Per-account recovery (non-destructive)
   - H2: Troubleshooting
   - H2: Capabilities probe
   - H2: Resolve names to IDs
