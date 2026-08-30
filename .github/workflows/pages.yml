@@ -22,6 +22,11 @@ on:
         required: false
         type: boolean
         default: false
+      purge_urls:
+        description: "JSON array of exact HTTPS docs URLs to purge from Cloudflare cache."
+        required: false
+        type: string
+        default: ""
 
 permissions:
   actions: write
@@ -65,6 +70,14 @@ jobs:
             --tag "${GITHUB_SHA::12}" \
             --message "openclaw/docs ${GITHUB_SHA}"
 
+      - name: Purge exact docs URLs
+        if: github.event_name == 'workflow_dispatch' && inputs.purge_urls != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_PURGE_URLS: ${{ inputs.purge_urls }}
+          CLOUDFLARE_ZONE_NAME: openclaw.ai
+        run: node scripts/docs-site/cloudflare-purge.mjs
+
       - name: Cut over docs hostnames
         if: github.event_name == 'workflow_dispatch' && inputs.cutover_docs_hosts == true
         env:
@@ -72,7 +85,7 @@ jobs:
         run: node scripts/cloudflare-cutover-docs-hosts.mjs
 
       - name: Dispatch live smoke
-        if: github.event_name == 'workflow_dispatch' && (inputs.deploy_worker == true || inputs.cutover_docs_hosts == true)
+        if: github.event_name == 'workflow_dispatch' && (inputs.deploy_worker == true || inputs.cutover_docs_hosts == true || inputs.purge_urls != '')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run docs-live-smoke.yml --ref main

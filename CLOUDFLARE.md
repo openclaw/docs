@@ -64,6 +64,7 @@ Required Cloudflare API token scopes for bucket/domain/DNS setup:
 - `Account: Workers Scripts: Edit`
 - `Zone: DNS: Edit`
 - `Zone: Cache Rules: Edit` or `Zone: Rulesets: Edit`
+- `Zone: Cache Purge`
 - `Zone: Zone Settings: Edit`
 - `Zone: Read`
 
@@ -100,6 +101,17 @@ Production router deploy:
 2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
 3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.118.0 deploy --config wrangler.toml`.
 4. `docs-live-smoke.yml`
+
+Purge one or more exact stale docs URLs through the protected Cloudflare environment:
+
+```sh
+gh workflow run pages.yml --repo openclaw/docs --ref main \
+  -f deploy_worker=false \
+  -f cutover_docs_hosts=false \
+  -f purge_urls='["https://docs.openclaw.ai/releases/2026.8.1","https://docs.openclaw.ai/releases/2026.8.1/"]'
+```
+
+The purge input accepts at most 30 credential-free HTTPS URLs under `openclaw.ai`. It does not purge the zone broadly or change Worker routes.
 
 Local R2 build:
 
