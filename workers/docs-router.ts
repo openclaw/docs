@@ -394,8 +394,11 @@ async function markdownResponse(env: Env, ctx: ExecutionContext, request: Reques
 
 async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string): Promise<Response> {
   const cache = caches.default;
+  // HTML is mutable at a stable URL. Read it from the R2 binding so a docs
+  // upload becomes visible without requiring a global Cache API purge.
+  const useWorkerCache = !isHtmlPath(pathname);
   const cacheKey = cacheRequest(request, pathname);
-  const cached = request.method === "GET" ? await cache.match(cacheKey) : undefined;
+  const cached = request.method === "GET" && useWorkerCache ? await cache.match(cacheKey) : undefined;
   if (cached) {
     const headers = new Headers(cached.headers);
     headers.set("X-OpenClaw-Docs-Cache", "HIT");
@@ -426,7 +429,7 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
     statusText: response.statusText,
     headers: responseHeaders,
   });
-  if (request.method === "GET" && finalResponse.ok) {
+  if (request.method === "GET" && finalResponse.ok && useWorkerCache) {
     const cacheHeaders = new Headers(finalResponse.headers);
     cacheHeaders.delete("Set-Cookie");
     const cacheResponse = new Response(finalResponse.clone().body, {
@@ -766,9 +769,6 @@ async function r2Fetch(env: Env, method: string, key: string): Promise<Response>
 function cacheRequest(request: Request, pathname: string): Request {
   const url = new URL(request.url);
   url.pathname = pathname;
-  if (isHtmlPath(pathname)) {
-    url.searchParams.set("__openclaw_docs_cache_minute", String(Math.floor(Date.now() / 60_000)));
-  }
   return new Request(url.toString(), {
     headers: request.headers,
     method: "GET",

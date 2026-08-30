@@ -64,7 +64,6 @@ Required Cloudflare API token scopes for bucket/domain/DNS setup:
 - `Account: Workers Scripts: Edit`
 - `Zone: DNS: Edit`
 - `Zone: Cache Rules: Edit` or `Zone: Rulesets: Edit`
-- `Zone: Cache Purge`
 - `Zone: Zone Settings: Edit`
 - `Zone: Read`
 
@@ -101,17 +100,6 @@ Production router deploy:
 2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
 3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.118.0 deploy --config wrangler.toml`.
 4. `docs-live-smoke.yml`
-
-Purge one or more stale docs URL prefixes through the protected Cloudflare environment. Prefix purge reaches the custom Cache API keys created by the Worker router:
-
-```sh
-gh workflow run pages.yml --repo openclaw/docs --ref main \
-  -f deploy_worker=false \
-  -f cutover_docs_hosts=false \
-  -f purge_prefixes='["https://docs.openclaw.ai/releases/2026.8.1"]'
-```
-
-The purge input accepts at most 30 credential-free HTTPS URL prefixes under `openclaw.ai`, rejects hostname-wide prefixes, and strips the scheme before calling Cloudflare's prefix-purge API. It does not purge the zone broadly or change Worker routes.
 
 Local R2 build:
 
@@ -164,14 +152,14 @@ The Worker router splits browser and edge cache headers so cached HTML does not 
 - hashed/static assets:
   - `Cache-Control: public, max-age=31536000, immutable`
 
-The Worker also uses `caches.default` for production router responses. Recommended Cloudflare cache rules for the later pure-R2 path:
+The Worker bypasses `caches.default` for HTML and slashless HTML aliases so a changed R2 page is visible immediately at its stable URL. Other responses continue to use the Worker cache. Recommended Cloudflare cache rules for the later pure-R2 path:
 
 1. Cache static assets and Pagefind files for one year.
 2. Cache HTML at the edge for one day with short browser TTL.
 3. Cache `.md`, `.txt`, `.json`, and `.jsonl` for one hour at the edge.
 4. Bypass cache for `/ask-molty/*`.
 
-After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS` then `HIT`. After pure-R2 ruleset cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
+After router deploy, verify repeated HTML requests remain `X-OpenClaw-Docs-Cache: MISS` and repeated static or markdown requests show `MISS` then `HIT`. After pure-R2 ruleset cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
 
 ## Cutover Checklist
 
