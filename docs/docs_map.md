@@ -697,10 +697,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Approval metadata
   - H3: Self-hosted push rules for quiet finalized previews
   - H2: Bot-to-bot rooms
-  - H2: Intelligent multi-agent turn-taking
-  - H3: Participation decision
-  - H3: Fresh-message action and redraft depth
-  - H3: Preview streaming behavior
   - H2: Encryption and verification
   - H3: Enable encryption
   - H3: Status and trust signals
@@ -731,7 +727,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Account and connection
   - H3: Encryption
   - H3: Access and policy
-  - H3: Intelligent turn-taking
   - H3: Reply behavior
   - H3: Reaction settings
   - H3: Tooling and per-room overrides
