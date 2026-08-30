@@ -8015,6 +8015,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Provider plus harness pairing
   - H3: Tool-result middleware
   - H3: Terminal outcome classification
+  - H3: Live output-token usage
   - H3: Agent-end side effects
   - H3: User input and tool surfaces
   - H3: Paired-device execution
