@@ -11090,6 +11090,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How collector children behave
   - H3: Children are leaves
   - H2: Observe a Swarm
+  - H2: Stop a Swarm
   - H2: Use Swarm from other harnesses
   - H2: Limits and roadmap
   - H2: Related
