@@ -9777,6 +9777,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Security and Privacy
   - H2: Quality-of-Life Improvements
   - H2: Other Bug Fixes
+  - H2: Maintainer and Internal Changes
 
 ## releases/index.md
 
