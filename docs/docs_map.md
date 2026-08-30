@@ -11432,6 +11432,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Stability contract
   - H3: Native catalog links
   - H2: Focus presentation routes
+  - H2: Beam share URLs
   - H2: Route table
   - H2: Other special documents and startup modes
   - H2: Remote Gateway handoff
