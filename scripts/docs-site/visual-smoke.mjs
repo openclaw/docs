@@ -647,7 +647,7 @@ async function checkMobile() {
     throw new Error(`mobile menu did not close on Escape: ${JSON.stringify(closed)}`);
   }
   await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
-  await page.screenshot({ path: path.join(artifacts, "discord-mobile-dark.png"), fullPage: true });
+  await page.screenshot({ path: path.join(artifacts, "discord-mobile-dark.png"), fullPage: false });
   const discordOverflow = await page.evaluate(() => {
     const viewport = innerWidth;
     const longCode = [...document.querySelectorAll(".doc code")]
