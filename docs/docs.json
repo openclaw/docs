@@ -53,6 +53,10 @@
   },
   "redirects": [
     {
+      "source": "/install/clawdock",
+      "destination": "/install/docker#clawdock-migration"
+    },
+    {
       "source": "/concepts/message-lifecycle-refactor",
       "destination": "/plugins/sdk-channel-outbound"
     },
@@ -1156,7 +1160,6 @@
                 "pages": [
                   "install/ansible",
                   "install/bun",
-                  "install/clawdock",
                   "install/docker",
                   "install/nix",
                   "install/podman"
@@ -2226,7 +2229,6 @@
                 "pages": [
                   "zh-CN/install/ansible",
                   "zh-CN/install/bun",
-                  "zh-CN/install/clawdock",
                   "zh-CN/install/docker",
                   "zh-CN/install/nix",
                   "zh-CN/install/podman"
@@ -3262,7 +3264,6 @@
                 "pages": [
                   "zh-TW/install/ansible",
                   "zh-TW/install/bun",
-                  "zh-TW/install/clawdock",
                   "zh-TW/install/docker",
                   "zh-TW/install/nix",
                   "zh-TW/install/podman"
@@ -4298,7 +4299,6 @@
                 "pages": [
                   "ja-JP/install/ansible",
                   "ja-JP/install/bun",
-                  "ja-JP/install/clawdock",
                   "ja-JP/install/docker",
                   "ja-JP/install/nix",
                   "ja-JP/install/podman"
@@ -5334,7 +5334,6 @@
                 "pages": [
                   "es/install/ansible",
                   "es/install/bun",
-                  "es/install/clawdock",
                   "es/install/docker",
                   "es/install/nix",
                   "es/install/podman"
@@ -6370,7 +6369,6 @@
                 "pages": [
                   "pt-BR/install/ansible",
                   "pt-BR/install/bun",
-                  "pt-BR/install/clawdock",
                   "pt-BR/install/docker",
                   "pt-BR/install/nix",
                   "pt-BR/install/podman"
@@ -7406,7 +7404,6 @@
                 "pages": [
                   "ko/install/ansible",
                   "ko/install/bun",
-                  "ko/install/clawdock",
                   "ko/install/docker",
                   "ko/install/nix",
                   "ko/install/podman"
@@ -8442,7 +8439,6 @@
                 "pages": [
                   "de/install/ansible",
                   "de/install/bun",
-                  "de/install/clawdock",
                   "de/install/docker",
                   "de/install/nix",
                   "de/install/podman"
@@ -9478,7 +9474,6 @@
                 "pages": [
                   "fr/install/ansible",
                   "fr/install/bun",
-                  "fr/install/clawdock",
                   "fr/install/docker",
                   "fr/install/nix",
                   "fr/install/podman"
@@ -10514,7 +10509,6 @@
                 "pages": [
                   "hi/install/ansible",
                   "hi/install/bun",
-                  "hi/install/clawdock",
                   "hi/install/docker",
                   "hi/install/nix",
                   "hi/install/podman"
@@ -11550,7 +11544,6 @@
                 "pages": [
                   "ar/install/ansible",
                   "ar/install/bun",
-                  "ar/install/clawdock",
                   "ar/install/docker",
                   "ar/install/nix",
                   "ar/install/podman"
@@ -12586,7 +12579,6 @@
                 "pages": [
                   "it/install/ansible",
                   "it/install/bun",
-                  "it/install/clawdock",
                   "it/install/docker",
                   "it/install/nix",
                   "it/install/podman"
@@ -13622,7 +13614,6 @@
                 "pages": [
                   "vi/install/ansible",
                   "vi/install/bun",
-                  "vi/install/clawdock",
                   "vi/install/docker",
                   "vi/install/nix",
                   "vi/install/podman"
@@ -14658,7 +14649,6 @@
                 "pages": [
                   "nl/install/ansible",
                   "nl/install/bun",
-                  "nl/install/clawdock",
                   "nl/install/docker",
                   "nl/install/nix",
                   "nl/install/podman"
@@ -15694,7 +15684,6 @@
                 "pages": [
                   "tr/install/ansible",
                   "tr/install/bun",
-                  "tr/install/clawdock",
                   "tr/install/docker",
                   "tr/install/nix",
                   "tr/install/podman"
@@ -16730,7 +16719,6 @@
                 "pages": [
                   "uk/install/ansible",
                   "uk/install/bun",
-                  "uk/install/clawdock",
                   "uk/install/docker",
                   "uk/install/nix",
                   "uk/install/podman"
@@ -17766,7 +17754,6 @@
                 "pages": [
                   "id/install/ansible",
                   "id/install/bun",
-                  "id/install/clawdock",
                   "id/install/docker",
                   "id/install/nix",
                   "id/install/podman"
@@ -18802,7 +18789,6 @@
                 "pages": [
                   "pl/install/ansible",
                   "pl/install/bun",
-                  "pl/install/clawdock",
                   "pl/install/docker",
                   "pl/install/nix",
                   "pl/install/podman"
@@ -19838,7 +19824,6 @@
                 "pages": [
                   "ru/install/ansible",
                   "ru/install/bun",
-                  "ru/install/clawdock",
                   "ru/install/docker",
                   "ru/install/nix",
                   "ru/install/podman"

@@ -4817,21 +4817,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Caveats
   - H2: Related
 
-## install/clawdock.md
-
-- Route: /install/clawdock
-- Headings:
-  - H2: Install
-  - H2: What you get
-  - H3: Basic operations
-  - H3: Container access
-  - H3: Web UI and pairing
-  - H3: Setup and maintenance
-  - H3: Utilities
-  - H2: First-time flow
-  - H2: Config and secrets
-  - H2: Related
-
 ## install/cloudflare.md
 
 - Route: /install/cloudflare
@@ -4932,7 +4917,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Claude CLI backend in Docker
   - H3: Bonjour / mDNS
   - H3: Storage and persistence
-  - H3: Shell helpers (optional)
+  - H3: ClawDock migration
   - H3: Image contents and security scanning
   - H3: Weekly image refreshes
   - H3: Running on a VPS?
