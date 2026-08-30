@@ -155,6 +155,8 @@ test("explicit locale rules work before that locale is published and English pre
 
 test("Markdown aliases serve current R2 targets despite warm HTML and Markdown caches; absent metadata preserves behavior", async (t) => {
   const p = pipeline(fixture(t, rules([["/old", "/target"]]), sources));
+  // HTML cache keys rotate by minute; warm-cache checks must share one clock bucket.
+  t.mock.timers.enable({ apis: ["Date"], now: Date.UTC(2026, 7, 30, 12) });
   const originalCaches = Object.getOwnPropertyDescriptor(globalThis, "caches");
   const htmlBody = await (await p.request("/old")).text();
   assert.equal((await p.request("/old")).headers.get("X-OpenClaw-Docs-Cache"), "HIT");
@@ -188,6 +190,10 @@ test("Markdown aliases serve current R2 targets despite warm HTML and Markdown c
   assert.equal(p.cache.has("https://docs.openclaw.ai/old.md"), false);
   assert.equal(await p.cache.get("https://docs.openclaw.ai/target.md").clone().text(), sources["target.md"]);
   assert.equal(await p.cache.get("https://docs.openclaw.ai/other.md").clone().text(), sources["other.md"]);
+  t.mock.timers.tick(60_000);
+  assert.equal((await p.request("/old")).headers.get("X-OpenClaw-Docs-Cache"), "MISS");
+  const afterRollover = await servesMarkdown(p, "/old.md", "/other.md");
+  assert.equal(afterRollover.headers.get("X-OpenClaw-Docs-Cache"), "HIT");
   delete p.entries.get("old").customMetadata;
   assert.equal((await p.request("/old.md")).status, 404);
   const negotiated = await p.request("/old", { accept: "text/markdown" });
