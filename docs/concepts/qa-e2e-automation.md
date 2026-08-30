@@ -485,6 +485,9 @@ accept the same flags:
 | `--credential-file <path>`            | -                                                        | Buzz-only JSON credential file for local runs.                                                                                                                                                                                                    |
 | `--allow-failures`                    | off                                                      | Write artifacts without returning a failing exit code when scenarios fail.                                                                                                                                                                        |
 
+Telegram fixes `--credential-source` to `convex`. Its Test Server userbot
+credential cannot be supplied through the shared environment credential mode.
+
 Each lane exits non-zero on any failed scenario. `--allow-failures` writes
 artifacts without setting a failing exit code. Telegram also accepts
 `--list-scenarios` to print available scenario ids and exit; the other lanes
@@ -530,16 +533,20 @@ the real Buzz relay path but omits credential values.
 pnpm openclaw qa telegram
 ```
 
-Targets one real private Telegram group with two distinct bots (driver +
-SUT). The SUT bot must have a Telegram username; bot-to-bot observation works
-best when both bots have **Bot-to-Bot Communication Mode** enabled in
-`@BotFather`.
+Targets one shared private group on Telegram's Test Server. One Convex lease
+contains the SUT bot plus one independent TDLib authorization for the QA user.
+That user sends test messages and observes SUT messages and edits through one
+long-lived TDLib process.
 
-Required env when `--credential-source env`:
+Required env:
 
-- `OPENCLAW_QA_TELEGRAM_GROUP_ID` - numeric chat id (string).
-- `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
-- `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`
+- `OPENCLAW_QA_CONVEX_SITE_URL`
+- `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER` for the default local role, or
+  `OPENCLAW_QA_CONVEX_SECRET_CI` with `--credential-role ci`
+
+`--credential-source` defaults to `convex`; `env` is rejected. The lease owns
+the Test Server group, SUT token, and restored TDLib session. The lane does not
+use production Telegram credentials or Bot-to-Bot Communication Mode.
 
 The `release` profile selects taxonomy-owned Telegram scenarios that declare
 the channel, use the flow execution kind, and match the requested provider and
@@ -571,12 +578,11 @@ OPENCLAW_QA_CREDENTIAL_SOURCE=convex \
 pnpm test:docker:npm-telegram-live
 ```
 
-When `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` is set, the package live wrapper
-leases a `kind: "telegram"` credential, exports the leased group/driver/SUT
-bot env into the installed-package run, heartbeats the lease, and releases it
-on shutdown. The package wrapper defaults to 20 RTT checks of
-`channel-canary`, a 30s RTT timeout, and Convex role
-`maintainer` outside CI when Convex is selected. Override
+The package live wrapper leases a `kind: "telegram-test-userbot"` credential,
+restores its isolated TDLib user session, and routes the SUT bot through the
+Test Bot API proxy. It heartbeats the lease and releases it on shutdown. The
+package wrapper defaults to 20 RTT checks of `channel-canary`, a 30s RTT
+timeout, and Convex role `maintainer` outside CI. Override
 `OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES`, `OPENCLAW_NPM_TELEGRAM_RTT_TIMEOUT_MS`,
 or `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` to tune RTT measurement without
 creating a separate RTT command or Telegram-specific summary format.
