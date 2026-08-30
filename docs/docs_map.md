@@ -3569,6 +3569,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Crabbox provider support
   - H2: Configuration
   - H3: Warm images
+  - H4: Recover a paused capture
   - H3: Per-project default profiles
   - H3: The setup command
   - H3: Build a complete custom node package
@@ -8010,6 +8011,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
+
+## plugins/reference/visitor-access.md
+
+- Route: /plugins/reference/visitor-access
+- Headings:
+  - H1: Visitor Access plugin
+  - H2: Distribution
+  - H2: Surface
 
 ## plugins/reference/vllm.md
 
