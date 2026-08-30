@@ -53,6 +53,50 @@
   },
   "redirects": [
     {
+      "source": "/concepts/message-lifecycle-refactor",
+      "destination": "/plugins/sdk-channel-outbound"
+    },
+    {
+      "source": "/plan/cloud-workers",
+      "destination": "/gateway/cloud-workers"
+    },
+    {
+      "source": "/plan/computer-use",
+      "destination": "/nodes/computer-use"
+    },
+    {
+      "source": "/plan/memory-provenance",
+      "destination": "/concepts/memory-provenance"
+    },
+    {
+      "source": "/plan/runners",
+      "destination": "/gateway/cloud-sessions"
+    },
+    {
+      "source": "/plan/ui-channels",
+      "destination": "/plugins/message-presentation"
+    },
+    {
+      "source": "/plan/worker-hibernation",
+      "destination": "/gateway/cloud-workers#warm-images"
+    },
+    {
+      "source": "/refactor/acp",
+      "destination": "/tools/acp-agents"
+    },
+    {
+      "source": "/refactor/database-first",
+      "destination": "/reference/database-schemas"
+    },
+    {
+      "source": "/refactor/operator-approvals",
+      "destination": "/tools/exec-approvals"
+    },
+    {
+      "source": "/start/onboarding-redesign",
+      "destination": "/cli/onboard"
+    },
+    {
       "source": "/gateway/security/shrinkwrap",
       "destination": "/gateway/security/dependency-locking"
     },
@@ -1294,7 +1338,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "concepts/messages",
-                  "concepts/message-lifecycle-refactor",
                   "concepts/streaming",
                   "concepts/progress-drafts",
                   "concepts/retry",
@@ -2364,7 +2407,6 @@
                 "group": "消息与投递",
                 "pages": [
                   "zh-CN/concepts/messages",
-                  "zh-CN/concepts/message-lifecycle-refactor",
                   "zh-CN/concepts/streaming",
                   "zh-CN/concepts/progress-drafts",
                   "zh-CN/concepts/retry",
@@ -3400,7 +3442,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "zh-TW/concepts/messages",
-                  "zh-TW/concepts/message-lifecycle-refactor",
                   "zh-TW/concepts/streaming",
                   "zh-TW/concepts/progress-drafts",
                   "zh-TW/concepts/retry",
@@ -4436,7 +4477,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "ja-JP/concepts/messages",
-                  "ja-JP/concepts/message-lifecycle-refactor",
                   "ja-JP/concepts/streaming",
                   "ja-JP/concepts/progress-drafts",
                   "ja-JP/concepts/retry",
@@ -5472,7 +5512,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "es/concepts/messages",
-                  "es/concepts/message-lifecycle-refactor",
                   "es/concepts/streaming",
                   "es/concepts/progress-drafts",
                   "es/concepts/retry",
@@ -6508,7 +6547,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "pt-BR/concepts/messages",
-                  "pt-BR/concepts/message-lifecycle-refactor",
                   "pt-BR/concepts/streaming",
                   "pt-BR/concepts/progress-drafts",
                   "pt-BR/concepts/retry",
@@ -7544,7 +7582,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "ko/concepts/messages",
-                  "ko/concepts/message-lifecycle-refactor",
                   "ko/concepts/streaming",
                   "ko/concepts/progress-drafts",
                   "ko/concepts/retry",
@@ -8580,7 +8617,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "de/concepts/messages",
-                  "de/concepts/message-lifecycle-refactor",
                   "de/concepts/streaming",
                   "de/concepts/progress-drafts",
                   "de/concepts/retry",
@@ -9616,7 +9652,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "fr/concepts/messages",
-                  "fr/concepts/message-lifecycle-refactor",
                   "fr/concepts/streaming",
                   "fr/concepts/progress-drafts",
                   "fr/concepts/retry",
@@ -10652,7 +10687,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "hi/concepts/messages",
-                  "hi/concepts/message-lifecycle-refactor",
                   "hi/concepts/streaming",
                   "hi/concepts/progress-drafts",
                   "hi/concepts/retry",
@@ -11688,7 +11722,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "ar/concepts/messages",
-                  "ar/concepts/message-lifecycle-refactor",
                   "ar/concepts/streaming",
                   "ar/concepts/progress-drafts",
                   "ar/concepts/retry",
@@ -12724,7 +12757,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "it/concepts/messages",
-                  "it/concepts/message-lifecycle-refactor",
                   "it/concepts/streaming",
                   "it/concepts/progress-drafts",
                   "it/concepts/retry",
@@ -13760,7 +13792,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "vi/concepts/messages",
-                  "vi/concepts/message-lifecycle-refactor",
                   "vi/concepts/streaming",
                   "vi/concepts/progress-drafts",
                   "vi/concepts/retry",
@@ -14796,7 +14827,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "nl/concepts/messages",
-                  "nl/concepts/message-lifecycle-refactor",
                   "nl/concepts/streaming",
                   "nl/concepts/progress-drafts",
                   "nl/concepts/retry",
@@ -15832,7 +15862,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "tr/concepts/messages",
-                  "tr/concepts/message-lifecycle-refactor",
                   "tr/concepts/streaming",
                   "tr/concepts/progress-drafts",
                   "tr/concepts/retry",
@@ -16868,7 +16897,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "uk/concepts/messages",
-                  "uk/concepts/message-lifecycle-refactor",
                   "uk/concepts/streaming",
                   "uk/concepts/progress-drafts",
                   "uk/concepts/retry",
@@ -17904,7 +17932,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "id/concepts/messages",
-                  "id/concepts/message-lifecycle-refactor",
                   "id/concepts/streaming",
                   "id/concepts/progress-drafts",
                   "id/concepts/retry",
@@ -18940,7 +18967,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "pl/concepts/messages",
-                  "pl/concepts/message-lifecycle-refactor",
                   "pl/concepts/streaming",
                   "pl/concepts/progress-drafts",
                   "pl/concepts/retry",
@@ -19976,7 +20002,6 @@
                 "group": "Messages and delivery",
                 "pages": [
                   "ru/concepts/messages",
-                  "ru/concepts/message-lifecycle-refactor",
                   "ru/concepts/streaming",
                   "ru/concepts/progress-drafts",
                   "ru/concepts/retry",
