@@ -2546,18 +2546,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Invariants
   - H2: Related
 
-## concepts/channel-docking.md
-
-- Route: /concepts/channel-docking
-- Headings:
-  - H2: Example
-  - H2: Why use it
-  - H2: Required config
-  - H2: Commands
-  - H2: What changes
-  - H2: What does not change
-  - H2: Troubleshooting
-
 ## concepts/compaction.md
 
 - Route: /concepts/compaction
@@ -3225,7 +3213,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How messages are routed
   - H2: DM isolation
-  - H3: Dock linked channels
   - H2: Group and room routing
   - H2: Incognito sessions
   - H2: Remember across conversations
@@ -11256,7 +11243,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H2: Command list
   - H3: Core commands
-  - H3: Dock commands
   - H3: Bundled plugin commands
   - H3: Skill commands
   - H2: /tools: what the agent can use now
