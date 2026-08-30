@@ -9859,6 +9859,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Notable Docker lanes
   - H3: Sandbox compatibility lanes
   - H2: Local PR gate
+  - H2: JSON reports across native processes
   - H2: Test performance tooling
   - H2: Benchmarks
   - H2: Onboarding E2E (Docker)
