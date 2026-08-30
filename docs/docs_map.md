@@ -9851,6 +9851,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test
 - Headings:
   - H2: Agent default
+  - H2: Crabbox repository setup
   - H2: Routine local order
   - H2: Core commands
   - H2: Shared test state and process helpers
