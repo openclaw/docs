@@ -9,11 +9,15 @@ test("central aliases serve exact canonical Markdown in the first response after
   const aliases = ["/refactor/database-first", "/plan/runners", "/automation/auth-monitoring", "/platforms/digitalocean"];
   const redirects = config.redirects.filter((redirect) => aliases.includes(redirect.source));
   assert.equal(redirects.length, aliases.length);
-  const sources = Object.fromEntries([
-    "index.md", "reference/database-schemas.md", "gateway/cloud-sessions.md",
-    "automation/auth-monitoring.md", "gateway/authentication.md",
-    "platforms/digitalocean.md", "install/digitalocean.md",
-  ].map((name) => [name, fs.readFileSync(path.join(repo, "docs", name), "utf8")]));
+  const sources = {
+    ...Object.fromEntries([
+      "index.md", "reference/database-schemas.md", "gateway/cloud-sessions.md",
+      "gateway/authentication.md", "install/digitalocean.md",
+    ].map((name) => [name, fs.readFileSync(path.join(repo, "docs", name), "utf8")])),
+    // Preserve real-source precedence coverage even after these mirror stubs retire.
+    "automation/auth-monitoring.md": "# Existing authentication source\n",
+    "platforms/digitalocean.md": "# Existing platform source\n",
+  };
   const p = pipeline(fixture(t, redirects, sources));
   for (const [source, target] of [
     ["/refactor/database-first", "/reference/database-schemas.md"],
