@@ -4,37 +4,42 @@ import { fileURLToPath } from "node:url";
 
 const cloudflareApi = "https://api.cloudflare.com/client/v4";
 
-export function parsePurgeUrls(raw, zoneName) {
+export function parsePurgePrefixes(raw, zoneName) {
   let values;
   try {
     values = JSON.parse(raw);
   } catch (error) {
-    throw new Error(`CLOUDFLARE_PURGE_URLS must be a JSON array: ${error.message}`);
+    throw new Error(`CLOUDFLARE_PURGE_PREFIXES must be a JSON array: ${error.message}`);
   }
   if (!Array.isArray(values) || values.length === 0 || values.length > 30) {
-    throw new Error("CLOUDFLARE_PURGE_URLS must contain 1 to 30 URLs");
+    throw new Error("CLOUDFLARE_PURGE_PREFIXES must contain 1 to 30 URLs");
   }
-  const urls = [];
+  const prefixes = [];
   const seen = new Set();
   for (const value of values) {
-    if (typeof value !== "string") throw new Error("Every purge target must be a URL string");
+    if (typeof value !== "string") throw new Error("Every purge prefix must be a URL string");
     const url = new URL(value);
-    if (url.protocol !== "https:" || url.username || url.password || url.hash) {
-      throw new Error(`Purge target must be a credential-free HTTPS URL without a fragment: ${value}`);
+    if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash) {
+      throw new Error(
+        `Purge prefix must be a credential-free HTTPS URL without a query or fragment: ${value}`,
+      );
     }
     if (url.hostname !== zoneName && !url.hostname.endsWith(`.${zoneName}`)) {
       throw new Error(`Purge target must belong to ${zoneName}: ${value}`);
     }
-    const normalized = url.toString();
+    if (url.pathname === "/") {
+      throw new Error("Purge prefix must include a path and cannot target the whole hostname");
+    }
+    const normalized = `${url.hostname}${url.pathname}`;
     if (!seen.has(normalized)) {
       seen.add(normalized);
-      urls.push(normalized);
+      prefixes.push(normalized);
     }
   }
-  return urls;
+  return prefixes;
 }
 
-export async function purgeCloudflareUrls({ fetchImpl = fetch, token, urls, zoneName }) {
+export async function purgeCloudflarePrefixes({ fetchImpl = fetch, prefixes, token, zoneName }) {
   if (!token) throw new Error("CLOUDFLARE_API_TOKEN is required");
   if (!zoneName) throw new Error("CLOUDFLARE_ZONE_NAME is required");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
@@ -45,11 +50,11 @@ export async function purgeCloudflareUrls({ fetchImpl = fetch, token, urls, zone
     throw new Error(`Expected exactly one active Cloudflare zone for ${zoneName}`);
   }
   await cloudflare(fetchImpl, `/zones/${zones.result[0].id}/purge_cache`, {
-    body: JSON.stringify({ files: urls }),
+    body: JSON.stringify({ prefixes }),
     headers,
     method: "POST",
   });
-  return { count: urls.length, zoneId: zones.result[0].id };
+  return { count: prefixes.length, zoneId: zones.result[0].id };
 }
 
 async function cloudflare(fetchImpl, apiPath, init) {
@@ -67,11 +72,14 @@ async function cloudflare(fetchImpl, apiPath, init) {
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
   const zoneName = process.env.CLOUDFLARE_ZONE_NAME || "openclaw.ai";
-  const urls = parsePurgeUrls(process.env.CLOUDFLARE_PURGE_URLS || "", zoneName);
-  const result = await purgeCloudflareUrls({
+  const prefixes = parsePurgePrefixes(
+    process.env.CLOUDFLARE_PURGE_PREFIXES || "",
+    zoneName,
+  );
+  const result = await purgeCloudflarePrefixes({
+    prefixes,
     token: process.env.CLOUDFLARE_API_TOKEN,
-    urls,
     zoneName,
   });
-  console.log(`purged ${result.count} exact URL(s) from ${zoneName}`);
+  console.log(`purged ${result.count} URL prefix(es) from ${zoneName}`);
 }
