@@ -7,6 +7,9 @@ const root = process.cwd();
 const sourceDir = path.join(root, "dist", "docs-site");
 const outputDir = path.join(root, "dist", "docs-r2");
 const manifestPath = path.join(root, "dist", "docs-r2-manifest.json");
+const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
+const markdownRedirects = fs.existsSync(redirectMetadataPath)
+  ? JSON.parse(fs.readFileSync(redirectMetadataPath, "utf8")) : {};
 
 if (!fs.existsSync(sourceDir)) throw new Error("dist/docs-site does not exist; run docs:build first");
 
@@ -29,6 +32,14 @@ for (const file of walk(outputDir)) {
 }
 
 entries.sort((a, b) => a.key.localeCompare(b.key));
+
+const markdownKeys = new Set(entries.filter((entry) => entry.contentType === "text/markdown; charset=utf-8").map((entry) => entry.key));
+for (const entry of entries) {
+  const target = entry.customMetadata?.["openclaw-markdown-target"];
+  if (target && !markdownKeys.has(target.split(/[?#]/u)[0].slice(1))) {
+    throw new Error(`Markdown redirect ${entry.key} has no published target: ${target}`);
+  }
+}
 
 const manifest = {
   version: 1,
@@ -69,6 +80,9 @@ function entryFor(key, file, sourceKey) {
     sha256: crypto.createHash("sha256").update(data).digest("hex"),
     contentType: contentTypeFor(metadataKey),
     cacheControl: cacheControlFor(metadataKey),
+    ...(markdownRedirects[sourceKey] ? {
+      customMetadata: { "openclaw-markdown-target": markdownRedirects[sourceKey] },
+    } : {}),
   };
 }
 

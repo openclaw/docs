@@ -11,12 +11,16 @@ import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from 
 import { elementsFixture } from "./elements-fixture.mjs";
 import { parseFrontmatter } from "./frontmatter.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
+import { resolveRedirects } from "./redirects.mjs";
 
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const shellPublicAssetsDir = path.join(siteAssetsDir, "assets");
 const outDir = path.join(root, "dist", "docs-site");
+const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
+// Preview builds skip redirects, so never let an earlier full build's records survive.
+fs.rmSync(redirectMetadataPath, { force: true });
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
@@ -719,37 +723,23 @@ function chatWidget() {
 }
 
 function writeRedirects() {
-  for (const redirect of config.redirects ?? []) {
-    const source = cleanPath(redirect.source);
-    const dest = cleanPath(redirect.destination);
-    writeRedirectVariants(source, publicPath(dest));
-    for (const locale of locales) {
-      if (locale.root) continue;
-      writeRedirectVariants(`/${locale.code}${source}`, localizedRedirectDestination(locale.code, dest));
-    }
+  const records = resolveRedirects({
+    redirects: config.redirects ?? [],
+    pages: pages.map((page) => ({ route: pageRoute(page), markdownRoute: pageMarkdownRoute(page) })),
+    localeCodes,
+    prefixes: [...new Set([basePath, legacyBasePath].filter(Boolean))],
+    publicPath,
+  });
+  const metadata = {};
+  for (const { source, destination, markdownTarget } of records) {
+    const target = path.resolve(outDir, source.slice(1), "index.html");
+    if (!target.startsWith(`${outDir}${path.sep}`)) throw new Error(`Redirect escapes output directory: ${source}`);
+    if (fs.existsSync(target)) continue;
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, redirectHtml(destination), "utf8");
+    if (markdownTarget) metadata[path.relative(outDir, target).split(path.sep).join("/")] = markdownTarget;
   }
-}
-
-function writeRedirectVariants(source, dest) {
-  writeRedirectFile(source, dest);
-  for (const prefix of new Set([basePath, legacyBasePath].filter(Boolean))) {
-    writeRedirectFile(`${prefix}${source}`, dest);
-  }
-}
-
-function localizedRedirectDestination(locale, dest) {
-  const [pathname, hash] = dest.split("#");
-  const slug = normalizeSlug(pathname.replace(/^\/+|\/+$/g, ""));
-  const page = allPageByKey.get(pageKey(locale, slug));
-  if (!page) return publicPath(dest);
-  return publicPath(`${pageRoute(page)}${hash ? `#${hash}` : ""}`);
-}
-
-function writeRedirectFile(source, dest) {
-  const target = path.join(outDir, source.replace(/^\//, ""), "index.html");
-  if (fs.existsSync(target)) return;
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, redirectHtml(dest), "utf8");
+  fs.writeFileSync(redirectMetadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
 }
 
 function redirectHtml(dest) {
@@ -1019,12 +1009,6 @@ function fileSlug(rel) {
 
 function normalizeSlug(value) {
   return value.replace(/\/index$/, "") || "index";
-}
-
-function cleanPath(value) {
-  const [pathname, hash = ""] = String(value).split("#");
-  const cleaned = pathname.replace(/\/$/, "") || "/";
-  return hash ? `${cleaned}#${hash}` : cleaned;
 }
 
 function publicPath(value) {
