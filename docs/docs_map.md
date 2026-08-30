@@ -7234,6 +7234,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: File Transfer plugin
   - H2: Distribution
   - H2: Surface
+  - H2: Directory archives
   - H2: Migrate existing permissions
 
 ## plugins/reference/firecrawl.md
@@ -10768,7 +10769,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Persistent gateway-host "never prompt" setup
   - H3: Local shortcut
   - H3: Node host
-  - H3: Session-only shortcut
+  - H3: Session and turn shortcuts
   - H2: Allowlist (per agent)
   - H3: Restricting arguments with argPattern
   - H2: Standing grants for automations
