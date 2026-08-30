@@ -8346,6 +8346,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent tool
   - H2: Gateway RPC
   - H2: Troubleshooting
+  - H3: Call placement fails to save its initial record
   - H3: Setup fails webhook exposure
   - H3: Provider credentials fail
   - H3: Calls start but provider webhooks do not arrive
