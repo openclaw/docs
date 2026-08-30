@@ -9748,8 +9748,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /releases/2026.8.1
 - Headings:
   - H1: v2026.8.1 (AKA OpenClaw 2.0)
-  - H2: The New Web UI
   - H2: Installation and Onboarding
+  - H2: The New Web UI
   - H2: Updates and Maintenance
   - H2: Messaging
   - H2: Memory
