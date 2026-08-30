@@ -1364,6 +1364,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Options
   - H2: Examples
   - H2: Notes
+  - H2: JSON failures
   - H2: JSON delivery status
   - H2: Related
 
