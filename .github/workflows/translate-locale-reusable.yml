@@ -266,7 +266,9 @@ jobs:
           LOCALE: ${{ inputs.locale }}
         run: |
           mkdir -p .openclaw-sync/mdx
-          node .openclaw-sync/check-docs-mdx.mjs "docs/${LOCALE}" \
+          node "${I18N_SCRIPT_DIR}/check_mdx_protected_attributes.mjs" \
+            --workspace "${GITHUB_WORKSPACE}" --locale "${LOCALE}" \
+            --manifest ".openclaw-sync/docs-i18n-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}.txt" \
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Snapshot translated MDX repair scope
@@ -309,7 +311,9 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          node .openclaw-sync/check-docs-mdx.mjs "docs/${LOCALE}" \
+          node "${I18N_SCRIPT_DIR}/check_mdx_protected_attributes.mjs" \
+            --workspace "${GITHUB_WORKSPACE}" --locale "${LOCALE}" \
+            --manifest ".openclaw-sync/docs-i18n-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}.txt" \
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Prepare locale artifact
