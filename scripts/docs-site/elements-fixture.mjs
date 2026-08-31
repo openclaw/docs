@@ -212,6 +212,10 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
   </Card>
 </CardGroup>
 
+## Encoded anchor: target
+
+This heading verifies cross-page navigation to an encoded fragment identifier.
+
 ## Columns
 
 <Columns>
@@ -352,10 +356,6 @@ Use a CTA when a long-form article has one obvious next action. Keep it specific
     Long reference details should remain readable without stealing attention from the surrounding page.
   </Accordion>
 </AccordionGroup>
-
-## Encoded anchor: target
-
-This heading verifies cross-page navigation to an encoded fragment identifier.
 
 ## Parameters
 
