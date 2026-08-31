@@ -212,6 +212,10 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
   </Card>
 </CardGroup>
 
+## Encoded anchor: target
+
+This heading verifies cross-page navigation to an encoded fragment identifier.
+
 ## Columns
 
 <Columns>
