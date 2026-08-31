@@ -130,20 +130,15 @@ jobs:
         id: aggregate_commit
         if: steps.apply.outputs.changed_count != '0'
         env:
-          BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
+          BASE_SOURCE_METADATA_OID: ${{ steps.apply.outputs.base_source_metadata_oid }}
         run: |
           set -euo pipefail
 
-          remote_source_sha() {
-            git show refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null \
-              | node -e 'const fs = require("node:fs"); try { const data = JSON.parse(fs.readFileSync(0, "utf8")); if (data.sha) process.stdout.write(data.sha); } catch {}' \
-              || true
-          }
-
           ensure_base_current() {
-            current_source_sha="$(remote_source_sha)"
-            if [ -n "${current_source_sha}" ] && [ "${current_source_sha}" != "${BASE_SOURCE_SHA}" ]; then
-              echo "Source moved from ${BASE_SOURCE_SHA} to ${current_source_sha}; skipping aggregate translation commit."
+            if ! current_source_metadata_oid="$(git rev-parse --verify refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null)" \
+              || ! git cat-file blob "${current_source_metadata_oid}" >/dev/null 2>&1 \
+              || [ "${current_source_metadata_oid}" != "${BASE_SOURCE_METADATA_OID}" ]; then
+              echo "Source metadata moved or is unreadable; skipping aggregate translation commit. Start a fresh finalizer attempt."
               exit 0
             fi
           }

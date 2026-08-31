@@ -5,10 +5,11 @@ Definition:
   This script mirrors the debounce and source-selection shell block used by
   Translate Incremental and Translate Full. It reads origin/main, waits for an
   optional cooldown window, validates .openclaw-sync/source.json, and writes the
-  same GitHub output fields consumed by downstream jobs.
+  same GitHub output fields consumed by downstream jobs. Retirement preparation
+  only records the already checked-out HEAD, without fetching or debouncing.
 
 Parameters:
-  --mode: Translation lane, either incremental or full.
+  --mode: Workflow lane: incremental, full, or retirements.
   --title: Summary heading to write to GITHUB_STEP_SUMMARY.
 
 Environment:
@@ -83,16 +84,20 @@ def validate_seconds(value: str, label: str) -> int:
 
 def read_main_state() -> MainState:
     run_git(["fetch", "--quiet", "origin", "main:refs/remotes/origin/main"])
-    publish_ref = run_git(["rev-parse", "refs/remotes/origin/main"]).strip()
-    source_json = run_git(["show", "refs/remotes/origin/main:.openclaw-sync/source.json"])
+    return read_source_state("refs/remotes/origin/main")
+
+
+def read_source_state(ref: str) -> MainState:
+    publish_ref = run_git(["rev-parse", ref]).strip()
+    source_json = run_git(["show", f"{publish_ref}:.openclaw-sync/source.json"])
     try:
         data = json.loads(source_json)
     except json.JSONDecodeError as exc:
-        raise SystemExit(f"Invalid .openclaw-sync/source.json on origin/main: {exc}") from exc
+        raise SystemExit(f"Invalid .openclaw-sync/source.json at {publish_ref}: {exc}") from exc
     source_repository = data.get("repository") or ""
     source_sha = data.get("sha") or ""
     if not source_repository or not source_sha:
-        raise SystemExit("Invalid .openclaw-sync/source.json on origin/main")
+        raise SystemExit(f"Invalid .openclaw-sync/source.json at {publish_ref}")
     return MainState(publish_ref=publish_ref, source_repository=source_repository, source_sha=source_sha)
 
 
@@ -171,9 +176,8 @@ def sleep_with_heartbeat(seconds: int) -> None:
             print(f"Still debouncing docs main; {remaining}s remaining.")
 
 
-def prepare(mode: str, title: str) -> dict[str, str]:
+def prepare_translation_state(mode: str) -> tuple[MainState, int]:
     event_name = os.environ.get("EVENT_NAME", "")
-    before_sha = os.environ.get("BEFORE_SHA", "")
     cooldown = validate_seconds(
         default_cooldown(
             mode,
@@ -209,7 +213,18 @@ def prepare(mode: str, title: str) -> dict[str, str]:
             print("Cooldown cap reached; translating newest observed state.")
             break
 
-    should_translate = True
+    return state, cooldown
+
+
+def prepare(mode: str, title: str) -> dict[str, str]:
+    if mode == "retirements":
+        state, cooldown = read_source_state("HEAD"), 0
+    else:
+        state, cooldown = prepare_translation_state(mode)
+
+    should_translate = mode != "retirements"
+    event_name = os.environ.get("EVENT_NAME", "")
+    before_sha = os.environ.get("BEFORE_SHA", "")
     if mode == "incremental" and event_name == "push" and before_sha:
         should_translate = incremental_should_translate(before_sha, state.publish_ref)
 
@@ -237,7 +252,7 @@ Examples:
   EVENT_NAME=workflow_dispatch python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
 """,
     )
-    parser.add_argument("--mode", choices=["incremental", "full"], required=True)
+    parser.add_argument("--mode", choices=["incremental", "full", "retirements"], required=True)
     parser.add_argument("--title", required=True)
     return parser.parse_args()
 

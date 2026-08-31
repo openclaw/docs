@@ -11,8 +11,9 @@ Parameters:
   --source-json: Path to source metadata JSON. Default: .openclaw-sync/source.json.
 
 Environment:
-  SOURCE_SHA is the requested source sha. GITHUB_OUTPUT receives repository and
-  sha when validation succeeds.
+  SOURCE_SHA is the requested source sha. SOURCE_REPOSITORY, when supplied by the
+  retirement producer, must also match. GITHUB_OUTPUT receives repository and sha
+  when validation succeeds.
 
 Outputs:
   repository=<repo> and sha=<sha> are appended to GITHUB_OUTPUT. Exit code is
@@ -38,7 +39,7 @@ class SourceMetadata:
     sha: str
 
 
-def read_source_metadata(source_json: Path, requested_sha: str) -> SourceMetadata:
+def read_source_metadata(source_json: Path, requested_sha: str, requested_repository: str = "") -> SourceMetadata:
     try:
         data = json.loads(source_json.read_text(encoding="utf-8"))
     except FileNotFoundError as exc:
@@ -51,6 +52,8 @@ def read_source_metadata(source_json: Path, requested_sha: str) -> SourceMetadat
         raise SystemExit(f"invalid source metadata in {source_json}")
     if metadata.sha != requested_sha:
         raise SystemExit(f"publish ref source {metadata.sha} does not match requested {requested_sha}")
+    if requested_repository and metadata.repository != requested_repository:
+        raise SystemExit(f"publish ref repository {metadata.repository} does not match requested {requested_repository}")
     return metadata
 
 
@@ -81,7 +84,7 @@ Examples:
 
 def main() -> None:
     args = parse_args()
-    metadata = read_source_metadata(args.source_json, os.environ["SOURCE_SHA"])
+    metadata = read_source_metadata(args.source_json, os.environ["SOURCE_SHA"], os.environ.get("SOURCE_REPOSITORY", ""))
     append_output(metadata)
 
 

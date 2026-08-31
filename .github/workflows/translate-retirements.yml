@@ -42,27 +42,18 @@ jobs:
           mkdir -p "${I18N_SCRIPT_DIR}"
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
-      - name: Check out for source selection
+      - name: Check out trusted main snapshot
         uses: actions/checkout@v7.0.1
         with:
           ref: main
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Select current source without cooldown
+      - name: Record checked-out source snapshot
         id: prepare
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          REQUESTED_COOLDOWN_SECONDS: "0"
-          DEFAULT_MAX_WAIT_SECONDS: "0"
         run: |
           set -euo pipefail
-          python "${I18N_SCRIPT_DIR}/prepare.py" --mode incremental --title "Retirement source selection"
-
-      - name: Check out selected publish ref
-        uses: actions/checkout@v7.0.1
-        with:
-          ref: ${{ steps.prepare.outputs.publish_ref }}
-          persist-credentials: false
+          python "${I18N_SCRIPT_DIR}/prepare.py" --mode retirements --title "Retirement source snapshot"
 
       - name: Validate selected source pair
         env:
@@ -71,7 +62,6 @@ jobs:
         run: |
           set -euo pipefail
           python "${I18N_SCRIPT_DIR}/read_source_metadata.py"
-          test "$(jq -r .repository .openclaw-sync/source.json)" = "${SOURCE_REPOSITORY}"
 
       - name: Plan one shard for every canonical locale
         run: |
