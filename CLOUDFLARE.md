@@ -94,9 +94,13 @@ Production docs object deploy:
 3. `npm run docs:smoke`
 4. `npm run docs:r2:upload`
 
+The global `r2-pages` queue serializes admission, build, and publication. After scope classification and any page/locale content refresh from main, the workflow checks freshness before source checkout, dependency installation, and build. Artifact-relevant stale snapshots yield to an existing successor run or dispatch a full successor when none exists; stale scoped translation dispatches fail so callers retry. Artifact-unaffected drift is admitted. Once admitted, the job publishes that snapshot even if main advances during the build; there is no second freshness veto before upload. Page/locale dispatches retain their selected workflow code and existing partial-upload boundaries, using the refreshed docs and source metadata throughout the build.
+
+After successful R2 publication (or a Worker-only deployment), the same head/successor helper checks main again and dispatches a full successor for artifact-relevant drift with no verified run. This catches changes whose push did not trigger R2, including `GITHUB_TOKEN` and skip-ci pushes during the build. API lookup failure biases to dispatch; dispatch failure fails the job without undoing publication. Catch-up also runs if live-smoke scheduling failed after publication. It never changes the admission verdict or gates the completed upload. This ordering applies to the automatic R2 queue without relying on FIFO ordering; manual Pages router deployment remains operator-owned outside that queue.
+
 Production router deploy:
 
-1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot has not been superseded.
+1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
 3. Manual `pages.yml` dispatch with `deploy_worker=true` deploys the router using the workflow's pinned Wrangler version. Leave `cutover_docs_hosts=false` for an ordinary router update.
 4. Successful deployments dispatch `docs-live-smoke.yml`. Verify the actual upload and Worker deployment steps, not just a green workflow that skipped a stale snapshot. If a docs-only successor uploads the artifact without deploying the changed Worker, use the manual router dispatch.
