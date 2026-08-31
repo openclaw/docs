@@ -45,6 +45,8 @@ if (!dryRun && !secretAccessKey) throw new Error("OPENCLAW_R2_SECRET_ACCESS_KEY 
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 if (!Array.isArray(manifest.entries)) throw new Error("dist/docs-r2-manifest.json must contain an entries array");
+const remoteManifest = await getRemoteManifest();
+const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
 const scopedEntries = filterEntriesByScope(manifest.entries, uploadScope);
 if ((uploadScope === "page" || uploadScope === "locale") && scopedEntries.length === 0) {
   throw new Error(`R2_UPLOAD_SCOPE=${uploadScope} matched zero manifest entries`);
@@ -52,11 +54,9 @@ if ((uploadScope === "page" || uploadScope === "locale") && scopedEntries.length
 if (uploadScope === "locale" && !scopedEntries.some((entry) => isLocaleManifestEntry(entry, uploadLocale))) {
   throw new Error(`R2_UPLOAD_SCOPE=locale matched no entries for locale ${uploadLocale}`);
 }
-const remoteManifest = await getRemoteManifest();
 if (partialUpload && !dryRun && remoteManifest.status !== "hit" && process.env.R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE !== "1") {
   throw new Error("Partial R2 upload requires an existing remote manifest; run a full upload first or set R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE=1");
 }
-const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
 const localKeys = new Set(partialUpload ? remoteEntries.keys() : scopedEntries.map((entry) => entry.key));
 for (const entry of scopedEntries) localKeys.add(entry.key);
 localKeys.add(remoteManifestKey);
@@ -119,6 +119,7 @@ function isLocaleScopedEntry(entry, locale) {
   // search objects keeps a successful locale publish discoverable without
   // falling back to a full-site page upload.
   if (key.startsWith("pagefind/")) return true;
+  if (markdownTargetKeys(entry).some((target) => target.startsWith(`${locale}/`))) return true;
   return isLocaleManifestEntry(entry, locale);
 }
 
@@ -129,7 +130,14 @@ function isLocaleManifestEntry(entry, locale) {
 
 function isPageScopedEntry(entry, locale, pagePath) {
   const keys = pageScopedKeys(locale, pagePath);
-  return keys.has(entry.key);
+  return keys.has(entry.key) || markdownTargetKeys(entry).some((target) => keys.has(target));
+}
+
+function markdownTargetKeys(entry) {
+  // A translation publish owns aliases targeting that page, including aliases
+  // switching to or from English fallback and compatibility-prefixed aliases.
+  return [entry, remoteEntries.get(entry.key)].map((value) =>
+    markdownTarget(value).split(/[?#]/u)[0].replace(/^\//u, ""));
 }
 
 function pageScopedKeys(locale, pagePath) {
@@ -293,7 +301,12 @@ function diffManifestEntry(remote, entry) {
   if (remote.sha256 !== entry.sha256) return "sha256";
   if (remote.contentType !== entry.contentType) return "content_type";
   if (remote.cacheControl !== entry.cacheControl) return "cache_control";
+  if (markdownTarget(remote) !== markdownTarget(entry)) return "markdown_target";
   return "";
+}
+
+function markdownTarget(entry) {
+  return entry?.customMetadata?.["openclaw-markdown-target"] ?? "";
 }
 
 function diffHeadEntry(head, remote, entry) {
@@ -302,6 +315,7 @@ function diffHeadEntry(head, remote, entry) {
   if (head.size !== undefined && head.size !== entry.size) return "size";
   if (head.contentType && head.contentType !== entry.contentType) return "content_type";
   if (head.cacheControl && head.cacheControl !== entry.cacheControl) return "cache_control";
+  if (head.markdownTarget !== markdownTarget(entry)) return "markdown_target";
   if (head.sha256 && head.sha256 !== entry.sha256) return "sha256";
   if (head.md5 && entry.md5 && head.md5 !== entry.md5) return "md5";
   if (head.etagMd5 && entry.md5) return head.etagMd5 === entry.md5 ? "" : "etag";
@@ -317,6 +331,7 @@ async function headObject(entry) {
     contentType: response.headers.get("content-type") || "",
     etagMd5: md5FromEtag(response.headers.get("etag") || ""),
     md5: response.headers.get("x-amz-meta-openclaw-md5") || "",
+    markdownTarget: response.headers.get("x-amz-meta-openclaw-markdown-target") || "",
     sha256: response.headers.get("x-amz-meta-openclaw-sha256") || "",
     size: numberHeader(response.headers.get("content-length")),
     source: "head",
@@ -462,6 +477,7 @@ async function putObject(entry) {
     "content-type": entry.contentType,
     "x-amz-meta-openclaw-md5": entry.md5 || md5Hex(body),
     "x-amz-meta-openclaw-sha256": entry.sha256 || sha256Hex(body),
+    ...(markdownTarget(entry) ? { "x-amz-meta-openclaw-markdown-target": markdownTarget(entry) } : {}),
     "x-amz-content-sha256": entry.sha256 || sha256Hex(body),
   });
   if (!response.ok) throw new Error(`R2 upload failed for ${entry.key}: ${response.status} ${await response.text()}`);

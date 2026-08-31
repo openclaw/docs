@@ -379,7 +379,19 @@ function r2AssetPath(pathname: string): string {
 }
 
 async function markdownResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string): Promise<Response> {
-  const response = await assetResponse(env, ctx, request, pathname);
+  let response = await assetResponse(env, ctx, request, pathname);
+  if (response.status === 404) {
+    // Resolve current alias metadata at R2 so translation publishes can change the target.
+    const alias = pathname.slice(0, -".md".length);
+    const key = alias === "/index" ? "index.html" : r2ObjectKey(alias);
+    const object = await env.DOCS_BUCKET?.head(key)
+      ?? (alias === "/index" ? await env.DOCS_BUCKET?.head("index") : null);
+    const target = object?.customMetadata?.["openclaw-markdown-target"];
+    if (target) {
+      // Cache the whole document by its canonical path, never by the missing alias.
+      response = await assetResponse(env, ctx, request, target.split(/[?#]/u)[0]);
+    }
+  }
   const headers = new Headers(response.headers);
   if (response.ok) {
     headers.set("Content-Type", "text/markdown; charset=utf-8");
