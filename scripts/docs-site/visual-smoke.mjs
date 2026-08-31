@@ -518,6 +518,69 @@ async function scrollToTocItem(page, index) {
   }, expected);
 }
 
+async function checkMobileToc(page) {
+  await page.goto(`${base}/releases/2026.8.1`, { waitUntil: "networkidle" });
+  const hiddenAtTop = await page.evaluate(() => ({
+    open: document.querySelector(".toc")?.hasAttribute("open"),
+    opacity: getComputedStyle(document.querySelector(".toc")).opacity,
+  }));
+  if (hiddenAtTop.open || hiddenAtTop.opacity !== "0") {
+    throw new Error(`mobile toc should stay hidden beside the page title: ${JSON.stringify(hiddenAtTop)}`);
+  }
+
+  await page.evaluate(() => {
+    const articleHeader = document.querySelector(".article-header")?.getBoundingClientRect();
+    scrollTo(0, (articleHeader?.bottom ?? 0) + scrollY + 20);
+  });
+  await page.waitForFunction(() => getComputedStyle(document.querySelector(".toc")).opacity === "1");
+  await page.click(".toc summary");
+  await page.screenshot({ path: path.join(artifacts, "release-mobile-toc.png"), fullPage: false });
+
+  const open = await page.evaluate(() => {
+    const rect = (selector) => document.querySelector(selector)?.getBoundingClientRect();
+    const summary = rect(".toc summary");
+    const nav = rect(".toc nav");
+    return {
+      backdrop: getComputedStyle(document.body, "::before").content,
+      bodyOverflow: getComputedStyle(document.body).overflow,
+      chatVisibility: getComputedStyle(document.querySelector(".docs-chat")).visibility,
+      nav: nav?.toJSON(),
+      navBackground: getComputedStyle(document.querySelector(".toc nav")).backgroundColor,
+      open: document.querySelector(".toc")?.hasAttribute("open"),
+      summary: summary?.toJSON(),
+      tocZ: Number(getComputedStyle(document.querySelector(".toc")).zIndex),
+      viewportHeight: innerHeight,
+      viewportWidth: innerWidth,
+    };
+  });
+  if (!open.open
+    || open.bodyOverflow !== "hidden"
+    || open.chatVisibility !== "hidden"
+    || open.backdrop === "none"
+    || open.tocZ < 100
+    || !open.nav
+    || !open.summary
+    || open.nav.left < 13
+    || open.nav.right > open.viewportWidth - 13
+    || open.nav.width < open.viewportWidth - 30
+    || open.nav.top < open.summary.bottom + 7
+    || open.nav.bottom > open.viewportHeight - 13
+    || open.navBackground.includes("/")) {
+    throw new Error(`mobile toc sheet failed: ${JSON.stringify(open)}`);
+  }
+
+  await page.keyboard.press("Escape");
+  const closed = await page.evaluate(() => ({
+    bodyOverflow: getComputedStyle(document.body).overflow,
+    chatVisibility: getComputedStyle(document.querySelector(".docs-chat")).visibility,
+    open: document.querySelector(".toc")?.hasAttribute("open"),
+  }));
+  if (closed.open || closed.bodyOverflow === "hidden" || closed.chatVisibility === "hidden") {
+    throw new Error(`mobile toc did not clean up after closing: ${JSON.stringify(closed)}`);
+  }
+  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+}
+
 async function checkMobile() {
   const page = await browser.newPage({ viewport: { width: 390, height: 980 }, isMobile: true });
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
@@ -558,6 +621,7 @@ async function checkMobile() {
     || geometry.stepInset < 0) {
     throw new Error(`mobile visual geometry failed: ${JSON.stringify(geometry)}`);
   }
+  await checkMobileToc(page);
   const mobileCardColumns = await page.evaluate(() => {
     const countColumns = (grid) => {
       const cards = [...grid.querySelectorAll(":scope > .oc-card")];

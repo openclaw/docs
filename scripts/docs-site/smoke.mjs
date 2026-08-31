@@ -412,6 +412,8 @@ if (!/function scrollActiveNavLink/.test(siteJs)
 }
 if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/function syncTocDisclosure/.test(siteJs)
+  || !/function compactTocVisible\(\)\{const articleHeader=document\.querySelector\("\.article-header"\)/.test(siteJs)
+  || !/if\(!visible&&toc\.open\)toc\.open=false/.test(siteJs)
   || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
   throw new Error("assets: compact page orientation should refresh across PJAX navigation");
 }
@@ -419,9 +421,14 @@ if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--
   || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
   || !/\.toc summary\{display:flex;align-items:center;gap:var\(--oc-space-2\)/.test(siteCss)
   || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,calc\(100vw - 302px\)\)/.test(siteCss)
-  || !/Math\.max\(scrollY,document\.scrollingElement\?\.scrollTop\|\|0\)>8/.test(siteJs)
   || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
   throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
+}
+if (!/\.toc\[open\]\{z-index:100\}/.test(siteCss)
+  || !/\.toc\[open\] nav\{position:fixed;inset:calc\(var\(--sticky-header-h\) \+ 52px\) 14px max\(14px,env\(safe-area-inset-bottom\)\) 14px;[^}]*background:var\(--paper\)/.test(siteCss)
+  || !/body:has\(\.toc\[open\]\)\{overflow:hidden\}/.test(siteCss)
+  || !/body:has\(\.toc\[open\]\) \.docs-chat\{visibility:hidden;pointer-events:none\}/.test(siteCss)) {
+  throw new Error("assets: mobile table of contents sheet is missing");
 }
 if (!/let tocObserver=null/.test(siteJs)
   || !/function initTocScrollspy/.test(siteJs)
