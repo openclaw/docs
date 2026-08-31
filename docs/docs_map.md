@@ -9592,21 +9592,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /releases/2026.8.1
 - Headings:
   - H1: v2026.8.1 (AKA OpenClaw 2.0)
-  - H2: Installation and Onboarding
-  - H2: The New Web UI
-  - H2: Updates and Maintenance
-  - H2: Messaging
-  - H2: Memory
-  - H2: Skills
-  - H2: Native Apps
-  - H2: Models and Providers
-  - H2: Automations and Scheduling
-  - H2: Browser and Computer Use
-  - H2: Plugins and Integrations
-  - H2: Security and Privacy
-  - H2: Quality-of-Life Improvements
-  - H2: Other Bug Fixes
-  - H2: Maintainer and Internal Changes
+  - H2: 2026.8.1
+  - H3: Highlights
+  - H3: Changes
+  - H3: Fixes
+  - H3: Complete contribution record
+  - H4: Pull requests
+  - H2: Additional source attribution
 
 ## releases/index.md
 
