@@ -381,7 +381,7 @@ function r2AssetPath(pathname: string): string {
 async function markdownResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string): Promise<Response> {
   let response = await assetResponse(env, ctx, request, pathname);
   if (response.status === 404) {
-    // Read current alias metadata directly; cached HTML may predate a translation publish.
+    // Resolve current alias metadata at R2 so translation publishes can change the target.
     const alias = pathname.slice(0, -".md".length);
     const key = alias === "/index" ? "index.html" : r2ObjectKey(alias);
     const object = await env.DOCS_BUCKET?.head(key)

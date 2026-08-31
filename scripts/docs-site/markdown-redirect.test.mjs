@@ -153,13 +153,15 @@ test("explicit locale rules work before that locale is published and English pre
   assert.equal(p.entries.has("de/de/old"), false);
 });
 
-test("Markdown aliases serve current R2 targets despite warm HTML and Markdown caches; absent metadata preserves behavior", async (t) => {
-  const p = pipeline(fixture(t, rules([["/old", "/target"]]), sources));
-  // HTML cache keys rotate by minute; warm-cache checks must share one clock bucket.
-  t.mock.timers.enable({ apis: ["Date"], now: Date.UTC(2026, 7, 30, 12) });
+test("Markdown aliases follow current R2 metadata while HTML stays fresh and canonical Markdown stays cached", async (t) => {
+  const p = pipeline(fixture(t, rules([["/old", "/target"], ["/updated", "/other"]]), sources));
   const originalCaches = Object.getOwnPropertyDescriptor(globalThis, "caches");
-  const htmlBody = await (await p.request("/old")).text();
-  assert.equal((await p.request("/old")).headers.get("X-OpenClaw-Docs-Cache"), "HIT");
+  const html = await p.request("/old");
+  const htmlBody = await html.clone().text();
+  assert.equal(p.cache.has("https://docs.openclaw.ai/old"), false);
+  // A pre-deployment HTML cache entry must not hide a later R2 alias update.
+  p.cache.set("https://docs.openclaw.ai/old", html);
+  assert.equal((await p.request("/old")).headers.get("X-OpenClaw-Docs-Cache"), "MISS");
   const first = await servesMarkdown(p, "/old.md", "/target.md");
   assert.equal(first.headers.get("X-OpenClaw-Docs-Cache"), "MISS");
   const warm = await servesMarkdown(p, "/old", "/target.md", { accept: "text/markdown" });
@@ -171,7 +173,7 @@ test("Markdown aliases serve current R2 targets despite warm HTML and Markdown c
   assert.match(canonicalHtml.headers.get("Content-Type"), /^text\/html/);
   assert.match(await canonicalHtml.text(), /<!doctype html>/i);
   await servesMarkdown(p, "/other.md", "/other.md");
-  p.entries.get("old").customMetadata["openclaw-markdown-target"] = "/other.md";
+  p.entries.set("old", { ...p.entries.get("updated"), key: "old" });
   for (const method of ["GET", "HEAD"]) {
     const start = p.calls.length;
     const alias = await servesMarkdown(p, "/old", "/other.md", { method, accept: "text/markdown" });
@@ -183,17 +185,14 @@ test("Markdown aliases serve current R2 targets despite warm HTML and Markdown c
   for (const header of ["Cache-Control", "CDN-Cache-Control", "Cloudflare-CDN-Cache-Control"]) {
     assert.equal(served.headers.get(header), canonical.headers.get(header));
   }
-  const cachedHtml = await p.request("/old");
-  assert.equal(cachedHtml.headers.get("X-OpenClaw-Docs-Cache"), "HIT");
-  assert.match(cachedHtml.headers.get("Content-Type"), /^text\/html/);
-  assert.equal(await cachedHtml.text(), htmlBody);
+  const freshHtml = await p.request("/old");
+  assert.equal(freshHtml.headers.get("X-OpenClaw-Docs-Cache"), "MISS");
+  assert.match(freshHtml.headers.get("Content-Type"), /^text\/html/);
+  assert.ok((await freshHtml.text()).includes('location.replace("/other")'));
+  assert.equal(await p.cache.get("https://docs.openclaw.ai/old").clone().text(), htmlBody);
   assert.equal(p.cache.has("https://docs.openclaw.ai/old.md"), false);
   assert.equal(await p.cache.get("https://docs.openclaw.ai/target.md").clone().text(), sources["target.md"]);
   assert.equal(await p.cache.get("https://docs.openclaw.ai/other.md").clone().text(), sources["other.md"]);
-  t.mock.timers.tick(60_000);
-  assert.equal((await p.request("/old")).headers.get("X-OpenClaw-Docs-Cache"), "MISS");
-  const afterRollover = await servesMarkdown(p, "/old.md", "/other.md");
-  assert.equal(afterRollover.headers.get("X-OpenClaw-Docs-Cache"), "HIT");
   delete p.entries.get("old").customMetadata;
   assert.equal((await p.request("/old.md")).status, 404);
   const negotiated = await p.request("/old", { accept: "text/markdown" });
