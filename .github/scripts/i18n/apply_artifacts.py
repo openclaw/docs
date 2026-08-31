@@ -3,8 +3,8 @@
 
 Definition:
   This script mirrors the finalizer artifact-apply block from
-  translate-finalize-reusable.yml. It validates artifact metadata, skips stale
-  payload safely when the source changed, copies valid payload files, records
+  translate-finalize-reusable.yml. It validates artifact metadata, checks page
+  hashes and source absence for every artifact, copies valid payload files, records
   incomplete shards, and writes the same GitHub outputs used by later steps.
 
 Parameters:
@@ -16,7 +16,7 @@ Parameters:
   --skip-checkout-main: Test-only option that skips origin/main checkout.
 
 Outputs:
-  GITHUB_OUTPUT receives stale, base_source_sha, changed_count, and
+  GITHUB_OUTPUT receives stale, base_source_sha, base_source_metadata_oid, changed_count, and
   incomplete_count. The incomplete locale list is written to
   .openclaw-sync/i18n-incomplete-locales.txt. GITHUB_STEP_SUMMARY receives a
   finalizer summary.
@@ -143,10 +143,8 @@ def artifact_payload_issue(artifact: Path, metadata: dict[str, object], locale: 
 
 
 def should_apply_changed(source_current: bool, locale: str, rel: str, payload_file: Path) -> tuple[bool, str]:
-    if source_current:
-        return True, ""
     if tm_path(locale, rel):
-        return False, f"{locale}: translation memory"
+        return (True, "") if source_current else (False, f"{locale}: translation memory")
     source = locale_doc_source(locale, rel)
     if source is None or payload_file.suffix.lower() not in {".md", ".mdx"}:
         return False, f"{locale}: unsupported stale path {rel}"
@@ -158,10 +156,9 @@ def should_apply_changed(source_current: bool, locale: str, rel: str, payload_fi
 
 
 def should_apply_deleted(source_current: bool, locale: str, rel: str) -> tuple[bool, str]:
-    if source_current:
-        return True, ""
     if tm_path(locale, rel):
-        return False, f"{locale}: translation memory"
+        return (True, "") if source_current else (False, f"{locale}: translation memory")
+    # The primary source SHA does not cover every mirrored source tree.
     source = locale_doc_source(locale, rel)
     if source is None:
         return False, f"{locale}: unsupported stale delete {rel}"
@@ -171,14 +168,12 @@ def should_apply_deleted(source_current: bool, locale: str, rel: str) -> tuple[b
 
 
 def artifact_stale_issue(artifact: Path, locale: str, source_current: bool) -> str:
-    if source_current:
-        return ""
     for rel in read_lines(artifact / "changed-files.txt"):
-        apply_change, reason = should_apply_changed(False, locale, rel, artifact / "payload" / rel)
+        apply_change, reason = should_apply_changed(source_current, locale, rel, artifact / "payload" / rel)
         if not apply_change:
             return reason
     for rel in read_lines(artifact / "deleted-files.txt"):
-        apply_delete, reason = should_apply_deleted(False, locale, rel)
+        apply_delete, reason = should_apply_deleted(source_current, locale, rel)
         if not apply_delete:
             return reason
     return ""
@@ -191,12 +186,12 @@ def checkout_latest_main(skip_checkout_main: bool) -> None:
     run(["git", "checkout", "-B", "main", "refs/remotes/origin/main"])
 
 
-def current_source_sha() -> str:
-    source_json = run(["git", "show", "HEAD:.openclaw-sync/source.json"])
+def source_sha_from_blob(metadata_oid: str) -> str:
+    source_json = run(["git", "cat-file", "blob", metadata_oid])
     try:
         return json.loads(source_json).get("sha") or ""
     except json.JSONDecodeError as exc:
-        raise SystemExit(f"invalid .openclaw-sync/source.json at HEAD: {exc}") from exc
+        raise SystemExit(f"invalid .openclaw-sync/source.json blob {metadata_oid}: {exc}") from exc
 
 
 def process_artifact(
@@ -294,13 +289,14 @@ def process_artifact(
         state.no_changes.append(artifact_label(locale, shard_index, expected_shard_total))
 
 
-def write_outputs(current: str, changed_count: int, incomplete_count: int) -> None:
+def write_outputs(current: str, metadata_oid: str, changed_count: int, incomplete_count: int) -> None:
     output = os.environ.get("GITHUB_OUTPUT")
     if not output:
         return
     with Path(output).open("a", encoding="utf-8") as fh:
         fh.write("stale=false\n")
         fh.write(f"base_source_sha={current}\n")
+        fh.write(f"base_source_metadata_oid={metadata_oid}\n")
         fh.write(f"changed_count={changed_count}\n")
         fh.write(f"incomplete_count={incomplete_count}\n")
 
@@ -359,7 +355,8 @@ def apply_artifacts(
     if shard_total < 1:
         raise SystemExit(f"invalid shard_total: {shard_total}")
     checkout_latest_main(skip_checkout_main)
-    current = current_source_sha()
+    metadata_oid = run(["git", "rev-parse", "--verify", "HEAD:.openclaw-sync/source.json"]).strip()
+    current = source_sha_from_blob(metadata_oid)
     source_current = current == source_sha
     expected = parse_expected(expected_locales)
     state = ApplyState()
@@ -435,10 +432,10 @@ def apply_artifacts(
     incomplete_path = Path(".openclaw-sync/i18n-incomplete-locales.txt")
     incomplete_path.parent.mkdir(exist_ok=True)
     incomplete_path.write_text("\n".join(missing_or_failed) + ("\n" if missing_or_failed else ""), encoding="utf-8")
-    write_outputs(current, changed_count, len(missing_or_failed))
+    write_outputs(current, metadata_oid, changed_count, len(missing_or_failed))
     write_summary(mode, shard_total, source_sha, current, changed_count, state, missing_or_failed)
     print(f"changed paths: {changed_count}")
-    return {"base_source_sha": current, "changed_count": changed_count, "incomplete_count": len(missing_or_failed)}
+    return {"base_source_sha": current, "base_source_metadata_oid": metadata_oid, "changed_count": changed_count, "incomplete_count": len(missing_or_failed)}
 
 
 def parse_args() -> argparse.Namespace:

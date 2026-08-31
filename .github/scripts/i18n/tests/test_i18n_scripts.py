@@ -78,7 +78,7 @@ def env(values: dict[str, str]):
 
 
 def run_git(repo: Path, *args: str) -> str:
-    result = subprocess.run(["git", *args], cwd=repo, check=True, text=True, stdout=subprocess.PIPE)
+    result = subprocess.run(["git", *args], cwd=repo, check=True, text=True, stdout=subprocess.PIPE, timeout=120)
     return result.stdout
 
 
@@ -86,6 +86,7 @@ def init_repo(repo: Path) -> None:
     run_git(repo, "init", "-b", "main")
     run_git(repo, "config", "user.name", "Test")
     run_git(repo, "config", "user.email", "test@example.com")
+    run_git(repo, "config", "commit.gpgsign", "false")
 
 
 class I18NScriptTests(unittest.TestCase):
@@ -175,6 +176,7 @@ class I18NScriptTests(unittest.TestCase):
         install = "npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1 tsx@4.23.12"
         self.assertIn(install, text)
         self.assertLess(text.index(install), text.index("Run i18n control-plane regressions"))
+        self.assertRegex(text, r'pull_request:\n    paths:\n      - "\.github/scripts/i18n/\*\*"\n      - "\.github/workflows/translate-\*\.yml"')
 
     def test_budget_check_accepts_current_full_batches_and_rejects_worker_over_budget(self) -> None:
         budget = budget_check.validate_budget(REPO_ROOT / ".github/workflows/translate-all.yml")
@@ -476,6 +478,43 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual("0", prepare.default_cooldown("full", "schedule", "", "3600"))
         self.assertFalse(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json"]))
         self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json", "docs/guide/setup.mdx"]))
+
+    def test_prepare_reads_metadata_from_the_once_resolved_revision(self) -> None:
+        for ref in ("HEAD", "refs/remotes/origin/main"):
+            with self.subTest(ref=ref), patch.object(prepare, "run_git", side_effect=[
+                "resolved-sha\n", '{"repository":"openclaw/openclaw","sha":"source-a"}',
+            ]) as git:
+                self.assertEqual(prepare.MainState("resolved-sha", "openclaw/openclaw", "source-a"), prepare.read_source_state(ref))
+                self.assertEqual([
+                    (["rev-parse", ref],),
+                    (["show", "resolved-sha:.openclaw-sync/source.json"],),
+                ], [call.args for call in git.call_args_list])
+
+    def test_prepare_translation_preserves_debounce_cap_and_push_filter(self) -> None:
+        first = prepare.MainState("publish-a", "openclaw/openclaw", "source-a")
+        newer = prepare.MainState("publish-b", "openclaw/openclaw", "source-b")
+        for mode, states, cap, translate in (
+            ("full", [first, first], "20", True),
+            ("full", [first, newer], "10", True),
+            ("incremental", [first, newer, newer, newer], "20", True),
+            ("incremental", [first, first], "20", False),
+        ):
+            with self.subTest(mode=mode, states=states, translate=translate), patch.dict(os.environ, {
+                "EVENT_NAME": "push", "BEFORE_SHA": "before", "REQUESTED_COOLDOWN_SECONDS": "10",
+                "DEFAULT_MAX_WAIT_SECONDS": cap,
+            }, clear=True), patch.object(prepare, "read_main_state", side_effect=states) as read, \
+                    patch.object(prepare, "sleep_with_heartbeat") as sleep, \
+                    patch.object(prepare, "incremental_should_translate", return_value=translate) as changed:
+                result = prepare.prepare(mode, "Fixture preparation")
+                self.assertEqual(states[-1].publish_ref, result["publish_ref"])
+                self.assertEqual(states[-1].source_sha, result["source_sha"])
+                self.assertEqual(str(translate).lower(), result["should_translate"])
+                self.assertEqual(len(states), read.call_count)
+                self.assertEqual([(10,)] * (len(states) // 2), [call.args for call in sleep.call_args_list])
+                if mode == "incremental":
+                    changed.assert_called_once_with("before", states[-1].publish_ref)
+                else:
+                    changed.assert_not_called()
 
     def test_incremental_workflow_schedules_all_expected_finalizer_locales(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
@@ -855,11 +894,13 @@ class I18NScriptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source_json = Path(tmp) / "source.json"
             source_json.write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n', encoding="utf-8")
-            metadata = read_source_metadata.read_source_metadata(source_json, "source-a")
+            metadata = read_source_metadata.read_source_metadata(source_json, "source-a", "openclaw/openclaw")
             self.assertEqual("openclaw/openclaw", metadata.repository)
             self.assertEqual("source-a", metadata.sha)
             with self.assertRaises(SystemExit):
                 read_source_metadata.read_source_metadata(source_json, "other-source")
+            with self.assertRaises(SystemExit):
+                read_source_metadata.read_source_metadata(source_json, "source-a", "other/repository")
 
     def test_prune_stale_locale_pages_removes_only_pages_without_source(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -869,12 +910,20 @@ class I18NScriptTests(unittest.TestCase):
             (docs / "index.md").write_text("# Index\n", encoding="utf-8")
             (docs / "fr/index.md").write_text("# Index FR\n", encoding="utf-8")
             (docs / "fr/old/nested/page.md").write_text("# Old\n", encoding="utf-8")
+            (docs / "fr/unrelated-empty").mkdir()
 
-            removed = prune_stale_locale_pages.prune_stale_locale_pages(docs, "fr")
+            args = [sys.executable, str(SCRIPT_DIR / "prune_stale_locale_pages.py"), "--docs-root", str(docs), "--locale", "fr"]
+            before = self._docs_bytes(Path(tmp))
+            empty = subprocess.run([*args, "--source-path="], text=True, capture_output=True, timeout=30)
+            self.assertNotEqual(0, empty.returncode)
+            self.assertEqual(before, self._docs_bytes(Path(tmp)))
+            result = subprocess.run(args, text=True, capture_output=True, timeout=30)
 
-            self.assertEqual(1, removed)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertIn("removed stale locale pages: 1", result.stdout)
             self.assertTrue((docs / "fr/index.md").exists())
             self.assertFalse((docs / "fr/old").exists())
+            self.assertFalse((docs / "fr/unrelated-empty").exists())
 
     def test_pending_manifest_filters_locale_generated_and_shards_pending_docs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2708,13 +2757,7 @@ class I18NScriptTests(unittest.TestCase):
                 },
                 changed=["docs/fr/index.md"],
                 payload={
-                    "docs/fr/index.md": (
-                        "---\n"
-                        "x-i18n:\n"
-                        "  source_hash: 1111111111111111111111111111111111111111111111111111111111111111\n"
-                        "---\n\n"
-                        "# Index FR\n"
-                    )
+                    "docs/fr/index.md": self._translated_page(repo / "docs/index.md", "# Index FR\n")
                 },
             )
 
@@ -2753,7 +2796,7 @@ class I18NScriptTests(unittest.TestCase):
                     "source_sha": "source-a",
                 },
                 changed=["docs/fr/index.md"],
-                payload={"docs/fr/index.md": "# Index FR\n"},
+                payload={"docs/fr/index.md": self._translated_page(repo / "docs/index.md", "# Index FR\n")},
             )
             self._write_artifact(
                 artifacts,
@@ -2768,7 +2811,7 @@ class I18NScriptTests(unittest.TestCase):
                     "source_sha": "source-a",
                 },
                 changed=["docs/fr/guide/setup.md"],
-                payload={"docs/fr/guide/setup.md": "# Setup FR\n"},
+                payload={"docs/fr/guide/setup.md": self._translated_page(repo / "docs/guide/setup.md", "# Setup FR\n")},
             )
 
             with chdir(repo):
@@ -2785,66 +2828,88 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
             self.assertIn("Setup FR", (repo / "docs/fr/guide/setup.md").read_text(encoding="utf-8"))
 
-    def test_apply_artifacts_leaves_locale_unchanged_when_one_stale_page_changed(self) -> None:
+    def test_artifact_preflight_preserves_current_source_tm_rules(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp, chdir(Path(tmp)):
+            artifact = Path(tmp) / "artifact"
+            for source_current in (True, False):
+                for kind, rel in (
+                    ("changed", "docs/.i18n/fr.tm.jsonl"),
+                    ("deleted", "docs/.i18n/fr.tm.jsonl"),
+                ):
+                    with self.subTest(source_current=source_current, kind=kind, rel=rel):
+                        if artifact.exists():
+                            shutil.rmtree(artifact)
+                        self._write_artifact(Path(tmp), "artifact", **{kind: [rel]}, payload={rel: "payload without source hash\n"} if kind == "changed" else {})
+                        issue = apply_artifacts.artifact_stale_issue(artifact, "fr", source_current)
+                        self.assertEqual(source_current, issue == "")
+
+    def test_apply_artifacts_checks_page_sources_across_all_locale_shards(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            repo = self._repo_with_source(tmp)
-            (repo / "docs/guide.md").write_text("# Current guide\n", encoding="utf-8")
-            (repo / "docs/fr").mkdir()
-            (repo / "docs/fr/index.md").write_text("# Existing index FR\n", encoding="utf-8")
-            (repo / "docs/fr/guide.md").write_text("# Existing guide FR\n", encoding="utf-8")
-            (repo / ".openclaw-sync/source.json").write_text(
-                '{"repository":"openclaw/openclaw","sha":"source-b"}\n',
-                encoding="utf-8",
-            )
-            run_git(repo, "add", ".")
-            run_git(repo, "commit", "-m", "move source")
-            index_hash = hashlib.sha256((repo / "docs/index.md").read_bytes()).hexdigest()
-            artifacts = repo / ".openclaw-sync/i18n-artifacts"
-            self._write_artifact(
-                artifacts,
-                "fr-s0of1",
-                metadata={
-                    "failed_reason": "",
-                    "locale": "fr",
-                    "locale_slug": "fr",
-                    "mode": "full",
-                    "shard_index": 0,
-                    "shard_total": 1,
-                    "source_sha": "source-a",
+            root = Path(tmp)
+            seed = root / "seed"
+            seed.mkdir()
+            self._repo_with_source(str(seed))
+            (seed / "docs/clawhub").mkdir()
+            (seed / "docs/clawhub/guide.mdx").write_text("# Current ClawHub guide\n")
+            (seed / "docs/clawhub/data.json").write_text('{"current":true}\n')
+            (seed / "docs/fr/clawhub").mkdir(parents=True)
+            (seed / "docs/fr/clawhub/guide.mdx").write_text("# Existing guide FR\n")
+            (seed / "docs/fr/index.md").write_text("# Existing index FR\n")
+            (seed / "docs/fr/orphan.md").write_text("# Valid deletion once locale passes\n")
+            (seed / "docs/.i18n").mkdir()
+            (seed / "docs/.i18n/fr.tm.jsonl").write_text('{"original":"memory"}\n')
+            (seed / ".openclaw-sync/source.json").write_text(json.dumps({
+                "repository": "openclaw/openclaw", "sha": "stable-core",
+                "sources": {
+                    "openclaw": {"repository": "openclaw/openclaw", "sha": "stable-core"},
+                    "clawhub": {"repository": "openclaw/clawhub", "sha": "after-retirement"},
                 },
-                changed=["docs/fr/index.md", "docs/fr/guide.md"],
-                payload={
-                    "docs/fr/index.md": (
-                        "---\n"
-                        "x-i18n:\n"
-                        f"  source_hash: {index_hash}\n"
-                        "---\n\n"
-                        "# Updated index FR\n"
-                    ),
-                    "docs/fr/guide.md": (
-                        "---\n"
-                        "x-i18n:\n"
-                        f"  source_hash: {'0' * 64}\n"
-                        "---\n\n"
-                        "# Stale guide FR\n"
-                    ),
-                },
+            }) + "\n")
+            run_git(seed, "add", ".")
+            run_git(seed, "commit", "-m", "secondary source after retirement")
+            origin = root / "origin.git"
+            run_git(root, "init", "--bare", "-b", "main", str(origin))
+            run_git(seed, "remote", "add", "origin", str(origin))
+            run_git(seed, "push", "origin", "main")
+            guide = self._translated_page(seed / "docs/clawhub/guide.mdx", "# Updated guide FR\n")
+            old_hash = hashlib.sha256(b"# Old ClawHub English\n").hexdigest()
+            old_page = f"---\nx-i18n:\n  source_hash: {old_hash}\n---\n# Old translation\n"
+            cases = (
+                ("same_sha_retired", "stable-core", "clawhub/retired.md", old_page, False),
+                ("same_sha_changed", "stable-core", "clawhub/guide.mdx", old_page, False),
+                ("stale_sha_changed", "old-core", "clawhub/guide.mdx", old_page, False),
+                ("missing_hash", "stable-core", "clawhub/guide.mdx", "# No source hash\n", False),
+                ("non_markdown", "stable-core", "clawhub/data.json", self._translated_page(seed / "docs/clawhub/data.json", "data\n"), False),
+                ("current_valid", "stable-core", "clawhub/guide.mdx", guide, True),
+                ("stale_valid", "old-core", "clawhub/guide.mdx", guide, True),
             )
-
-            with chdir(repo):
-                result = apply_artifacts.apply_artifacts(
-                    source_sha="source-a",
-                    mode="full",
-                    shard_total=1,
-                    expected_locales="fr=fr",
-                    artifacts_root=artifacts,
-                    skip_checkout_main=True,
-                )
-
-            self.assertEqual(1, result["incomplete_count"])
-            self.assertEqual(0, result["changed_count"])
-            self.assertEqual("# Existing index FR\n", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
-            self.assertEqual("# Existing guide FR\n", (repo / "docs/fr/guide.md").read_text(encoding="utf-8"))
+            for case, source_sha, relative, page, valid in cases:
+                with self.subTest(case=case):
+                    repo = root / case
+                    run_git(root, "clone", str(origin), str(repo))
+                    before = self._docs_bytes(repo)
+                    artifacts = repo / ".openclaw-sync/i18n-artifacts"
+                    metadata = {"failed_reason": "", "locale": "fr", "locale_slug": "fr", "mode": "full", "shard_total": 2, "source_sha": source_sha}
+                    payload = {"docs/fr/index.md": self._translated_page(seed / "docs/index.md", "# Updated index FR\n")}
+                    if source_sha == "stable-core":
+                        payload["docs/.i18n/fr.tm.jsonl"] = '{"updated":"memory"}\n'
+                    self._write_artifact(artifacts, "fr-s0of2", metadata={**metadata, "shard_index": 0}, changed=list(payload), deleted=["docs/fr/orphan.md"], payload=payload)
+                    self._write_artifact(artifacts, "fr-s1of2", metadata={**metadata, "shard_index": 1}, changed=[f"docs/fr/{relative}"], payload={f"docs/fr/{relative}": page})
+                    result = self._retirement_cli(repo, root, {}, "apply_artifacts.py", "--source-sha", source_sha, "--mode", "full", "--shard-total", "2", "--expected-locales", "fr=fr", "--artifacts-root", str(artifacts))
+                    self.assertEqual("stable-core", result["base_source_sha"])
+                    self.assertFalse((repo / "docs/clawhub/retired.md").exists())
+                    self.assertFalse((repo / "docs/fr/clawhub/retired.md").exists(), "old wave must not resurrect a retired page")
+                    if valid:
+                        expected = {**before, **{rel: text.encode() for rel, text in payload.items()}, f"docs/fr/{relative}": page.encode()}
+                        del expected["docs/fr/orphan.md"]
+                        self.assertEqual(expected, self._docs_bytes(repo))
+                        self.assertEqual("0", result["incomplete_count"])
+                        self.assertEqual(str(len(payload) + 2), result["changed_count"])
+                    else:
+                        self.assertEqual(before, self._docs_bytes(repo), "invalid page must block every shard's updates, TM and deletions")
+                        self.assertEqual("0", result["changed_count"])
+                        self.assertEqual("1", result["incomplete_count"])
+                        self.assertIn(f"docs/fr/{relative}", (repo / ".openclaw-sync/i18n-incomplete-locales.txt").read_text())
 
     def test_apply_artifacts_leaves_incomplete_locale_unchanged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2869,7 +2934,7 @@ class I18NScriptTests(unittest.TestCase):
                 },
                 changed=["docs/fr/index.md"],
                 deleted=["docs/fr/removed.md"],
-                payload={"docs/fr/index.md": "# Updated FR\n"},
+                payload={"docs/fr/index.md": self._translated_page(repo / "docs/index.md", "# Updated FR\n")},
             )
             self._write_artifact(
                 artifacts,
@@ -2917,7 +2982,7 @@ class I18NScriptTests(unittest.TestCase):
                     "source_sha": "source-a",
                 },
                 changed=["docs/fr/index.md"],
-                payload={"docs/fr/index.md": "# Index FR\n"},
+                payload={"docs/fr/index.md": self._translated_page(repo / "docs/index.md", "# Index FR\n")},
             )
             self._write_artifact(
                 artifacts,
@@ -2974,7 +3039,7 @@ class I18NScriptTests(unittest.TestCase):
                     "source_sha": "source-a",
                 },
                 changed=["docs/fr/index.md"],
-                payload={"docs/fr/index.md": "# Updated FR\n"},
+                payload={"docs/fr/index.md": self._translated_page(repo / "docs/index.md", "# Updated FR\n")},
             )
             self._write_artifact(
                 artifacts,
@@ -3058,6 +3123,452 @@ class I18NScriptTests(unittest.TestCase):
             incomplete = (repo / ".openclaw-sync/i18n-incomplete-locales.txt").read_text(encoding="utf-8")
             self.assertEqual(1, result["incomplete_count"])
             self.assertIn("fr: translation failed", incomplete)
+
+    def test_finalizer_commit_rechecks_metadata_after_aggregate_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            seed = root / "seed"
+            seed.mkdir()
+            self._repo_with_source(str(seed))
+            origin = root / "origin.git"
+            run_git(root, "init", "--bare", "-b", "main", str(origin))
+            run_git(seed, "remote", "add", "origin", str(origin))
+            run_git(seed, "push", "origin", "main")
+            workflow = "translate-finalize-reusable.yml"
+            for case in ("unchanged", "unrelated_main", "restored_secondary", "metadata_refresh", "missing_metadata"):
+                with self.subTest(case=case):
+                    run_git(seed, "fetch", "origin", "main")
+                    run_git(seed, "merge", "--ff-only", "origin/main")
+                    (seed / "docs/fr/clawhub").mkdir(parents=True, exist_ok=True)
+                    (seed / "docs/fr/clawhub/retired.md").write_text("# Retired FR\n")
+                    (seed / "docs/clawhub").mkdir(exist_ok=True)
+                    (seed / "docs/clawhub/retired.md").unlink(missing_ok=True)
+                    metadata = {
+                        "repository": "openclaw/openclaw", "sha": "stable-core",
+                        "sources": {"clawhub": {"repository": "openclaw/clawhub", "sha": "retired"}},
+                    }
+                    source_json = seed / ".openclaw-sync/source.json"
+                    source_json.write_text(json.dumps(metadata) + "\n")
+                    run_git(seed, "add", "docs", ".openclaw-sync/source.json")
+                    run_git(seed, "commit", "--allow-empty", "-m", "fixture retirement admission")
+                    run_git(seed, "push", "origin", "main")
+                    repo = root / case
+                    run_git(root, "clone", str(origin), str(repo))
+                    run_git(repo, "config", "commit.gpgsign", "false")
+                    artifacts = repo / ".openclaw-sync/artifacts"
+                    self._write_artifact(artifacts, "fr-s0of1", metadata={
+                        "locale": "fr", "locale_slug": "fr", "source_sha": "stable-core",
+                        "shard_index": 0, "shard_total": 1, "failed_reason": "",
+                    }, deleted=["docs/fr/clawhub/retired.md"])
+                    applied = self._retirement_cli(repo, root, {}, "apply_artifacts.py", "--source-sha", "stable-core", "--mode", "retirements", "--shard-total", "1", "--expected-locales", "fr=fr", "--artifacts-root", str(artifacts))
+                    self.assertEqual("1", applied["changed_count"])
+                    self.assertEqual("0", applied["incomplete_count"])
+                    admitted_oid = run_git(repo, "rev-parse", "HEAD:.openclaw-sync/source.json").strip()
+                    self.assertEqual(admitted_oid, applied["base_source_metadata_oid"])
+                    self.assertEqual(json.loads(run_git(repo, "cat-file", "blob", admitted_oid))["sha"], applied["base_source_sha"])
+                    # Simulate a remote update during the awaited docs:check.
+                    if case == "restored_secondary":
+                        (seed / "docs/clawhub/retired.md").write_text("# Restored English\n")
+                        metadata["sources"]["clawhub"]["sha"] = "restored"
+                        source_json.write_text(json.dumps(metadata) + "\n")
+                    elif case == "metadata_refresh":
+                        metadata["syncedAt"] = "later sync with identical sources"
+                        source_json.write_text(json.dumps(metadata) + "\n")
+                    elif case == "missing_metadata":
+                        source_json.unlink()
+                    elif case == "unrelated_main":
+                        (seed / "unrelated.txt").write_text("Unrelated main change\n")
+                    if case != "unchanged":
+                        run_git(seed, "add", ".")
+                        run_git(seed, "commit", "-m", "fixture update during validation")
+                        run_git(seed, "push", "origin", "main")
+                    remote_before = run_git(origin, "rev-parse", "main").strip()
+                    values = {f"steps.apply.outputs.{key}": value for key, value in applied.items()}
+                    self._retirement_step(repo, root, values, "Commit aggregate translation refresh", workflow_name=workflow)
+                    published = case in {"unchanged", "unrelated_main"}
+                    self.assertEqual("true" if published else None, values.get("steps.aggregate_commit.outputs.committed"))
+                    paths = run_git(origin, "ls-tree", "-r", "--name-only", "main").splitlines()
+                    self.assertEqual(not published, "docs/fr/clawhub/retired.md" in paths)
+                    if published:
+                        self.assertNotEqual(remote_before, run_git(origin, "rev-parse", "main").strip())
+                        run_git(origin, "merge-base", "--is-ancestor", remote_before, "main")
+                        if case == "unrelated_main":
+                            self.assertIn("unrelated.txt", paths)
+                    else:
+                        self.assertEqual(remote_before, run_git(origin, "rev-parse", "main").strip())
+                        failure = self._retirement_step(repo, root, values, "Fail uncommitted aggregate translation refresh", workflow_name=workflow, succeeds=False)
+                        self.assertIn("did not commit them", failure.stderr)
+
+    def test_retirement_workflow_cleans_all_locales_without_translation_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, runner, values, seed, origin = self._retirement_fixture(Path(tmp))
+            # The literal main checkout admits the source before prepare records it.
+            (seed / "docs/new.md").write_text("# New source\n", encoding="utf-8")
+            run_git(seed, "add", "docs/new.md")
+            run_git(seed, "commit", "-m", "new publish revision")
+            run_git(seed, "push", "origin", "main")
+            self._prepare_retirements(repo, runner, values)
+            selected_ref = run_git(seed, "rev-parse", "HEAD").strip()
+            selected_metadata = (repo / ".openclaw-sync/source.json").read_bytes()
+            (seed / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-b"}\n')
+            run_git(seed, "add", ".openclaw-sync/source.json")
+            run_git(seed, "commit", "-m", "remote main moves after checkout")
+            run_git(seed, "push", "origin", "main")
+            self._retirement_step(repo, runner, values, "Record checked-out source snapshot")
+            self._retirement_step(repo, runner, values, "Validate selected source pair")
+            self.assertEqual(selected_ref, values["steps.prepare.outputs.publish_ref"])
+            self.assertEqual("source-a", values["steps.prepare.outputs.source_sha"])
+            self.assertEqual("false", values["steps.prepare.outputs.should_translate"])
+            self.assertEqual(selected_ref, run_git(repo, "rev-parse", "refs/remotes/origin/main").strip(), "recording must not fetch")
+            self.assertEqual(selected_ref, run_git(repo, "rev-parse", "HEAD").strip())
+            self.assertEqual(selected_metadata, (repo / ".openclaw-sync/source.json").read_bytes())
+            # Existing translation lanes still fetch the newest main, without
+            # changing the retirement producer's admitted checkout.
+            for mode in ("full", "incremental"):
+                preparation = self._retirement_cli(repo, runner, {**values, "EVENT_NAME": "workflow_dispatch", "REQUESTED_COOLDOWN_SECONDS": "0"}, "prepare.py", "--mode", mode, "--title", "Fixture translation")
+                self.assertEqual(run_git(seed, "rev-parse", "HEAD").strip(), preparation["publish_ref"])
+                self.assertEqual("source-b", preparation["source_sha"])
+                self.assertEqual("true", preparation["should_translate"])
+                self.assertEqual(selected_ref, run_git(repo, "rev-parse", "HEAD").strip())
+            self._retirement_step(repo, runner, values, "Prune and package every locale")
+            self._retirement_step(repo, runner, values, "Require a complete deletion-only bundle")
+            for item in translation_plan.all_locales():
+                self.assertTrue((repo / f"docs/{item.locale}/orphan/keep.md").is_file(), "unselected orphan must survive retirement")
+                self.assertEqual(b"", (repo / f".openclaw-sync/docs-i18n-{item.locale_slug}-s0of1.txt").read_bytes())
+            self.assertFalse((repo / "docs/fr/retired").exists())
+            self.assertTrue((repo / "docs/fr/unrelated-empty").is_dir())
+            self.assertTrue((repo / "docs/fr/never-translated").is_dir())
+            self.assertFalse((repo / "not-evaluated").exists())
+            selected = json.loads(Path(values["GITHUB_EVENT_PATH"]).read_text())["inputs"]["source_paths"].splitlines()
+            self.assertEqual(selected, json.loads((runner / "retirements-source-paths.json").read_text()))
+            summary = (runner / "summary").read_text()
+            self.assertIn(f"Selected source paths: {len(selected)}", summary)
+            for path in selected:
+                self.assertIn(path, summary)
+            self.assertEqual(selected_ref, values["steps.prepare.outputs.publish_ref"])
+
+            # The old lane still schedules model work for stale/missing surviving
+            # pages, even when the operator only needs source retirements.
+            legacy = {**values, "LOCALE": "fr", "LOCALE_SLUG": "fr", "MODE": "incremental", "SHARD_INDEX": "0", "SHARD_TOTAL": "1"}
+            pending_output = self._retirement_cli(repo, runner, legacy, "build_pending_manifest.py")
+            self.assertGreater(int(pending_output["pending_count"]), 0)
+            workflow = (REPO_ROOT / ".github/workflows/translate-retirements.yml").read_text(encoding="utf-8")
+            incremental = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
+            self.assertIn("- provider-preflight", incremental)
+            self.assertNotIn("provider-preflight", workflow)
+            self.assertNotIn("translate-locale-reusable.yml", workflow)
+            self.assertNotIn("strategy:", workflow)
+            self.assertRegex(workflow, r"on:\n  workflow_dispatch:\n    inputs:\n      source_paths:")
+            self.assertIn("group: docs-i18n-retirements\n  cancel-in-progress: false", workflow)
+            self.assertIn("ref: ${{ github.workflow_sha }}", workflow)
+            self.assertEqual(["${{ github.workflow_sha }}", "main"], re.findall(r"^          ref: (.+)$", workflow, re.M))
+            self.assertEqual(2, workflow.count("uses: actions/checkout@"))
+            self.assertLess(workflow.index("Stage workflow scripts"), workflow.index("Check out trusted main snapshot"))
+            self.assertLess(workflow.index("Check out trusted main snapshot"), workflow.index("Record checked-out source snapshot"))
+            self.assertIn("needs: produce\n    uses: ./.github/workflows/translate-finalize-reusable.yml", workflow)
+            self.assertNotIn("expected_locales:", workflow)  # Keep the finalizer's complete default.
+            self.assertLess(workflow.index("Require a complete deletion-only bundle"), workflow.index("uses: actions/upload-artifact"))
+
+            locales = translation_plan.all_locales()
+            self.assertEqual({item.locale_slug: item.locale for item in locales}, apply_artifacts.parse_expected(apply_artifacts.DEFAULT_EXPECTED_LOCALES))
+            artifacts = repo / ".openclaw-sync/artifacts"
+            self.assertEqual(len(locales), len(list(artifacts.iterdir())))
+            intended = {f"docs/{item.locale}/retired/old.md" for item in locales[:-1]}
+            for item in locales:
+                artifact = artifacts / f"{item.locale_slug}-s0of1"
+                metadata = json.loads((artifact / "metadata.json").read_text())
+                self.assertEqual("", metadata["failed_reason"])
+                self.assertEqual(0, metadata["pending_count"])
+                self.assertEqual("skipped", metadata["mdx_protected_attribute_repair_outcome"])
+                self.assertEqual(b"", (artifact / "changed-files.txt").read_bytes())
+                self.assertEqual([], list((artifact / "payload").rglob("*")))
+                expected = [f"docs/{item.locale}/retired/old.md"] if item != locales[-1] else []
+                self.assertEqual(expected, (artifact / "deleted-files.txt").read_text().splitlines())
+                self.assertIn(f"- {item.locale}: {len(expected)} deletions", summary)
+
+            consumer = runner / "consumer"
+            run_git(runner, "clone", str(origin), str(consumer))
+            before = self._docs_bytes(consumer)
+            result = self._apply_retirement_bundle(consumer, runner, values, artifacts)
+            self.assertEqual("0", result["incomplete_count"])
+            self.assertEqual(str(len(intended)), result["changed_count"])
+            expected_bytes = {path: content for path, content in before.items() if path not in intended}
+            self.assertEqual(expected_bytes, self._docs_bytes(repo))
+            self.assertEqual(expected_bytes, self._docs_bytes(consumer))
+            self.assertEqual(intended, set(run_git(consumer, "diff", "--name-only", "--", "docs").splitlines()))
+            self.assertEqual("", run_git(consumer, "diff", "--name-only", "--diff-filter=ACMRT", "--", "docs"))
+            # Simulate the finalizer's published cleanup in the local bare origin,
+            # then run the producer again: every locale must now be a valid no-op.
+            run_git(consumer, "config", "user.name", "Test")
+            run_git(consumer, "config", "user.email", "test@example.com")
+            run_git(consumer, "config", "commit.gpgsign", "false")
+            run_git(consumer, "add", "docs")
+            run_git(consumer, "commit", "-m", "fixture aggregate retirements")
+            run_git(consumer, "push", "origin", "main")
+            shutil.rmtree(artifacts)
+            self._produce_retirements(repo, runner, values)
+            for item in locales:
+                artifact = artifacts / f"{item.locale_slug}-s0of1"
+                self.assertEqual(b"", (artifact / "deleted-files.txt").read_bytes())
+                self.assertEqual(0, json.loads((artifact / "metadata.json").read_text())["deleted_count"])
+            shutil.rmtree(consumer / ".openclaw-sync/current-artifacts")
+            second = self._apply_retirement_bundle(consumer, runner, values, artifacts)
+            self.assertEqual("0", second["incomplete_count"])
+            self.assertEqual("0", second["changed_count"])
+            self.assertEqual(expected_bytes, self._docs_bytes(consumer))
+            self.assertFalse((runner / "forbidden-runtime-called").exists())
+
+    def test_retirement_upload_gate_rejects_incomplete_or_non_deletion_bundles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, runner, values, _seed, _origin = self._retirement_fixture(Path(tmp))
+            self._prepare_retirements(repo, runner, values)
+            event = Path(values["GITHUB_EVENT_PATH"])
+            valid_event = event.read_bytes()
+            outside = runner / "outside"
+            outside.mkdir()
+            (outside / "escape.md").write_text("outside must remain unchanged\n")
+            first_locale = repo / "docs" / translation_plan.all_locales()[0].locale
+            source_alias, locale_alias = repo / "docs/source-alias", first_locale / "locale-alias"
+            source_alias.symlink_to(outside, target_is_directory=True)
+            locale_alias.symlink_to(outside, target_is_directory=True)
+            (first_locale / "directory.md").mkdir()
+            before = self._docs_bytes(repo)
+            directories = {path for path in (repo / "docs").rglob("*") if path.is_dir()}
+            invalid = ["", " \t\r\n\n"] + [
+                "retired/old.md\n" + path for path in (
+                    "retired/old.md", "../escape.md", str(outside / "escape.md"), "C:/escape.md",
+                    "retired//old.md", "retired/./old.md", "retired\\old.md", "zh-cn/index.md",
+                    ".i18n/state.md", "concepts/.generated/state.md", "old.png", "index.md",
+                    "source-alias/missing.md", "locale-alias/escape.md", "directory.md", "bad\tname.md", "bad\0name.md",
+                )
+            ]
+            for selection in invalid:
+                with self.subTest(selection=selection):
+                    event.write_text(json.dumps({"inputs": {"source_paths": selection}}))
+                    self._retirement_step(repo, runner, values, "Prune and package every locale", succeeds=False)
+                    self.assertEqual(before, self._docs_bytes(repo), "invalid selection must fail before any deletion")
+                    self.assertEqual(directories, {path for path in (repo / "docs").rglob("*") if path.is_dir()})
+                    self.assertEqual("outside must remain unchanged\n", (outside / "escape.md").read_text())
+                    self.assertFalse((repo / ".openclaw-sync/artifacts").exists())
+            source_alias.unlink()
+            locale_alias.unlink()
+            (first_locale / "directory.md").rmdir()
+            event.write_bytes(valid_event)
+            self._retirement_step(repo, runner, values, "Prune and package every locale")
+            self._retirement_step(repo, runner, values, "Require a complete deletion-only bundle")
+            artifacts = repo / ".openclaw-sync/artifacts"
+            artifact = artifacts / "fr-s0of1"
+            originals = {path: path.read_bytes() for path in artifact.iterdir() if path.is_file()}
+            empty_locale = artifacts / f"{translation_plan.all_locales()[-1].locale_slug}-s0of1"
+            for field in ("source_sha", "source_repository"):
+                with self.subTest(source_pair_field=field):
+                    mismatch = {**values, f"steps.prepare.outputs.{field}": "mismatched"}
+                    self._retirement_step(repo, runner, mismatch, "Validate selected source pair", succeeds=False)
+            cases = ("missing_empty_locale", "failed", "changed_count", "changed_manifest", "pending_work", "tm_delete", "other_locale_delete", "unsafe_delete", "unselected_delete", "payload")
+            for case in cases:
+                with self.subTest(case=case):
+                    metadata_path = artifact / "metadata.json"
+                    metadata = json.loads(metadata_path.read_text())
+                    if case == "missing_empty_locale":
+                        empty_locale.rename(runner / empty_locale.name)
+                    elif case == "failed":
+                        metadata["failed_reason"] = "packaging failed"
+                    elif case == "changed_count":
+                        metadata["changed_count"] = 1
+                    elif case == "changed_manifest":
+                        (artifact / "changed-files.txt").write_text("docs/fr/index.md\n")
+                    elif case == "pending_work":
+                        metadata["pending_count"] = 1
+                    elif case.endswith("delete"):
+                        path = {"tm_delete": "docs/.i18n/fr.tm.jsonl", "other_locale_delete": "docs/de/retired/old.md", "unsafe_delete": "docs/fr/../index.md", "unselected_delete": "docs/fr/orphan/keep.md"}[case]
+                        (artifact / "deleted-files.txt").write_text(path + "\n")
+                    elif case == "payload":
+                        (artifact / "payload/unlisted.md").write_text("unadvertised payload\n")
+                    metadata_path.write_text(json.dumps(metadata))
+                    try:
+                        self._retirement_step(repo, runner, values, "Require a complete deletion-only bundle", succeeds=False)
+                    finally:
+                        for path, content in originals.items():
+                            path.write_bytes(content)
+                        (artifact / "payload/unlisted.md").unlink(missing_ok=True)
+                        if not empty_locale.exists():
+                            (runner / empty_locale.name).rename(empty_locale)
+
+    def test_retirement_finalizer_rejects_missing_failed_and_restored_source_deletes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, runner, values, seed, origin = self._retirement_fixture(Path(tmp))
+            self._produce_retirements(repo, runner, values)
+            source_artifacts = repo / ".openclaw-sync/artifacts"
+            for case in ("missing", "failed", "wrong_source", "restored_same_source", "restored_new_source"):
+                with self.subTest(case=case):
+                    restored = case.startswith("restored_")
+                    if restored:
+                        (seed / "docs/retired").mkdir(exist_ok=True)
+                        (seed / "docs/retired/old.md").write_text("# Restored English\n")
+                        primary_sha = "source-a" if case == "restored_same_source" else "source-b"
+                        (seed / ".openclaw-sync/source.json").write_text(json.dumps({
+                            "repository": "openclaw/openclaw", "sha": primary_sha,
+                            "sources": {
+                                "openclaw": {"repository": "openclaw/openclaw", "sha": primary_sha},
+                                "clawhub": {"repository": "openclaw/clawhub", "sha": "clawhub-restored"},
+                            },
+                        }) + "\n")
+                        run_git(seed, "add", "docs", ".openclaw-sync/source.json")
+                        run_git(seed, "commit", "-m", "restore source page")
+                        run_git(seed, "push", "origin", "main")
+                    consumer = runner / case
+                    run_git(runner, "clone", str(origin), str(consumer))
+                    before = self._docs_bytes(consumer)
+                    artifacts = runner / f"{case}-artifacts"
+                    shutil.copytree(source_artifacts, artifacts)
+                    french = artifacts / "fr-s0of1"
+                    if case == "missing":
+                        shutil.rmtree(french)
+                    elif case in {"failed", "wrong_source"}:
+                        metadata_path = french / "metadata.json"
+                        metadata = json.loads(metadata_path.read_text())
+                        metadata["failed_reason" if case == "failed" else "source_sha"] = "failed" if case == "failed" else "other-source"
+                        metadata_path.write_text(json.dumps(metadata))
+                    elif restored:
+                        # A valid update must also stay unapplied when this locale's
+                        # deletion targets restored English, even with the same core SHA.
+                        index_hash = hashlib.sha256((consumer / "docs/index.md").read_bytes()).hexdigest()
+                        payload = french / "payload/docs/fr/index.md"
+                        payload.parent.mkdir(parents=True)
+                        payload.write_text(f"---\nx-i18n:\n  source_hash: {index_hash}\n---\n# Updated index\n")
+                        (french / "changed-files.txt").write_text("docs/fr/index.md\n")
+                        metadata_path = french / "metadata.json"
+                        metadata = json.loads(metadata_path.read_text())
+                        metadata["changed_count"] = 1
+                        metadata_path.write_text(json.dumps(metadata))
+                    result = self._apply_retirement_bundle(consumer, runner, values, artifacts)
+                    self.assertGreater(int(result["incomplete_count"]), 0)
+                    self.assertEqual(before["docs/fr/retired/old.md"], (consumer / "docs/fr/retired/old.md").read_bytes())
+                    if restored:
+                        self.assertEqual(primary_sha, result["base_source_sha"])
+                        self.assertEqual("0", result["changed_count"])
+                        self.assertEqual(before, self._docs_bytes(consumer))
+                        self.assertIn("stale payload", (consumer / ".openclaw-sync/i18n-incomplete-locales.txt").read_text())
+                    else:
+                        self.assertFalse((consumer / "docs/de/retired/old.md").exists())
+                    for item in translation_plan.all_locales():
+                        for rel in (f"docs/{item.locale}/orphan/keep.md", f"docs/{item.locale}/index.md", f"docs/.i18n/{item.locale}.tm.jsonl"):
+                            self.assertEqual(before[rel], (consumer / rel).read_bytes())
+
+    def _retirement_fixture(self, root: Path):
+        seed = root / "seed"
+        seed.mkdir()
+        self._repo_with_source(str(seed))
+        for item in translation_plan.all_locales():
+            locale = seed / "docs" / item.locale
+            locale.mkdir()
+            (locale / "index.md").write_text(f"# Surviving {item.locale}\n\n[Still linked](orphan/keep.md)\n")
+            (locale / "orphan").mkdir()
+            (locale / "orphan/keep.md").write_text(f"# Unselected orphan {item.locale}\n")
+            if item != translation_plan.all_locales()[-1]:
+                (locale / "retired").mkdir()
+                (locale / "retired/old.md").write_text(f"# Retired {item.locale}\n")
+            tm = seed / f"docs/.i18n/{item.locale}.tm.jsonl"
+            tm.parent.mkdir(exist_ok=True)
+            tm.write_bytes(b'{"unchanged":"memory"}\n')
+        run_git(seed, "add", "docs")
+        run_git(seed, "commit", "-m", "stale locale fixtures")
+        origin = root / "origin.git"
+        run_git(root, "init", "--bare", "-b", "main", str(origin))
+        run_git(seed, "remote", "add", "origin", str(origin))
+        run_git(seed, "push", "origin", "main")
+        repo = root / "producer"
+        run_git(root, "clone", str(origin), str(repo))
+        (repo / "docs/fr/unrelated-empty").mkdir()
+        (repo / "docs/fr/never-translated").mkdir()
+        runner = root / "runner"
+        runner.mkdir()
+        scripts = repo / ".openclaw-sync/workflow-ref/.github/scripts/i18n"
+        shutil.copytree(SCRIPT_DIR, scripts)
+        # Block runtime entry points without changing any production script.
+        commands = runner / "bin"
+        commands.mkdir()
+        (commands / "python").symlink_to(sys.executable)
+        for command in ("node", "npm", "go", "codex"):
+            executable = commands / command
+            executable.write_text('#!/bin/sh\ntouch "$RUNNER_TEMP/forbidden-runtime-called"\nexit 99\n')
+            executable.chmod(0o755)
+        values = {"PATH": f"{commands}{os.pathsep}{os.environ['PATH']}", "RUNNER_TEMP": str(runner), "github.event_name": "workflow_dispatch"}
+        event = runner / "event.json"
+        event.write_text(json.dumps({"inputs": {"source_paths": "retired/old.md\r\nnever-translated/missing.mdx\r\nretired/$(touch not-evaluated).md\r\n"}}))
+        values["GITHUB_EVENT_PATH"] = str(event)
+        return repo, runner, values, seed, origin
+
+    def _retirement_step(self, repo: Path, runner: Path, values: dict[str, str], name: str, *, succeeds: bool = True, workflow_name: str = "translate-retirements.yml"):
+        workflow = REPO_ROOT / ".github/workflows" / workflow_name
+        blocks = [block for block in re.split(r"(?m)^      - name: ", workflow.read_text())[1:] if "        run: |\n" in block]
+        shells = runner / "shells"
+        shells.mkdir(exist_ok=True)
+        extracted = workflow_shell_check.extract_run_blocks(workflow, shells)
+        index = next(index for index, block in enumerate(blocks) if block.splitlines()[0] == name)
+        step_env = {}
+        for key, raw in re.findall(r"^          (\w+): (.+)$", blocks[index].split("        run: |\n")[0], re.M):
+            step_env[key] = values[raw[3:-2].strip()] if raw.startswith("${{") else json.loads(raw) if raw.startswith('"') else raw
+        output = runner / "output"
+        github_env = runner / "env"
+        output.write_text("")
+        github_env.write_text("")
+        process_env = {**os.environ, **values, **step_env, "GITHUB_WORKSPACE": str(repo), "GITHUB_OUTPUT": str(output), "GITHUB_ENV": str(github_env), "GITHUB_STEP_SUMMARY": str(runner / "summary")}
+        result = subprocess.run(["bash", str(extracted[index])], cwd=repo, env=process_env, text=True, capture_output=True, timeout=60)
+        if succeeds:
+            self.assertEqual(0, result.returncode, f"{name}: {result.stdout}\n{result.stderr}")
+        else:
+            self.assertNotEqual(0, result.returncode, f"{name} unexpectedly succeeded")
+        values.update(dict(line.split("=", 1) for line in github_env.read_text().splitlines()))
+        outputs = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        step_id = re.search(r"^        id: (\w+)$", blocks[index], re.M)
+        if step_id:
+            values.update({f"steps.{step_id[1]}.outputs.{key}": value for key, value in outputs.items()})
+        return result
+
+    def _prepare_retirements(self, repo: Path, runner: Path, values: dict[str, str]) -> None:
+        self._retirement_step(repo, runner, values, "Stage workflow scripts")
+        workflow = (REPO_ROOT / ".github/workflows/translate-retirements.yml").read_text()
+        checkout = workflow.split("      - name: Check out trusted main snapshot\n", 1)[1].split("      - name:", 1)[0]
+        ref = re.search(r"^          ref: (.+)$", checkout, re.M)[1]
+        self.assertEqual("main", ref)
+        # Simulate actions/checkout against the fixture's local bare origin,
+        # at the workflow's checkout boundary, before the actual prepare shell.
+        run_git(repo, "fetch", "origin", f"{ref}:refs/remotes/origin/{ref}")
+        run_git(repo, "checkout", "-B", ref, f"refs/remotes/origin/{ref}")
+        self._retirement_step(repo, runner, values, "Record checked-out source snapshot")
+        self._retirement_step(repo, runner, values, "Validate selected source pair")
+        self._retirement_step(repo, runner, values, "Plan one shard for every canonical locale")
+
+    def _produce_retirements(self, repo: Path, runner: Path, values: dict[str, str]) -> None:
+        self._prepare_retirements(repo, runner, values)
+        self._retirement_step(repo, runner, values, "Prune and package every locale")
+        self._retirement_step(repo, runner, values, "Require a complete deletion-only bundle")
+
+    def _retirement_cli(self, repo: Path, runner: Path, values: dict[str, str], script: str, *args: str) -> dict[str, str]:
+        output = runner / "cli-output"
+        output.write_text("")
+        process_env = {**os.environ, **values, "GITHUB_WORKSPACE": str(repo), "GITHUB_OUTPUT": str(output), "GITHUB_STEP_SUMMARY": str(runner / "summary")}
+        result = subprocess.run([sys.executable, str(SCRIPT_DIR / script), *args], cwd=repo, env=process_env, text=True, capture_output=True, timeout=60)
+        self.assertEqual(0, result.returncode, f"{script}: {result.stdout}\n{result.stderr}")
+        return dict(line.split("=", 1) for line in output.read_text().splitlines())
+
+    def _apply_retirement_bundle(self, repo: Path, runner: Path, values: dict[str, str], artifacts: Path) -> dict[str, str]:
+        current = repo / ".openclaw-sync/current-artifacts"
+        if not current.exists():
+            shutil.copytree(artifacts, current / "i18n-retirements-source-a")
+        merged = repo / ".openclaw-sync/i18n-artifacts"
+        self._retirement_cli(repo, runner, values, "merge_artifact_roots.py", "--current-root", str(current), "--output-root", str(merged))
+        return self._retirement_cli(repo, runner, values, "apply_artifacts.py", "--source-sha", values["steps.prepare.outputs.source_sha"], "--mode", "retirements", "--shard-total", "1", "--artifacts-root", str(merged))
+
+    @staticmethod
+    def _docs_bytes(repo: Path) -> dict[str, bytes]:
+        return {path.relative_to(repo).as_posix(): path.read_bytes() for path in (repo / "docs").rglob("*") if path.is_file()}
+
+    @staticmethod
+    def _translated_page(source: Path, body: str) -> str:
+        source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+        return f"---\nx-i18n:\n  source_hash: {source_hash}\n---\n\n{body}"
 
     def _repo_with_source(self, tmp: str) -> Path:
         repo = Path(tmp)
