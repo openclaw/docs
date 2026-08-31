@@ -5454,6 +5454,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /nodes/talk
 - Headings:
   - H2: Choose a Talk voice from chat
+  - H2: Session ownership
   - H2: Behavior (macOS)
   - H2: Realtime Talk over the Gateway relay (macOS)
   - H3: When realtime cannot start
