@@ -9981,6 +9981,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: acpx harness support (current)
   - H2: Required config
+  - H2: Repair existing bare-session histories
   - H2: Plugin setup for acpx backend
   - H3: acpx runtime startup probe
   - H3: Automatic adapter download
@@ -10018,6 +10019,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Delivery model
   - H2: Sandbox compatibility
   - H2: Session target resolution
+  - H3: Session owner and harness
   - H2: ACP controls
   - H3: Runtime options mapping
   - H2: acpx harness, plugin setup, and permissions
