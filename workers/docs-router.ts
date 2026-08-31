@@ -90,11 +90,17 @@ export default {
       return markdownResponse(env, ctx, request, url.pathname);
     }
 
+    let owner: Response | undefined;
     if (prefersMarkdown(request)) {
       const markdownPath = markdownPathFor(url.pathname);
       if (markdownPath) {
-        const response = await markdownResponse(env, ctx, request, markdownPath);
-        if (response.status !== 404) return response;
+        const key = r2ObjectKey(markdownPath.slice(0, -".md".length));
+        // Dotted objects negotiate only when current R2 metadata identifies HTML.
+        if (/\.[^/]+$/.test(key)) owner = await r2Fetch(env, "HEAD", key);
+        if (!owner || (owner.ok && isHtmlResponse(owner))) {
+          const response = await markdownResponse(env, ctx, request, markdownPath, owner);
+          if (response.status !== 404) return response;
+        }
       }
     }
 
@@ -103,7 +109,7 @@ export default {
       return Response.redirect(url.toString(), 308);
     }
 
-    return assetResponse(env, ctx, request, r2AssetPath(url.pathname));
+    return assetResponse(env, ctx, request, r2AssetPath(url.pathname), owner);
   },
 };
 
@@ -369,7 +375,7 @@ function prefersMarkdown(request: Request): boolean {
 function markdownPathFor(pathname: string): string | null {
   const clean = pathname.replace(/\/+$/, "") || "/";
   if (clean === "/") return "/index.md";
-  if (/\.[^/]+$/.test(clean)) return null;
+  if (r2ObjectKey(clean).endsWith(".html")) return null;
   return `${clean}.md`;
 }
 
@@ -378,15 +384,18 @@ function r2AssetPath(pathname: string): string {
   return pathname;
 }
 
-async function markdownResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string): Promise<Response> {
+async function markdownResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string, owner?: Response): Promise<Response> {
   let response = await assetResponse(env, ctx, request, pathname);
   if (response.status === 404) {
     // Resolve current alias metadata at R2 so translation publishes can change the target.
-    const alias = pathname.slice(0, -".md".length);
-    const key = alias === "/index" ? "index.html" : r2ObjectKey(alias);
-    const object = await env.DOCS_BUCKET?.head(key)
-      ?? (alias === "/index" ? await env.DOCS_BUCKET?.head("index") : null);
-    const target = object?.customMetadata?.["openclaw-markdown-target"];
+    let target = owner?.headers.get("x-amz-meta-openclaw-markdown-target");
+    if (!owner) {
+      const alias = pathname.slice(0, -".md".length);
+      const key = alias === "/index" ? "index.html" : r2ObjectKey(alias);
+      const object = await env.DOCS_BUCKET?.head(key)
+        ?? (alias === "/index" ? await env.DOCS_BUCKET?.head("index") : null);
+      target = object?.customMetadata?.["openclaw-markdown-target"];
+    }
     if (target) {
       // Cache the whole document by its canonical path, never by the missing alias.
       response = await assetResponse(env, ctx, request, target.split(/[?#]/u)[0]);
@@ -404,17 +413,19 @@ async function markdownResponse(env: Env, ctx: ExecutionContext, request: Reques
   });
 }
 
-async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string): Promise<Response> {
+async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, pathname: string, owner?: Response): Promise<Response> {
   const cache = caches.default;
+  const key = r2ObjectKey(pathname);
+  const objectPath = `/${key}`;
   // HTML is mutable at a stable URL. Read it from the R2 binding so a docs
   // upload becomes visible without requiring a global Cache API purge.
-  const useWorkerCache = !isHtmlPath(pathname);
+  const useWorkerCache = !isHtmlPath(objectPath);
   const cacheKey = cacheRequest(request, pathname);
   const cached = request.method === "GET" && useWorkerCache ? await cache.match(cacheKey) : undefined;
-  if (cached && !isHtmlResponse(cached)) {
+  if (cached && !isHtmlResponse(cached) && !(owner && isHtmlResponse(owner))) {
     const headers = new Headers(cached.headers);
     headers.set("X-OpenClaw-Docs-Cache", "HIT");
-    applyCacheHeaders(headers, pathname, false);
+    applyCacheHeaders(headers, objectPath, false);
     applyMarkdownAlternateHeader(headers, pathname, false);
     return new Response(request.method === "HEAD" ? null : cached.body, {
       status: cached.status,
@@ -423,19 +434,21 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
     });
   }
 
-  const key = r2ObjectKey(pathname);
-  const response = await r2Fetch(env, request.method, key);
+  const response = request.method === "HEAD" && owner ? owner : await r2Fetch(env, request.method, key);
   if (response.status === 404) {
-    return isHtmlPath(pathname) ? docsNotFoundResponse(request, pathname) : plainNotFoundResponse(request);
+    return isHtmlPath(objectPath) ? docsNotFoundResponse(request, pathname) : plainNotFoundResponse(request);
   }
-  const isHtml = isHtmlPath(pathname) || isHtmlResponse(response);
+  const isHtml = isHtmlPath(objectPath) || isHtmlResponse(response);
   const responseHeaders = new Headers(response.headers);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
   responseHeaders.set("X-OpenClaw-Docs-Cache", "MISS");
   responseHeaders.delete("Content-Length");
   if (response.ok) {
-    applyCacheHeaders(responseHeaders, pathname, isHtml);
+    applyCacheHeaders(responseHeaders, objectPath, isHtml);
     applyMarkdownAlternateHeader(responseHeaders, pathname, isHtml);
+    if (isHtml && markdownPathFor(new URL(request.url).pathname)) {
+      responseHeaders.set("Vary", appendVary(responseHeaders.get("Vary"), "Accept"));
+    }
   }
   const finalResponse = new Response(request.method === "HEAD" ? null : response.body, {
     status: response.status,
