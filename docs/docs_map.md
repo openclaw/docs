@@ -8354,6 +8354,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Install plugin
   - H2: Getting started
   - H2: Non-interactive setup
+  - H2: Discovery and pricing
   - H2: Built-in catalog
   - H2: Manual config
   - H2: Related
