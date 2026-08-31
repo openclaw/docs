@@ -305,6 +305,7 @@ if (!/data-language-native/.test(index)
   throw new Error("assets: native language select fallback for coarse pointers is missing");
 }
 if (!/tocSpyHoldUntil/.test(siteJs)
+  || !/function fragmentId\(hash\)\{return hash\.slice\(1\)\}/.test(siteJs)
   || !/closeMermaidOverlay\(\);const key=location\.pathname\+location\.search;if\(key===currentDocKey\)\{tocSpyHoldUntil/.test(siteJs)) {
   throw new Error("assets: toc scrollspy hold or Mermaid-safe same-document popstate guard is missing");
 }
@@ -427,7 +428,7 @@ if (!/let tocObserver=null/.test(siteJs)
   || !/new IntersectionObserver/.test(siteJs)
   || !/rootMargin:"-120px 0px -70% 0px"/.test(siteJs)
   || !/scroller\.scrollTop\+innerHeight>=scroller\.scrollHeight-2/.test(siteJs)
-  || !/scrollTarget\(url\.hash\);initTocScrollspy\(\)/.test(siteJs)
+  || !/initTocScrollspy\(\);scrollTarget\(url\.hash\)/.test(siteJs)
   || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("change"[^;]*language-native[\s\S]{0,200}?document\.addEventListener\("click"/.test(siteJs)) {
   throw new Error("assets: table-of-contents scrollspy is missing");
 }

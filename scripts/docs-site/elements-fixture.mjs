@@ -353,6 +353,10 @@ Use a CTA when a long-form article has one obvious next action. Keep it specific
   </Accordion>
 </AccordionGroup>
 
+## Encoded anchor: target
+
+This heading verifies cross-page navigation to an encoded fragment identifier.
+
 ## Parameters
 
 <ParamField path="channels.telegram.groupPolicy" type="string" required>

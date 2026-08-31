@@ -453,6 +453,44 @@ async function checkTocScrollspy() {
     || afterPjax.activeCount !== 1) {
     throw new Error(`toc scrollspy failed after PJAX navigation: ${JSON.stringify(afterPjax)}`);
   }
+
+  await page.evaluate(() => {
+    const link = document.createElement("a");
+    link.href = "/__elements#encoded-anchor%3A-target";
+    link.textContent = "Encoded anchor target";
+    link.dataset.encodedAnchorSmoke = "true";
+    document.querySelector(".doc")?.prepend(link);
+  });
+  await page.click("[data-encoded-anchor-smoke]");
+  await page.waitForURL("**/__elements#encoded-anchor%3A-target");
+  await page.waitForFunction(() => {
+    const target = document.getElementById(location.hash.slice(1));
+    const top = target?.getBoundingClientRect().top;
+    return top !== undefined && top >= 0 && top < innerHeight;
+  });
+  const encodedAnchor = await page.evaluate(() => {
+    const target = document.getElementById(location.hash.slice(1));
+    const active = [...document.querySelectorAll(".toc a.active")];
+    return {
+      activeCount: active.length,
+      activeHash: active[0]?.hash ?? null,
+      hash: location.hash,
+      pathname: location.pathname,
+      targetId: target?.id ?? null,
+      targetTop: target?.getBoundingClientRect().top ?? null,
+      viewportHeight: innerHeight,
+    };
+  });
+  if (encodedAnchor.pathname !== "/__elements"
+    || encodedAnchor.hash !== "#encoded-anchor%3A-target"
+    || encodedAnchor.targetId !== "encoded-anchor%3A-target"
+    || encodedAnchor.targetTop === null
+    || encodedAnchor.targetTop < 0
+    || encodedAnchor.targetTop >= encodedAnchor.viewportHeight
+    || encodedAnchor.activeCount !== 1
+    || encodedAnchor.activeHash !== encodedAnchor.hash) {
+    throw new Error(`encoded cross-page anchor failed: ${JSON.stringify(encodedAnchor)}`);
+  }
   await page.close();
 }
 
@@ -460,7 +498,7 @@ async function scrollToTocItem(page, index) {
   const expected = await page.evaluate((targetIndex) => {
     const links = [...document.querySelectorAll(".toc a")];
     const items = links
-      .map((link) => ({ hash: link.hash, id: decodeURIComponent(link.hash.slice(1)) }))
+      .map((link) => ({ hash: link.hash, id: link.hash.slice(1) }))
       .filter((item) => item.id && document.getElementById(item.id));
     const item = items[Math.min(targetIndex, items.length - 1)];
     document.getElementById(item?.id)?.scrollIntoView();
