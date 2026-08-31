@@ -10336,6 +10336,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Install
   - H2: Use it
+  - H3: Standalone direct-loopback relay
   - H3: Choose tab access
   - H2: Automatic setup controls
   - H3: Upgrades from the retired tab copilot
