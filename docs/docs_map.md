@@ -4337,6 +4337,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/security/dependency-locking
 - Headings:
+  - H2: Check dependency advisories
+  - H3: Interpret coverage
   - H2: Published package behavior
   - H2: Validate npm dependency graphs
   - H2: Inspect a plugin tarball
