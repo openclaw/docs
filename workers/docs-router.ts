@@ -399,11 +399,11 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   const useWorkerCache = !isHtmlPath(pathname);
   const cacheKey = cacheRequest(request, pathname);
   const cached = request.method === "GET" && useWorkerCache ? await cache.match(cacheKey) : undefined;
-  if (cached) {
+  if (cached && !isHtmlResponse(cached)) {
     const headers = new Headers(cached.headers);
     headers.set("X-OpenClaw-Docs-Cache", "HIT");
-    applyCacheHeaders(headers, pathname);
-    applyMarkdownAlternateHeader(headers, pathname);
+    applyCacheHeaders(headers, pathname, false);
+    applyMarkdownAlternateHeader(headers, pathname, false);
     return new Response(request.method === "HEAD" ? null : cached.body, {
       status: cached.status,
       statusText: cached.statusText,
@@ -416,20 +416,21 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   if (response.status === 404) {
     return isHtmlPath(pathname) ? docsNotFoundResponse(request, pathname) : plainNotFoundResponse(request);
   }
+  const isHtml = isHtmlPath(pathname) || isHtmlResponse(response);
   const responseHeaders = new Headers(response.headers);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
   responseHeaders.set("X-OpenClaw-Docs-Cache", "MISS");
   responseHeaders.delete("Content-Length");
   if (response.ok) {
-    applyCacheHeaders(responseHeaders, pathname);
-    applyMarkdownAlternateHeader(responseHeaders, pathname);
+    applyCacheHeaders(responseHeaders, pathname, isHtml);
+    applyMarkdownAlternateHeader(responseHeaders, pathname, isHtml);
   }
   const finalResponse = new Response(request.method === "HEAD" ? null : response.body, {
     status: response.status,
     statusText: response.statusText,
     headers: responseHeaders,
   });
-  if (request.method === "GET" && finalResponse.ok && useWorkerCache) {
+  if (request.method === "GET" && finalResponse.ok && useWorkerCache && !isHtml) {
     const cacheHeaders = new Headers(finalResponse.headers);
     cacheHeaders.delete("Set-Cookie");
     const cacheResponse = new Response(finalResponse.clone().body, {
@@ -775,21 +776,21 @@ function cacheRequest(request: Request, pathname: string): Request {
   });
 }
 
-function applyCacheHeaders(headers: Headers, pathname: string): void {
-  headers.set("Cache-Control", browserCacheControlFor(pathname));
-  const cdnCacheControl = edgeCacheControlFor(pathname);
+function applyCacheHeaders(headers: Headers, pathname: string, isHtml: boolean): void {
+  headers.set("Cache-Control", browserCacheControlFor(pathname, isHtml));
+  const cdnCacheControl = edgeCacheControlFor(pathname, isHtml);
   headers.set("CDN-Cache-Control", cdnCacheControl);
   headers.set("Cloudflare-CDN-Cache-Control", cdnCacheControl);
 }
 
-function applyMarkdownAlternateHeader(headers: Headers, pathname: string): void {
-  const markdownPath = markdownAlternatePathFor(pathname);
+function applyMarkdownAlternateHeader(headers: Headers, pathname: string, isHtml: boolean): void {
+  const markdownPath = markdownAlternatePathFor(pathname, isHtml);
   if (!markdownPath) return;
   headers.set("Link", appendLink(headers.get("Link"), `<${markdownPath}>; rel="alternate"; type="text/markdown"`));
 }
 
-function markdownAlternatePathFor(pathname: string): string | null {
-  if (!isHtmlPath(pathname)) return null;
+function markdownAlternatePathFor(pathname: string, isHtml: boolean): string | null {
+  if (!isHtml) return null;
   if (pathname === "/" || pathname === "/index.html") return "/index.md";
   const clean = pathname.replace(/\/+$/, "");
   if (clean.endsWith("/index.html")) return `${clean.slice(0, -"/index.html".length)}.md`;
@@ -797,8 +798,8 @@ function markdownAlternatePathFor(pathname: string): string | null {
   return `${clean}.md`;
 }
 
-function browserCacheControlFor(pathname: string): string {
-  if (isHtmlPath(pathname)) {
+function browserCacheControlFor(pathname: string, isHtml: boolean): string {
+  if (isHtml) {
     return "public, max-age=60, stale-while-revalidate=60";
   }
   if (isShellAssetPath(pathname)) {
@@ -810,8 +811,8 @@ function browserCacheControlFor(pathname: string): string {
   return "public, max-age=31536000, immutable";
 }
 
-function edgeCacheControlFor(pathname: string): string {
-  if (isHtmlPath(pathname)) {
+function edgeCacheControlFor(pathname: string, isHtml: boolean): string {
+  if (isHtml) {
     return "public, s-maxage=60, stale-while-revalidate=60";
   }
   if (isShellAssetPath(pathname)) {
@@ -838,6 +839,10 @@ function isShellAssetPath(pathname: string): boolean {
 
 function isHtmlPath(pathname: string): boolean {
   return pathname.endsWith(".html") || !/\.[^/]+$/.test(pathname);
+}
+
+function isHtmlResponse(response: Response): boolean {
+  return response.headers.get("Content-Type")?.toLowerCase().startsWith("text/html") ?? false;
 }
 
 function appendVary(current: string | null, value: string): string {
