@@ -11300,6 +11300,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Manage plugins
   - H2: Apps and extensions
   - H2: Sidebar navigation
+  - H3: Session menu
   - H3: Session placement
   - H3: Session icons
   - H2: Session colors
