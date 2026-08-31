@@ -7991,6 +7991,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What changed
   - H3: Why
   - H2: Compatibility policy
+  - H3: Retained helper contracts
+  - H3: Harness attempt result migration
   - H3: Model-provider result compatibility
   - H3: Memory read missing results
   - H3: Plugin state migration declarations
