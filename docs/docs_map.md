@@ -1224,6 +1224,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Pipeline overview
   - H2: Fail-fast order
   - H2: Watching pull request CI
+  - H3: Recover an existing PR run first
   - H2: PR context and evidence
   - H2: Checkout ownership
   - H2: Scope and routing
