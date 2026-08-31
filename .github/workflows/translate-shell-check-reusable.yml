@@ -1,6 +1,10 @@
 name: Translate Shell Check Reusable
 
 on:
+  pull_request:
+    paths:
+      - ".github/scripts/i18n/**"
+      - ".github/workflows/translate-*.yml"
   workflow_call:
 
 permissions:
