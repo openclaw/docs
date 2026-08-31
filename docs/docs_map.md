@@ -2255,6 +2255,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Options
   - H2: update status
   - H2: update repair
+  - H2: update cleanup
   - H2: update wizard
   - H2: What it does
   - H3: Restart handoff
@@ -5171,6 +5172,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/updating
 - Headings:
   - H2: Recommended: openclaw update
+  - H2: Retire update recovery data
   - H2: Switch between npm and git installs
   - H2: Source-checkout servers (reference script)
   - H2: Alternative: re-run the installer
