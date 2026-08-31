@@ -1,0 +1,181 @@
+name: Translate Retirements
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_paths:
+        description: "Exact retired docs-relative .md/.mdx filenames, one per line (for example concepts/retired.md)."
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: docs-i18n-retirements
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    name: Package all locale retirements without translation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      source_sha: ${{ steps.prepare.outputs.source_sha }}
+    steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
+      - name: Check out for source selection
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Select current source without cooldown
+        id: prepare
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_COOLDOWN_SECONDS: "0"
+          DEFAULT_MAX_WAIT_SECONDS: "0"
+        run: |
+          set -euo pipefail
+          python "${I18N_SCRIPT_DIR}/prepare.py" --mode incremental --title "Retirement source selection"
+
+      - name: Check out selected publish ref
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ steps.prepare.outputs.publish_ref }}
+          persist-credentials: false
+
+      - name: Validate selected source pair
+        env:
+          SOURCE_SHA: ${{ steps.prepare.outputs.source_sha }}
+          SOURCE_REPOSITORY: ${{ steps.prepare.outputs.source_repository }}
+        run: |
+          set -euo pipefail
+          python "${I18N_SCRIPT_DIR}/read_source_metadata.py"
+          test "$(jq -r .repository .openclaw-sync/source.json)" = "${SOURCE_REPOSITORY}"
+
+      - name: Plan one shard for every canonical locale
+        run: |
+          set -euo pipefail
+          python "${I18N_SCRIPT_DIR}/plan_incremental.py" --max-shards 1 > "${RUNNER_TEMP}/retirements-plan.json"
+          jq -e '
+            .shard_total == 1 and .locale_count > 0 and
+            (.matrix.include | length) == .locale_count and
+            (.matrix.include | unique_by(.locale_slug) | length) == .locale_count and
+            all(.matrix.include[]; .shard_index == "0" and .shard_total == "1")
+          ' "${RUNNER_TEMP}/retirements-plan.json"
+          jq -r '.matrix.include[] | [.locale, .locale_slug] | @tsv' \
+            "${RUNNER_TEMP}/retirements-plan.json" > "${RUNNER_TEMP}/retirements-locales.tsv"
+
+      - name: Prune and package every locale
+        env:
+          SOURCE_SHA: ${{ steps.prepare.outputs.source_sha }}
+          MODE: retirements
+          ARTIFACT_ROLE: locale
+          SHARD_INDEX: "0"
+          SHARD_TOTAL: "1"
+          WORKER_PARALLEL: "0"
+          THINKING_EFFORT: ""
+          PENDING_COUNT: "0"
+          TOTAL_PENDING_COUNT: "0"
+        run: |
+          set -euo pipefail
+          export ALL_COUNT
+          ALL_COUNT="$(jq -r .source_doc_count "${RUNNER_TEMP}/retirements-plan.json")"
+          jq -e '
+            (.inputs.source_paths // "") | split("\n") | map(rtrimstr("\r") | select(test("\\S"))) |
+            if length == 0 or any(.[]; test("[[:cntrl:]]")) then
+              error("source_paths requires nonempty Markdown filenames, one per line, without control characters")
+            else . end
+          ' "$GITHUB_EVENT_PATH" > "${RUNNER_TEMP}/retirements-source-paths.json"
+          jq -r '.[]' "${RUNNER_TEMP}/retirements-source-paths.json" > "${RUNNER_TEMP}/retirements-source-paths.txt"
+          source_args=()
+          while IFS= read -r source_path; do
+            source_args+=("--source-path=${source_path}")
+          done < "${RUNNER_TEMP}/retirements-source-paths.txt"
+          test "${#source_args[@]}" -gt 0
+          while IFS=$'\t' read -r LOCALE LOCALE_SLUG; do
+            export LOCALE LOCALE_SLUG
+            python "${I18N_SCRIPT_DIR}/prune_stale_locale_pages.py" "${source_args[@]}"
+            : > ".openclaw-sync/docs-i18n-${LOCALE_SLUG}-s0of1.txt"
+            python "${I18N_SCRIPT_DIR}/package_artifact.py"
+          done < "${RUNNER_TEMP}/retirements-locales.tsv"
+
+      - name: Require a complete deletion-only bundle
+        env:
+          SOURCE_SHA: ${{ steps.prepare.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          locale_count="$(jq -r .locale_count "${RUNNER_TEMP}/retirements-plan.json")"
+          artifacts=(.openclaw-sync/artifacts/*)
+          echo "Checking ${#artifacts[@]} artifacts; expected ${locale_count} canonical locales."
+          test "${#artifacts[@]}" -eq "${locale_count}"
+          {
+            echo "### Retirement selection"
+            jq -r '"Selected source paths: \(length)"' "${RUNNER_TEMP}/retirements-source-paths.json"
+            echo '```json'
+            cat "${RUNNER_TEMP}/retirements-source-paths.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          while IFS=$'\t' read -r locale slug; do
+            artifact=".openclaw-sync/artifacts/${slug}-s0of1"
+            echo "Checking retirement artifact ${slug}"
+            test -f "${artifact}/changed-files.txt"
+            test ! -s "${artifact}/changed-files.txt"
+            test -d "${artifact}/payload"
+            test -z "$(find "${artifact}/payload" -mindepth 1 -print -quit)"
+            jq -e --arg locale "${locale}" --arg slug "${slug}" --arg source "${SOURCE_SHA}" \
+              --slurpfile selected "${RUNNER_TEMP}/retirements-source-paths.json" \
+              --rawfile deleted "${artifact}/deleted-files.txt" '
+              ($deleted | split("\n") | map(select(length > 0))) as $paths |
+              ($selected[0] | map("docs/" + $locale + "/" + .)) as $allowed |
+              .locale == $locale and .locale_slug == $slug and .source_sha == $source and
+              .mode == "retirements" and .artifact_role == "locale" and
+              .shard_index == 0 and .shard_total == 1 and .failed_reason == "" and
+              .pending_count == 0 and .total_pending_count == 0 and .changed_count == 0 and
+              .deleted_count == ($paths | length) and
+              ($paths - $allowed | length) == 0 and
+              ($paths | length) == ($paths | unique | length) and
+              all($paths[]; startswith("docs/" + $locale + "/") and
+                (split("/") | all(. != ".." and . != "." and . != "")))
+            ' "${artifact}/metadata.json"
+            jq -r '"- \(.locale): \(.deleted_count) deletions"' "${artifact}/metadata.json" >> "$GITHUB_STEP_SUMMARY"
+          done < "${RUNNER_TEMP}/retirements-locales.tsv"
+          echo "Validated ${locale_count} deletion-only locale artifacts." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload complete retirement bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: i18n-retirements-${{ steps.prepare.outputs.source_sha }}
+          path: .openclaw-sync/artifacts/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  finalize:
+    name: Validate and publish aggregate retirements
+    needs: produce
+    uses: ./.github/workflows/translate-finalize-reusable.yml
+    with:
+      source_sha: ${{ needs.produce.outputs.source_sha }}
+      mode: retirements
+      shard_total: "1"
