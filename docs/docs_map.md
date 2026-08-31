@@ -2616,6 +2616,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/main-session
 - Headings:
   - H2: Home
+  - H3: Talk to Home while working
   - H2: What flows into the main session
   - H2: Memory across resets and conversations
   - H2: A rolling session with durable history
