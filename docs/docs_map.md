@@ -47,18 +47,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Legacy-Compatible Messaging
   - H2: Related
 
-## automation/auth-monitoring.md
-
-- Route: /automation/auth-monitoring
-- Headings:
-  - H2: Related
-
-## automation/clawflow.md
-
-- Route: /automation/clawflow
-- Headings:
-  - H2: Related
-
 ## automation/cron-jobs.md
 
 - Route: /automation/cron-jobs
@@ -99,18 +87,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H2: Troubleshooting
   - H3: Command ladder
-  - H2: Related
-
-## automation/cron-vs-heartbeat.md
-
-- Route: /automation/cron-vs-heartbeat
-- Headings:
-  - H2: Related
-
-## automation/gmail-pubsub.md
-
-- Route: /automation/gmail-pubsub
-- Headings:
   - H2: Related
 
 ## automation/hooks.md
@@ -174,12 +150,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How they work together
   - H2: Related
 
-## automation/poll.md
-
-- Route: /automation/poll
-- Headings:
-  - H2: Related
-
 ## automation/standing-orders.md
 
 - Route: /automation/standing-orders
@@ -233,24 +203,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Where tasks live
   - H3: Automatic maintenance
   - H2: How tasks relate to other systems
-  - H2: Related
-
-## automation/troubleshooting.md
-
-- Route: /automation/troubleshooting
-- Headings:
-  - H2: Related
-
-## automation/webhook.md
-
-- Route: /automation/webhook
-- Headings:
-  - H2: Related
-
-## brave-search.md
-
-- Route: /brave-search
-- Headings:
   - H2: Related
 
 ## channels/a2a.md
@@ -1556,11 +1508,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Revocation behavior
   - H2: Troubleshooting
 
-## cli/crestodian.md
-
-- Route: /cli/crestodian
-- Headings: none
-
 ## cli/cron.md
 
 - Route: /cli/cron
@@ -1704,16 +1651,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storage and container layout
   - H2: Security profile
   - H2: Token handling
-  - H2: Related
-
-## cli/flows.md
-
-- Route: /cli/flows
-- Headings:
-  - H1: openclaw tasks flow
-  - H2: Subcommands
-  - H3: Status filter values
-  - H2: Examples
   - H2: Related
 
 ## cli/gateway.md
@@ -2807,12 +2744,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Purging a person or a source end to end
   - H2: Related
 
-## concepts/memory-qmd.md
-
-- Route: /concepts/memory-qmd
-- Headings:
-  - H1: QMD memory backend removal
-
 ## concepts/memory-search.md
 
 - Route: /concepts/memory-search
@@ -3351,19 +3282,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tool payloads + connectors (raw provider time + normalized fields)
   - H2: Related docs
 
-## debug/node-issue.md
-
-- Route: /debug/node-issue
-- Headings:
-  - H1: Node + tsx "\\name is not a function" crash
-  - H2: Status
-  - H2: Original symptom
-  - H2: Cause
-  - H2: Current repro check
-  - H2: Workarounds (if the crash returns)
-  - H2: References
-  - H2: Related
-
 ## diagnostics/flags.md
 
 - Route: /diagnostics/flags
@@ -3463,19 +3381,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Escaped instance names (\032)
   - H2: Enabling / disabling / configuration
   - H2: Related docs
-
-## gateway/bridge-protocol.md
-
-- Route: /gateway/bridge-protocol
-- Headings:
-  - H2: Why it existed
-  - H2: Transport
-  - H2: Handshake and pairing
-  - H2: Frames
-  - H2: Exec lifecycle events
-  - H2: Historical tailnet usage
-  - H2: Versioning
-  - H2: Related
 
 ## gateway/cli-backends.md
 
@@ -3989,12 +3894,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick checks
   - H2: Related
 
-## gateway/network-model.md
-
-- Route: /gateway/network-model
-- Headings:
-  - H2: Related
-
 ## gateway/openai-http-api.md
 
 - Route: /gateway/openai-http-api
@@ -4182,6 +4081,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session list bootstrap
   - H3: Common event families
   - H3: Node helper methods
+  - H3: Node exec lifecycle events
   - H2: Audit ledger RPC
   - H2: Task ledger RPCs
   - H2: Operator helper methods
@@ -4195,15 +4095,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Device auth migration diagnostics
   - H2: TLS and pinning
   - H2: Scope
-  - H2: Related
-
-## gateway/remote-gateway-readme.md
-
-- Route: /gateway/remote-gateway-readme
-- Headings:
-  - H1: Running OpenClaw.app with a Remote Gateway
-  - H2: Setup
-  - H2: How it works
   - H2: Related
 
 ## gateway/remote.md
@@ -4567,6 +4458,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session trace output
   - H2: Plugin lifecycle trace
   - H2: CLI startup and command profiling
+  - H2: Node and tsx startup errors
   - H2: Gateway watch mode
   - H2: Dev profile + dev gateway (--dev)
   - H2: Raw stream logging
@@ -5606,12 +5498,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: References
   - H2: Related
 
-## perplexity.md
-
-- Route: /perplexity
-- Headings:
-  - H2: Related
-
 ## platforms/android.md
 
 - Route: /platforms/android
@@ -5656,12 +5542,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Node version
   - H2: Provider keys and environment variables
   - H2: Crostini is not always on
-  - H2: Related
-
-## platforms/digitalocean.md
-
-- Route: /platforms/digitalocean
-- Headings:
   - H2: Related
 
 ## platforms/easyrunner.md
@@ -5769,11 +5649,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: A2UI belongs on session dashboards
   - H2: Migrating documents from a custom root
   - H2: Related
-
-## platforms/mac/child-process.md
-
-- Route: /platforms/mac/child-process
-- Headings: none
 
 ## platforms/mac/dev-setup.md
 
@@ -5976,18 +5851,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: macOS detail pages
   - H2: Related
 
-## platforms/oracle.md
-
-- Route: /platforms/oracle
-- Headings:
-  - H2: Related
-
-## platforms/raspberry-pi.md
-
-- Route: /platforms/raspberry-pi
-- Headings:
-  - H2: Related
-
 ## platforms/windows.md
 
 - Route: /platforms/windows
@@ -6038,12 +5901,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Allowed methods
   - H2: WebSocket comparison
   - H2: Troubleshooting
-  - H2: Related
-
-## plugins/agent-tools.md
-
-- Route: /plugins/agent-tools
-- Headings:
   - H2: Related
 
 ## plugins/architecture-internals.md
@@ -6110,12 +5967,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Security boundary
   - H2: Mirroring
   - H2: Troubleshooting
-  - H2: Related
-
-## plugins/building-extensions.md
-
-- Route: /plugins/building-extensions
-- Headings:
   - H2: Related
 
 ## plugins/building-plugins.md
@@ -8060,11 +7911,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Redaction
   - H2: Verification
 
-## plugins/sdk-channel-message.md
-
-- Route: /plugins/sdk-channel-message
-- Headings: none
-
 ## plugins/sdk-channel-outbound.md
 
 - Route: /plugins/sdk-channel-outbound
@@ -8079,6 +7925,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Automatic unknown-send reconciliation
   - H2: Deferred delivery admission
   - H2: Compatibility dispatch
+  - H3: Migrating from channel-message
 
 ## plugins/sdk-channel-plugins.md
 
@@ -8116,11 +7963,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced topics
   - H2: Next steps
   - H2: Related
-
-## plugins/sdk-channel-turn.md
-
-- Route: /plugins/sdk-channel-turn
-- Headings: none
 
 ## plugins/sdk-entrypoints.md
 
@@ -9667,12 +9509,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Historical behavior (pre-2026.1.22)
   - H2: Related
 
-## reference/wizard.md
-
-- Route: /reference/wizard
-- Headings:
-  - H2: Related
-
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
@@ -10020,12 +9856,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Next steps
   - H2: Related
 
-## start/quickstart.md
-
-- Route: /start/quickstart
-- Headings:
-  - H2: Related
-
 ## start/setup.md
 
 - Route: /start/setup
@@ -10328,12 +10158,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to use it
   - H2: Related
 
-## tools/capability-cookbook.md
-
-- Route: /tools/capability-cookbook
-- Headings:
-  - H2: Related
-
 ## tools/chrome-extension.md
 
 - Route: /tools/chrome-extension
@@ -10352,11 +10176,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Permissions
   - H2: Native bootstrap security
   - H2: Troubleshooting
-
-## tools/clawhub.md
-
-- Route: /tools/clawhub
-- Headings: none
 
 ## tools/code-execution.md
 
@@ -11267,12 +11086,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: xsearch example
   - H2: Examples
   - H2: Tool profiles
-  - H2: Related
-
-## tts.md
-
-- Route: /tts
-- Headings:
   - H2: Related
 
 ## vps.md

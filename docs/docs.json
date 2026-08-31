@@ -546,7 +546,7 @@
     },
     {
       "source": "/cron-vs-heartbeat",
-      "destination": "/automation"
+      "destination": "/automation#automations-vs-heartbeat"
     },
     {
       "source": "/dashboard",
@@ -602,7 +602,7 @@
     },
     {
       "source": "/gmail-pubsub",
-      "destination": "/automation/cron-jobs"
+      "destination": "/automation/cron-jobs#gmail-pubsub-integration"
     },
     {
       "source": "/grammy",
@@ -814,7 +814,7 @@
     },
     {
       "source": "/remote-gateway-readme",
-      "destination": "/gateway/remote-gateway-readme"
+      "destination": "/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent"
     },
     {
       "source": "/rpc",
@@ -958,7 +958,7 @@
     },
     {
       "source": "/webhook",
-      "destination": "/automation/cron-jobs"
+      "destination": "/automation/cron-jobs#webhooks"
     },
     {
       "source": "/whatsapp",
@@ -1074,19 +1074,55 @@
     },
     {
       "source": "/automation/troubleshooting",
-      "destination": "/automation/cron-jobs"
+      "destination": "/automation/cron-jobs#troubleshooting"
     },
     {
       "source": "/automation/cron-vs-heartbeat",
-      "destination": "/automation"
+      "destination": "/automation#automations-vs-heartbeat"
     },
     {
       "source": "/automation/webhook",
-      "destination": "/automation/cron-jobs"
+      "destination": "/automation/cron-jobs#webhooks"
     },
     {
       "source": "/automation/gmail-pubsub",
-      "destination": "/automation/cron-jobs"
+      "destination": "/automation/cron-jobs#gmail-pubsub-integration"
+    },
+    {
+      "source": "/cli/flows",
+      "destination": "/cli/tasks#flow"
+    },
+    {
+      "source": "/concepts/memory-qmd",
+      "destination": "/concepts/memory-builtin#migrating-from-qmd"
+    },
+    {
+      "source": "/gateway/network-model",
+      "destination": "/network#core-model"
+    },
+    {
+      "source": "/gateway/remote-gateway-readme",
+      "destination": "/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent"
+    },
+    {
+      "source": "/platforms/mac/child-process",
+      "destination": "/platforms/mac/bundled-gateway"
+    },
+    {
+      "source": "/plugins/sdk-channel-message",
+      "destination": "/plugins/sdk-channel-outbound"
+    },
+    {
+      "source": "/plugins/sdk-channel-turn",
+      "destination": "/plugins/sdk-channel-inbound#migration"
+    },
+    {
+      "source": "/debug/node-issue",
+      "destination": "/help/debugging#node-and-tsx-startup-errors"
+    },
+    {
+      "source": "/gateway/bridge-protocol",
+      "destination": "/gateway/protocol"
     }
   ],
   "navigation": {
@@ -1772,7 +1808,6 @@
                       "gateway/protocol",
                       "gateway/clients",
                       "gateway/embedding",
-                      "gateway/bridge-protocol",
                       "gateway/openai-http-api",
                       "gateway/openresponses-http-api",
                       "gateway/tools-invoke-http-api",
@@ -1797,7 +1832,6 @@
                 "group": "Remote access",
                 "pages": [
                   "gateway/remote",
-                  "gateway/remote-gateway-readme",
                   "gateway/stable-https-url",
                   "gateway/tailscale",
                   "gateway/cloudflare-access"
@@ -1922,7 +1956,6 @@
                       "cli/approvals",
                       "cli/browser",
                       "cli/cron",
-                      "cli/flows",
                       "cli/connect",
                       "cli/node",
                       "cli/nodes",
@@ -2144,8 +2177,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "help/environment",
-                  "diagnostics/flags",
-                  "debug/node-issue"
+                  "diagnostics/flags"
                 ]
               },
               {
@@ -2807,7 +2839,6 @@
                       "zh-CN/gateway/protocol",
                       "zh-CN/gateway/clients",
                       "zh-CN/gateway/embedding",
-                      "zh-CN/gateway/bridge-protocol",
                       "zh-CN/gateway/openai-http-api",
                       "zh-CN/gateway/openresponses-http-api",
                       "zh-CN/gateway/tools-invoke-http-api",
@@ -2832,7 +2863,6 @@
                 "group": "远程访问",
                 "pages": [
                   "zh-CN/gateway/remote",
-                  "zh-CN/gateway/remote-gateway-readme",
                   "zh-CN/gateway/stable-https-url",
                   "zh-CN/gateway/tailscale",
                   "zh-CN/gateway/cloudflare-access"
@@ -2957,7 +2987,6 @@
                       "zh-CN/cli/approvals",
                       "zh-CN/cli/browser",
                       "zh-CN/cli/cron",
-                      "zh-CN/cli/flows",
                       "zh-CN/cli/connect",
                       "zh-CN/cli/node",
                       "zh-CN/cli/nodes",
@@ -3179,8 +3208,7 @@
                 "group": "环境与调试",
                 "pages": [
                   "zh-CN/help/environment",
-                  "zh-CN/diagnostics/flags",
-                  "zh-CN/debug/node-issue"
+                  "zh-CN/diagnostics/flags"
                 ]
               },
               {
@@ -3842,7 +3870,6 @@
                       "zh-TW/gateway/protocol",
                       "zh-TW/gateway/clients",
                       "zh-TW/gateway/embedding",
-                      "zh-TW/gateway/bridge-protocol",
                       "zh-TW/gateway/openai-http-api",
                       "zh-TW/gateway/openresponses-http-api",
                       "zh-TW/gateway/tools-invoke-http-api",
@@ -3867,7 +3894,6 @@
                 "group": "Remote access",
                 "pages": [
                   "zh-TW/gateway/remote",
-                  "zh-TW/gateway/remote-gateway-readme",
                   "zh-TW/gateway/stable-https-url",
                   "zh-TW/gateway/tailscale",
                   "zh-TW/gateway/cloudflare-access"
@@ -3992,7 +4018,6 @@
                       "zh-TW/cli/approvals",
                       "zh-TW/cli/browser",
                       "zh-TW/cli/cron",
-                      "zh-TW/cli/flows",
                       "zh-TW/cli/connect",
                       "zh-TW/cli/node",
                       "zh-TW/cli/nodes",
@@ -4214,8 +4239,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "zh-TW/help/environment",
-                  "zh-TW/diagnostics/flags",
-                  "zh-TW/debug/node-issue"
+                  "zh-TW/diagnostics/flags"
                 ]
               },
               {
@@ -4877,7 +4901,6 @@
                       "ja-JP/gateway/protocol",
                       "ja-JP/gateway/clients",
                       "ja-JP/gateway/embedding",
-                      "ja-JP/gateway/bridge-protocol",
                       "ja-JP/gateway/openai-http-api",
                       "ja-JP/gateway/openresponses-http-api",
                       "ja-JP/gateway/tools-invoke-http-api",
@@ -4902,7 +4925,6 @@
                 "group": "Remote access",
                 "pages": [
                   "ja-JP/gateway/remote",
-                  "ja-JP/gateway/remote-gateway-readme",
                   "ja-JP/gateway/stable-https-url",
                   "ja-JP/gateway/tailscale",
                   "ja-JP/gateway/cloudflare-access"
@@ -5027,7 +5049,6 @@
                       "ja-JP/cli/approvals",
                       "ja-JP/cli/browser",
                       "ja-JP/cli/cron",
-                      "ja-JP/cli/flows",
                       "ja-JP/cli/connect",
                       "ja-JP/cli/node",
                       "ja-JP/cli/nodes",
@@ -5249,8 +5270,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "ja-JP/help/environment",
-                  "ja-JP/diagnostics/flags",
-                  "ja-JP/debug/node-issue"
+                  "ja-JP/diagnostics/flags"
                 ]
               },
               {
@@ -5912,7 +5932,6 @@
                       "es/gateway/protocol",
                       "es/gateway/clients",
                       "es/gateway/embedding",
-                      "es/gateway/bridge-protocol",
                       "es/gateway/openai-http-api",
                       "es/gateway/openresponses-http-api",
                       "es/gateway/tools-invoke-http-api",
@@ -5937,7 +5956,6 @@
                 "group": "Remote access",
                 "pages": [
                   "es/gateway/remote",
-                  "es/gateway/remote-gateway-readme",
                   "es/gateway/stable-https-url",
                   "es/gateway/tailscale",
                   "es/gateway/cloudflare-access"
@@ -6062,7 +6080,6 @@
                       "es/cli/approvals",
                       "es/cli/browser",
                       "es/cli/cron",
-                      "es/cli/flows",
                       "es/cli/connect",
                       "es/cli/node",
                       "es/cli/nodes",
@@ -6284,8 +6301,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "es/help/environment",
-                  "es/diagnostics/flags",
-                  "es/debug/node-issue"
+                  "es/diagnostics/flags"
                 ]
               },
               {
@@ -6947,7 +6963,6 @@
                       "pt-BR/gateway/protocol",
                       "pt-BR/gateway/clients",
                       "pt-BR/gateway/embedding",
-                      "pt-BR/gateway/bridge-protocol",
                       "pt-BR/gateway/openai-http-api",
                       "pt-BR/gateway/openresponses-http-api",
                       "pt-BR/gateway/tools-invoke-http-api",
@@ -6972,7 +6987,6 @@
                 "group": "Remote access",
                 "pages": [
                   "pt-BR/gateway/remote",
-                  "pt-BR/gateway/remote-gateway-readme",
                   "pt-BR/gateway/stable-https-url",
                   "pt-BR/gateway/tailscale",
                   "pt-BR/gateway/cloudflare-access"
@@ -7097,7 +7111,6 @@
                       "pt-BR/cli/approvals",
                       "pt-BR/cli/browser",
                       "pt-BR/cli/cron",
-                      "pt-BR/cli/flows",
                       "pt-BR/cli/connect",
                       "pt-BR/cli/node",
                       "pt-BR/cli/nodes",
@@ -7319,8 +7332,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "pt-BR/help/environment",
-                  "pt-BR/diagnostics/flags",
-                  "pt-BR/debug/node-issue"
+                  "pt-BR/diagnostics/flags"
                 ]
               },
               {
@@ -7982,7 +7994,6 @@
                       "ko/gateway/protocol",
                       "ko/gateway/clients",
                       "ko/gateway/embedding",
-                      "ko/gateway/bridge-protocol",
                       "ko/gateway/openai-http-api",
                       "ko/gateway/openresponses-http-api",
                       "ko/gateway/tools-invoke-http-api",
@@ -8007,7 +8018,6 @@
                 "group": "Remote access",
                 "pages": [
                   "ko/gateway/remote",
-                  "ko/gateway/remote-gateway-readme",
                   "ko/gateway/stable-https-url",
                   "ko/gateway/tailscale",
                   "ko/gateway/cloudflare-access"
@@ -8132,7 +8142,6 @@
                       "ko/cli/approvals",
                       "ko/cli/browser",
                       "ko/cli/cron",
-                      "ko/cli/flows",
                       "ko/cli/connect",
                       "ko/cli/node",
                       "ko/cli/nodes",
@@ -8354,8 +8363,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "ko/help/environment",
-                  "ko/diagnostics/flags",
-                  "ko/debug/node-issue"
+                  "ko/diagnostics/flags"
                 ]
               },
               {
@@ -9017,7 +9025,6 @@
                       "de/gateway/protocol",
                       "de/gateway/clients",
                       "de/gateway/embedding",
-                      "de/gateway/bridge-protocol",
                       "de/gateway/openai-http-api",
                       "de/gateway/openresponses-http-api",
                       "de/gateway/tools-invoke-http-api",
@@ -9042,7 +9049,6 @@
                 "group": "Remote access",
                 "pages": [
                   "de/gateway/remote",
-                  "de/gateway/remote-gateway-readme",
                   "de/gateway/stable-https-url",
                   "de/gateway/tailscale",
                   "de/gateway/cloudflare-access"
@@ -9167,7 +9173,6 @@
                       "de/cli/approvals",
                       "de/cli/browser",
                       "de/cli/cron",
-                      "de/cli/flows",
                       "de/cli/connect",
                       "de/cli/node",
                       "de/cli/nodes",
@@ -9389,8 +9394,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "de/help/environment",
-                  "de/diagnostics/flags",
-                  "de/debug/node-issue"
+                  "de/diagnostics/flags"
                 ]
               },
               {
@@ -10052,7 +10056,6 @@
                       "fr/gateway/protocol",
                       "fr/gateway/clients",
                       "fr/gateway/embedding",
-                      "fr/gateway/bridge-protocol",
                       "fr/gateway/openai-http-api",
                       "fr/gateway/openresponses-http-api",
                       "fr/gateway/tools-invoke-http-api",
@@ -10077,7 +10080,6 @@
                 "group": "Remote access",
                 "pages": [
                   "fr/gateway/remote",
-                  "fr/gateway/remote-gateway-readme",
                   "fr/gateway/stable-https-url",
                   "fr/gateway/tailscale",
                   "fr/gateway/cloudflare-access"
@@ -10202,7 +10204,6 @@
                       "fr/cli/approvals",
                       "fr/cli/browser",
                       "fr/cli/cron",
-                      "fr/cli/flows",
                       "fr/cli/connect",
                       "fr/cli/node",
                       "fr/cli/nodes",
@@ -10424,8 +10425,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "fr/help/environment",
-                  "fr/diagnostics/flags",
-                  "fr/debug/node-issue"
+                  "fr/diagnostics/flags"
                 ]
               },
               {
@@ -11087,7 +11087,6 @@
                       "hi/gateway/protocol",
                       "hi/gateway/clients",
                       "hi/gateway/embedding",
-                      "hi/gateway/bridge-protocol",
                       "hi/gateway/openai-http-api",
                       "hi/gateway/openresponses-http-api",
                       "hi/gateway/tools-invoke-http-api",
@@ -11112,7 +11111,6 @@
                 "group": "Remote access",
                 "pages": [
                   "hi/gateway/remote",
-                  "hi/gateway/remote-gateway-readme",
                   "hi/gateway/stable-https-url",
                   "hi/gateway/tailscale",
                   "hi/gateway/cloudflare-access"
@@ -11237,7 +11235,6 @@
                       "hi/cli/approvals",
                       "hi/cli/browser",
                       "hi/cli/cron",
-                      "hi/cli/flows",
                       "hi/cli/connect",
                       "hi/cli/node",
                       "hi/cli/nodes",
@@ -11459,8 +11456,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "hi/help/environment",
-                  "hi/diagnostics/flags",
-                  "hi/debug/node-issue"
+                  "hi/diagnostics/flags"
                 ]
               },
               {
@@ -12122,7 +12118,6 @@
                       "ar/gateway/protocol",
                       "ar/gateway/clients",
                       "ar/gateway/embedding",
-                      "ar/gateway/bridge-protocol",
                       "ar/gateway/openai-http-api",
                       "ar/gateway/openresponses-http-api",
                       "ar/gateway/tools-invoke-http-api",
@@ -12147,7 +12142,6 @@
                 "group": "Remote access",
                 "pages": [
                   "ar/gateway/remote",
-                  "ar/gateway/remote-gateway-readme",
                   "ar/gateway/stable-https-url",
                   "ar/gateway/tailscale",
                   "ar/gateway/cloudflare-access"
@@ -12272,7 +12266,6 @@
                       "ar/cli/approvals",
                       "ar/cli/browser",
                       "ar/cli/cron",
-                      "ar/cli/flows",
                       "ar/cli/connect",
                       "ar/cli/node",
                       "ar/cli/nodes",
@@ -12494,8 +12487,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "ar/help/environment",
-                  "ar/diagnostics/flags",
-                  "ar/debug/node-issue"
+                  "ar/diagnostics/flags"
                 ]
               },
               {
@@ -13157,7 +13149,6 @@
                       "it/gateway/protocol",
                       "it/gateway/clients",
                       "it/gateway/embedding",
-                      "it/gateway/bridge-protocol",
                       "it/gateway/openai-http-api",
                       "it/gateway/openresponses-http-api",
                       "it/gateway/tools-invoke-http-api",
@@ -13182,7 +13173,6 @@
                 "group": "Remote access",
                 "pages": [
                   "it/gateway/remote",
-                  "it/gateway/remote-gateway-readme",
                   "it/gateway/stable-https-url",
                   "it/gateway/tailscale",
                   "it/gateway/cloudflare-access"
@@ -13307,7 +13297,6 @@
                       "it/cli/approvals",
                       "it/cli/browser",
                       "it/cli/cron",
-                      "it/cli/flows",
                       "it/cli/connect",
                       "it/cli/node",
                       "it/cli/nodes",
@@ -13529,8 +13518,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "it/help/environment",
-                  "it/diagnostics/flags",
-                  "it/debug/node-issue"
+                  "it/diagnostics/flags"
                 ]
               },
               {
@@ -14192,7 +14180,6 @@
                       "vi/gateway/protocol",
                       "vi/gateway/clients",
                       "vi/gateway/embedding",
-                      "vi/gateway/bridge-protocol",
                       "vi/gateway/openai-http-api",
                       "vi/gateway/openresponses-http-api",
                       "vi/gateway/tools-invoke-http-api",
@@ -14217,7 +14204,6 @@
                 "group": "Remote access",
                 "pages": [
                   "vi/gateway/remote",
-                  "vi/gateway/remote-gateway-readme",
                   "vi/gateway/stable-https-url",
                   "vi/gateway/tailscale",
                   "vi/gateway/cloudflare-access"
@@ -14342,7 +14328,6 @@
                       "vi/cli/approvals",
                       "vi/cli/browser",
                       "vi/cli/cron",
-                      "vi/cli/flows",
                       "vi/cli/connect",
                       "vi/cli/node",
                       "vi/cli/nodes",
@@ -14564,8 +14549,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "vi/help/environment",
-                  "vi/diagnostics/flags",
-                  "vi/debug/node-issue"
+                  "vi/diagnostics/flags"
                 ]
               },
               {
@@ -15227,7 +15211,6 @@
                       "nl/gateway/protocol",
                       "nl/gateway/clients",
                       "nl/gateway/embedding",
-                      "nl/gateway/bridge-protocol",
                       "nl/gateway/openai-http-api",
                       "nl/gateway/openresponses-http-api",
                       "nl/gateway/tools-invoke-http-api",
@@ -15252,7 +15235,6 @@
                 "group": "Remote access",
                 "pages": [
                   "nl/gateway/remote",
-                  "nl/gateway/remote-gateway-readme",
                   "nl/gateway/stable-https-url",
                   "nl/gateway/tailscale",
                   "nl/gateway/cloudflare-access"
@@ -15377,7 +15359,6 @@
                       "nl/cli/approvals",
                       "nl/cli/browser",
                       "nl/cli/cron",
-                      "nl/cli/flows",
                       "nl/cli/connect",
                       "nl/cli/node",
                       "nl/cli/nodes",
@@ -15599,8 +15580,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "nl/help/environment",
-                  "nl/diagnostics/flags",
-                  "nl/debug/node-issue"
+                  "nl/diagnostics/flags"
                 ]
               },
               {
@@ -16262,7 +16242,6 @@
                       "tr/gateway/protocol",
                       "tr/gateway/clients",
                       "tr/gateway/embedding",
-                      "tr/gateway/bridge-protocol",
                       "tr/gateway/openai-http-api",
                       "tr/gateway/openresponses-http-api",
                       "tr/gateway/tools-invoke-http-api",
@@ -16287,7 +16266,6 @@
                 "group": "Remote access",
                 "pages": [
                   "tr/gateway/remote",
-                  "tr/gateway/remote-gateway-readme",
                   "tr/gateway/stable-https-url",
                   "tr/gateway/tailscale",
                   "tr/gateway/cloudflare-access"
@@ -16412,7 +16390,6 @@
                       "tr/cli/approvals",
                       "tr/cli/browser",
                       "tr/cli/cron",
-                      "tr/cli/flows",
                       "tr/cli/connect",
                       "tr/cli/node",
                       "tr/cli/nodes",
@@ -16634,8 +16611,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "tr/help/environment",
-                  "tr/diagnostics/flags",
-                  "tr/debug/node-issue"
+                  "tr/diagnostics/flags"
                 ]
               },
               {
@@ -17297,7 +17273,6 @@
                       "uk/gateway/protocol",
                       "uk/gateway/clients",
                       "uk/gateway/embedding",
-                      "uk/gateway/bridge-protocol",
                       "uk/gateway/openai-http-api",
                       "uk/gateway/openresponses-http-api",
                       "uk/gateway/tools-invoke-http-api",
@@ -17322,7 +17297,6 @@
                 "group": "Remote access",
                 "pages": [
                   "uk/gateway/remote",
-                  "uk/gateway/remote-gateway-readme",
                   "uk/gateway/stable-https-url",
                   "uk/gateway/tailscale",
                   "uk/gateway/cloudflare-access"
@@ -17447,7 +17421,6 @@
                       "uk/cli/approvals",
                       "uk/cli/browser",
                       "uk/cli/cron",
-                      "uk/cli/flows",
                       "uk/cli/connect",
                       "uk/cli/node",
                       "uk/cli/nodes",
@@ -17669,8 +17642,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "uk/help/environment",
-                  "uk/diagnostics/flags",
-                  "uk/debug/node-issue"
+                  "uk/diagnostics/flags"
                 ]
               },
               {
@@ -18332,7 +18304,6 @@
                       "id/gateway/protocol",
                       "id/gateway/clients",
                       "id/gateway/embedding",
-                      "id/gateway/bridge-protocol",
                       "id/gateway/openai-http-api",
                       "id/gateway/openresponses-http-api",
                       "id/gateway/tools-invoke-http-api",
@@ -18357,7 +18328,6 @@
                 "group": "Remote access",
                 "pages": [
                   "id/gateway/remote",
-                  "id/gateway/remote-gateway-readme",
                   "id/gateway/stable-https-url",
                   "id/gateway/tailscale",
                   "id/gateway/cloudflare-access"
@@ -18482,7 +18452,6 @@
                       "id/cli/approvals",
                       "id/cli/browser",
                       "id/cli/cron",
-                      "id/cli/flows",
                       "id/cli/connect",
                       "id/cli/node",
                       "id/cli/nodes",
@@ -18704,8 +18673,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "id/help/environment",
-                  "id/diagnostics/flags",
-                  "id/debug/node-issue"
+                  "id/diagnostics/flags"
                 ]
               },
               {
@@ -19367,7 +19335,6 @@
                       "pl/gateway/protocol",
                       "pl/gateway/clients",
                       "pl/gateway/embedding",
-                      "pl/gateway/bridge-protocol",
                       "pl/gateway/openai-http-api",
                       "pl/gateway/openresponses-http-api",
                       "pl/gateway/tools-invoke-http-api",
@@ -19392,7 +19359,6 @@
                 "group": "Remote access",
                 "pages": [
                   "pl/gateway/remote",
-                  "pl/gateway/remote-gateway-readme",
                   "pl/gateway/stable-https-url",
                   "pl/gateway/tailscale",
                   "pl/gateway/cloudflare-access"
@@ -19517,7 +19483,6 @@
                       "pl/cli/approvals",
                       "pl/cli/browser",
                       "pl/cli/cron",
-                      "pl/cli/flows",
                       "pl/cli/connect",
                       "pl/cli/node",
                       "pl/cli/nodes",
@@ -19739,8 +19704,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "pl/help/environment",
-                  "pl/diagnostics/flags",
-                  "pl/debug/node-issue"
+                  "pl/diagnostics/flags"
                 ]
               },
               {
@@ -20402,7 +20366,6 @@
                       "ru/gateway/protocol",
                       "ru/gateway/clients",
                       "ru/gateway/embedding",
-                      "ru/gateway/bridge-protocol",
                       "ru/gateway/openai-http-api",
                       "ru/gateway/openresponses-http-api",
                       "ru/gateway/tools-invoke-http-api",
@@ -20427,7 +20390,6 @@
                 "group": "Remote access",
                 "pages": [
                   "ru/gateway/remote",
-                  "ru/gateway/remote-gateway-readme",
                   "ru/gateway/stable-https-url",
                   "ru/gateway/tailscale",
                   "ru/gateway/cloudflare-access"
@@ -20552,7 +20514,6 @@
                       "ru/cli/approvals",
                       "ru/cli/browser",
                       "ru/cli/cron",
-                      "ru/cli/flows",
                       "ru/cli/connect",
                       "ru/cli/node",
                       "ru/cli/nodes",
@@ -20774,8 +20735,7 @@
                 "group": "Diagnostics",
                 "pages": [
                   "ru/help/environment",
-                  "ru/diagnostics/flags",
-                  "ru/debug/node-issue"
+                  "ru/diagnostics/flags"
                 ]
               },
               {
