@@ -4793,6 +4793,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Bake required binaries into the image
   - H2: Verify and administer the Gateway
   - H2: What persists where
+  - H2: Common pitfall: never file-bind openclaw.json
   - H2: Update OpenClaw
   - H2: Related
 
