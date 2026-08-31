@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { createRequire } from "node:module";
@@ -7,6 +10,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const PROTECTED_ATTRIBUTES = new Set(["className", "id", "path", "type", "default", "aria-hidden", "target", "rel"]);
 const JSX_TAG_START_RE = /[A-Za-z_$\p{ID_Start}/!?>]/u;
+const MAX_ERRORS = 50;
 
 function attributeSignature(attribute) {
   if (attribute.type === "mdxJsxExpressionAttribute") {
@@ -189,7 +193,113 @@ async function readInput() {
   return JSON.parse(input);
 }
 
+function parseArgs(argv) {
+  const flags = ["--workspace", "--locale", "--manifest", "--json-out"];
+  const args = {};
+  for (let index = 0; index < argv.length; index += 2) {
+    const flag = argv[index];
+    const value = argv[index + 1];
+    if (!flags.includes(flag) || Object.hasOwn(args, flag)) throw new Error(`unknown or duplicate option: ${flag}`);
+    if (!value || value.startsWith("-")) throw new Error(`${flag} requires a value`);
+    args[flag] = value;
+  }
+  for (const flag of flags) {
+    if (!args[flag]) throw new Error(`${flag} is required`);
+  }
+  if (!/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/u.test(args["--locale"])) throw new Error("invalid locale");
+  return args;
+}
+
+async function checkTranslatedMdx(args) {
+  const startedAt = Date.now();
+  const workspace = path.resolve(args["--workspace"]);
+  const locale = args["--locale"];
+  const manifest = path.resolve(workspace, args["--manifest"]);
+  const jsonOut = path.resolve(workspace, args["--json-out"]);
+  const checker = path.join(workspace, ".openclaw-sync/check-docs-mdx.mjs");
+  const report = {
+    files: 0,
+    errors: [],
+    recheck_command: [
+      process.execPath, fileURLToPath(import.meta.url),
+      "--workspace", workspace, "--locale", locale, "--manifest", manifest, "--json-out", jsonOut,
+    ],
+  };
+  fs.mkdirSync(path.dirname(jsonOut), { recursive: true });
+  // A failed invocation must never leave the previous successful report in place.
+  fs.rmSync(jsonOut, { force: true });
+  let temporary;
+  try {
+    temporary = fs.mkdtempSync(path.join(os.tmpdir(), "translated-mdx-"));
+    const genericOut = path.join(temporary, "generic.json");
+    const result = spawnSync(process.execPath, [
+      checker, `docs/${locale}`, "--json-out", genericOut, "--max-errors", String(MAX_ERRORS),
+    ], {
+      cwd: workspace,
+      stdio: ["ignore", "inherit", "inherit"],
+    });
+    const generic = JSON.parse(fs.readFileSync(genericOut, "utf8"));
+    if (!Number.isSafeInteger(generic?.files) || generic.files < 0 || !Array.isArray(generic.errors) ||
+        !generic.errors.every((error) => error && typeof error.type === "string" &&
+          typeof error.file === "string" && typeof error.message === "string" &&
+          [error.line, error.column].every((value) => value === undefined || (Number.isSafeInteger(value) && value > 0)))) {
+      throw new Error("generic MDX checker returned an invalid report");
+    }
+    report.files = generic.files;
+    if (result.error || result.signal || result.status !== (generic.errors.length ? 1 : 0)) {
+      throw new Error(`generic MDX checker failed (exit ${result.status}, signal ${result.signal || "none"})`);
+    }
+    report.errors.push(...generic.errors.slice(0, MAX_ERRORS));
+  } catch (error) {
+    report.errors.push({ type: "generic-checker", file: ".openclaw-sync/check-docs-mdx.mjs", message: String(error.message || error) });
+  } finally {
+    if (temporary) fs.rmSync(temporary, { recursive: true, force: true });
+  }
+
+  try {
+    const require = createRequire(path.join(workspace, "package.json"));
+    const { createProcessor } = await import(pathToFileURL(require.resolve("@mdx-js/mdx")).href);
+    const processor = createProcessor({ format: "mdx" });
+    const markdownProcessor = createProcessor({ format: "md" });
+    const docsRoot = path.join(workspace, "docs");
+    const sources = new Set(fs.readFileSync(manifest, "utf8").split(/\r?\n/u).filter((line) => line.trim()));
+    for (const source of sources) {
+      // A full report remains a failure; fresh rechecks expose errors beyond this repair batch.
+      if (report.errors.length >= MAX_ERRORS) break;
+      const relative = path.relative(docsRoot, path.resolve(workspace, source));
+      if (!relative || relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+        throw new Error(`source path escapes docs root: ${source}`);
+      }
+      if (!/\.mdx?$/u.test(relative)) continue;
+      const translatedPath = path.join(docsRoot, locale, relative);
+      if (!fs.existsSync(translatedPath)) continue;
+      const file = path.relative(workspace, translatedPath);
+      const value = fs.readFileSync(translatedPath, "utf8");
+      try {
+        parseMdx(processor, markdownProcessor, value);
+      } catch (error) {
+        report.errors.push({
+          type: "translated-mdx",
+          file,
+          // parseMdx preserves newlines, but its literal masking can shift columns.
+          ...(Number.isInteger(error.line) ? { line: error.line } : {}),
+          message: `${error.reason || error.message || error} (columns refer to normalized Markdown)`,
+        });
+      }
+    }
+  } catch (error) {
+    if (report.errors.length < MAX_ERRORS) {
+      report.errors.push({ type: "translation-preflight", file: path.relative(workspace, manifest), message: String(error.message || error) });
+    }
+  }
+  report.ms = Date.now() - startedAt;
+  fs.writeFileSync(jsonOut, `${JSON.stringify(report, null, 2)}\n`);
+  for (const error of report.errors) process.stderr.write(`${error.file}: ${error.message}\n`);
+  process.exitCode = report.errors.length ? 1 : 0;
+}
+
 async function main() {
+  if (process.argv.length > 2) return checkTranslatedMdx(parseArgs(process.argv.slice(2)));
   const input = await readInput();
   if (typeof input.moduleRoot !== "string" || !Array.isArray(input.documents)) throw new Error("invalid input");
   const require = createRequire(path.join(input.moduleRoot, "package.json"));

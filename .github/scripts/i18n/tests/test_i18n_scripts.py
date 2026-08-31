@@ -172,7 +172,7 @@ class I18NScriptTests(unittest.TestCase):
 
     def test_shell_check_installs_mdx_dependency_before_regressions(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-shell-check-reusable.yml").read_text(encoding="utf-8")
-        install = "npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1"
+        install = "npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1 tsx@4.23.12"
         self.assertIn(install, text)
         self.assertLess(text.index(install), text.index("Run i18n control-plane regressions"))
 
@@ -1315,6 +1315,13 @@ class I18NScriptTests(unittest.TestCase):
             )
             (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n", encoding="utf-8")
 
+            self._prepare_mdx_checker(repo)
+            before = translated.read_bytes()
+            checked, report = self._check_translated_mdx(repo)
+            self.assertEqual(0, checked.returncode, checked.stderr)
+            self.assertEqual([], report["errors"])
+            self.assertEqual(before, translated.read_bytes())
+
             with (
                 chdir(repo),
                 env(
@@ -1332,7 +1339,7 @@ class I18NScriptTests(unittest.TestCase):
                         "TOTAL_PENDING_COUNT": "1",
                         "ALL_COUNT": "1",
                         "TRANSLATE_OUTCOME": "success",
-                        "MDX_CHECK_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "success" if checked.returncode == 0 else "failure",
                         "MDX_REPAIR_OUTCOME": "skipped",
                         "MDX_SCOPE_OUTCOME": "skipped",
                         "MDX_RECHECK_OUTCOME": "skipped",
@@ -1409,6 +1416,187 @@ class I18NScriptTests(unittest.TestCase):
                 '<X default="source" />\n',
                 (artifact / "payload/docs/fr/tools/pdf.md").read_text(encoding="utf-8"),
             )
+
+    def _prepare_mdx_checker(self, repo: Path) -> None:
+        mirror = repo / ".openclaw-sync"
+        mirror.mkdir(exist_ok=True)
+        for name in ("check-docs-mdx.mjs", "check-docs-mdx.mts", "tsx.mjs"):
+            shutil.copy2(REPO_ROOT / ".openclaw-sync" / name, mirror / name)
+        shutil.copytree(REPO_ROOT / ".openclaw-sync/lib", mirror / "lib")
+        (repo / "node_modules").symlink_to(REPO_ROOT / "node_modules", target_is_directory=True)
+
+    def _check_translated_mdx(self, repo: Path, step: str = "Check translated MDX") -> tuple[subprocess.CompletedProcess, dict]:
+        report = repo / ".openclaw-sync/mdx/fr.json"
+        workflow = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
+        block = workflow.split(f"      - name: {step}\n", 1)[1].split("      - name:", 1)[0]
+        command = block.split("        run: |\n", 1)[1]
+        for key, value in (("locale_slug", "fr"), ("shard_index", "0"), ("shard_total", "1")):
+            command = command.replace("${{ inputs." + key + " }}", value)
+        result = subprocess.run(
+            ["bash", "-eu", "-c", command], cwd=repo, text=True, capture_output=True,
+            env={**os.environ, "I18N_SCRIPT_DIR": str(SCRIPT_DIR), "GITHUB_WORKSPACE": str(repo), "LOCALE": "fr"},
+        )
+        return result, json.loads(report.read_text(encoding="utf-8"))
+
+    def test_translated_mdx_preflight_catches_pending_markdown_and_rechecks_fresh_report(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mdx quoted ' $() ") as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / "docs/fr").mkdir(parents=True)
+            originals = {}
+            for name, attributes in (("plain.md", ""), ("protected.md", ' className="card"')):
+                source = repo / "docs" / name
+                source.write_text(f'<div{attributes}>Texte</div>\n', encoding="utf-8")
+                translated = repo / "docs/fr" / name
+                translated.write_text(f'<div{attributes}>Texte</span>\n', encoding="utf-8")
+                originals[translated] = translated.read_bytes()
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "existing malformed translations")
+            self._prepare_mdx_checker(repo)
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(
+                "".join(str(repo / "docs" / file.name) + "\n" for file in originals), encoding="utf-8",
+            )
+            old = subprocess.run(
+                ["node", str(repo / ".openclaw-sync/check-docs-mdx.mjs"), "docs/fr",
+                 "--json-out", ".openclaw-sync/old.json"],
+                cwd=repo, text=True, capture_output=True,
+            )
+            self.assertEqual(0, old.returncode, old.stderr)
+            self.assertEqual([], json.loads((repo / ".openclaw-sync/old.json").read_text())["errors"])
+            self.assertEqual("", run_git(repo, "diff", "--name-only", "--", "docs"))
+
+            checked, report = self._check_translated_mdx(repo)
+            self.assertEqual(1, checked.returncode, checked.stderr)
+            self.assertEqual({"docs/fr/plain.md", "docs/fr/protected.md"}, {error["file"] for error in report["errors"]})
+            for error in report["errors"]:
+                self.assertEqual("translated-mdx", error["type"])
+                self.assertIn("Unexpected closing tag", error["message"])
+                self.assertIn("span", error["message"])
+                self.assertIn("div", error["message"])
+            for file, before in originals.items():
+                self.assertEqual(before, file.read_bytes())
+                file.write_bytes(before.replace(b"</span>", b"</div>"))
+            rechecked = subprocess.run(report["recheck_command"], cwd=repo.parent, text=True, capture_output=True)
+            self.assertEqual(0, rechecked.returncode, rechecked.stderr)
+            fresh = json.loads((repo / ".openclaw-sync/mdx/fr.json").read_text())
+            self.assertEqual([], fresh["errors"])
+            self.assertEqual(report["recheck_command"], fresh["recheck_command"])
+            rechecked, fresh = self._check_translated_mdx(repo, "Recheck translated MDX")
+            self.assertEqual(0, rechecked.returncode, rechecked.stderr)
+            self.assertEqual([], fresh["errors"])
+
+    def test_translated_mdx_preflight_preserves_mixed_markdown_and_jsx(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            shutil.copytree(FIXTURES / "pending-docs/docs", repo / "docs")
+            self._prepare_mdx_checker(repo)
+            translated = repo / "docs/fr/index.md"
+            translated.write_text(
+                '---\ntitle: Exemple\n---\n<!-- unmatched { ` <X /> -->\n\n'
+                'Texte n < 9, <user@example.com>, <https://example.com>.\n\n'
+                '`<X id="literal" />`\n\n```mdx\n<div></span>\n```\n\n'
+                '<Card id="stable" title="Français">Texte</Card>\n\n{ready && <X />}\n',
+                encoding="utf-8",
+            )
+            (repo / "docs/fr/valid.mdx").write_text('<Card title="Français" />\n', encoding="utf-8")
+            (repo / "docs/fr/not-pending.md").write_text('<div></span>\n', encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(
+                "".join(str(repo / "docs" / name) + "\n" for name in ("index.md", "valid.mdx", "missing.md")),
+                encoding="utf-8",
+            )
+            before = {file: file.read_bytes() for file in (repo / "docs").rglob("*") if file.is_file()}
+            checked, report = self._check_translated_mdx(repo)
+            self.assertEqual(0, checked.returncode, checked.stderr)
+            self.assertEqual([], report["errors"])
+            self.assertEqual(before, {file: file.read_bytes() for file in (repo / "docs").rglob("*") if file.is_file()})
+            translated.write_text("Texte n < 9, <user@example.com>, <div></span>\n", encoding="utf-8")
+            checked, report = self._check_translated_mdx(repo)
+            self.assertEqual(1, checked.returncode, checked.stderr)
+            error, = report["errors"]
+            self.assertEqual(1, error["line"])
+            self.assertNotIn("column", error)
+            self.assertIn("columns refer to normalized Markdown", error["message"])
+
+    def test_translated_mdx_preflight_combines_generic_and_packaging_syntax_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "docs/fr").mkdir(parents=True)
+            self._prepare_mdx_checker(repo)
+            for name, value in {
+                "poison.md": "analysis to=functions.exec\n",
+                "accordion.md": '<Accordion title="Title">\nContent\n  </Accordion>\n',
+                "generic.mdx": "<div></span>\n",
+                "pending.md": "<div></span>\n",
+            }.items():
+                (repo / "docs/fr" / name).write_text(value, encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/pending.md") + "\n")
+            checked, report = self._check_translated_mdx(repo)
+            self.assertEqual(1, checked.returncode, checked.stderr)
+            self.assertEqual(
+                {("poison-text", "docs/fr/poison.md"), ("mintlify-mdx", "docs/fr/accordion.md"),
+                 ("mdx", "docs/fr/generic.mdx"), ("translated-mdx", "docs/fr/pending.md")},
+                {(error["type"], error["file"]) for error in report["errors"]},
+            )
+
+    def test_translated_mdx_preflight_bounds_reports_and_reveals_remaining_errors(self) -> None:
+        for poison in (False, True):
+            with self.subTest(poison=poison), tempfile.TemporaryDirectory() as tmp:
+                repo = Path(tmp)
+                (repo / "docs/fr").mkdir(parents=True)
+                self._prepare_mdx_checker(repo)
+                sources = []
+                for index in range(52):
+                    source = repo / "docs" / f"page-{index:02}.md"
+                    source.write_text("<div>Texte</div>\n", encoding="utf-8")
+                    sources.append(str(source))
+                    (repo / "docs/fr" / source.name).write_text(
+                        ("/home/runner/work/example\n\n" if poison else "") + "<div>Texte</span>\n",
+                        encoding="utf-8",
+                    )
+                (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text("\n".join(sources) + "\n")
+                checked, report = self._check_translated_mdx(repo)
+                self.assertEqual(1, checked.returncode, checked.stderr)
+                self.assertEqual(50, len(report["errors"]))
+                self.assertEqual({"poison-text" if poison else "translated-mdx"}, {error["type"] for error in report["errors"]})
+                reported = {error["file"] for error in report["errors"]}
+                remaining = {f"docs/fr/page-{index:02}.md" for index in range(52)} - reported
+                self.assertEqual(2, len(remaining))
+                for file in reported:
+                    (repo / file).write_bytes((repo / "docs" / Path(file).name).read_bytes())
+                checked, report = self._check_translated_mdx(repo, "Recheck translated MDX")
+                self.assertEqual(1, checked.returncode, checked.stderr)
+                self.assertEqual(remaining, {error["file"] for error in report["errors"]})
+                self.assertEqual(4 if poison else 2, len(report["errors"]))
+                self.assertTrue(any(error["type"] == "translated-mdx" for error in report["errors"]))
+                for file in remaining:
+                    (repo / file).write_bytes((repo / "docs" / Path(file).name).read_bytes())
+                checked, report = self._check_translated_mdx(repo, "Recheck translated MDX")
+                self.assertEqual(0, checked.returncode, checked.stderr)
+                self.assertEqual([], report["errors"])
+
+    def test_translated_mdx_preflight_fails_closed_on_generic_checker_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "docs/fr").mkdir(parents=True)
+            self._prepare_mdx_checker(repo)
+            (repo / "docs/fr/index.md").write_text("<div></span>\n", encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n")
+            output = repo / ".openclaw-sync/mdx/fr.json"
+            output.parent.mkdir()
+            for body, code in ((None, 1), ("not JSON", 0), ('{}', 0),
+                               ('{"files":1,"errors":[{}]}', 1), ('{"files":1,"errors":[]}', 2)):
+                with self.subTest(body=body, code=code):
+                    # Break the actual subprocess/report boundary, without a production injection hook.
+                    program = 'import fs from "node:fs";\n'
+                    if body is not None:
+                        program += f'fs.writeFileSync(process.argv[process.argv.indexOf("--json-out") + 1], {json.dumps(body)});\n'
+                    program += f'process.exit({code});\n'
+                    (repo / ".openclaw-sync/check-docs-mdx.mjs").write_text(program, encoding="utf-8")
+                    output.write_text('{"files":999,"errors":[],"stale":true}', encoding="utf-8")
+                    checked, report = self._check_translated_mdx(repo)
+                    self.assertEqual(1, checked.returncode, checked.stderr)
+                    self.assertNotIn("stale", report)
+                    self.assertEqual({"generic-checker", "translated-mdx"}, {error["type"] for error in report["errors"]})
 
     def test_mdx_protected_attribute_signatures_use_parsed_element_ownership(self) -> None:
         script = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
@@ -2322,8 +2510,19 @@ class I18NScriptTests(unittest.TestCase):
             (repo / ".openclaw-sync").mkdir()
             (repo / "docs").mkdir()
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / "docs/fr").mkdir()
+            stale = repo / "docs/fr/retired.md"
+            stale.write_text("# Retired\n", encoding="utf-8")
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
+            stale.unlink()
+            (repo / "docs/fr/index.md").write_text("<div></span>\n", encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n")
+            self._prepare_mdx_checker(repo)
+            checked, _ = self._check_translated_mdx(repo)
+            rechecked, _ = self._check_translated_mdx(repo, "Recheck translated MDX")
+            self.assertEqual(1, checked.returncode, checked.stderr)
+            self.assertEqual(1, rechecked.returncode, rechecked.stderr)
             output = repo / "github-output.txt"
 
             with chdir(repo), env(
@@ -2349,9 +2548,22 @@ class I18NScriptTests(unittest.TestCase):
                 }
             ):
                 package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+                with env({
+                    "TRANSLATE_OUTCOME": "success", "MDX_CHECK_OUTCOME": "failure",
+                    "MDX_REPAIR_OUTCOME": "success", "MDX_SCOPE_OUTCOME": "success",
+                    "MDX_RECHECK_OUTCOME": "failure" if rechecked.returncode else "success",
+                }):
+                    metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
 
             self.assertIn("failed=true", output.read_text(encoding="utf-8"))
             self.assertIn("failed_reason=translation failed", output.read_text(encoding="utf-8"))
+            self.assertIn("failed_reason=mdx repair failed", output.read_text(encoding="utf-8"))
+            self.assertEqual("mdx repair failed", metadata["failed_reason"])
+            self.assertEqual((0, 0), (metadata["changed_count"], metadata["deleted_count"]))
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            for name in ("changed-files.txt", "deleted-files.txt"):
+                self.assertEqual("", (artifact / name).read_text(encoding="utf-8"))
+            self.assertFalse(any((artifact / "payload").rglob("*.md")))
 
     def test_mdx_repair_scope_allows_preexisting_untracked_locale_files_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
