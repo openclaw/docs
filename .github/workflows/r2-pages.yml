@@ -158,8 +158,27 @@ jobs:
           echo "content_sha=${content_sha}" >> "${GITHUB_OUTPUT}"
           echo "Scoped docs content refreshed from main ${content_sha}."
 
+      # Admit once while holding the deployment queue, before expensive work.
+      # Catch-up after publication schedules missing successors without a veto.
+      - name: Check current docs main
+        if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
+        id: current-main
+        env:
+          SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
+        run: node scripts/docs-site/head-drift.mjs admit
+
+      - name: Fail stale scoped translation deploy
+        if: github.event_name == 'workflow_dispatch' && steps.current-main.outputs.stale == 'true' && (steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
+        run: |
+          echo "Scoped translation content went stale before build admission; retry this dispatch against latest main." >&2
+          exit 1
+
       - name: Read source metadata
-        if: steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page'
+        if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
         id: source-meta
         run: |
           node - <<'NODE'
@@ -171,7 +190,7 @@ jobs:
           NODE
 
       - name: Check out OpenClaw source
-        if: steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page'
+        if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
         uses: actions/checkout@v7.0.1
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
@@ -180,22 +199,22 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Node
-        if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
+        if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
 
       - name: Install
-        if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
+        if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
         run: npm ci
 
       - name: Install librsvg2-bin
-        if: steps.artifact-scope.outputs.scope != 'none'
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Build R2 artifact
-        if: steps.artifact-scope.outputs.scope != 'none'
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         env:
           DOCS_SOURCE_REPO_DIR: source
           DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
@@ -208,7 +227,7 @@ jobs:
           fi
 
       - name: Smoke generated site
-        if: steps.artifact-scope.outputs.scope != 'none'
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         run: |
           if [ "${{ steps.artifact-scope.outputs.scope }}" = "shell" ]; then
             npm run docs:smoke:shell
@@ -216,76 +235,8 @@ jobs:
             npm run docs:smoke
           fi
 
-      - name: Check current docs main
-        if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
-        id: current-main
-        env:
-          SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          git fetch --quiet origin main
-          latest="$(git rev-parse refs/remotes/origin/main)"
-          echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
-          expected="${SCOPED_CONTENT_SHA:-${GITHUB_SHA}}"
-          if [ "${expected}" = "${latest}" ]; then
-            echo "stale=false" >> "${GITHUB_OUTPUT}"
-            echo "dispatch=false" >> "${GITHUB_OUTPUT}"
-            exit 0
-          fi
-          # Never infer a successor run from changed paths: skip-ci annotations,
-          # GITHUB_TOKEN pushes (i18n finalizer), and >300-file filter truncation
-          # all skip push runs. Verify against the Actions API; dispatch when absent.
-          verdict="$(git diff --name-only "${expected}" "${latest}" | node scripts/docs-site/head-drift.mjs)"
-          if [ "${verdict}" = "artifact-unaffected" ]; then
-            echo "stale=false" >> "${GITHUB_OUTPUT}"
-            echo "dispatch=false" >> "${GITHUB_OUTPUT}"
-            echo "::notice::Docs main moved to ${latest} without artifact-relevant changes; continuing upload for ${expected}."
-          elif [ "${verdict}" = "artifact-affected" ]; then
-            echo "stale=true" >> "${GITHUB_OUTPUT}"
-            successor_runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/r2-pages.yml/runs?head_sha=${latest}&per_page=1" --jq '.total_count' || echo '')"
-            if [ "${successor_runs}" != "" ] && [ "${successor_runs}" -gt 0 ]; then
-              echo "dispatch=false" >> "${GITHUB_OUTPUT}"
-              echo "::notice::Docs main moved to ${latest}; yielding the R2 upload for ${expected} to its existing run."
-            else
-              echo "dispatch=true" >> "${GITHUB_OUTPUT}"
-              echo "::notice::Docs main moved to ${latest} with no run of its own; dispatching a fresh full run."
-            fi
-          else
-            echo "Unexpected head-drift verdict: ${verdict}" >&2
-            exit 1
-          fi
-
-      - name: Dispatch run for successorless head
-        if: steps.current-main.outputs.dispatch == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EVENT_NAME: ${{ github.event_name }}
-          BEFORE_SHA: ${{ github.event.before || '' }}
-          SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
-          LATEST_SHA: ${{ steps.current-main.outputs.latest }}
-        run: |
-          set -euo pipefail
-          base=""
-          if [[ "${EVENT_NAME}" == "push" && "${BEFORE_SHA}" =~ ^[0-9a-f]{7,40}$ && ! "${BEFORE_SHA}" =~ ^0+$ ]]; then
-            base="${BEFORE_SHA}"
-          elif [ -n "${SMOKE_COMMIT_RANGE}" ]; then
-            base="${SMOKE_COMMIT_RANGE%%..*}"
-          fi
-          range=""
-          if [ -n "${base}" ]; then
-            range="${base}..${LATEST_SHA}"
-          fi
-          gh workflow run r2-pages.yml --ref main -f artifact_scope=full -f request_id="head-drift-${GITHUB_RUN_ID}" -f smoke_commit_range="${range}"
-
-      - name: Fail stale scoped translation deploy
-        if: github.event_name == 'workflow_dispatch' && steps.current-main.outputs.stale == 'true' && (steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
-        run: |
-          echo "Scoped translation content went stale before upload; retry this dispatch against latest main." >&2
-          exit 1
-
       - name: Resolve R2 credentials
-        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'
+        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale == 'false'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -388,7 +339,7 @@ jobs:
 
       - name: Upload changed R2 objects
         id: upload-r2
-        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'
+        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale == 'false'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: openclaw-docs
@@ -403,6 +354,7 @@ jobs:
         run: npm run docs:r2:upload
 
       - name: Deploy Worker before live smoke
+        id: deploy-worker
         if: steps.artifact-scope.outputs.deploy_worker == '1' && steps.current-main.outputs.stale == 'false'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -429,3 +381,13 @@ jobs:
             range="${SMOKE_COMMIT_RANGE}"
           fi
           gh workflow run docs-live-smoke.yml --ref main -f commit_range="${range}"
+
+      - name: Catch up docs main after publication
+        if: ${{ !cancelled() && steps.current-main.outputs.stale == 'false' && (steps.upload-r2.outcome == 'success' || steps.deploy-worker.outcome == 'success') && (steps.artifact-scope.outputs.deploy_worker != '1' || steps.deploy-worker.outcome == 'success') }}
+        env:
+          SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
+        run: node scripts/docs-site/head-drift.mjs catch-up
