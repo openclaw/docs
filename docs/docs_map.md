@@ -9471,6 +9471,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Source tests and subprocess builds
   - H2: Shared test state and process helpers
   - H2: Control UI, TUI, and extension lanes
+  - H3: Retained mocked Control UI proof
   - H2: Gateway and E2E
   - H2: Full Docker suite (pnpm test:docker:all)
   - H3: Notable Docker lanes
