@@ -1551,6 +1551,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/dashboard
 - Headings:
   - H1: openclaw dashboard
+  - H2: Gateway service and state compatibility
   - H2: Machine-readable output
   - H2: Related
 
