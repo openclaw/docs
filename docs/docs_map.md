@@ -148,6 +148,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Hooks
   - H3: Heartbeat
   - H2: How they work together
+  - H2: Retired inferred commitments
   - H2: Related
 
 ## automation/standing-orders.md
@@ -3133,6 +3134,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How messages are routed
   - H2: DM isolation
+  - H2: Retired channel docking
   - H2: Group and room routing
   - H2: Incognito sessions
   - H2: Remember across conversations
@@ -5628,6 +5630,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Quick Chat
   - H2: CLI and SSH alternative
   - H2: Node capabilities
+  - H2: Retired Linux Canvas
   - H2: Install
   - H2: Gateway service (systemd)
   - H2: Memory pressure and OOM kills
@@ -8169,6 +8172,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: Configuration
+  - H3: Choose the call owner
   - H3: Config reference
   - H2: Session scope
   - H2: Realtime voice conversations
@@ -8905,6 +8909,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Install plugin
   - H2: Getting started
+  - H2: Retired Qwen Portal authentication
   - H2: Plan types and endpoints
   - H2: Built-in catalog
   - H3: Token Plan catalog
@@ -11205,6 +11210,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What widgets are allowed to do
   - H2: MCP apps on the board
   - H2: A2UI widgets
+  - H2: Retired Workspaces
   - H2: Good to know
 
 ## web/index.md
