@@ -3271,6 +3271,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/user-model
 - Headings:
   - H2: Gateway profile and GitHub credit
+  - H2: GitHub connections
+  - H3: Publish with your account
+  - H3: Disconnect and reconnect
   - H2: Profile appearance preferences
   - H2: Write directives, not observations
   - H2: Supersede in place
@@ -9167,6 +9170,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Database layout
   - H2: Versioning contract
+  - H2: Personal GitHub connections and publication
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H2: Agent schema history
