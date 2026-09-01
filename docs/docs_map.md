@@ -577,6 +577,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Inbound durability
   - H2: Configure
   - H2: Access control
+  - H2: Directory
   - H2: Group join introductions
   - H2: Message behavior
   - H2: Structured rich messages
