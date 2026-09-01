@@ -2226,7 +2226,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/triage
 - Headings:
   - H1: openclaw triage
-  - H2: Agent handoff
+  - H2: Failed update recovery
+  - H2: Installation target and embedded handoff
+  - H2: Manual handoff
   - H2: Output and exit codes
   - H2: Options
 
@@ -2259,6 +2261,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw update
   - H2: Usage
   - H2: Options
+  - H2: Recover a failed update
   - H2: update status
   - H2: update repair
   - H2: update cleanup
@@ -4145,6 +4148,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What survives a restart
   - H2: Graceful restarts drain first
   - H2: Host sleep and process freezes
+  - H2: Recovery after a failed update
   - H2: How interrupted work is detected
   - H2: Automatic resume
   - H3: Subagents
