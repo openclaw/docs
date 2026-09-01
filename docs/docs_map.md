@@ -1235,6 +1235,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: ClawSweeper activity forwarding
   - H2: Manual dispatches
   - H2: Runners
+  - H3: Blacksmith runner capacity
   - H3: Runner backend modes
   - H2: Runner registration budget
   - H2: Surface ratchets
