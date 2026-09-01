@@ -9637,6 +9637,28 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other Bug Fixes
   - H2: Maintainer and Internal Changes
 
+## releases/2026.8.2.md
+
+- Route: /releases/2026.8.2
+- Headings:
+  - H1: OpenClaw v2026.8.2 Release Notes
+  - H2: Highlights
+  - H3: Your Home agent, beside your work
+  - H3: A desktop companion for Linux
+  - H3: Start work without switching pages
+  - H3: Safer upgrades
+  - H3: Replies that finish the job
+  - H3: More dependable voice
+  - H3: Browser control without a running Gateway
+  - H3: Four new looks
+  - H2: Before updating
+  - H2: More ways to work
+  - H2: More fixes
+  - H2: For plugin authors
+  - H3: Upcoming deprecations
+  - H2: Known issues
+  - H2: Full changelog and contributors
+
 ## releases/index.md
 
 - Route: /releases
