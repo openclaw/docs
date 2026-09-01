@@ -9404,6 +9404,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: 1. Ask What to Call You
   - H2: 2. Choose Your Vibe
   - H2: 3. Finish With Recommendations
+  - H2: 4. One Safety Note
   - H2: Related
 
 ## reference/templates/HEARTBEAT.md
@@ -9797,6 +9798,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /start/getting-started
 - Headings:
   - H2: What you need
+  - H2: Try it in one command
   - H2: Quick setup
   - H2: If setup does not work
   - H2: What to do next
