@@ -8457,6 +8457,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config snippet
   - H2: Supported surfaces
   - H2: Available models
+  - H2: Price estimates
   - H2: Notes
   - H2: Related
 
