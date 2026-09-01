@@ -648,6 +648,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration example
   - H2: Streaming previews
   - H2: Voice messages
+  - H2: Reply controls and presentations
   - H2: Approval metadata
   - H3: Self-hosted push rules for quiet finalized previews
   - H2: Bot-to-bot rooms
