@@ -6152,6 +6152,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable supervision
   - H2: Use the operator CLI
   - H2: Branch from a local session
+  - H2: Fork a message in a supervised Chat
   - H2: Archive a local session
   - H2: Understand paired-node limits
   - H2: Metadata and permissions
@@ -9758,6 +9759,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Ownership
   - H2: Catalog flow
   - H2: Operator CLI boundary
+  - H2: Canonical message forks
   - H2: Local continuation
   - H2: Archive behavior
   - H2: Active thread safety
