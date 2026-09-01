@@ -3253,6 +3253,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it is
   - H2: Where it shows up
+  - H2: Usage date ranges
   - H2: Anthropic and OpenAI cost history
   - H2: Default usage footer mode
   - H3: Three distinct session states
