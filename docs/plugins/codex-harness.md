@@ -69,8 +69,9 @@ cleanup of commands that deliberately detach from that ownership.
 With the default `tools.exec.host: "auto"` and no active OpenClaw sandbox,
 Codex also receives `node_exec` for commands on paired nodes. Native shell
 remains on the Codex app-server host and workspace
-(Gateway-local for the default stdio deployment); `node_exec` selects a node by
-name or id, keeps OpenClaw's node approval policy in force, and waits for the
+(Gateway-local for the default stdio deployment); `node_exec` selects the sole
+connected node that supports `system.run`, or requires a name or id when several
+are eligible. It keeps OpenClaw's node approval policy in force and waits for the
 remote command to finish. Remote-node background follow-up is not available. If
 a finite runtime allowlist disables native Code Mode and leaves the turn without
 an execution environment, OpenClaw keeps its policy-filtered `exec` and
