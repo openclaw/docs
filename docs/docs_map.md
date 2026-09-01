@@ -3315,6 +3315,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser sign-in with 1Password for Claude
   - H2: Security notes
   - H2: Troubleshooting
+  - H3: Homebrew command symlinks
 
 ## gateway/audit.md
 
