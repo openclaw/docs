@@ -2630,6 +2630,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/managed-worktrees
 - Headings:
+  - H2: Choose where worktrees are stored
   - H2: Layout and names
   - H2: Capacity and disk space
   - H2: Provision ignored files
@@ -3622,6 +3623,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Channels
   - H2: Agent defaults, multi-agent, sessions, and messages
+  - H2: worktreeRoot
   - H2: Tools and custom providers
   - H2: Models
   - H2: MCP
