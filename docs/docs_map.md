@@ -2162,6 +2162,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw skills
   - H2: Commands
   - H2: Remove a ClawHub skill
+  - H2: Personal skill library
   - H2: Skill Workshop
   - H2: Related
 
@@ -9171,6 +9172,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Database layout
   - H2: Versioning contract
+  - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
@@ -10294,6 +10296,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/creating-skills
 - Headings:
   - H2: Create your first skill
+  - H2: Create a personal skill on a shared Gateway
   - H2: SKILL.md reference
   - H3: Required fields
   - H3: Optional frontmatter keys
@@ -10835,6 +10838,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/skill-workshop
 - Headings:
+  - H2: Personal library authoring
   - H2: How it works
   - H2: Lifecycle
   - H2: Collection review
@@ -10878,6 +10882,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Loading order
   - H2: Node-hosted skills
   - H2: Per-agent vs shared skills
+  - H2: Personal skills on a shared Gateway
+  - H3: Ownership and sharing
+  - H3: Revisions and session selection
   - H2: Agent allowlists
   - H2: Plugins and skills
   - H2: Reference a skill in a prompt
