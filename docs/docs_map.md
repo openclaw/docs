@@ -10845,6 +10845,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Show on a device
   - H2: Interactive widgets
   - H2: Dashboard capabilities
+  - H3: Read GitHub Actions runs
   - H2: Security and storage
   - H2: Related
 
@@ -11237,6 +11238,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Widget model and hosting
   - H3: Widgets host content; MCP apps are one content kind
   - H3: Plugin capability declarations
+  - H3: Authenticated GitHub reads
   - H3: Modeled residual: WebRTC data channels
   - H3: Transcript display: one widget card
   - H3: Server-sourced widgets (pinned MCP apps)
