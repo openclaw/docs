@@ -192,6 +192,20 @@ Malformed required-check evidence and cancelled required checks also stop
 verification. Server-enforced publisher binding and the final pinned-head merge
 request remain intact. Hosted mode adds no bypass.
 
+For a squash message whose GitHub preview contains obsolete prose, use an
+explicit reviewed body with `scripts/pr merge-run <PR> --body-file <path>`.
+The path is relative to the caller, and the native merge owner snapshots its
+regular UTF-8 file before verification. Empty files are valid. It preserves
+operator-provided text and trailers, appending any missing co-authors from the
+current GitHub preview and reviewed source commits. This option requires squash
+and a non-queue PR; all review, CI, exact-head, and admission checks still apply.
+Without the option, the existing GitHub preview behavior is unchanged.
+
+`merge-recover` accepts the same option after its required outcome ID and
+`--confirmed-operator-recovery`. Repeating `merge-run` with a retained outcome
+only reconciles that outcome, even if the original body file was removed; it
+never dispatches another request or changes an accepted message.
+
 ### Recover an existing PR run first
 
 For an existing terminal PR run with a diagnosed infrastructure failure or
