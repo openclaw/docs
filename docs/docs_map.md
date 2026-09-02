@@ -6137,6 +6137,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Shared Fast mode and Codex fast mode
   - H3: Inspect Codex threads locally
   - H3: Auth order
+  - H3: Scheduled app authority
   - H3: Environment isolation
   - H3: Dynamic tools and web search
   - H3: Config fields
