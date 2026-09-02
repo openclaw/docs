@@ -106,6 +106,7 @@ explicitly unsupported even though the ACP spawn and child are observable.
     internal context (not user-authored text) and includes:
 
     - `Result` — the latest visible `assistant` reply text from the child. Tool/toolResult output is not promoted into child results. Terminal failed runs do not reuse captured reply text.
+    - `Model route change` — when the terminal producer proves that fallback changed the requested model, one bounded and redacted route fact is carried separately from `Result`. Local and nested parents preserve it in their update. External channel parents keep it as private orchestration context, and raw direct-delivery fallback sends only `Result`.
     - `Status` — `completed; ready for parent review` / `failed` / `timed out` / `unknown`.
     - Compact runtime/token stats.
     - A review instruction telling the requester agent to verify the result before deciding whether the original task is done.

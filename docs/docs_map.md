@@ -11319,6 +11319,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Choose what reaches each device
   - H3: Use more than one Gateway on one phone
   - H2: Enable notifications in the macOS app
+  - H3: Background session completion
   - H2: Troubleshooting
   - H3: Enable is unavailable
   - H3: Browser permission is blocked
