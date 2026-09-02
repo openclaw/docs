@@ -10437,6 +10437,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session and turn shortcuts
   - H2: Allowlist (per agent)
   - H3: Restricting arguments with argPattern
+  - H2: MCP tool grants
   - H2: Standing grants for automations
   - H3: What a grant covers, and when it stops
   - H3: Grant lifetime
