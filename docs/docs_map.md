@@ -6082,6 +6082,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Auth and environment isolation
   - H2: Dynamic tools
   - H2: Timeouts
+  - H3: Turn execution and settlement
   - H2: Model discovery
   - H2: Restricted turns
   - H2: Workspace bootstrap files
@@ -6138,7 +6139,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Dynamic tools and web search
   - H3: Config fields
   - H3: Image loader ownership
-  - H3: Dynamic tool call timeouts
+  - H3: Turn liveness and timeouts
   - H3: Local testing env overrides
   - H2: Native Codex plugins
   - H2: Computer Use
