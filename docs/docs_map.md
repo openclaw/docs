@@ -8031,6 +8031,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Media legacy projection
   - H2: How to migrate
   - H2: Import path reference
+  - H3: Retained channel facade mappings
   - H2: Removed compatibility surfaces
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
