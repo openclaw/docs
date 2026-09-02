@@ -10622,6 +10622,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Add a server from the composer
   - H2: Add a server from the CLI
   - H2: Configure a server directly
+  - H2: Approvals
   - H2: Troubleshooting
   - H3: The server appears in Settings but exposes no tools
   - H3: A stdio server does not start
