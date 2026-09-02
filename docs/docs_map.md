@@ -1478,6 +1478,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: config schema
   - H3: config validate
   - H2: Values
+  - H3: Conditional writes
   - H2: config set modes
   - H3: Provider builder flags
   - H2: config patch
