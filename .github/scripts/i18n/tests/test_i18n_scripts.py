@@ -1759,6 +1759,289 @@ class I18NScriptTests(unittest.TestCase):
             json.loads(result.stdout),
         )
 
+    def test_mdx_syntax_repair_rescues_common_translation_damage(self) -> None:
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_syntax.mjs"
+        cases = [
+            # Fabricated unclosed element: the invented <id> token is removed
+            # and the translated prose stays.
+            (
+                '<ParamField path="prompt" type="string" label="Prompt" />\n\nUse a prompt.\n',
+                "Utilisez un <id> prompt.\n",
+                "Utilisez un  prompt.\n",
+            ),
+            # Stray closing tag is dropped and the unterminated flow element is
+            # closed on its own line.
+            (
+                "<div>\n  <span>Score</span>\n</div>\n",
+                "<div>\n  <span>Skor kartu</span>\n</span>\n",
+                "<div>\n  <span>Skor kartu</span>\n</div>\n\n",
+            ),
+            # Unquoted attribute values are quoted; junk where an attribute
+            # name was expected is dropped.
+            (
+                '<Tabs>\n  <Tab title="Questions">Answer</Tab>\n</Tabs>\n',
+                "<Tabs>\n  <Tab title=Domande 'freq> Risposta</Tab>\n</Tabs>\n",
+                '<Tabs>\n  <Tab title="Domande" freq> Risposta</Tab>\n</Tabs>\n',
+            ),
+            # A real element that lost its closer gets it back.
+            (
+                "<Note>Take care</Note>\n\nEnd.\n",
+                "<Note>Prendre soin\n\nFin.\n",
+                "<Note>Prendre soin</Note>\n\nFin.\n",
+            ),
+            # Unquoted values stop before the `/>` delimiter so self-closing
+            # syntax is preserved.
+            (
+                '<img src="guide" />\n',
+                "<img src=guide/>\n",
+                '<img src="guide"/>\n',
+            ),
+            # Terminated Markdown/HTML comments are valid downstream and are
+            # left untouched (never rewritten to MDX expression syntax).
+            (
+                "text note here more\n",
+                "texte <!-- note ici --> plus\n",
+                "texte <!-- note ici --> plus\n",
+            ),
+            # Unterminated comments are closed so the text stays commented out.
+            (
+                "text note here more\n",
+                "texte <!-- note ici\n",
+                "texte <!-- note ici -->\n",
+            ),
+            # Void elements become self-closing; comments stay intact and must
+            # not hide the real damage from diagnosis.
+            (
+                "<Note>Take care</Note>\n",
+                "<!-- translated -->\nLigne un<br>\n<Note>Prendre soin\n",
+                "<!-- translated -->\nLigne un<br />\n<Note>Prendre soin</Note>\n",
+            ),
+            # Real elements get closed; prose less-than stays untouched because
+            # diagnosis shares the downstream chain's tolerant masking.
+            (
+                "<Note>Take care</Note>\n",
+                "compare 1 < 2\n\n<Note>Prendre soin\n",
+                "compare 1 < 2\n\n<Note>Prendre soin</Note>\n",
+            ),
+            # Adjacent stray closers all get removed (mutable offsets are not
+            # patch identities), then the real element gets closed.
+            (
+                "<div>a</div>\n",
+                "<div>a</span></em>\n",
+                "<div>a</div>\n",
+            ),
+            # A fabricated flow-level element is removed, never closed: an
+            # undefined uppercase component would break MDX rendering.
+            (
+                "<div>a</div>\n",
+                "<Div>\ntexte\n",
+                "\ntexte\n",
+            ),
+            # The opener search must target the diagnosed element, not the
+            # first same-name token inside comments or code examples.
+            (
+                "<div>a</div>\n",
+                "<!-- <Div> example -->\n<Div>\ntexte\n",
+                "<!-- <Div> example -->\n\ntexte\n",
+            ),
+            (
+                "<div>a</div>\n",
+                "```\n<Div> example\n```\n\n<Div>\ntexte\n",
+                "```\n<Div> example\n```\n\n\ntexte\n",
+            ),
+            # Astral Unicode inside a terminated comment must not shift the
+            # masked-copy offsets used to locate the stray closer.
+            (
+                "<div>a</div>\n",
+                "<!-- \U0001F600 -->\n<div>a</span>\n",
+                "<!-- \U0001F600 -->\n<div>a</div>\n",
+            ),
+        ]
+        program = (
+            'import { createProcessor } from "@mdx-js/mdx";\n'
+            f"import {{ repairMdxSyntax }} from {json.dumps(repair.as_uri())};\n"
+            'const processor = createProcessor({ format: "mdx" });\n'
+            'const markdownProcessor = createProcessor({ format: "md" });\n'
+            f"const cases = {json.dumps(cases)};\n"
+            "for (const [source, translated, expected] of cases) {\n"
+            "  const result = repairMdxSyntax(processor, markdownProcessor, source, translated);\n"
+            "  if (result.value !== expected) {\n"
+            '    throw new Error(`unexpected repair: ${JSON.stringify(result.value)}`);\n'
+            "  }\n"
+            "}\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            cwd=REPO_ROOT,
+        )
+        self.assertEqual("", result.stdout)
+
+    def test_mdx_syntax_repair_leaves_valid_documents_untouched(self) -> None:
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_syntax.mjs"
+        program = (
+            'import { createProcessor } from "@mdx-js/mdx";\n'
+            f"import {{ repairMdxSyntax }} from {json.dumps(repair.as_uri())};\n"
+            'const processor = createProcessor({ format: "mdx" });\n'
+            'const markdownProcessor = createProcessor({ format: "md" });\n'
+            'const result = repairMdxSyntax(processor, markdownProcessor, "<Note>ok</Note>\\n", "<Note>ok</Note>\\n");\n'
+            "if (result.changed) throw new Error(`unexpected rewrite: ${JSON.stringify(result.value)}`);\n"
+        )
+        subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            cwd=REPO_ROOT,
+        )
+
+    def test_mdx_syntax_repair_fails_closed_on_unresolvable_damage(self) -> None:
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_syntax.mjs"
+        program = (
+            'import { createProcessor } from "@mdx-js/mdx";\n'
+            f"import {{ repairMdxSyntax }} from {json.dumps(repair.as_uri())};\n"
+            'const processor = createProcessor({ format: "mdx" });\n'
+            'const markdownProcessor = createProcessor({ format: "md" });\n'
+            "try {\n"
+            '  repairMdxSyntax(processor, markdownProcessor, "# T\\n", "{{ready &&\\n");\n'
+            "} catch (error) {\n"
+            "  console.log(String(error.message).slice(0, 40));\n"
+            '  process.exit(0);\n'
+            "}\n"
+            'throw new Error("expected the repair to fail closed");\n'
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            cwd=REPO_ROOT,
+        )
+        self.assertIn("MDX syntax repair exhausted", result.stdout)
+
+        # A multiline unterminated comment has no knowable end; the repair must
+        # refuse instead of exposing or hiding the remainder.
+        program = (
+            'import { createProcessor } from "@mdx-js/mdx";\n'
+            f"import {{ repairMdxSyntax }} from {json.dumps(repair.as_uri())};\n"
+            'const processor = createProcessor({ format: "mdx" });\n'
+            'const markdownProcessor = createProcessor({ format: "md" });\n'
+            "try {\n"
+            '  repairMdxSyntax(processor, markdownProcessor, "# T\\n", "<!-- hidden note\\nvisible text\\n");\n'
+            "} catch (error) {\n"
+            "  console.log(String(error.message).slice(0, 40));\n"
+            '  process.exit(0);\n'
+            "}\n"
+            'throw new Error("expected the repair to fail closed");\n'
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", program],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            cwd=REPO_ROOT,
+        )
+        self.assertIn("MDX syntax repair exhausted", result.stdout)
+
+    def test_package_artifact_repairs_mdx_syntax_before_protected_attributes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr/tools").mkdir(parents=True)
+            (repo / "docs/tools").mkdir(parents=True)
+            source = repo / "docs/tools/pdf.md"
+            translated = repo / "docs/fr/tools/pdf.md"
+            source.write_text(
+                '<Note path="prompt" type="string" label="Prompt">care</Note>\n',
+                encoding="utf-8",
+            )
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            translated.write_text(
+                '<Note path="invite" type="texte" label="Invite">soin',
+                encoding="utf-8",
+            )
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n", encoding="utf-8")
+
+            with (
+                chdir(repo),
+                env(
+                    {
+                        "GITHUB_WORKSPACE": str(repo),
+                        "LOCALE": "fr",
+                        "LOCALE_SLUG": "fr",
+                        "SOURCE_SHA": "source-a",
+                        "MODE": "full",
+                        "SHARD_INDEX": "0",
+                        "SHARD_TOTAL": "1",
+                        "WORKER_PARALLEL": "3",
+                        "THINKING_EFFORT": "xhigh",
+                        "PENDING_COUNT": "1",
+                        "TOTAL_PENDING_COUNT": "1",
+                        "ALL_COUNT": "1",
+                        "TRANSLATE_OUTCOME": "success",
+                        "MDX_CHECK_OUTCOME": "success",
+                        "MDX_REPAIR_OUTCOME": "skipped",
+                        "MDX_SCOPE_OUTCOME": "skipped",
+                        "MDX_RECHECK_OUTCOME": "skipped",
+                    }
+                ),
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            expected = '<Note path="prompt" type="string" label="Invite">soin</Note>'
+            self.assertEqual("", metadata["failed_reason"])
+            self.assertEqual("success", metadata["mdx_syntax_repair_outcome"])
+            self.assertEqual("success", metadata["mdx_protected_attribute_repair_outcome"])
+            self.assertEqual(expected, translated.read_text(encoding="utf-8"))
+
+    def test_syntax_repair_skips_empty_manifest_without_node(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text("", encoding="utf-8")
+            with patch.object(package_artifact.subprocess, "run") as run:
+                result = package_artifact.repair_mdx_syntax(repo, "fr", "fr", 0, 1)
+            self.assertEqual(("", [], False), result)
+            run.assert_not_called()
+
+    def test_repair_scripts_reject_locale_path_traversal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/tools").mkdir(parents=True)
+            (repo / "docs/tools/pdf.md").write_text("# Source\n", encoding="utf-8")
+            manifest = repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt"
+            manifest.write_text(str(repo / "docs/tools/pdf.md") + "\n", encoding="utf-8")
+            for script in (
+                ".github/scripts/i18n/repair_mdx_syntax.mjs",
+                ".github/scripts/i18n/repair_mdx_protected_attributes.mjs",
+            ):
+                result = subprocess.run(
+                    [
+                        "node",
+                        str(REPO_ROOT / script),
+                        "--workspace",
+                        str(repo),
+                        "--locale",
+                        "../escape",
+                        "--manifest",
+                        str(manifest),
+                        "--module-root",
+                        "/nonexistent",
+                    ],
+                    check=False,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                self.assertNotEqual(0, result.returncode, script)
+                self.assertIn("single safe path segment", result.stderr, script)
+
     def test_mdx_protected_attribute_repair_uses_parser_offsets(self) -> None:
         checker = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
         repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_protected_attributes.mjs"

@@ -69,6 +69,15 @@ payload/docs/.i18n/<locale>.tm.jsonl
 
 `metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
 
+### MDX repair chain
+
+The packaging path currently contains two deterministic repair stages:
+
+1. Syntax repair (`repair_mdx_syntax.mjs`): if a page no longer passes the repair chain's MDX parse, the parser is re-run in a bounded loop and each reported diagnostic is patched minimally — fabricated elements absent from the source are removed, missing or stray closing tags are resynced, void elements are self-closed, unquoted attribute values are quoted, and unterminated comments are closed. Markdown comments and prose less-than tokens are accepted untouched (the chain's tolerant parser already allows them), so translated prose is preserved. Unresolvable damage still fails the shard with a parser-backed reason.
+2. Protected-attribute repair (`repair_mdx_protected_attributes.mjs`): re-syncs protected attributes (`className`, `id`, `path`, `type`, `default`, `aria-hidden`, `target`, `rel`) byte-for-byte from the source page.
+
+Both stages only rewrite markup tokens; the final `check-docs-mdx` gate still validates every packaged page.
+
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
 ## Aggregate commit
