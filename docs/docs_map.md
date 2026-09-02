@@ -6143,6 +6143,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Config fields
   - H3: Image loader ownership
   - H3: Turn liveness and timeouts
+  - H3: Parallel chats and thread ownership
   - H3: Local testing env overrides
   - H2: Native Codex plugins
   - H2: Computer Use
