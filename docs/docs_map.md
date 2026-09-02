@@ -5615,6 +5615,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H2: Session colors
+  - H2: Diagrams in chat
   - H2: Requirements
   - H2: Quick start (pair + connect)
   - H2: Health summaries
