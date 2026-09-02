@@ -5843,6 +5843,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /platforms/mac/webchat
 - Headings:
+  - H2: Diagrams
   - H2: Session colors
   - H2: Multiple Gateway windows
   - H3: Gateway picker
