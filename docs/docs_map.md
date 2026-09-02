@@ -1801,6 +1801,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw memory
   - H2: memory status
   - H2: memory index
+  - H2: memory reset
   - H2: memory search
   - H2: memory forget
   - H3: Session selection
@@ -3507,6 +3508,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Agent defaults
   - H3: agents.defaults.workspace
+  - H3: agents.defaults.cwd
   - H3: agents.defaults.repoRoot
   - H3: agents.defaults.skills
   - H3: agents.defaults.skipBootstrap
