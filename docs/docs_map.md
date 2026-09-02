@@ -3928,6 +3928,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to use this endpoint
   - H2: Agent-first model contract
   - H2: Session behavior
+  - H3: Explicit incognito session continuation
   - H2: Request limits
   - H2: Chat tool contract
   - H3: Supported request fields
@@ -3946,6 +3947,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Authentication, security, and routing
   - H2: Session behavior
+  - H3: Explicit incognito session continuation
   - H2: Request shape
   - H2: Items (input)
   - H3: message
