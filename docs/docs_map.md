@@ -7901,6 +7901,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Harness-owned auth bootstrap
   - H3: Verified setup runtime artifacts
   - H3: Request-transport contract
+  - H3: Per-turn temporal context
   - H2: Register a harness
   - H3: Isolated completion
   - H3: Delegated execution
