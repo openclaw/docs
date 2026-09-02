@@ -5619,6 +5619,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Quick start (pair + connect)
   - H2: Health summaries
+  - H2: Apple Watch voice and chat
   - H2: Review command approvals
   - H2: Answer agent questions
   - H2: Optional direct Apple Watch node
