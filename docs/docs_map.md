@@ -9967,6 +9967,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Step 3: Sign the team in to the Control UI
   - H2: Step 4: Work in shared sessions
   - H2: Step 5: Bound what each person can do
+  - H3: Coding as a guest
   - H2: Verify
   - H2: When to split things up
   - H2: Related
