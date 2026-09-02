@@ -6174,6 +6174,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Before you begin
   - H2: Enable supervision
+  - H2: Start a new native Codex CLI
   - H2: Use the operator CLI
   - H2: Branch from a local session
   - H2: Fork a message in a supervised Chat
@@ -11212,6 +11213,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session icons
   - H2: Session colors
   - H2: New session page
+  - H3: Start a native coding CLI
+  - H3: OpenClaw Chat workspace startup
   - H2: What it can do (today)
   - H2: Import assistant memory
   - H2: MCP page
