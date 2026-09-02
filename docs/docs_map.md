@@ -10458,6 +10458,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Modes
   - H3: Inline eval (strictInlineEval)
   - H3: PATH handling
+  - H3: Python environments (uv)
   - H2: Session overrides (/exec)
   - H2: Exec approvals (companion app / node host)
   - H2: Allowlist + safe bins
