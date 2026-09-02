@@ -1000,6 +1000,8 @@ When gateway auth is configured, assistant local-media previews use a two-step r
 
 This keeps media rendering compatible with browser-native media elements without putting reusable gateway credentials in visible media URLs.
 
+Uploaded and local chat image previews rendered with native image elements keep an already-loaded image visible during temporary connection or metadata-renewal failures. Retention applies only to that mounted image; it does not extend its media ticket or authorize fresh reads. An explicit missing or access-denied response, or a change to the source, credentials, or access scope, clears the retained image.
+
 Generated images under `/api/chat/media/outgoing/...` use the same capability
 principle through `artifacts.download`. The authenticated WebSocket request
 authorizes the transcript artifact and returns a short-lived URL. The HTTP media
