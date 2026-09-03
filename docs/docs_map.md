@@ -39,6 +39,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Eligibility rules
   - H3: Resolution rules
   - H2: Agent copy portability
+  - H2: Personal model accounts
   - H2: Config-only auth routes
   - H2: Explicit auth order filtering
   - H2: Probe target resolution
@@ -1878,6 +1879,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Scan
   - H2: Aliases
   - H2: Fallbacks
+  - H2: Personal model accounts
   - H2: Auth profiles
   - H2: Related
 
@@ -2922,6 +2924,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Trust boundary
   - H2: The three ownership layers
   - H2: Assigning an owner
+  - H2: Per-person model accounts
   - H2: Finding sessions by owner
   - H2: Reading the avatars
   - H2: People cards
@@ -2947,6 +2950,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Multiple accounts (profiles) + routing
   - H3: 1) Preferred: separate agents
   - H3: 2) Advanced: multiple profiles in one agent
+  - H3: 3) Multi-user: personal accounts
   - H2: Related
 
 ## concepts/parallel-specialist-lanes.md
@@ -9223,6 +9227,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Versioning contract
   - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
+  - H2: Personal model accounts
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H2: Agent schema history
