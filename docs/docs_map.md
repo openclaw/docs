@@ -4108,6 +4108,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Roles and scopes
   - H3: Caps/commands/permissions (node)
   - H2: Presence
+  - H3: Node host stats
   - H3: Node background alive event
   - H2: Broadcast event scoping
   - H2: RPC method families
@@ -5258,6 +5259,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Log levels
   - H3: Targeted model transport diagnostics
   - H3: Trace correlation
+  - H3: Slow reply preparation
   - H3: Model call size and timing
   - H3: Console styles
   - H3: Redaction
