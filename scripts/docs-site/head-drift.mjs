@@ -13,6 +13,8 @@ export const pushTriggerPaths = [
   "package-lock.json",
   ".github/workflows/r2-pages.yml",
   ".openclaw-sync/source.json",
+  ".openclaw-sync/lib/docs-markdown.mjs",
+  ".openclaw-sync/lib/docs-redirects.mjs",
 ];
 
 const artifactIrrelevantPaths = [

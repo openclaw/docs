@@ -158,7 +158,7 @@ test("only admitted snapshots do expensive work or publish, including worker-onl
 
 test("scoped dispatches admit refreshed main content and fail stale admission for caller retries", () => {
   assert.equal(step("Check current docs main").env.SCOPED_CONTENT_SHA, "${{ steps.scoped-content.outputs.content_sha || '' }}");
-  assert.match(step("Refresh scoped docs content from main").run, /git checkout "\$\{content_sha\}" -- docs \.openclaw-sync\/source\.json/);
+  assert.match(step("Refresh scoped docs content from main").run, /git checkout "\$\{content_sha\}" -- docs \.openclaw-sync/);
   assert.deepEqual(step("Catch up docs main after publication").env, step("Check current docs main").env);
   for (const event of ["push", "workflow_dispatch"]) {
     for (const scope of ["full", "shell", "locale", "page", "none"]) {
@@ -206,6 +206,8 @@ test("catch-up requires admitted publication, including unchanged uploads and Wo
 
 const cases = [
   [[".openclaw-sync/source.json"], "artifact-affected"],
+  [[".openclaw-sync/lib/docs-markdown.mjs"], "artifact-affected"],
+  [[".openclaw-sync/lib/docs-redirects.mjs"], "artifact-affected"],
   [["docs/start/why-openclaw.md"], "artifact-affected"],
   [["README.md", "docs/a.md"], "artifact-affected"],
   [["README.md"], "artifact-unaffected"],
@@ -249,6 +251,7 @@ for (const [count, apiFailure, dispatches] of [["0", false, 1], ["1", false, 0],
 
 test("artifact-unaffected drift and refreshed scoped identity do not schedule unnecessary successors", (t) => {
   const f = gitFixture(t);
+  f.advance(".openclaw-sync/lib/docs-markdown.mjs", "shared parser B");
   const scoped = f.advance();
   const refreshed = f.runStep("Refresh scoped docs content from main");
   assert.equal(refreshed.status, 0, refreshed.stderr);
@@ -256,6 +259,7 @@ test("artifact-unaffected drift and refreshed scoped identity do not schedule un
   assert.equal(contentSha, scoped);
   assert.equal(f.git(f.checkout, "rev-parse", "HEAD"), f.initial, "workflow code stays on its selected ref");
   assert.equal(fs.readFileSync(path.join(f.checkout, "docs/page.md"), "utf8"), "B");
+  assert.equal(fs.readFileSync(path.join(f.checkout, ".openclaw-sync/lib/docs-markdown.mjs"), "utf8"), "shared parser B");
   const overrides = { EVENT_NAME: "workflow_dispatch", SCOPED_CONTENT_SHA: contentSha };
   const admitted = f.runStep("Check current docs main", overrides);
   assert.equal(admitted.status, 0, admitted.stderr);

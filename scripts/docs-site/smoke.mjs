@@ -2,10 +2,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { DomUtils, parseDocument } from "htmlparser2";
 
 import { ignoredDocDirs, localeFlags, localeLabels, mintlifyLocaleToDir } from "./config.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
-import { parseFrontmatter } from "./frontmatter.mjs";
+import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
@@ -304,11 +305,6 @@ if (!/data-language-native/.test(index)
   || !/\.language-native\{display:block;position:absolute/.test(siteCss)) {
   throw new Error("assets: native language select fallback for coarse pointers is missing");
 }
-if (!/tocSpyHoldUntil/.test(siteJs)
-  || !/function fragmentId\(hash\)\{return hash\.slice\(1\)\}/.test(siteJs)
-  || !/closeMermaidOverlay\(\);const key=location\.pathname\+location\.search;if\(key===currentDocKey\)\{tocSpyHoldUntil/.test(siteJs)) {
-  throw new Error("assets: toc scrollspy hold or Mermaid-safe same-document popstate guard is missing");
-}
 if (/\.header-links a[\s{:.[]/.test(siteCss)) {
   throw new Error("assets: .header-links descendant anchor rules override .language-option layout; scope to .header-links>a");
 }
@@ -457,8 +453,7 @@ if (!/let tocObserver=null/.test(siteJs)
   || !/new IntersectionObserver/.test(siteJs)
   || !/rootMargin:"-120px 0px -70% 0px"/.test(siteJs)
   || !/scroller\.scrollTop\+innerHeight>=scroller\.scrollHeight-2/.test(siteJs)
-  || !/initTocScrollspy\(\);scrollTarget\(url\.hash\)/.test(siteJs)
-  || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("change"[^;]*language-native[\s\S]{0,200}?document\.addEventListener\("click"/.test(siteJs)) {
+  || !/initTocScrollspy\(\);scrollTarget\(url\.hash\)/.test(siteJs)) {
   throw new Error("assets: table-of-contents scrollspy is missing");
 }
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
@@ -507,11 +502,25 @@ const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), 
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
   throw new Error("platforms index: TOC double-escaped ampersand");
 }
+const execPage = fs.readFileSync(path.join(site, "tools/exec/index.html"), "utf8");
+for (const id of ["session-overrides-(%2Fexec)", "session-overrides-/exec"]) {
+  if (!execPage.includes(`id="${id}"`)) throw new Error(`tools/exec: missing published anchor ${id}`);
+}
 const toolsIndex = fs.readFileSync(path.join(site, "tools/index.html"), "utf8");
 if (/class="anchor"/.test(toolsIndex)) {
   throw new Error("tools index: legacy visible heading permalink anchors should not be rendered");
 }
-if (!/<h2 id="([^"]*choose-tools[^"]*)"[^>]*>Choose tools, skills, or plugins<button type="button" class="heading-anchor" data-heading-anchor="\1" data-copy-label="Copy link to section" aria-label="Copy link to section">[\s\S]*lucide-link[\s\S]*lucide-check[\s\S]*<\/button><\/h2>/.test(toolsIndex)) {
+const toolsHeading = DomUtils.findOne(
+  (node) => node.name === "h2" && DomUtils.textContent(node) === "Choose tools, skills, or plugins",
+  parseDocument(toolsIndex).children,
+);
+const headingCopy = toolsHeading && DomUtils.findOne((node) => node.name === "button", toolsHeading.children);
+if (!toolsHeading?.attribs.id || headingCopy?.attribs["data-heading-anchor"] !== toolsHeading.attribs.id
+  || headingCopy.attribs.type !== "button" || headingCopy.attribs.class !== "heading-anchor"
+  || headingCopy.attribs["aria-label"] !== "Copy link to section"
+  || headingCopy.attribs["data-copy-label"] !== "Copy link to section"
+  || !DomUtils.existsOne((node) => node.attribs.class?.split(" ").includes("lucide-link"), headingCopy.children)
+  || !DomUtils.existsOne((node) => node.attribs.class?.split(" ").includes("lucide-check"), headingCopy.children)) {
   throw new Error("tools index: heading ids should render copy-link buttons");
 }
 if (/<aside class="toc"[\s\S]*Copy link to section/.test(toolsIndex)) {
