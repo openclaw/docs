@@ -5413,6 +5413,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Isolate hosted worker sessions in containers
   - H3: OpenCode and Pi sessions
   - H3: Terminal file uploads
+  - H3: Agent file transfers
   - H2: Invoking commands
   - H2: Command policy
   - H2: Config (openclaw.json)
