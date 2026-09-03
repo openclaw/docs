@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { parseFrontmatter } from "./frontmatter.mjs";
+import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
 test("parses YAML frontmatter and strips its delimiters", () => {
   assert.deepEqual(

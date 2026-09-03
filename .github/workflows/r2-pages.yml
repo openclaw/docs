@@ -14,6 +14,8 @@ on:
       - "package-lock.json"
       - ".github/workflows/r2-pages.yml"
       - ".openclaw-sync/source.json"
+      - ".openclaw-sync/lib/docs-markdown.mjs"
+      - ".openclaw-sync/lib/docs-redirects.mjs"
   workflow_dispatch:
     inputs:
       artifact_scope:
@@ -154,7 +156,7 @@ jobs:
           content_sha="$(git rev-parse refs/remotes/origin/main)"
           # Scoped translation deploys must test the workflow/ref under review
           # while publishing the content that the finalizer just wrote to main.
-          git checkout "${content_sha}" -- docs .openclaw-sync/source.json
+          git checkout "${content_sha}" -- docs .openclaw-sync
           echo "content_sha=${content_sha}" >> "${GITHUB_OUTPUT}"
           echo "Scoped docs content refreshed from main ${content_sha}."
 

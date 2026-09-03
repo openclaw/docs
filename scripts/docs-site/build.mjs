@@ -9,9 +9,9 @@ import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
-import { parseFrontmatter } from "./frontmatter.mjs";
+import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
-import { resolveRedirects } from "./redirects.mjs";
+import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
@@ -256,7 +256,7 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(expandSnippets(page.body, page.file), md), page.locale);
+  const html = rewriteInternalUrls(renderMdxish(page.raw, md, { sourceFile: page.file, root, pageRoute: pageRoute(page) }), page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -751,6 +751,7 @@ function writeRedirects() {
     redirects: config.redirects ?? [],
     pages: pages.map((page) => ({ route: pageRoute(page), markdownRoute: pageMarkdownRoute(page) })),
     localeCodes,
+    knownLocales: Object.keys(localeLabels),
     prefixes: [...new Set([basePath, legacyBasePath].filter(Boolean))],
     publicPath,
   });
@@ -783,25 +784,6 @@ function componentLabel(name, attrs) {
   const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
   const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
   return label ? `\n${label}\n` : `\n${name}\n`;
-}
-
-function expandSnippets(input, sourceFile, seen = new Set()) {
-  return input.replace(/<Snippet\b([^>]*)\/>/g, (_, rawAttrs) => {
-    const attrs = parseSimpleAttrs(rawAttrs);
-    const ref = attrs.file ?? attrs.src;
-    if (!ref) return "";
-    const target = path.resolve(path.dirname(sourceFile), ref);
-    if (!target.startsWith(root) || seen.has(target) || !fs.existsSync(target)) return "";
-    const nextSeen = new Set(seen);
-    nextSeen.add(target);
-    const parsed = parseFrontmatter(fs.readFileSync(target, "utf8"));
-    return `\n${expandSnippets(parsed.content, target, nextSeen).trim()}\n`;
-  });
-}
-
-function parseSimpleAttrs(rawAttrs) {
-  return Object.fromEntries([...String(rawAttrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)'|\{([^}]*)\}|([^\s>]+))/g)]
-    .map((match) => [match[1], match[2] ?? match[3] ?? match[4] ?? match[5] ?? ""]));
 }
 
 async function renderPageOgCards() {

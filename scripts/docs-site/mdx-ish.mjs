@@ -1,5 +1,4 @@
-import MarkdownIt from "markdown-it";
-import anchor from "markdown-it-anchor";
+import { createDocsMarkdown, parseDocsDocument, rewriteDocsRelativeLinks, parseAttrs, markerPrefix, inlineMarkerPrefix } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import hljs from "highlight.js/lib/core";
 import bash from "highlight.js/lib/languages/bash";
 import css from "highlight.js/lib/languages/css";
@@ -22,8 +21,6 @@ import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
 import { icons as lucideIcons } from "lucide";
 
-const markerPrefix = "OPENCLAW_DOCS_MARKER";
-const inlineMarkerPrefix = "OPENCLAW_DOCS_INLINE";
 const languages = {
   bash,
   css,
@@ -67,33 +64,13 @@ const languageAliases = new Map([
   ["text", "plaintext"],
   ["txt", "plaintext"],
 ]);
-const knownBlocks = new Map([
-  ["AccordionGroup", ["accordion-group", ""]],
-  ["Steps", ["steps", ""]],
-  ["Tabs", ["tabs", ""]],
-  ["CodeGroup", ["code-group", ""]],
-  ["TileGroup", ["tile-group", ""]],
-  ["CTAGroup", ["cta-grid", ""]],
-  ["StatGrid", ["stat-grid", ""]]
-]);
-const callouts = new Map([
-  ["Note", "Note"],
-  ["Warning", "Warning"],
-  ["Tip", "Tip"],
-  ["Info", "Info"],
-  ["Check", "Check"],
-  ["Say", "Say"],
-  ["Banner", "Banner"],
-  ["Update", "Update"]
-]);
-
 export function createMarkdownRenderer() {
-  const md = new MarkdownIt({
-    html: true,
-    linkify: false,
-    typographer: false,
-    highlight: highlightCode
-  }).use(anchor);
+  const md = createDocsMarkdown({ highlight: highlightCode });
+  const renderHeadingOpen = md.renderer.rules.heading_open ?? renderToken;
+  md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+    const alias = tokens[idx].meta?.anchorAlias;
+    return `${renderHeadingOpen(tokens, idx, options, env, self)}${alias ? `<span id="${escapeAttr(alias)}" class="anchor-alias" aria-hidden="true"></span>` : ""}`;
+  };
   const renderHeadingClose = md.renderer.rules.heading_close ?? renderToken;
   md.renderer.rules.heading_close = (tokens, idx, options, env, self) => {
     const headingOpen = tokens[idx - 2];
@@ -223,95 +200,9 @@ function mermaidHtml(source) {
   return `<figure class="oc-mermaid" data-mermaid="${escapeAttr(diagram)}"><pre><code>${escapeHtml(diagram)}</code></pre></figure>`;
 }
 
-export function renderMdxish(markdown, md) {
-  const prepared = preprocess(markdown);
-  return postprocess(md.render(prepared));
-}
-
-function preprocess(input) {
-  let out = input.replace(/\r\n/g, "\n");
-  out = out.replace(/^import\s+.+?;?\s*$/gm, "");
-  out = out.replace(/<Mermaid\b[^>]*>([\s\S]*?)<\/Mermaid>/g, (_, body) => `\n${marker("mermaidBlock", body)}\n`);
-  out = out.replace(/<Chart\b([^>]*)\/>/g, (_, attrs) => `\n${marker("chart", JSON.stringify({ attrs, body: "" }))}\n`);
-  out = out.replace(/<Chart\b([^>]*)>([\s\S]*?)<\/Chart>/g, (_, attrs, body) => `\n${marker("chart", JSON.stringify({ attrs, body }))}\n`);
-  out = replaceBreaksOutsideFences(out);
-
-  out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
-  out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
-  out = out.replace(/<\/Card>/g, `\n${marker("cardClose")}\n`);
-  out = out.replace(/<CTA\b([^>]*)>/g, (_, attrs) => `\n${marker("ctaOpen", attrs)}\n`);
-  out = out.replace(/<\/CTA>/g, `\n${marker("ctaClose")}\n`);
-  out = out.replace(/<CTACard\b([^>]*)\/>/g, (_, attrs) => `${marker("ctaCardSelf", attrs)}\n`);
-  out = out.replace(/<CTACard\b([^>]*)>/g, (_, attrs) => `\n${marker("ctaCardOpen", attrs)}\n`);
-  out = out.replace(/<\/CTACard>/g, `\n${marker("ctaCardClose")}\n`);
-  out = out.replace(/<CardGroup\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
-  out = out.replace(/<\/CardGroup>/g, `\n${marker("blockClose", "card-grid")}\n`);
-  out = out.replace(/<Columns\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
-  out = out.replace(/<\/Columns>/g, `\n${marker("blockClose", "card-grid")}\n`);
-  out = out.replace(/<Lead\b[^>]*>/g, `\n${marker("leadOpen")}\n`);
-  out = out.replace(/<\/Lead>/g, `\n${marker("leadClose")}\n`);
-  out = out.replace(/<PullQuote\b([^>]*)>/g, (_, attrs) => `\n${marker("pullQuoteOpen", attrs)}\n`);
-  out = out.replace(/<\/PullQuote>/g, `\n${marker("pullQuoteClose")}\n`);
-  out = out.replace(/<Stat\b([^>]*)\/>/g, (_, attrs) => `${marker("statSelf", attrs)}\n`);
-  out = out.replace(/<Stat\b([^>]*)>/g, (_, attrs) => `\n${marker("statOpen", attrs)}\n`);
-  out = out.replace(/<\/Stat>/g, `\n${marker("statClose")}\n`);
-
-  out = out.replace(/<Step\b([^>]*)>/g, (_, attrs) => `\n${marker("stepOpen", attrs)}\n`);
-  out = out.replace(/<\/Step>/g, `\n${marker("stepClose")}\n`);
-  out = out.replace(/<Tab\b([^>]*)>/g, (_, attrs) => `\n${marker("tabOpen", attrs)}\n`);
-  out = out.replace(/<\/Tab>/g, `\n${marker("tabClose")}\n`);
-  out = out.replace(/<Accordion\b([^>]*)>/g, (_, attrs) => `\n${marker("accordionOpen", attrs)}\n`);
-  out = out.replace(/<\/Accordion>/g, `\n${marker("accordionClose")}\n`);
-  out = out.replace(/<Expandable\b([^>]*)>/g, (_, attrs) => `\n${marker("accordionOpen", attrs)}\n`);
-  out = out.replace(/<\/Expandable>/g, `\n${marker("accordionClose")}\n`);
-  out = out.replace(/<Frame\b([^>]*)>/g, (_, attrs) => `\n${marker("frameOpen", attrs)}\n`);
-  out = out.replace(/<\/Frame>/g, `\n${marker("frameClose")}\n`);
-  out = out.replace(/<Panel\b([^>]*)>/g, (_, attrs) => `\n${marker("panelOpen", attrs)}\n`);
-  out = out.replace(/<\/Panel>/g, `\n${marker("panelClose")}\n`);
-  out = out.replace(/<Prompt\b([^>]*)>/g, (_, attrs) => `\n${marker("promptOpen", attrs)}\n`);
-  out = out.replace(/<\/Prompt>/g, `\n${marker("promptClose")}\n`);
-  out = out.replace(/<ParamField\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
-  out = out.replace(/<\/ParamField>/g, `\n${marker("paramClose")}\n`);
-  out = out.replace(/<(?:Field|Property|ResponseField)\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
-  out = out.replace(/<\/(?:Field|Property|ResponseField)>/g, `\n${marker("paramClose")}\n`);
-  out = out.replace(/<Tile\b([^>]*)\/>/g, (_, attrs) => `${marker("tileSelf", attrs)}\n`);
-  out = out.replace(/<Tile\b([^>]*)>/g, (_, attrs) => `\n${marker("tileOpen", attrs)}\n`);
-  out = out.replace(/<\/Tile>/g, `\n${marker("tileClose")}\n`);
-  out = out.replace(/<Badge\b([^>]*)\/>/g, (_, attrs) => inlineMarker("badgeSelf", attrs));
-  out = out.replace(/<Badge\b([^>]*)>/g, (_, attrs) => inlineMarker("badgeOpen", attrs));
-  out = out.replace(/<\/Badge>/g, inlineMarker("badgeClose"));
-  out = out.replace(/<Tooltip\b([^>]*)>/g, (_, attrs) => inlineMarker("tooltipOpen", attrs));
-  out = out.replace(/<\/Tooltip>/g, inlineMarker("tooltipClose"));
-
-  for (const [name, [kind]] of knownBlocks) {
-    out = out.replace(new RegExp(`<${name}\\b[^>]*>`, "g"), `\n${marker("blockOpen", kind)}\n`);
-    out = out.replace(new RegExp(`</${name}>`, "g"), `\n${marker("blockClose", kind)}\n`);
-  }
-  for (const [name, label] of callouts) {
-    out = out.replace(new RegExp(`<${name}\\b[^>]*>`, "g"), `\n${marker("calloutOpen", label)}\n`);
-    out = out.replace(new RegExp(`</${name}>`, "g"), `\n${marker("calloutClose")}\n`);
-  }
-
-  out = out.replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => escapeHtml(`<${name}${attrs}>`));
-  out = out.replace(/<\/([A-Z][A-Za-z0-9_.-]*)>/g, (_, name) => escapeHtml(`</${name}>`));
-  return dedentComponentChildren(out);
-}
-
-function replaceBreaksOutsideFences(input) {
-  const lines = input.split("\n");
-  let fence = null;
-  return lines.map((line) => {
-    const marker = line.match(/^ {0,3}(`{3,}|~{3,})/)?.[1];
-    if (marker) {
-      if (!fence) {
-        fence = { char: marker[0], length: marker.length };
-      } else if (marker[0] === fence.char && marker.length >= fence.length) {
-        fence = null;
-      }
-      return line;
-    }
-    return fence ? line : line.replace(/<br\s*\/?>/gi, "\n");
-  }).join("\n");
+export function renderMdxish(markdown, md, options) {
+  const { tokens, env } = parseDocsDocument(markdown, md, options);
+  return rewriteDocsRelativeLinks(postprocess(md.renderer.render(tokens, md.options, env)), options);
 }
 
 function postprocess(html) {
@@ -321,8 +212,12 @@ function postprocess(html) {
     pullQuote: []
   };
   return normalizeHtmlAttributes(html)
-    .replace(/(<div class="maturity-category-docs">)([\s\S]*?)(<\/div>)/g, (_, open, body, close) => `${open}${normalizeEmbeddedMarkdownLinks(body)}${close}`)
-    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload, state))
+    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => {
+      const html = expandMarker(payload, state);
+      const encodedId = payload.split(":")[2];
+      const id = encodedId ? Buffer.from(encodedId, "base64url").toString("utf8") : "";
+      return id ? html.replace(/^<[a-z]+/, (tag) => `${tag} id="${escapeAttr(id)}"`) : html;
+    })
     .replace(/<table>([\s\S]*?)<\/table>/g, `<div class="oc-table-wrap"><table class="oc-table">$1</table></div>`)
     .replace(new RegExp(`${inlineMarkerPrefix}:([A-Za-z0-9]+):([A-Za-z0-9_-]*):`, "g"), (_, kind, encoded) => expandInlineMarker(`${kind}:${encoded}`));
 }
@@ -356,20 +251,6 @@ function styleObjectToCss(body) {
     if (value) declarations.push(`${key}: ${value}`);
   }
   return declarations.join("; ");
-}
-
-function normalizeEmbeddedMarkdownLinks(body) {
-  return body.replace(/\[([^\]]+)\]\(((?:\/|https?:\/\/)[^)\s]+)\)/g, (_, label, href) => (
-    `<a href="${escapeAttr(href)}">${escapeHtml(label)}</a>`
-  ));
-}
-
-function marker(kind, payload = "") {
-  return `${markerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}`;
-}
-
-function inlineMarker(kind, payload = "") {
-  return `${inlineMarkerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}:`;
 }
 
 function expandMarker(payload, state = {}) {
@@ -418,6 +299,8 @@ function expandMarker(payload, state = {}) {
   if (kind === "statSelf") return statHtml(value, true);
   if (kind === "statOpen") return statHtml(value, false);
   if (kind === "statClose") return "</div></section>";
+  if (kind === "stepsOpen") return `<div class="oc-steps">`;
+  if (kind === "stepsClose") return "</div>";
   if (kind === "stepOpen") return `<li class="oc-step"><h3>${escapeHtml(parseAttrs(value).title ?? "Step")}</h3>`;
   if (kind === "stepClose") return "</li>";
   if (kind === "tabOpen") return `<section class="oc-tab"><h3>${escapeHtml(parseAttrs(value).title ?? "Tab")}</h3>`;
@@ -730,42 +613,6 @@ function iconSvg(name) {
     iconCache.set(key, body);
   }
   return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
-}
-
-function cardGridClass(rawAttrs) {
-  const attrs = parseAttrs(rawAttrs);
-  const cols = Math.max(1, Math.min(4, Number.parseInt(attrs.cols ?? "", 10) || 2));
-  return `card-grid oc-card-cols-${cols}`;
-}
-
-function dedentComponentChildren(markdown) {
-  let depth = 0;
-  return markdown
-    .split("\n")
-    .map((line) => {
-      const markerMatch = line.match(new RegExp(`^${markerPrefix}:([^:]+):`));
-      if (markerMatch) {
-        if (markerMatch[1].endsWith("Close") || markerMatch[1] === "blockClose" || markerMatch[1] === "calloutClose") {
-          depth = Math.max(0, depth - 1);
-        }
-        const markerLine = line;
-        if (markerMatch[1].endsWith("Open") || markerMatch[1] === "blockOpen" || markerMatch[1] === "calloutOpen") {
-          depth += 1;
-        }
-        return markerLine;
-      }
-      if (depth <= 0 || !line.startsWith(" ")) return line;
-      return line.replace(new RegExp(`^ {1,${depth * 2}}`), "");
-    })
-    .join("\n");
-}
-
-function parseAttrs(raw) {
-  const attrs = {};
-  for (const match of raw.matchAll(/([A-Za-z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|\{([^}]*)\}|([^\s>]+)))?/g)) {
-    attrs[match[1]] = match[2] ?? match[3] ?? match[4] ?? match[5] ?? "";
-  }
-  return attrs;
 }
 
 function slug(value) {
