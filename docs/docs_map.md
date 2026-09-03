@@ -4058,6 +4058,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/permission-modes
 - Headings:
   - H2: Session root and defaults
+  - H2: Delegated setup and repair
   - H2: Change permissions during a task
   - H2: Policy precedence and clamping
 
