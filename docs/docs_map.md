@@ -5210,6 +5210,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/updating
 - Headings:
   - H2: Recommended: openclaw update
+  - H3: From chat
   - H2: Retire update recovery data
   - H2: Switch between npm and git installs
   - H2: Source-checkout servers (reference script)
