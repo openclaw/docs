@@ -9281,6 +9281,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Remote endpoint config
   - H2: Provider-specific config
   - H2: Indexing behavior
+  - H3: File-watcher pressure
   - H2: Hybrid search config
   - H3: Full example
   - H2: Additional memory paths
