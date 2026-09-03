@@ -8875,6 +8875,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Usage and cost tracking
   - H2: Quick choice
+  - H2: GPT-6 Astra
   - H2: Naming map
   - H2: Implicit agent runtime
   - H2: GPT-5.6 limited preview
