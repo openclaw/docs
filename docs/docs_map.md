@@ -7911,6 +7911,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What core still owns
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
+  - H3: Bound native session ownership
   - H3: Verified setup runtime artifacts
   - H3: Request-transport contract
   - H3: Per-turn temporal context
