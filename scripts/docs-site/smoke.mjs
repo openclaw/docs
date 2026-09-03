@@ -5,6 +5,7 @@ import { execFileSync } from "node:child_process";
 import { DomUtils, parseDocument } from "htmlparser2";
 
 import { ignoredDocDirs, localeFlags, localeLabels, mintlifyLocaleToDir } from "./config.mjs";
+import { chromeStrings } from "./chrome-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
@@ -72,6 +73,7 @@ const poison = [
 for (const locale of activeLocaleCodes()) {
   if (!localeLabels[locale]) throw new Error(`locale metadata: missing label for ${locale}`);
   if (!localeFlags[locale]) throw new Error(`locale metadata: missing flag for ${locale}`);
+  if (!Object.hasOwn(chromeStrings, locale)) throw new Error(`chrome strings: missing translations for ${locale}`);
 }
 
 for (const rel of required) {
@@ -84,6 +86,7 @@ for (const rel of required) {
     if (pattern.test(html)) throw new Error(`${rel}: poison matched ${pattern}`);
   }
 }
+assertLocalizedChrome();
 if (!shellOnly) {
   for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
     if (fs.existsSync(path.join(site, rel))) throw new Error(`${rel}: full-site LLM corpus should not be emitted`);
@@ -914,6 +917,41 @@ function assertEditSourceLinks() {
   assertEditSourceSample("de/channels/index.html", "https://github.com/openclaw/openclaw/edit/main/docs/channels/index.md");
   if (missingEdit > 0) {
     console.log(`edit source audit: ${missingEdit} page tool(s) intentionally have no edit source link`);
+  }
+}
+
+function assertLocalizedChrome() {
+  for (const locale of activeLocaleCodes()) {
+    const rel = `${locale === "en" ? "" : `${locale}/`}start/getting-started/index.html`;
+    const file = path.join(site, rel);
+    if (!fs.existsSync(file)) throw new Error(`chrome strings: missing rendered sample ${rel}`);
+    const document = parseDocument(fs.readFileSync(file, "utf8"));
+    const strings = chromeStrings[locale];
+    const byClass = (className) => DomUtils.findOne(
+      (node) => node.attribs?.class?.split(" ").includes(className),
+      document.children,
+    );
+    const text = (node) => DomUtils.textContent(node).trim();
+    const card = byClass("community-invite");
+    const image = byClass("community-invite__art");
+    const close = byClass("community-invite__close");
+    const title = byClass("community-invite__title");
+    const body = byClass("community-invite__text");
+    const cta = byClass("community-invite__cta");
+    const toc = byClass("toc");
+    const tocSummary = toc && DomUtils.findOne((node) => node.name === "summary", toc.children);
+    const tocHeading = toc && DomUtils.findOne((node) => node.name === "h2", toc.children);
+    if (card?.attribs["aria-label"] !== strings.communityLabel
+      || image?.attribs.alt !== strings.communityImageAlt
+      || close?.attribs["aria-label"] !== strings.communityDismissLabel
+      || text(title) !== strings.communityTitle
+      || text(body) !== strings.communityBody
+      || text(cta) !== strings.communityCta
+      || toc?.attribs["aria-label"] !== strings.onThisPage
+      || text(tocSummary) !== strings.onThisPage
+      || text(tocHeading) !== strings.onThisPage) {
+      throw new Error(`chrome strings: ${rel} did not render its locale table`);
+    }
   }
 }
 
