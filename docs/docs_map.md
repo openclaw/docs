@@ -11235,6 +11235,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui
 - Headings:
   - H2: Environment identity
+  - H2: Community invitation
   - H2: New session names
   - H2: Quick open (local)
   - H2: Device pairing (first connection)
