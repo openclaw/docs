@@ -6104,6 +6104,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Thread bindings and model changes
   - H2: Supervision and safe continuation
   - H2: Visible replies and heartbeats
+  - H2: Final answers after settled tool work
   - H2: Hook boundaries
   - H2: Experimental sandbox process streaming
   - H2: V1 support contract
