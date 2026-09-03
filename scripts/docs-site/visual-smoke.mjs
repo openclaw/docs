@@ -921,6 +921,10 @@ async function checkPageActions(page, label) {
     document.body.append(radiusProbe);
     const controlRadius = getComputedStyle(radiusProbe).borderTopLeftRadius;
     radiusProbe.remove();
+    const cornerRadiusScale = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--oc-corner-radius-scale"),
+    ) || 1;
+    const segmentRadius = `${Number.parseFloat(controlRadius) * cornerRadiusScale}px`;
     const primaryRightBorder = parseFloat(primaryStyle.borderRightWidth);
     const summaryLeftBorder = parseFloat(summaryStyle.borderLeftWidth);
     const seamDelta = summaryRect.left - primaryRect.right;
@@ -955,6 +959,7 @@ async function checkPageActions(page, label) {
         summaryStyle.borderBottomLeftRadius,
       ],
       controlRadius,
+      segmentRadius,
       whiteSpace: primaryStyle.whiteSpace,
       labelHeight: labelRect.height,
       sameLine: Math.abs(iconRect.top - labelRect.top) < 4,
@@ -973,8 +978,8 @@ async function checkPageActions(page, label) {
     || closed.seamDelta > 0
     || closed.seamDelta < -1
     || !closeEnough(closed.seamWidth, 1)
-    || closed.primaryRadii.join(" ") !== `${closed.controlRadius} 0px 0px ${closed.controlRadius}`
-    || closed.summaryRadii.join(" ") !== `0px ${closed.controlRadius} ${closed.controlRadius} 0px`
+    || closed.primaryRadii.join(" ") !== `${closed.segmentRadius} 0px 0px ${closed.segmentRadius}`
+    || closed.summaryRadii.join(" ") !== `0px ${closed.segmentRadius} ${closed.segmentRadius} 0px`
     || closed.whiteSpace !== "nowrap"
     || closed.labelHeight > closed.primaryHeight
     || !closed.sameLine
