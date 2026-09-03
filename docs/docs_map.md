@@ -6049,6 +6049,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config shape
   - H2: Advanced backend hooks
   - H3: parseJsonlEvent: provider-specific JSONL streams
+  - H3: parseJsonlLifecycleEvent: provider-native lifecycle records
   - H3: ownsNativeCompaction: opting out of OpenClaw compaction
   - H2: MCP tool bridge
   - H2: Selecting the backend
