@@ -1468,6 +1468,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage
   - H2: Options
   - H2: Install flow
+  - H2: Permission failures
   - H2: Notes
   - H2: Related
 
