@@ -127,10 +127,13 @@ function parseOptionalPositiveInt(value, name) {
 
 function collectPages(localeList) {
   const result = [];
+  const localeRoots = new Set(localeList.filter((locale) => !locale.root).map((locale) => locale.code));
   for (const locale of localeList) {
     const base = locale.root ? docsDir : path.join(docsDir, locale.code);
     for (const file of walkDocs(base)) {
       const rel = path.relative(base, file).replaceAll(path.sep, "/");
+      // Only the English owner excludes foreign roots; walkDocs remains an all-source traversal.
+      if (locale.root && localeRoots.has(rel.split("/")[0])) continue;
       if (ignoredDocFiles.has(rel)) continue;
       const raw = fs.readFileSync(file, "utf8");
       const parsed = parseFrontmatter(raw);
