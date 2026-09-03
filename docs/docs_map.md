@@ -1237,6 +1237,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Measured shard weights
   - H2: ClawSweeper activity forwarding
   - H2: Manual dispatches
+  - H3: Windows Testbox Probe
   - H2: Runners
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
