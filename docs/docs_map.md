@@ -9233,6 +9233,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
   - H2: Personal model accounts
+  - H2: Apple companion delivery journals
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H2: Agent schema history
