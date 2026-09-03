@@ -329,6 +329,7 @@ ${pager(prev, next)}
 ${tocHtml(toc)}
 </main>
 </div>
+${communityInvite()}
 ${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
@@ -386,6 +387,23 @@ function sidebar(page, nav, activeTab) {
 <details class="mobile-section-switcher"><summary><span class="mobile-section-copy"><span class="mobile-section-label">Section</span><strong>${escapeHtml(currentTab?.title ?? "Docs")}</strong></span><span class="mobile-section-chevron" aria-hidden="true">${icon("chevron-down")}</span></summary><nav class="mobile-tabs" aria-label="Docs sections">${mobileTabs}</nav></details>
 <p class="sidebar-section-label">In this section</p>
 <nav aria-label="${escapeAttr(`${currentTab?.title ?? "Docs"} pages`)}">${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
+</aside>`;
+}
+
+// Floats over the page instead of docking into the sidebar, so it stays independent of the
+// nav layout. Ships hidden so a browser that already dismissed it never flashes the card;
+// the shell script reveals it only when local storage is readable and holds no dismissal.
+function communityInvite() {
+  return `<aside class="community-invite" aria-label="Join the OpenClaw community on Discord" hidden>
+<div class="community-invite__header">
+<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="A lobster beside the Discord mark on a lit seafloor pedestal" width="1024" height="538" loading="lazy" decoding="async">
+<button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="Dismiss and don't show again">${icon("x")}</button>
+</div>
+<div class="community-invite__body">
+<h2 class="community-invite__title">Come build with us</h2>
+<p class="community-invite__text">Ask anything, show what you're making, and find out what everyone else is building. Or just say hi.</p>
+<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>Join us on Discord</span></a>
+</div>
 </aside>`;
 }
 
