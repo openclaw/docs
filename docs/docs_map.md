@@ -1626,6 +1626,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw doctor
   - H2: Postures
+  - H2: Control UI assets
   - H2: Examples
   - H2: Options
   - H2: Lint mode
