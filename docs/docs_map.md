@@ -11402,6 +11402,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session and dashboard URLs
   - H3: Stability contract
   - H3: Native catalog links
+  - H2: Person activity URLs
   - H2: Focus presentation routes
   - H2: Beam share URLs
   - H2: Route table
