@@ -390,9 +390,12 @@ function sidebar(page, nav, activeTab) {
 </aside>`;
 }
 
-// Floats over the page instead of docking into the sidebar, so it stays independent of the
-// nav layout. Ships hidden so a browser that already dismissed it never flashes the card;
-// the shell script reveals it only when local storage is readable and holds no dismissal.
+// Body-level sibling of .doc-shell, never a child of .sidebar: the narrow-layout drawer is
+// transformed and masked, which would make it the containing block for this position:fixed card
+// and clip it. CSS floats it over wide layouts and docks it flush to the drawer bottom on narrow
+// ones, so one element and one dismissal serve both. Ships hidden so a browser that already
+// dismissed it never flashes the card; the shell script reveals it only when local storage is
+// readable and holds no dismissal.
 function communityInvite() {
   return `<aside class="community-invite" aria-label="Join the OpenClaw community on Discord" hidden>
 <div class="community-invite__header">

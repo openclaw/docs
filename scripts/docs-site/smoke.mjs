@@ -378,9 +378,16 @@ if (!/\.community-invite\{[^}]*position:fixed;[^}]*z-index:65/.test(siteCss)
   || !/\.community-invite\[hidden\]\{display:none\}/.test(siteCss)) {
   throw new Error("assets: community invite is not a hidden-by-default floating card");
 }
-// Narrow layouts must reserve page padding, or the card covers the end of the article.
+// Wide layouts must reserve page padding, or the card covers the end of the article.
 if (!/body\.has-community-invite\{padding-bottom:calc\(var\(--community-invite-h,0px\)/.test(siteCss)) {
-  throw new Error("assets: community invite mobile page reserve is missing");
+  throw new Error("assets: community invite page reserve is missing");
+}
+// Narrow layouts dock the card in the nav drawer instead of floating it, so it must slide with
+// the drawer and the drawer must reserve room for it rather than the page.
+if (!/@media\(max-width:820px\)\{\.community-invite\{left:0;bottom:0;z-index:91/.test(siteCss)
+  || !/body\.nav-open \.community-invite\{transform:translateX\(0\)\}/.test(siteCss)
+  || !/body\.has-community-invite \.sidebar\{padding-bottom:calc\(var\(--community-invite-h,0px\)/.test(siteCss)) {
+  throw new Error("assets: community invite does not dock into the mobile nav drawer");
 }
 if (!/data-community-invite-dismiss/.test(siteJs)
   || !/openclaw\.docs\.community-invite/.test(siteJs)
