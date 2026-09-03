@@ -387,6 +387,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Components v2 UI
   - H2: Voice
   - H3: Voice channels
+  - H3: Meeting notes
   - H3: Follow users in voice
   - H3: Voice messages
   - H2: Troubleshooting
@@ -2218,6 +2219,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Commands
   - H2: Output
   - H2: Tool selectors
+  - H3: Reading notes from any session
+  - H3: Selecting a capture
+  - H2: Gateway and Control UI reads
   - H2: JSON output
   - H2: Many sessions per day
   - H2: Missing summaries
@@ -9198,6 +9202,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas
 - Headings:
   - H2: Database layout
+  - H3: Meeting transcript tables
+  - H4: `meeting_transcript_sessions`
+  - H4: `meeting_transcript_utterances`
+  - H4: `meeting_transcript_summaries`
   - H2: Versioning contract
   - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
@@ -11246,6 +11254,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Import assistant memory
   - H2: MCP page
   - H2: Activity tab
+  - H2: Meetings page
   - H2: Operator terminal
   - H2: Browser panel
   - H2: Composer capability menu
