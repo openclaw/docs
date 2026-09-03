@@ -106,8 +106,8 @@ for (const base of ["", "/manual"]) {
     assert.equal(p.entries.get("collision.v2").customMetadata, undefined);
     assert.equal(p.entries.get("release.v2").contentType, "text/html; charset=utf-8");
     assert.equal(p.entries.get("release.v2/index.html").contentType, "text/html; charset=utf-8");
-    // The builder's English pass also emits de.md; use that existing source.
-    await servesMarkdown(p, "/de", "/de.md", { accept: "text/markdown" });
+    await servesMarkdown(p, "/de/index.md", "/de/index.md");
+    assert.equal(p.entries.has("de.md"), false);
     if (base) assert.equal((await p.request(`${base}/release.v2`, { accept: "text/markdown" })).status, 404);
   });
 }
