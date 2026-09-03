@@ -2925,6 +2925,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Finding sessions by owner
   - H2: Reading the avatars
   - H2: People cards
+  - H2: Mentioning people
+  - H2: Temporary mentions Inbox
   - H2: Agent-spawned sessions
   - H2: Identity-scoped convenience state
   - H2: Drafts
@@ -11362,6 +11364,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Which surface you get
   - H2: Enable browser notifications
   - H3: Choose what reaches each device
+  - H3: Receive human mention alerts
   - H3: Use more than one Gateway on one phone
   - H2: Enable notifications in the macOS app
   - H3: Background session completion
@@ -11371,6 +11374,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Service worker is not ready
   - H3: Web Push asks for a Doctor migration
   - H3: Tests arrive but approval requests do not
+  - H3: A mention is missing or produces no browser alert
   - H2: Related
 
 ## web/tui.md
@@ -11420,6 +11424,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: How it works
   - H3: Transcript and delivery model
+  - H2: Human mention delivery
   - H2: Control UI agents tools panel
   - H2: Remote use
   - H2: Configuration reference (WebChat)
