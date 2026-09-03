@@ -372,6 +372,28 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   || !/\.sidebar\.can-scroll-down\{--sidebar-fade-bottom:30px\}/.test(siteCss)) {
   throw new Error("assets: sidebar overflow affordance is missing");
 }
+// The invite floats over the page, so it must stay position:fixed and must never render
+// before the shell script has cleared it against local storage.
+if (!/\.community-invite\{[^}]*position:fixed;[^}]*z-index:65/.test(siteCss)
+  || !/\.community-invite\[hidden\]\{display:none\}/.test(siteCss)) {
+  throw new Error("assets: community invite is not a hidden-by-default floating card");
+}
+// Wide layouts must reserve page padding, or the card covers the end of the article.
+if (!/body\.has-community-invite\{padding-bottom:calc\(var\(--community-invite-h,0px\)/.test(siteCss)) {
+  throw new Error("assets: community invite page reserve is missing");
+}
+// Narrow layouts dock the card in the nav drawer instead of floating it, so it must slide with
+// the drawer and the drawer must reserve room for it rather than the page.
+if (!/@media\(max-width:820px\)\{\.community-invite\{left:0;bottom:0;z-index:91/.test(siteCss)
+  || !/body\.nav-open \.community-invite\{transform:translateX\(0\)\}/.test(siteCss)
+  || !/body\.has-community-invite \.sidebar\{padding-bottom:calc\(var\(--community-invite-h,0px\)/.test(siteCss)) {
+  throw new Error("assets: community invite does not dock into the mobile nav drawer");
+}
+if (!/data-community-invite-dismiss/.test(siteJs)
+  || !/openclaw\.docs\.community-invite/.test(siteJs)
+  || !/card\.hidden=state===null\|\|state\.dismissedAtMs!==undefined/.test(siteJs)) {
+  throw new Error("assets: community invite dismissal is not wired to local storage");
+}
 if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
