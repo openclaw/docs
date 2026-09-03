@@ -157,6 +157,10 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
   throw new Error("it channels: x-default hreflang alternate is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (!/<div class="main">\s*<main class="article" id="main">/.test(index)
+  || /<main class="main"/.test(index)) {
+  throw new Error("index: the primary landmark must not use the display-contents layout wrapper");
+}
 if (!index.includes('class="site-footer"') || !index.includes('class="site-footer-links"')) {
   throw new Error("index: site footer is missing");
 }

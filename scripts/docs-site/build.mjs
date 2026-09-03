@@ -315,8 +315,8 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 ${siteHeader(page, nav, activeTab)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
-<main class="main" id="main">
-<article class="article">
+<div class="main">
+<main class="article" id="main">
 <header class="article-header">
 ${articleMeta(page, nav)}
 ${page.hidden ? "" : pageMarkdownScript(page)}
@@ -328,9 +328,9 @@ ${pageSearchMetadata(page, nav)}
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
-</article>
-${tocHtml(toc)}
 </main>
+${tocHtml(toc)}
+</div>
 </div>
 ${communityInvite()}
 ${siteFooter()}
