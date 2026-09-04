@@ -5735,6 +5735,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/mac/icon
 - Headings:
   - H1: Menu Bar Icon States
+  - H2: Dock icon
   - H2: States
   - H2: Voice wake ears
   - H2: Shapes and sizes
