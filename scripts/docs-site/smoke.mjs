@@ -157,6 +157,10 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
   throw new Error("it channels: x-default hreflang alternate is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (!/<div class="main">\s*<main class="article" id="main">/.test(index)
+  || /<main class="main"/.test(index)) {
+  throw new Error("index: the primary landmark must not use the display-contents layout wrapper");
+}
 if (!index.includes('class="site-footer"') || !index.includes('class="site-footer-links"')) {
   throw new Error("index: site footer is missing");
 }
@@ -392,7 +396,9 @@ if (!/data-community-invite-dismiss/.test(siteJs)
 }
 if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
-  || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
+  || !/:root\{--shell-pad:56px;--rail-gap:56px;--rail-max:272px;--article-max:820px\}/.test(siteCss)
+  || !/\.doc-shell\{display:grid;grid-template-columns:minmax\(var\(--rail-max\),1fr\) minmax\(0,var\(--article-max\)\) minmax\(var\(--rail-max\),1fr\);gap:var\(--rail-gap\);padding:38px var\(--shell-pad\) 90px\}/.test(siteCss)
+  || !/@media\(max-width:1280px\)[\s\S]*?\.doc-shell\{grid-template-columns:var\(--rail-max\) minmax\(0,1fr\)\}\.article\{width:min\(100%,var\(--article-max\)\);justify-self:center\}/.test(siteCss)) {
   throw new Error("assets: docs shell geometry does not match the wide reference layout");
 }
 if (!/body\{[^}]*font:var\(--oc-font-size-md\)\/1\.7 var\(--oc-font-body\)/.test(siteCss)
@@ -435,11 +441,12 @@ if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
   throw new Error("assets: compact page orientation should refresh across PJAX navigation");
 }
-if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
+if (!/compactTocQuery=matchMedia\("\(max-width:1280px\)"\)/.test(siteJs)
+  || !/\.toc\{position:fixed;left:var\(--toc-left\);top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
   || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
   || !/\.toc summary\{display:flex;align-items:center;gap:var\(--oc-space-2\)/.test(siteCss)
-  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,calc\(100vw - 302px\)\)/.test(siteCss)
-  || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
+  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,var\(--toc-room\)\)/.test(siteCss)
+  || !/\.toc\[open\] nav\{display:grid;align-content:start;gap:2px\}/.test(siteCss)) {
   throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
 }
 if (!/\.toc\[open\]\{z-index:100\}/.test(siteCss)
@@ -563,6 +570,13 @@ if (!/\.doc\{container-type:inline-size\}/.test(siteCss)
   || !/\.oc-card-grid\.oc-card-cols-4,\.oc-card-group\.oc-card-cols-4\{--oc-card-columns:4\}/.test(siteCss)
   || !/@container \(max-width:520px\)\{\.oc-card-grid,\.oc-card-group\{--oc-card-columns:1\}\}/.test(siteCss)) {
   throw new Error("assets: card column classes should use explicit column counts with responsive collapse");
+}
+if (!/@supports \(corner-shape: superellipse\(1\.5\)\)\{/.test(siteCss)
+  || !/:root\{--oc-corner-radius-scale:1\.25\}/.test(siteCss)
+  || !/\.oc-card\.oc-card,\.oc-cta-card\.oc-cta-card\{border-radius:calc\(var\(--oc-radius-lg\) \* var\(--oc-corner-radius-scale\)\);corner-shape:superellipse\(1\.5\)\}/.test(siteCss)
+  || !/\.page-tools \.page-actions-primary\.page-actions-primary\{[^}]*corner-shape:superellipse\(1\.5\)\}/.test(siteCss)
+  || !/@media\(min-width:821px\)\{\.community-invite\.community-invite\{[^}]*corner-shape:superellipse\(1\.5\)\}\}/.test(siteCss)) {
+  throw new Error("assets: continuous corner curvature is missing from cards and controls");
 }
 const elementsIndexPath = path.join(site, "__elements/index.html");
 if (!fs.existsSync(elementsIndexPath)) {
