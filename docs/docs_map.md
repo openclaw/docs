@@ -2177,6 +2177,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw skills
   - H2: Commands
+  - H2: Release trust
   - H2: Remove a ClawHub skill
   - H2: Personal skill library
   - H2: Skill Workshop
