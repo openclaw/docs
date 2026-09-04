@@ -1,23 +1,178 @@
 ---
-summary: "Run OpenClaw Gateway 24/7 on a GCP Compute Engine VM with Docker"
+summary: "Deploy OpenClaw Gateway 24/7 on Google Cloud using Cloud Run Instances or Compute Engine"
 doc-schema-version: 1
 read_when:
-  - You want OpenClaw running 24/7 on GCP
+  - You want OpenClaw running 24/7 on Google Cloud
+  - You want a serverless, managed deployment on Cloud Run Instances
   - You want a persistent Gateway on a Compute Engine VM
-  - You need GCP provisioning, firewall, or SSH tunnel guidance
+  - You need GCP provisioning, Secret Manager, Cloud Storage, or firewall guidance
 title: "GCP"
 ---
 
-Run a persistent OpenClaw Gateway on a Debian Compute Engine VM. This page
-covers GCP provisioning, network access, and machine operations; the shared
-[Docker VM runtime](/install/docker-vm-runtime) page owns container setup,
-persistence, custom binaries, verification, and updates.
+Deploy a persistent OpenClaw Gateway on Google Cloud. You can deploy using either:
 
-Pricing varies by machine type and region. Use at least 6 GB RAM for a source
-image build. On a smaller machine, use the official pre-built image described
-in [Docker VM runtime](/install/docker-vm-runtime).
+1. **Cloud Run Instances (Recommended / Managed)**: Container-native, serverless deployment with automated restarts, built-in HTTPS endpoints, Secret Manager credential management, and Cloud Storage state persistence.
+2. **Compute Engine VM**: Dedicated Debian Linux VM running Docker.
 
-## What you need
+---
+
+## Option 1: Cloud Run Instances (Recommended)
+
+Run OpenClaw on Cloud Run Instances for a fully managed, containerized environment with zero VM patching, zero SSH tunnels, and persistent workspace storage.
+
+### Prerequisites
+
+- A GCP project with billing enabled
+- The `gcloud` CLI installed and authenticated (`gcloud auth login`)
+- API credentials for your primary model provider (e.g. Gemini, Anthropic, or OpenAI)
+- About 10 minutes
+
+### Deployment Steps
+
+<Steps>
+  <Step title="Enable required APIs and set project">
+    ```bash
+    export PROJECT_ID="my-openclaw-project"
+    export REGION="us-west1"
+    export BUCKET_NAME="${PROJECT_ID}-openclaw-state"
+    export SERVICE_ACCOUNT="openclaw-sa@${PROJECT_ID}.iam.gserviceaccount.com"
+
+    gcloud config set project ${PROJECT_ID}
+    gcloud services enable \
+      run.googleapis.com \
+      storage.googleapis.com \
+      secretmanager.googleapis.com
+    ```
+  </Step>
+
+  <Step title="Create dedicated service account">
+    Create an unprivileged service account for OpenClaw:
+
+    ```bash
+    gcloud iam service-accounts create openclaw-sa \
+      --display-name="OpenClaw Gateway Service Account"
+    ```
+  </Step>
+
+  <Step title="Store secrets in Secret Manager">
+    Generate a random gateway password and store your model credentials securely:
+
+    ```bash
+    export OPENCLAW_GATEWAY_PASSWORD=$(openssl rand -hex 16)
+    echo "Gateway Password: ${OPENCLAW_GATEWAY_PASSWORD}"
+
+    # 1. Store Gateway Password
+    echo -n "${OPENCLAW_GATEWAY_PASSWORD}" | gcloud secrets create openclaw-gateway-password \
+      --data-file=- \
+      --replication-policy="automatic"
+
+    # 2. Store Model API Key (e.g. Gemini)
+    echo -n "YOUR_API_KEY" | gcloud secrets create gemini-api-key \
+      --data-file=- \
+      --replication-policy="automatic"
+
+    # Grant service account access to read secrets
+    gcloud secrets add-iam-policy-binding openclaw-gateway-password \
+      --member="serviceAccount:${SERVICE_ACCOUNT}" \
+      --role="roles/secretmanager.secretAccessor"
+
+    gcloud secrets add-iam-policy-binding gemini-api-key \
+      --member="serviceAccount:${SERVICE_ACCOUNT}" \
+      --role="roles/secretmanager.secretAccessor"
+    ```
+  </Step>
+
+  <Step title="Prepare Cloud Storage state bucket">
+    Create a bucket to persist OpenClaw's configuration, sessions, and SQLite database:
+
+    ```bash
+    gcloud storage buckets create gs://${BUCKET_NAME} \
+      --location=${REGION} \
+      --uniform-bucket-level-access
+
+    gcloud storage buckets add-iam-policy-binding gs://${BUCKET_NAME} \
+      --member="serviceAccount:${SERVICE_ACCOUNT}" \
+      --role="roles/storage.objectUser"
+    ```
+
+    Upload a minimal `openclaw.json` configured for Cloud Run's reverse proxy:
+
+    ```bash
+    cat << 'EOF' > openclaw.json
+    {
+      "gateway": {
+        "mode": "local",
+        "port": 18789,
+        "trustedProxies": ["0.0.0.0/0"],
+        "bind": "lan",
+        "auth": {
+          "password": "${OPENCLAW_GATEWAY_PASSWORD}"
+        },
+        "controlUi": {
+          "dangerouslyDisableDeviceAuth": true,
+          "allowedOrigins": ["*"],
+          "enabled": true
+        }
+      },
+      "agents": {
+        "defaults": {
+          "model": {
+            "primary": "google/gemini-2.5-pro"
+          }
+        }
+      }
+    }
+    EOF
+
+    gcloud storage cp openclaw.json gs://${BUCKET_NAME}/openclaw.json
+    ```
+  </Step>
+
+  <Step title="Deploy to Cloud Run Instances">
+    Deploy OpenClaw using `gcloud beta run instances create` with the Cloud Storage volume mount:
+
+    ```bash
+    gcloud beta run instances create openclaw-gateway \
+      --image alpine/openclaw:latest \
+      --service-account ${SERVICE_ACCOUNT} \
+      --port 18789 \
+      --cpu 2 \
+      --memory 2Gi \
+      --no-invoker-iam-check \
+      --add-volume mount-path=/home/node/.openclaw,type=cloud-storage,mount-options="uid=1000;gid=1000;file-mode=0700;dir-mode=0700",bucket=${BUCKET_NAME} \
+      --set-secrets GEMINI_API_KEY=gemini-api-key:latest,OPENCLAW_GATEWAY_PASSWORD=openclaw-gateway-password:latest \
+      --region ${REGION}
+    ```
+
+    <Note>
+      `mount-options="uid=1000;gid=1000;file-mode=0700;dir-mode=0700"` is required because OpenClaw runs as the unprivileged `node` user (`UID 1000`) and enforces strict `0700` permissions on session directories.
+    </Note>
+  </Step>
+
+  <Step title="Access the Control Web UI">
+    Retrieve your service URL:
+
+    ```bash
+    gcloud beta run instances describe openclaw-gateway \
+      --region ${REGION} \
+      --format="value(status.urls[0])"
+    ```
+
+    1. Open the URL in your browser.
+    2. Enter your generated `OPENCLAW_GATEWAY_PASSWORD` to log in.
+    3. Start prompting your agent directly from the web interface!
+  </Step>
+</Steps>
+
+> For an in-depth walkthrough covering optional **Telegram / WhatsApp messaging integrations**, custom skills, and gVisor sandbox execution, see the official [Deploy OpenClaw on Cloud Run Instances Codelab](https://codelabs.developers.google.com/codelabs/cloud-run/deploy-openclaw-cloud-run-instances).
+
+---
+
+## Option 2: Compute Engine VM (Docker VM)
+
+Run a persistent OpenClaw Gateway on a Debian Compute Engine VM with Docker.
+
+### What you need
 
 - A GCP project with billing enabled
 - The `gcloud` CLI or the [Cloud Console](https://console.cloud.google.com)
@@ -25,7 +180,7 @@ in [Docker VM runtime](/install/docker-vm-runtime).
 - Model and optional channel credentials
 - About 20 minutes
 
-## Provision the VM
+### Provision the VM
 
 <Steps>
   <Step title="Initialize gcloud">
@@ -123,7 +278,7 @@ in [Docker VM runtime](/install/docker-vm-runtime).
   </Step>
 </Steps>
 
-## Configure the Docker runtime
+### Configure the Docker runtime
 
 On the VM, follow [Docker VM runtime](/install/docker-vm-runtime) from
 **Before you begin** through **Verify and administer the Gateway**. The
@@ -138,7 +293,7 @@ export OPENCLAW_AUTH_PROFILE_SECRET_DIR="$HOME/.openclaw-auth-profile-secrets"
 If a source build ends with `Killed`, `ResourceExhausted`, or exit code 137,
 resize the VM before retrying.
 
-## Access the Control UI
+### Access the Control UI
 
 From your laptop, open an SSH tunnel and leave it running:
 
@@ -157,9 +312,11 @@ docker compose run --rm openclaw-cli devices list
 docker compose run --rm openclaw-cli devices approve <requestId>
 ```
 
+---
+
 ## Troubleshooting
 
-### SSH connection refused
+### SSH connection refused (Compute Engine)
 
 Wait one or two minutes for SSH key propagation, then retry. Check the VM is
 running and that an ingress firewall rule allows TCP 22 from your current
@@ -183,22 +340,7 @@ gcloud compute instances set-machine-type openclaw-gateway \
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
-## Use a deployment service account
-
-For personal setup, your user account is enough. Automation should use a
-dedicated service account with the narrowest role that works:
-
-```bash
-gcloud iam service-accounts create openclaw-deploy \
-  --display-name="OpenClaw Deployment"
-
-gcloud projects add-iam-policy-binding my-openclaw-project \
-  --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
-  --role="roles/compute.instanceAdmin.v1"
-```
-
-Avoid the Owner role. See
-[Understanding roles](https://cloud.google.com/iam/docs/understanding-roles).
+---
 
 ## Next steps
 
