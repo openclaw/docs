@@ -5876,6 +5876,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session colors
   - H2: Multiple Gateway windows
   - H3: Gateway picker
+  - H3: Cron jobs when switching Gateways
   - H2: Quick Chat bar
   - H2: Launch and debugging
   - H2: How it is wired
