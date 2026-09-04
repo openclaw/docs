@@ -11271,6 +11271,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: New session page
   - H3: Start a native coding CLI
   - H3: OpenClaw Chat workspace startup
+  - H2: Settings
+  - H3: This Mac (macOS app)
   - H2: What it can do (today)
   - H2: Import assistant memory
   - H2: MCP page
