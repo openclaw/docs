@@ -1268,6 +1268,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Platform-specific security shards
   - H3: Critical Quality categories
   - H2: Maintenance workflows
+  - H3: Dependency Audit
   - H3: Docs Agent
   - H3: Duplicate PRs After Merge
   - H2: Local check gates and changed routing
