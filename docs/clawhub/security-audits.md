@@ -111,8 +111,21 @@ Artifact pages link to the full audit at:
 The audit page combines:
 
 1. SkillSpector
-2. VirusTotal
-3. Risk analysis
+2. A.I.G
+3. VirusTotal
+4. Risk analysis
+
+## A.I.G
+
+Skill audits include findings from Tencent Zhuque Lab's A.I.G scanner. A.I.G
+checks agent instructions for vulnerability patterns and supplies supporting
+evidence to ClawScan's artifact-wide review. It does not issue ClawHub's final
+verdict or independently block installation.
+
+A.I.G 0.2.1 cannot inspect packaged Python bytecode. Until Tencent ships its
+[CVE-2026-84809](https://nvd.nist.gov/vuln/detail/CVE-2026-84809) fix, ClawHub
+rejects skills containing `.pyc`, `.pyo`, or `.pyd` files before A.I.G runs.
+ClawScan also detects packaged Python bytecode independently.
 
 ## VirusTotal
 
@@ -150,7 +163,8 @@ risk analysis.
 Risk analysis is powered internally by ClawScan, ClawHub's own security audit
 system. It reviews each release as an agent-facing artifact: instructions,
 metadata, declared permissions, files, capability signals, static scan signals,
-SkillSpector findings, VirusTotal telemetry, and publisher-provided context.
+SkillSpector findings, A.I.G findings for skills, VirusTotal telemetry, and
+publisher-provided context.
 Static scan signals are internal context for this review; they are not a
 standalone public audit section or install-blocking verdict.
 
