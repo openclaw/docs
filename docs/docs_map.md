@@ -3865,7 +3865,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Managed llama.cpp
   - H2: Config shape
   - H2: Fields
-  - H2: Inferrs example
+  - H2: llmman example
   - H2: ds4 example
   - H2: Related
 
@@ -8695,17 +8695,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Transcription providers
   - H2: Community tools
 
-## providers/inferrs.md
-
-- Route: /providers/inferrs
-- Headings:
-  - H2: Getting started
-  - H2: Full config example
-  - H2: On-demand startup
-  - H2: Advanced configuration
-  - H2: Troubleshooting
-  - H2: Related
-
 ## providers/inworld.md
 
 - Route: /providers/inworld
@@ -8735,6 +8724,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H2: Image generation
   - H2: Advanced
+  - H2: Related
+
+## providers/llmman.md
+
+- Route: /providers/llmman
+- Headings:
+  - H2: Getting started
+  - H2: Full config example
+  - H2: On-demand startup
+  - H2: Advanced configuration
+  - H2: Troubleshooting
   - H2: Related
 
 ## providers/lmstudio.md
