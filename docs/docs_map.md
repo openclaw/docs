@@ -1276,29 +1276,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Testbox validation
   - H2: Related
 
-## clawhub/cli.md
-
-- Route: /clawhub/cli
-- Headings:
-  - H1: ClawHub CLI
-  - H2: Discover and install
-  - H3: Release trust
-  - H2: Remove an installed skill
-  - H2: Publish and maintain
-  - H2: Related
-
-## clawhub/publishing.md
-
-- Route: /clawhub/publishing
-- Headings:
-  - H1: Publishing on ClawHub
-  - H2: Owners
-  - H2: Skills
-  - H2: Plugins
-  - H2: Release flow
-  - H2: FAQ
-  - H3: Package scope must match selected owner
-
 ## cli/acp.md
 
 - Route: /cli/acp
