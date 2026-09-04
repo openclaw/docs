@@ -5232,6 +5232,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Source-checkout servers (reference script)
   - H2: Alternative: re-run the installer
   - H2: Alternative: manual npm, pnpm, or bun
+  - H3: Package lifecycle and operator state
   - H3: Advanced npm install topics
   - H2: Auto-updater
   - H3: Update campaigns
