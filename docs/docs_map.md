@@ -1692,6 +1692,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: gateway suspend
   - H3: gateway resume &lt;suspensionId&gt;
   - H2: Manage the Gateway service
+  - H3: Lifecycle requests from Gateway chat
   - H3: Install with a wrapper
   - H2: Discover gateways (Bonjour)
   - H3: gateway discover
