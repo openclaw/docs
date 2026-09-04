@@ -5387,6 +5387,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The computer.act node command
   - H2: Authorization
   - H2: Safety
+  - H2: Desktop stream troubleshooting
   - H2: macOS permission troubleshooting
   - H2: Relationship to other desktop-control paths
 
