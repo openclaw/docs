@@ -6366,6 +6366,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Choose server ownership
   - H2: Managed local server
+  - H3: Model recommendations
+  - H3: Execution backends
+  - H3: Set up only local embeddings
   - H3: Use another managed GGUF
   - H2: Existing llama-server
   - H3: Authentication and endpoint replacement
