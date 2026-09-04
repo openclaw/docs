@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import re
@@ -10,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -889,6 +890,37 @@ class I18NScriptTests(unittest.TestCase):
         payload = json.loads(request.data)
         self.assertEqual(200, response.status_code)
         self.assertGreaterEqual(payload["max_output_tokens"], 16)
+
+    def test_provider_preflight_private_selection_and_availability_fallback(self) -> None:
+        cases = [
+            (200, {}, ["private-primary"], "primary"),
+            (404, {"code": "model_not_found"}, ["private-primary", "private-fallback"], "fallback"),
+            (403, {"param": "model", "code": "permission_denied"}, ["private-primary", "private-fallback"], "fallback"),
+            (401, {}, ["private-primary"], None),
+            (403, {"code": "permission_denied"}, ["private-primary"], None),
+            (404, {}, ["private-primary"], None),
+            (429, {"code": "insufficient_quota"}, ["private-primary"], None),
+            (500, {}, ["private-primary"], None),
+        ]
+        for status, error, expected_models, slot in cases:
+            with self.subTest(status=status, error=error), tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp) / "output"
+                body = json.dumps({"error": {**error, "message": "private-primary private-fallback"}})
+                responses = [provider_preflight.ApiResponse(status, body), provider_preflight.ApiResponse(200, "{}")]
+                stdout = io.StringIO()
+                with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key", "GITHUB_OUTPUT": str(output)}), patch.object(provider_preflight, "openai_probe_request", side_effect=responses) as probe, redirect_stdout(stdout):
+                    if slot:
+                        provider_preflight.provider_preflight("openai", "private-primary", 30, fallback_model="private-fallback")
+                    else:
+                        with self.assertRaises(SystemExit) as failure:
+                            provider_preflight.provider_preflight("openai", "private-primary", 30, fallback_model="private-fallback")
+                        stdout.write(str(failure.exception))
+                self.assertEqual(expected_models, [call.args[0] for call in probe.call_args_list])
+                public_output = stdout.getvalue() + output.read_text()
+                for identifier in ("private-primary", "private-fallback"):
+                    self.assertNotIn(identifier, public_output)
+                if slot:
+                    self.assertIn(f"model_slot={slot}", output.read_text())
 
     def test_read_source_metadata_validates_requested_sha_and_outputs_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

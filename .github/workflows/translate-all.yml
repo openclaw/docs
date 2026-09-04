@@ -220,7 +220,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
-          OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
+          OPENCLAW_DOCS_I18N_MODEL: ${{ secrets.OPENCLAW_I18N_MODEL }}
+          OPENCLAW_DOCS_I18N_FALLBACK_MODEL: ${{ secrets.OPENCLAW_I18N_FALLBACK_MODEL }}
         run: |
           set -euo pipefail
 

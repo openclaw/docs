@@ -10,6 +10,7 @@ Definition:
 Parameters:
   --provider: Translation provider. Default: OPENCLAW_DOCS_I18N_PROVIDER/openai.
   --model: Model name to validate. Default: OPENCLAW_DOCS_I18N_MODEL.
+  --fallback-model: Used only for an unavailable primary model. Default: OPENCLAW_DOCS_I18N_FALLBACK_MODEL.
   --timeout-seconds: HTTP timeout. Default: 30.
   --status-code and --response-file: Test-only inputs for local classification.
 
@@ -53,34 +54,32 @@ def append_output(values: dict[str, str]) -> None:
             fh.write(f"{key}={value}\n")
 
 
-def parse_error_code(body: str) -> str:
+def parse_error(body: str) -> dict:
     try:
         data = json.loads(body)
     except json.JSONDecodeError:
-        return ""
-    error = data.get("error")
-    if isinstance(error, dict):
-        code = error.get("code") or error.get("type") or ""
-        return str(code)
-    return ""
+        return {}
+    error = data.get("error") if isinstance(data, dict) else None
+    return error if isinstance(error, dict) else {}
 
 
 def classify_response(status_code: int, body: str) -> tuple[bool, str, str]:
-    code = parse_error_code(body)
+    error = parse_error(body)
+    code = error.get("code") or error.get("type")
     if 200 <= status_code < 300:
         return True, "ok", "provider preflight ok"
     if code == "insufficient_quota":
         return False, "quota_exhausted", "OpenAI reported insufficient quota for the translation key"
     if status_code == 401:
         return False, "invalid_key", "OpenAI rejected the translation API key"
+    if code == "model_not_found" or (status_code in (403, 404) and error.get("param") == "model"):
+        return False, "model_unavailable", "OpenAI cannot serve the requested translation model"
     if status_code == 403:
         return False, "model_access_denied", "OpenAI denied access to the requested translation model"
     if status_code == 404:
         return False, "model_not_found", "OpenAI could not find the requested translation model"
     if status_code == 429:
         return False, "rate_limited", "OpenAI rate-limited the translation preflight"
-    if "model" in code and "not" in code:
-        return False, "model_not_found", "OpenAI could not find the requested translation model"
     return False, "provider_error", f"OpenAI preflight failed with HTTP {status_code}"
 
 
@@ -109,8 +108,8 @@ def openai_probe_request(model: str, api_key: str, timeout_seconds: int) -> ApiR
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         return ApiResponse(status_code=exc.code, body=body)
-    except urllib.error.URLError as exc:
-        raise SystemExit(f"provider_error: OpenAI preflight network failure: {exc}") from exc
+    except (urllib.error.URLError, TimeoutError):
+        raise SystemExit("provider_error: OpenAI preflight network failure") from None
 
 
 def load_test_response(status_code: int | None, response_file: Path | None) -> ApiResponse | None:
@@ -125,6 +124,7 @@ def provider_preflight(
     model: str,
     timeout_seconds: int,
     test_response: ApiResponse | None = None,
+    fallback_model: str = "",
 ) -> str:
     if provider != "openai":
         append_output({"provider_preflight": "failed", "failure_class": "unsupported_provider"})
@@ -140,10 +140,16 @@ def provider_preflight(
 
     response = test_response or openai_probe_request(model, api_key, timeout_seconds)
     ok, failure_class, message = classify_response(response.status_code, response.body)
-    append_output({"provider_preflight": "ok" if ok else "failed", "failure_class": "" if ok else failure_class})
+    model_slot = "primary"
+    if not ok and failure_class == "model_unavailable" and fallback_model and fallback_model != model:
+        print("Primary translation model unavailable; checking configured fallback.")
+        model_slot = "fallback"
+        response = openai_probe_request(fallback_model, api_key, timeout_seconds)
+        ok, failure_class, message = classify_response(response.status_code, response.body)
+    append_output({"provider_preflight": "ok" if ok else "failed", "failure_class": "" if ok else failure_class, "model_slot": model_slot if ok else ""})
     if not ok:
         raise SystemExit(f"{failure_class}: {message}")
-    print(f"provider preflight ok: provider={provider} model={model}")
+    print("provider preflight ok")
     return failure_class
 
 
@@ -161,6 +167,7 @@ Examples:
     )
     parser.add_argument("--provider", default=os.environ.get("OPENCLAW_DOCS_I18N_PROVIDER", "openai"))
     parser.add_argument("--model", default=os.environ.get("OPENCLAW_DOCS_I18N_MODEL", ""))
+    parser.add_argument("--fallback-model", default=os.environ.get("OPENCLAW_DOCS_I18N_FALLBACK_MODEL", ""))
     parser.add_argument("--timeout-seconds", default=30, type=int)
     parser.add_argument("--status-code", type=int, help="Test-only HTTP status to classify instead of calling the provider.")
     parser.add_argument("--response-file", type=Path, help="Test-only provider response body for --status-code.")
@@ -170,7 +177,7 @@ Examples:
 def main() -> None:
     args = parse_args()
     test_response = load_test_response(args.status_code, args.response_file)
-    provider_preflight(args.provider, args.model, args.timeout_seconds, test_response)
+    provider_preflight(args.provider, args.model, args.timeout_seconds, test_response, args.fallback_model)
 
 
 if __name__ == "__main__":

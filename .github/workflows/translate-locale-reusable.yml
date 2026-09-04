@@ -182,7 +182,8 @@ jobs:
           MODE: ${{ inputs.mode }}
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
-          OPENCLAW_DOCS_I18N_MODEL: gpt-5.6
+          OPENCLAW_DOCS_I18N_MODEL: ${{ secrets.OPENCLAW_I18N_MODEL }}
+          OPENCLAW_DOCS_I18N_FALLBACK_MODEL: ${{ secrets.OPENCLAW_I18N_FALLBACK_MODEL }}
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
           # Owned by source/scripts/docs-i18n; diagnostics opt in per canary.
           OPENCLAW_DOCS_I18N_LOG_REJECTED_BODY: ${{ inputs.log_rejected_body && '1' || '0' }}
@@ -279,9 +280,19 @@ jobs:
           python "${I18N_SCRIPT_DIR}/mdx_repair_scope.py" snapshot \
             --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
 
+      - name: Select available repair model
+        id: repair_model
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
+          OPENCLAW_DOCS_I18N_MODEL: ${{ secrets.OPENCLAW_I18N_MODEL }}
+          OPENCLAW_DOCS_I18N_FALLBACK_MODEL: ${{ secrets.OPENCLAW_I18N_FALLBACK_MODEL }}
+        run: python "${I18N_SCRIPT_DIR}/provider_preflight.py"
+
       - name: Repair translated MDX
         id: mdx_repair
-        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        if: steps.repair_model.outcome == 'success'
         continue-on-error: true
         uses: openai/codex-action@v1
         env:
@@ -289,7 +300,7 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           prompt-file: .openclaw-sync/docs-mdx-repair.md
-          model: gpt-5.6
+          model: ${{ steps.repair_model.outputs.model_slot == 'fallback' && secrets.OPENCLAW_I18N_FALLBACK_MODEL || secrets.OPENCLAW_I18N_MODEL }}
           effort: xhigh
           sandbox: workspace-write
           safety-strategy: drop-sudo
