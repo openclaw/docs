@@ -6,6 +6,7 @@ import { Worker } from "node:worker_threads";
 
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
+import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
@@ -329,10 +330,10 @@ ${pageSearchMetadata(page, nav)}
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
 </main>
-${tocHtml(toc)}
+${tocHtml(toc, page.locale)}
 </div>
 </div>
-${communityInvite()}
+${communityInvite(page.locale)}
 ${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
@@ -399,16 +400,17 @@ function sidebar(page, nav, activeTab) {
 // ones, so one element and one dismissal serve both. Ships hidden so a browser that already
 // dismissed it never flashes the card; the shell script reveals it only when local storage is
 // readable and holds no dismissal.
-function communityInvite() {
-  return `<aside class="community-invite" aria-label="Join the OpenClaw community on Discord" hidden>
+function communityInvite(locale) {
+  const strings = chromeStringsForLocale(locale);
+  return `<aside class="community-invite" aria-label="${escapeAttr(strings.communityLabel)}" hidden>
 <div class="community-invite__header">
-<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="A lobster beside the Discord mark on a lit seafloor pedestal" width="1024" height="538" loading="lazy" decoding="async">
-<button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="Dismiss and don't show again">${icon("x")}</button>
+<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="${escapeAttr(strings.communityImageAlt)}" width="1024" height="538" loading="lazy" decoding="async">
+<button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
 </div>
 <div class="community-invite__body">
-<h2 class="community-invite__title">Come build with us</h2>
-<p class="community-invite__text">Ask anything, show what you're making, and find out what everyone else is building. Or just say hi.</p>
-<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>Join us on Discord</span></a>
+<h2 class="community-invite__title">${escapeHtml(strings.communityTitle)}</h2>
+<p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
+<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>${escapeHtml(strings.communityCta)}</span></a>
 </div>
 </aside>`;
 }
@@ -582,9 +584,10 @@ function tableOfContents(html) {
     .slice(0, 24);
 }
 
-function tocHtml(items) {
+function tocHtml(items, locale) {
   if (!items.length) return "";
-  return `<details class="toc" aria-label="On this page" open><summary><span>On this page</span></summary><h2>On this page</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
+  const label = chromeStringsForLocale(locale).onThisPage;
+  return `<details class="toc" aria-label="${escapeAttr(label)}" open><summary><span>${escapeHtml(label)}</span></summary><h2>${escapeHtml(label)}</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
 }
 
 function pager(prev, next) {
