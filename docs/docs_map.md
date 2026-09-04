@@ -6455,6 +6455,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Discovery precedence (duplicate plugin ids)
   - H2: JSON Schema requirements
   - H2: Validation behavior
+  - H3: Capability catalogs
+  - H3: Configuration validation
   - H2: Notes
   - H2: Related
 
@@ -8165,6 +8167,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-subpaths
 - Headings:
   - H2: Plugin entry
+  - H3: Capability catalog entry
   - H3: Compatibility and private-local helpers
   - H3: Bundled plugin helper subpaths
   - H2: Related
