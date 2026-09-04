@@ -2997,7 +2997,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Commentary lane
   - H3: Status headline
   - H3: Line limits
-  - H3: Hide tool/task lines
+  - H3: Show the tool log
   - H2: Channel behavior
   - H2: Finalization
   - H2: Troubleshooting
@@ -8012,6 +8012,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Message adapter
   - H3: Progress visibility acceptance
   - H3: Quiet progress presentation
+  - H3: Quiet acknowledgement and coalesced progress
   - H3: Commentary delivery ownership
   - H3: TTS voice delivery
   - H3: Inbound ingress (experimental)
