@@ -37,6 +37,12 @@ Manual and weekly runs do not wait by default.
 
 ## Incremental translation
 
+### Private model configuration
+
+Store the primary model in the GitHub Actions secret `OPENCLAW_I18N_MODEL` and the optional fallback in `OPENCLAW_I18N_FALLBACK_MODEL`. Both translation coordinators and translated-MDX repair use these secrets. Do not put model identifiers in repository variables, workflow inputs, or committed files.
+
+The provider preflight checks the primary first and tries the fallback only when the API identifies the requested model as unavailable. Authentication, quota, rate-limit, network, and unrelated request failures remain visible failures. Public preflight output contains only the result and the selected `primary` or `fallback` role, never an identifier. The source repository's translation engine also handles model retirement during a running shard and omits model identity from generated translation metadata. Incremental planning queues unchanged pages that still contain retired model/provider metadata so the source engine can regenerate them without those fields.
+
 Each translated page stores `x-i18n.source_hash`. Locale jobs compare the current English page hash with the stored locale hash.
 
 Normal runs translate only:
