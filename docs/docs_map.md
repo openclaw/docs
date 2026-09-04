@@ -4006,6 +4006,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Model-call observation units
   - H3: Claude Code CLI model-call fidelity
   - H2: Exported metrics
+  - H3: Gateway RPC
   - H3: Model usage
   - H3: Message flow
   - H3: Talk
