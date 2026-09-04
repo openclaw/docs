@@ -4,8 +4,8 @@
 Definition:
   This script mirrors the pending-doc selection logic from
   translate-locale-reusable.yml. It discovers source docs, excludes generated
-  and locale docs, compares source hashes in incremental mode, and writes the
-  shard-specific pending file consumed by docs-i18n.
+  and locale docs, compares source hashes and retired model metadata in
+  incremental mode, and writes the shard-specific pending file consumed by docs-i18n.
 
 Parameters:
   --docs-root: Docs directory. Default: docs.
@@ -37,6 +37,7 @@ from translation_plan import is_locale_dir
 
 
 SOURCE_HASH_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$", re.M)
+MODEL_METADATA_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+(?:model|provider):", re.M)
 
 
 @dataclass(frozen=True)
@@ -48,14 +49,16 @@ class PendingResult:
     shard_files: list[Path]
 
 
-def stored_source_hash(path: Path) -> str:
+def translation_matches_source(path: Path, source_hash: str) -> bool:
     if not path.exists():
-        return ""
+        return False
     text = path.read_text(encoding="utf-8", errors="ignore")
-    match = SOURCE_HASH_RE.search(text)
-    if not match:
-        return ""
-    return match.group(1).strip()
+    frontmatter, separator, _ = text[4:].partition("\n---")
+    if not text.startswith("---\n") or not separator:
+        return False
+    # Same-source pages still need regeneration to remove retired routing metadata.
+    match = SOURCE_HASH_RE.search(frontmatter)
+    return bool(match and match.group(1) == source_hash and not MODEL_METADATA_RE.search(frontmatter))
 
 
 def validate_shard(index_value: str, total_value: str) -> tuple[int, int]:
@@ -122,7 +125,7 @@ def build_pending_manifest(
         all_files.append(path.resolve())
         locale_path = docs_root / locale / rel
         source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
-        if mode == "full" or stored_source_hash(locale_path) != source_hash:
+        if mode == "full" or not translation_matches_source(locale_path, source_hash):
             pending_files.append(path.resolve())
 
     pending_files = sorted(pending_files)

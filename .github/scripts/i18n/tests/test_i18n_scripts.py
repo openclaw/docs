@@ -1009,24 +1009,30 @@ class I18NScriptTests(unittest.TestCase):
             shutil.copytree(FIXTURES / "pending-docs" / "docs", tmp_path / "docs")
             source = tmp_path / "docs/index.md"
             digest = hashlib.sha256(source.read_bytes()).hexdigest()
-            (tmp_path / "docs/fr/index.md").write_text(
-                f"---\nx-i18n:\n  source_hash: {digest}\n---\n\n# Index FR\n",
-                encoding="utf-8",
-            )
-
-            result = pending.build_pending_manifest(
-                docs_root=tmp_path / "docs",
-                openclaw_sync_dir=tmp_path / ".openclaw-sync",
-                locale="fr",
-                locale_slug="fr",
-                mode="incremental",
-                shard_index=0,
-                shard_total=1,
-            )
-
-            self.assertEqual(2, result.all_count)
-            self.assertEqual(1, result.total_pending_count)
-            self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/guide/setup.mdx"))
+            for metadata, body, needs_refresh in (
+                ("", "# Index FR\n", False),
+                ("  model: retired-model\n", "# Index FR\n", True),
+                ("  provider: retired-provider\n", "# Index FR\n", True),
+                ("", "# Index FR\n```yaml\nx-i18n:\n  model: example\n```\n", False),
+            ):
+                with self.subTest(metadata=metadata, body=body):
+                    (tmp_path / "docs/fr/index.md").write_text(
+                        f"---\nx-i18n:\n  source_hash: {digest}\n{metadata}---\n\n{body}",
+                        encoding="utf-8",
+                    )
+                    result = pending.build_pending_manifest(
+                        docs_root=tmp_path / "docs",
+                        openclaw_sync_dir=tmp_path / ".openclaw-sync",
+                        locale="fr",
+                        locale_slug="fr",
+                        mode="incremental",
+                        shard_index=0,
+                        shard_total=1,
+                    )
+                    expected = ["guide/setup.mdx", "index.md"] if needs_refresh else ["guide/setup.mdx"]
+                    self.assertEqual(2, result.all_count)
+                    self.assertEqual(len(expected), result.total_pending_count)
+                    self.assertEqual(expected, [file.relative_to((tmp_path / "docs").resolve()).as_posix() for file in result.shard_files])
 
     def test_pending_manifest_excludes_supported_locale_dirs_without_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
