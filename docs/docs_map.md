@@ -3071,6 +3071,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Queue modes
   - H2: Queue options
   - H2: Steer and streaming
+  - H2: Answering a pending question
   - H2: Precedence
   - H2: Per-session overrides
   - H2: Queued-turn cancellation
@@ -7942,6 +7943,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Delegated execution
   - H2: Selection policy
   - H2: Provider plus harness pairing
+  - H3: Guarded active-run injection
   - H3: Tool-result middleware
   - H3: Terminal outcome classification
   - H3: Live output-token usage
