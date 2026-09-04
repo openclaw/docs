@@ -561,6 +561,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Inbound durability
   - H2: Connection settings
+  - H2: Outbound text
   - H2: Security defaults
   - H2: Access control
   - H3: Common gotcha: allowFrom is for DMs, not channels
