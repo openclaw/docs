@@ -4014,6 +4014,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Talk
   - H3: Queues and sessions
   - H3: Session liveness telemetry
+  - H3: Gateway event-loop observation windows
   - H3: Harness lifecycle
   - H3: Tool execution and loop detection
   - H3: Exec
@@ -4090,6 +4091,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: Metrics exported
+  - H3: Event-loop observation windows
   - H2: Label policy
   - H2: PromQL recipes
   - H2: Choosing between Prometheus and OpenTelemetry export
