@@ -73,6 +73,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Output language
   - H2: CLI examples
   - H2: Managing jobs
+  - H3: Conversational management
+  - H3: CLI management
   - H2: Webhooks
   - H3: Enable and test an agent hook
   - H3: Authentication
