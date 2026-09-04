@@ -2745,6 +2745,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to use
   - H2: Troubleshooting
   - H3: Safe index recovery
+  - H3: Reclaim disk space
   - H2: Configuration
   - H2: Related
 
