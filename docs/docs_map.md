@@ -1982,6 +1982,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Commands
   - H2: Author
+  - H3: Feature scaffold and artifacts
   - H3: Provider scaffold
   - H2: Install
   - H3: Marketplace shorthand
@@ -6260,6 +6261,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Native imports from a standalone source build
   - H2: Legacy cleanup
 
+## plugins/feature-plugins.md
+
+- Route: /plugins/feature-plugins
+- Headings:
+  - H2: Enable custom plugin UI
+  - H2: Create a feature plugin
+  - H2: Define operations once
+  - H2: Contribute and replace views
+  - H2: Build and reload
+  - H2: Approve an agent-built artifact
+
 ## plugins/geolocation.md
 
 - Route: /plugins/geolocation
@@ -6406,6 +6418,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin icon
   - H2: backupResources reference
   - H2: MCP server reference
+  - H2: controlUi reference
   - H2: dashboard reference
   - H2: catalog reference
   - H2: Generation provider metadata reference
@@ -8073,6 +8086,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-overview
 - Headings:
+  - H2: API stability
   - H2: Import convention
   - H2: Subpath reference
   - H2: Registration API
@@ -11274,6 +11288,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Settings
   - H3: This Mac (macOS app)
   - H2: What it can do (today)
+  - H2: Custom plugin UI
   - H2: Import assistant memory
   - H2: MCP page
   - H2: Activity tab

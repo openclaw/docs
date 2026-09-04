@@ -1479,6 +1479,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "plugins/building-plugins",
+                  "plugins/feature-plugins",
                   "plugins/tool-plugins",
                   "plugins/sdk-channel-plugins",
                   "plugins/sdk-provider-plugins",
@@ -2546,6 +2547,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "zh-CN/plugins/building-plugins",
+                  "zh-CN/plugins/feature-plugins",
                   "zh-CN/plugins/tool-plugins",
                   "zh-CN/plugins/sdk-channel-plugins",
                   "zh-CN/plugins/sdk-provider-plugins",
@@ -3579,6 +3581,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "zh-TW/plugins/building-plugins",
+                  "zh-TW/plugins/feature-plugins",
                   "zh-TW/plugins/tool-plugins",
                   "zh-TW/plugins/sdk-channel-plugins",
                   "zh-TW/plugins/sdk-provider-plugins",
@@ -4612,6 +4615,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "ja-JP/plugins/building-plugins",
+                  "ja-JP/plugins/feature-plugins",
                   "ja-JP/plugins/tool-plugins",
                   "ja-JP/plugins/sdk-channel-plugins",
                   "ja-JP/plugins/sdk-provider-plugins",
@@ -5645,6 +5649,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "es/plugins/building-plugins",
+                  "es/plugins/feature-plugins",
                   "es/plugins/tool-plugins",
                   "es/plugins/sdk-channel-plugins",
                   "es/plugins/sdk-provider-plugins",
@@ -6678,6 +6683,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "pt-BR/plugins/building-plugins",
+                  "pt-BR/plugins/feature-plugins",
                   "pt-BR/plugins/tool-plugins",
                   "pt-BR/plugins/sdk-channel-plugins",
                   "pt-BR/plugins/sdk-provider-plugins",
@@ -7711,6 +7717,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "ko/plugins/building-plugins",
+                  "ko/plugins/feature-plugins",
                   "ko/plugins/tool-plugins",
                   "ko/plugins/sdk-channel-plugins",
                   "ko/plugins/sdk-provider-plugins",
@@ -8744,6 +8751,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "de/plugins/building-plugins",
+                  "de/plugins/feature-plugins",
                   "de/plugins/tool-plugins",
                   "de/plugins/sdk-channel-plugins",
                   "de/plugins/sdk-provider-plugins",
@@ -9777,6 +9785,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "fr/plugins/building-plugins",
+                  "fr/plugins/feature-plugins",
                   "fr/plugins/tool-plugins",
                   "fr/plugins/sdk-channel-plugins",
                   "fr/plugins/sdk-provider-plugins",
@@ -10810,6 +10819,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "hi/plugins/building-plugins",
+                  "hi/plugins/feature-plugins",
                   "hi/plugins/tool-plugins",
                   "hi/plugins/sdk-channel-plugins",
                   "hi/plugins/sdk-provider-plugins",
@@ -11843,6 +11853,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "ar/plugins/building-plugins",
+                  "ar/plugins/feature-plugins",
                   "ar/plugins/tool-plugins",
                   "ar/plugins/sdk-channel-plugins",
                   "ar/plugins/sdk-provider-plugins",
@@ -12876,6 +12887,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "it/plugins/building-plugins",
+                  "it/plugins/feature-plugins",
                   "it/plugins/tool-plugins",
                   "it/plugins/sdk-channel-plugins",
                   "it/plugins/sdk-provider-plugins",
@@ -13909,6 +13921,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "vi/plugins/building-plugins",
+                  "vi/plugins/feature-plugins",
                   "vi/plugins/tool-plugins",
                   "vi/plugins/sdk-channel-plugins",
                   "vi/plugins/sdk-provider-plugins",
@@ -14942,6 +14955,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "nl/plugins/building-plugins",
+                  "nl/plugins/feature-plugins",
                   "nl/plugins/tool-plugins",
                   "nl/plugins/sdk-channel-plugins",
                   "nl/plugins/sdk-provider-plugins",
@@ -15975,6 +15989,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "tr/plugins/building-plugins",
+                  "tr/plugins/feature-plugins",
                   "tr/plugins/tool-plugins",
                   "tr/plugins/sdk-channel-plugins",
                   "tr/plugins/sdk-provider-plugins",
@@ -17008,6 +17023,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "uk/plugins/building-plugins",
+                  "uk/plugins/feature-plugins",
                   "uk/plugins/tool-plugins",
                   "uk/plugins/sdk-channel-plugins",
                   "uk/plugins/sdk-provider-plugins",
@@ -18041,6 +18057,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "id/plugins/building-plugins",
+                  "id/plugins/feature-plugins",
                   "id/plugins/tool-plugins",
                   "id/plugins/sdk-channel-plugins",
                   "id/plugins/sdk-provider-plugins",
@@ -19074,6 +19091,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "pl/plugins/building-plugins",
+                  "pl/plugins/feature-plugins",
                   "pl/plugins/tool-plugins",
                   "pl/plugins/sdk-channel-plugins",
                   "pl/plugins/sdk-provider-plugins",
@@ -20107,6 +20125,7 @@
                 "group": "Building plugins",
                 "pages": [
                   "ru/plugins/building-plugins",
+                  "ru/plugins/feature-plugins",
                   "ru/plugins/tool-plugins",
                   "ru/plugins/sdk-channel-plugins",
                   "ru/plugins/sdk-provider-plugins",
