@@ -33,6 +33,27 @@ fresh lease. Every run still syncs the current checkout.
 `OPENCLAW_TESTBOX_ALLOW_STALE=1` is only for intentional diagnostics, not
 release proof.
 
+The Testbox workflow registers a separate disposable checkout for native sync.
+The hydrated execution workspace stays at its original absolute path, so native
+Git cleanup and rsync cannot delete dependencies, build output, or ignored runtime
+there. The wrapper verifies and applies the source bundle in that execution
+workspace, then runs the payload there. It never restores runtime from the caller
+or changes the selected rsync binary.
+
+Workspace preparation changes require a fresh lease. A missing or overlapping
+execution-workspace binding stops the payload; stop that lease and warm a new one.
+Use the OpenClaw wrapper for proof: direct native Blacksmith commands target the
+transport checkout, which deliberately has no hydrated runtime.
+
+Testbox requests with `--artifact-glob` or `--require-artifact` also require the
+`prepared-artifact-workspace` feature in the selected Crabbox binary's
+`providers describe blacksmith-testbox --json` response. The wrapper checks this
+before sync or lease work, rather than collecting missing or stale transport files.
+Update Crabbox if that capability is absent. Collection stays anchored in the
+prepared workspace across payload directory changes and normal failure exits;
+existing cancellation and signal-related artifact withholding remains unchanged.
+Ordinary runs without artifact requests do not require this additional capability.
+
 Testbox runs and POSIX remote changed gates freeze source into a Git bundle
 against the pinned base. These runs require Crabbox 0.37.0 or later for
 `sync-plan --json`; upgrade Crabbox before retrying an older binary. This API floor
