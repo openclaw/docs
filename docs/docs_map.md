@@ -3353,6 +3353,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Coverage and proof limits
   - H2: Storage, retention, and migration
   - H2: Querying
+  - H2: Maintainer invariants
   - H2: Related
 
 ## gateway/authentication.md
