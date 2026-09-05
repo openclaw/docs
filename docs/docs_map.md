@@ -5509,6 +5509,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Voice directives in replies
   - H2: Config (`~/.openclaw/openclaw.json`)
   - H2: macOS UI
+  - H2: Apple Watch UI
   - H2: Android UI
   - H2: Notes
   - H2: Related
@@ -5646,6 +5647,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start (pair + connect)
   - H2: Health summaries
   - H2: Apple Watch voice and chat
+  - H3: Talk to Claw with the iPhone
+  - H3: Standalone voice
   - H2: Review command approvals
   - H2: Answer agent questions
   - H2: Optional direct Apple Watch node
