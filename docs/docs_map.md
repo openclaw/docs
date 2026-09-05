@@ -1249,6 +1249,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface ratchets
   - H2: Local equivalents
   - H2: OpenClaw Performance
+  - H3: Vitest paired benchmark
   - H2: Full Release Validation
   - H2: Live and E2E shards
   - H2: Package Acceptance
