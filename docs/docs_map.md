@@ -2262,6 +2262,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Options
   - H2: Recover a failed update
   - H2: update status
+  - H2: Run history and reports
   - H2: update repair
   - H2: update cleanup
   - H2: update wizard
@@ -9246,6 +9247,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: `meeting_transcript_sessions`
   - H4: `meeting_transcript_utterances`
   - H4: `meeting_transcript_summaries`
+  - H3: Update run ledger
   - H2: Versioning contract
   - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
