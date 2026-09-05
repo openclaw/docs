@@ -10949,6 +10949,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How widgets work
   - H2: Design system
   - H2: Use the tool
+  - H2: Native dashboard reports
   - H2: Show on a device
   - H2: Interactive widgets
   - H2: Dashboard capabilities
@@ -11356,6 +11357,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Interaction tiers
   - H2: Widget model and hosting
   - H3: Widgets host content; MCP apps are one content kind
+  - H3: Native data reports
   - H3: Plugin capability declarations
   - H3: Authenticated GitHub reads
   - H3: Modeled residual: WebRTC data channels
