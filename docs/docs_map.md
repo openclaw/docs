@@ -10963,6 +10963,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H2: Lifecycle
   - H2: Collection review
+  - H3: Changes and recovery
   - H3: When an older backup cannot be restored automatically
   - H2: Chat
   - H3: Learn from recent work
