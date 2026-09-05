@@ -11299,6 +11299,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: OpenClaw system care
   - H2: Home dock
   - H2: Manage plugins
+  - H2: Updates
   - H2: Apps and extensions
   - H2: Sidebar navigation
   - H3: Session menu
