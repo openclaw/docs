@@ -2677,6 +2677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: slack-desktop-smoke
   - H2: Evidence manifest
   - H2: GitHub automation
+  - H3: Telegram proof is a separate QA entrypoint
   - H2: Machines and secrets
   - H2: Run outcomes
   - H2: Adding a scenario
