@@ -63,6 +63,16 @@ const syntheticR2 = {
   OPENCLAW_R2_SECRET_ACCESS_KEY: "synthetic-secret",
 };
 
+for (const value of ["30s", "1.5", "0", "-1", "Infinity", "2147483648"]) {
+  test(`R2 upload rejects invalid timeout ${value} before making a request`, (t) => {
+    const root = fetchUploadRoot(t);
+    const result = run(root, "r2-upload.mjs", { ...syntheticR2, R2_UPLOAD_FETCH_TIMEOUT_MS: value });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /R2_UPLOAD_FETCH_TIMEOUT_MS must be an integer between/);
+    assert.doesNotMatch(result.stderr, /Unexpected outbound fetch/);
+  });
+}
+
 test("manifest diff detects metadata additions, changes and removals with identical HTML hashes", (t) => {
   const f = uploadFixture(t);
   const result = dryUpload(f.root, f.local, f.old);

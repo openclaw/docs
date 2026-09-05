@@ -19,7 +19,7 @@ const sessionToken = process.env.OPENCLAW_R2_SESSION_TOKEN || process.env.AWS_SE
 const region = process.env.OPENCLAW_R2_REGION || "auto";
 const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
-const fetchTimeoutMs = Number.parseInt(process.env.R2_UPLOAD_FETCH_TIMEOUT_MS || "30000", 10);
+const fetchTimeoutMs = Number(process.env.R2_UPLOAD_FETCH_TIMEOUT_MS || "30000");
 const deleteOrphans = process.env.R2_DELETE_ORPHANS !== "0";
 const deleteBucketOrphans = process.env.R2_DELETE_BUCKET_ORPHANS !== "0";
 const fullRefresh = process.env.R2_UPLOAD_FORCE === "1" || process.env.R2_UPLOAD_FULL_REFRESH === "1";
@@ -39,7 +39,10 @@ const protectedKeys = new Set([
 
 if (!Number.isFinite(concurrency) || concurrency < 1) throw new Error("R2_UPLOAD_CONCURRENCY must be a positive integer");
 if (!Number.isFinite(refreshConcurrency) || refreshConcurrency < 1) throw new Error("R2_REFRESH_CONCURRENCY must be a positive integer");
-if (!Number.isFinite(fetchTimeoutMs) || fetchTimeoutMs < 1) throw new Error("R2_UPLOAD_FETCH_TIMEOUT_MS must be a positive integer");
+// Larger delays overflow Node timers and can become one-millisecond timeouts.
+if (!Number.isInteger(fetchTimeoutMs) || fetchTimeoutMs < 1 || fetchTimeoutMs > 2_147_483_647) {
+  throw new Error("R2_UPLOAD_FETCH_TIMEOUT_MS must be an integer between 1 and 2147483647 milliseconds");
+}
 if (!fs.existsSync(manifestPath)) throw new Error(`${path.relative(root, manifestPath) || manifestPath} does not exist; run the matching build step first`);
 if (!dryRun && !endpoint) throw new Error("OPENCLAW_R2_S3_ENDPOINT or CLOUDFLARE_ACCOUNT_ID is required");
 if (!dryRun && !accessKeyId) throw new Error("OPENCLAW_R2_ACCESS_KEY_ID or AWS_ACCESS_KEY_ID is required");
