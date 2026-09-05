@@ -180,6 +180,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to use Task Flow
   - H2: Sync modes
   - H3: Managed mode
+  - H4: Launching and linking child tasks
+  - H4: Run a managed Lobster workflow
   - H3: Mirrored mode
   - H2: Flow statuses
   - H2: Durable state and revision tracking
