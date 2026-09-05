@@ -4458,6 +4458,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Anthropic 429 extra usage required for long context
   - H2: Upstream 403 blocked responses
   - H2: Local OpenAI-compatible backend passes direct probes but agent runs fail
+  - H2: Agent run failed with a storage error
   - H2: No replies
   - H2: Dashboard control UI connectivity
   - H3: Auth detail codes quick map
