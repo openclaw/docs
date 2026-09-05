@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import worker from "../../../workers/docs-router.ts";
 
 export const repo = fileURLToPath(new URL("../../../", import.meta.url));
@@ -14,16 +14,17 @@ export function write(root, name, content) {
   fs.writeFileSync(file, content);
 }
 
-export function run(root, script, env = {}, imports = []) {
+export function run(root, script, env = {}, imports = [], options = {}) {
   return spawnSync(process.execPath, [
-    "--import", path.join(root, "no-network.mjs"),
-    ...imports.flatMap((file) => ["--import", file]),
+    "--import", pathToFileURL(path.join(root, "no-network.mjs")).href,
+    ...imports.flatMap((file) => ["--import", pathToFileURL(file).href]),
     path.join(repo, "scripts/docs-site", script),
   ], {
     cwd: root,
     env: { PATH: process.env.PATH, ...env },
     encoding: "utf8",
     maxBuffer: 8 * 1024 * 1024,
+    timeout: options.timeout,
   });
 }
 
@@ -32,7 +33,14 @@ export function fixture(t, redirects = [], sources = {}, basePath = "") {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   write(root, "no-network.mjs", 'globalThis.fetch = () => { throw new Error("Unexpected outbound fetch"); };\n');
   fs.mkdirSync(path.join(root, "scripts"));
-  fs.symlinkSync(path.join(repo, "scripts/docs-site"), path.join(root, "scripts/docs-site"), "dir");
+  const docsSite = path.join(repo, "scripts/docs-site");
+  const fixtureDocsSite = path.join(root, "scripts/docs-site");
+  try {
+    fs.symlinkSync(docsSite, fixtureDocsSite, "dir");
+  } catch (error) {
+    if (error.code !== "EPERM") throw error;
+    fs.symlinkSync(docsSite, fixtureDocsSite, "junction");
+  }
   write(root, "docs/docs.json", JSON.stringify({
     name: "Redirect fixture",
     navigation: { languages: ["en", "de", "fr"].map((language) => ({ language, tabs: [] })) },
