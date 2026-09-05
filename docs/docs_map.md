@@ -4413,6 +4413,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Externally managed Serve and Funnel
   - H2: Notes
   - H3: Tailscale prerequisites and limits
+  - H2: Recover an orphaned foreground claim
   - H2: Browser control (remote Gateway + local browser)
   - H2: Learn more
   - H2: Related
