@@ -2121,6 +2121,65 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual("# Hindi\n", run_git(repo, "show", "origin/main:docs/hi/index.md"))
             self.assertNotIn("docs/.i18n/hi.tm.jsonl", run_git(repo, "ls-tree", "-r", "--name-only", "origin/main"))
 
+    def test_ensure_base_current_treats_empty_remote_sha_as_stale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "github_output"
+            stdout = io.StringIO()
+            with patch.object(commit_locale_artifact, "remote_source_sha", return_value=""), patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}), redirect_stdout(stdout):
+                current = commit_locale_artifact.ensure_base_current("source-a", "fr")
+            self.assertFalse(current)
+            self.assertIn("committed=false", output.read_text(encoding="utf-8"))
+            self.assertIn("missing or unreadable", stdout.getvalue())
+
+    def test_commit_locale_skips_push_when_origin_source_json_is_unreadable(self) -> None:
+        cases = {
+            "missing": None,
+            "invalid": "{not-json\n",
+            "empty_sha": json.dumps({"repository": "openclaw/openclaw", "sha": ""}) + "\n",
+            "missing_sha": json.dumps({"repository": "openclaw/openclaw"}) + "\n",
+        }
+        for name, source_body in cases.items():
+            with self.subTest(name):
+                with tempfile.TemporaryDirectory() as tmp:
+                    tmp_path = Path(tmp)
+                    origin = tmp_path / "origin.git"
+                    subprocess.run(["git", "init", "--bare", str(origin)], check=True, text=True, stdout=subprocess.PIPE)
+                    repo = tmp_path / "repo"
+                    repo.mkdir()
+                    init_repo(repo)
+                    (repo / ".openclaw-sync").mkdir()
+                    if source_body is None:
+                        (repo / ".openclaw-sync/keep").write_text("x\n", encoding="utf-8")
+                    else:
+                        (repo / ".openclaw-sync/source.json").write_text(source_body, encoding="utf-8")
+                    (repo / "docs").mkdir()
+                    (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+                    run_git(repo, "add", ".")
+                    run_git(repo, "commit", "-m", "initial")
+                    run_git(repo, "remote", "add", "origin", str(origin))
+                    run_git(repo, "push", "-u", "origin", "main")
+
+                    (repo / "docs/hi").mkdir(parents=True)
+                    (repo / "docs/hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+                    artifact = repo / ".openclaw-sync/i18n-artifacts/hi-s0of1"
+                    artifact.mkdir(parents=True)
+                    (artifact / "changed-files.txt").write_text("docs/hi/index.md\n", encoding="utf-8")
+                    (artifact / "deleted-files.txt").write_text("", encoding="utf-8")
+
+                    stdout = io.StringIO()
+                    with chdir(repo), redirect_stdout(stdout):
+                        committed = commit_locale_artifact.commit_locale(
+                            "hi",
+                            "source-a",
+                            1,
+                            artifact_role="canary",
+                            artifact_dir=str(artifact),
+                        )
+
+                    self.assertFalse(committed)
+                    self.assertIn("missing or unreadable", stdout.getvalue())
+                    self.assertNotIn("docs/hi/index.md", run_git(repo, "ls-tree", "-r", "--name-only", "origin/main"))
+
     def test_canary_commit_scope_rejects_unrelated_locale_deletes_not_in_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
