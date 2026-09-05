@@ -1673,6 +1673,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: gateway suspend
   - H3: gateway resume &lt;suspensionId&gt;
   - H2: Manage the Gateway service
+  - H3: Recover an unreadable native service definition
   - H3: Lifecycle requests from Gateway chat
   - H3: Install with a wrapper
   - H2: Discover gateways (Bonjour)
@@ -10859,6 +10860,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin hooks
   - H2: Verify the active Gateway
   - H2: Troubleshooting
+  - H3: Trusted plugin state refused
   - H3: Blocked plugin path ownership
   - H3: Slow plugin tool setup
   - H2: Related
