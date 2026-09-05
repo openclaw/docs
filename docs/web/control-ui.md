@@ -487,6 +487,34 @@ uses the requesting session's loaded title, not the open conversation's title. I
 metadata is unavailable, the normal session-name fallback remains until it loads.
 This label does not change which request the approval buttons resolve.
 
+### Side panel keyboard shortcuts
+
+The side panel **+** menu and the keyboard shortcut overview (⌘/ on Apple
+platforms, Ctrl+/ elsewhere) show the same panel shortcuts. A shortcut opens its
+panel, activates an existing hidden tab, or closes the panel when it is visible.
+Only the active, presented chat pane responds, including while the composer has
+focus. Availability follows the menu: Terminal, Browser, Desktop, and Discussion
+need their corresponding capabilities; Dashboard needs an available session board
+and is omitted in compact panes. Conversation has no shortcut.
+
+| Panel      | macOS | Windows / Linux  |
+| ---------- | ----- | ---------------- |
+| Terminal   | ⌃\`   | Ctrl+\`          |
+| Browser    | ⌘⌥⇧U  | Ctrl+Alt+Shift+U |
+| Files      | ⌘⇧B   | Ctrl+Shift+B     |
+| Side chat  | ⌘⇧S   | Ctrl+Shift+S     |
+| Tasks      | ⌘⌥⇧K  | Ctrl+Alt+Shift+K |
+| Desktop    | ⌘⌥⇧D  | Ctrl+Alt+Shift+D |
+| Discussion | ⌘⌥⇧J  | Ctrl+Alt+Shift+J |
+| Dashboard  | ⌘⌥⇧G  | Ctrl+Alt+Shift+G |
+| Review     | ⌘⌥⇧E  | Ctrl+Alt+Shift+E |
+
+Command+Option chords accept Option symbols through the physical key; Ctrl+Alt chords require the matching ASCII letter to preserve non-ASCII AltGr text. Dead keys and composition are ignored.
+
+The new panel chords include Option/Alt to avoid browser actions such as developer
+tools, Read Aloud, and find previous, and OpenClaw's existing debug-overlay shortcut.
+The existing Terminal, Files, and Side chat bindings are unchanged.
+
 ### This Mac (macOS app)
 
 Inside the [macOS app](/platforms/macos), Settings includes a **This Mac** group
@@ -505,6 +533,7 @@ are Gateway settings and remain available in every browser.
 
 <AccordionGroup>
   <Accordion title="Chat and Talk">
+    - Subagent transcripts hide author avatars in both the main chat view and task details; sender names remain visible.
     - Chat with the model via Gateway WS (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`). Archived sessions keep the composer disabled and show a banner with an **Unarchive** action before the conversation can continue.
     - Opening or refreshing chat requests up to 80 recent messages. Each background warming pass reads at most two inactive sessions sequentially, with up to 20 messages per session, after presented chat loads finish. Automatic warming waits for a visible conversation on the current page; dashboard-only views still warm the session you hover or keyboard-focus. Scrolling back requests up to 1,000 older messages per page and prefetches the next page. Per-message text caps and response-byte limits can reduce these counts.
     - A previous run's error banner clears when Chat adopts a new run or history confirms a newer successful run. Retiring the banner does not erase recorded diagnostics. A late error from the same run can remain visible beside its delivered answer; reconnecting or refreshing metadata alone does not establish recovery.

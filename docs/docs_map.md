@@ -11343,6 +11343,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Start a native coding CLI
   - H3: OpenClaw Chat workspace startup
   - H2: Settings
+  - H3: Side panel keyboard shortcuts
   - H3: This Mac (macOS app)
   - H2: What it can do (today)
   - H2: Custom plugin UI
