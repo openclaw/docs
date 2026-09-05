@@ -70,11 +70,15 @@ def remote_source_sha() -> str:
 
 def ensure_base_current(base_source_sha: str, locale: str) -> bool:
     current_source_sha = remote_source_sha()
-    if current_source_sha and current_source_sha != base_source_sha:
+    if not current_source_sha or current_source_sha != base_source_sha:
         # Artifact application already did stale-page filtering against latest
-        # main. If main moves again during validation/push, rerun this locale
-        # rather than commit against an unvalidated source base.
-        print(f"Source moved from {base_source_sha} to {current_source_sha}; skipping {locale} translation commit.")
+        # main. If main moves again during validation/push, or source.json is
+        # missing/unreadable, skip rather than commit against an unvalidated
+        # source base.
+        if current_source_sha:
+            print(f"Source moved from {base_source_sha} to {current_source_sha}; skipping {locale} translation commit.")
+        else:
+            print(f"Source metadata missing or unreadable; skipping {locale} translation commit.")
         write_output("committed", "false")
         return False
     return True
