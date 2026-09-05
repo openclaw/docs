@@ -49,6 +49,15 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
+Signed R2 requests and the hostname cutover helper default to a 30-second
+per-request timeout. A stalled R2 request enters the existing retry loop; a
+stalled cutover request fails the helper. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` for
+`scripts/docs-site/r2-upload.mjs`, or `CLOUDFLARE_API_TIMEOUT_MS` for
+`scripts/cloudflare-cutover-docs-hosts.mjs` (including dry runs), to raise the
+relevant budget. Use an integer from 1 to 2147483647 milliseconds (Node's maximum
+timer delay). The workflow job timeout remains an outer limit even when a request
+budget is raised.
+
 ## Secrets
 
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.

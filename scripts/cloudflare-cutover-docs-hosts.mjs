@@ -2,9 +2,14 @@
 const apiToken = process.env.CLOUDFLARE_API_TOKEN;
 const zoneName = process.env.CLOUDFLARE_ZONE_NAME ?? "openclaw.ai";
 const dryRun = process.argv.includes("--dry-run");
+const fetchTimeoutMs = Number(process.env.CLOUDFLARE_API_TIMEOUT_MS || "30000");
 
 if (!apiToken) {
   throw new Error("CLOUDFLARE_API_TOKEN is required");
+}
+// Larger delays overflow Node timers and can become one-millisecond timeouts.
+if (!Number.isInteger(fetchTimeoutMs) || fetchTimeoutMs < 1 || fetchTimeoutMs > 2_147_483_647) {
+  throw new Error("CLOUDFLARE_API_TIMEOUT_MS must be an integer between 1 and 2147483647 milliseconds");
 }
 
 const docsHost = `docs.${zoneName}`;
@@ -162,6 +167,7 @@ async function cloudflare(path, init = {}) {
       "Content-Type": "application/json",
     },
     body: init.body ? JSON.stringify(init.body) : undefined,
+    signal: AbortSignal.timeout(fetchTimeoutMs),
   });
   const text = await response.text();
   const data = text ? JSON.parse(text) : {};

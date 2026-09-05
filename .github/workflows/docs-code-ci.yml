@@ -11,6 +11,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/cloudflare-cutover-docs-hosts.mjs"
+      - "scripts/*.test.mjs"
       - "scripts/docs-site/**"
       - "workers/**"
       - "wrangler.toml"
