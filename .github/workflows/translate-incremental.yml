@@ -54,6 +54,7 @@ jobs:
     name: Debounce and pick source
     needs: validate-workflow-shell
     runs-on: ubuntu-latest
+    timeout-minutes: 70
     outputs:
       mode: ${{ steps.prepare.outputs.mode }}
       publish_ref: ${{ steps.prepare.outputs.publish_ref }}
@@ -84,6 +85,7 @@ jobs:
     needs: prepare
     if: needs.prepare.outputs.should_translate == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       locale_count: ${{ steps.plan.outputs.locale_count }}
       source_doc_count: ${{ steps.plan.outputs.source_doc_count }}
@@ -154,6 +156,7 @@ jobs:
     needs: prepare
     if: needs.prepare.outputs.should_translate == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out
         uses: actions/checkout@v7.0.1
