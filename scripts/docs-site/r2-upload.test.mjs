@@ -181,3 +181,92 @@ test("shell scope selects both physical and virtual redirect objects for metadat
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(puts(result.stdout), local.map((entry) => entry.key).sort());
 });
+
+function localeEntries(template) {
+  return [
+    { ...template, key: "de/page" },
+    { ...template, key: "de/page/index.html" },
+    { ...template, key: "de/page.md" },
+  ];
+}
+
+test("empty object remote manifest is not a hit and does not write a merged manifest", (t) => {
+  const f = uploadFixture(t);
+  const local = localeEntries(f.local[0]);
+  write(f.root, "dist/local.json", JSON.stringify(manifest(local)));
+  write(f.root, "dist/remote.json", "{}\n");
+  const mergedPath = path.join(f.root, "dist/docs-r2-manifest.locale.merged.json");
+  const result = run(f.root, "r2-upload.mjs", {
+    R2_UPLOAD_DRY_RUN: "1", R2_UPLOAD_MANIFEST_PATH: "dist/local.json",
+    R2_UPLOAD_REMOTE_MANIFEST_PATH: "dist/remote.json",
+    R2_UPLOAD_SCOPE: "locale", R2_UPLOAD_LOCALE: "de",
+  });
+  assert.notEqual(result.status, 0, result.stdout);
+  assert.match(`${result.stderr}\n${result.stdout}`, /entries array/i);
+  assert.equal(fs.existsSync(mergedPath), false);
+});
+
+test("valid remote manifest with empty entries array remains a hit", (t) => {
+  const f = uploadFixture(t);
+  const result = dryUpload(f.root, f.local, []);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /r2 remote manifest: hit from file \(0 entries\)/);
+});
+
+test("dry-run without a remote manifest path stays missing", (t) => {
+  const f = uploadFixture(t);
+  write(f.root, "dist/local.json", JSON.stringify(manifest(f.local)));
+  const result = run(f.root, "r2-upload.mjs", {
+    R2_UPLOAD_DRY_RUN: "1", R2_UPLOAD_MANIFEST_PATH: "dist/local.json",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /r2 remote manifest: missing from dry-run \(0 entries\)/);
+});
+
+for (const body of ["null", "[]"]) {
+  test(`remote manifest HTTP 200 body ${body} fails closed`, (t) => {
+    const f = uploadFixture(t);
+    write(f.root, "dist/local.json", JSON.stringify(manifest(f.local)));
+    write(f.root, "mock-fetch.mjs", `
+globalThis.fetch = async (input, init) => {
+  const url = new URL(input);
+  const key = decodeURIComponent(url.pathname.slice("/synthetic-bucket/".length));
+  if (init.method === "GET" && key === ".openclaw-docs-r2-manifest.json") {
+    return new Response(${JSON.stringify(body)}, { status: 200 });
+  }
+  return new Response(null, { status: 200 });
+};
+`);
+    const result = run(f.root, "r2-upload.mjs", {
+      R2_UPLOAD_MANIFEST_PATH: "dist/local.json", R2_UPLOAD_RETRIES: "0",
+      OPENCLAW_R2_S3_ENDPOINT: "https://synthetic-r2.invalid",
+      CLOUDFLARE_R2_BUCKET: "synthetic-bucket", OPENCLAW_R2_ACCESS_KEY_ID: "synthetic-access",
+      OPENCLAW_R2_SECRET_ACCESS_KEY: "synthetic-secret",
+    }, [path.join(f.root, "mock-fetch.mjs")]);
+    assert.notEqual(result.status, 0, result.stdout);
+    assert.match(`${result.stderr}\n${result.stdout}`, /entries array|invalid JSON/i);
+  });
+}
+
+test("HTTP 404 remote manifest stays missing with empty entries", (t) => {
+  const f = uploadFixture(t);
+  write(f.root, "dist/local.json", JSON.stringify(manifest(f.local)));
+  write(f.root, "mock-fetch.mjs", `
+globalThis.fetch = async (input, init) => {
+  const url = new URL(input);
+  const key = decodeURIComponent(url.pathname.slice("/synthetic-bucket/".length));
+  if (init.method === "GET" && key === ".openclaw-docs-r2-manifest.json") {
+    return new Response("Not Found", { status: 404 });
+  }
+  return new Response(null, { status: 200 });
+};
+`);
+  const result = run(f.root, "r2-upload.mjs", {
+    R2_UPLOAD_MANIFEST_PATH: "dist/local.json", R2_UPLOAD_RETRIES: "0", R2_DELETE_ORPHANS: "0",
+    OPENCLAW_R2_S3_ENDPOINT: "https://synthetic-r2.invalid",
+    CLOUDFLARE_R2_BUCKET: "synthetic-bucket", OPENCLAW_R2_ACCESS_KEY_ID: "synthetic-access",
+    OPENCLAW_R2_SECRET_ACCESS_KEY: "synthetic-secret",
+  }, [path.join(f.root, "mock-fetch.mjs")]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /r2 remote manifest: missing from r2 \(0 entries\)/);
+});

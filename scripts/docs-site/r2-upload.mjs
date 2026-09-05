@@ -210,23 +210,31 @@ function writeUploadManifest(localManifest, currentRemoteManifest, entries) {
 async function getRemoteManifest() {
   if (remoteManifestPath) {
     const file = path.isAbsolute(remoteManifestPath) ? remoteManifestPath : path.join(root, remoteManifestPath);
-    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
-    return {
-      ...parsed,
-      manifestSource: "file",
-      status: "hit",
-    };
+    return remoteManifestHit(JSON.parse(fs.readFileSync(file, "utf8")), "file");
   }
   if (dryRun) return { entries: [], source: "dry-run", status: "missing" };
   const response = await signedFetchWithRetry("GET", remoteManifestKey);
   if (response.status === 404) return { entries: [], source: "r2", status: "missing" };
   if (!response.ok) throw new Error(`GET manifest failed: ${response.status} ${await response.text()}`);
   const text = await response.text();
+  let parsed;
   try {
-    return { ...JSON.parse(text), manifestSource: "r2", status: "hit" };
+    parsed = JSON.parse(text);
   } catch (error) {
     throw new Error(`GET manifest returned invalid JSON; refusing to reupload the full docs tree: ${error.message}`);
   }
+  return remoteManifestHit(parsed, "r2");
+}
+
+function remoteManifestHit(parsed, source) {
+  if (!Array.isArray(parsed?.entries)) {
+    throw new Error("remote manifest must contain an entries array; refusing to reupload the full docs tree");
+  }
+  return {
+    ...parsed,
+    manifestSource: source,
+    status: "hit",
+  };
 }
 
 async function createUploadPlan(entries, remoteEntriesByKey) {
