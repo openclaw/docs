@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fixture, servesMarkdown, pipeline, run, write } from "./test-helpers/redirect-fixture.mjs";
@@ -36,6 +37,40 @@ function dryUpload(root, local, remote, env = {}) {
 function puts(output) {
   return [...output.matchAll(/^r2 dry-run put: (.+)$/gm)].map((match) => match[1])
     .filter((key) => key !== ".openclaw-docs-r2-manifest.json").sort();
+}
+
+function fetchUploadRoot(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-r2-fetch-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  write(root, "no-network.mjs", 'globalThis.fetch = () => { throw new Error("Unexpected outbound fetch"); };\n');
+  const body = "<html>ok</html>";
+  write(root, "files/page.html", body);
+  const local = [{
+    key: "page", sourceKey: "page", file: "files/page.html", size: Buffer.byteLength(body),
+    contentType: "text/html; charset=utf-8", cacheControl: "public, max-age=60",
+    sha256: crypto.createHash("sha256").update(body).digest("hex"),
+    md5: crypto.createHash("md5").update(body).digest("hex"),
+  }];
+  write(root, "dist/local.json", JSON.stringify(manifest(local)));
+  write(root, "dist/remote.json", JSON.stringify(manifest(local)));
+  return root;
+}
+
+const syntheticR2 = {
+  R2_UPLOAD_MANIFEST_PATH: "dist/local.json", R2_UPLOAD_REMOTE_MANIFEST_PATH: "dist/remote.json",
+  R2_DELETE_ORPHANS: "0", R2_UPLOAD_RETRIES: "0", OPENCLAW_R2_S3_ENDPOINT: "https://synthetic-r2.invalid",
+  CLOUDFLARE_R2_BUCKET: "synthetic-bucket", OPENCLAW_R2_ACCESS_KEY_ID: "synthetic-access",
+  OPENCLAW_R2_SECRET_ACCESS_KEY: "synthetic-secret",
+};
+
+for (const value of ["30s", "1.5", "0", "-1", "Infinity", "2147483648"]) {
+  test(`R2 upload rejects invalid timeout ${value} before making a request`, (t) => {
+    const root = fetchUploadRoot(t);
+    const result = run(root, "r2-upload.mjs", { ...syntheticR2, R2_UPLOAD_FETCH_TIMEOUT_MS: value });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /R2_UPLOAD_FETCH_TIMEOUT_MS must be an integer between/);
+    assert.doesNotMatch(result.stderr, /Unexpected outbound fetch/);
+  });
 }
 
 test("manifest diff detects metadata additions, changes and removals with identical HTML hashes", (t) => {
@@ -168,6 +203,67 @@ test("translation page/locale scopes own affected aliases and compatibility pref
   });
   assert.equal(fallback.status, 0, fallback.stderr);
   assert.deepEqual(puts(fallback.stdout), expected.filter((key) => !key.startsWith("de/target")));
+});
+
+test("signedFetch attaches an AbortSignal so a stalled R2 socket can time out", (t) => {
+  const root = fetchUploadRoot(t);
+  write(root, "mock-fetch.mjs", `
+import fs from "node:fs";
+const calls = [];
+globalThis.fetch = async (input, init = {}) => {
+  const url = new URL(input);
+  const key = decodeURIComponent(url.pathname.slice("/synthetic-bucket/".length));
+  calls.push({
+    method: init.method,
+    key,
+    hasSignal: Boolean(init.signal),
+    signalAborted: Boolean(init.signal?.aborted),
+    signalName: init.signal?.constructor?.name ?? null,
+  });
+  fs.writeFileSync("calls.json", JSON.stringify(calls));
+  return new Response(null, { status: 200 });
+};
+`);
+  const result = run(root, "r2-upload.mjs", syntheticR2, [path.join(root, "mock-fetch.mjs")]);
+  assert.equal(result.status, 0, result.stderr);
+  const calls = JSON.parse(fs.readFileSync(path.join(root, "calls.json"), "utf8"));
+  assert.ok(calls.length > 0, "signedFetch must call fetch at least once");
+  for (const call of calls) {
+    assert.equal(call.hasSignal, true, `${call.method} ${call.key} missing AbortSignal`);
+    assert.equal(call.signalName, "AbortSignal", `${call.method} ${call.key}`);
+    assert.equal(call.signalAborted, false, `${call.method} ${call.key} started already aborted`);
+  }
+});
+
+test("signedFetch aborts a hung R2 fetch so retries are not stuck on a stalled socket", (t) => {
+  const root = fetchUploadRoot(t);
+  write(root, "mock-fetch.mjs", `
+globalThis.fetch = (_input, init = {}) => new Promise((_resolve, reject) => {
+  const signal = init.signal;
+  const keepAlive = setTimeout(() => {}, 60_000);
+  const abort = () => {
+    clearTimeout(keepAlive);
+    const error = new Error("The operation was aborted");
+    error.name = "AbortError";
+    reject(error);
+  };
+  if (!signal) return;
+  if (signal.aborted) {
+    abort();
+    return;
+  }
+  signal.addEventListener("abort", abort, { once: true });
+});
+`);
+  const started = Date.now();
+  const result = run(root, "r2-upload.mjs", {
+    ...syntheticR2, R2_UPLOAD_FETCH_TIMEOUT_MS: "80",
+  }, [path.join(root, "mock-fetch.mjs")], { timeout: 4000 });
+  const elapsed = Date.now() - started;
+  assert.notEqual(result.status, null, `hung fetch was killed after ${elapsed}ms instead of aborting`);
+  assert.notEqual(result.status, 0, result.stdout);
+  assert.match(result.stderr, /abort/i);
+  assert.ok(elapsed < 2000, `hung fetch ran ${elapsed}ms without aborting`);
 });
 
 test("shell scope selects both physical and virtual redirect objects for metadata-only changes", (t) => {
