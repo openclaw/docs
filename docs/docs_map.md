@@ -11106,7 +11106,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Loop on a decision gate
   - H3: Process the first child that finishes
   - H2: How collector children behave
-  - H3: Children are leaves
+  - H3: Keep collector groups flat
   - H2: Observe a Swarm
   - H2: Stop a Swarm
   - H2: Use Swarm from other harnesses
