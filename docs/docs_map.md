@@ -5807,6 +5807,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /platforms/mac/remote
 - Headings:
+  - H2: Connect with your browser
+  - H3: Open the Mac app from a website
   - H2: Modes
   - H2: Remote transports
   - H2: Prereqs on the remote host
