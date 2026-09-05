@@ -31,6 +31,17 @@ function runCutover(root, env = {}, extra = {}) {
   });
 }
 
+for (const value of ["30s", "1.5", "0", "-1", "Infinity", "2147483648"]) {
+  test(`cutover rejects invalid timeout ${value} before making a request`, (t) => {
+    const root = cutoverRoot(t);
+    fs.writeFileSync(path.join(root, "mock-fetch.mjs"), 'globalThis.fetch = () => { throw new Error("Unexpected network request"); };\n');
+    const result = runCutover(root, { CLOUDFLARE_API_TIMEOUT_MS: value });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /CLOUDFLARE_API_TIMEOUT_MS must be an integer between/);
+    assert.doesNotMatch(result.stderr, /Unexpected network request/);
+  });
+}
+
 test("Cloudflare API fetch attaches an AbortSignal so a stalled cutover call can time out", (t) => {
   const root = cutoverRoot(t);
   fs.writeFileSync(path.join(root, "mock-fetch.mjs"), `

@@ -12,5 +12,6 @@
 - Bound live docs smoke requests and jobs while preserving the dispatch retry window; thanks @SebTardif.
 - Bound maintenance and translation workflow jobs, including reusable workflow callees and the incremental debounce; thanks @SebTardif.
 - Abort stalled Cloudflare hostname cutover requests, with a configurable `CLOUDFLARE_API_TIMEOUT_MS` budget; thanks @SebTardif.
+- Reject malformed and overflowing request timeout settings before network operations begin.
 - Refresh syntax highlighting, icons, Markdown parsing, and diagrams with highlight.js 11.12.0, Lucide 1.39.0, markdown-it 15.0.1, and Mermaid 11.17.2.
 - Update CodeQL actions to 4.37.9 for the current analysis bundle.

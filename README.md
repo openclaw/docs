@@ -54,8 +54,9 @@ per-request timeout. A stalled R2 request enters the existing retry loop; a
 stalled cutover request fails the helper. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` for
 `scripts/docs-site/r2-upload.mjs`, or `CLOUDFLARE_API_TIMEOUT_MS` for
 `scripts/cloudflare-cutover-docs-hosts.mjs` (including dry runs), to raise the
-relevant budget. Use a positive integer number of milliseconds. The workflow job
-timeout remains an outer limit even when a request budget is raised.
+relevant budget. Use an integer from 1 to 2147483647 milliseconds (Node's maximum
+timer delay). The workflow job timeout remains an outer limit even when a request
+budget is raised.
 
 ## Secrets
 
