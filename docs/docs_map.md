@@ -11477,6 +11477,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser panel
   - H2: Composer capability menu
   - H2: Chat behavior
+  - H3: Source previews and copying code
   - H3: Markdown tables
   - H3: Mermaid diagrams
   - H2: Connection loss and reconnect
