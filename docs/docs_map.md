@@ -9269,6 +9269,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas
 - Headings:
   - H2: Database layout
+  - H3: ACP replay accounting
   - H3: Meeting transcript tables
   - H4: `meeting_transcript_sessions`
   - H4: `meeting_transcript_utterances`
