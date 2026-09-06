@@ -9642,6 +9642,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/transcript-hygiene
 - Headings:
+  - H2: Failed attempts and recovery
   - H2: Global rule: runtime context is not user transcript
   - H2: Where this runs
   - H2: Global rule: image sanitization
