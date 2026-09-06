@@ -5252,6 +5252,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Restore state only when necessary
   - H3: Verify the rollback
   - H2: If you are stuck
+  - H3: Unattended repair on your own inference
   - H2: Related
 
 ## install/upstash.md
