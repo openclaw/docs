@@ -1798,6 +1798,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/memory
 - Headings:
   - H1: openclaw memory
+  - H2: JSON availability
   - H2: memory status
   - H2: memory index
   - H2: memory reset
