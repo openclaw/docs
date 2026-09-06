@@ -552,6 +552,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels
 - Headings:
+  - H2: Which channel should I connect first?
   - H2: Supported channels
   - H3: Related communication plugins
   - H2: Group join introductions
@@ -4980,6 +4981,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Install from the GitHub main checkout
   - H3: Containers and package managers
   - H2: Verify the install
+  - H2: Next: run onboarding and connect a channel
   - H2: Hosting and deployment
   - H2: Back up, update, migrate, or uninstall
   - H2: Troubleshooting: openclaw not found
@@ -9927,6 +9929,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /start/docs-directory
 - Headings:
   - H2: Start here
+  - H2: Setup and reference
   - H2: Channels and UX
   - H2: Companion apps
   - H2: Operations and safety
