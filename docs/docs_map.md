@@ -6446,6 +6446,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest
 - Headings:
   - H2: What this file does
+  - H2: Native conversation discovery
   - H2: Minimal example
   - H2: Rich example
   - H2: Top-level field reference
