@@ -2273,6 +2273,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: update cleanup
   - H2: update wizard
   - H2: What it does
+  - H3: Validation and activation
   - H3: Restart handoff
   - H3: Control-plane response shape
   - H2: Git checkout flow
@@ -5240,6 +5241,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Restart the gateway
   - H3: Verify
   - H2: Rollback
+  - H3: Automatic schema-neutral rollback
   - H3: Before updating: create a verified backup
   - H3: Roll back a package install
   - H3: Roll back a source checkout
