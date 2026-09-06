@@ -1627,6 +1627,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session SQLite migration
   - H3: Downgrading After Session SQLite Migration
   - H2: Notes
+  - H2: Invalid Gateway tokens
   - H2: macOS: launchctl env overrides
   - H2: Related
 
