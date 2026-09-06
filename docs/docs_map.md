@@ -8906,6 +8906,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Usage and cost tracking
   - H2: Quick choice
+  - H3: Retired subscription model references
   - H2: GPT-6 Astra
   - H3: Async tools, steering, and reasoning changes
   - H2: Naming map
