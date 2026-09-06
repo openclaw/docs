@@ -3466,6 +3466,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-sessions
 - Headings:
+  - H2: Start without a Gateway checkout
   - H2: Images and attachments
   - H2: Paired devices: your own hardware as session hosts
   - H2: Cloud workers: rented machines through Crabbox
@@ -9275,6 +9276,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: `meeting_transcript_utterances`
   - H4: `meeting_transcript_summaries`
   - H3: Update run ledger
+  - H3: Cloud repository workspaces
   - H2: Versioning contract
   - H3: Profile-owned skill library
   - H2: Personal GitHub connections and publication
