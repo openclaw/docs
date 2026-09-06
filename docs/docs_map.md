@@ -2215,6 +2215,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/transcripts
 - Headings:
   - H1: openclaw transcripts
+  - H2: Read transcripts in the Control UI
   - H2: Commands
   - H2: Output
   - H2: Tool selectors
