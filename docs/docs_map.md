@@ -42,6 +42,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Personal model accounts
   - H2: Config-only auth routes
   - H2: Explicit auth order filtering
+  - H2: Model catalog discovery
   - H2: Probe target resolution
   - H2: External CLI credential discovery
   - H2: OAuth SecretRef Policy Guard
