@@ -3577,6 +3577,23 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Talk
   - H2: Related
 
+## gateway/config-automation.md
+
+- Route: /gateway/config-automation
+- Headings:
+  - H2: Automations (cron)
+  - H3: cron.failureAlert
+  - H2: Media model template variables
+
+## gateway/config-browser-ui-desktop.md
+
+- Route: /gateway/config-browser-ui-desktop
+- Headings:
+  - H2: Browser
+  - H2: UI
+  - H2: Desktop
+  - H3: Paired node desktops
+
 ## gateway/config-channels.md
 
 - Route: /gateway/config-channels
@@ -3604,6 +3621,84 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Self-chat mode
   - H3: Commands (chat command handling)
   - H2: Related
+
+## gateway/config-cloud-workers.md
+
+- Route: /gateway/config-cloud-workers
+- Headings:
+  - H2: Cloud worker environments
+  - H3: Crabbox profile
+  - H3: Static SSH development profile
+
+## gateway/config-extensions.md
+
+- Route: /gateway/config-extensions
+- Headings:
+  - H2: MCP
+  - H2: Skills
+  - H2: Plugins
+  - H3: Codex harness plugin config
+  - H2: Canvas widget presenter
+
+## gateway/config-gateway.md
+
+- Route: /gateway/config-gateway
+- Headings:
+  - H2: Gateway
+  - H3: OpenAI-compatible endpoints
+  - H3: Multi-instance isolation
+  - H3: gateway.tls
+  - H3: gateway.reload
+
+## gateway/config-hooks.md
+
+- Route: /gateway/config-hooks
+- Headings:
+  - H2: Hooks
+  - H3: Hook HTTP contract
+  - H3: Hook agent payload
+  - H3: Hook session and agent policy
+  - H3: Mapping details
+  - H3: Hook retries and fan-out
+  - H3: Gmail integration
+
+## gateway/config-observability.md
+
+- Route: /gateway/config-observability
+- Headings:
+  - H2: Audit
+  - H2: Logging
+  - H2: Diagnostics
+  - H2: Telemetry
+
+## gateway/config-runtime.md
+
+- Route: /gateway/config-runtime
+- Headings:
+  - H2: worktreeRoot
+  - H2: Models
+  - H2: Discovery
+  - H3: mDNS (Bonjour)
+  - H3: Wide-area (DNS-SD)
+  - H2: Update
+  - H2: ACP
+  - H2: Wizard
+  - H2: Bridge (legacy, removed)
+
+## gateway/config-secrets-env.md
+
+- Route: /gateway/config-secrets-env
+- Headings:
+  - H2: Environment
+  - H3: env (inline env vars)
+  - H3: Env var substitution
+  - H2: Secrets
+  - H3: secrets.egressProxy
+  - H3: SecretRef
+  - H3: Supported credential surface
+  - H3: Secret providers config
+  - H2: Auth storage
+  - H2: Config includes ($include)
 
 ## gateway/config-tools.md
 
@@ -3657,6 +3752,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/configuration-reference
 - Headings:
+  - H2: Pages in this reference set
   - H2: Channels
   - H2: Agent defaults, multi-agent, sessions, and messages
   - H2: worktreeRoot
@@ -3665,38 +3761,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: MCP
   - H2: Skills
   - H2: Plugins
-  - H3: Codex harness plugin config
   - H2: Browser
   - H2: UI
   - H2: Desktop
-  - H3: Paired node desktops
   - H2: Gateway
-  - H3: OpenAI-compatible endpoints
-  - H3: Multi-instance isolation
-  - H3: gateway.tls
-  - H3: gateway.reload
   - H2: Cloud worker environments
-  - H3: Crabbox profile
-  - H3: Static SSH development profile
   - H2: Hooks
-  - H3: Hook HTTP contract
-  - H3: Hook agent payload
-  - H3: Hook session and agent policy
-  - H3: Mapping details
-  - H3: Hook retries and fan-out
-  - H3: Gmail integration
   - H2: Canvas widget presenter
   - H2: Discovery
-  - H3: mDNS (Bonjour)
-  - H3: Wide-area (DNS-SD)
   - H2: Environment
-  - H3: env (inline env vars)
-  - H3: Env var substitution
   - H2: Secrets
-  - H3: secrets.egressProxy
-  - H3: SecretRef
-  - H3: Supported credential surface
-  - H3: Secret providers config
   - H2: Auth storage
   - H2: Audit
   - H2: Logging
@@ -3708,7 +3782,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Identity
   - H2: Bridge (legacy, removed)
   - H2: Automations (cron)
-  - H3: cron.failureAlert
   - H2: Media model template variables
   - H2: Config includes ($include)
   - H2: Related

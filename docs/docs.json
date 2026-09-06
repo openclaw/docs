@@ -54,51 +54,51 @@
   "redirects": [
     {
       "source": "/cli/commitments",
-      "destination": "/en/automation#retired-inferred-commitments"
+      "destination": "/automation#retired-inferred-commitments"
     },
     {
       "source": "/concepts/commitments",
-      "destination": "/en/automation#retired-inferred-commitments"
+      "destination": "/automation#retired-inferred-commitments"
     },
     {
       "source": "/concepts/channel-docking",
-      "destination": "/en/concepts/session#retired-channel-docking"
+      "destination": "/concepts/session#retired-channel-docking"
     },
     {
       "source": "/install/clawdock",
-      "destination": "/en/install/docker#clawdock-migration"
+      "destination": "/install/docker#clawdock-migration"
     },
     {
       "source": "/plan/swarms",
-      "destination": "/en/tools/swarm"
+      "destination": "/tools/swarm"
     },
     {
       "source": "/plugins/reference/linux-canvas",
-      "destination": "/en/platforms/linux#retired-linux-canvas"
+      "destination": "/platforms/linux#retired-linux-canvas"
     },
     {
       "source": "/plugins/reference/open-prose",
-      "destination": "/en/prose"
+      "destination": "/prose"
     },
     {
       "source": "/plugins/reference/workspaces",
-      "destination": "/en/web/dashboards#retired-workspaces"
+      "destination": "/web/dashboards#retired-workspaces"
     },
     {
       "source": "/providers/qwen-oauth",
-      "destination": "/en/providers/qwen#retired-qwen-portal-authentication"
+      "destination": "/providers/qwen#retired-qwen-portal-authentication"
     },
     {
       "source": "/refactor/canvas",
-      "destination": "/en/platforms/mac/canvas"
+      "destination": "/platforms/mac/canvas"
     },
     {
       "source": "/reference/templates/TOOLS.dev",
-      "destination": "/en/reference/templates/AGENTS.dev#tools"
+      "destination": "/reference/templates/AGENTS.dev#tools"
     },
     {
       "source": "/web/workspaces",
-      "destination": "/en/web/dashboards#retired-workspaces"
+      "destination": "/web/dashboards#retired-workspaces"
     },
     {
       "source": "/concepts/message-lifecycle-refactor",
@@ -1959,7 +1959,16 @@
                       "gateway/configuration",
                       "gateway/configuration-reference",
                       "gateway/config-agents",
+                      "gateway/config-automation",
+                      "gateway/config-browser-ui-desktop",
                       "gateway/config-channels",
+                      "gateway/config-cloud-workers",
+                      "gateway/config-extensions",
+                      "gateway/config-gateway",
+                      "gateway/config-hooks",
+                      "gateway/config-observability",
+                      "gateway/config-runtime",
+                      "gateway/config-secrets-env",
                       "gateway/config-tools",
                       "gateway/configuration-examples"
                     ]
@@ -3142,7 +3151,16 @@
                       "zh-CN/gateway/configuration",
                       "zh-CN/gateway/configuration-reference",
                       "zh-CN/gateway/config-agents",
+                      "zh-CN/gateway/config-automation",
+                      "zh-CN/gateway/config-browser-ui-desktop",
                       "zh-CN/gateway/config-channels",
+                      "zh-CN/gateway/config-cloud-workers",
+                      "zh-CN/gateway/config-extensions",
+                      "zh-CN/gateway/config-gateway",
+                      "zh-CN/gateway/config-hooks",
+                      "zh-CN/gateway/config-observability",
+                      "zh-CN/gateway/config-runtime",
+                      "zh-CN/gateway/config-secrets-env",
                       "zh-CN/gateway/config-tools",
                       "zh-CN/gateway/configuration-examples"
                     ]
@@ -4325,7 +4343,16 @@
                       "zh-TW/gateway/configuration",
                       "zh-TW/gateway/configuration-reference",
                       "zh-TW/gateway/config-agents",
+                      "zh-TW/gateway/config-automation",
+                      "zh-TW/gateway/config-browser-ui-desktop",
                       "zh-TW/gateway/config-channels",
+                      "zh-TW/gateway/config-cloud-workers",
+                      "zh-TW/gateway/config-extensions",
+                      "zh-TW/gateway/config-gateway",
+                      "zh-TW/gateway/config-hooks",
+                      "zh-TW/gateway/config-observability",
+                      "zh-TW/gateway/config-runtime",
+                      "zh-TW/gateway/config-secrets-env",
                       "zh-TW/gateway/config-tools",
                       "zh-TW/gateway/configuration-examples"
                     ]
@@ -5508,7 +5535,16 @@
                       "ja-JP/gateway/configuration",
                       "ja-JP/gateway/configuration-reference",
                       "ja-JP/gateway/config-agents",
+                      "ja-JP/gateway/config-automation",
+                      "ja-JP/gateway/config-browser-ui-desktop",
                       "ja-JP/gateway/config-channels",
+                      "ja-JP/gateway/config-cloud-workers",
+                      "ja-JP/gateway/config-extensions",
+                      "ja-JP/gateway/config-gateway",
+                      "ja-JP/gateway/config-hooks",
+                      "ja-JP/gateway/config-observability",
+                      "ja-JP/gateway/config-runtime",
+                      "ja-JP/gateway/config-secrets-env",
                       "ja-JP/gateway/config-tools",
                       "ja-JP/gateway/configuration-examples"
                     ]
@@ -6691,7 +6727,16 @@
                       "es/gateway/configuration",
                       "es/gateway/configuration-reference",
                       "es/gateway/config-agents",
+                      "es/gateway/config-automation",
+                      "es/gateway/config-browser-ui-desktop",
                       "es/gateway/config-channels",
+                      "es/gateway/config-cloud-workers",
+                      "es/gateway/config-extensions",
+                      "es/gateway/config-gateway",
+                      "es/gateway/config-hooks",
+                      "es/gateway/config-observability",
+                      "es/gateway/config-runtime",
+                      "es/gateway/config-secrets-env",
                       "es/gateway/config-tools",
                       "es/gateway/configuration-examples"
                     ]
@@ -7874,7 +7919,16 @@
                       "pt-BR/gateway/configuration",
                       "pt-BR/gateway/configuration-reference",
                       "pt-BR/gateway/config-agents",
+                      "pt-BR/gateway/config-automation",
+                      "pt-BR/gateway/config-browser-ui-desktop",
                       "pt-BR/gateway/config-channels",
+                      "pt-BR/gateway/config-cloud-workers",
+                      "pt-BR/gateway/config-extensions",
+                      "pt-BR/gateway/config-gateway",
+                      "pt-BR/gateway/config-hooks",
+                      "pt-BR/gateway/config-observability",
+                      "pt-BR/gateway/config-runtime",
+                      "pt-BR/gateway/config-secrets-env",
                       "pt-BR/gateway/config-tools",
                       "pt-BR/gateway/configuration-examples"
                     ]
@@ -9057,7 +9111,16 @@
                       "ko/gateway/configuration",
                       "ko/gateway/configuration-reference",
                       "ko/gateway/config-agents",
+                      "ko/gateway/config-automation",
+                      "ko/gateway/config-browser-ui-desktop",
                       "ko/gateway/config-channels",
+                      "ko/gateway/config-cloud-workers",
+                      "ko/gateway/config-extensions",
+                      "ko/gateway/config-gateway",
+                      "ko/gateway/config-hooks",
+                      "ko/gateway/config-observability",
+                      "ko/gateway/config-runtime",
+                      "ko/gateway/config-secrets-env",
                       "ko/gateway/config-tools",
                       "ko/gateway/configuration-examples"
                     ]
@@ -10240,7 +10303,16 @@
                       "de/gateway/configuration",
                       "de/gateway/configuration-reference",
                       "de/gateway/config-agents",
+                      "de/gateway/config-automation",
+                      "de/gateway/config-browser-ui-desktop",
                       "de/gateway/config-channels",
+                      "de/gateway/config-cloud-workers",
+                      "de/gateway/config-extensions",
+                      "de/gateway/config-gateway",
+                      "de/gateway/config-hooks",
+                      "de/gateway/config-observability",
+                      "de/gateway/config-runtime",
+                      "de/gateway/config-secrets-env",
                       "de/gateway/config-tools",
                       "de/gateway/configuration-examples"
                     ]
@@ -11423,7 +11495,16 @@
                       "fr/gateway/configuration",
                       "fr/gateway/configuration-reference",
                       "fr/gateway/config-agents",
+                      "fr/gateway/config-automation",
+                      "fr/gateway/config-browser-ui-desktop",
                       "fr/gateway/config-channels",
+                      "fr/gateway/config-cloud-workers",
+                      "fr/gateway/config-extensions",
+                      "fr/gateway/config-gateway",
+                      "fr/gateway/config-hooks",
+                      "fr/gateway/config-observability",
+                      "fr/gateway/config-runtime",
+                      "fr/gateway/config-secrets-env",
                       "fr/gateway/config-tools",
                       "fr/gateway/configuration-examples"
                     ]
@@ -12606,7 +12687,16 @@
                       "hi/gateway/configuration",
                       "hi/gateway/configuration-reference",
                       "hi/gateway/config-agents",
+                      "hi/gateway/config-automation",
+                      "hi/gateway/config-browser-ui-desktop",
                       "hi/gateway/config-channels",
+                      "hi/gateway/config-cloud-workers",
+                      "hi/gateway/config-extensions",
+                      "hi/gateway/config-gateway",
+                      "hi/gateway/config-hooks",
+                      "hi/gateway/config-observability",
+                      "hi/gateway/config-runtime",
+                      "hi/gateway/config-secrets-env",
                       "hi/gateway/config-tools",
                       "hi/gateway/configuration-examples"
                     ]
@@ -13789,7 +13879,16 @@
                       "ar/gateway/configuration",
                       "ar/gateway/configuration-reference",
                       "ar/gateway/config-agents",
+                      "ar/gateway/config-automation",
+                      "ar/gateway/config-browser-ui-desktop",
                       "ar/gateway/config-channels",
+                      "ar/gateway/config-cloud-workers",
+                      "ar/gateway/config-extensions",
+                      "ar/gateway/config-gateway",
+                      "ar/gateway/config-hooks",
+                      "ar/gateway/config-observability",
+                      "ar/gateway/config-runtime",
+                      "ar/gateway/config-secrets-env",
                       "ar/gateway/config-tools",
                       "ar/gateway/configuration-examples"
                     ]
@@ -14972,7 +15071,16 @@
                       "it/gateway/configuration",
                       "it/gateway/configuration-reference",
                       "it/gateway/config-agents",
+                      "it/gateway/config-automation",
+                      "it/gateway/config-browser-ui-desktop",
                       "it/gateway/config-channels",
+                      "it/gateway/config-cloud-workers",
+                      "it/gateway/config-extensions",
+                      "it/gateway/config-gateway",
+                      "it/gateway/config-hooks",
+                      "it/gateway/config-observability",
+                      "it/gateway/config-runtime",
+                      "it/gateway/config-secrets-env",
                       "it/gateway/config-tools",
                       "it/gateway/configuration-examples"
                     ]
@@ -16155,7 +16263,16 @@
                       "vi/gateway/configuration",
                       "vi/gateway/configuration-reference",
                       "vi/gateway/config-agents",
+                      "vi/gateway/config-automation",
+                      "vi/gateway/config-browser-ui-desktop",
                       "vi/gateway/config-channels",
+                      "vi/gateway/config-cloud-workers",
+                      "vi/gateway/config-extensions",
+                      "vi/gateway/config-gateway",
+                      "vi/gateway/config-hooks",
+                      "vi/gateway/config-observability",
+                      "vi/gateway/config-runtime",
+                      "vi/gateway/config-secrets-env",
                       "vi/gateway/config-tools",
                       "vi/gateway/configuration-examples"
                     ]
@@ -17338,7 +17455,16 @@
                       "nl/gateway/configuration",
                       "nl/gateway/configuration-reference",
                       "nl/gateway/config-agents",
+                      "nl/gateway/config-automation",
+                      "nl/gateway/config-browser-ui-desktop",
                       "nl/gateway/config-channels",
+                      "nl/gateway/config-cloud-workers",
+                      "nl/gateway/config-extensions",
+                      "nl/gateway/config-gateway",
+                      "nl/gateway/config-hooks",
+                      "nl/gateway/config-observability",
+                      "nl/gateway/config-runtime",
+                      "nl/gateway/config-secrets-env",
                       "nl/gateway/config-tools",
                       "nl/gateway/configuration-examples"
                     ]
@@ -18521,7 +18647,16 @@
                       "tr/gateway/configuration",
                       "tr/gateway/configuration-reference",
                       "tr/gateway/config-agents",
+                      "tr/gateway/config-automation",
+                      "tr/gateway/config-browser-ui-desktop",
                       "tr/gateway/config-channels",
+                      "tr/gateway/config-cloud-workers",
+                      "tr/gateway/config-extensions",
+                      "tr/gateway/config-gateway",
+                      "tr/gateway/config-hooks",
+                      "tr/gateway/config-observability",
+                      "tr/gateway/config-runtime",
+                      "tr/gateway/config-secrets-env",
                       "tr/gateway/config-tools",
                       "tr/gateway/configuration-examples"
                     ]
@@ -19704,7 +19839,16 @@
                       "uk/gateway/configuration",
                       "uk/gateway/configuration-reference",
                       "uk/gateway/config-agents",
+                      "uk/gateway/config-automation",
+                      "uk/gateway/config-browser-ui-desktop",
                       "uk/gateway/config-channels",
+                      "uk/gateway/config-cloud-workers",
+                      "uk/gateway/config-extensions",
+                      "uk/gateway/config-gateway",
+                      "uk/gateway/config-hooks",
+                      "uk/gateway/config-observability",
+                      "uk/gateway/config-runtime",
+                      "uk/gateway/config-secrets-env",
                       "uk/gateway/config-tools",
                       "uk/gateway/configuration-examples"
                     ]
@@ -20887,7 +21031,16 @@
                       "id/gateway/configuration",
                       "id/gateway/configuration-reference",
                       "id/gateway/config-agents",
+                      "id/gateway/config-automation",
+                      "id/gateway/config-browser-ui-desktop",
                       "id/gateway/config-channels",
+                      "id/gateway/config-cloud-workers",
+                      "id/gateway/config-extensions",
+                      "id/gateway/config-gateway",
+                      "id/gateway/config-hooks",
+                      "id/gateway/config-observability",
+                      "id/gateway/config-runtime",
+                      "id/gateway/config-secrets-env",
                       "id/gateway/config-tools",
                       "id/gateway/configuration-examples"
                     ]
@@ -22070,7 +22223,16 @@
                       "pl/gateway/configuration",
                       "pl/gateway/configuration-reference",
                       "pl/gateway/config-agents",
+                      "pl/gateway/config-automation",
+                      "pl/gateway/config-browser-ui-desktop",
                       "pl/gateway/config-channels",
+                      "pl/gateway/config-cloud-workers",
+                      "pl/gateway/config-extensions",
+                      "pl/gateway/config-gateway",
+                      "pl/gateway/config-hooks",
+                      "pl/gateway/config-observability",
+                      "pl/gateway/config-runtime",
+                      "pl/gateway/config-secrets-env",
                       "pl/gateway/config-tools",
                       "pl/gateway/configuration-examples"
                     ]
@@ -23253,7 +23415,16 @@
                       "ru/gateway/configuration",
                       "ru/gateway/configuration-reference",
                       "ru/gateway/config-agents",
+                      "ru/gateway/config-automation",
+                      "ru/gateway/config-browser-ui-desktop",
                       "ru/gateway/config-channels",
+                      "ru/gateway/config-cloud-workers",
+                      "ru/gateway/config-extensions",
+                      "ru/gateway/config-gateway",
+                      "ru/gateway/config-hooks",
+                      "ru/gateway/config-observability",
+                      "ru/gateway/config-runtime",
+                      "ru/gateway/config-secrets-env",
                       "ru/gateway/config-tools",
                       "ru/gateway/configuration-examples"
                     ]
