@@ -2185,33 +2185,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "releases/2026.8.1/installation-and-onboarding",
-                      "releases/2026.8.1/the-new-web-ui",
-                      "releases/2026.8.1/updates-and-maintenance",
-                      "releases/2026.8.1/messaging",
-                      "releases/2026.8.1/memory",
-                      "releases/2026.8.1/skills",
-                      "releases/2026.8.1/native-apps",
-                      "releases/2026.8.1/models-and-providers",
-                      "releases/2026.8.1/automations-and-scheduling",
-                      "releases/2026.8.1/browser-and-computer-use",
-                      "releases/2026.8.1/plugins-and-integrations",
-                      "releases/2026.8.1/security-and-privacy",
-                      "releases/2026.8.1/quality-of-life-improvements",
-                      "releases/2026.8.1/other-bug-fixes",
-                      "releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "releases/2026.8.1/maintenance-changes-part-1",
-                          "releases/2026.8.1/maintenance-changes-part-2",
-                          "releases/2026.8.1/maintenance-changes-part-3",
-                          "releases/2026.8.1/maintenance-changes-part-4",
-                          "releases/2026.8.1/maintenance-changes-part-5",
-                          "releases/2026.8.1/maintenance-changes-part-6",
-                          "releases/2026.8.1/maintenance-changes-part-7",
-                          "releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -3262,33 +3238,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "zh-CN/releases/2026.8.1/installation-and-onboarding",
-                      "zh-CN/releases/2026.8.1/the-new-web-ui",
-                      "zh-CN/releases/2026.8.1/updates-and-maintenance",
-                      "zh-CN/releases/2026.8.1/messaging",
-                      "zh-CN/releases/2026.8.1/memory",
-                      "zh-CN/releases/2026.8.1/skills",
-                      "zh-CN/releases/2026.8.1/native-apps",
-                      "zh-CN/releases/2026.8.1/models-and-providers",
-                      "zh-CN/releases/2026.8.1/automations-and-scheduling",
-                      "zh-CN/releases/2026.8.1/browser-and-computer-use",
-                      "zh-CN/releases/2026.8.1/plugins-and-integrations",
-                      "zh-CN/releases/2026.8.1/security-and-privacy",
-                      "zh-CN/releases/2026.8.1/quality-of-life-improvements",
-                      "zh-CN/releases/2026.8.1/other-bug-fixes",
-                      "zh-CN/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-1",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-2",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-3",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-4",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-5",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-6",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-7",
-                          "zh-CN/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -4339,33 +4291,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "zh-TW/releases/2026.8.1/installation-and-onboarding",
-                      "zh-TW/releases/2026.8.1/the-new-web-ui",
-                      "zh-TW/releases/2026.8.1/updates-and-maintenance",
-                      "zh-TW/releases/2026.8.1/messaging",
-                      "zh-TW/releases/2026.8.1/memory",
-                      "zh-TW/releases/2026.8.1/skills",
-                      "zh-TW/releases/2026.8.1/native-apps",
-                      "zh-TW/releases/2026.8.1/models-and-providers",
-                      "zh-TW/releases/2026.8.1/automations-and-scheduling",
-                      "zh-TW/releases/2026.8.1/browser-and-computer-use",
-                      "zh-TW/releases/2026.8.1/plugins-and-integrations",
-                      "zh-TW/releases/2026.8.1/security-and-privacy",
-                      "zh-TW/releases/2026.8.1/quality-of-life-improvements",
-                      "zh-TW/releases/2026.8.1/other-bug-fixes",
-                      "zh-TW/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-1",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-2",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-3",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-4",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-5",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-6",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-7",
-                          "zh-TW/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -5416,33 +5344,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "ja-JP/releases/2026.8.1/installation-and-onboarding",
-                      "ja-JP/releases/2026.8.1/the-new-web-ui",
-                      "ja-JP/releases/2026.8.1/updates-and-maintenance",
-                      "ja-JP/releases/2026.8.1/messaging",
-                      "ja-JP/releases/2026.8.1/memory",
-                      "ja-JP/releases/2026.8.1/skills",
-                      "ja-JP/releases/2026.8.1/native-apps",
-                      "ja-JP/releases/2026.8.1/models-and-providers",
-                      "ja-JP/releases/2026.8.1/automations-and-scheduling",
-                      "ja-JP/releases/2026.8.1/browser-and-computer-use",
-                      "ja-JP/releases/2026.8.1/plugins-and-integrations",
-                      "ja-JP/releases/2026.8.1/security-and-privacy",
-                      "ja-JP/releases/2026.8.1/quality-of-life-improvements",
-                      "ja-JP/releases/2026.8.1/other-bug-fixes",
-                      "ja-JP/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-1",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-2",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-3",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-4",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-5",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-6",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-7",
-                          "ja-JP/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -6493,33 +6397,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "es/releases/2026.8.1/installation-and-onboarding",
-                      "es/releases/2026.8.1/the-new-web-ui",
-                      "es/releases/2026.8.1/updates-and-maintenance",
-                      "es/releases/2026.8.1/messaging",
-                      "es/releases/2026.8.1/memory",
-                      "es/releases/2026.8.1/skills",
-                      "es/releases/2026.8.1/native-apps",
-                      "es/releases/2026.8.1/models-and-providers",
-                      "es/releases/2026.8.1/automations-and-scheduling",
-                      "es/releases/2026.8.1/browser-and-computer-use",
-                      "es/releases/2026.8.1/plugins-and-integrations",
-                      "es/releases/2026.8.1/security-and-privacy",
-                      "es/releases/2026.8.1/quality-of-life-improvements",
-                      "es/releases/2026.8.1/other-bug-fixes",
-                      "es/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "es/releases/2026.8.1/maintenance-changes-part-1",
-                          "es/releases/2026.8.1/maintenance-changes-part-2",
-                          "es/releases/2026.8.1/maintenance-changes-part-3",
-                          "es/releases/2026.8.1/maintenance-changes-part-4",
-                          "es/releases/2026.8.1/maintenance-changes-part-5",
-                          "es/releases/2026.8.1/maintenance-changes-part-6",
-                          "es/releases/2026.8.1/maintenance-changes-part-7",
-                          "es/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -7570,33 +7450,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "pt-BR/releases/2026.8.1/installation-and-onboarding",
-                      "pt-BR/releases/2026.8.1/the-new-web-ui",
-                      "pt-BR/releases/2026.8.1/updates-and-maintenance",
-                      "pt-BR/releases/2026.8.1/messaging",
-                      "pt-BR/releases/2026.8.1/memory",
-                      "pt-BR/releases/2026.8.1/skills",
-                      "pt-BR/releases/2026.8.1/native-apps",
-                      "pt-BR/releases/2026.8.1/models-and-providers",
-                      "pt-BR/releases/2026.8.1/automations-and-scheduling",
-                      "pt-BR/releases/2026.8.1/browser-and-computer-use",
-                      "pt-BR/releases/2026.8.1/plugins-and-integrations",
-                      "pt-BR/releases/2026.8.1/security-and-privacy",
-                      "pt-BR/releases/2026.8.1/quality-of-life-improvements",
-                      "pt-BR/releases/2026.8.1/other-bug-fixes",
-                      "pt-BR/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-1",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-2",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-3",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-4",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-5",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-6",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-7",
-                          "pt-BR/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -8647,33 +8503,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "ko/releases/2026.8.1/installation-and-onboarding",
-                      "ko/releases/2026.8.1/the-new-web-ui",
-                      "ko/releases/2026.8.1/updates-and-maintenance",
-                      "ko/releases/2026.8.1/messaging",
-                      "ko/releases/2026.8.1/memory",
-                      "ko/releases/2026.8.1/skills",
-                      "ko/releases/2026.8.1/native-apps",
-                      "ko/releases/2026.8.1/models-and-providers",
-                      "ko/releases/2026.8.1/automations-and-scheduling",
-                      "ko/releases/2026.8.1/browser-and-computer-use",
-                      "ko/releases/2026.8.1/plugins-and-integrations",
-                      "ko/releases/2026.8.1/security-and-privacy",
-                      "ko/releases/2026.8.1/quality-of-life-improvements",
-                      "ko/releases/2026.8.1/other-bug-fixes",
-                      "ko/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "ko/releases/2026.8.1/maintenance-changes-part-1",
-                          "ko/releases/2026.8.1/maintenance-changes-part-2",
-                          "ko/releases/2026.8.1/maintenance-changes-part-3",
-                          "ko/releases/2026.8.1/maintenance-changes-part-4",
-                          "ko/releases/2026.8.1/maintenance-changes-part-5",
-                          "ko/releases/2026.8.1/maintenance-changes-part-6",
-                          "ko/releases/2026.8.1/maintenance-changes-part-7",
-                          "ko/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -9724,33 +9556,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "de/releases/2026.8.1/installation-and-onboarding",
-                      "de/releases/2026.8.1/the-new-web-ui",
-                      "de/releases/2026.8.1/updates-and-maintenance",
-                      "de/releases/2026.8.1/messaging",
-                      "de/releases/2026.8.1/memory",
-                      "de/releases/2026.8.1/skills",
-                      "de/releases/2026.8.1/native-apps",
-                      "de/releases/2026.8.1/models-and-providers",
-                      "de/releases/2026.8.1/automations-and-scheduling",
-                      "de/releases/2026.8.1/browser-and-computer-use",
-                      "de/releases/2026.8.1/plugins-and-integrations",
-                      "de/releases/2026.8.1/security-and-privacy",
-                      "de/releases/2026.8.1/quality-of-life-improvements",
-                      "de/releases/2026.8.1/other-bug-fixes",
-                      "de/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "de/releases/2026.8.1/maintenance-changes-part-1",
-                          "de/releases/2026.8.1/maintenance-changes-part-2",
-                          "de/releases/2026.8.1/maintenance-changes-part-3",
-                          "de/releases/2026.8.1/maintenance-changes-part-4",
-                          "de/releases/2026.8.1/maintenance-changes-part-5",
-                          "de/releases/2026.8.1/maintenance-changes-part-6",
-                          "de/releases/2026.8.1/maintenance-changes-part-7",
-                          "de/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -10801,33 +10609,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "fr/releases/2026.8.1/installation-and-onboarding",
-                      "fr/releases/2026.8.1/the-new-web-ui",
-                      "fr/releases/2026.8.1/updates-and-maintenance",
-                      "fr/releases/2026.8.1/messaging",
-                      "fr/releases/2026.8.1/memory",
-                      "fr/releases/2026.8.1/skills",
-                      "fr/releases/2026.8.1/native-apps",
-                      "fr/releases/2026.8.1/models-and-providers",
-                      "fr/releases/2026.8.1/automations-and-scheduling",
-                      "fr/releases/2026.8.1/browser-and-computer-use",
-                      "fr/releases/2026.8.1/plugins-and-integrations",
-                      "fr/releases/2026.8.1/security-and-privacy",
-                      "fr/releases/2026.8.1/quality-of-life-improvements",
-                      "fr/releases/2026.8.1/other-bug-fixes",
-                      "fr/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "fr/releases/2026.8.1/maintenance-changes-part-1",
-                          "fr/releases/2026.8.1/maintenance-changes-part-2",
-                          "fr/releases/2026.8.1/maintenance-changes-part-3",
-                          "fr/releases/2026.8.1/maintenance-changes-part-4",
-                          "fr/releases/2026.8.1/maintenance-changes-part-5",
-                          "fr/releases/2026.8.1/maintenance-changes-part-6",
-                          "fr/releases/2026.8.1/maintenance-changes-part-7",
-                          "fr/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -11878,33 +11662,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "hi/releases/2026.8.1/installation-and-onboarding",
-                      "hi/releases/2026.8.1/the-new-web-ui",
-                      "hi/releases/2026.8.1/updates-and-maintenance",
-                      "hi/releases/2026.8.1/messaging",
-                      "hi/releases/2026.8.1/memory",
-                      "hi/releases/2026.8.1/skills",
-                      "hi/releases/2026.8.1/native-apps",
-                      "hi/releases/2026.8.1/models-and-providers",
-                      "hi/releases/2026.8.1/automations-and-scheduling",
-                      "hi/releases/2026.8.1/browser-and-computer-use",
-                      "hi/releases/2026.8.1/plugins-and-integrations",
-                      "hi/releases/2026.8.1/security-and-privacy",
-                      "hi/releases/2026.8.1/quality-of-life-improvements",
-                      "hi/releases/2026.8.1/other-bug-fixes",
-                      "hi/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "hi/releases/2026.8.1/maintenance-changes-part-1",
-                          "hi/releases/2026.8.1/maintenance-changes-part-2",
-                          "hi/releases/2026.8.1/maintenance-changes-part-3",
-                          "hi/releases/2026.8.1/maintenance-changes-part-4",
-                          "hi/releases/2026.8.1/maintenance-changes-part-5",
-                          "hi/releases/2026.8.1/maintenance-changes-part-6",
-                          "hi/releases/2026.8.1/maintenance-changes-part-7",
-                          "hi/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -12955,33 +12715,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "ar/releases/2026.8.1/installation-and-onboarding",
-                      "ar/releases/2026.8.1/the-new-web-ui",
-                      "ar/releases/2026.8.1/updates-and-maintenance",
-                      "ar/releases/2026.8.1/messaging",
-                      "ar/releases/2026.8.1/memory",
-                      "ar/releases/2026.8.1/skills",
-                      "ar/releases/2026.8.1/native-apps",
-                      "ar/releases/2026.8.1/models-and-providers",
-                      "ar/releases/2026.8.1/automations-and-scheduling",
-                      "ar/releases/2026.8.1/browser-and-computer-use",
-                      "ar/releases/2026.8.1/plugins-and-integrations",
-                      "ar/releases/2026.8.1/security-and-privacy",
-                      "ar/releases/2026.8.1/quality-of-life-improvements",
-                      "ar/releases/2026.8.1/other-bug-fixes",
-                      "ar/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "ar/releases/2026.8.1/maintenance-changes-part-1",
-                          "ar/releases/2026.8.1/maintenance-changes-part-2",
-                          "ar/releases/2026.8.1/maintenance-changes-part-3",
-                          "ar/releases/2026.8.1/maintenance-changes-part-4",
-                          "ar/releases/2026.8.1/maintenance-changes-part-5",
-                          "ar/releases/2026.8.1/maintenance-changes-part-6",
-                          "ar/releases/2026.8.1/maintenance-changes-part-7",
-                          "ar/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -14032,33 +13768,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "it/releases/2026.8.1/installation-and-onboarding",
-                      "it/releases/2026.8.1/the-new-web-ui",
-                      "it/releases/2026.8.1/updates-and-maintenance",
-                      "it/releases/2026.8.1/messaging",
-                      "it/releases/2026.8.1/memory",
-                      "it/releases/2026.8.1/skills",
-                      "it/releases/2026.8.1/native-apps",
-                      "it/releases/2026.8.1/models-and-providers",
-                      "it/releases/2026.8.1/automations-and-scheduling",
-                      "it/releases/2026.8.1/browser-and-computer-use",
-                      "it/releases/2026.8.1/plugins-and-integrations",
-                      "it/releases/2026.8.1/security-and-privacy",
-                      "it/releases/2026.8.1/quality-of-life-improvements",
-                      "it/releases/2026.8.1/other-bug-fixes",
-                      "it/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "it/releases/2026.8.1/maintenance-changes-part-1",
-                          "it/releases/2026.8.1/maintenance-changes-part-2",
-                          "it/releases/2026.8.1/maintenance-changes-part-3",
-                          "it/releases/2026.8.1/maintenance-changes-part-4",
-                          "it/releases/2026.8.1/maintenance-changes-part-5",
-                          "it/releases/2026.8.1/maintenance-changes-part-6",
-                          "it/releases/2026.8.1/maintenance-changes-part-7",
-                          "it/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -15109,33 +14821,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "vi/releases/2026.8.1/installation-and-onboarding",
-                      "vi/releases/2026.8.1/the-new-web-ui",
-                      "vi/releases/2026.8.1/updates-and-maintenance",
-                      "vi/releases/2026.8.1/messaging",
-                      "vi/releases/2026.8.1/memory",
-                      "vi/releases/2026.8.1/skills",
-                      "vi/releases/2026.8.1/native-apps",
-                      "vi/releases/2026.8.1/models-and-providers",
-                      "vi/releases/2026.8.1/automations-and-scheduling",
-                      "vi/releases/2026.8.1/browser-and-computer-use",
-                      "vi/releases/2026.8.1/plugins-and-integrations",
-                      "vi/releases/2026.8.1/security-and-privacy",
-                      "vi/releases/2026.8.1/quality-of-life-improvements",
-                      "vi/releases/2026.8.1/other-bug-fixes",
-                      "vi/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "vi/releases/2026.8.1/maintenance-changes-part-1",
-                          "vi/releases/2026.8.1/maintenance-changes-part-2",
-                          "vi/releases/2026.8.1/maintenance-changes-part-3",
-                          "vi/releases/2026.8.1/maintenance-changes-part-4",
-                          "vi/releases/2026.8.1/maintenance-changes-part-5",
-                          "vi/releases/2026.8.1/maintenance-changes-part-6",
-                          "vi/releases/2026.8.1/maintenance-changes-part-7",
-                          "vi/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -16186,33 +15874,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "nl/releases/2026.8.1/installation-and-onboarding",
-                      "nl/releases/2026.8.1/the-new-web-ui",
-                      "nl/releases/2026.8.1/updates-and-maintenance",
-                      "nl/releases/2026.8.1/messaging",
-                      "nl/releases/2026.8.1/memory",
-                      "nl/releases/2026.8.1/skills",
-                      "nl/releases/2026.8.1/native-apps",
-                      "nl/releases/2026.8.1/models-and-providers",
-                      "nl/releases/2026.8.1/automations-and-scheduling",
-                      "nl/releases/2026.8.1/browser-and-computer-use",
-                      "nl/releases/2026.8.1/plugins-and-integrations",
-                      "nl/releases/2026.8.1/security-and-privacy",
-                      "nl/releases/2026.8.1/quality-of-life-improvements",
-                      "nl/releases/2026.8.1/other-bug-fixes",
-                      "nl/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "nl/releases/2026.8.1/maintenance-changes-part-1",
-                          "nl/releases/2026.8.1/maintenance-changes-part-2",
-                          "nl/releases/2026.8.1/maintenance-changes-part-3",
-                          "nl/releases/2026.8.1/maintenance-changes-part-4",
-                          "nl/releases/2026.8.1/maintenance-changes-part-5",
-                          "nl/releases/2026.8.1/maintenance-changes-part-6",
-                          "nl/releases/2026.8.1/maintenance-changes-part-7",
-                          "nl/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -17263,33 +16927,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "tr/releases/2026.8.1/installation-and-onboarding",
-                      "tr/releases/2026.8.1/the-new-web-ui",
-                      "tr/releases/2026.8.1/updates-and-maintenance",
-                      "tr/releases/2026.8.1/messaging",
-                      "tr/releases/2026.8.1/memory",
-                      "tr/releases/2026.8.1/skills",
-                      "tr/releases/2026.8.1/native-apps",
-                      "tr/releases/2026.8.1/models-and-providers",
-                      "tr/releases/2026.8.1/automations-and-scheduling",
-                      "tr/releases/2026.8.1/browser-and-computer-use",
-                      "tr/releases/2026.8.1/plugins-and-integrations",
-                      "tr/releases/2026.8.1/security-and-privacy",
-                      "tr/releases/2026.8.1/quality-of-life-improvements",
-                      "tr/releases/2026.8.1/other-bug-fixes",
-                      "tr/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "tr/releases/2026.8.1/maintenance-changes-part-1",
-                          "tr/releases/2026.8.1/maintenance-changes-part-2",
-                          "tr/releases/2026.8.1/maintenance-changes-part-3",
-                          "tr/releases/2026.8.1/maintenance-changes-part-4",
-                          "tr/releases/2026.8.1/maintenance-changes-part-5",
-                          "tr/releases/2026.8.1/maintenance-changes-part-6",
-                          "tr/releases/2026.8.1/maintenance-changes-part-7",
-                          "tr/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -18340,33 +17980,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "uk/releases/2026.8.1/installation-and-onboarding",
-                      "uk/releases/2026.8.1/the-new-web-ui",
-                      "uk/releases/2026.8.1/updates-and-maintenance",
-                      "uk/releases/2026.8.1/messaging",
-                      "uk/releases/2026.8.1/memory",
-                      "uk/releases/2026.8.1/skills",
-                      "uk/releases/2026.8.1/native-apps",
-                      "uk/releases/2026.8.1/models-and-providers",
-                      "uk/releases/2026.8.1/automations-and-scheduling",
-                      "uk/releases/2026.8.1/browser-and-computer-use",
-                      "uk/releases/2026.8.1/plugins-and-integrations",
-                      "uk/releases/2026.8.1/security-and-privacy",
-                      "uk/releases/2026.8.1/quality-of-life-improvements",
-                      "uk/releases/2026.8.1/other-bug-fixes",
-                      "uk/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "uk/releases/2026.8.1/maintenance-changes-part-1",
-                          "uk/releases/2026.8.1/maintenance-changes-part-2",
-                          "uk/releases/2026.8.1/maintenance-changes-part-3",
-                          "uk/releases/2026.8.1/maintenance-changes-part-4",
-                          "uk/releases/2026.8.1/maintenance-changes-part-5",
-                          "uk/releases/2026.8.1/maintenance-changes-part-6",
-                          "uk/releases/2026.8.1/maintenance-changes-part-7",
-                          "uk/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -19417,33 +19033,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "id/releases/2026.8.1/installation-and-onboarding",
-                      "id/releases/2026.8.1/the-new-web-ui",
-                      "id/releases/2026.8.1/updates-and-maintenance",
-                      "id/releases/2026.8.1/messaging",
-                      "id/releases/2026.8.1/memory",
-                      "id/releases/2026.8.1/skills",
-                      "id/releases/2026.8.1/native-apps",
-                      "id/releases/2026.8.1/models-and-providers",
-                      "id/releases/2026.8.1/automations-and-scheduling",
-                      "id/releases/2026.8.1/browser-and-computer-use",
-                      "id/releases/2026.8.1/plugins-and-integrations",
-                      "id/releases/2026.8.1/security-and-privacy",
-                      "id/releases/2026.8.1/quality-of-life-improvements",
-                      "id/releases/2026.8.1/other-bug-fixes",
-                      "id/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "id/releases/2026.8.1/maintenance-changes-part-1",
-                          "id/releases/2026.8.1/maintenance-changes-part-2",
-                          "id/releases/2026.8.1/maintenance-changes-part-3",
-                          "id/releases/2026.8.1/maintenance-changes-part-4",
-                          "id/releases/2026.8.1/maintenance-changes-part-5",
-                          "id/releases/2026.8.1/maintenance-changes-part-6",
-                          "id/releases/2026.8.1/maintenance-changes-part-7",
-                          "id/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -20494,33 +20086,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "pl/releases/2026.8.1/installation-and-onboarding",
-                      "pl/releases/2026.8.1/the-new-web-ui",
-                      "pl/releases/2026.8.1/updates-and-maintenance",
-                      "pl/releases/2026.8.1/messaging",
-                      "pl/releases/2026.8.1/memory",
-                      "pl/releases/2026.8.1/skills",
-                      "pl/releases/2026.8.1/native-apps",
-                      "pl/releases/2026.8.1/models-and-providers",
-                      "pl/releases/2026.8.1/automations-and-scheduling",
-                      "pl/releases/2026.8.1/browser-and-computer-use",
-                      "pl/releases/2026.8.1/plugins-and-integrations",
-                      "pl/releases/2026.8.1/security-and-privacy",
-                      "pl/releases/2026.8.1/quality-of-life-improvements",
-                      "pl/releases/2026.8.1/other-bug-fixes",
-                      "pl/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "pl/releases/2026.8.1/maintenance-changes-part-1",
-                          "pl/releases/2026.8.1/maintenance-changes-part-2",
-                          "pl/releases/2026.8.1/maintenance-changes-part-3",
-                          "pl/releases/2026.8.1/maintenance-changes-part-4",
-                          "pl/releases/2026.8.1/maintenance-changes-part-5",
-                          "pl/releases/2026.8.1/maintenance-changes-part-6",
-                          "pl/releases/2026.8.1/maintenance-changes-part-7",
-                          "pl/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
@@ -21571,33 +21139,9 @@
                   {
                     "group": "v2026.8.1 sections",
                     "pages": [
-                      "ru/releases/2026.8.1/installation-and-onboarding",
-                      "ru/releases/2026.8.1/the-new-web-ui",
-                      "ru/releases/2026.8.1/updates-and-maintenance",
-                      "ru/releases/2026.8.1/messaging",
-                      "ru/releases/2026.8.1/memory",
-                      "ru/releases/2026.8.1/skills",
-                      "ru/releases/2026.8.1/native-apps",
-                      "ru/releases/2026.8.1/models-and-providers",
-                      "ru/releases/2026.8.1/automations-and-scheduling",
-                      "ru/releases/2026.8.1/browser-and-computer-use",
-                      "ru/releases/2026.8.1/plugins-and-integrations",
-                      "ru/releases/2026.8.1/security-and-privacy",
-                      "ru/releases/2026.8.1/quality-of-life-improvements",
-                      "ru/releases/2026.8.1/other-bug-fixes",
-                      "ru/releases/2026.8.1/maintainer-and-internal-changes",
                       {
                         "group": "Maintenance changes",
-                        "pages": [
-                          "ru/releases/2026.8.1/maintenance-changes-part-1",
-                          "ru/releases/2026.8.1/maintenance-changes-part-2",
-                          "ru/releases/2026.8.1/maintenance-changes-part-3",
-                          "ru/releases/2026.8.1/maintenance-changes-part-4",
-                          "ru/releases/2026.8.1/maintenance-changes-part-5",
-                          "ru/releases/2026.8.1/maintenance-changes-part-6",
-                          "ru/releases/2026.8.1/maintenance-changes-part-7",
-                          "ru/releases/2026.8.1/maintenance-changes-part-8"
-                        ]
+                        "pages": []
                       }
                     ]
                   },
