@@ -1175,6 +1175,62 @@
     {
       "source": "/providers/inferrs",
       "destination": "/providers/llmman"
+    },
+    {
+      "source": "/web/control-ui/community-invitation",
+      "destination": "/web/control-ui/settings#community-invitation"
+    },
+    {
+      "source": "/web/control-ui/composer-capability-menu",
+      "destination": "/web/control-ui/chat#composer-capability-menu"
+    },
+    {
+      "source": "/web/control-ui/hosted-embeds",
+      "destination": "/web/control-ui/chat#hosted-embeds"
+    },
+    {
+      "source": "/web/control-ui/import-assistant-memory",
+      "destination": "/web/control-ui/settings#import-assistant-memory"
+    },
+    {
+      "source": "/web/control-ui/insecure-http",
+      "destination": "/web/control-ui/connect-and-pair#insecure-http"
+    },
+    {
+      "source": "/web/control-ui/markdown-tables",
+      "destination": "/web/control-ui/chat#markdown-tables"
+    },
+    {
+      "source": "/web/control-ui/meetings-page",
+      "destination": "/web/control-ui/settings#meetings-page"
+    },
+    {
+      "source": "/web/control-ui/mermaid-diagrams",
+      "destination": "/web/control-ui/chat#mermaid-diagrams"
+    },
+    {
+      "source": "/web/control-ui/new-session-names",
+      "destination": "/web/control-ui/sessions-and-sidebar#new-session-names"
+    },
+    {
+      "source": "/web/control-ui/operator-terminal",
+      "destination": "/web/control-ui/panels#operator-terminal"
+    },
+    {
+      "source": "/web/control-ui/pwa-install-and-web-push",
+      "destination": "/web/control-ui/connect-and-pair#pwa-install-and-web-push"
+    },
+    {
+      "source": "/web/control-ui/session-menu",
+      "destination": "/web/control-ui/sessions-and-sidebar#session-menu"
+    },
+    {
+      "source": "/web/control-ui/start-a-native-coding-cli",
+      "destination": "/web/control-ui/sessions-and-sidebar#start-a-native-coding-cli"
+    },
+    {
+      "source": "/web/control-ui/updates",
+      "destination": "/web/control-ui/settings#updates"
     }
   ],
   "navigation": {
@@ -2040,6 +2096,20 @@
                 "pages": [
                   "web/index",
                   "web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "web/control-ui/connect-and-pair",
+                      "web/control-ui/sessions-and-sidebar",
+                      "web/control-ui/chat",
+                      "web/control-ui/panels",
+                      "web/control-ui/settings",
+                      "web/control-ui/feature-reference",
+                      "web/control-ui/offline-and-reconnect",
+                      "web/control-ui/security-model",
+                      "web/control-ui/development"
+                    ]
+                  },
                   "web/notifications",
                   "web/urls",
                   "web/dashboard",
@@ -3209,6 +3279,20 @@
                 "pages": [
                   "zh-CN/web/index",
                   "zh-CN/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "zh-CN/web/control-ui/connect-and-pair",
+                      "zh-CN/web/control-ui/sessions-and-sidebar",
+                      "zh-CN/web/control-ui/chat",
+                      "zh-CN/web/control-ui/panels",
+                      "zh-CN/web/control-ui/settings",
+                      "zh-CN/web/control-ui/feature-reference",
+                      "zh-CN/web/control-ui/offline-and-reconnect",
+                      "zh-CN/web/control-ui/security-model",
+                      "zh-CN/web/control-ui/development"
+                    ]
+                  },
                   "zh-CN/web/notifications",
                   "zh-CN/web/urls",
                   "zh-CN/web/dashboard",
@@ -4378,6 +4462,20 @@
                 "pages": [
                   "zh-TW/web/index",
                   "zh-TW/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "zh-TW/web/control-ui/connect-and-pair",
+                      "zh-TW/web/control-ui/sessions-and-sidebar",
+                      "zh-TW/web/control-ui/chat",
+                      "zh-TW/web/control-ui/panels",
+                      "zh-TW/web/control-ui/settings",
+                      "zh-TW/web/control-ui/feature-reference",
+                      "zh-TW/web/control-ui/offline-and-reconnect",
+                      "zh-TW/web/control-ui/security-model",
+                      "zh-TW/web/control-ui/development"
+                    ]
+                  },
                   "zh-TW/web/notifications",
                   "zh-TW/web/urls",
                   "zh-TW/web/dashboard",
@@ -5547,6 +5645,20 @@
                 "pages": [
                   "ja-JP/web/index",
                   "ja-JP/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "ja-JP/web/control-ui/connect-and-pair",
+                      "ja-JP/web/control-ui/sessions-and-sidebar",
+                      "ja-JP/web/control-ui/chat",
+                      "ja-JP/web/control-ui/panels",
+                      "ja-JP/web/control-ui/settings",
+                      "ja-JP/web/control-ui/feature-reference",
+                      "ja-JP/web/control-ui/offline-and-reconnect",
+                      "ja-JP/web/control-ui/security-model",
+                      "ja-JP/web/control-ui/development"
+                    ]
+                  },
                   "ja-JP/web/notifications",
                   "ja-JP/web/urls",
                   "ja-JP/web/dashboard",
@@ -6716,6 +6828,20 @@
                 "pages": [
                   "es/web/index",
                   "es/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "es/web/control-ui/connect-and-pair",
+                      "es/web/control-ui/sessions-and-sidebar",
+                      "es/web/control-ui/chat",
+                      "es/web/control-ui/panels",
+                      "es/web/control-ui/settings",
+                      "es/web/control-ui/feature-reference",
+                      "es/web/control-ui/offline-and-reconnect",
+                      "es/web/control-ui/security-model",
+                      "es/web/control-ui/development"
+                    ]
+                  },
                   "es/web/notifications",
                   "es/web/urls",
                   "es/web/dashboard",
@@ -7885,6 +8011,20 @@
                 "pages": [
                   "pt-BR/web/index",
                   "pt-BR/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "pt-BR/web/control-ui/connect-and-pair",
+                      "pt-BR/web/control-ui/sessions-and-sidebar",
+                      "pt-BR/web/control-ui/chat",
+                      "pt-BR/web/control-ui/panels",
+                      "pt-BR/web/control-ui/settings",
+                      "pt-BR/web/control-ui/feature-reference",
+                      "pt-BR/web/control-ui/offline-and-reconnect",
+                      "pt-BR/web/control-ui/security-model",
+                      "pt-BR/web/control-ui/development"
+                    ]
+                  },
                   "pt-BR/web/notifications",
                   "pt-BR/web/urls",
                   "pt-BR/web/dashboard",
@@ -9054,6 +9194,20 @@
                 "pages": [
                   "ko/web/index",
                   "ko/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "ko/web/control-ui/connect-and-pair",
+                      "ko/web/control-ui/sessions-and-sidebar",
+                      "ko/web/control-ui/chat",
+                      "ko/web/control-ui/panels",
+                      "ko/web/control-ui/settings",
+                      "ko/web/control-ui/feature-reference",
+                      "ko/web/control-ui/offline-and-reconnect",
+                      "ko/web/control-ui/security-model",
+                      "ko/web/control-ui/development"
+                    ]
+                  },
                   "ko/web/notifications",
                   "ko/web/urls",
                   "ko/web/dashboard",
@@ -10223,6 +10377,20 @@
                 "pages": [
                   "de/web/index",
                   "de/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "de/web/control-ui/connect-and-pair",
+                      "de/web/control-ui/sessions-and-sidebar",
+                      "de/web/control-ui/chat",
+                      "de/web/control-ui/panels",
+                      "de/web/control-ui/settings",
+                      "de/web/control-ui/feature-reference",
+                      "de/web/control-ui/offline-and-reconnect",
+                      "de/web/control-ui/security-model",
+                      "de/web/control-ui/development"
+                    ]
+                  },
                   "de/web/notifications",
                   "de/web/urls",
                   "de/web/dashboard",
@@ -11392,6 +11560,20 @@
                 "pages": [
                   "fr/web/index",
                   "fr/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "fr/web/control-ui/connect-and-pair",
+                      "fr/web/control-ui/sessions-and-sidebar",
+                      "fr/web/control-ui/chat",
+                      "fr/web/control-ui/panels",
+                      "fr/web/control-ui/settings",
+                      "fr/web/control-ui/feature-reference",
+                      "fr/web/control-ui/offline-and-reconnect",
+                      "fr/web/control-ui/security-model",
+                      "fr/web/control-ui/development"
+                    ]
+                  },
                   "fr/web/notifications",
                   "fr/web/urls",
                   "fr/web/dashboard",
@@ -12561,6 +12743,20 @@
                 "pages": [
                   "hi/web/index",
                   "hi/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "hi/web/control-ui/connect-and-pair",
+                      "hi/web/control-ui/sessions-and-sidebar",
+                      "hi/web/control-ui/chat",
+                      "hi/web/control-ui/panels",
+                      "hi/web/control-ui/settings",
+                      "hi/web/control-ui/feature-reference",
+                      "hi/web/control-ui/offline-and-reconnect",
+                      "hi/web/control-ui/security-model",
+                      "hi/web/control-ui/development"
+                    ]
+                  },
                   "hi/web/notifications",
                   "hi/web/urls",
                   "hi/web/dashboard",
@@ -13730,6 +13926,20 @@
                 "pages": [
                   "ar/web/index",
                   "ar/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "ar/web/control-ui/connect-and-pair",
+                      "ar/web/control-ui/sessions-and-sidebar",
+                      "ar/web/control-ui/chat",
+                      "ar/web/control-ui/panels",
+                      "ar/web/control-ui/settings",
+                      "ar/web/control-ui/feature-reference",
+                      "ar/web/control-ui/offline-and-reconnect",
+                      "ar/web/control-ui/security-model",
+                      "ar/web/control-ui/development"
+                    ]
+                  },
                   "ar/web/notifications",
                   "ar/web/urls",
                   "ar/web/dashboard",
@@ -14899,6 +15109,20 @@
                 "pages": [
                   "it/web/index",
                   "it/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "it/web/control-ui/connect-and-pair",
+                      "it/web/control-ui/sessions-and-sidebar",
+                      "it/web/control-ui/chat",
+                      "it/web/control-ui/panels",
+                      "it/web/control-ui/settings",
+                      "it/web/control-ui/feature-reference",
+                      "it/web/control-ui/offline-and-reconnect",
+                      "it/web/control-ui/security-model",
+                      "it/web/control-ui/development"
+                    ]
+                  },
                   "it/web/notifications",
                   "it/web/urls",
                   "it/web/dashboard",
@@ -16068,6 +16292,20 @@
                 "pages": [
                   "vi/web/index",
                   "vi/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "vi/web/control-ui/connect-and-pair",
+                      "vi/web/control-ui/sessions-and-sidebar",
+                      "vi/web/control-ui/chat",
+                      "vi/web/control-ui/panels",
+                      "vi/web/control-ui/settings",
+                      "vi/web/control-ui/feature-reference",
+                      "vi/web/control-ui/offline-and-reconnect",
+                      "vi/web/control-ui/security-model",
+                      "vi/web/control-ui/development"
+                    ]
+                  },
                   "vi/web/notifications",
                   "vi/web/urls",
                   "vi/web/dashboard",
@@ -17237,6 +17475,20 @@
                 "pages": [
                   "nl/web/index",
                   "nl/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "nl/web/control-ui/connect-and-pair",
+                      "nl/web/control-ui/sessions-and-sidebar",
+                      "nl/web/control-ui/chat",
+                      "nl/web/control-ui/panels",
+                      "nl/web/control-ui/settings",
+                      "nl/web/control-ui/feature-reference",
+                      "nl/web/control-ui/offline-and-reconnect",
+                      "nl/web/control-ui/security-model",
+                      "nl/web/control-ui/development"
+                    ]
+                  },
                   "nl/web/notifications",
                   "nl/web/urls",
                   "nl/web/dashboard",
@@ -18406,6 +18658,20 @@
                 "pages": [
                   "tr/web/index",
                   "tr/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "tr/web/control-ui/connect-and-pair",
+                      "tr/web/control-ui/sessions-and-sidebar",
+                      "tr/web/control-ui/chat",
+                      "tr/web/control-ui/panels",
+                      "tr/web/control-ui/settings",
+                      "tr/web/control-ui/feature-reference",
+                      "tr/web/control-ui/offline-and-reconnect",
+                      "tr/web/control-ui/security-model",
+                      "tr/web/control-ui/development"
+                    ]
+                  },
                   "tr/web/notifications",
                   "tr/web/urls",
                   "tr/web/dashboard",
@@ -19575,6 +19841,20 @@
                 "pages": [
                   "uk/web/index",
                   "uk/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "uk/web/control-ui/connect-and-pair",
+                      "uk/web/control-ui/sessions-and-sidebar",
+                      "uk/web/control-ui/chat",
+                      "uk/web/control-ui/panels",
+                      "uk/web/control-ui/settings",
+                      "uk/web/control-ui/feature-reference",
+                      "uk/web/control-ui/offline-and-reconnect",
+                      "uk/web/control-ui/security-model",
+                      "uk/web/control-ui/development"
+                    ]
+                  },
                   "uk/web/notifications",
                   "uk/web/urls",
                   "uk/web/dashboard",
@@ -20744,6 +21024,20 @@
                 "pages": [
                   "id/web/index",
                   "id/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "id/web/control-ui/connect-and-pair",
+                      "id/web/control-ui/sessions-and-sidebar",
+                      "id/web/control-ui/chat",
+                      "id/web/control-ui/panels",
+                      "id/web/control-ui/settings",
+                      "id/web/control-ui/feature-reference",
+                      "id/web/control-ui/offline-and-reconnect",
+                      "id/web/control-ui/security-model",
+                      "id/web/control-ui/development"
+                    ]
+                  },
                   "id/web/notifications",
                   "id/web/urls",
                   "id/web/dashboard",
@@ -21913,6 +22207,20 @@
                 "pages": [
                   "pl/web/index",
                   "pl/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "pl/web/control-ui/connect-and-pair",
+                      "pl/web/control-ui/sessions-and-sidebar",
+                      "pl/web/control-ui/chat",
+                      "pl/web/control-ui/panels",
+                      "pl/web/control-ui/settings",
+                      "pl/web/control-ui/feature-reference",
+                      "pl/web/control-ui/offline-and-reconnect",
+                      "pl/web/control-ui/security-model",
+                      "pl/web/control-ui/development"
+                    ]
+                  },
                   "pl/web/notifications",
                   "pl/web/urls",
                   "pl/web/dashboard",
@@ -23082,6 +23390,20 @@
                 "pages": [
                   "ru/web/index",
                   "ru/web/control-ui",
+                  {
+                    "group": "Control UI",
+                    "pages": [
+                      "ru/web/control-ui/connect-and-pair",
+                      "ru/web/control-ui/sessions-and-sidebar",
+                      "ru/web/control-ui/chat",
+                      "ru/web/control-ui/panels",
+                      "ru/web/control-ui/settings",
+                      "ru/web/control-ui/feature-reference",
+                      "ru/web/control-ui/offline-and-reconnect",
+                      "ru/web/control-ui/security-model",
+                      "ru/web/control-ui/development"
+                    ]
+                  },
                   "ru/web/notifications",
                   "ru/web/urls",
                   "ru/web/dashboard",

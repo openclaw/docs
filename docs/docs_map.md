@@ -3436,6 +3436,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Claude CLI specifics
   - H3: Claude browser tools and 1Password sign-in
   - H2: Sessions
+  - H3: History account boundaries
   - H2: Fallback prelude from claude-cli sessions
   - H2: Images
   - H2: Inputs and outputs
@@ -11292,23 +11293,80 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui
 - Headings:
-  - H2: Environment identity
-  - H2: Community invitation
-  - H2: New session names
   - H2: Quick open (local)
+  - H2: What each page covers
+  - H2: Related
+
+## web/control-ui/chat.md
+
+- Route: /web/control-ui/chat
+- Headings:
+  - H2: Session rail and side chat
+  - H2: Session links in messages
+  - H2: Composer capability menu
+  - H2: Chat behavior
+  - H3: Source previews and copying code
+  - H3: Markdown tables
+  - H3: Mermaid diagrams
+  - H2: Hosted embeds
+  - H2: Chat transcript layout
+  - H2: Chat message width
+
+## web/control-ui/connect-and-pair.md
+
+- Route: /web/control-ui/connect-and-pair
+- Headings:
   - H2: Device pairing (first connection)
   - H2: Pair a mobile device
-  - H2: New-session preferences and recents
-  - H2: Personal identity
   - H2: Runtime config endpoint
-  - H2: Gateway host status
-  - H2: Language support
-  - H2: Appearance themes
+  - H2: PWA install and web push
+  - H2: Tailnet access (recommended)
+  - H2: Insecure HTTP
+  - H2: Blank Control UI page
+
+## web/control-ui/development.md
+
+- Route: /web/control-ui/development
+- Headings:
+  - H2: Build and develop the UI
+  - H2: Debugging/testing: dev server + remote Gateway
+
+## web/control-ui/feature-reference.md
+
+- Route: /web/control-ui/feature-reference
+- Headings:
+  - H2: Feature and RPC reference
+
+## web/control-ui/offline-and-reconnect.md
+
+- Route: /web/control-ui/offline-and-reconnect
+- Headings:
+  - H2: Connection loss and reconnect
+
+## web/control-ui/panels.md
+
+- Route: /web/control-ui/panels
+- Headings:
   - H2: OpenClaw system care
   - H2: Home dock
-  - H2: Manage plugins
-  - H2: Updates
-  - H2: Apps and extensions
+  - H2: Operator terminal
+  - H2: Browser panel
+
+## web/control-ui/security-model.md
+
+- Route: /web/control-ui/security-model
+- Headings:
+  - H2: Content security policy
+  - H2: Avatar route auth
+  - H2: Assistant media route auth
+  - H2: Approval links
+
+## web/control-ui/sessions-and-sidebar.md
+
+- Route: /web/control-ui/sessions-and-sidebar
+- Headings:
+  - H2: New session names
+  - H2: New-session preferences and recents
   - H2: Sidebar navigation
   - H3: Session menu
   - H3: Session placement
@@ -11317,36 +11375,28 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: New session page
   - H3: Start a native coding CLI
   - H3: OpenClaw Chat workspace startup
+
+## web/control-ui/settings.md
+
+- Route: /web/control-ui/settings
+- Headings:
+  - H2: Environment identity
+  - H2: Community invitation
+  - H2: Personal identity
+  - H2: Gateway host status
+  - H2: Language support
+  - H2: Appearance themes
+  - H2: Manage plugins
+  - H2: Updates
+  - H2: Apps and extensions
   - H2: Settings
   - H3: Side panel keyboard shortcuts
   - H3: This Mac (macOS app)
-  - H2: What it can do (today)
   - H2: Custom plugin UI
   - H2: Import assistant memory
   - H2: MCP page
   - H2: Activity tab
   - H2: Meetings page
-  - H2: Operator terminal
-  - H2: Browser panel
-  - H2: Composer capability menu
-  - H2: Chat behavior
-  - H3: Source previews and copying code
-  - H3: Markdown tables
-  - H3: Mermaid diagrams
-  - H2: Connection loss and reconnect
-  - H2: PWA install and web push
-  - H2: Hosted embeds
-  - H2: Chat transcript layout
-  - H2: Chat message width
-  - H2: Tailnet access (recommended)
-  - H2: Insecure HTTP
-  - H2: Content security policy
-  - H2: Avatar route auth
-  - H2: Assistant media route auth
-  - H2: Approval links
-  - H2: Blank Control UI page
-  - H2: Debugging/testing: dev server + remote Gateway
-  - H2: Related
 
 ## web/dashboard-architecture.md
 
