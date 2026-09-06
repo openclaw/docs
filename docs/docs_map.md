@@ -8131,6 +8131,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Capability registration
   - H3: Tools and commands
   - H3: Infrastructure
+  - H4: File-watch capacity errors
   - H4: SQLite write admission
   - H4: Webhook body rejection
   - H4: Post-ack webhook work
