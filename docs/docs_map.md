@@ -11003,6 +11003,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Personal library authoring
   - H2: How it works
+  - H2: Review in the Control UI
   - H2: Lifecycle
   - H2: Collection review
   - H3: Changes and recovery
