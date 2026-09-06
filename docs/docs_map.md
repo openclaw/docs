@@ -9671,7 +9671,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.6.11
 - Headings:
-  - H1: OpenClaw v2026.6.11 Release Notes (2026-06-30)
   - H2: Highlights
   - H3: Channel delivery reliability
   - H3: Provider and model recovery
@@ -9695,7 +9694,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.7.1
 - Headings:
-  - H1: OpenClaw v2026.7.1 Release Notes (2026-07-13)
   - H2: Highlights
   - H3: Control UI overhaul: chat, sessions, workspaces, and usage
   - H3: Easier setup from install to first chat
@@ -9749,28 +9747,128 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.8.1
 - Headings:
-  - H1: v2026.8.1 (AKA OpenClaw 2.0)
-  - H2: Installation and Onboarding
-  - H2: The New Web UI
-  - H2: Updates and Maintenance
-  - H2: Messaging
-  - H2: Memory
-  - H2: Skills
-  - H2: Native Apps
-  - H2: Models and Providers
-  - H2: Automations and Scheduling
-  - H2: Browser and Computer Use
-  - H2: Plugins and Integrations
-  - H2: Security and Privacy
-  - H2: Quality-of-Life Improvements
-  - H2: Other Bug Fixes
-  - H2: Maintainer and Internal Changes
+  - H2: Sections
+
+## releases/2026.8.1/automations-and-scheduling.md
+
+- Route: /releases/2026.8.1/automations-and-scheduling
+- Headings: none
+
+## releases/2026.8.1/browser-and-computer-use.md
+
+- Route: /releases/2026.8.1/browser-and-computer-use
+- Headings: none
+
+## releases/2026.8.1/installation-and-onboarding.md
+
+- Route: /releases/2026.8.1/installation-and-onboarding
+- Headings: none
+
+## releases/2026.8.1/maintainer-and-internal-changes.md
+
+- Route: /releases/2026.8.1/maintainer-and-internal-changes
+- Headings:
+  - H2: Maintenance changes
+
+## releases/2026.8.1/maintenance-changes-part-1.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-1
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-2.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-2
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-3.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-3
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-4.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-4
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-5.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-5
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-6.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-6
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-7.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-7
+- Headings: none
+
+## releases/2026.8.1/maintenance-changes-part-8.md
+
+- Route: /releases/2026.8.1/maintenance-changes-part-8
+- Headings: none
+
+## releases/2026.8.1/memory.md
+
+- Route: /releases/2026.8.1/memory
+- Headings: none
+
+## releases/2026.8.1/messaging.md
+
+- Route: /releases/2026.8.1/messaging
+- Headings: none
+
+## releases/2026.8.1/models-and-providers.md
+
+- Route: /releases/2026.8.1/models-and-providers
+- Headings: none
+
+## releases/2026.8.1/native-apps.md
+
+- Route: /releases/2026.8.1/native-apps
+- Headings: none
+
+## releases/2026.8.1/other-bug-fixes.md
+
+- Route: /releases/2026.8.1/other-bug-fixes
+- Headings: none
+
+## releases/2026.8.1/plugins-and-integrations.md
+
+- Route: /releases/2026.8.1/plugins-and-integrations
+- Headings: none
+
+## releases/2026.8.1/quality-of-life-improvements.md
+
+- Route: /releases/2026.8.1/quality-of-life-improvements
+- Headings: none
+
+## releases/2026.8.1/security-and-privacy.md
+
+- Route: /releases/2026.8.1/security-and-privacy
+- Headings: none
+
+## releases/2026.8.1/skills.md
+
+- Route: /releases/2026.8.1/skills
+- Headings: none
+
+## releases/2026.8.1/the-new-web-ui.md
+
+- Route: /releases/2026.8.1/the-new-web-ui
+- Headings: none
+
+## releases/2026.8.1/updates-and-maintenance.md
+
+- Route: /releases/2026.8.1/updates-and-maintenance
+- Headings: none
 
 ## releases/2026.8.2.md
 
 - Route: /releases/2026.8.2
 - Headings:
-  - H1: v2026.8.2
   - H2: Installation and Onboarding
   - H2: The New Web UI
   - H2: Updates and Maintenance
@@ -9789,7 +9887,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.9.1
 - Headings:
-  - H1: v2026.9.1
   - H2: Installation and Onboarding
   - H2: The New Web UI
   - H2: Updates and Maintenance
@@ -9810,7 +9907,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.9.2
 - Headings:
-  - H1: v2026.9.2
   - H2: Installation and Onboarding
   - H2: The New Web UI
   - H2: Updates and Maintenance
@@ -9831,9 +9927,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases
 - Headings:
-  - H1: Release notes
   - H2: Releases
-  - H2: Raw release history
+  - H2: Changelog
 
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
