@@ -392,6 +392,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Components v2 UI
   - H2: Voice
   - H3: Voice channels
+  - H3: Capture voice transcripts
   - H3: Meeting notes
   - H3: Follow users in voice
   - H3: Voice messages
