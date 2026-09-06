@@ -2305,15 +2305,6 @@
                   "releases/2026.9.1",
                   "releases/2026.8.2",
                   "releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "releases/2026.7.1",
                   "releases/2026.6.11"
                 ]
@@ -3483,15 +3474,6 @@
                   "zh-CN/releases/2026.9.1",
                   "zh-CN/releases/2026.8.2",
                   "zh-CN/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "zh-CN/releases/2026.7.1",
                   "zh-CN/releases/2026.6.11"
                 ]
@@ -4661,15 +4643,6 @@
                   "zh-TW/releases/2026.9.1",
                   "zh-TW/releases/2026.8.2",
                   "zh-TW/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "zh-TW/releases/2026.7.1",
                   "zh-TW/releases/2026.6.11"
                 ]
@@ -5839,15 +5812,6 @@
                   "ja-JP/releases/2026.9.1",
                   "ja-JP/releases/2026.8.2",
                   "ja-JP/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "ja-JP/releases/2026.7.1",
                   "ja-JP/releases/2026.6.11"
                 ]
@@ -7017,15 +6981,6 @@
                   "es/releases/2026.9.1",
                   "es/releases/2026.8.2",
                   "es/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "es/releases/2026.7.1",
                   "es/releases/2026.6.11"
                 ]
@@ -8195,15 +8150,6 @@
                   "pt-BR/releases/2026.9.1",
                   "pt-BR/releases/2026.8.2",
                   "pt-BR/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "pt-BR/releases/2026.7.1",
                   "pt-BR/releases/2026.6.11"
                 ]
@@ -9373,15 +9319,6 @@
                   "ko/releases/2026.9.1",
                   "ko/releases/2026.8.2",
                   "ko/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "ko/releases/2026.7.1",
                   "ko/releases/2026.6.11"
                 ]
@@ -10551,15 +10488,6 @@
                   "de/releases/2026.9.1",
                   "de/releases/2026.8.2",
                   "de/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "de/releases/2026.7.1",
                   "de/releases/2026.6.11"
                 ]
@@ -11729,15 +11657,6 @@
                   "fr/releases/2026.9.1",
                   "fr/releases/2026.8.2",
                   "fr/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "fr/releases/2026.7.1",
                   "fr/releases/2026.6.11"
                 ]
@@ -12907,15 +12826,6 @@
                   "hi/releases/2026.9.1",
                   "hi/releases/2026.8.2",
                   "hi/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "hi/releases/2026.7.1",
                   "hi/releases/2026.6.11"
                 ]
@@ -14085,15 +13995,6 @@
                   "ar/releases/2026.9.1",
                   "ar/releases/2026.8.2",
                   "ar/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "ar/releases/2026.7.1",
                   "ar/releases/2026.6.11"
                 ]
@@ -15263,15 +15164,6 @@
                   "it/releases/2026.9.1",
                   "it/releases/2026.8.2",
                   "it/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "it/releases/2026.7.1",
                   "it/releases/2026.6.11"
                 ]
@@ -16441,15 +16333,6 @@
                   "vi/releases/2026.9.1",
                   "vi/releases/2026.8.2",
                   "vi/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "vi/releases/2026.7.1",
                   "vi/releases/2026.6.11"
                 ]
@@ -17619,15 +17502,6 @@
                   "nl/releases/2026.9.1",
                   "nl/releases/2026.8.2",
                   "nl/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "nl/releases/2026.7.1",
                   "nl/releases/2026.6.11"
                 ]
@@ -18797,15 +18671,6 @@
                   "tr/releases/2026.9.1",
                   "tr/releases/2026.8.2",
                   "tr/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "tr/releases/2026.7.1",
                   "tr/releases/2026.6.11"
                 ]
@@ -19975,15 +19840,6 @@
                   "uk/releases/2026.9.1",
                   "uk/releases/2026.8.2",
                   "uk/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "uk/releases/2026.7.1",
                   "uk/releases/2026.6.11"
                 ]
@@ -21153,15 +21009,6 @@
                   "id/releases/2026.9.1",
                   "id/releases/2026.8.2",
                   "id/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "id/releases/2026.7.1",
                   "id/releases/2026.6.11"
                 ]
@@ -22331,15 +22178,6 @@
                   "pl/releases/2026.9.1",
                   "pl/releases/2026.8.2",
                   "pl/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "pl/releases/2026.7.1",
                   "pl/releases/2026.6.11"
                 ]
@@ -23509,15 +23347,6 @@
                   "ru/releases/2026.9.1",
                   "ru/releases/2026.8.2",
                   "ru/releases/2026.8.1",
-                  {
-                    "group": "v2026.8.1 sections",
-                    "pages": [
-                      {
-                        "group": "Maintenance changes",
-                        "pages": []
-                      }
-                    ]
-                  },
                   "ru/releases/2026.7.1",
                   "ru/releases/2026.6.11"
                 ]
