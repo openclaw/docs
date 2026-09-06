@@ -6597,12 +6597,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/plugin-inventory
 - Headings:
-  - H1: Plugin inventory
   - H2: Definitions
   - H2: Install a plugin
   - H2: Core npm package
   - H2: Official external packages
   - H2: Source checkout only
+  - H2: How this page is built
 
 ## plugins/plugin-permission-requests.md
 
@@ -6621,13 +6621,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference
 - Headings:
-  - H1: Plugin reference
+  - H2: How this page is built
 
 ## plugins/reference/a2a.md
 
 - Route: /plugins/reference/a2a
 - Headings:
-  - H1: A2a plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6636,7 +6635,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/acpx
 - Headings:
-  - H1: ACPx plugin
   - H2: Distribution
   - H2: Surface
   - H2: Pi native sessions
@@ -6646,7 +6644,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/active-memory
 - Headings:
-  - H1: Active Memory plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6654,7 +6651,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/admin-http-rpc
 - Headings:
-  - H1: Admin Http Rpc plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6663,7 +6659,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/alibaba
 - Headings:
-  - H1: Alibaba plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6672,7 +6667,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/amazon-bedrock-mantle
 - Headings:
-  - H1: Amazon Bedrock Mantle plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6681,7 +6675,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/amazon-bedrock
 - Headings:
-  - H1: Amazon Bedrock plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6690,7 +6683,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/anthropic-vertex
 - Headings:
-  - H1: Anthropic Vertex plugin
   - H2: Distribution
   - H2: Surface
   - H2: Claude Fable 5
@@ -6700,7 +6692,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/anthropic
 - Headings:
-  - H1: Anthropic plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6709,7 +6700,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/arcee
 - Headings:
-  - H1: Arcee plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6718,7 +6708,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/azure-speech
 - Headings:
-  - H1: Azure Speech plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6727,7 +6716,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/baseten
 - Headings:
-  - H1: Baseten plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6736,7 +6724,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/beam
 - Headings:
-  - H1: Beam plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6745,7 +6732,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/bonjour
 - Headings:
-  - H1: Bonjour plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6753,7 +6739,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/brave
 - Headings:
-  - H1: Brave plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6762,7 +6747,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/browser
 - Headings:
-  - H1: Browser plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6771,7 +6755,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/buzz
 - Headings:
-  - H1: Buzz plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6780,7 +6763,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/byteplus
 - Headings:
-  - H1: BytePlus plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6788,7 +6770,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/canvas
 - Headings:
-  - H1: Canvas plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6796,7 +6777,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/cerebras
 - Headings:
-  - H1: Cerebras plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6805,7 +6785,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/chutes
 - Headings:
-  - H1: Chutes plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6814,7 +6793,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/clawrouter
 - Headings:
-  - H1: ClawRouter plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6823,7 +6801,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/clickclack
 - Headings:
-  - H1: Clickclack plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6832,7 +6809,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/cloudflare-ai-gateway
 - Headings:
-  - H1: Cloudflare AI Gateway plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6841,7 +6817,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/codex
 - Headings:
-  - H1: Codex plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6850,7 +6825,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/cohere
 - Headings:
-  - H1: Cohere plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6859,7 +6833,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/comfy
 - Headings:
-  - H1: ComfyUI plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6868,7 +6841,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/copilot-proxy
 - Headings:
-  - H1: Copilot Proxy plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6876,7 +6848,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/copilot
 - Headings:
-  - H1: Copilot plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6885,7 +6856,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/crabbox
 - Headings:
-  - H1: Crabbox plugin
   - H2: Distribution
   - H2: Surface
   - H2: Configure
@@ -6894,7 +6864,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/cua-computer
 - Headings:
-  - H1: Cua Computer plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6902,7 +6871,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/deepgram
 - Headings:
-  - H1: Deepgram plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6911,7 +6879,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/deepinfra
 - Headings:
-  - H1: DeepInfra plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6920,7 +6887,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/deepseek
 - Headings:
-  - H1: DeepSeek plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6929,7 +6895,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/device-pair
 - Headings:
-  - H1: Device Pair plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6937,7 +6902,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/diagnostics-otel
 - Headings:
-  - H1: Diagnostics OpenTelemetry plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6945,7 +6909,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/diagnostics-prometheus
 - Headings:
-  - H1: Diagnostics Prometheus plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6953,7 +6916,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/diffs-language-pack
 - Headings:
-  - H1: Diffs Language Pack plugin
   - H2: Distribution
   - H2: Surface
   - H2: Added languages
@@ -6962,7 +6924,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/diffs
 - Headings:
-  - H1: Diffs plugin
   - H2: Distribution
   - H2: Surface
 
@@ -6970,7 +6931,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/discord
 - Headings:
-  - H1: Discord plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6979,7 +6939,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/document-extract
 - Headings:
-  - H1: Document Extract plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6988,7 +6947,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/duckduckgo
 - Headings:
-  - H1: DuckDuckGo plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -6997,7 +6955,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/elevenlabs
 - Headings:
-  - H1: Elevenlabs plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7006,7 +6963,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/exa
 - Headings:
-  - H1: Exa plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7015,7 +6971,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/fal
 - Headings:
-  - H1: fal plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7024,7 +6979,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/featherless
 - Headings:
-  - H1: Featherless plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7033,7 +6987,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/feishu
 - Headings:
-  - H1: Feishu plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7042,7 +6995,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/file-transfer
 - Headings:
-  - H1: File Transfer plugin
   - H2: Distribution
   - H2: Surface
   - H2: Directory archives
@@ -7052,7 +7004,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/firecrawl
 - Headings:
-  - H1: Firecrawl plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7061,7 +7012,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/fireworks
 - Headings:
-  - H1: Fireworks plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7070,7 +7020,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/fish-audio-speech
 - Headings:
-  - H1: Fish Audio Speech plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7079,7 +7028,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/geolocation
 - Headings:
-  - H1: Geolocation plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7088,7 +7036,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/github-copilot
 - Headings:
-  - H1: GitHub Copilot plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7097,7 +7044,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/gmi
 - Headings:
-  - H1: Gmi plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7106,7 +7052,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/google-meet
 - Headings:
-  - H1: Google Meet plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7115,7 +7060,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/google
 - Headings:
-  - H1: Google plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7124,7 +7068,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/googlechat
 - Headings:
-  - H1: Google Chat plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7133,7 +7076,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/gradium
 - Headings:
-  - H1: Gradium plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7142,7 +7084,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/groq
 - Headings:
-  - H1: Groq plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7151,7 +7092,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/huggingface
 - Headings:
-  - H1: Hugging Face plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7160,7 +7100,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/imap
 - Headings:
-  - H1: Imap plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7169,7 +7108,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/imessage
 - Headings:
-  - H1: iMessage plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7178,7 +7116,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/inworld
 - Headings:
-  - H1: Inworld plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7187,7 +7124,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/irc
 - Headings:
-  - H1: IRC plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7196,7 +7132,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/kilocode
 - Headings:
-  - H1: Kilocode plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7205,7 +7140,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/kimi
 - Headings:
-  - H1: Kimi plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7214,7 +7148,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/line
 - Headings:
-  - H1: LINE plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7223,7 +7156,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/linux-node
 - Headings:
-  - H1: Linux Node plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7231,7 +7163,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/litellm
 - Headings:
-  - H1: LiteLLM plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7240,7 +7171,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/llama-cpp
 - Headings:
-  - H1: Llama Cpp plugin
   - H2: Distribution
   - H2: Surface
   - H2: Default text model
@@ -7250,7 +7180,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/llm-task
 - Headings:
-  - H1: LLM Task plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7258,7 +7187,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/lmstudio
 - Headings:
-  - H1: LM Studio plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7267,7 +7195,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/lobster
 - Headings:
-  - H1: Lobster plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7275,7 +7202,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/logbook
 - Headings:
-  - H1: Logbook plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7284,7 +7210,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/longcat
 - Headings:
-  - H1: LongCat plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7293,7 +7218,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/matrix
 - Headings:
-  - H1: Matrix plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7302,7 +7226,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/mattermost
 - Headings:
-  - H1: Mattermost plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7311,7 +7234,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/memory-core
 - Headings:
-  - H1: Memory Core plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7319,7 +7241,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/memory-lancedb
 - Headings:
-  - H1: Memory Lancedb plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7328,7 +7249,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/memory-wiki
 - Headings:
-  - H1: Memory Wiki plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7337,7 +7257,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/meta
 - Headings:
-  - H1: Meta plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7346,7 +7265,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/microsoft-foundry
 - Headings:
-  - H1: Microsoft Foundry plugin
   - H2: Distribution
   - H2: Surface
   - H2: Requirements
@@ -7358,7 +7276,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/microsoft
 - Headings:
-  - H1: Microsoft plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7366,7 +7283,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/migrate-claude
 - Headings:
-  - H1: Migrate Claude plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7374,7 +7290,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/migrate-hermes
 - Headings:
-  - H1: Migrate Hermes plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7382,7 +7297,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/minimax
 - Headings:
-  - H1: MiniMax plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7391,7 +7305,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/mistral
 - Headings:
-  - H1: Mistral plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7400,7 +7313,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/moonshot
 - Headings:
-  - H1: Moonshot plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7409,7 +7321,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/msteams
 - Headings:
-  - H1: Microsoft Teams plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7418,7 +7329,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/mxc
 - Headings:
-  - H1: Mxc plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7426,7 +7336,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/nextcloud-talk
 - Headings:
-  - H1: Nextcloud Talk plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7435,7 +7344,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/nostr
 - Headings:
-  - H1: Nostr plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7444,7 +7352,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/novita
 - Headings:
-  - H1: Novita plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7453,7 +7360,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/nvidia
 - Headings:
-  - H1: NVIDIA plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7462,7 +7368,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/oc-path
 - Headings:
-  - H1: Oc Path plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7471,7 +7376,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/ollama
 - Headings:
-  - H1: Ollama plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7480,7 +7384,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/onepassword
 - Headings:
-  - H1: Onepassword plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7489,7 +7392,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/openai
 - Headings:
-  - H1: OpenAI plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7498,7 +7400,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/opencode-go
 - Headings:
-  - H1: OpenCode Go plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7507,7 +7408,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/opencode
 - Headings:
-  - H1: OpenCode plugin
   - H2: Distribution
   - H2: Surface
   - H2: Native sessions
@@ -7517,7 +7417,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/openrouter
 - Headings:
-  - H1: OpenRouter plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7526,7 +7425,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/openshell
 - Headings:
-  - H1: Openshell plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7534,7 +7432,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/perplexity
 - Headings:
-  - H1: Perplexity plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7543,7 +7440,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/pixverse
 - Headings:
-  - H1: PixVerse plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7552,7 +7448,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/policy
 - Headings:
-  - H1: Policy plugin
   - H2: Distribution
   - H2: Surface
   - H2: Behavior
@@ -7562,7 +7457,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/qa-channel
 - Headings:
-  - H1: QA Channel plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7571,7 +7465,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/qa-lab
 - Headings:
-  - H1: QA Lab plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7579,7 +7472,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/qianfan
 - Headings:
-  - H1: Qianfan plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7588,7 +7480,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/qqbot
 - Headings:
-  - H1: QQ Bot plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7597,7 +7488,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/qwen
 - Headings:
-  - H1: Qwen plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7606,7 +7496,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/raft
 - Headings:
-  - H1: Raft plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7615,7 +7504,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/reef
 - Headings:
-  - H1: Reef plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7624,7 +7512,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/runway
 - Headings:
-  - H1: Runway plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7633,7 +7520,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/searxng
 - Headings:
-  - H1: SearXNG plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7641,7 +7527,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/senseaudio
 - Headings:
-  - H1: Senseaudio plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7650,7 +7535,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/sglang
 - Headings:
-  - H1: SGLang plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7659,7 +7543,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/signal
 - Headings:
-  - H1: Signal plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7668,7 +7551,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/slack
 - Headings:
-  - H1: Slack plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7677,7 +7559,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/sms
 - Headings:
-  - H1: Sms plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7686,7 +7567,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/stepfun
 - Headings:
-  - H1: StepFun plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7695,7 +7575,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/synology-chat
 - Headings:
-  - H1: Synology Chat plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7704,7 +7583,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/synthetic
 - Headings:
-  - H1: Synthetic plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7713,7 +7591,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/talk-voice
 - Headings:
-  - H1: Talk Voice plugin
   - H2: Distribution
   - H2: Surface
   - H2: Configure a Talk voice from chat
@@ -7722,7 +7599,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/tavily
 - Headings:
-  - H1: Tavily plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7731,7 +7607,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/teams-meetings
 - Headings:
-  - H1: Microsoft Teams meetings plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7740,7 +7615,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/telegram
 - Headings:
-  - H1: Telegram plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7749,7 +7623,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/tencent
 - Headings:
-  - H1: Tencent plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7758,7 +7631,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/tlon
 - Headings:
-  - H1: Tlon plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7767,7 +7639,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/together
 - Headings:
-  - H1: Together plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7776,7 +7647,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/tokenjuice
 - Headings:
-  - H1: Tokenjuice plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7785,7 +7655,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/tts-local-cli
 - Headings:
-  - H1: TTS Local CLI plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7793,7 +7662,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/twitch
 - Headings:
-  - H1: Twitch plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7802,7 +7670,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/vault
 - Headings:
-  - H1: Vault plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7811,7 +7678,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/venice
 - Headings:
-  - H1: Venice plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7820,7 +7686,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/vercel-ai-gateway
 - Headings:
-  - H1: Vercel AI Gateway plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7829,7 +7694,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/visitor-access
 - Headings:
-  - H1: Visitor Access plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7837,7 +7701,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/vllm
 - Headings:
-  - H1: vLLM plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7846,7 +7709,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/voice-call
 - Headings:
-  - H1: Voice Call plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7855,7 +7717,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/volcengine
 - Headings:
-  - H1: Volcengine plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7864,7 +7725,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/voyage
 - Headings:
-  - H1: Voyage plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7872,7 +7732,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/vydra
 - Headings:
-  - H1: Vydra plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7881,7 +7740,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/web-readability
 - Headings:
-  - H1: Web Readability plugin
   - H2: Distribution
   - H2: Surface
 
@@ -7889,7 +7747,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/webhooks
 - Headings:
-  - H1: Webhooks plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7898,7 +7755,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/whatsapp
 - Headings:
-  - H1: WhatsApp plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7907,7 +7763,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/workboard
 - Headings:
-  - H1: Workboard plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7916,7 +7771,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/xai
 - Headings:
-  - H1: xAI plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7925,7 +7779,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/xiaomi
 - Headings:
-  - H1: Xiaomi plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7934,7 +7787,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/zai
 - Headings:
-  - H1: Z.AI plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7943,7 +7795,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/zalo
 - Headings:
-  - H1: Zalo plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7952,7 +7803,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/zalouser
 - Headings:
-  - H1: Zalo Personal plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
@@ -7961,7 +7811,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/reference/zoom-meetings
 - Headings:
-  - H1: Zoom meetings plugin
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
