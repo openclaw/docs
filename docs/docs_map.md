@@ -4185,6 +4185,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Background tasks
   - H3: Agent-requested restarts
   - H2: Safety valves and observability
+  - H2: Verify recovery after an update
   - H2: What is not resumed
 
 ## gateway/sandbox-vs-tool-policy-vs-elevated.md
