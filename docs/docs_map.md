@@ -11084,6 +11084,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Announce chain
   - H3: Tool policy by depth
   - H3: Per-agent spawn limit
+  - H3: Reset a conversation
   - H3: Cascade stop
   - H2: Authentication
   - H2: Announce
