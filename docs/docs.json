@@ -933,6 +933,10 @@
       "destination": "/channels/telegram"
     },
     {
+      "source": "/reference/templates/CLAUDE",
+      "destination": "/reference/templates/AGENTS"
+    },
+    {
       "source": "/templates/AGENTS",
       "destination": "/reference/templates/AGENTS"
     },
@@ -2114,7 +2118,16 @@
                   "reference/templates/HEARTBEAT",
                   "reference/templates/IDENTITY",
                   "reference/templates/SOUL",
-                  "reference/templates/USER"
+                  "reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "reference/templates/AGENTS.dev",
+                      "reference/templates/IDENTITY.dev",
+                      "reference/templates/SOUL.dev",
+                      "reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -3149,7 +3162,16 @@
                   "zh-CN/reference/templates/HEARTBEAT",
                   "zh-CN/reference/templates/IDENTITY",
                   "zh-CN/reference/templates/SOUL",
-                  "zh-CN/reference/templates/USER"
+                  "zh-CN/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "zh-CN/reference/templates/AGENTS.dev",
+                      "zh-CN/reference/templates/IDENTITY.dev",
+                      "zh-CN/reference/templates/SOUL.dev",
+                      "zh-CN/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -4184,7 +4206,16 @@
                   "zh-TW/reference/templates/HEARTBEAT",
                   "zh-TW/reference/templates/IDENTITY",
                   "zh-TW/reference/templates/SOUL",
-                  "zh-TW/reference/templates/USER"
+                  "zh-TW/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "zh-TW/reference/templates/AGENTS.dev",
+                      "zh-TW/reference/templates/IDENTITY.dev",
+                      "zh-TW/reference/templates/SOUL.dev",
+                      "zh-TW/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -5219,7 +5250,16 @@
                   "ja-JP/reference/templates/HEARTBEAT",
                   "ja-JP/reference/templates/IDENTITY",
                   "ja-JP/reference/templates/SOUL",
-                  "ja-JP/reference/templates/USER"
+                  "ja-JP/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "ja-JP/reference/templates/AGENTS.dev",
+                      "ja-JP/reference/templates/IDENTITY.dev",
+                      "ja-JP/reference/templates/SOUL.dev",
+                      "ja-JP/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -6254,7 +6294,16 @@
                   "es/reference/templates/HEARTBEAT",
                   "es/reference/templates/IDENTITY",
                   "es/reference/templates/SOUL",
-                  "es/reference/templates/USER"
+                  "es/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "es/reference/templates/AGENTS.dev",
+                      "es/reference/templates/IDENTITY.dev",
+                      "es/reference/templates/SOUL.dev",
+                      "es/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -7289,7 +7338,16 @@
                   "pt-BR/reference/templates/HEARTBEAT",
                   "pt-BR/reference/templates/IDENTITY",
                   "pt-BR/reference/templates/SOUL",
-                  "pt-BR/reference/templates/USER"
+                  "pt-BR/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "pt-BR/reference/templates/AGENTS.dev",
+                      "pt-BR/reference/templates/IDENTITY.dev",
+                      "pt-BR/reference/templates/SOUL.dev",
+                      "pt-BR/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -8324,7 +8382,16 @@
                   "ko/reference/templates/HEARTBEAT",
                   "ko/reference/templates/IDENTITY",
                   "ko/reference/templates/SOUL",
-                  "ko/reference/templates/USER"
+                  "ko/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "ko/reference/templates/AGENTS.dev",
+                      "ko/reference/templates/IDENTITY.dev",
+                      "ko/reference/templates/SOUL.dev",
+                      "ko/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -9359,7 +9426,16 @@
                   "de/reference/templates/HEARTBEAT",
                   "de/reference/templates/IDENTITY",
                   "de/reference/templates/SOUL",
-                  "de/reference/templates/USER"
+                  "de/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "de/reference/templates/AGENTS.dev",
+                      "de/reference/templates/IDENTITY.dev",
+                      "de/reference/templates/SOUL.dev",
+                      "de/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -10394,7 +10470,16 @@
                   "fr/reference/templates/HEARTBEAT",
                   "fr/reference/templates/IDENTITY",
                   "fr/reference/templates/SOUL",
-                  "fr/reference/templates/USER"
+                  "fr/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "fr/reference/templates/AGENTS.dev",
+                      "fr/reference/templates/IDENTITY.dev",
+                      "fr/reference/templates/SOUL.dev",
+                      "fr/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -11429,7 +11514,16 @@
                   "hi/reference/templates/HEARTBEAT",
                   "hi/reference/templates/IDENTITY",
                   "hi/reference/templates/SOUL",
-                  "hi/reference/templates/USER"
+                  "hi/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "hi/reference/templates/AGENTS.dev",
+                      "hi/reference/templates/IDENTITY.dev",
+                      "hi/reference/templates/SOUL.dev",
+                      "hi/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -12464,7 +12558,16 @@
                   "ar/reference/templates/HEARTBEAT",
                   "ar/reference/templates/IDENTITY",
                   "ar/reference/templates/SOUL",
-                  "ar/reference/templates/USER"
+                  "ar/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "ar/reference/templates/AGENTS.dev",
+                      "ar/reference/templates/IDENTITY.dev",
+                      "ar/reference/templates/SOUL.dev",
+                      "ar/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -13499,7 +13602,16 @@
                   "it/reference/templates/HEARTBEAT",
                   "it/reference/templates/IDENTITY",
                   "it/reference/templates/SOUL",
-                  "it/reference/templates/USER"
+                  "it/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "it/reference/templates/AGENTS.dev",
+                      "it/reference/templates/IDENTITY.dev",
+                      "it/reference/templates/SOUL.dev",
+                      "it/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -14534,7 +14646,16 @@
                   "vi/reference/templates/HEARTBEAT",
                   "vi/reference/templates/IDENTITY",
                   "vi/reference/templates/SOUL",
-                  "vi/reference/templates/USER"
+                  "vi/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "vi/reference/templates/AGENTS.dev",
+                      "vi/reference/templates/IDENTITY.dev",
+                      "vi/reference/templates/SOUL.dev",
+                      "vi/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -15569,7 +15690,16 @@
                   "nl/reference/templates/HEARTBEAT",
                   "nl/reference/templates/IDENTITY",
                   "nl/reference/templates/SOUL",
-                  "nl/reference/templates/USER"
+                  "nl/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "nl/reference/templates/AGENTS.dev",
+                      "nl/reference/templates/IDENTITY.dev",
+                      "nl/reference/templates/SOUL.dev",
+                      "nl/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -16604,7 +16734,16 @@
                   "tr/reference/templates/HEARTBEAT",
                   "tr/reference/templates/IDENTITY",
                   "tr/reference/templates/SOUL",
-                  "tr/reference/templates/USER"
+                  "tr/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "tr/reference/templates/AGENTS.dev",
+                      "tr/reference/templates/IDENTITY.dev",
+                      "tr/reference/templates/SOUL.dev",
+                      "tr/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -17639,7 +17778,16 @@
                   "uk/reference/templates/HEARTBEAT",
                   "uk/reference/templates/IDENTITY",
                   "uk/reference/templates/SOUL",
-                  "uk/reference/templates/USER"
+                  "uk/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "uk/reference/templates/AGENTS.dev",
+                      "uk/reference/templates/IDENTITY.dev",
+                      "uk/reference/templates/SOUL.dev",
+                      "uk/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -18674,7 +18822,16 @@
                   "id/reference/templates/HEARTBEAT",
                   "id/reference/templates/IDENTITY",
                   "id/reference/templates/SOUL",
-                  "id/reference/templates/USER"
+                  "id/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "id/reference/templates/AGENTS.dev",
+                      "id/reference/templates/IDENTITY.dev",
+                      "id/reference/templates/SOUL.dev",
+                      "id/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -19709,7 +19866,16 @@
                   "pl/reference/templates/HEARTBEAT",
                   "pl/reference/templates/IDENTITY",
                   "pl/reference/templates/SOUL",
-                  "pl/reference/templates/USER"
+                  "pl/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "pl/reference/templates/AGENTS.dev",
+                      "pl/reference/templates/IDENTITY.dev",
+                      "pl/reference/templates/SOUL.dev",
+                      "pl/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
@@ -20744,7 +20910,16 @@
                   "ru/reference/templates/HEARTBEAT",
                   "ru/reference/templates/IDENTITY",
                   "ru/reference/templates/SOUL",
-                  "ru/reference/templates/USER"
+                  "ru/reference/templates/USER",
+                  {
+                    "group": "Dev agent templates",
+                    "pages": [
+                      "ru/reference/templates/AGENTS.dev",
+                      "ru/reference/templates/IDENTITY.dev",
+                      "ru/reference/templates/SOUL.dev",
+                      "ru/reference/templates/USER.dev"
+                    ]
+                  }
                 ]
               },
               {
