@@ -6449,6 +6449,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Rich example
   - H2: Top-level field reference
   - H2: Plugin icon
+  - H2: Transcript sources reference
   - H2: backupResources reference
   - H2: MCP server reference
   - H2: controlUi reference
