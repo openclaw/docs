@@ -11628,6 +11628,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/swarm
 - Headings:
+  - H2: When to use Swarm
   - H2: Enable Swarm
   - H2: Requirements
   - H2: Write a Swarm script
