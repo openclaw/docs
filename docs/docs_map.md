@@ -3090,6 +3090,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/multi-user
 - Headings:
   - H2: Trust boundary
+  - H2: World-readable session links
   - H2: The three ownership layers
   - H2: Assigning an owner
   - H2: Per-person model accounts
@@ -11882,6 +11883,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/security-model
 - Headings:
   - H2: Content security policy
+  - H2: Public transcript boundary
   - H2: Avatar route auth
   - H2: Assistant media route auth
   - H2: Approval links
@@ -11894,6 +11896,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: New-session preferences and recents
   - H2: Sidebar navigation
   - H3: Session menu
+  - H3: Share a session publicly
   - H3: Session placement
   - H3: Session icons
   - H2: Session colors
