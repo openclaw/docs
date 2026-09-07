@@ -1677,6 +1677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: openclaw devices list
   - H3: `openclaw devices approve [requestId] [--latest]`
   - H3: openclaw devices reject &lt;requestId&gt;
+  - H3: openclaw devices join-code
   - H3: openclaw devices remove &lt;deviceId&gt;
   - H3: openclaw devices rename --device &lt;id&gt; --name &lt;label&gt;
   - H3: `openclaw devices clear --yes [--pending]`
