@@ -3097,7 +3097,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Reading the avatars
   - H2: People cards
   - H2: Mentioning people
-  - H2: Temporary mentions Inbox
+  - H2: Mentions Inbox
   - H2: Agent-spawned sessions
   - H2: Identity-scoped convenience state
   - H2: Drafts
@@ -9647,6 +9647,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas
 - Headings:
   - H2: Database layout
+  - H3: Mentions Inbox
   - H3: ACP replay accounting
   - H3: Meeting transcript tables
   - H4: `meeting_transcript_sessions`
