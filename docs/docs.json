@@ -1759,6 +1759,19 @@
                 "pages": [
                   "automation/index",
                   "automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "automation/cron-jobs/how-it-works",
+                      "automation/cron-jobs/schedules",
+                      "automation/cron-jobs/payloads",
+                      "automation/cron-jobs/delivery",
+                      "automation/cron-jobs/managing-jobs",
+                      "automation/cron-jobs/webhooks",
+                      "automation/cron-jobs/gmail",
+                      "automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "automation/imap",
                   "automation/tasks",
                   "automation/taskflow",
@@ -3080,6 +3093,19 @@
                 "pages": [
                   "zh-CN/automation/index",
                   "zh-CN/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "zh-CN/automation/cron-jobs/how-it-works",
+                      "zh-CN/automation/cron-jobs/schedules",
+                      "zh-CN/automation/cron-jobs/payloads",
+                      "zh-CN/automation/cron-jobs/delivery",
+                      "zh-CN/automation/cron-jobs/managing-jobs",
+                      "zh-CN/automation/cron-jobs/webhooks",
+                      "zh-CN/automation/cron-jobs/gmail",
+                      "zh-CN/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "zh-CN/automation/imap",
                   "zh-CN/automation/tasks",
                   "zh-CN/automation/taskflow",
@@ -4367,6 +4393,19 @@
                 "pages": [
                   "zh-TW/automation/index",
                   "zh-TW/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "zh-TW/automation/cron-jobs/how-it-works",
+                      "zh-TW/automation/cron-jobs/schedules",
+                      "zh-TW/automation/cron-jobs/payloads",
+                      "zh-TW/automation/cron-jobs/delivery",
+                      "zh-TW/automation/cron-jobs/managing-jobs",
+                      "zh-TW/automation/cron-jobs/webhooks",
+                      "zh-TW/automation/cron-jobs/gmail",
+                      "zh-TW/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "zh-TW/automation/imap",
                   "zh-TW/automation/tasks",
                   "zh-TW/automation/taskflow",
@@ -5654,6 +5693,19 @@
                 "pages": [
                   "ja-JP/automation/index",
                   "ja-JP/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "ja-JP/automation/cron-jobs/how-it-works",
+                      "ja-JP/automation/cron-jobs/schedules",
+                      "ja-JP/automation/cron-jobs/payloads",
+                      "ja-JP/automation/cron-jobs/delivery",
+                      "ja-JP/automation/cron-jobs/managing-jobs",
+                      "ja-JP/automation/cron-jobs/webhooks",
+                      "ja-JP/automation/cron-jobs/gmail",
+                      "ja-JP/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "ja-JP/automation/imap",
                   "ja-JP/automation/tasks",
                   "ja-JP/automation/taskflow",
@@ -6941,6 +6993,19 @@
                 "pages": [
                   "es/automation/index",
                   "es/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "es/automation/cron-jobs/how-it-works",
+                      "es/automation/cron-jobs/schedules",
+                      "es/automation/cron-jobs/payloads",
+                      "es/automation/cron-jobs/delivery",
+                      "es/automation/cron-jobs/managing-jobs",
+                      "es/automation/cron-jobs/webhooks",
+                      "es/automation/cron-jobs/gmail",
+                      "es/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "es/automation/imap",
                   "es/automation/tasks",
                   "es/automation/taskflow",
@@ -8228,6 +8293,19 @@
                 "pages": [
                   "pt-BR/automation/index",
                   "pt-BR/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "pt-BR/automation/cron-jobs/how-it-works",
+                      "pt-BR/automation/cron-jobs/schedules",
+                      "pt-BR/automation/cron-jobs/payloads",
+                      "pt-BR/automation/cron-jobs/delivery",
+                      "pt-BR/automation/cron-jobs/managing-jobs",
+                      "pt-BR/automation/cron-jobs/webhooks",
+                      "pt-BR/automation/cron-jobs/gmail",
+                      "pt-BR/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "pt-BR/automation/imap",
                   "pt-BR/automation/tasks",
                   "pt-BR/automation/taskflow",
@@ -9515,6 +9593,19 @@
                 "pages": [
                   "ko/automation/index",
                   "ko/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "ko/automation/cron-jobs/how-it-works",
+                      "ko/automation/cron-jobs/schedules",
+                      "ko/automation/cron-jobs/payloads",
+                      "ko/automation/cron-jobs/delivery",
+                      "ko/automation/cron-jobs/managing-jobs",
+                      "ko/automation/cron-jobs/webhooks",
+                      "ko/automation/cron-jobs/gmail",
+                      "ko/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "ko/automation/imap",
                   "ko/automation/tasks",
                   "ko/automation/taskflow",
@@ -10802,6 +10893,19 @@
                 "pages": [
                   "de/automation/index",
                   "de/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "de/automation/cron-jobs/how-it-works",
+                      "de/automation/cron-jobs/schedules",
+                      "de/automation/cron-jobs/payloads",
+                      "de/automation/cron-jobs/delivery",
+                      "de/automation/cron-jobs/managing-jobs",
+                      "de/automation/cron-jobs/webhooks",
+                      "de/automation/cron-jobs/gmail",
+                      "de/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "de/automation/imap",
                   "de/automation/tasks",
                   "de/automation/taskflow",
@@ -12089,6 +12193,19 @@
                 "pages": [
                   "fr/automation/index",
                   "fr/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "fr/automation/cron-jobs/how-it-works",
+                      "fr/automation/cron-jobs/schedules",
+                      "fr/automation/cron-jobs/payloads",
+                      "fr/automation/cron-jobs/delivery",
+                      "fr/automation/cron-jobs/managing-jobs",
+                      "fr/automation/cron-jobs/webhooks",
+                      "fr/automation/cron-jobs/gmail",
+                      "fr/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "fr/automation/imap",
                   "fr/automation/tasks",
                   "fr/automation/taskflow",
@@ -13376,6 +13493,19 @@
                 "pages": [
                   "hi/automation/index",
                   "hi/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "hi/automation/cron-jobs/how-it-works",
+                      "hi/automation/cron-jobs/schedules",
+                      "hi/automation/cron-jobs/payloads",
+                      "hi/automation/cron-jobs/delivery",
+                      "hi/automation/cron-jobs/managing-jobs",
+                      "hi/automation/cron-jobs/webhooks",
+                      "hi/automation/cron-jobs/gmail",
+                      "hi/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "hi/automation/imap",
                   "hi/automation/tasks",
                   "hi/automation/taskflow",
@@ -14663,6 +14793,19 @@
                 "pages": [
                   "ar/automation/index",
                   "ar/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "ar/automation/cron-jobs/how-it-works",
+                      "ar/automation/cron-jobs/schedules",
+                      "ar/automation/cron-jobs/payloads",
+                      "ar/automation/cron-jobs/delivery",
+                      "ar/automation/cron-jobs/managing-jobs",
+                      "ar/automation/cron-jobs/webhooks",
+                      "ar/automation/cron-jobs/gmail",
+                      "ar/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "ar/automation/imap",
                   "ar/automation/tasks",
                   "ar/automation/taskflow",
@@ -15950,6 +16093,19 @@
                 "pages": [
                   "it/automation/index",
                   "it/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "it/automation/cron-jobs/how-it-works",
+                      "it/automation/cron-jobs/schedules",
+                      "it/automation/cron-jobs/payloads",
+                      "it/automation/cron-jobs/delivery",
+                      "it/automation/cron-jobs/managing-jobs",
+                      "it/automation/cron-jobs/webhooks",
+                      "it/automation/cron-jobs/gmail",
+                      "it/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "it/automation/imap",
                   "it/automation/tasks",
                   "it/automation/taskflow",
@@ -17237,6 +17393,19 @@
                 "pages": [
                   "vi/automation/index",
                   "vi/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "vi/automation/cron-jobs/how-it-works",
+                      "vi/automation/cron-jobs/schedules",
+                      "vi/automation/cron-jobs/payloads",
+                      "vi/automation/cron-jobs/delivery",
+                      "vi/automation/cron-jobs/managing-jobs",
+                      "vi/automation/cron-jobs/webhooks",
+                      "vi/automation/cron-jobs/gmail",
+                      "vi/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "vi/automation/imap",
                   "vi/automation/tasks",
                   "vi/automation/taskflow",
@@ -18524,6 +18693,19 @@
                 "pages": [
                   "nl/automation/index",
                   "nl/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "nl/automation/cron-jobs/how-it-works",
+                      "nl/automation/cron-jobs/schedules",
+                      "nl/automation/cron-jobs/payloads",
+                      "nl/automation/cron-jobs/delivery",
+                      "nl/automation/cron-jobs/managing-jobs",
+                      "nl/automation/cron-jobs/webhooks",
+                      "nl/automation/cron-jobs/gmail",
+                      "nl/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "nl/automation/imap",
                   "nl/automation/tasks",
                   "nl/automation/taskflow",
@@ -19811,6 +19993,19 @@
                 "pages": [
                   "tr/automation/index",
                   "tr/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "tr/automation/cron-jobs/how-it-works",
+                      "tr/automation/cron-jobs/schedules",
+                      "tr/automation/cron-jobs/payloads",
+                      "tr/automation/cron-jobs/delivery",
+                      "tr/automation/cron-jobs/managing-jobs",
+                      "tr/automation/cron-jobs/webhooks",
+                      "tr/automation/cron-jobs/gmail",
+                      "tr/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "tr/automation/imap",
                   "tr/automation/tasks",
                   "tr/automation/taskflow",
@@ -21098,6 +21293,19 @@
                 "pages": [
                   "uk/automation/index",
                   "uk/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "uk/automation/cron-jobs/how-it-works",
+                      "uk/automation/cron-jobs/schedules",
+                      "uk/automation/cron-jobs/payloads",
+                      "uk/automation/cron-jobs/delivery",
+                      "uk/automation/cron-jobs/managing-jobs",
+                      "uk/automation/cron-jobs/webhooks",
+                      "uk/automation/cron-jobs/gmail",
+                      "uk/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "uk/automation/imap",
                   "uk/automation/tasks",
                   "uk/automation/taskflow",
@@ -22385,6 +22593,19 @@
                 "pages": [
                   "id/automation/index",
                   "id/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "id/automation/cron-jobs/how-it-works",
+                      "id/automation/cron-jobs/schedules",
+                      "id/automation/cron-jobs/payloads",
+                      "id/automation/cron-jobs/delivery",
+                      "id/automation/cron-jobs/managing-jobs",
+                      "id/automation/cron-jobs/webhooks",
+                      "id/automation/cron-jobs/gmail",
+                      "id/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "id/automation/imap",
                   "id/automation/tasks",
                   "id/automation/taskflow",
@@ -23672,6 +23893,19 @@
                 "pages": [
                   "pl/automation/index",
                   "pl/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "pl/automation/cron-jobs/how-it-works",
+                      "pl/automation/cron-jobs/schedules",
+                      "pl/automation/cron-jobs/payloads",
+                      "pl/automation/cron-jobs/delivery",
+                      "pl/automation/cron-jobs/managing-jobs",
+                      "pl/automation/cron-jobs/webhooks",
+                      "pl/automation/cron-jobs/gmail",
+                      "pl/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "pl/automation/imap",
                   "pl/automation/tasks",
                   "pl/automation/taskflow",
@@ -24959,6 +25193,19 @@
                 "pages": [
                   "ru/automation/index",
                   "ru/automation/cron-jobs",
+                  {
+                    "group": "Automations",
+                    "pages": [
+                      "ru/automation/cron-jobs/how-it-works",
+                      "ru/automation/cron-jobs/schedules",
+                      "ru/automation/cron-jobs/payloads",
+                      "ru/automation/cron-jobs/delivery",
+                      "ru/automation/cron-jobs/managing-jobs",
+                      "ru/automation/cron-jobs/webhooks",
+                      "ru/automation/cron-jobs/gmail",
+                      "ru/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
                   "ru/automation/imap",
                   "ru/automation/tasks",
                   "ru/automation/taskflow",

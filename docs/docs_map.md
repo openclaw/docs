@@ -54,32 +54,29 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /automation/cron-jobs
 - Headings:
   - H2: Quick start
-  - H2: How automations work
-  - H2: Schedule types
-  - H3: Heartbeat task migration
-  - H3: Stream sources
-  - H3: Dynamic cadence (pacing)
-  - H3: /loop chat shortcut
-  - H3: Day-of-month and day-of-week use OR logic
-  - H2: Event triggers (condition watchers)
-  - H2: Promoting a repeated job into an automation
-  - H2: Payloads
-  - H3: Agent-turn options
-  - H3: Command payloads
-  - H3: Script payloads
-  - H2: Execution styles
-  - H3: Codex apps in scheduled automations
+  - H2: Where each section moved
+  - H3: Runtime model and promotion
+  - H3: Schedule and trigger sections
+  - H3: Payload and execution sections
+  - H3: Delivery sections
+  - H3: Management and configuration sections
+  - H3: Inbound webhook sections
+  - H3: Gmail sections
+  - H3: Troubleshooting sections
+  - H2: Related
+
+## automation/cron-jobs/delivery.md
+
+- Route: /automation/cron-jobs/delivery
+- Headings:
   - H2: Delivery and output
   - H3: Failure notifications
   - H3: Output language
-  - H2: CLI examples
-  - H2: Managing jobs
-  - H3: Conversational management
-  - H3: CLI management
-  - H2: Webhooks
-  - H3: Enable and test an agent hook
-  - H3: Authentication
-  - H3: Verify and troubleshoot hook requests
+
+## automation/cron-jobs/gmail.md
+
+- Route: /automation/cron-jobs/gmail
+- Headings:
   - H2: Gmail PubSub integration
   - H3: Configure a restricted Gmail reader (recommended)
   - H3: Authenticate the reader model
@@ -88,10 +85,62 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway auto-start
   - H3: Manual one-time setup
   - H3: Gmail model override
+
+## automation/cron-jobs/how-it-works.md
+
+- Route: /automation/cron-jobs/how-it-works
+- Headings:
+  - H2: How automations work
+  - H2: Promoting a repeated job into an automation
+
+## automation/cron-jobs/managing-jobs.md
+
+- Route: /automation/cron-jobs/managing-jobs
+- Headings:
+  - H2: CLI examples
+  - H2: Managing jobs
+  - H3: Conversational management
+  - H3: CLI management
   - H2: Configuration
+
+## automation/cron-jobs/payloads.md
+
+- Route: /automation/cron-jobs/payloads
+- Headings:
+  - H2: Payloads
+  - H3: Agent-turn options
+  - H3: Command payloads
+  - H3: Script payloads
+  - H2: Execution styles
+  - H3: Codex apps in scheduled automations
+
+## automation/cron-jobs/schedules.md
+
+- Route: /automation/cron-jobs/schedules
+- Headings:
+  - H2: Schedule types
+  - H3: Heartbeat task migration
+  - H3: Stream sources
+  - H3: Dynamic cadence (pacing)
+  - H3: /loop chat shortcut
+  - H3: Day-of-month and day-of-week use OR logic
+  - H2: Event triggers (condition watchers)
+
+## automation/cron-jobs/troubleshooting.md
+
+- Route: /automation/cron-jobs/troubleshooting
+- Headings:
   - H2: Troubleshooting
   - H3: Command ladder
-  - H2: Related
+
+## automation/cron-jobs/webhooks.md
+
+- Route: /automation/cron-jobs/webhooks
+- Headings:
+  - H2: Webhooks
+  - H3: Enable and test an agent hook
+  - H3: Authentication
+  - H3: Verify and troubleshoot hook requests
 
 ## automation/hooks.md
 
