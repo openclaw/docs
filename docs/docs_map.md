@@ -8283,6 +8283,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Registration mode
   - H2: Plugin shapes
   - H2: Related
+  - H2: MCP subprocess runtime
 
 ## plugins/sdk-migration.md
 
