@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const script = fileURLToPath(new URL("./source-index.mjs", import.meta.url));
 
@@ -40,6 +40,61 @@ test("indexes a repository whose tracked-file list exceeds Node's default buffer
 
     const meta = JSON.parse(fs.readFileSync(path.join(root, "dist", "docs-site", "source-index-meta.json"), "utf8"));
     assert.equal(meta.filesConsidered, 14_000);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("fails the process when the source-index write stream flush errors", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-source-index-flush-"));
+  const source = path.join(root, "source");
+  fs.mkdirSync(path.join(source, "src"), { recursive: true });
+
+  try {
+    git(source, ["init"]);
+    for (let index = 0; index < 101; index += 1) {
+      fs.writeFileSync(
+        path.join(source, "src", `file-${String(index).padStart(3, "0")}.js`),
+        `export const value = ${index};\n`,
+      );
+    }
+    git(source, ["add", "."]);
+
+    const stub = path.join(root, "stub-flush-error.mjs");
+    fs.writeFileSync(
+      stub,
+      `import fs from "node:fs";
+const createWriteStream = fs.createWriteStream;
+fs.createWriteStream = function patchedCreateWriteStream(file, options) {
+  const stream = createWriteStream.call(this, file, options);
+  if (!String(file).includes("source-index.jsonl")) {
+    return stream;
+  }
+  stream.end = function end(cb) {
+    if (typeof cb === "function") {
+      cb(Object.assign(new Error("ENOSPC: mock flush"), { code: "ENOSPC" }));
+    }
+    return this;
+  };
+  return stream;
+};
+`,
+    );
+
+    const result = spawnSync(process.execPath, ["--import", pathToFileURL(stub).href, script], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DOCS_SOURCE_REPO_DIR: source,
+        DOCS_SOURCE_SHA: "test-sha",
+      },
+    });
+
+    assert.notEqual(result.status, 0, result.stdout + result.stderr);
+    assert.match(`${result.stderr}\n${result.stdout}`, /ENOSPC: mock flush/);
+    assert.doesNotMatch(result.stdout, /indexed \d+ source files/);
+    assert.equal(fs.existsSync(path.join(root, "dist", "docs-site", "source-index-meta.json")), false);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

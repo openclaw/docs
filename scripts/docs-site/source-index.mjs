@@ -127,7 +127,16 @@ for (const rel of files) {
   recordCount += 1;
 }
 
-await new Promise((resolve) => output.end(resolve));
+await new Promise((resolve, reject) => {
+  output.on("error", reject);
+  output.end((err) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve();
+  });
+});
 
 const meta = {
   repository: sourceMeta.repository ?? "openclaw/openclaw",
