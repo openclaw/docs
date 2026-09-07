@@ -4054,6 +4054,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H3: Headless and automation modes
+  - H2: Schema publication during a 2026.9.2 update
   - H2: Read-only lint mode
   - H2: What it does (summary)
   - H2: Dreams UI backfill and reset
