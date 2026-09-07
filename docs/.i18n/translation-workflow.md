@@ -71,6 +71,12 @@ payload/docs/.i18n/<locale>.tm.jsonl
 
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
+### MDX syntax recovery
+
+Before validating translated MDX, the locale worker runs a deterministic syntax repair over the pending manifest. It uses the same tolerant MDX parser as validation, preserving valid Markdown comments, code examples, and prose less-than signs. Parser-diagnosed markup damage can be repaired in at most 64 edits per page: mismatched closing tags for source-backed elements, non-self-closing void elements, and unquoted attributes. Every changed document must retain the source's element nesting and attribute names and forms. Unknown tags, missing or unmatched closers, unterminated comments, and broken JavaScript expressions are left for the existing repair path; an apparent tag may be a meaningful literal placeholder whose backticks were lost.
+
+The script prepares all repairs in memory before writing, and writes only pending locale pages. Pages containing JSX inside JavaScript expressions or attributes require the existing model repair because their element structure is outside the deterministic repair's scope. If any page cannot be repaired, none of the prepared repairs are written. The existing validation still runs after a failed attempt and selects the existing model repair when needed. Protected-attribute repair and shard publication checks remain mandatory; failed shards still produce empty artifacts for later reconciliation. No new model calls, relay rounds, canary controls, or partial-page publication are introduced.
+
 ## Aggregate commit
 
 The finalizer owns the only locale push in the normal path.

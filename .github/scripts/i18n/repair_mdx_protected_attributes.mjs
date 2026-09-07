@@ -44,7 +44,11 @@ function literalMarkdownRanges(markdownProcessor, source) {
 }
 
 function blankPreservingNewlines(value) {
-  return value.replace(/[^\n]/gu, " ");
+  // No `u` flag: matching per UTF-16 code unit (surrogate pairs become two
+  // spaces) keeps the masked string length-equal so parser offsets map back
+  // onto the original document. With `u`, an astral character would collapse
+  // to one space and shift every later diagnostic offset.
+  return value.replace(/[^\n]/g, " ");
 }
 
 function replaceWithOffsetMap(prepared, offsets, start, end, replacement) {
@@ -62,19 +66,39 @@ function replaceWithOffsetMap(prepared, offsets, start, end, replacement) {
 }
 
 function parseMdxForOffsets(processor, markdownProcessor, value) {
+  // Exported for repair_mdx_syntax.mjs: diagnostics come back with maskOffsets
+  // (prepared→original offset map) and maskedSource so callers can map error
+  // positions back onto the untouched document.
   let prepared = value;
   let offsets = Array.from({ length: value.length + 1 }, (_, index) => index);
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     try {
       return { tree: processor.parse(prepared), offsets };
     } catch (error) {
-      const offset = error.place?.offset;
-      if (!Number.isInteger(offset)) throw error;
+      // mdast-level diagnostics carry a Position (place.start/end) rather
+      // than a micromark Point; accept both so their offsets reach the
+      // masking logic below.
+      const offset = error.place?.start?.offset ?? error.place?.offset;
+      if (!Number.isInteger(offset)) {
+        // Every escape from this loop must carry the current mask state so
+        // callers can map diagnostic offsets back onto the real document.
+        error.maskOffsets = offsets;
+        error.maskedSource = prepared;
+        throw error;
+      }
       const opening = prepared.lastIndexOf("<", offset);
-      if (opening < 0 || prepared.slice(opening, offset).includes(">")) throw error;
+      if (opening < 0 || prepared.slice(opening, offset).includes(">")) {
+        error.maskOffsets = offsets;
+        error.maskedSource = prepared;
+        throw error;
+      }
       if (prepared.startsWith("<!--", opening)) {
         const closing = prepared.indexOf("-->", opening + 4);
-        if (closing < 0) throw error;
+        if (closing < 0) {
+          error.maskOffsets = offsets;
+          error.maskedSource = prepared;
+          throw error;
+        }
         ({ prepared, offsets } = replaceWithOffsetMap(
           prepared,
           offsets,
@@ -88,12 +112,18 @@ function parseMdxForOffsets(processor, markdownProcessor, value) {
       const literal = literalMarkdownRanges(markdownProcessor, prepared).some(
         ([start, end]) => opening >= start && opening < end,
       );
-      if (!literal && JSX_TAG_START_RE.test(prepared[opening + 1] || "")) throw error;
+      if (!literal && JSX_TAG_START_RE.test(prepared[opening + 1] || "")) {
+        error.maskOffsets = offsets;
+        error.maskedSource = prepared;
+        throw error;
+      }
       ({ prepared, offsets } = replaceWithOffsetMap(prepared, offsets, opening, opening + 1, "&lt;"));
     }
   }
   throw new Error("too many rejected non-MDX less-than tokens");
 }
+
+export { parseMdxForOffsets };
 
 function collectElements(parsed, value) {
   const { tree, offsets } = parsed;
@@ -264,8 +294,18 @@ function parseArgs(argv) {
   return values;
 }
 
+// The locale is joined into a writable path before any repository-relative
+// validation runs, so a value like ".." would let a repair write outside
+// docs/<locale>. Reject anything that is not one plain path segment.
+function assertSafeLocale(locale) {
+  if (!locale || locale === "." || locale === ".." || /[/\\\0]/u.test(locale)) {
+    throw new Error(`locale must be a single safe path segment: ${JSON.stringify(locale)}`);
+  }
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  assertSafeLocale(args.locale);
   const workspace = path.resolve(args.workspace);
   const docsRoot = path.join(workspace, "docs");
   const manifest = path.resolve(workspace, args.manifest);
