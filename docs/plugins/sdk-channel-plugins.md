@@ -646,6 +646,20 @@ Other approval helpers:
   ingress or poller for replay. `readApprovalReactionTargetRecord` validates the
   shared persisted fields; transport-specific route and author fields still need
   their own validation.
+- Use `formatChannelApprovalResolvedLabel` and
+  `buildSystemAgentApprovalResolvedText` from
+  `openclaw/plugin-sdk/approval-runtime` for terminal presentation.
+  Rich labels preserve application-status precedence; prose preserves denial
+  precedence, because a denied system change can also report `not-applied`.
+  Both prioritize cancellation. Pass a decision formatter for transport-specific
+  label spelling, and prepare any bounded operation summary before building prose.
+  Use `formatApprovalDecisionLabel` for a recorded decision without implying
+  application completion.
+- Approval account lookup helpers `resolveApprovalRequestAccountId` and
+  `resolveApprovalRequestChannelAccountId` use `approval-native-runtime`. Their
+  duplicate `approval-runtime` exports and its unused
+  `matchesApprovalRequestSessionFilter` export have been retired. The core
+  implementations are unchanged.
 - Use `createNativeApprovalChannelRouteGates` from
   `openclaw/plugin-sdk/approval-native-runtime` when a channel supports both
   session-origin native delivery and explicit approval forwarding targets. The
