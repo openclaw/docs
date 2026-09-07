@@ -1496,7 +1496,23 @@
                   },
                   "channels/msteams",
                   "channels/signal",
-                  "channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "channels/slack",
+                      "channels/slack/setup",
+                      "channels/slack/transports",
+                      "channels/slack/enterprise-grid",
+                      "channels/slack/manifest-and-scopes",
+                      "channels/slack/access-control",
+                      "channels/slack/threads-and-sessions",
+                      "channels/slack/messaging",
+                      "channels/slack/media",
+                      "channels/slack/rich-messages",
+                      "channels/slack/events",
+                      "channels/slack/troubleshooting"
+                    ]
+                  },
                   "channels/sms",
                   "channels/telegram",
                   "channels/whatsapp"
@@ -2761,7 +2777,23 @@
                   },
                   "zh-CN/channels/msteams",
                   "zh-CN/channels/signal",
-                  "zh-CN/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "zh-CN/channels/slack",
+                      "zh-CN/channels/slack/setup",
+                      "zh-CN/channels/slack/transports",
+                      "zh-CN/channels/slack/enterprise-grid",
+                      "zh-CN/channels/slack/manifest-and-scopes",
+                      "zh-CN/channels/slack/access-control",
+                      "zh-CN/channels/slack/threads-and-sessions",
+                      "zh-CN/channels/slack/messaging",
+                      "zh-CN/channels/slack/media",
+                      "zh-CN/channels/slack/rich-messages",
+                      "zh-CN/channels/slack/events",
+                      "zh-CN/channels/slack/troubleshooting"
+                    ]
+                  },
                   "zh-CN/channels/sms",
                   "zh-CN/channels/telegram",
                   "zh-CN/channels/whatsapp"
@@ -3992,7 +4024,23 @@
                   },
                   "zh-TW/channels/msteams",
                   "zh-TW/channels/signal",
-                  "zh-TW/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "zh-TW/channels/slack",
+                      "zh-TW/channels/slack/setup",
+                      "zh-TW/channels/slack/transports",
+                      "zh-TW/channels/slack/enterprise-grid",
+                      "zh-TW/channels/slack/manifest-and-scopes",
+                      "zh-TW/channels/slack/access-control",
+                      "zh-TW/channels/slack/threads-and-sessions",
+                      "zh-TW/channels/slack/messaging",
+                      "zh-TW/channels/slack/media",
+                      "zh-TW/channels/slack/rich-messages",
+                      "zh-TW/channels/slack/events",
+                      "zh-TW/channels/slack/troubleshooting"
+                    ]
+                  },
                   "zh-TW/channels/sms",
                   "zh-TW/channels/telegram",
                   "zh-TW/channels/whatsapp"
@@ -5223,7 +5271,23 @@
                   },
                   "ja-JP/channels/msteams",
                   "ja-JP/channels/signal",
-                  "ja-JP/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "ja-JP/channels/slack",
+                      "ja-JP/channels/slack/setup",
+                      "ja-JP/channels/slack/transports",
+                      "ja-JP/channels/slack/enterprise-grid",
+                      "ja-JP/channels/slack/manifest-and-scopes",
+                      "ja-JP/channels/slack/access-control",
+                      "ja-JP/channels/slack/threads-and-sessions",
+                      "ja-JP/channels/slack/messaging",
+                      "ja-JP/channels/slack/media",
+                      "ja-JP/channels/slack/rich-messages",
+                      "ja-JP/channels/slack/events",
+                      "ja-JP/channels/slack/troubleshooting"
+                    ]
+                  },
                   "ja-JP/channels/sms",
                   "ja-JP/channels/telegram",
                   "ja-JP/channels/whatsapp"
@@ -6454,7 +6518,23 @@
                   },
                   "es/channels/msteams",
                   "es/channels/signal",
-                  "es/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "es/channels/slack",
+                      "es/channels/slack/setup",
+                      "es/channels/slack/transports",
+                      "es/channels/slack/enterprise-grid",
+                      "es/channels/slack/manifest-and-scopes",
+                      "es/channels/slack/access-control",
+                      "es/channels/slack/threads-and-sessions",
+                      "es/channels/slack/messaging",
+                      "es/channels/slack/media",
+                      "es/channels/slack/rich-messages",
+                      "es/channels/slack/events",
+                      "es/channels/slack/troubleshooting"
+                    ]
+                  },
                   "es/channels/sms",
                   "es/channels/telegram",
                   "es/channels/whatsapp"
@@ -7685,7 +7765,23 @@
                   },
                   "pt-BR/channels/msteams",
                   "pt-BR/channels/signal",
-                  "pt-BR/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "pt-BR/channels/slack",
+                      "pt-BR/channels/slack/setup",
+                      "pt-BR/channels/slack/transports",
+                      "pt-BR/channels/slack/enterprise-grid",
+                      "pt-BR/channels/slack/manifest-and-scopes",
+                      "pt-BR/channels/slack/access-control",
+                      "pt-BR/channels/slack/threads-and-sessions",
+                      "pt-BR/channels/slack/messaging",
+                      "pt-BR/channels/slack/media",
+                      "pt-BR/channels/slack/rich-messages",
+                      "pt-BR/channels/slack/events",
+                      "pt-BR/channels/slack/troubleshooting"
+                    ]
+                  },
                   "pt-BR/channels/sms",
                   "pt-BR/channels/telegram",
                   "pt-BR/channels/whatsapp"
@@ -8916,7 +9012,23 @@
                   },
                   "ko/channels/msteams",
                   "ko/channels/signal",
-                  "ko/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "ko/channels/slack",
+                      "ko/channels/slack/setup",
+                      "ko/channels/slack/transports",
+                      "ko/channels/slack/enterprise-grid",
+                      "ko/channels/slack/manifest-and-scopes",
+                      "ko/channels/slack/access-control",
+                      "ko/channels/slack/threads-and-sessions",
+                      "ko/channels/slack/messaging",
+                      "ko/channels/slack/media",
+                      "ko/channels/slack/rich-messages",
+                      "ko/channels/slack/events",
+                      "ko/channels/slack/troubleshooting"
+                    ]
+                  },
                   "ko/channels/sms",
                   "ko/channels/telegram",
                   "ko/channels/whatsapp"
@@ -10147,7 +10259,23 @@
                   },
                   "de/channels/msteams",
                   "de/channels/signal",
-                  "de/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "de/channels/slack",
+                      "de/channels/slack/setup",
+                      "de/channels/slack/transports",
+                      "de/channels/slack/enterprise-grid",
+                      "de/channels/slack/manifest-and-scopes",
+                      "de/channels/slack/access-control",
+                      "de/channels/slack/threads-and-sessions",
+                      "de/channels/slack/messaging",
+                      "de/channels/slack/media",
+                      "de/channels/slack/rich-messages",
+                      "de/channels/slack/events",
+                      "de/channels/slack/troubleshooting"
+                    ]
+                  },
                   "de/channels/sms",
                   "de/channels/telegram",
                   "de/channels/whatsapp"
@@ -11378,7 +11506,23 @@
                   },
                   "fr/channels/msteams",
                   "fr/channels/signal",
-                  "fr/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "fr/channels/slack",
+                      "fr/channels/slack/setup",
+                      "fr/channels/slack/transports",
+                      "fr/channels/slack/enterprise-grid",
+                      "fr/channels/slack/manifest-and-scopes",
+                      "fr/channels/slack/access-control",
+                      "fr/channels/slack/threads-and-sessions",
+                      "fr/channels/slack/messaging",
+                      "fr/channels/slack/media",
+                      "fr/channels/slack/rich-messages",
+                      "fr/channels/slack/events",
+                      "fr/channels/slack/troubleshooting"
+                    ]
+                  },
                   "fr/channels/sms",
                   "fr/channels/telegram",
                   "fr/channels/whatsapp"
@@ -12609,7 +12753,23 @@
                   },
                   "hi/channels/msteams",
                   "hi/channels/signal",
-                  "hi/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "hi/channels/slack",
+                      "hi/channels/slack/setup",
+                      "hi/channels/slack/transports",
+                      "hi/channels/slack/enterprise-grid",
+                      "hi/channels/slack/manifest-and-scopes",
+                      "hi/channels/slack/access-control",
+                      "hi/channels/slack/threads-and-sessions",
+                      "hi/channels/slack/messaging",
+                      "hi/channels/slack/media",
+                      "hi/channels/slack/rich-messages",
+                      "hi/channels/slack/events",
+                      "hi/channels/slack/troubleshooting"
+                    ]
+                  },
                   "hi/channels/sms",
                   "hi/channels/telegram",
                   "hi/channels/whatsapp"
@@ -13840,7 +14000,23 @@
                   },
                   "ar/channels/msteams",
                   "ar/channels/signal",
-                  "ar/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "ar/channels/slack",
+                      "ar/channels/slack/setup",
+                      "ar/channels/slack/transports",
+                      "ar/channels/slack/enterprise-grid",
+                      "ar/channels/slack/manifest-and-scopes",
+                      "ar/channels/slack/access-control",
+                      "ar/channels/slack/threads-and-sessions",
+                      "ar/channels/slack/messaging",
+                      "ar/channels/slack/media",
+                      "ar/channels/slack/rich-messages",
+                      "ar/channels/slack/events",
+                      "ar/channels/slack/troubleshooting"
+                    ]
+                  },
                   "ar/channels/sms",
                   "ar/channels/telegram",
                   "ar/channels/whatsapp"
@@ -15071,7 +15247,23 @@
                   },
                   "it/channels/msteams",
                   "it/channels/signal",
-                  "it/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "it/channels/slack",
+                      "it/channels/slack/setup",
+                      "it/channels/slack/transports",
+                      "it/channels/slack/enterprise-grid",
+                      "it/channels/slack/manifest-and-scopes",
+                      "it/channels/slack/access-control",
+                      "it/channels/slack/threads-and-sessions",
+                      "it/channels/slack/messaging",
+                      "it/channels/slack/media",
+                      "it/channels/slack/rich-messages",
+                      "it/channels/slack/events",
+                      "it/channels/slack/troubleshooting"
+                    ]
+                  },
                   "it/channels/sms",
                   "it/channels/telegram",
                   "it/channels/whatsapp"
@@ -16302,7 +16494,23 @@
                   },
                   "vi/channels/msteams",
                   "vi/channels/signal",
-                  "vi/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "vi/channels/slack",
+                      "vi/channels/slack/setup",
+                      "vi/channels/slack/transports",
+                      "vi/channels/slack/enterprise-grid",
+                      "vi/channels/slack/manifest-and-scopes",
+                      "vi/channels/slack/access-control",
+                      "vi/channels/slack/threads-and-sessions",
+                      "vi/channels/slack/messaging",
+                      "vi/channels/slack/media",
+                      "vi/channels/slack/rich-messages",
+                      "vi/channels/slack/events",
+                      "vi/channels/slack/troubleshooting"
+                    ]
+                  },
                   "vi/channels/sms",
                   "vi/channels/telegram",
                   "vi/channels/whatsapp"
@@ -17533,7 +17741,23 @@
                   },
                   "nl/channels/msteams",
                   "nl/channels/signal",
-                  "nl/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "nl/channels/slack",
+                      "nl/channels/slack/setup",
+                      "nl/channels/slack/transports",
+                      "nl/channels/slack/enterprise-grid",
+                      "nl/channels/slack/manifest-and-scopes",
+                      "nl/channels/slack/access-control",
+                      "nl/channels/slack/threads-and-sessions",
+                      "nl/channels/slack/messaging",
+                      "nl/channels/slack/media",
+                      "nl/channels/slack/rich-messages",
+                      "nl/channels/slack/events",
+                      "nl/channels/slack/troubleshooting"
+                    ]
+                  },
                   "nl/channels/sms",
                   "nl/channels/telegram",
                   "nl/channels/whatsapp"
@@ -18764,7 +18988,23 @@
                   },
                   "tr/channels/msteams",
                   "tr/channels/signal",
-                  "tr/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "tr/channels/slack",
+                      "tr/channels/slack/setup",
+                      "tr/channels/slack/transports",
+                      "tr/channels/slack/enterprise-grid",
+                      "tr/channels/slack/manifest-and-scopes",
+                      "tr/channels/slack/access-control",
+                      "tr/channels/slack/threads-and-sessions",
+                      "tr/channels/slack/messaging",
+                      "tr/channels/slack/media",
+                      "tr/channels/slack/rich-messages",
+                      "tr/channels/slack/events",
+                      "tr/channels/slack/troubleshooting"
+                    ]
+                  },
                   "tr/channels/sms",
                   "tr/channels/telegram",
                   "tr/channels/whatsapp"
@@ -19995,7 +20235,23 @@
                   },
                   "uk/channels/msteams",
                   "uk/channels/signal",
-                  "uk/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "uk/channels/slack",
+                      "uk/channels/slack/setup",
+                      "uk/channels/slack/transports",
+                      "uk/channels/slack/enterprise-grid",
+                      "uk/channels/slack/manifest-and-scopes",
+                      "uk/channels/slack/access-control",
+                      "uk/channels/slack/threads-and-sessions",
+                      "uk/channels/slack/messaging",
+                      "uk/channels/slack/media",
+                      "uk/channels/slack/rich-messages",
+                      "uk/channels/slack/events",
+                      "uk/channels/slack/troubleshooting"
+                    ]
+                  },
                   "uk/channels/sms",
                   "uk/channels/telegram",
                   "uk/channels/whatsapp"
@@ -21226,7 +21482,23 @@
                   },
                   "id/channels/msteams",
                   "id/channels/signal",
-                  "id/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "id/channels/slack",
+                      "id/channels/slack/setup",
+                      "id/channels/slack/transports",
+                      "id/channels/slack/enterprise-grid",
+                      "id/channels/slack/manifest-and-scopes",
+                      "id/channels/slack/access-control",
+                      "id/channels/slack/threads-and-sessions",
+                      "id/channels/slack/messaging",
+                      "id/channels/slack/media",
+                      "id/channels/slack/rich-messages",
+                      "id/channels/slack/events",
+                      "id/channels/slack/troubleshooting"
+                    ]
+                  },
                   "id/channels/sms",
                   "id/channels/telegram",
                   "id/channels/whatsapp"
@@ -22457,7 +22729,23 @@
                   },
                   "pl/channels/msteams",
                   "pl/channels/signal",
-                  "pl/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "pl/channels/slack",
+                      "pl/channels/slack/setup",
+                      "pl/channels/slack/transports",
+                      "pl/channels/slack/enterprise-grid",
+                      "pl/channels/slack/manifest-and-scopes",
+                      "pl/channels/slack/access-control",
+                      "pl/channels/slack/threads-and-sessions",
+                      "pl/channels/slack/messaging",
+                      "pl/channels/slack/media",
+                      "pl/channels/slack/rich-messages",
+                      "pl/channels/slack/events",
+                      "pl/channels/slack/troubleshooting"
+                    ]
+                  },
                   "pl/channels/sms",
                   "pl/channels/telegram",
                   "pl/channels/whatsapp"
@@ -23688,7 +23976,23 @@
                   },
                   "ru/channels/msteams",
                   "ru/channels/signal",
-                  "ru/channels/slack",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "ru/channels/slack",
+                      "ru/channels/slack/setup",
+                      "ru/channels/slack/transports",
+                      "ru/channels/slack/enterprise-grid",
+                      "ru/channels/slack/manifest-and-scopes",
+                      "ru/channels/slack/access-control",
+                      "ru/channels/slack/threads-and-sessions",
+                      "ru/channels/slack/messaging",
+                      "ru/channels/slack/media",
+                      "ru/channels/slack/rich-messages",
+                      "ru/channels/slack/events",
+                      "ru/channels/slack/troubleshooting"
+                    ]
+                  },
                   "ru/channels/sms",
                   "ru/channels/telegram",
                   "ru/channels/whatsapp"

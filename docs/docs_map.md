@@ -930,39 +930,47 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/slack
 - Headings:
-  - H2: Choosing a transport
-  - H3: Relay mode
-  - H3: Enterprise Grid org-wide installs
-  - H4: Socket Mode
-  - H4: HTTP Request URLs
-  - H2: Install
-  - H2: Quick setup
-  - H2: User identity (post as a real person)
-  - H2: Socket Mode transport tuning
-  - H2: Manifest and scope checklist
-  - H3: Additional manifest settings
-  - H2: Token model
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Configuration reference
+  - H2: Related
+
+## channels/slack/access-control.md
+
+- Route: /channels/slack/access-control
+- Headings:
   - H2: Actions and gates
   - H2: Access control and routing
   - H3: Group DMs (MPDMs) and bots
-  - H2: Threading, sessions, and reply tags
-  - H3: Agent View DMs
-  - H2: Ack reactions
-  - H3: Emoji (ackReaction)
-  - H3: Scope (messages.ackReactionScope)
-  - H2: Text streaming
-  - H2: Typing reaction fallback
-  - H2: Voice input
-  - H2: Media, chunking, and delivery
-  - H2: Commands and slash behavior
-  - H2: Native charts
-  - H2: Native tables
-  - H2: Plugin-owned modal submissions
-  - H2: Native approvals in Slack
+
+## channels/slack/enterprise-grid.md
+
+- Route: /channels/slack/enterprise-grid
+- Headings:
+  - H2: Enterprise Grid org-wide installs
+  - H3: Socket Mode
+  - H3: HTTP Request URLs
+
+## channels/slack/events.md
+
+- Route: /channels/slack/events
+- Headings:
   - H2: Events and operational behavior
   - H3: Presence events
-  - H2: Configuration reference
-  - H2: Troubleshooting
+
+## channels/slack/manifest-and-scopes.md
+
+- Route: /channels/slack/manifest-and-scopes
+- Headings:
+  - H2: Manifest and scope checklist
+  - H3: Additional manifest settings
+
+## channels/slack/media.md
+
+- Route: /channels/slack/media
+- Headings:
+  - H2: Voice input
+  - H2: Media, chunking, and delivery
   - H2: Attachment media reference
   - H3: Supported media types
   - H3: Inbound pipeline
@@ -971,7 +979,56 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Size, download, and model limits
   - H3: Known limits
   - H3: Related documentation
-  - H2: Related
+
+## channels/slack/messaging.md
+
+- Route: /channels/slack/messaging
+- Headings:
+  - H2: Ack reactions
+  - H3: Emoji (ackReaction)
+  - H3: Scope (messages.ackReactionScope)
+  - H2: Text streaming
+  - H2: Typing reaction fallback
+  - H2: Commands and slash behavior
+
+## channels/slack/rich-messages.md
+
+- Route: /channels/slack/rich-messages
+- Headings:
+  - H2: Native charts
+  - H2: Native tables
+  - H2: Plugin-owned modal submissions
+  - H2: Native approvals in Slack
+
+## channels/slack/setup.md
+
+- Route: /channels/slack/setup
+- Headings:
+  - H2: Install
+  - H2: Quick setup
+  - H2: User identity (post as a real person)
+  - H2: Token model
+
+## channels/slack/threads-and-sessions.md
+
+- Route: /channels/slack/threads-and-sessions
+- Headings:
+  - H2: Threading, sessions, and reply tags
+  - H3: Agent View DMs
+
+## channels/slack/transports.md
+
+- Route: /channels/slack/transports
+- Headings:
+  - H2: Choosing a transport
+  - H3: Relay mode
+  - H2: Socket Mode transport tuning
+
+## channels/slack/troubleshooting.md
+
+- Route: /channels/slack/troubleshooting
+- Headings:
+  - H2: Troubleshooting
 
 ## channels/sms.md
 
