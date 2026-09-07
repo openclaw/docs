@@ -8329,6 +8329,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-entrypoints
 - Headings:
+  - H2: Tool policy vocabulary
   - H2: Package entries
   - H2: defineToolPlugin
   - H2: definePluginEntry
