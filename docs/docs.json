@@ -2446,6 +2446,19 @@
                   "plugins/sdk-subpaths",
                   "plugins/sdk-entrypoints",
                   "plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "plugins/sdk-runtime/config-and-utilities",
+                      "plugins/sdk-runtime/agent",
+                      "plugins/sdk-runtime/models",
+                      "plugins/sdk-runtime/background-work",
+                      "plugins/sdk-runtime/gateway-and-nodes",
+                      "plugins/sdk-runtime/media",
+                      "plugins/sdk-runtime/state-and-system",
+                      "plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "plugins/sdk-agent-harness",
                   "plugins/sdk-setup",
                   "plugins/sdk-testing"
@@ -3706,6 +3719,19 @@
                   "zh-CN/plugins/sdk-subpaths",
                   "zh-CN/plugins/sdk-entrypoints",
                   "zh-CN/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "zh-CN/plugins/sdk-runtime/config-and-utilities",
+                      "zh-CN/plugins/sdk-runtime/agent",
+                      "zh-CN/plugins/sdk-runtime/models",
+                      "zh-CN/plugins/sdk-runtime/background-work",
+                      "zh-CN/plugins/sdk-runtime/gateway-and-nodes",
+                      "zh-CN/plugins/sdk-runtime/media",
+                      "zh-CN/plugins/sdk-runtime/state-and-system",
+                      "zh-CN/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-agent-harness",
                   "zh-CN/plugins/sdk-setup",
                   "zh-CN/plugins/sdk-testing"
@@ -4966,6 +4992,19 @@
                   "zh-TW/plugins/sdk-subpaths",
                   "zh-TW/plugins/sdk-entrypoints",
                   "zh-TW/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "zh-TW/plugins/sdk-runtime/config-and-utilities",
+                      "zh-TW/plugins/sdk-runtime/agent",
+                      "zh-TW/plugins/sdk-runtime/models",
+                      "zh-TW/plugins/sdk-runtime/background-work",
+                      "zh-TW/plugins/sdk-runtime/gateway-and-nodes",
+                      "zh-TW/plugins/sdk-runtime/media",
+                      "zh-TW/plugins/sdk-runtime/state-and-system",
+                      "zh-TW/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-agent-harness",
                   "zh-TW/plugins/sdk-setup",
                   "zh-TW/plugins/sdk-testing"
@@ -6226,6 +6265,19 @@
                   "ja-JP/plugins/sdk-subpaths",
                   "ja-JP/plugins/sdk-entrypoints",
                   "ja-JP/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "ja-JP/plugins/sdk-runtime/config-and-utilities",
+                      "ja-JP/plugins/sdk-runtime/agent",
+                      "ja-JP/plugins/sdk-runtime/models",
+                      "ja-JP/plugins/sdk-runtime/background-work",
+                      "ja-JP/plugins/sdk-runtime/gateway-and-nodes",
+                      "ja-JP/plugins/sdk-runtime/media",
+                      "ja-JP/plugins/sdk-runtime/state-and-system",
+                      "ja-JP/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-agent-harness",
                   "ja-JP/plugins/sdk-setup",
                   "ja-JP/plugins/sdk-testing"
@@ -7486,6 +7538,19 @@
                   "es/plugins/sdk-subpaths",
                   "es/plugins/sdk-entrypoints",
                   "es/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "es/plugins/sdk-runtime/config-and-utilities",
+                      "es/plugins/sdk-runtime/agent",
+                      "es/plugins/sdk-runtime/models",
+                      "es/plugins/sdk-runtime/background-work",
+                      "es/plugins/sdk-runtime/gateway-and-nodes",
+                      "es/plugins/sdk-runtime/media",
+                      "es/plugins/sdk-runtime/state-and-system",
+                      "es/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "es/plugins/sdk-agent-harness",
                   "es/plugins/sdk-setup",
                   "es/plugins/sdk-testing"
@@ -8746,6 +8811,19 @@
                   "pt-BR/plugins/sdk-subpaths",
                   "pt-BR/plugins/sdk-entrypoints",
                   "pt-BR/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "pt-BR/plugins/sdk-runtime/config-and-utilities",
+                      "pt-BR/plugins/sdk-runtime/agent",
+                      "pt-BR/plugins/sdk-runtime/models",
+                      "pt-BR/plugins/sdk-runtime/background-work",
+                      "pt-BR/plugins/sdk-runtime/gateway-and-nodes",
+                      "pt-BR/plugins/sdk-runtime/media",
+                      "pt-BR/plugins/sdk-runtime/state-and-system",
+                      "pt-BR/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-agent-harness",
                   "pt-BR/plugins/sdk-setup",
                   "pt-BR/plugins/sdk-testing"
@@ -10006,6 +10084,19 @@
                   "ko/plugins/sdk-subpaths",
                   "ko/plugins/sdk-entrypoints",
                   "ko/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "ko/plugins/sdk-runtime/config-and-utilities",
+                      "ko/plugins/sdk-runtime/agent",
+                      "ko/plugins/sdk-runtime/models",
+                      "ko/plugins/sdk-runtime/background-work",
+                      "ko/plugins/sdk-runtime/gateway-and-nodes",
+                      "ko/plugins/sdk-runtime/media",
+                      "ko/plugins/sdk-runtime/state-and-system",
+                      "ko/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "ko/plugins/sdk-agent-harness",
                   "ko/plugins/sdk-setup",
                   "ko/plugins/sdk-testing"
@@ -11266,6 +11357,19 @@
                   "de/plugins/sdk-subpaths",
                   "de/plugins/sdk-entrypoints",
                   "de/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "de/plugins/sdk-runtime/config-and-utilities",
+                      "de/plugins/sdk-runtime/agent",
+                      "de/plugins/sdk-runtime/models",
+                      "de/plugins/sdk-runtime/background-work",
+                      "de/plugins/sdk-runtime/gateway-and-nodes",
+                      "de/plugins/sdk-runtime/media",
+                      "de/plugins/sdk-runtime/state-and-system",
+                      "de/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "de/plugins/sdk-agent-harness",
                   "de/plugins/sdk-setup",
                   "de/plugins/sdk-testing"
@@ -12526,6 +12630,19 @@
                   "fr/plugins/sdk-subpaths",
                   "fr/plugins/sdk-entrypoints",
                   "fr/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "fr/plugins/sdk-runtime/config-and-utilities",
+                      "fr/plugins/sdk-runtime/agent",
+                      "fr/plugins/sdk-runtime/models",
+                      "fr/plugins/sdk-runtime/background-work",
+                      "fr/plugins/sdk-runtime/gateway-and-nodes",
+                      "fr/plugins/sdk-runtime/media",
+                      "fr/plugins/sdk-runtime/state-and-system",
+                      "fr/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "fr/plugins/sdk-agent-harness",
                   "fr/plugins/sdk-setup",
                   "fr/plugins/sdk-testing"
@@ -13786,6 +13903,19 @@
                   "hi/plugins/sdk-subpaths",
                   "hi/plugins/sdk-entrypoints",
                   "hi/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "hi/plugins/sdk-runtime/config-and-utilities",
+                      "hi/plugins/sdk-runtime/agent",
+                      "hi/plugins/sdk-runtime/models",
+                      "hi/plugins/sdk-runtime/background-work",
+                      "hi/plugins/sdk-runtime/gateway-and-nodes",
+                      "hi/plugins/sdk-runtime/media",
+                      "hi/plugins/sdk-runtime/state-and-system",
+                      "hi/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "hi/plugins/sdk-agent-harness",
                   "hi/plugins/sdk-setup",
                   "hi/plugins/sdk-testing"
@@ -15046,6 +15176,19 @@
                   "ar/plugins/sdk-subpaths",
                   "ar/plugins/sdk-entrypoints",
                   "ar/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "ar/plugins/sdk-runtime/config-and-utilities",
+                      "ar/plugins/sdk-runtime/agent",
+                      "ar/plugins/sdk-runtime/models",
+                      "ar/plugins/sdk-runtime/background-work",
+                      "ar/plugins/sdk-runtime/gateway-and-nodes",
+                      "ar/plugins/sdk-runtime/media",
+                      "ar/plugins/sdk-runtime/state-and-system",
+                      "ar/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "ar/plugins/sdk-agent-harness",
                   "ar/plugins/sdk-setup",
                   "ar/plugins/sdk-testing"
@@ -16306,6 +16449,19 @@
                   "it/plugins/sdk-subpaths",
                   "it/plugins/sdk-entrypoints",
                   "it/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "it/plugins/sdk-runtime/config-and-utilities",
+                      "it/plugins/sdk-runtime/agent",
+                      "it/plugins/sdk-runtime/models",
+                      "it/plugins/sdk-runtime/background-work",
+                      "it/plugins/sdk-runtime/gateway-and-nodes",
+                      "it/plugins/sdk-runtime/media",
+                      "it/plugins/sdk-runtime/state-and-system",
+                      "it/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "it/plugins/sdk-agent-harness",
                   "it/plugins/sdk-setup",
                   "it/plugins/sdk-testing"
@@ -17566,6 +17722,19 @@
                   "vi/plugins/sdk-subpaths",
                   "vi/plugins/sdk-entrypoints",
                   "vi/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "vi/plugins/sdk-runtime/config-and-utilities",
+                      "vi/plugins/sdk-runtime/agent",
+                      "vi/plugins/sdk-runtime/models",
+                      "vi/plugins/sdk-runtime/background-work",
+                      "vi/plugins/sdk-runtime/gateway-and-nodes",
+                      "vi/plugins/sdk-runtime/media",
+                      "vi/plugins/sdk-runtime/state-and-system",
+                      "vi/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "vi/plugins/sdk-agent-harness",
                   "vi/plugins/sdk-setup",
                   "vi/plugins/sdk-testing"
@@ -18826,6 +18995,19 @@
                   "nl/plugins/sdk-subpaths",
                   "nl/plugins/sdk-entrypoints",
                   "nl/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "nl/plugins/sdk-runtime/config-and-utilities",
+                      "nl/plugins/sdk-runtime/agent",
+                      "nl/plugins/sdk-runtime/models",
+                      "nl/plugins/sdk-runtime/background-work",
+                      "nl/plugins/sdk-runtime/gateway-and-nodes",
+                      "nl/plugins/sdk-runtime/media",
+                      "nl/plugins/sdk-runtime/state-and-system",
+                      "nl/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "nl/plugins/sdk-agent-harness",
                   "nl/plugins/sdk-setup",
                   "nl/plugins/sdk-testing"
@@ -20086,6 +20268,19 @@
                   "tr/plugins/sdk-subpaths",
                   "tr/plugins/sdk-entrypoints",
                   "tr/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "tr/plugins/sdk-runtime/config-and-utilities",
+                      "tr/plugins/sdk-runtime/agent",
+                      "tr/plugins/sdk-runtime/models",
+                      "tr/plugins/sdk-runtime/background-work",
+                      "tr/plugins/sdk-runtime/gateway-and-nodes",
+                      "tr/plugins/sdk-runtime/media",
+                      "tr/plugins/sdk-runtime/state-and-system",
+                      "tr/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "tr/plugins/sdk-agent-harness",
                   "tr/plugins/sdk-setup",
                   "tr/plugins/sdk-testing"
@@ -21346,6 +21541,19 @@
                   "uk/plugins/sdk-subpaths",
                   "uk/plugins/sdk-entrypoints",
                   "uk/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "uk/plugins/sdk-runtime/config-and-utilities",
+                      "uk/plugins/sdk-runtime/agent",
+                      "uk/plugins/sdk-runtime/models",
+                      "uk/plugins/sdk-runtime/background-work",
+                      "uk/plugins/sdk-runtime/gateway-and-nodes",
+                      "uk/plugins/sdk-runtime/media",
+                      "uk/plugins/sdk-runtime/state-and-system",
+                      "uk/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "uk/plugins/sdk-agent-harness",
                   "uk/plugins/sdk-setup",
                   "uk/plugins/sdk-testing"
@@ -22606,6 +22814,19 @@
                   "id/plugins/sdk-subpaths",
                   "id/plugins/sdk-entrypoints",
                   "id/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "id/plugins/sdk-runtime/config-and-utilities",
+                      "id/plugins/sdk-runtime/agent",
+                      "id/plugins/sdk-runtime/models",
+                      "id/plugins/sdk-runtime/background-work",
+                      "id/plugins/sdk-runtime/gateway-and-nodes",
+                      "id/plugins/sdk-runtime/media",
+                      "id/plugins/sdk-runtime/state-and-system",
+                      "id/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "id/plugins/sdk-agent-harness",
                   "id/plugins/sdk-setup",
                   "id/plugins/sdk-testing"
@@ -23866,6 +24087,19 @@
                   "pl/plugins/sdk-subpaths",
                   "pl/plugins/sdk-entrypoints",
                   "pl/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "pl/plugins/sdk-runtime/config-and-utilities",
+                      "pl/plugins/sdk-runtime/agent",
+                      "pl/plugins/sdk-runtime/models",
+                      "pl/plugins/sdk-runtime/background-work",
+                      "pl/plugins/sdk-runtime/gateway-and-nodes",
+                      "pl/plugins/sdk-runtime/media",
+                      "pl/plugins/sdk-runtime/state-and-system",
+                      "pl/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "pl/plugins/sdk-agent-harness",
                   "pl/plugins/sdk-setup",
                   "pl/plugins/sdk-testing"
@@ -25126,6 +25360,19 @@
                   "ru/plugins/sdk-subpaths",
                   "ru/plugins/sdk-entrypoints",
                   "ru/plugins/sdk-runtime",
+                  {
+                    "group": "Plugin runtime helpers",
+                    "pages": [
+                      "ru/plugins/sdk-runtime/config-and-utilities",
+                      "ru/plugins/sdk-runtime/agent",
+                      "ru/plugins/sdk-runtime/models",
+                      "ru/plugins/sdk-runtime/background-work",
+                      "ru/plugins/sdk-runtime/gateway-and-nodes",
+                      "ru/plugins/sdk-runtime/media",
+                      "ru/plugins/sdk-runtime/state-and-system",
+                      "ru/plugins/sdk-runtime/channel"
+                    ]
+                  },
                   "ru/plugins/sdk-agent-harness",
                   "ru/plugins/sdk-setup",
                   "ru/plugins/sdk-testing"

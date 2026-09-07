@@ -8357,15 +8357,64 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime
 - Headings:
+  - H2: What each page covers
+  - H2: Runtime namespaces
+  - H2: Storing runtime references
+  - H2: Other top-level api fields
+  - H2: Where each section moved
+  - H2: Related
+
+## plugins/sdk-runtime/agent.md
+
+- Route: /plugins/sdk-runtime/agent
+- Headings:
+  - H2: Plugin command runtime helpers
+  - H2: Agent and session namespaces
+
+## plugins/sdk-runtime/background-work.md
+
+- Route: /plugins/sdk-runtime/background-work
+- Headings:
+  - H2: Background work namespaces
+
+## plugins/sdk-runtime/channel.md
+
+- Route: /plugins/sdk-runtime/channel
+- Headings:
+  - H2: Channel namespaces
+
+## plugins/sdk-runtime/config-and-utilities.md
+
+- Route: /plugins/sdk-runtime/config-and-utilities
+- Headings:
   - H2: Config loading and writes
   - H2: Reusable runtime utilities
   - H3: Stage timing diagnostics
-  - H2: Plugin command runtime helpers
-  - H2: Runtime namespaces
+
+## plugins/sdk-runtime/gateway-and-nodes.md
+
+- Route: /plugins/sdk-runtime/gateway-and-nodes
+- Headings:
+  - H2: Gateway and node namespaces
   - H2: Gateway service events
-  - H2: Storing runtime references
-  - H2: Other top-level api fields
-  - H2: Related
+
+## plugins/sdk-runtime/media.md
+
+- Route: /plugins/sdk-runtime/media
+- Headings:
+  - H2: Media and generation namespaces
+
+## plugins/sdk-runtime/models.md
+
+- Route: /plugins/sdk-runtime/models
+- Headings:
+  - H2: Model namespaces
+
+## plugins/sdk-runtime/state-and-system.md
+
+- Route: /plugins/sdk-runtime/state-and-system
+- Headings:
+  - H2: State, config, and system namespaces
 
 ## plugins/sdk-setup.md
 
@@ -10587,6 +10636,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser-control
 - Headings:
   - H2: Control API (optional)
+  - H3: Screencast stream
   - H3: /act error contract
   - H3: Playwright requirement
   - H4: Docker Playwright install
