@@ -12006,6 +12006,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H3: Enable is unavailable
   - H3: Browser permission is blocked
+  - H3: Permission is granted but the browser is not subscribed
   - H3: Service worker is not ready
   - H3: Web Push asks for a Doctor migration
   - H3: Tests arrive but approval requests do not
