@@ -6525,10 +6525,81 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest
 - Headings:
   - H2: What this file does
-  - H2: Native conversation discovery
+  - H2: Where each field is documented
+  - H3: Model fields
+  - H3: Provider fields
+  - H3: Setup and auth fields
+  - H3: Capability fields
+  - H3: Host surface fields
+  - H3: Config and secret fields
+  - H3: Manifest and package.json fields
   - H2: Minimal example
   - H2: Rich example
   - H2: Top-level field reference
+  - H2: JSON Schema requirements
+  - H2: Validation behavior
+  - H3: Capability catalogs
+  - H3: Configuration validation
+  - H2: Notes
+  - H2: Related
+
+## plugins/manifest/capabilities.md
+
+- Route: /plugins/manifest/capabilities
+- Headings:
+  - H2: contracts reference
+  - H2: Tool metadata reference
+  - H2: activation reference
+
+## plugins/manifest/config-and-secrets.md
+
+- Route: /plugins/manifest/config-and-secrets
+- Headings:
+  - H2: configContracts reference
+  - H2: secretProviderIntegrations reference
+
+## plugins/manifest/models.md
+
+- Route: /plugins/manifest/models
+- Headings:
+  - H2: modelSupport reference
+  - H2: modelCatalog reference
+  - H2: modelIdNormalization reference
+  - H2: modelPricing reference
+  - H3: OpenClaw Provider Index
+
+## plugins/manifest/package-json.md
+
+- Route: /plugins/manifest/package-json
+- Headings:
+  - H2: Manifest versus package.json
+  - H3: package.json fields that affect discovery
+  - H2: Discovery precedence (duplicate plugin ids)
+
+## plugins/manifest/providers.md
+
+- Route: /plugins/manifest/providers
+- Headings:
+  - H2: Generation provider metadata reference
+  - H2: mediaUnderstandingProviderMetadata reference
+  - H2: providerEndpoints reference
+  - H2: providerRequest reference
+
+## plugins/manifest/setup-and-auth.md
+
+- Route: /plugins/manifest/setup-and-auth
+- Headings:
+  - H2: Native conversation discovery
+  - H2: providerAuthChoices reference
+  - H2: setup reference
+  - H3: setup.providers reference
+  - H3: setup fields
+  - H2: uiHints reference
+
+## plugins/manifest/surfaces.md
+
+- Route: /plugins/manifest/surfaces
+- Headings:
   - H2: Plugin icon
   - H2: Transcript sources reference
   - H2: backupResources reference
@@ -6536,39 +6607,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: controlUi reference
   - H2: dashboard reference
   - H2: catalog reference
-  - H2: Generation provider metadata reference
-  - H2: Tool metadata reference
-  - H2: providerAuthChoices reference
   - H2: cliCommands reference
   - H2: commandAliases reference
-  - H2: activation reference
   - H2: qaRunners reference
-  - H2: setup reference
-  - H3: setup.providers reference
-  - H3: setup fields
-  - H2: uiHints reference
-  - H2: contracts reference
-  - H2: configContracts reference
-  - H2: mediaUnderstandingProviderMetadata reference
   - H2: channelConfigs reference
   - H3: Replacing another channel plugin
-  - H2: modelSupport reference
-  - H2: modelCatalog reference
-  - H2: modelIdNormalization reference
-  - H2: providerEndpoints reference
-  - H2: providerRequest reference
-  - H2: secretProviderIntegrations reference
-  - H2: modelPricing reference
-  - H3: OpenClaw Provider Index
-  - H2: Manifest versus package.json
-  - H3: package.json fields that affect discovery
-  - H2: Discovery precedence (duplicate plugin ids)
-  - H2: JSON Schema requirements
-  - H2: Validation behavior
-  - H3: Capability catalogs
-  - H3: Configuration validation
-  - H2: Notes
-  - H2: Related
 
 ## plugins/meeting-plugins.md
 

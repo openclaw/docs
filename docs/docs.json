@@ -2288,13 +2288,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "plugins/sdk-overview",
+                  "plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "plugins/manifest/models",
+                      "plugins/manifest/providers",
+                      "plugins/manifest/setup-and-auth",
+                      "plugins/manifest/capabilities",
+                      "plugins/manifest/surfaces",
+                      "plugins/manifest/config-and-secrets",
+                      "plugins/manifest/package-json"
+                    ]
+                  },
                   "plugins/sdk-subpaths",
                   "plugins/sdk-entrypoints",
                   "plugins/sdk-runtime",
                   "plugins/sdk-agent-harness",
                   "plugins/sdk-setup",
-                  "plugins/sdk-testing",
-                  "plugins/manifest"
+                  "plugins/sdk-testing"
                 ]
               },
               {
@@ -3480,13 +3492,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "zh-CN/plugins/sdk-overview",
+                  "zh-CN/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "zh-CN/plugins/manifest/models",
+                      "zh-CN/plugins/manifest/providers",
+                      "zh-CN/plugins/manifest/setup-and-auth",
+                      "zh-CN/plugins/manifest/capabilities",
+                      "zh-CN/plugins/manifest/surfaces",
+                      "zh-CN/plugins/manifest/config-and-secrets",
+                      "zh-CN/plugins/manifest/package-json"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-subpaths",
                   "zh-CN/plugins/sdk-entrypoints",
                   "zh-CN/plugins/sdk-runtime",
                   "zh-CN/plugins/sdk-agent-harness",
                   "zh-CN/plugins/sdk-setup",
-                  "zh-CN/plugins/sdk-testing",
-                  "zh-CN/plugins/manifest"
+                  "zh-CN/plugins/sdk-testing"
                 ]
               },
               {
@@ -4672,13 +4696,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "zh-TW/plugins/sdk-overview",
+                  "zh-TW/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "zh-TW/plugins/manifest/models",
+                      "zh-TW/plugins/manifest/providers",
+                      "zh-TW/plugins/manifest/setup-and-auth",
+                      "zh-TW/plugins/manifest/capabilities",
+                      "zh-TW/plugins/manifest/surfaces",
+                      "zh-TW/plugins/manifest/config-and-secrets",
+                      "zh-TW/plugins/manifest/package-json"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-subpaths",
                   "zh-TW/plugins/sdk-entrypoints",
                   "zh-TW/plugins/sdk-runtime",
                   "zh-TW/plugins/sdk-agent-harness",
                   "zh-TW/plugins/sdk-setup",
-                  "zh-TW/plugins/sdk-testing",
-                  "zh-TW/plugins/manifest"
+                  "zh-TW/plugins/sdk-testing"
                 ]
               },
               {
@@ -5864,13 +5900,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ja-JP/plugins/sdk-overview",
+                  "ja-JP/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "ja-JP/plugins/manifest/models",
+                      "ja-JP/plugins/manifest/providers",
+                      "ja-JP/plugins/manifest/setup-and-auth",
+                      "ja-JP/plugins/manifest/capabilities",
+                      "ja-JP/plugins/manifest/surfaces",
+                      "ja-JP/plugins/manifest/config-and-secrets",
+                      "ja-JP/plugins/manifest/package-json"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-subpaths",
                   "ja-JP/plugins/sdk-entrypoints",
                   "ja-JP/plugins/sdk-runtime",
                   "ja-JP/plugins/sdk-agent-harness",
                   "ja-JP/plugins/sdk-setup",
-                  "ja-JP/plugins/sdk-testing",
-                  "ja-JP/plugins/manifest"
+                  "ja-JP/plugins/sdk-testing"
                 ]
               },
               {
@@ -7056,13 +7104,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "es/plugins/sdk-overview",
+                  "es/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "es/plugins/manifest/models",
+                      "es/plugins/manifest/providers",
+                      "es/plugins/manifest/setup-and-auth",
+                      "es/plugins/manifest/capabilities",
+                      "es/plugins/manifest/surfaces",
+                      "es/plugins/manifest/config-and-secrets",
+                      "es/plugins/manifest/package-json"
+                    ]
+                  },
                   "es/plugins/sdk-subpaths",
                   "es/plugins/sdk-entrypoints",
                   "es/plugins/sdk-runtime",
                   "es/plugins/sdk-agent-harness",
                   "es/plugins/sdk-setup",
-                  "es/plugins/sdk-testing",
-                  "es/plugins/manifest"
+                  "es/plugins/sdk-testing"
                 ]
               },
               {
@@ -8248,13 +8308,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "pt-BR/plugins/sdk-overview",
+                  "pt-BR/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "pt-BR/plugins/manifest/models",
+                      "pt-BR/plugins/manifest/providers",
+                      "pt-BR/plugins/manifest/setup-and-auth",
+                      "pt-BR/plugins/manifest/capabilities",
+                      "pt-BR/plugins/manifest/surfaces",
+                      "pt-BR/plugins/manifest/config-and-secrets",
+                      "pt-BR/plugins/manifest/package-json"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-subpaths",
                   "pt-BR/plugins/sdk-entrypoints",
                   "pt-BR/plugins/sdk-runtime",
                   "pt-BR/plugins/sdk-agent-harness",
                   "pt-BR/plugins/sdk-setup",
-                  "pt-BR/plugins/sdk-testing",
-                  "pt-BR/plugins/manifest"
+                  "pt-BR/plugins/sdk-testing"
                 ]
               },
               {
@@ -9440,13 +9512,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ko/plugins/sdk-overview",
+                  "ko/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "ko/plugins/manifest/models",
+                      "ko/plugins/manifest/providers",
+                      "ko/plugins/manifest/setup-and-auth",
+                      "ko/plugins/manifest/capabilities",
+                      "ko/plugins/manifest/surfaces",
+                      "ko/plugins/manifest/config-and-secrets",
+                      "ko/plugins/manifest/package-json"
+                    ]
+                  },
                   "ko/plugins/sdk-subpaths",
                   "ko/plugins/sdk-entrypoints",
                   "ko/plugins/sdk-runtime",
                   "ko/plugins/sdk-agent-harness",
                   "ko/plugins/sdk-setup",
-                  "ko/plugins/sdk-testing",
-                  "ko/plugins/manifest"
+                  "ko/plugins/sdk-testing"
                 ]
               },
               {
@@ -10632,13 +10716,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "de/plugins/sdk-overview",
+                  "de/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "de/plugins/manifest/models",
+                      "de/plugins/manifest/providers",
+                      "de/plugins/manifest/setup-and-auth",
+                      "de/plugins/manifest/capabilities",
+                      "de/plugins/manifest/surfaces",
+                      "de/plugins/manifest/config-and-secrets",
+                      "de/plugins/manifest/package-json"
+                    ]
+                  },
                   "de/plugins/sdk-subpaths",
                   "de/plugins/sdk-entrypoints",
                   "de/plugins/sdk-runtime",
                   "de/plugins/sdk-agent-harness",
                   "de/plugins/sdk-setup",
-                  "de/plugins/sdk-testing",
-                  "de/plugins/manifest"
+                  "de/plugins/sdk-testing"
                 ]
               },
               {
@@ -11824,13 +11920,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "fr/plugins/sdk-overview",
+                  "fr/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "fr/plugins/manifest/models",
+                      "fr/plugins/manifest/providers",
+                      "fr/plugins/manifest/setup-and-auth",
+                      "fr/plugins/manifest/capabilities",
+                      "fr/plugins/manifest/surfaces",
+                      "fr/plugins/manifest/config-and-secrets",
+                      "fr/plugins/manifest/package-json"
+                    ]
+                  },
                   "fr/plugins/sdk-subpaths",
                   "fr/plugins/sdk-entrypoints",
                   "fr/plugins/sdk-runtime",
                   "fr/plugins/sdk-agent-harness",
                   "fr/plugins/sdk-setup",
-                  "fr/plugins/sdk-testing",
-                  "fr/plugins/manifest"
+                  "fr/plugins/sdk-testing"
                 ]
               },
               {
@@ -13016,13 +13124,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "hi/plugins/sdk-overview",
+                  "hi/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "hi/plugins/manifest/models",
+                      "hi/plugins/manifest/providers",
+                      "hi/plugins/manifest/setup-and-auth",
+                      "hi/plugins/manifest/capabilities",
+                      "hi/plugins/manifest/surfaces",
+                      "hi/plugins/manifest/config-and-secrets",
+                      "hi/plugins/manifest/package-json"
+                    ]
+                  },
                   "hi/plugins/sdk-subpaths",
                   "hi/plugins/sdk-entrypoints",
                   "hi/plugins/sdk-runtime",
                   "hi/plugins/sdk-agent-harness",
                   "hi/plugins/sdk-setup",
-                  "hi/plugins/sdk-testing",
-                  "hi/plugins/manifest"
+                  "hi/plugins/sdk-testing"
                 ]
               },
               {
@@ -14208,13 +14328,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ar/plugins/sdk-overview",
+                  "ar/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "ar/plugins/manifest/models",
+                      "ar/plugins/manifest/providers",
+                      "ar/plugins/manifest/setup-and-auth",
+                      "ar/plugins/manifest/capabilities",
+                      "ar/plugins/manifest/surfaces",
+                      "ar/plugins/manifest/config-and-secrets",
+                      "ar/plugins/manifest/package-json"
+                    ]
+                  },
                   "ar/plugins/sdk-subpaths",
                   "ar/plugins/sdk-entrypoints",
                   "ar/plugins/sdk-runtime",
                   "ar/plugins/sdk-agent-harness",
                   "ar/plugins/sdk-setup",
-                  "ar/plugins/sdk-testing",
-                  "ar/plugins/manifest"
+                  "ar/plugins/sdk-testing"
                 ]
               },
               {
@@ -15400,13 +15532,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "it/plugins/sdk-overview",
+                  "it/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "it/plugins/manifest/models",
+                      "it/plugins/manifest/providers",
+                      "it/plugins/manifest/setup-and-auth",
+                      "it/plugins/manifest/capabilities",
+                      "it/plugins/manifest/surfaces",
+                      "it/plugins/manifest/config-and-secrets",
+                      "it/plugins/manifest/package-json"
+                    ]
+                  },
                   "it/plugins/sdk-subpaths",
                   "it/plugins/sdk-entrypoints",
                   "it/plugins/sdk-runtime",
                   "it/plugins/sdk-agent-harness",
                   "it/plugins/sdk-setup",
-                  "it/plugins/sdk-testing",
-                  "it/plugins/manifest"
+                  "it/plugins/sdk-testing"
                 ]
               },
               {
@@ -16592,13 +16736,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "vi/plugins/sdk-overview",
+                  "vi/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "vi/plugins/manifest/models",
+                      "vi/plugins/manifest/providers",
+                      "vi/plugins/manifest/setup-and-auth",
+                      "vi/plugins/manifest/capabilities",
+                      "vi/plugins/manifest/surfaces",
+                      "vi/plugins/manifest/config-and-secrets",
+                      "vi/plugins/manifest/package-json"
+                    ]
+                  },
                   "vi/plugins/sdk-subpaths",
                   "vi/plugins/sdk-entrypoints",
                   "vi/plugins/sdk-runtime",
                   "vi/plugins/sdk-agent-harness",
                   "vi/plugins/sdk-setup",
-                  "vi/plugins/sdk-testing",
-                  "vi/plugins/manifest"
+                  "vi/plugins/sdk-testing"
                 ]
               },
               {
@@ -17784,13 +17940,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "nl/plugins/sdk-overview",
+                  "nl/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "nl/plugins/manifest/models",
+                      "nl/plugins/manifest/providers",
+                      "nl/plugins/manifest/setup-and-auth",
+                      "nl/plugins/manifest/capabilities",
+                      "nl/plugins/manifest/surfaces",
+                      "nl/plugins/manifest/config-and-secrets",
+                      "nl/plugins/manifest/package-json"
+                    ]
+                  },
                   "nl/plugins/sdk-subpaths",
                   "nl/plugins/sdk-entrypoints",
                   "nl/plugins/sdk-runtime",
                   "nl/plugins/sdk-agent-harness",
                   "nl/plugins/sdk-setup",
-                  "nl/plugins/sdk-testing",
-                  "nl/plugins/manifest"
+                  "nl/plugins/sdk-testing"
                 ]
               },
               {
@@ -18976,13 +19144,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "tr/plugins/sdk-overview",
+                  "tr/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "tr/plugins/manifest/models",
+                      "tr/plugins/manifest/providers",
+                      "tr/plugins/manifest/setup-and-auth",
+                      "tr/plugins/manifest/capabilities",
+                      "tr/plugins/manifest/surfaces",
+                      "tr/plugins/manifest/config-and-secrets",
+                      "tr/plugins/manifest/package-json"
+                    ]
+                  },
                   "tr/plugins/sdk-subpaths",
                   "tr/plugins/sdk-entrypoints",
                   "tr/plugins/sdk-runtime",
                   "tr/plugins/sdk-agent-harness",
                   "tr/plugins/sdk-setup",
-                  "tr/plugins/sdk-testing",
-                  "tr/plugins/manifest"
+                  "tr/plugins/sdk-testing"
                 ]
               },
               {
@@ -20168,13 +20348,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "uk/plugins/sdk-overview",
+                  "uk/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "uk/plugins/manifest/models",
+                      "uk/plugins/manifest/providers",
+                      "uk/plugins/manifest/setup-and-auth",
+                      "uk/plugins/manifest/capabilities",
+                      "uk/plugins/manifest/surfaces",
+                      "uk/plugins/manifest/config-and-secrets",
+                      "uk/plugins/manifest/package-json"
+                    ]
+                  },
                   "uk/plugins/sdk-subpaths",
                   "uk/plugins/sdk-entrypoints",
                   "uk/plugins/sdk-runtime",
                   "uk/plugins/sdk-agent-harness",
                   "uk/plugins/sdk-setup",
-                  "uk/plugins/sdk-testing",
-                  "uk/plugins/manifest"
+                  "uk/plugins/sdk-testing"
                 ]
               },
               {
@@ -21360,13 +21552,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "id/plugins/sdk-overview",
+                  "id/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "id/plugins/manifest/models",
+                      "id/plugins/manifest/providers",
+                      "id/plugins/manifest/setup-and-auth",
+                      "id/plugins/manifest/capabilities",
+                      "id/plugins/manifest/surfaces",
+                      "id/plugins/manifest/config-and-secrets",
+                      "id/plugins/manifest/package-json"
+                    ]
+                  },
                   "id/plugins/sdk-subpaths",
                   "id/plugins/sdk-entrypoints",
                   "id/plugins/sdk-runtime",
                   "id/plugins/sdk-agent-harness",
                   "id/plugins/sdk-setup",
-                  "id/plugins/sdk-testing",
-                  "id/plugins/manifest"
+                  "id/plugins/sdk-testing"
                 ]
               },
               {
@@ -22552,13 +22756,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "pl/plugins/sdk-overview",
+                  "pl/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "pl/plugins/manifest/models",
+                      "pl/plugins/manifest/providers",
+                      "pl/plugins/manifest/setup-and-auth",
+                      "pl/plugins/manifest/capabilities",
+                      "pl/plugins/manifest/surfaces",
+                      "pl/plugins/manifest/config-and-secrets",
+                      "pl/plugins/manifest/package-json"
+                    ]
+                  },
                   "pl/plugins/sdk-subpaths",
                   "pl/plugins/sdk-entrypoints",
                   "pl/plugins/sdk-runtime",
                   "pl/plugins/sdk-agent-harness",
                   "pl/plugins/sdk-setup",
-                  "pl/plugins/sdk-testing",
-                  "pl/plugins/manifest"
+                  "pl/plugins/sdk-testing"
                 ]
               },
               {
@@ -23744,13 +23960,25 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ru/plugins/sdk-overview",
+                  "ru/plugins/manifest",
+                  {
+                    "group": "Plugin manifest",
+                    "pages": [
+                      "ru/plugins/manifest/models",
+                      "ru/plugins/manifest/providers",
+                      "ru/plugins/manifest/setup-and-auth",
+                      "ru/plugins/manifest/capabilities",
+                      "ru/plugins/manifest/surfaces",
+                      "ru/plugins/manifest/config-and-secrets",
+                      "ru/plugins/manifest/package-json"
+                    ]
+                  },
                   "ru/plugins/sdk-subpaths",
                   "ru/plugins/sdk-entrypoints",
                   "ru/plugins/sdk-runtime",
                   "ru/plugins/sdk-agent-harness",
                   "ru/plugins/sdk-setup",
-                  "ru/plugins/sdk-testing",
-                  "ru/plugins/manifest"
+                  "ru/plugins/sdk-testing"
                 ]
               },
               {
