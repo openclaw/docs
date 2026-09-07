@@ -567,10 +567,13 @@ function icon(name) {
 }
 
 function navGroupHtml(activePage, group) {
-  return `<section class="nav-section"><h2>${escapeHtml(group.title)}</h2>${group.pages.map((entry) => {
-    if (entry.group) return `<div class="nav-nested"><h2>${escapeHtml(entry.group)}</h2>${entry.pages.map((page) => navLink(activePage, page)).join("")}</div>`;
-    return navLink(activePage, entry);
-  }).join("")}</section>`;
+  return `<section class="nav-section"><h2>${escapeHtml(group.title)}</h2>${group.pages.map((entry) => navEntryHtml(activePage, entry)).join("")}</section>`;
+}
+
+function navEntryHtml(activePage, entry) {
+  return entry.group
+    ? `<div class="nav-nested"><h2>${escapeHtml(entry.group)}</h2>${entry.pages.map((child) => navEntryHtml(activePage, child)).join("")}</div>`
+    : navLink(activePage, entry);
 }
 
 function navLink(activePage, page) {
@@ -919,7 +922,7 @@ function activeTabTitle(nav, slug) {
 function groupForPage(nav, slug) {
   for (const tab of nav) {
     for (const group of tab.groups) {
-      if (group.pages.some((entry) => entry.group ? entry.pages.some((page) => page.slug === slug) : entry.slug === slug)) {
+      if (flattenNavEntries(group.pages).some((page) => page.slug === slug)) {
         return group.title;
       }
     }
@@ -935,10 +938,7 @@ function flattenNav(nav) {
 }
 
 function firstPage(tab) {
-  for (const group of tab.groups) {
-    for (const entry of group.pages) return entry.group ? entry.pages[0] : entry;
-  }
-  return pages[0];
+  return flattenNav([tab])[0] ?? pages[0];
 }
 
 function localeUrlForSlug(locale, slug) {

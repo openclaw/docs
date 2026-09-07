@@ -46,6 +46,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
+- Navigation groups can nest recursively; sidebar links, section metadata, and desktop/mobile tab targets resolve to descendant pages at every depth.
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
