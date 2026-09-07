@@ -8076,6 +8076,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Harness attempt result migration
   - H3: Model-provider result compatibility
   - H3: Memory read missing results
+  - H3: Config record migrations
   - H3: Plugin state migration declarations
   - H3: AuthStorage SQLite migration
   - H3: Published channel setup compatibility
