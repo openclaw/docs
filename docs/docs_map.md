@@ -9151,6 +9151,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Streaming usage compatibility
   - H3: Thinking compatibility
   - H3: Explicit configuration
+  - H3: Model instances and context
   - H3: Disabling preload
   - H3: LAN or tailnet host
   - H2: Troubleshooting
