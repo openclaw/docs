@@ -8139,6 +8139,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Config loading and writes
   - H2: Reusable runtime utilities
+  - H3: Stage timing diagnostics
   - H2: Plugin command runtime helpers
   - H2: Runtime namespaces
   - H2: Gateway service events
