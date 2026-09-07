@@ -4202,6 +4202,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: File-based logger
   - H3: Verbose vs. log levels
   - H3: SQLite session writes
+  - H3: Slow agent database opens
   - H3: Slow cron list pages
   - H2: Console capture
   - H2: Redaction
