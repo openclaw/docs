@@ -3812,6 +3812,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Chat command
   - H2: What the export contains
   - H2: Privacy model
+  - H2: WebSocket disconnect logs
   - H2: Stability recorder
   - H2: Useful options
   - H2: Disable diagnostics
