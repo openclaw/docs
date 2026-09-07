@@ -1424,6 +1424,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Dependency Audit
   - H3: Docs Agent
   - H3: Duplicate PRs After Merge
+  - H3: Update Migration
   - H2: ClawSweeper activity forwarding
   - H2: Related
 
