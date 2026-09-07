@@ -4263,38 +4263,80 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/protocol
 - Headings:
-  - H2: npm packages
-  - H2: Transport and framing
-  - H2: Gateway-controlled WebRTC Talk
+  - H2: Scope
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/protocol/auth.md
+
+- Route: /gateway/protocol/auth
+- Headings:
+  - H2: Auth
+  - H2: Device identity and pairing
+  - H3: Device auth migration diagnostics
+  - H2: TLS and pinning
+
+## gateway/protocol/handshake.md
+
+- Route: /gateway/protocol/handshake
+- Headings:
   - H2: Handshake
   - H3: Worker role and closed protocol
   - H3: Client capabilities
   - H3: Node connect example
   - H2: Roles and scopes
   - H3: Caps/commands/permissions (node)
+
+## gateway/protocol/ledgers.md
+
+- Route: /gateway/protocol/ledgers
+- Headings:
+  - H2: Audit ledger RPC
+  - H2: Task ledger RPCs
+
+## gateway/protocol/operator-methods.md
+
+- Route: /gateway/protocol/operator-methods
+- Headings:
+  - H2: Operator helper methods
+  - H3: models.list views
+  - H2: Exec approvals
+  - H2: Agent delivery fallback
+
+## gateway/protocol/presence.md
+
+- Route: /gateway/protocol/presence
+- Headings:
   - H2: Presence
   - H3: Node host stats
   - H3: Node background alive event
   - H2: Broadcast event scoping
+
+## gateway/protocol/rpc-methods.md
+
+- Route: /gateway/protocol/rpc-methods
+- Headings:
   - H2: RPC method families
   - H3: Session list bootstrap
   - H3: Common event families
   - H3: Node helper methods
   - H3: Node exec lifecycle events
-  - H2: Audit ledger RPC
-  - H2: Task ledger RPCs
-  - H2: Operator helper methods
-  - H3: models.list views
-  - H2: Exec approvals
-  - H2: Agent delivery fallback
+
+## gateway/protocol/transport.md
+
+- Route: /gateway/protocol/transport
+- Headings:
+  - H2: npm packages
+  - H2: Transport and framing
+  - H2: Gateway-controlled WebRTC Talk
+
+## gateway/protocol/versioning.md
+
+- Route: /gateway/protocol/versioning
+- Headings:
   - H2: Versioning
   - H3: Client constants
-  - H2: Auth
-  - H2: Device identity and pairing
-  - H3: Device auth migration diagnostics
-  - H2: TLS and pinning
-  - H2: Scope
-  - H2: Related
 
 ## gateway/remote.md
 

@@ -2132,6 +2132,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "gateway/protocol/transport",
+                          "gateway/protocol/handshake",
+                          "gateway/protocol/presence",
+                          "gateway/protocol/rpc-methods",
+                          "gateway/protocol/ledgers",
+                          "gateway/protocol/operator-methods",
+                          "gateway/protocol/versioning",
+                          "gateway/protocol/auth"
+                        ]
+                      },
                       "gateway/clients",
                       "gateway/embedding",
                       "gateway/openai-http-api",
@@ -3350,6 +3363,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "zh-CN/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "zh-CN/gateway/protocol/transport",
+                          "zh-CN/gateway/protocol/handshake",
+                          "zh-CN/gateway/protocol/presence",
+                          "zh-CN/gateway/protocol/rpc-methods",
+                          "zh-CN/gateway/protocol/ledgers",
+                          "zh-CN/gateway/protocol/operator-methods",
+                          "zh-CN/gateway/protocol/versioning",
+                          "zh-CN/gateway/protocol/auth"
+                        ]
+                      },
                       "zh-CN/gateway/clients",
                       "zh-CN/gateway/embedding",
                       "zh-CN/gateway/openai-http-api",
@@ -4568,6 +4594,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "zh-TW/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "zh-TW/gateway/protocol/transport",
+                          "zh-TW/gateway/protocol/handshake",
+                          "zh-TW/gateway/protocol/presence",
+                          "zh-TW/gateway/protocol/rpc-methods",
+                          "zh-TW/gateway/protocol/ledgers",
+                          "zh-TW/gateway/protocol/operator-methods",
+                          "zh-TW/gateway/protocol/versioning",
+                          "zh-TW/gateway/protocol/auth"
+                        ]
+                      },
                       "zh-TW/gateway/clients",
                       "zh-TW/gateway/embedding",
                       "zh-TW/gateway/openai-http-api",
@@ -5786,6 +5825,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ja-JP/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "ja-JP/gateway/protocol/transport",
+                          "ja-JP/gateway/protocol/handshake",
+                          "ja-JP/gateway/protocol/presence",
+                          "ja-JP/gateway/protocol/rpc-methods",
+                          "ja-JP/gateway/protocol/ledgers",
+                          "ja-JP/gateway/protocol/operator-methods",
+                          "ja-JP/gateway/protocol/versioning",
+                          "ja-JP/gateway/protocol/auth"
+                        ]
+                      },
                       "ja-JP/gateway/clients",
                       "ja-JP/gateway/embedding",
                       "ja-JP/gateway/openai-http-api",
@@ -7004,6 +7056,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "es/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "es/gateway/protocol/transport",
+                          "es/gateway/protocol/handshake",
+                          "es/gateway/protocol/presence",
+                          "es/gateway/protocol/rpc-methods",
+                          "es/gateway/protocol/ledgers",
+                          "es/gateway/protocol/operator-methods",
+                          "es/gateway/protocol/versioning",
+                          "es/gateway/protocol/auth"
+                        ]
+                      },
                       "es/gateway/clients",
                       "es/gateway/embedding",
                       "es/gateway/openai-http-api",
@@ -8222,6 +8287,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "pt-BR/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "pt-BR/gateway/protocol/transport",
+                          "pt-BR/gateway/protocol/handshake",
+                          "pt-BR/gateway/protocol/presence",
+                          "pt-BR/gateway/protocol/rpc-methods",
+                          "pt-BR/gateway/protocol/ledgers",
+                          "pt-BR/gateway/protocol/operator-methods",
+                          "pt-BR/gateway/protocol/versioning",
+                          "pt-BR/gateway/protocol/auth"
+                        ]
+                      },
                       "pt-BR/gateway/clients",
                       "pt-BR/gateway/embedding",
                       "pt-BR/gateway/openai-http-api",
@@ -9440,6 +9518,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ko/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "ko/gateway/protocol/transport",
+                          "ko/gateway/protocol/handshake",
+                          "ko/gateway/protocol/presence",
+                          "ko/gateway/protocol/rpc-methods",
+                          "ko/gateway/protocol/ledgers",
+                          "ko/gateway/protocol/operator-methods",
+                          "ko/gateway/protocol/versioning",
+                          "ko/gateway/protocol/auth"
+                        ]
+                      },
                       "ko/gateway/clients",
                       "ko/gateway/embedding",
                       "ko/gateway/openai-http-api",
@@ -10658,6 +10749,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "de/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "de/gateway/protocol/transport",
+                          "de/gateway/protocol/handshake",
+                          "de/gateway/protocol/presence",
+                          "de/gateway/protocol/rpc-methods",
+                          "de/gateway/protocol/ledgers",
+                          "de/gateway/protocol/operator-methods",
+                          "de/gateway/protocol/versioning",
+                          "de/gateway/protocol/auth"
+                        ]
+                      },
                       "de/gateway/clients",
                       "de/gateway/embedding",
                       "de/gateway/openai-http-api",
@@ -11876,6 +11980,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "fr/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "fr/gateway/protocol/transport",
+                          "fr/gateway/protocol/handshake",
+                          "fr/gateway/protocol/presence",
+                          "fr/gateway/protocol/rpc-methods",
+                          "fr/gateway/protocol/ledgers",
+                          "fr/gateway/protocol/operator-methods",
+                          "fr/gateway/protocol/versioning",
+                          "fr/gateway/protocol/auth"
+                        ]
+                      },
                       "fr/gateway/clients",
                       "fr/gateway/embedding",
                       "fr/gateway/openai-http-api",
@@ -13094,6 +13211,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "hi/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "hi/gateway/protocol/transport",
+                          "hi/gateway/protocol/handshake",
+                          "hi/gateway/protocol/presence",
+                          "hi/gateway/protocol/rpc-methods",
+                          "hi/gateway/protocol/ledgers",
+                          "hi/gateway/protocol/operator-methods",
+                          "hi/gateway/protocol/versioning",
+                          "hi/gateway/protocol/auth"
+                        ]
+                      },
                       "hi/gateway/clients",
                       "hi/gateway/embedding",
                       "hi/gateway/openai-http-api",
@@ -14312,6 +14442,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ar/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "ar/gateway/protocol/transport",
+                          "ar/gateway/protocol/handshake",
+                          "ar/gateway/protocol/presence",
+                          "ar/gateway/protocol/rpc-methods",
+                          "ar/gateway/protocol/ledgers",
+                          "ar/gateway/protocol/operator-methods",
+                          "ar/gateway/protocol/versioning",
+                          "ar/gateway/protocol/auth"
+                        ]
+                      },
                       "ar/gateway/clients",
                       "ar/gateway/embedding",
                       "ar/gateway/openai-http-api",
@@ -15530,6 +15673,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "it/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "it/gateway/protocol/transport",
+                          "it/gateway/protocol/handshake",
+                          "it/gateway/protocol/presence",
+                          "it/gateway/protocol/rpc-methods",
+                          "it/gateway/protocol/ledgers",
+                          "it/gateway/protocol/operator-methods",
+                          "it/gateway/protocol/versioning",
+                          "it/gateway/protocol/auth"
+                        ]
+                      },
                       "it/gateway/clients",
                       "it/gateway/embedding",
                       "it/gateway/openai-http-api",
@@ -16748,6 +16904,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "vi/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "vi/gateway/protocol/transport",
+                          "vi/gateway/protocol/handshake",
+                          "vi/gateway/protocol/presence",
+                          "vi/gateway/protocol/rpc-methods",
+                          "vi/gateway/protocol/ledgers",
+                          "vi/gateway/protocol/operator-methods",
+                          "vi/gateway/protocol/versioning",
+                          "vi/gateway/protocol/auth"
+                        ]
+                      },
                       "vi/gateway/clients",
                       "vi/gateway/embedding",
                       "vi/gateway/openai-http-api",
@@ -17966,6 +18135,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "nl/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "nl/gateway/protocol/transport",
+                          "nl/gateway/protocol/handshake",
+                          "nl/gateway/protocol/presence",
+                          "nl/gateway/protocol/rpc-methods",
+                          "nl/gateway/protocol/ledgers",
+                          "nl/gateway/protocol/operator-methods",
+                          "nl/gateway/protocol/versioning",
+                          "nl/gateway/protocol/auth"
+                        ]
+                      },
                       "nl/gateway/clients",
                       "nl/gateway/embedding",
                       "nl/gateway/openai-http-api",
@@ -19184,6 +19366,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "tr/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "tr/gateway/protocol/transport",
+                          "tr/gateway/protocol/handshake",
+                          "tr/gateway/protocol/presence",
+                          "tr/gateway/protocol/rpc-methods",
+                          "tr/gateway/protocol/ledgers",
+                          "tr/gateway/protocol/operator-methods",
+                          "tr/gateway/protocol/versioning",
+                          "tr/gateway/protocol/auth"
+                        ]
+                      },
                       "tr/gateway/clients",
                       "tr/gateway/embedding",
                       "tr/gateway/openai-http-api",
@@ -20402,6 +20597,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "uk/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "uk/gateway/protocol/transport",
+                          "uk/gateway/protocol/handshake",
+                          "uk/gateway/protocol/presence",
+                          "uk/gateway/protocol/rpc-methods",
+                          "uk/gateway/protocol/ledgers",
+                          "uk/gateway/protocol/operator-methods",
+                          "uk/gateway/protocol/versioning",
+                          "uk/gateway/protocol/auth"
+                        ]
+                      },
                       "uk/gateway/clients",
                       "uk/gateway/embedding",
                       "uk/gateway/openai-http-api",
@@ -21620,6 +21828,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "id/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "id/gateway/protocol/transport",
+                          "id/gateway/protocol/handshake",
+                          "id/gateway/protocol/presence",
+                          "id/gateway/protocol/rpc-methods",
+                          "id/gateway/protocol/ledgers",
+                          "id/gateway/protocol/operator-methods",
+                          "id/gateway/protocol/versioning",
+                          "id/gateway/protocol/auth"
+                        ]
+                      },
                       "id/gateway/clients",
                       "id/gateway/embedding",
                       "id/gateway/openai-http-api",
@@ -22838,6 +23059,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "pl/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "pl/gateway/protocol/transport",
+                          "pl/gateway/protocol/handshake",
+                          "pl/gateway/protocol/presence",
+                          "pl/gateway/protocol/rpc-methods",
+                          "pl/gateway/protocol/ledgers",
+                          "pl/gateway/protocol/operator-methods",
+                          "pl/gateway/protocol/versioning",
+                          "pl/gateway/protocol/auth"
+                        ]
+                      },
                       "pl/gateway/clients",
                       "pl/gateway/embedding",
                       "pl/gateway/openai-http-api",
@@ -24056,6 +24290,19 @@
                     "group": "Protocols and APIs",
                     "pages": [
                       "ru/gateway/protocol",
+                      {
+                        "group": "Gateway protocol",
+                        "pages": [
+                          "ru/gateway/protocol/transport",
+                          "ru/gateway/protocol/handshake",
+                          "ru/gateway/protocol/presence",
+                          "ru/gateway/protocol/rpc-methods",
+                          "ru/gateway/protocol/ledgers",
+                          "ru/gateway/protocol/operator-methods",
+                          "ru/gateway/protocol/versioning",
+                          "ru/gateway/protocol/auth"
+                        ]
+                      },
                       "ru/gateway/clients",
                       "ru/gateway/embedding",
                       "ru/gateway/openai-http-api",
