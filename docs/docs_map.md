@@ -6459,40 +6459,95 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Requirements
   - H2: Quickstart
-  - H2: Run Codex on a paired device
-  - H2: Run Codex on a cloud worker
-  - H2: Share threads with Codex Desktop and CLI
-  - H2: Supervise Codex sessions
+  - H2: Verify Codex runtime
+  - H2: Where each section moved
+  - H3: Run Codex on another machine
+  - H3: Codex routing and deployment
+  - H3: Codex harness configuration
+  - H3: Codex app-server policy
+  - H3: Codex plugin config fields
+  - H3: Codex commands and diagnostics
+  - H3: Codex runtime behavior
+  - H3: Native Codex state and features
+  - H3: Codex harness troubleshooting
+  - H2: Related
+
+## plugins/codex-harness/app-server.md
+
+- Route: /plugins/codex-harness/app-server
+- Headings:
+  - H2: App-server policy
+  - H3: Native approval audit evidence
+  - H2: Auth order
+  - H2: Scheduled app authority
+  - H2: Environment isolation
+  - H2: Local testing env overrides
+
+## plugins/codex-harness/commands.md
+
+- Route: /plugins/codex-harness/commands
+- Headings:
+  - H2: Commands and diagnostics
+  - H3: Shared Fast mode and Codex fast mode
+  - H3: Inspect Codex threads locally
+
+## plugins/codex-harness/config-fields.md
+
+- Route: /plugins/codex-harness/config-fields
+- Headings:
+  - H2: Config fields
+
+## plugins/codex-harness/configuration.md
+
+- Route: /plugins/codex-harness/configuration
+- Headings:
   - H2: Configuration
   - H3: Restricted turns and ring zero
   - H3: Project instructions
   - H3: Compaction
   - H3: Direct API long context
-  - H2: Verify Codex runtime
+
+## plugins/codex-harness/native-features.md
+
+- Route: /plugins/codex-harness/native-features
+- Headings:
+  - H2: Share threads with Codex Desktop and CLI
+  - H2: Supervise Codex sessions
+  - H2: Native Codex plugins
+  - H2: Computer Use
+
+## plugins/codex-harness/placement.md
+
+- Route: /plugins/codex-harness/placement
+- Headings:
+  - H2: Run Codex on a paired device
+  - H2: Run Codex on a cloud worker
+
+## plugins/codex-harness/routing.md
+
+- Route: /plugins/codex-harness/routing
+- Headings:
   - H2: Routing and model selection
   - H2: Deployment patterns
   - H3: Basic Codex deployment
   - H3: Mixed provider deployment
   - H3: Fail-closed Codex deployment
-  - H2: App-server policy
-  - H3: Native approval audit evidence
-  - H2: Commands and diagnostics
-  - H3: Shared Fast mode and Codex fast mode
-  - H3: Inspect Codex threads locally
-  - H3: Auth order
-  - H3: Scheduled app authority
-  - H3: Environment isolation
-  - H3: Dynamic tools and web search
-  - H3: Config fields
-  - H3: Image loader ownership
-  - H3: Turn liveness and timeouts
-  - H3: Parallel chats and thread ownership
-  - H3: Local testing env overrides
-  - H2: Native Codex plugins
-  - H2: Computer Use
+
+## plugins/codex-harness/runtime-behavior.md
+
+- Route: /plugins/codex-harness/runtime-behavior
+- Headings:
+  - H2: Dynamic tools and web search
+  - H2: Image loader ownership
+  - H2: Turn liveness and timeouts
+  - H2: Parallel chats and thread ownership
   - H2: Runtime boundaries
+
+## plugins/codex-harness/troubleshooting.md
+
+- Route: /plugins/codex-harness/troubleshooting
+- Headings:
   - H2: Troubleshooting
-  - H2: Related
 
 ## plugins/codex-native-plugins.md
 

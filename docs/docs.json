@@ -1669,6 +1669,20 @@
                     "pages": [
                       "plugins/codex-computer-use",
                       "plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "plugins/codex-harness/placement",
+                          "plugins/codex-harness/routing",
+                          "plugins/codex-harness/configuration",
+                          "plugins/codex-harness/app-server",
+                          "plugins/codex-harness/config-fields",
+                          "plugins/codex-harness/commands",
+                          "plugins/codex-harness/runtime-behavior",
+                          "plugins/codex-harness/native-features",
+                          "plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "plugins/codex-native-plugins",
                       "plugins/codex-supervision"
                     ]
@@ -2976,6 +2990,20 @@
                     "pages": [
                       "zh-CN/plugins/codex-computer-use",
                       "zh-CN/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "zh-CN/plugins/codex-harness/placement",
+                          "zh-CN/plugins/codex-harness/routing",
+                          "zh-CN/plugins/codex-harness/configuration",
+                          "zh-CN/plugins/codex-harness/app-server",
+                          "zh-CN/plugins/codex-harness/config-fields",
+                          "zh-CN/plugins/codex-harness/commands",
+                          "zh-CN/plugins/codex-harness/runtime-behavior",
+                          "zh-CN/plugins/codex-harness/native-features",
+                          "zh-CN/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "zh-CN/plugins/codex-native-plugins",
                       "zh-CN/plugins/codex-supervision"
                     ]
@@ -4249,6 +4277,20 @@
                     "pages": [
                       "zh-TW/plugins/codex-computer-use",
                       "zh-TW/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "zh-TW/plugins/codex-harness/placement",
+                          "zh-TW/plugins/codex-harness/routing",
+                          "zh-TW/plugins/codex-harness/configuration",
+                          "zh-TW/plugins/codex-harness/app-server",
+                          "zh-TW/plugins/codex-harness/config-fields",
+                          "zh-TW/plugins/codex-harness/commands",
+                          "zh-TW/plugins/codex-harness/runtime-behavior",
+                          "zh-TW/plugins/codex-harness/native-features",
+                          "zh-TW/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "zh-TW/plugins/codex-native-plugins",
                       "zh-TW/plugins/codex-supervision"
                     ]
@@ -5522,6 +5564,20 @@
                     "pages": [
                       "ja-JP/plugins/codex-computer-use",
                       "ja-JP/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "ja-JP/plugins/codex-harness/placement",
+                          "ja-JP/plugins/codex-harness/routing",
+                          "ja-JP/plugins/codex-harness/configuration",
+                          "ja-JP/plugins/codex-harness/app-server",
+                          "ja-JP/plugins/codex-harness/config-fields",
+                          "ja-JP/plugins/codex-harness/commands",
+                          "ja-JP/plugins/codex-harness/runtime-behavior",
+                          "ja-JP/plugins/codex-harness/native-features",
+                          "ja-JP/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "ja-JP/plugins/codex-native-plugins",
                       "ja-JP/plugins/codex-supervision"
                     ]
@@ -6795,6 +6851,20 @@
                     "pages": [
                       "es/plugins/codex-computer-use",
                       "es/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "es/plugins/codex-harness/placement",
+                          "es/plugins/codex-harness/routing",
+                          "es/plugins/codex-harness/configuration",
+                          "es/plugins/codex-harness/app-server",
+                          "es/plugins/codex-harness/config-fields",
+                          "es/plugins/codex-harness/commands",
+                          "es/plugins/codex-harness/runtime-behavior",
+                          "es/plugins/codex-harness/native-features",
+                          "es/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "es/plugins/codex-native-plugins",
                       "es/plugins/codex-supervision"
                     ]
@@ -8068,6 +8138,20 @@
                     "pages": [
                       "pt-BR/plugins/codex-computer-use",
                       "pt-BR/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "pt-BR/plugins/codex-harness/placement",
+                          "pt-BR/plugins/codex-harness/routing",
+                          "pt-BR/plugins/codex-harness/configuration",
+                          "pt-BR/plugins/codex-harness/app-server",
+                          "pt-BR/plugins/codex-harness/config-fields",
+                          "pt-BR/plugins/codex-harness/commands",
+                          "pt-BR/plugins/codex-harness/runtime-behavior",
+                          "pt-BR/plugins/codex-harness/native-features",
+                          "pt-BR/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "pt-BR/plugins/codex-native-plugins",
                       "pt-BR/plugins/codex-supervision"
                     ]
@@ -9341,6 +9425,20 @@
                     "pages": [
                       "ko/plugins/codex-computer-use",
                       "ko/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "ko/plugins/codex-harness/placement",
+                          "ko/plugins/codex-harness/routing",
+                          "ko/plugins/codex-harness/configuration",
+                          "ko/plugins/codex-harness/app-server",
+                          "ko/plugins/codex-harness/config-fields",
+                          "ko/plugins/codex-harness/commands",
+                          "ko/plugins/codex-harness/runtime-behavior",
+                          "ko/plugins/codex-harness/native-features",
+                          "ko/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "ko/plugins/codex-native-plugins",
                       "ko/plugins/codex-supervision"
                     ]
@@ -10614,6 +10712,20 @@
                     "pages": [
                       "de/plugins/codex-computer-use",
                       "de/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "de/plugins/codex-harness/placement",
+                          "de/plugins/codex-harness/routing",
+                          "de/plugins/codex-harness/configuration",
+                          "de/plugins/codex-harness/app-server",
+                          "de/plugins/codex-harness/config-fields",
+                          "de/plugins/codex-harness/commands",
+                          "de/plugins/codex-harness/runtime-behavior",
+                          "de/plugins/codex-harness/native-features",
+                          "de/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "de/plugins/codex-native-plugins",
                       "de/plugins/codex-supervision"
                     ]
@@ -11887,6 +11999,20 @@
                     "pages": [
                       "fr/plugins/codex-computer-use",
                       "fr/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "fr/plugins/codex-harness/placement",
+                          "fr/plugins/codex-harness/routing",
+                          "fr/plugins/codex-harness/configuration",
+                          "fr/plugins/codex-harness/app-server",
+                          "fr/plugins/codex-harness/config-fields",
+                          "fr/plugins/codex-harness/commands",
+                          "fr/plugins/codex-harness/runtime-behavior",
+                          "fr/plugins/codex-harness/native-features",
+                          "fr/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "fr/plugins/codex-native-plugins",
                       "fr/plugins/codex-supervision"
                     ]
@@ -13160,6 +13286,20 @@
                     "pages": [
                       "hi/plugins/codex-computer-use",
                       "hi/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "hi/plugins/codex-harness/placement",
+                          "hi/plugins/codex-harness/routing",
+                          "hi/plugins/codex-harness/configuration",
+                          "hi/plugins/codex-harness/app-server",
+                          "hi/plugins/codex-harness/config-fields",
+                          "hi/plugins/codex-harness/commands",
+                          "hi/plugins/codex-harness/runtime-behavior",
+                          "hi/plugins/codex-harness/native-features",
+                          "hi/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "hi/plugins/codex-native-plugins",
                       "hi/plugins/codex-supervision"
                     ]
@@ -14433,6 +14573,20 @@
                     "pages": [
                       "ar/plugins/codex-computer-use",
                       "ar/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "ar/plugins/codex-harness/placement",
+                          "ar/plugins/codex-harness/routing",
+                          "ar/plugins/codex-harness/configuration",
+                          "ar/plugins/codex-harness/app-server",
+                          "ar/plugins/codex-harness/config-fields",
+                          "ar/plugins/codex-harness/commands",
+                          "ar/plugins/codex-harness/runtime-behavior",
+                          "ar/plugins/codex-harness/native-features",
+                          "ar/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "ar/plugins/codex-native-plugins",
                       "ar/plugins/codex-supervision"
                     ]
@@ -15706,6 +15860,20 @@
                     "pages": [
                       "it/plugins/codex-computer-use",
                       "it/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "it/plugins/codex-harness/placement",
+                          "it/plugins/codex-harness/routing",
+                          "it/plugins/codex-harness/configuration",
+                          "it/plugins/codex-harness/app-server",
+                          "it/plugins/codex-harness/config-fields",
+                          "it/plugins/codex-harness/commands",
+                          "it/plugins/codex-harness/runtime-behavior",
+                          "it/plugins/codex-harness/native-features",
+                          "it/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "it/plugins/codex-native-plugins",
                       "it/plugins/codex-supervision"
                     ]
@@ -16979,6 +17147,20 @@
                     "pages": [
                       "vi/plugins/codex-computer-use",
                       "vi/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "vi/plugins/codex-harness/placement",
+                          "vi/plugins/codex-harness/routing",
+                          "vi/plugins/codex-harness/configuration",
+                          "vi/plugins/codex-harness/app-server",
+                          "vi/plugins/codex-harness/config-fields",
+                          "vi/plugins/codex-harness/commands",
+                          "vi/plugins/codex-harness/runtime-behavior",
+                          "vi/plugins/codex-harness/native-features",
+                          "vi/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "vi/plugins/codex-native-plugins",
                       "vi/plugins/codex-supervision"
                     ]
@@ -18252,6 +18434,20 @@
                     "pages": [
                       "nl/plugins/codex-computer-use",
                       "nl/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "nl/plugins/codex-harness/placement",
+                          "nl/plugins/codex-harness/routing",
+                          "nl/plugins/codex-harness/configuration",
+                          "nl/plugins/codex-harness/app-server",
+                          "nl/plugins/codex-harness/config-fields",
+                          "nl/plugins/codex-harness/commands",
+                          "nl/plugins/codex-harness/runtime-behavior",
+                          "nl/plugins/codex-harness/native-features",
+                          "nl/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "nl/plugins/codex-native-plugins",
                       "nl/plugins/codex-supervision"
                     ]
@@ -19525,6 +19721,20 @@
                     "pages": [
                       "tr/plugins/codex-computer-use",
                       "tr/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "tr/plugins/codex-harness/placement",
+                          "tr/plugins/codex-harness/routing",
+                          "tr/plugins/codex-harness/configuration",
+                          "tr/plugins/codex-harness/app-server",
+                          "tr/plugins/codex-harness/config-fields",
+                          "tr/plugins/codex-harness/commands",
+                          "tr/plugins/codex-harness/runtime-behavior",
+                          "tr/plugins/codex-harness/native-features",
+                          "tr/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "tr/plugins/codex-native-plugins",
                       "tr/plugins/codex-supervision"
                     ]
@@ -20798,6 +21008,20 @@
                     "pages": [
                       "uk/plugins/codex-computer-use",
                       "uk/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "uk/plugins/codex-harness/placement",
+                          "uk/plugins/codex-harness/routing",
+                          "uk/plugins/codex-harness/configuration",
+                          "uk/plugins/codex-harness/app-server",
+                          "uk/plugins/codex-harness/config-fields",
+                          "uk/plugins/codex-harness/commands",
+                          "uk/plugins/codex-harness/runtime-behavior",
+                          "uk/plugins/codex-harness/native-features",
+                          "uk/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "uk/plugins/codex-native-plugins",
                       "uk/plugins/codex-supervision"
                     ]
@@ -22071,6 +22295,20 @@
                     "pages": [
                       "id/plugins/codex-computer-use",
                       "id/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "id/plugins/codex-harness/placement",
+                          "id/plugins/codex-harness/routing",
+                          "id/plugins/codex-harness/configuration",
+                          "id/plugins/codex-harness/app-server",
+                          "id/plugins/codex-harness/config-fields",
+                          "id/plugins/codex-harness/commands",
+                          "id/plugins/codex-harness/runtime-behavior",
+                          "id/plugins/codex-harness/native-features",
+                          "id/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "id/plugins/codex-native-plugins",
                       "id/plugins/codex-supervision"
                     ]
@@ -23344,6 +23582,20 @@
                     "pages": [
                       "pl/plugins/codex-computer-use",
                       "pl/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "pl/plugins/codex-harness/placement",
+                          "pl/plugins/codex-harness/routing",
+                          "pl/plugins/codex-harness/configuration",
+                          "pl/plugins/codex-harness/app-server",
+                          "pl/plugins/codex-harness/config-fields",
+                          "pl/plugins/codex-harness/commands",
+                          "pl/plugins/codex-harness/runtime-behavior",
+                          "pl/plugins/codex-harness/native-features",
+                          "pl/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "pl/plugins/codex-native-plugins",
                       "pl/plugins/codex-supervision"
                     ]
@@ -24617,6 +24869,20 @@
                     "pages": [
                       "ru/plugins/codex-computer-use",
                       "ru/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "ru/plugins/codex-harness/placement",
+                          "ru/plugins/codex-harness/routing",
+                          "ru/plugins/codex-harness/configuration",
+                          "ru/plugins/codex-harness/app-server",
+                          "ru/plugins/codex-harness/config-fields",
+                          "ru/plugins/codex-harness/commands",
+                          "ru/plugins/codex-harness/runtime-behavior",
+                          "ru/plugins/codex-harness/native-features",
+                          "ru/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
                       "ru/plugins/codex-native-plugins",
                       "ru/plugins/codex-supervision"
                     ]
