@@ -5587,14 +5587,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Run doctor
   - H3: Restart the gateway
   - H3: Verify
-  - H2: Rollback
+  - H2: Downgrade
   - H3: Automatic schema-neutral rollback
   - H3: Before updating: create a verified backup
-  - H3: Roll back a package install
-  - H3: Roll back a source checkout
-  - H3: Downgrading across the session SQLite migration
-  - H3: Restore state only when necessary
-  - H3: Verify the rollback
   - H2: If you are stuck
   - H3: Unattended repair on your own inference
   - H2: Related
@@ -9690,14 +9685,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Why you cannot go back after updating to 2026.7.2
   - H3: The Gateway refuses to start with a newer schema version error
   - H3: A database is quarantined after integrity verification failed
-  - H2: Downgrades are unsupported
-  - H3: Example: state schema 13 to 12
-  - H3: Example: state schema 12 to 11
-  - H3: Example: state schema 11 to 10
-  - H3: Example: state schema 10 to 9
-  - H3: Example: state schema 9 to 8
-  - H3: Example: state schema 7 to 6
-  - H3: Example: agent schema 17 to 16
+  - H2: Downgrade recovery
 
 ## reference/device-models.md
 
