@@ -2075,6 +2075,19 @@
                       "gateway/configuration",
                       "gateway/configuration-reference",
                       "gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "gateway/config-agents/workspace-and-bootstrap",
+                          "gateway/config-agents/models",
+                          "gateway/config-agents/runtime-and-cli-backends",
+                          "gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "gateway/config-agents/sandbox",
+                          "gateway/config-agents/entries-and-multi-agent",
+                          "gateway/config-agents/sessions",
+                          "gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "gateway/config-automation",
                       "gateway/config-browser-ui-desktop",
                       "gateway/config-channels",
@@ -3322,6 +3335,19 @@
                       "zh-CN/gateway/configuration",
                       "zh-CN/gateway/configuration-reference",
                       "zh-CN/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "zh-CN/gateway/config-agents/workspace-and-bootstrap",
+                          "zh-CN/gateway/config-agents/models",
+                          "zh-CN/gateway/config-agents/runtime-and-cli-backends",
+                          "zh-CN/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "zh-CN/gateway/config-agents/sandbox",
+                          "zh-CN/gateway/config-agents/entries-and-multi-agent",
+                          "zh-CN/gateway/config-agents/sessions",
+                          "zh-CN/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "zh-CN/gateway/config-automation",
                       "zh-CN/gateway/config-browser-ui-desktop",
                       "zh-CN/gateway/config-channels",
@@ -4569,6 +4595,19 @@
                       "zh-TW/gateway/configuration",
                       "zh-TW/gateway/configuration-reference",
                       "zh-TW/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "zh-TW/gateway/config-agents/workspace-and-bootstrap",
+                          "zh-TW/gateway/config-agents/models",
+                          "zh-TW/gateway/config-agents/runtime-and-cli-backends",
+                          "zh-TW/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "zh-TW/gateway/config-agents/sandbox",
+                          "zh-TW/gateway/config-agents/entries-and-multi-agent",
+                          "zh-TW/gateway/config-agents/sessions",
+                          "zh-TW/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "zh-TW/gateway/config-automation",
                       "zh-TW/gateway/config-browser-ui-desktop",
                       "zh-TW/gateway/config-channels",
@@ -5816,6 +5855,19 @@
                       "ja-JP/gateway/configuration",
                       "ja-JP/gateway/configuration-reference",
                       "ja-JP/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "ja-JP/gateway/config-agents/workspace-and-bootstrap",
+                          "ja-JP/gateway/config-agents/models",
+                          "ja-JP/gateway/config-agents/runtime-and-cli-backends",
+                          "ja-JP/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "ja-JP/gateway/config-agents/sandbox",
+                          "ja-JP/gateway/config-agents/entries-and-multi-agent",
+                          "ja-JP/gateway/config-agents/sessions",
+                          "ja-JP/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "ja-JP/gateway/config-automation",
                       "ja-JP/gateway/config-browser-ui-desktop",
                       "ja-JP/gateway/config-channels",
@@ -7063,6 +7115,19 @@
                       "es/gateway/configuration",
                       "es/gateway/configuration-reference",
                       "es/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "es/gateway/config-agents/workspace-and-bootstrap",
+                          "es/gateway/config-agents/models",
+                          "es/gateway/config-agents/runtime-and-cli-backends",
+                          "es/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "es/gateway/config-agents/sandbox",
+                          "es/gateway/config-agents/entries-and-multi-agent",
+                          "es/gateway/config-agents/sessions",
+                          "es/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "es/gateway/config-automation",
                       "es/gateway/config-browser-ui-desktop",
                       "es/gateway/config-channels",
@@ -8310,6 +8375,19 @@
                       "pt-BR/gateway/configuration",
                       "pt-BR/gateway/configuration-reference",
                       "pt-BR/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "pt-BR/gateway/config-agents/workspace-and-bootstrap",
+                          "pt-BR/gateway/config-agents/models",
+                          "pt-BR/gateway/config-agents/runtime-and-cli-backends",
+                          "pt-BR/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "pt-BR/gateway/config-agents/sandbox",
+                          "pt-BR/gateway/config-agents/entries-and-multi-agent",
+                          "pt-BR/gateway/config-agents/sessions",
+                          "pt-BR/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "pt-BR/gateway/config-automation",
                       "pt-BR/gateway/config-browser-ui-desktop",
                       "pt-BR/gateway/config-channels",
@@ -9557,6 +9635,19 @@
                       "ko/gateway/configuration",
                       "ko/gateway/configuration-reference",
                       "ko/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "ko/gateway/config-agents/workspace-and-bootstrap",
+                          "ko/gateway/config-agents/models",
+                          "ko/gateway/config-agents/runtime-and-cli-backends",
+                          "ko/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "ko/gateway/config-agents/sandbox",
+                          "ko/gateway/config-agents/entries-and-multi-agent",
+                          "ko/gateway/config-agents/sessions",
+                          "ko/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "ko/gateway/config-automation",
                       "ko/gateway/config-browser-ui-desktop",
                       "ko/gateway/config-channels",
@@ -10804,6 +10895,19 @@
                       "de/gateway/configuration",
                       "de/gateway/configuration-reference",
                       "de/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "de/gateway/config-agents/workspace-and-bootstrap",
+                          "de/gateway/config-agents/models",
+                          "de/gateway/config-agents/runtime-and-cli-backends",
+                          "de/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "de/gateway/config-agents/sandbox",
+                          "de/gateway/config-agents/entries-and-multi-agent",
+                          "de/gateway/config-agents/sessions",
+                          "de/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "de/gateway/config-automation",
                       "de/gateway/config-browser-ui-desktop",
                       "de/gateway/config-channels",
@@ -12051,6 +12155,19 @@
                       "fr/gateway/configuration",
                       "fr/gateway/configuration-reference",
                       "fr/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "fr/gateway/config-agents/workspace-and-bootstrap",
+                          "fr/gateway/config-agents/models",
+                          "fr/gateway/config-agents/runtime-and-cli-backends",
+                          "fr/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "fr/gateway/config-agents/sandbox",
+                          "fr/gateway/config-agents/entries-and-multi-agent",
+                          "fr/gateway/config-agents/sessions",
+                          "fr/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "fr/gateway/config-automation",
                       "fr/gateway/config-browser-ui-desktop",
                       "fr/gateway/config-channels",
@@ -13298,6 +13415,19 @@
                       "hi/gateway/configuration",
                       "hi/gateway/configuration-reference",
                       "hi/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "hi/gateway/config-agents/workspace-and-bootstrap",
+                          "hi/gateway/config-agents/models",
+                          "hi/gateway/config-agents/runtime-and-cli-backends",
+                          "hi/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "hi/gateway/config-agents/sandbox",
+                          "hi/gateway/config-agents/entries-and-multi-agent",
+                          "hi/gateway/config-agents/sessions",
+                          "hi/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "hi/gateway/config-automation",
                       "hi/gateway/config-browser-ui-desktop",
                       "hi/gateway/config-channels",
@@ -14545,6 +14675,19 @@
                       "ar/gateway/configuration",
                       "ar/gateway/configuration-reference",
                       "ar/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "ar/gateway/config-agents/workspace-and-bootstrap",
+                          "ar/gateway/config-agents/models",
+                          "ar/gateway/config-agents/runtime-and-cli-backends",
+                          "ar/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "ar/gateway/config-agents/sandbox",
+                          "ar/gateway/config-agents/entries-and-multi-agent",
+                          "ar/gateway/config-agents/sessions",
+                          "ar/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "ar/gateway/config-automation",
                       "ar/gateway/config-browser-ui-desktop",
                       "ar/gateway/config-channels",
@@ -15792,6 +15935,19 @@
                       "it/gateway/configuration",
                       "it/gateway/configuration-reference",
                       "it/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "it/gateway/config-agents/workspace-and-bootstrap",
+                          "it/gateway/config-agents/models",
+                          "it/gateway/config-agents/runtime-and-cli-backends",
+                          "it/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "it/gateway/config-agents/sandbox",
+                          "it/gateway/config-agents/entries-and-multi-agent",
+                          "it/gateway/config-agents/sessions",
+                          "it/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "it/gateway/config-automation",
                       "it/gateway/config-browser-ui-desktop",
                       "it/gateway/config-channels",
@@ -17039,6 +17195,19 @@
                       "vi/gateway/configuration",
                       "vi/gateway/configuration-reference",
                       "vi/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "vi/gateway/config-agents/workspace-and-bootstrap",
+                          "vi/gateway/config-agents/models",
+                          "vi/gateway/config-agents/runtime-and-cli-backends",
+                          "vi/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "vi/gateway/config-agents/sandbox",
+                          "vi/gateway/config-agents/entries-and-multi-agent",
+                          "vi/gateway/config-agents/sessions",
+                          "vi/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "vi/gateway/config-automation",
                       "vi/gateway/config-browser-ui-desktop",
                       "vi/gateway/config-channels",
@@ -18286,6 +18455,19 @@
                       "nl/gateway/configuration",
                       "nl/gateway/configuration-reference",
                       "nl/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "nl/gateway/config-agents/workspace-and-bootstrap",
+                          "nl/gateway/config-agents/models",
+                          "nl/gateway/config-agents/runtime-and-cli-backends",
+                          "nl/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "nl/gateway/config-agents/sandbox",
+                          "nl/gateway/config-agents/entries-and-multi-agent",
+                          "nl/gateway/config-agents/sessions",
+                          "nl/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "nl/gateway/config-automation",
                       "nl/gateway/config-browser-ui-desktop",
                       "nl/gateway/config-channels",
@@ -19533,6 +19715,19 @@
                       "tr/gateway/configuration",
                       "tr/gateway/configuration-reference",
                       "tr/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "tr/gateway/config-agents/workspace-and-bootstrap",
+                          "tr/gateway/config-agents/models",
+                          "tr/gateway/config-agents/runtime-and-cli-backends",
+                          "tr/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "tr/gateway/config-agents/sandbox",
+                          "tr/gateway/config-agents/entries-and-multi-agent",
+                          "tr/gateway/config-agents/sessions",
+                          "tr/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "tr/gateway/config-automation",
                       "tr/gateway/config-browser-ui-desktop",
                       "tr/gateway/config-channels",
@@ -20780,6 +20975,19 @@
                       "uk/gateway/configuration",
                       "uk/gateway/configuration-reference",
                       "uk/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "uk/gateway/config-agents/workspace-and-bootstrap",
+                          "uk/gateway/config-agents/models",
+                          "uk/gateway/config-agents/runtime-and-cli-backends",
+                          "uk/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "uk/gateway/config-agents/sandbox",
+                          "uk/gateway/config-agents/entries-and-multi-agent",
+                          "uk/gateway/config-agents/sessions",
+                          "uk/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "uk/gateway/config-automation",
                       "uk/gateway/config-browser-ui-desktop",
                       "uk/gateway/config-channels",
@@ -22027,6 +22235,19 @@
                       "id/gateway/configuration",
                       "id/gateway/configuration-reference",
                       "id/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "id/gateway/config-agents/workspace-and-bootstrap",
+                          "id/gateway/config-agents/models",
+                          "id/gateway/config-agents/runtime-and-cli-backends",
+                          "id/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "id/gateway/config-agents/sandbox",
+                          "id/gateway/config-agents/entries-and-multi-agent",
+                          "id/gateway/config-agents/sessions",
+                          "id/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "id/gateway/config-automation",
                       "id/gateway/config-browser-ui-desktop",
                       "id/gateway/config-channels",
@@ -23274,6 +23495,19 @@
                       "pl/gateway/configuration",
                       "pl/gateway/configuration-reference",
                       "pl/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "pl/gateway/config-agents/workspace-and-bootstrap",
+                          "pl/gateway/config-agents/models",
+                          "pl/gateway/config-agents/runtime-and-cli-backends",
+                          "pl/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "pl/gateway/config-agents/sandbox",
+                          "pl/gateway/config-agents/entries-and-multi-agent",
+                          "pl/gateway/config-agents/sessions",
+                          "pl/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "pl/gateway/config-automation",
                       "pl/gateway/config-browser-ui-desktop",
                       "pl/gateway/config-channels",
@@ -24521,6 +24755,19 @@
                       "ru/gateway/configuration",
                       "ru/gateway/configuration-reference",
                       "ru/gateway/config-agents",
+                      {
+                        "group": "Agents",
+                        "pages": [
+                          "ru/gateway/config-agents/workspace-and-bootstrap",
+                          "ru/gateway/config-agents/models",
+                          "ru/gateway/config-agents/runtime-and-cli-backends",
+                          "ru/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "ru/gateway/config-agents/sandbox",
+                          "ru/gateway/config-agents/entries-and-multi-agent",
+                          "ru/gateway/config-agents/sessions",
+                          "ru/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
                       "ru/gateway/config-automation",
                       "ru/gateway/config-browser-ui-desktop",
                       "ru/gateway/config-channels",

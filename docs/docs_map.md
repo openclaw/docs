@@ -3653,44 +3653,34 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/config-agents
 - Headings:
-  - H2: Agent defaults
-  - H3: agents.defaults.workspace
-  - H3: agents.defaults.cwd
-  - H3: agents.defaults.repoRoot
-  - H3: agents.defaults.skills
-  - H3: agents.defaults.skipBootstrap
-  - H3: agents.defaults.skipOptionalBootstrapFiles
-  - H3: agents.defaults.contextInjection
-  - H3: agents.defaults.bootstrapMaxChars
-  - H3: agents.defaults.bootstrapTotalMaxChars
-  - H3: Per-agent bootstrap profile overrides
-  - H3: Bootstrap truncation notice
-  - H3: Context budget ownership map
-  - H4: agents.defaults.startupContext
-  - H4: agents.defaults.contextLimits
-  - H4: `agents.entries.*.contextLimits`
-  - H4: skills.limits.maxSkillsPromptChars
-  - H4: `agents.entries.*.skillsLimits.maxSkillsPromptChars`
-  - H3: agents.defaults.imageMaxDimensionPx
-  - H3: agents.defaults.imageQuality
-  - H3: agents.defaults.userTimezone
-  - H3: agents.defaults.model
-  - H3: agents.defaults.modelSelectionScope
-  - H3: Runtime policy
-  - H3: CLI backend selection
-  - H3: OpenAI GPT-5 personality
-  - H3: agents.defaults.heartbeat
-  - H3: agents.defaults.systemAgent
-  - H3: agents.defaults.compaction
-  - H3: agents.defaults.contextPruning
-  - H3: Block streaming
-  - H3: Typing indicators
-  - H3: agents.defaults.sandbox
-  - H3: agents.entries (per-agent overrides)
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/config-agents/entries-and-multi-agent.md
+
+- Route: /gateway/config-agents/entries-and-multi-agent
+- Headings:
+  - H2: agents.entries (per-agent overrides)
   - H2: Multi-agent routing
   - H3: Binding match fields
   - H3: Per-agent access profiles
-  - H2: Session
+
+## gateway/config-agents/heartbeat-compaction-and-streaming.md
+
+- Route: /gateway/config-agents/heartbeat-compaction-and-streaming
+- Headings:
+  - H2: agents.defaults.heartbeat
+  - H2: agents.defaults.systemAgent
+  - H2: agents.defaults.compaction
+  - H2: agents.defaults.contextPruning
+  - H2: Block streaming
+  - H2: Typing indicators
+
+## gateway/config-agents/messages-and-talk.md
+
+- Route: /gateway/config-agents/messages-and-talk
+- Headings:
   - H2: Messages
   - H3: Response prefix
   - H3: Ack reaction
@@ -3699,7 +3689,58 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Other message keys
   - H3: TTS (text-to-speech)
   - H2: Talk
-  - H2: Related
+
+## gateway/config-agents/models.md
+
+- Route: /gateway/config-agents/models
+- Headings:
+  - H2: agents.defaults.model
+  - H2: agents.defaults.modelSelectionScope
+
+## gateway/config-agents/runtime-and-cli-backends.md
+
+- Route: /gateway/config-agents/runtime-and-cli-backends
+- Headings:
+  - H2: Runtime policy
+  - H2: CLI backend selection
+  - H2: OpenAI GPT-5 personality
+
+## gateway/config-agents/sandbox.md
+
+- Route: /gateway/config-agents/sandbox
+- Headings:
+  - H2: agents.defaults.sandbox
+
+## gateway/config-agents/sessions.md
+
+- Route: /gateway/config-agents/sessions
+- Headings:
+  - H2: Session
+
+## gateway/config-agents/workspace-and-bootstrap.md
+
+- Route: /gateway/config-agents/workspace-and-bootstrap
+- Headings:
+  - H2: agents.defaults.workspace
+  - H2: agents.defaults.cwd
+  - H2: agents.defaults.repoRoot
+  - H2: agents.defaults.skills
+  - H2: agents.defaults.skipBootstrap
+  - H2: agents.defaults.skipOptionalBootstrapFiles
+  - H2: agents.defaults.contextInjection
+  - H2: agents.defaults.bootstrapMaxChars
+  - H2: agents.defaults.bootstrapTotalMaxChars
+  - H2: Per-agent bootstrap profile overrides
+  - H2: Bootstrap truncation notice
+  - H2: Context budget ownership map
+  - H3: agents.defaults.startupContext
+  - H3: agents.defaults.contextLimits
+  - H3: `agents.entries.*.contextLimits`
+  - H3: skills.limits.maxSkillsPromptChars
+  - H3: `agents.entries.*.skillsLimits.maxSkillsPromptChars`
+  - H2: agents.defaults.imageMaxDimensionPx
+  - H2: agents.defaults.imageQuality
+  - H2: agents.defaults.userTimezone
 
 ## gateway/config-automation.md
 
