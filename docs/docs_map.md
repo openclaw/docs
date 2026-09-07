@@ -6176,6 +6176,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Remote transports
   - H2: Prereqs on the remote host
   - H2: macOS app setup
+  - H3: Add and manage saved Gateways
+  - H3: Secrets, profiles, and app launch
+  - H3: Offline preconfiguration
+  - H3: Configure in the app
   - H2: Web Chat
   - H2: Permissions
   - H2: Security notes
@@ -6256,6 +6260,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H3: Gateway + node transport
   - H3: Node service + app IPC
+  - H3: App control socket
   - H3: PeekabooBridge (UI automation)
   - H2: Operational flows
   - H2: Hardening notes
