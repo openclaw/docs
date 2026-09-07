@@ -37,6 +37,7 @@ const searchIndexKey = "docs-search.json";
 const searchIndexTtlMs = 60_000;
 const maxSearchQueryLength = 180;
 const maxSearchResults = 12;
+const maxMcpBatchSize = 32;
 let searchIndexCache: SearchIndex | undefined;
 
 export default {
@@ -122,6 +123,9 @@ async function mcpResponse(env: Env, request: Request): Promise<Response> {
   }
 
   const payload = await request.json().catch(() => undefined);
+  if (Array.isArray(payload) && payload.length > maxMcpBatchSize) {
+    return mcpJsonResponse(mcpError(null, -32600, "Batch too large"));
+  }
   const requests = Array.isArray(payload) ? payload : [payload];
   const responses = [];
   for (const item of requests) {
