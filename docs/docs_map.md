@@ -5949,6 +5949,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/ios
 - Headings:
   - H2: What it does
+  - H2: Settings
   - H2: Session colors
   - H2: Diagrams in chat
   - H2: Requirements
