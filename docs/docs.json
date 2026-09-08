@@ -2631,6 +2631,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "reference/test/local",
+                      "reference/test/lanes",
+                      "reference/test/docker",
+                      "reference/test/performance",
+                      "reference/test/runner-internals",
+                      "reference/test/remote-proof"
+                    ]
+                  },
                   "ci",
                   {
                     "group": "CI",
@@ -3972,6 +3983,17 @@
                 "group": "测试与 CI",
                 "pages": [
                   "zh-CN/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "zh-CN/reference/test/local",
+                      "zh-CN/reference/test/lanes",
+                      "zh-CN/reference/test/docker",
+                      "zh-CN/reference/test/performance",
+                      "zh-CN/reference/test/runner-internals",
+                      "zh-CN/reference/test/remote-proof"
+                    ]
+                  },
                   "zh-CN/ci",
                   {
                     "group": "CI",
@@ -5313,6 +5335,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "zh-TW/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "zh-TW/reference/test/local",
+                      "zh-TW/reference/test/lanes",
+                      "zh-TW/reference/test/docker",
+                      "zh-TW/reference/test/performance",
+                      "zh-TW/reference/test/runner-internals",
+                      "zh-TW/reference/test/remote-proof"
+                    ]
+                  },
                   "zh-TW/ci",
                   {
                     "group": "CI",
@@ -6654,6 +6687,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "ja-JP/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "ja-JP/reference/test/local",
+                      "ja-JP/reference/test/lanes",
+                      "ja-JP/reference/test/docker",
+                      "ja-JP/reference/test/performance",
+                      "ja-JP/reference/test/runner-internals",
+                      "ja-JP/reference/test/remote-proof"
+                    ]
+                  },
                   "ja-JP/ci",
                   {
                     "group": "CI",
@@ -7995,6 +8039,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "es/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "es/reference/test/local",
+                      "es/reference/test/lanes",
+                      "es/reference/test/docker",
+                      "es/reference/test/performance",
+                      "es/reference/test/runner-internals",
+                      "es/reference/test/remote-proof"
+                    ]
+                  },
                   "es/ci",
                   {
                     "group": "CI",
@@ -9336,6 +9391,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "pt-BR/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "pt-BR/reference/test/local",
+                      "pt-BR/reference/test/lanes",
+                      "pt-BR/reference/test/docker",
+                      "pt-BR/reference/test/performance",
+                      "pt-BR/reference/test/runner-internals",
+                      "pt-BR/reference/test/remote-proof"
+                    ]
+                  },
                   "pt-BR/ci",
                   {
                     "group": "CI",
@@ -10677,6 +10743,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "ko/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "ko/reference/test/local",
+                      "ko/reference/test/lanes",
+                      "ko/reference/test/docker",
+                      "ko/reference/test/performance",
+                      "ko/reference/test/runner-internals",
+                      "ko/reference/test/remote-proof"
+                    ]
+                  },
                   "ko/ci",
                   {
                     "group": "CI",
@@ -12018,6 +12095,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "de/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "de/reference/test/local",
+                      "de/reference/test/lanes",
+                      "de/reference/test/docker",
+                      "de/reference/test/performance",
+                      "de/reference/test/runner-internals",
+                      "de/reference/test/remote-proof"
+                    ]
+                  },
                   "de/ci",
                   {
                     "group": "CI",
@@ -13359,6 +13447,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "fr/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "fr/reference/test/local",
+                      "fr/reference/test/lanes",
+                      "fr/reference/test/docker",
+                      "fr/reference/test/performance",
+                      "fr/reference/test/runner-internals",
+                      "fr/reference/test/remote-proof"
+                    ]
+                  },
                   "fr/ci",
                   {
                     "group": "CI",
@@ -14700,6 +14799,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "hi/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "hi/reference/test/local",
+                      "hi/reference/test/lanes",
+                      "hi/reference/test/docker",
+                      "hi/reference/test/performance",
+                      "hi/reference/test/runner-internals",
+                      "hi/reference/test/remote-proof"
+                    ]
+                  },
                   "hi/ci",
                   {
                     "group": "CI",
@@ -16041,6 +16151,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "ar/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "ar/reference/test/local",
+                      "ar/reference/test/lanes",
+                      "ar/reference/test/docker",
+                      "ar/reference/test/performance",
+                      "ar/reference/test/runner-internals",
+                      "ar/reference/test/remote-proof"
+                    ]
+                  },
                   "ar/ci",
                   {
                     "group": "CI",
@@ -17382,6 +17503,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "it/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "it/reference/test/local",
+                      "it/reference/test/lanes",
+                      "it/reference/test/docker",
+                      "it/reference/test/performance",
+                      "it/reference/test/runner-internals",
+                      "it/reference/test/remote-proof"
+                    ]
+                  },
                   "it/ci",
                   {
                     "group": "CI",
@@ -18723,6 +18855,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "vi/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "vi/reference/test/local",
+                      "vi/reference/test/lanes",
+                      "vi/reference/test/docker",
+                      "vi/reference/test/performance",
+                      "vi/reference/test/runner-internals",
+                      "vi/reference/test/remote-proof"
+                    ]
+                  },
                   "vi/ci",
                   {
                     "group": "CI",
@@ -20064,6 +20207,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "nl/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "nl/reference/test/local",
+                      "nl/reference/test/lanes",
+                      "nl/reference/test/docker",
+                      "nl/reference/test/performance",
+                      "nl/reference/test/runner-internals",
+                      "nl/reference/test/remote-proof"
+                    ]
+                  },
                   "nl/ci",
                   {
                     "group": "CI",
@@ -21405,6 +21559,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "tr/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "tr/reference/test/local",
+                      "tr/reference/test/lanes",
+                      "tr/reference/test/docker",
+                      "tr/reference/test/performance",
+                      "tr/reference/test/runner-internals",
+                      "tr/reference/test/remote-proof"
+                    ]
+                  },
                   "tr/ci",
                   {
                     "group": "CI",
@@ -22746,6 +22911,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "uk/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "uk/reference/test/local",
+                      "uk/reference/test/lanes",
+                      "uk/reference/test/docker",
+                      "uk/reference/test/performance",
+                      "uk/reference/test/runner-internals",
+                      "uk/reference/test/remote-proof"
+                    ]
+                  },
                   "uk/ci",
                   {
                     "group": "CI",
@@ -24087,6 +24263,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "id/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "id/reference/test/local",
+                      "id/reference/test/lanes",
+                      "id/reference/test/docker",
+                      "id/reference/test/performance",
+                      "id/reference/test/runner-internals",
+                      "id/reference/test/remote-proof"
+                    ]
+                  },
                   "id/ci",
                   {
                     "group": "CI",
@@ -25428,6 +25615,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "pl/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "pl/reference/test/local",
+                      "pl/reference/test/lanes",
+                      "pl/reference/test/docker",
+                      "pl/reference/test/performance",
+                      "pl/reference/test/runner-internals",
+                      "pl/reference/test/remote-proof"
+                    ]
+                  },
                   "pl/ci",
                   {
                     "group": "CI",
@@ -26769,6 +26967,17 @@
                 "group": "Testing and CI",
                 "pages": [
                   "ru/reference/test",
+                  {
+                    "group": "Tests",
+                    "pages": [
+                      "ru/reference/test/local",
+                      "ru/reference/test/lanes",
+                      "ru/reference/test/docker",
+                      "ru/reference/test/performance",
+                      "ru/reference/test/runner-internals",
+                      "ru/reference/test/remote-proof"
+                    ]
+                  },
                   "ru/ci",
                   {
                     "group": "CI",

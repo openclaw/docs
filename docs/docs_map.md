@@ -10129,27 +10129,58 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/test
 - Headings:
-  - H2: Agent default
-  - H2: Crabbox repository setup
-  - H2: Routine local order
-  - H2: Core commands
-  - H3: Source tests and subprocess builds
-  - H2: Shared test state and process helpers
+  - H2: Where each section moved
+  - H2: Related
+
+## reference/test/docker.md
+
+- Route: /reference/test/docker
+- Headings:
+  - H2: Full Docker suite (pnpm test:docker:all)
+  - H3: Notable Docker lanes
+  - H3: Sandbox compatibility lanes
+  - H2: Onboarding E2E (Docker)
+  - H2: QR import smoke (Docker)
+
+## reference/test/lanes.md
+
+- Route: /reference/test/lanes
+- Headings:
   - H2: Control UI, TUI, and extension lanes
   - H3: Real-Gateway Control UI fixture lifetimes
   - H3: Retained Control UI proof
   - H3: Screenshots during Chromium recordings
   - H2: Gateway and E2E
-  - H2: Full Docker suite (pnpm test:docker:all)
-  - H3: Notable Docker lanes
-  - H3: Sandbox compatibility lanes
+
+## reference/test/local.md
+
+- Route: /reference/test/local
+- Headings:
+  - H2: Routine local order
+  - H2: Core commands
+  - H3: Source tests and subprocess builds
   - H2: Local PR gate
-  - H2: JSON reports across native processes
+
+## reference/test/performance.md
+
+- Route: /reference/test/performance
+- Headings:
   - H2: Test performance tooling
   - H2: Benchmarks
-  - H2: Onboarding E2E (Docker)
-  - H2: QR import smoke (Docker)
-  - H2: Related
+
+## reference/test/remote-proof.md
+
+- Route: /reference/test/remote-proof
+- Headings:
+  - H2: Agent default
+  - H2: Crabbox repository setup
+
+## reference/test/runner-internals.md
+
+- Route: /reference/test/runner-internals
+- Headings:
+  - H2: Shared test state and process helpers
+  - H2: JSON reports across native processes
 
 ## reference/token-use.md
 
