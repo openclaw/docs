@@ -5653,9 +5653,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: macOS (launchd)
   - H3: Linux (systemd user unit)
   - H3: Windows (Scheduled Task)
-  - H2: Normal install vs source checkout
-  - H3: Normal install (install.sh / npm / pnpm / bun)
-  - H3: Source checkout (git clone)
+  - H2: Remove the CLI
   - H2: Related
 
 ## install/update-troubleshooting.md
