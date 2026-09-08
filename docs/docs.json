@@ -1481,6 +1481,16 @@
                     "group": "Discord",
                     "pages": [
                       "channels/discord",
+                      "channels/discord/setup",
+                      "channels/discord/access-control",
+                      "channels/discord/messaging",
+                      "channels/discord/threads-and-sessions",
+                      "channels/discord/rich-messages",
+                      "channels/discord/events",
+                      "channels/discord/voice-channels",
+                      "channels/discord/voice-transcripts",
+                      "channels/discord/voice-follow",
+                      "channels/discord/troubleshooting",
                       "channels/discord-activities"
                     ]
                   },
@@ -2950,6 +2960,16 @@
                     "group": "Discord",
                     "pages": [
                       "zh-CN/channels/discord",
+                      "zh-CN/channels/discord/setup",
+                      "zh-CN/channels/discord/access-control",
+                      "zh-CN/channels/discord/messaging",
+                      "zh-CN/channels/discord/threads-and-sessions",
+                      "zh-CN/channels/discord/rich-messages",
+                      "zh-CN/channels/discord/events",
+                      "zh-CN/channels/discord/voice-channels",
+                      "zh-CN/channels/discord/voice-transcripts",
+                      "zh-CN/channels/discord/voice-follow",
+                      "zh-CN/channels/discord/troubleshooting",
                       "zh-CN/channels/discord-activities"
                     ]
                   },
@@ -4385,6 +4405,16 @@
                     "group": "Discord",
                     "pages": [
                       "zh-TW/channels/discord",
+                      "zh-TW/channels/discord/setup",
+                      "zh-TW/channels/discord/access-control",
+                      "zh-TW/channels/discord/messaging",
+                      "zh-TW/channels/discord/threads-and-sessions",
+                      "zh-TW/channels/discord/rich-messages",
+                      "zh-TW/channels/discord/events",
+                      "zh-TW/channels/discord/voice-channels",
+                      "zh-TW/channels/discord/voice-transcripts",
+                      "zh-TW/channels/discord/voice-follow",
+                      "zh-TW/channels/discord/troubleshooting",
                       "zh-TW/channels/discord-activities"
                     ]
                   },
@@ -5820,6 +5850,16 @@
                     "group": "Discord",
                     "pages": [
                       "ja-JP/channels/discord",
+                      "ja-JP/channels/discord/setup",
+                      "ja-JP/channels/discord/access-control",
+                      "ja-JP/channels/discord/messaging",
+                      "ja-JP/channels/discord/threads-and-sessions",
+                      "ja-JP/channels/discord/rich-messages",
+                      "ja-JP/channels/discord/events",
+                      "ja-JP/channels/discord/voice-channels",
+                      "ja-JP/channels/discord/voice-transcripts",
+                      "ja-JP/channels/discord/voice-follow",
+                      "ja-JP/channels/discord/troubleshooting",
                       "ja-JP/channels/discord-activities"
                     ]
                   },
@@ -7255,6 +7295,16 @@
                     "group": "Discord",
                     "pages": [
                       "es/channels/discord",
+                      "es/channels/discord/setup",
+                      "es/channels/discord/access-control",
+                      "es/channels/discord/messaging",
+                      "es/channels/discord/threads-and-sessions",
+                      "es/channels/discord/rich-messages",
+                      "es/channels/discord/events",
+                      "es/channels/discord/voice-channels",
+                      "es/channels/discord/voice-transcripts",
+                      "es/channels/discord/voice-follow",
+                      "es/channels/discord/troubleshooting",
                       "es/channels/discord-activities"
                     ]
                   },
@@ -8690,6 +8740,16 @@
                     "group": "Discord",
                     "pages": [
                       "pt-BR/channels/discord",
+                      "pt-BR/channels/discord/setup",
+                      "pt-BR/channels/discord/access-control",
+                      "pt-BR/channels/discord/messaging",
+                      "pt-BR/channels/discord/threads-and-sessions",
+                      "pt-BR/channels/discord/rich-messages",
+                      "pt-BR/channels/discord/events",
+                      "pt-BR/channels/discord/voice-channels",
+                      "pt-BR/channels/discord/voice-transcripts",
+                      "pt-BR/channels/discord/voice-follow",
+                      "pt-BR/channels/discord/troubleshooting",
                       "pt-BR/channels/discord-activities"
                     ]
                   },
@@ -10125,6 +10185,16 @@
                     "group": "Discord",
                     "pages": [
                       "ko/channels/discord",
+                      "ko/channels/discord/setup",
+                      "ko/channels/discord/access-control",
+                      "ko/channels/discord/messaging",
+                      "ko/channels/discord/threads-and-sessions",
+                      "ko/channels/discord/rich-messages",
+                      "ko/channels/discord/events",
+                      "ko/channels/discord/voice-channels",
+                      "ko/channels/discord/voice-transcripts",
+                      "ko/channels/discord/voice-follow",
+                      "ko/channels/discord/troubleshooting",
                       "ko/channels/discord-activities"
                     ]
                   },
@@ -11560,6 +11630,16 @@
                     "group": "Discord",
                     "pages": [
                       "de/channels/discord",
+                      "de/channels/discord/setup",
+                      "de/channels/discord/access-control",
+                      "de/channels/discord/messaging",
+                      "de/channels/discord/threads-and-sessions",
+                      "de/channels/discord/rich-messages",
+                      "de/channels/discord/events",
+                      "de/channels/discord/voice-channels",
+                      "de/channels/discord/voice-transcripts",
+                      "de/channels/discord/voice-follow",
+                      "de/channels/discord/troubleshooting",
                       "de/channels/discord-activities"
                     ]
                   },
@@ -12995,6 +13075,16 @@
                     "group": "Discord",
                     "pages": [
                       "fr/channels/discord",
+                      "fr/channels/discord/setup",
+                      "fr/channels/discord/access-control",
+                      "fr/channels/discord/messaging",
+                      "fr/channels/discord/threads-and-sessions",
+                      "fr/channels/discord/rich-messages",
+                      "fr/channels/discord/events",
+                      "fr/channels/discord/voice-channels",
+                      "fr/channels/discord/voice-transcripts",
+                      "fr/channels/discord/voice-follow",
+                      "fr/channels/discord/troubleshooting",
                       "fr/channels/discord-activities"
                     ]
                   },
@@ -14430,6 +14520,16 @@
                     "group": "Discord",
                     "pages": [
                       "hi/channels/discord",
+                      "hi/channels/discord/setup",
+                      "hi/channels/discord/access-control",
+                      "hi/channels/discord/messaging",
+                      "hi/channels/discord/threads-and-sessions",
+                      "hi/channels/discord/rich-messages",
+                      "hi/channels/discord/events",
+                      "hi/channels/discord/voice-channels",
+                      "hi/channels/discord/voice-transcripts",
+                      "hi/channels/discord/voice-follow",
+                      "hi/channels/discord/troubleshooting",
                       "hi/channels/discord-activities"
                     ]
                   },
@@ -15865,6 +15965,16 @@
                     "group": "Discord",
                     "pages": [
                       "ar/channels/discord",
+                      "ar/channels/discord/setup",
+                      "ar/channels/discord/access-control",
+                      "ar/channels/discord/messaging",
+                      "ar/channels/discord/threads-and-sessions",
+                      "ar/channels/discord/rich-messages",
+                      "ar/channels/discord/events",
+                      "ar/channels/discord/voice-channels",
+                      "ar/channels/discord/voice-transcripts",
+                      "ar/channels/discord/voice-follow",
+                      "ar/channels/discord/troubleshooting",
                       "ar/channels/discord-activities"
                     ]
                   },
@@ -17300,6 +17410,16 @@
                     "group": "Discord",
                     "pages": [
                       "it/channels/discord",
+                      "it/channels/discord/setup",
+                      "it/channels/discord/access-control",
+                      "it/channels/discord/messaging",
+                      "it/channels/discord/threads-and-sessions",
+                      "it/channels/discord/rich-messages",
+                      "it/channels/discord/events",
+                      "it/channels/discord/voice-channels",
+                      "it/channels/discord/voice-transcripts",
+                      "it/channels/discord/voice-follow",
+                      "it/channels/discord/troubleshooting",
                       "it/channels/discord-activities"
                     ]
                   },
@@ -18735,6 +18855,16 @@
                     "group": "Discord",
                     "pages": [
                       "vi/channels/discord",
+                      "vi/channels/discord/setup",
+                      "vi/channels/discord/access-control",
+                      "vi/channels/discord/messaging",
+                      "vi/channels/discord/threads-and-sessions",
+                      "vi/channels/discord/rich-messages",
+                      "vi/channels/discord/events",
+                      "vi/channels/discord/voice-channels",
+                      "vi/channels/discord/voice-transcripts",
+                      "vi/channels/discord/voice-follow",
+                      "vi/channels/discord/troubleshooting",
                       "vi/channels/discord-activities"
                     ]
                   },
@@ -20170,6 +20300,16 @@
                     "group": "Discord",
                     "pages": [
                       "nl/channels/discord",
+                      "nl/channels/discord/setup",
+                      "nl/channels/discord/access-control",
+                      "nl/channels/discord/messaging",
+                      "nl/channels/discord/threads-and-sessions",
+                      "nl/channels/discord/rich-messages",
+                      "nl/channels/discord/events",
+                      "nl/channels/discord/voice-channels",
+                      "nl/channels/discord/voice-transcripts",
+                      "nl/channels/discord/voice-follow",
+                      "nl/channels/discord/troubleshooting",
                       "nl/channels/discord-activities"
                     ]
                   },
@@ -21605,6 +21745,16 @@
                     "group": "Discord",
                     "pages": [
                       "tr/channels/discord",
+                      "tr/channels/discord/setup",
+                      "tr/channels/discord/access-control",
+                      "tr/channels/discord/messaging",
+                      "tr/channels/discord/threads-and-sessions",
+                      "tr/channels/discord/rich-messages",
+                      "tr/channels/discord/events",
+                      "tr/channels/discord/voice-channels",
+                      "tr/channels/discord/voice-transcripts",
+                      "tr/channels/discord/voice-follow",
+                      "tr/channels/discord/troubleshooting",
                       "tr/channels/discord-activities"
                     ]
                   },
@@ -23040,6 +23190,16 @@
                     "group": "Discord",
                     "pages": [
                       "uk/channels/discord",
+                      "uk/channels/discord/setup",
+                      "uk/channels/discord/access-control",
+                      "uk/channels/discord/messaging",
+                      "uk/channels/discord/threads-and-sessions",
+                      "uk/channels/discord/rich-messages",
+                      "uk/channels/discord/events",
+                      "uk/channels/discord/voice-channels",
+                      "uk/channels/discord/voice-transcripts",
+                      "uk/channels/discord/voice-follow",
+                      "uk/channels/discord/troubleshooting",
                       "uk/channels/discord-activities"
                     ]
                   },
@@ -24475,6 +24635,16 @@
                     "group": "Discord",
                     "pages": [
                       "id/channels/discord",
+                      "id/channels/discord/setup",
+                      "id/channels/discord/access-control",
+                      "id/channels/discord/messaging",
+                      "id/channels/discord/threads-and-sessions",
+                      "id/channels/discord/rich-messages",
+                      "id/channels/discord/events",
+                      "id/channels/discord/voice-channels",
+                      "id/channels/discord/voice-transcripts",
+                      "id/channels/discord/voice-follow",
+                      "id/channels/discord/troubleshooting",
                       "id/channels/discord-activities"
                     ]
                   },
@@ -25910,6 +26080,16 @@
                     "group": "Discord",
                     "pages": [
                       "pl/channels/discord",
+                      "pl/channels/discord/setup",
+                      "pl/channels/discord/access-control",
+                      "pl/channels/discord/messaging",
+                      "pl/channels/discord/threads-and-sessions",
+                      "pl/channels/discord/rich-messages",
+                      "pl/channels/discord/events",
+                      "pl/channels/discord/voice-channels",
+                      "pl/channels/discord/voice-transcripts",
+                      "pl/channels/discord/voice-follow",
+                      "pl/channels/discord/troubleshooting",
                       "pl/channels/discord-activities"
                     ]
                   },
@@ -27345,6 +27525,16 @@
                     "group": "Discord",
                     "pages": [
                       "ru/channels/discord",
+                      "ru/channels/discord/setup",
+                      "ru/channels/discord/access-control",
+                      "ru/channels/discord/messaging",
+                      "ru/channels/discord/threads-and-sessions",
+                      "ru/channels/discord/rich-messages",
+                      "ru/channels/discord/events",
+                      "ru/channels/discord/voice-channels",
+                      "ru/channels/discord/voice-transcripts",
+                      "ru/channels/discord/voice-follow",
+                      "ru/channels/discord/troubleshooting",
                       "ru/channels/discord-activities"
                     ]
                   },

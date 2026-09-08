@@ -428,30 +428,85 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/discord
 - Headings:
-  - H2: Quick setup
-  - H2: Recommended: Set up a guild workspace
-  - H2: Runtime model
-  - H2: Forum channels
-  - H2: Interactive components
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Configuration reference
+  - H3: Discord Activities
+  - H2: Safety and operations
+  - H2: Related
+
+## channels/discord/access-control.md
+
+- Route: /channels/discord/access-control
+- Headings:
   - H2: Access control and routing
   - H3: Guild channel maps are allowlists
   - H3: Applying access-policy changes
   - H3: Role-based agent routing
   - H2: Native commands and command auth
-  - H2: Feature details
   - H2: Tools and action gates
+
+## channels/discord/events.md
+
+- Route: /channels/discord/events
+- Headings:
+  - H2: Events and operations
+
+## channels/discord/messaging.md
+
+- Route: /channels/discord/messaging
+- Headings:
+  - H2: Runtime model
+  - H2: Message behavior
+
+## channels/discord/rich-messages.md
+
+- Route: /channels/discord/rich-messages
+- Headings:
+  - H2: Interactive components
   - H2: Components v2 UI
-  - H2: Voice
-  - H3: Voice channels
-  - H3: Capture voice transcripts
-  - H3: Meeting notes
-  - H3: Follow users in voice
-  - H3: Voice messages
+  - H2: Approvals
+
+## channels/discord/setup.md
+
+- Route: /channels/discord/setup
+- Headings:
+  - H2: Quick setup
+  - H2: Recommended: Set up a guild workspace
+
+## channels/discord/threads-and-sessions.md
+
+- Route: /channels/discord/threads-and-sessions
+- Headings:
+  - H2: Forum channels
+  - H2: Session and thread behavior
+
+## channels/discord/troubleshooting.md
+
+- Route: /channels/discord/troubleshooting
+- Headings:
   - H2: Troubleshooting
-  - H2: Configuration reference
-  - H3: Discord Activities
-  - H2: Safety and operations
-  - H2: Related
+
+## channels/discord/voice-channels.md
+
+- Route: /channels/discord/voice-channels
+- Headings:
+  - H2: Voice
+  - H2: Voice channels
+  - H2: Voice messages
+
+## channels/discord/voice-follow.md
+
+- Route: /channels/discord/voice-follow
+- Headings:
+  - H2: Follow users in voice
+
+## channels/discord/voice-transcripts.md
+
+- Route: /channels/discord/voice-transcripts
+- Headings:
+  - H2: Capture voice transcripts
+  - H2: Meeting notes
 
 ## channels/feishu.md
 
