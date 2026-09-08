@@ -8391,6 +8391,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Live output-token usage
   - H3: Agent-end side effects
   - H3: User input and tool surfaces
+  - H3: Exec reviewer outcomes
   - H3: Paired-device execution
   - H3: Native model inventory
   - H3: Native MCP inventory
