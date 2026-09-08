@@ -2572,6 +2572,17 @@
                   "plugins/architecture",
                   "plugins/architecture-internals",
                   "plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "plugins/sdk-migration/how-to-migrate",
+                      "plugins/sdk-migration/import-paths",
+                      "plugins/sdk-migration/removed-surfaces",
+                      "plugins/sdk-migration/talk",
+                      "plugins/sdk-migration/compatibility-policy",
+                      "plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "plugins/compatibility",
                   "plugins/sdk-channel-outbound",
                   "plugins/sdk-channel-inbound",
@@ -3983,6 +3994,17 @@
                   "zh-CN/plugins/architecture",
                   "zh-CN/plugins/architecture-internals",
                   "zh-CN/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "zh-CN/plugins/sdk-migration/how-to-migrate",
+                      "zh-CN/plugins/sdk-migration/import-paths",
+                      "zh-CN/plugins/sdk-migration/removed-surfaces",
+                      "zh-CN/plugins/sdk-migration/talk",
+                      "zh-CN/plugins/sdk-migration/compatibility-policy",
+                      "zh-CN/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "zh-CN/plugins/compatibility",
                   "zh-CN/plugins/sdk-channel-outbound",
                   "zh-CN/plugins/sdk-channel-inbound",
@@ -5394,6 +5416,17 @@
                   "zh-TW/plugins/architecture",
                   "zh-TW/plugins/architecture-internals",
                   "zh-TW/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "zh-TW/plugins/sdk-migration/how-to-migrate",
+                      "zh-TW/plugins/sdk-migration/import-paths",
+                      "zh-TW/plugins/sdk-migration/removed-surfaces",
+                      "zh-TW/plugins/sdk-migration/talk",
+                      "zh-TW/plugins/sdk-migration/compatibility-policy",
+                      "zh-TW/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "zh-TW/plugins/compatibility",
                   "zh-TW/plugins/sdk-channel-outbound",
                   "zh-TW/plugins/sdk-channel-inbound",
@@ -6805,6 +6838,17 @@
                   "ja-JP/plugins/architecture",
                   "ja-JP/plugins/architecture-internals",
                   "ja-JP/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "ja-JP/plugins/sdk-migration/how-to-migrate",
+                      "ja-JP/plugins/sdk-migration/import-paths",
+                      "ja-JP/plugins/sdk-migration/removed-surfaces",
+                      "ja-JP/plugins/sdk-migration/talk",
+                      "ja-JP/plugins/sdk-migration/compatibility-policy",
+                      "ja-JP/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "ja-JP/plugins/compatibility",
                   "ja-JP/plugins/sdk-channel-outbound",
                   "ja-JP/plugins/sdk-channel-inbound",
@@ -8216,6 +8260,17 @@
                   "es/plugins/architecture",
                   "es/plugins/architecture-internals",
                   "es/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "es/plugins/sdk-migration/how-to-migrate",
+                      "es/plugins/sdk-migration/import-paths",
+                      "es/plugins/sdk-migration/removed-surfaces",
+                      "es/plugins/sdk-migration/talk",
+                      "es/plugins/sdk-migration/compatibility-policy",
+                      "es/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "es/plugins/compatibility",
                   "es/plugins/sdk-channel-outbound",
                   "es/plugins/sdk-channel-inbound",
@@ -9627,6 +9682,17 @@
                   "pt-BR/plugins/architecture",
                   "pt-BR/plugins/architecture-internals",
                   "pt-BR/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "pt-BR/plugins/sdk-migration/how-to-migrate",
+                      "pt-BR/plugins/sdk-migration/import-paths",
+                      "pt-BR/plugins/sdk-migration/removed-surfaces",
+                      "pt-BR/plugins/sdk-migration/talk",
+                      "pt-BR/plugins/sdk-migration/compatibility-policy",
+                      "pt-BR/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "pt-BR/plugins/compatibility",
                   "pt-BR/plugins/sdk-channel-outbound",
                   "pt-BR/plugins/sdk-channel-inbound",
@@ -11038,6 +11104,17 @@
                   "ko/plugins/architecture",
                   "ko/plugins/architecture-internals",
                   "ko/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "ko/plugins/sdk-migration/how-to-migrate",
+                      "ko/plugins/sdk-migration/import-paths",
+                      "ko/plugins/sdk-migration/removed-surfaces",
+                      "ko/plugins/sdk-migration/talk",
+                      "ko/plugins/sdk-migration/compatibility-policy",
+                      "ko/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "ko/plugins/compatibility",
                   "ko/plugins/sdk-channel-outbound",
                   "ko/plugins/sdk-channel-inbound",
@@ -12449,6 +12526,17 @@
                   "de/plugins/architecture",
                   "de/plugins/architecture-internals",
                   "de/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "de/plugins/sdk-migration/how-to-migrate",
+                      "de/plugins/sdk-migration/import-paths",
+                      "de/plugins/sdk-migration/removed-surfaces",
+                      "de/plugins/sdk-migration/talk",
+                      "de/plugins/sdk-migration/compatibility-policy",
+                      "de/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "de/plugins/compatibility",
                   "de/plugins/sdk-channel-outbound",
                   "de/plugins/sdk-channel-inbound",
@@ -13860,6 +13948,17 @@
                   "fr/plugins/architecture",
                   "fr/plugins/architecture-internals",
                   "fr/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "fr/plugins/sdk-migration/how-to-migrate",
+                      "fr/plugins/sdk-migration/import-paths",
+                      "fr/plugins/sdk-migration/removed-surfaces",
+                      "fr/plugins/sdk-migration/talk",
+                      "fr/plugins/sdk-migration/compatibility-policy",
+                      "fr/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "fr/plugins/compatibility",
                   "fr/plugins/sdk-channel-outbound",
                   "fr/plugins/sdk-channel-inbound",
@@ -15271,6 +15370,17 @@
                   "hi/plugins/architecture",
                   "hi/plugins/architecture-internals",
                   "hi/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "hi/plugins/sdk-migration/how-to-migrate",
+                      "hi/plugins/sdk-migration/import-paths",
+                      "hi/plugins/sdk-migration/removed-surfaces",
+                      "hi/plugins/sdk-migration/talk",
+                      "hi/plugins/sdk-migration/compatibility-policy",
+                      "hi/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "hi/plugins/compatibility",
                   "hi/plugins/sdk-channel-outbound",
                   "hi/plugins/sdk-channel-inbound",
@@ -16682,6 +16792,17 @@
                   "ar/plugins/architecture",
                   "ar/plugins/architecture-internals",
                   "ar/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "ar/plugins/sdk-migration/how-to-migrate",
+                      "ar/plugins/sdk-migration/import-paths",
+                      "ar/plugins/sdk-migration/removed-surfaces",
+                      "ar/plugins/sdk-migration/talk",
+                      "ar/plugins/sdk-migration/compatibility-policy",
+                      "ar/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "ar/plugins/compatibility",
                   "ar/plugins/sdk-channel-outbound",
                   "ar/plugins/sdk-channel-inbound",
@@ -18093,6 +18214,17 @@
                   "it/plugins/architecture",
                   "it/plugins/architecture-internals",
                   "it/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "it/plugins/sdk-migration/how-to-migrate",
+                      "it/plugins/sdk-migration/import-paths",
+                      "it/plugins/sdk-migration/removed-surfaces",
+                      "it/plugins/sdk-migration/talk",
+                      "it/plugins/sdk-migration/compatibility-policy",
+                      "it/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "it/plugins/compatibility",
                   "it/plugins/sdk-channel-outbound",
                   "it/plugins/sdk-channel-inbound",
@@ -19504,6 +19636,17 @@
                   "vi/plugins/architecture",
                   "vi/plugins/architecture-internals",
                   "vi/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "vi/plugins/sdk-migration/how-to-migrate",
+                      "vi/plugins/sdk-migration/import-paths",
+                      "vi/plugins/sdk-migration/removed-surfaces",
+                      "vi/plugins/sdk-migration/talk",
+                      "vi/plugins/sdk-migration/compatibility-policy",
+                      "vi/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "vi/plugins/compatibility",
                   "vi/plugins/sdk-channel-outbound",
                   "vi/plugins/sdk-channel-inbound",
@@ -20915,6 +21058,17 @@
                   "nl/plugins/architecture",
                   "nl/plugins/architecture-internals",
                   "nl/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "nl/plugins/sdk-migration/how-to-migrate",
+                      "nl/plugins/sdk-migration/import-paths",
+                      "nl/plugins/sdk-migration/removed-surfaces",
+                      "nl/plugins/sdk-migration/talk",
+                      "nl/plugins/sdk-migration/compatibility-policy",
+                      "nl/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "nl/plugins/compatibility",
                   "nl/plugins/sdk-channel-outbound",
                   "nl/plugins/sdk-channel-inbound",
@@ -22326,6 +22480,17 @@
                   "tr/plugins/architecture",
                   "tr/plugins/architecture-internals",
                   "tr/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "tr/plugins/sdk-migration/how-to-migrate",
+                      "tr/plugins/sdk-migration/import-paths",
+                      "tr/plugins/sdk-migration/removed-surfaces",
+                      "tr/plugins/sdk-migration/talk",
+                      "tr/plugins/sdk-migration/compatibility-policy",
+                      "tr/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "tr/plugins/compatibility",
                   "tr/plugins/sdk-channel-outbound",
                   "tr/plugins/sdk-channel-inbound",
@@ -23737,6 +23902,17 @@
                   "uk/plugins/architecture",
                   "uk/plugins/architecture-internals",
                   "uk/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "uk/plugins/sdk-migration/how-to-migrate",
+                      "uk/plugins/sdk-migration/import-paths",
+                      "uk/plugins/sdk-migration/removed-surfaces",
+                      "uk/plugins/sdk-migration/talk",
+                      "uk/plugins/sdk-migration/compatibility-policy",
+                      "uk/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "uk/plugins/compatibility",
                   "uk/plugins/sdk-channel-outbound",
                   "uk/plugins/sdk-channel-inbound",
@@ -25148,6 +25324,17 @@
                   "id/plugins/architecture",
                   "id/plugins/architecture-internals",
                   "id/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "id/plugins/sdk-migration/how-to-migrate",
+                      "id/plugins/sdk-migration/import-paths",
+                      "id/plugins/sdk-migration/removed-surfaces",
+                      "id/plugins/sdk-migration/talk",
+                      "id/plugins/sdk-migration/compatibility-policy",
+                      "id/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "id/plugins/compatibility",
                   "id/plugins/sdk-channel-outbound",
                   "id/plugins/sdk-channel-inbound",
@@ -26559,6 +26746,17 @@
                   "pl/plugins/architecture",
                   "pl/plugins/architecture-internals",
                   "pl/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "pl/plugins/sdk-migration/how-to-migrate",
+                      "pl/plugins/sdk-migration/import-paths",
+                      "pl/plugins/sdk-migration/removed-surfaces",
+                      "pl/plugins/sdk-migration/talk",
+                      "pl/plugins/sdk-migration/compatibility-policy",
+                      "pl/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "pl/plugins/compatibility",
                   "pl/plugins/sdk-channel-outbound",
                   "pl/plugins/sdk-channel-inbound",
@@ -27970,6 +28168,17 @@
                   "ru/plugins/architecture",
                   "ru/plugins/architecture-internals",
                   "ru/plugins/sdk-migration",
+                  {
+                    "group": "Plugin SDK migration",
+                    "pages": [
+                      "ru/plugins/sdk-migration/how-to-migrate",
+                      "ru/plugins/sdk-migration/import-paths",
+                      "ru/plugins/sdk-migration/removed-surfaces",
+                      "ru/plugins/sdk-migration/talk",
+                      "ru/plugins/sdk-migration/compatibility-policy",
+                      "ru/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
                   "ru/plugins/compatibility",
                   "ru/plugins/sdk-channel-outbound",
                   "ru/plugins/sdk-channel-inbound",

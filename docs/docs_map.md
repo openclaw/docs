@@ -8634,6 +8634,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What changed
   - H3: Why
+  - H2: Where each topic lives
+  - H3: Migration steps
+  - H3: Import paths
+  - H3: Removed surfaces and replacements
+  - H3: Talk and voice
+  - H3: Compatibility records
+  - H3: Timeline
+  - H2: Related
+
+## plugins/sdk-migration/compatibility-policy.md
+
+- Route: /plugins/sdk-migration/compatibility-policy
+- Headings:
   - H2: Compatibility policy
   - H3: Retained helper contracts
   - H3: Harness attempt result migration
@@ -8646,17 +8659,41 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel setup input field compatibility
   - H4: Verifying readers
   - H3: Media legacy projection
+
+## plugins/sdk-migration/how-to-migrate.md
+
+- Route: /plugins/sdk-migration/how-to-migrate
+- Headings:
   - H2: How to migrate
+
+## plugins/sdk-migration/import-paths.md
+
+- Route: /plugins/sdk-migration/import-paths
+- Headings:
   - H2: Import path reference
   - H3: Retained channel facade mappings
+
+## plugins/sdk-migration/removal-timeline.md
+
+- Route: /plugins/sdk-migration/removal-timeline
+- Headings:
+  - H2: Removal timeline
+
+## plugins/sdk-migration/removed-surfaces.md
+
+- Route: /plugins/sdk-migration/removed-surfaces
+- Headings:
   - H2: Removed compatibility surfaces
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
   - H3: Private testing barrel
   - H2: Migration reference
+
+## plugins/sdk-migration/talk.md
+
+- Route: /plugins/sdk-migration/talk
+- Headings:
   - H2: Talk and realtime voice migration
-  - H2: Removal timeline
-  - H2: Related
 
 ## plugins/sdk-overview.md
 
