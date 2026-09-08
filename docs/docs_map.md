@@ -1422,6 +1422,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Critical Quality categories
   - H2: Maintenance workflows
   - H3: Dependency Audit
+  - H3: Docs Sync Publish Repo
   - H3: Docs Agent
   - H3: Duplicate PRs After Merge
   - H3: Update Migration
