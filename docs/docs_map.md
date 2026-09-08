@@ -4058,14 +4058,55 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor
 - Headings:
+  - H2: Doctor pages
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/doctor/checks.md
+
+- Route: /gateway/doctor/checks
+- Headings:
+  - H2: What it does (summary)
+
+## gateway/doctor/config-migrations.md
+
+- Route: /gateway/doctor/config-migrations
+- Headings:
+  - H2: Schema publication during a 2026.9.2 update
+  - H2: Checks 0-2
+
+## gateway/doctor/gateway-and-services.md
+
+- Route: /gateway/doctor/gateway-and-services
+- Headings:
+  - H2: Checks 8-17
+
+## gateway/doctor/provider-repairs.md
+
+- Route: /gateway/doctor/provider-repairs
+- Headings:
+  - H2: Checks 2b-2g
+
+## gateway/doctor/running.md
+
+- Route: /gateway/doctor/running
+- Headings:
   - H2: Quick start
   - H3: Headless and automation modes
-  - H2: Schema publication during a 2026.9.2 update
   - H2: Read-only lint mode
-  - H2: What it does (summary)
+
+## gateway/doctor/state-and-sessions.md
+
+- Route: /gateway/doctor/state-and-sessions
+- Headings:
+  - H2: Checks 3-7b
+
+## gateway/doctor/workspace-and-dreams.md
+
+- Route: /gateway/doctor/workspace-and-dreams
+- Headings:
+  - H2: Checks 18-20
   - H2: Dreams UI backfill and reset
-  - H2: Detailed behavior and rationale
-  - H2: Related
 
 ## gateway/embedding.md
 

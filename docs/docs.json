@@ -2156,6 +2156,18 @@
                       "gateway/health",
                       "gateway/heartbeat",
                       "gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "gateway/doctor/running",
+                          "gateway/doctor/checks",
+                          "gateway/doctor/config-migrations",
+                          "gateway/doctor/provider-repairs",
+                          "gateway/doctor/state-and-sessions",
+                          "gateway/doctor/gateway-and-services",
+                          "gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "gateway/audit",
                       "gateway/telemetry",
                       "logging",
@@ -3466,6 +3478,18 @@
                       "zh-CN/gateway/health",
                       "zh-CN/gateway/heartbeat",
                       "zh-CN/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "zh-CN/gateway/doctor/running",
+                          "zh-CN/gateway/doctor/checks",
+                          "zh-CN/gateway/doctor/config-migrations",
+                          "zh-CN/gateway/doctor/provider-repairs",
+                          "zh-CN/gateway/doctor/state-and-sessions",
+                          "zh-CN/gateway/doctor/gateway-and-services",
+                          "zh-CN/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "zh-CN/gateway/audit",
                       "zh-CN/gateway/telemetry",
                       "zh-CN/logging",
@@ -4776,6 +4800,18 @@
                       "zh-TW/gateway/health",
                       "zh-TW/gateway/heartbeat",
                       "zh-TW/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "zh-TW/gateway/doctor/running",
+                          "zh-TW/gateway/doctor/checks",
+                          "zh-TW/gateway/doctor/config-migrations",
+                          "zh-TW/gateway/doctor/provider-repairs",
+                          "zh-TW/gateway/doctor/state-and-sessions",
+                          "zh-TW/gateway/doctor/gateway-and-services",
+                          "zh-TW/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "zh-TW/gateway/audit",
                       "zh-TW/gateway/telemetry",
                       "zh-TW/logging",
@@ -6086,6 +6122,18 @@
                       "ja-JP/gateway/health",
                       "ja-JP/gateway/heartbeat",
                       "ja-JP/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ja-JP/gateway/doctor/running",
+                          "ja-JP/gateway/doctor/checks",
+                          "ja-JP/gateway/doctor/config-migrations",
+                          "ja-JP/gateway/doctor/provider-repairs",
+                          "ja-JP/gateway/doctor/state-and-sessions",
+                          "ja-JP/gateway/doctor/gateway-and-services",
+                          "ja-JP/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "ja-JP/gateway/audit",
                       "ja-JP/gateway/telemetry",
                       "ja-JP/logging",
@@ -7396,6 +7444,18 @@
                       "es/gateway/health",
                       "es/gateway/heartbeat",
                       "es/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "es/gateway/doctor/running",
+                          "es/gateway/doctor/checks",
+                          "es/gateway/doctor/config-migrations",
+                          "es/gateway/doctor/provider-repairs",
+                          "es/gateway/doctor/state-and-sessions",
+                          "es/gateway/doctor/gateway-and-services",
+                          "es/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "es/gateway/audit",
                       "es/gateway/telemetry",
                       "es/logging",
@@ -8706,6 +8766,18 @@
                       "pt-BR/gateway/health",
                       "pt-BR/gateway/heartbeat",
                       "pt-BR/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "pt-BR/gateway/doctor/running",
+                          "pt-BR/gateway/doctor/checks",
+                          "pt-BR/gateway/doctor/config-migrations",
+                          "pt-BR/gateway/doctor/provider-repairs",
+                          "pt-BR/gateway/doctor/state-and-sessions",
+                          "pt-BR/gateway/doctor/gateway-and-services",
+                          "pt-BR/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "pt-BR/gateway/audit",
                       "pt-BR/gateway/telemetry",
                       "pt-BR/logging",
@@ -10016,6 +10088,18 @@
                       "ko/gateway/health",
                       "ko/gateway/heartbeat",
                       "ko/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ko/gateway/doctor/running",
+                          "ko/gateway/doctor/checks",
+                          "ko/gateway/doctor/config-migrations",
+                          "ko/gateway/doctor/provider-repairs",
+                          "ko/gateway/doctor/state-and-sessions",
+                          "ko/gateway/doctor/gateway-and-services",
+                          "ko/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "ko/gateway/audit",
                       "ko/gateway/telemetry",
                       "ko/logging",
@@ -11326,6 +11410,18 @@
                       "de/gateway/health",
                       "de/gateway/heartbeat",
                       "de/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "de/gateway/doctor/running",
+                          "de/gateway/doctor/checks",
+                          "de/gateway/doctor/config-migrations",
+                          "de/gateway/doctor/provider-repairs",
+                          "de/gateway/doctor/state-and-sessions",
+                          "de/gateway/doctor/gateway-and-services",
+                          "de/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "de/gateway/audit",
                       "de/gateway/telemetry",
                       "de/logging",
@@ -12636,6 +12732,18 @@
                       "fr/gateway/health",
                       "fr/gateway/heartbeat",
                       "fr/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "fr/gateway/doctor/running",
+                          "fr/gateway/doctor/checks",
+                          "fr/gateway/doctor/config-migrations",
+                          "fr/gateway/doctor/provider-repairs",
+                          "fr/gateway/doctor/state-and-sessions",
+                          "fr/gateway/doctor/gateway-and-services",
+                          "fr/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "fr/gateway/audit",
                       "fr/gateway/telemetry",
                       "fr/logging",
@@ -13946,6 +14054,18 @@
                       "hi/gateway/health",
                       "hi/gateway/heartbeat",
                       "hi/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "hi/gateway/doctor/running",
+                          "hi/gateway/doctor/checks",
+                          "hi/gateway/doctor/config-migrations",
+                          "hi/gateway/doctor/provider-repairs",
+                          "hi/gateway/doctor/state-and-sessions",
+                          "hi/gateway/doctor/gateway-and-services",
+                          "hi/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "hi/gateway/audit",
                       "hi/gateway/telemetry",
                       "hi/logging",
@@ -15256,6 +15376,18 @@
                       "ar/gateway/health",
                       "ar/gateway/heartbeat",
                       "ar/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ar/gateway/doctor/running",
+                          "ar/gateway/doctor/checks",
+                          "ar/gateway/doctor/config-migrations",
+                          "ar/gateway/doctor/provider-repairs",
+                          "ar/gateway/doctor/state-and-sessions",
+                          "ar/gateway/doctor/gateway-and-services",
+                          "ar/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "ar/gateway/audit",
                       "ar/gateway/telemetry",
                       "ar/logging",
@@ -16566,6 +16698,18 @@
                       "it/gateway/health",
                       "it/gateway/heartbeat",
                       "it/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "it/gateway/doctor/running",
+                          "it/gateway/doctor/checks",
+                          "it/gateway/doctor/config-migrations",
+                          "it/gateway/doctor/provider-repairs",
+                          "it/gateway/doctor/state-and-sessions",
+                          "it/gateway/doctor/gateway-and-services",
+                          "it/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "it/gateway/audit",
                       "it/gateway/telemetry",
                       "it/logging",
@@ -17876,6 +18020,18 @@
                       "vi/gateway/health",
                       "vi/gateway/heartbeat",
                       "vi/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "vi/gateway/doctor/running",
+                          "vi/gateway/doctor/checks",
+                          "vi/gateway/doctor/config-migrations",
+                          "vi/gateway/doctor/provider-repairs",
+                          "vi/gateway/doctor/state-and-sessions",
+                          "vi/gateway/doctor/gateway-and-services",
+                          "vi/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "vi/gateway/audit",
                       "vi/gateway/telemetry",
                       "vi/logging",
@@ -19186,6 +19342,18 @@
                       "nl/gateway/health",
                       "nl/gateway/heartbeat",
                       "nl/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "nl/gateway/doctor/running",
+                          "nl/gateway/doctor/checks",
+                          "nl/gateway/doctor/config-migrations",
+                          "nl/gateway/doctor/provider-repairs",
+                          "nl/gateway/doctor/state-and-sessions",
+                          "nl/gateway/doctor/gateway-and-services",
+                          "nl/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "nl/gateway/audit",
                       "nl/gateway/telemetry",
                       "nl/logging",
@@ -20496,6 +20664,18 @@
                       "tr/gateway/health",
                       "tr/gateway/heartbeat",
                       "tr/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "tr/gateway/doctor/running",
+                          "tr/gateway/doctor/checks",
+                          "tr/gateway/doctor/config-migrations",
+                          "tr/gateway/doctor/provider-repairs",
+                          "tr/gateway/doctor/state-and-sessions",
+                          "tr/gateway/doctor/gateway-and-services",
+                          "tr/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "tr/gateway/audit",
                       "tr/gateway/telemetry",
                       "tr/logging",
@@ -21806,6 +21986,18 @@
                       "uk/gateway/health",
                       "uk/gateway/heartbeat",
                       "uk/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "uk/gateway/doctor/running",
+                          "uk/gateway/doctor/checks",
+                          "uk/gateway/doctor/config-migrations",
+                          "uk/gateway/doctor/provider-repairs",
+                          "uk/gateway/doctor/state-and-sessions",
+                          "uk/gateway/doctor/gateway-and-services",
+                          "uk/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "uk/gateway/audit",
                       "uk/gateway/telemetry",
                       "uk/logging",
@@ -23116,6 +23308,18 @@
                       "id/gateway/health",
                       "id/gateway/heartbeat",
                       "id/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "id/gateway/doctor/running",
+                          "id/gateway/doctor/checks",
+                          "id/gateway/doctor/config-migrations",
+                          "id/gateway/doctor/provider-repairs",
+                          "id/gateway/doctor/state-and-sessions",
+                          "id/gateway/doctor/gateway-and-services",
+                          "id/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "id/gateway/audit",
                       "id/gateway/telemetry",
                       "id/logging",
@@ -24426,6 +24630,18 @@
                       "pl/gateway/health",
                       "pl/gateway/heartbeat",
                       "pl/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "pl/gateway/doctor/running",
+                          "pl/gateway/doctor/checks",
+                          "pl/gateway/doctor/config-migrations",
+                          "pl/gateway/doctor/provider-repairs",
+                          "pl/gateway/doctor/state-and-sessions",
+                          "pl/gateway/doctor/gateway-and-services",
+                          "pl/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "pl/gateway/audit",
                       "pl/gateway/telemetry",
                       "pl/logging",
@@ -25736,6 +25952,18 @@
                       "ru/gateway/health",
                       "ru/gateway/heartbeat",
                       "ru/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ru/gateway/doctor/running",
+                          "ru/gateway/doctor/checks",
+                          "ru/gateway/doctor/config-migrations",
+                          "ru/gateway/doctor/provider-repairs",
+                          "ru/gateway/doctor/state-and-sessions",
+                          "ru/gateway/doctor/gateway-and-services",
+                          "ru/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
                       "ru/gateway/audit",
                       "ru/gateway/telemetry",
                       "ru/logging",
