@@ -1735,6 +1735,16 @@
                   "plugins/tool-plugins",
                   "plugins/sdk-channel-plugins",
                   "plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "plugins/sdk-provider-plugins/model-catalogs",
+                      "plugins/sdk-provider-plugins/hook-families",
+                      "plugins/sdk-provider-plugins/runtime-hooks",
+                      "plugins/sdk-provider-plugins/voice-and-audio",
+                      "plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "plugins/cli-backend-plugins",
                   "plugins/hooks",
                   "plugins/plugin-permission-requests",
@@ -3069,6 +3079,16 @@
                   "zh-CN/plugins/tool-plugins",
                   "zh-CN/plugins/sdk-channel-plugins",
                   "zh-CN/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "zh-CN/plugins/sdk-provider-plugins/model-catalogs",
+                      "zh-CN/plugins/sdk-provider-plugins/hook-families",
+                      "zh-CN/plugins/sdk-provider-plugins/runtime-hooks",
+                      "zh-CN/plugins/sdk-provider-plugins/voice-and-audio",
+                      "zh-CN/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "zh-CN/plugins/cli-backend-plugins",
                   "zh-CN/plugins/hooks",
                   "zh-CN/plugins/plugin-permission-requests",
@@ -4369,6 +4389,16 @@
                   "zh-TW/plugins/tool-plugins",
                   "zh-TW/plugins/sdk-channel-plugins",
                   "zh-TW/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "zh-TW/plugins/sdk-provider-plugins/model-catalogs",
+                      "zh-TW/plugins/sdk-provider-plugins/hook-families",
+                      "zh-TW/plugins/sdk-provider-plugins/runtime-hooks",
+                      "zh-TW/plugins/sdk-provider-plugins/voice-and-audio",
+                      "zh-TW/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "zh-TW/plugins/cli-backend-plugins",
                   "zh-TW/plugins/hooks",
                   "zh-TW/plugins/plugin-permission-requests",
@@ -5669,6 +5699,16 @@
                   "ja-JP/plugins/tool-plugins",
                   "ja-JP/plugins/sdk-channel-plugins",
                   "ja-JP/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "ja-JP/plugins/sdk-provider-plugins/model-catalogs",
+                      "ja-JP/plugins/sdk-provider-plugins/hook-families",
+                      "ja-JP/plugins/sdk-provider-plugins/runtime-hooks",
+                      "ja-JP/plugins/sdk-provider-plugins/voice-and-audio",
+                      "ja-JP/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "ja-JP/plugins/cli-backend-plugins",
                   "ja-JP/plugins/hooks",
                   "ja-JP/plugins/plugin-permission-requests",
@@ -6969,6 +7009,16 @@
                   "es/plugins/tool-plugins",
                   "es/plugins/sdk-channel-plugins",
                   "es/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "es/plugins/sdk-provider-plugins/model-catalogs",
+                      "es/plugins/sdk-provider-plugins/hook-families",
+                      "es/plugins/sdk-provider-plugins/runtime-hooks",
+                      "es/plugins/sdk-provider-plugins/voice-and-audio",
+                      "es/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "es/plugins/cli-backend-plugins",
                   "es/plugins/hooks",
                   "es/plugins/plugin-permission-requests",
@@ -8269,6 +8319,16 @@
                   "pt-BR/plugins/tool-plugins",
                   "pt-BR/plugins/sdk-channel-plugins",
                   "pt-BR/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "pt-BR/plugins/sdk-provider-plugins/model-catalogs",
+                      "pt-BR/plugins/sdk-provider-plugins/hook-families",
+                      "pt-BR/plugins/sdk-provider-plugins/runtime-hooks",
+                      "pt-BR/plugins/sdk-provider-plugins/voice-and-audio",
+                      "pt-BR/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "pt-BR/plugins/cli-backend-plugins",
                   "pt-BR/plugins/hooks",
                   "pt-BR/plugins/plugin-permission-requests",
@@ -9569,6 +9629,16 @@
                   "ko/plugins/tool-plugins",
                   "ko/plugins/sdk-channel-plugins",
                   "ko/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "ko/plugins/sdk-provider-plugins/model-catalogs",
+                      "ko/plugins/sdk-provider-plugins/hook-families",
+                      "ko/plugins/sdk-provider-plugins/runtime-hooks",
+                      "ko/plugins/sdk-provider-plugins/voice-and-audio",
+                      "ko/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "ko/plugins/cli-backend-plugins",
                   "ko/plugins/hooks",
                   "ko/plugins/plugin-permission-requests",
@@ -10869,6 +10939,16 @@
                   "de/plugins/tool-plugins",
                   "de/plugins/sdk-channel-plugins",
                   "de/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "de/plugins/sdk-provider-plugins/model-catalogs",
+                      "de/plugins/sdk-provider-plugins/hook-families",
+                      "de/plugins/sdk-provider-plugins/runtime-hooks",
+                      "de/plugins/sdk-provider-plugins/voice-and-audio",
+                      "de/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "de/plugins/cli-backend-plugins",
                   "de/plugins/hooks",
                   "de/plugins/plugin-permission-requests",
@@ -12169,6 +12249,16 @@
                   "fr/plugins/tool-plugins",
                   "fr/plugins/sdk-channel-plugins",
                   "fr/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "fr/plugins/sdk-provider-plugins/model-catalogs",
+                      "fr/plugins/sdk-provider-plugins/hook-families",
+                      "fr/plugins/sdk-provider-plugins/runtime-hooks",
+                      "fr/plugins/sdk-provider-plugins/voice-and-audio",
+                      "fr/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "fr/plugins/cli-backend-plugins",
                   "fr/plugins/hooks",
                   "fr/plugins/plugin-permission-requests",
@@ -13469,6 +13559,16 @@
                   "hi/plugins/tool-plugins",
                   "hi/plugins/sdk-channel-plugins",
                   "hi/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "hi/plugins/sdk-provider-plugins/model-catalogs",
+                      "hi/plugins/sdk-provider-plugins/hook-families",
+                      "hi/plugins/sdk-provider-plugins/runtime-hooks",
+                      "hi/plugins/sdk-provider-plugins/voice-and-audio",
+                      "hi/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "hi/plugins/cli-backend-plugins",
                   "hi/plugins/hooks",
                   "hi/plugins/plugin-permission-requests",
@@ -14769,6 +14869,16 @@
                   "ar/plugins/tool-plugins",
                   "ar/plugins/sdk-channel-plugins",
                   "ar/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "ar/plugins/sdk-provider-plugins/model-catalogs",
+                      "ar/plugins/sdk-provider-plugins/hook-families",
+                      "ar/plugins/sdk-provider-plugins/runtime-hooks",
+                      "ar/plugins/sdk-provider-plugins/voice-and-audio",
+                      "ar/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "ar/plugins/cli-backend-plugins",
                   "ar/plugins/hooks",
                   "ar/plugins/plugin-permission-requests",
@@ -16069,6 +16179,16 @@
                   "it/plugins/tool-plugins",
                   "it/plugins/sdk-channel-plugins",
                   "it/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "it/plugins/sdk-provider-plugins/model-catalogs",
+                      "it/plugins/sdk-provider-plugins/hook-families",
+                      "it/plugins/sdk-provider-plugins/runtime-hooks",
+                      "it/plugins/sdk-provider-plugins/voice-and-audio",
+                      "it/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "it/plugins/cli-backend-plugins",
                   "it/plugins/hooks",
                   "it/plugins/plugin-permission-requests",
@@ -17369,6 +17489,16 @@
                   "vi/plugins/tool-plugins",
                   "vi/plugins/sdk-channel-plugins",
                   "vi/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "vi/plugins/sdk-provider-plugins/model-catalogs",
+                      "vi/plugins/sdk-provider-plugins/hook-families",
+                      "vi/plugins/sdk-provider-plugins/runtime-hooks",
+                      "vi/plugins/sdk-provider-plugins/voice-and-audio",
+                      "vi/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "vi/plugins/cli-backend-plugins",
                   "vi/plugins/hooks",
                   "vi/plugins/plugin-permission-requests",
@@ -18669,6 +18799,16 @@
                   "nl/plugins/tool-plugins",
                   "nl/plugins/sdk-channel-plugins",
                   "nl/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "nl/plugins/sdk-provider-plugins/model-catalogs",
+                      "nl/plugins/sdk-provider-plugins/hook-families",
+                      "nl/plugins/sdk-provider-plugins/runtime-hooks",
+                      "nl/plugins/sdk-provider-plugins/voice-and-audio",
+                      "nl/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "nl/plugins/cli-backend-plugins",
                   "nl/plugins/hooks",
                   "nl/plugins/plugin-permission-requests",
@@ -19969,6 +20109,16 @@
                   "tr/plugins/tool-plugins",
                   "tr/plugins/sdk-channel-plugins",
                   "tr/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "tr/plugins/sdk-provider-plugins/model-catalogs",
+                      "tr/plugins/sdk-provider-plugins/hook-families",
+                      "tr/plugins/sdk-provider-plugins/runtime-hooks",
+                      "tr/plugins/sdk-provider-plugins/voice-and-audio",
+                      "tr/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "tr/plugins/cli-backend-plugins",
                   "tr/plugins/hooks",
                   "tr/plugins/plugin-permission-requests",
@@ -21269,6 +21419,16 @@
                   "uk/plugins/tool-plugins",
                   "uk/plugins/sdk-channel-plugins",
                   "uk/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "uk/plugins/sdk-provider-plugins/model-catalogs",
+                      "uk/plugins/sdk-provider-plugins/hook-families",
+                      "uk/plugins/sdk-provider-plugins/runtime-hooks",
+                      "uk/plugins/sdk-provider-plugins/voice-and-audio",
+                      "uk/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "uk/plugins/cli-backend-plugins",
                   "uk/plugins/hooks",
                   "uk/plugins/plugin-permission-requests",
@@ -22569,6 +22729,16 @@
                   "id/plugins/tool-plugins",
                   "id/plugins/sdk-channel-plugins",
                   "id/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "id/plugins/sdk-provider-plugins/model-catalogs",
+                      "id/plugins/sdk-provider-plugins/hook-families",
+                      "id/plugins/sdk-provider-plugins/runtime-hooks",
+                      "id/plugins/sdk-provider-plugins/voice-and-audio",
+                      "id/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "id/plugins/cli-backend-plugins",
                   "id/plugins/hooks",
                   "id/plugins/plugin-permission-requests",
@@ -23869,6 +24039,16 @@
                   "pl/plugins/tool-plugins",
                   "pl/plugins/sdk-channel-plugins",
                   "pl/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "pl/plugins/sdk-provider-plugins/model-catalogs",
+                      "pl/plugins/sdk-provider-plugins/hook-families",
+                      "pl/plugins/sdk-provider-plugins/runtime-hooks",
+                      "pl/plugins/sdk-provider-plugins/voice-and-audio",
+                      "pl/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "pl/plugins/cli-backend-plugins",
                   "pl/plugins/hooks",
                   "pl/plugins/plugin-permission-requests",
@@ -25169,6 +25349,16 @@
                   "ru/plugins/tool-plugins",
                   "ru/plugins/sdk-channel-plugins",
                   "ru/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Provider plugins",
+                    "pages": [
+                      "ru/plugins/sdk-provider-plugins/model-catalogs",
+                      "ru/plugins/sdk-provider-plugins/hook-families",
+                      "ru/plugins/sdk-provider-plugins/runtime-hooks",
+                      "ru/plugins/sdk-provider-plugins/voice-and-audio",
+                      "ru/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
                   "ru/plugins/cli-backend-plugins",
                   "ru/plugins/hooks",
                   "ru/plugins/plugin-permission-requests",

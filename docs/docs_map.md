@@ -8473,7 +8473,43 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: File structure
   - H2: Catalog order reference
   - H2: Next steps
+  - H2: Where each section moved
+  - H3: Provider model catalogs
+  - H3: Provider hook families
+  - H3: Provider hook wiring
+  - H3: Provider voice capabilities
+  - H3: Provider media and search
   - H2: Related
+
+## plugins/sdk-provider-plugins/hook-families.md
+
+- Route: /plugins/sdk-provider-plugins/hook-families
+- Headings:
+  - H2: Family builders
+
+## plugins/sdk-provider-plugins/media-and-search.md
+
+- Route: /plugins/sdk-provider-plugins/media-and-search
+- Headings:
+  - H2: Media and search capabilities
+
+## plugins/sdk-provider-plugins/model-catalogs.md
+
+- Route: /plugins/sdk-provider-plugins/model-catalogs
+- Headings:
+  - H2: Live model discovery
+
+## plugins/sdk-provider-plugins/runtime-hooks.md
+
+- Route: /plugins/sdk-provider-plugins/runtime-hooks
+- Headings:
+  - H2: Hook examples
+
+## plugins/sdk-provider-plugins/voice-and-audio.md
+
+- Route: /plugins/sdk-provider-plugins/voice-and-audio
+- Headings:
+  - H2: Voice and audio capabilities
 
 ## plugins/sdk-runtime.md
 
