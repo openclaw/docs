@@ -2762,5 +2762,37 @@
   {
     "source": "Operator incident response",
     "target": "运维方事件响应"
+  },
+  {
+    "source": "Command surface",
+    "target": "命令总览"
+  },
+  {
+    "source": "Operator flow",
+    "target": "操作员流程"
+  },
+  {
+    "source": "Canonical scenario coverage",
+    "target": "标准场景覆盖"
+  },
+  {
+    "source": "Channel QA reference",
+    "target": "通道 QA 参考"
+  },
+  {
+    "source": "Slack QA",
+    "target": "Slack QA"
+  },
+  {
+    "source": "WhatsApp QA and credentials",
+    "target": "WhatsApp QA 与凭据"
+  },
+  {
+    "source": "Extending the QA stack",
+    "target": "扩展 QA 技术栈"
+  },
+  {
+    "source": "QA reporting",
+    "target": "QA 报告"
   }
 ]

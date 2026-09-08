@@ -2695,6 +2695,19 @@
                   },
                   "help/scripts",
                   "concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "concepts/qa-e2e-automation/command-surface",
+                      "concepts/qa-e2e-automation/operator-flow",
+                      "concepts/qa-e2e-automation/scenario-coverage",
+                      "concepts/qa-e2e-automation/channel-qa-reference",
+                      "concepts/qa-e2e-automation/slack-qa",
+                      "concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "concepts/qa-e2e-automation/extending-the-stack",
+                      "concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -4083,6 +4096,19 @@
                   },
                   "zh-CN/help/scripts",
                   "zh-CN/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "zh-CN/concepts/qa-e2e-automation/command-surface",
+                      "zh-CN/concepts/qa-e2e-automation/operator-flow",
+                      "zh-CN/concepts/qa-e2e-automation/scenario-coverage",
+                      "zh-CN/concepts/qa-e2e-automation/channel-qa-reference",
+                      "zh-CN/concepts/qa-e2e-automation/slack-qa",
+                      "zh-CN/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "zh-CN/concepts/qa-e2e-automation/extending-the-stack",
+                      "zh-CN/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "zh-CN/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -5471,6 +5497,19 @@
                   },
                   "zh-TW/help/scripts",
                   "zh-TW/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "zh-TW/concepts/qa-e2e-automation/command-surface",
+                      "zh-TW/concepts/qa-e2e-automation/operator-flow",
+                      "zh-TW/concepts/qa-e2e-automation/scenario-coverage",
+                      "zh-TW/concepts/qa-e2e-automation/channel-qa-reference",
+                      "zh-TW/concepts/qa-e2e-automation/slack-qa",
+                      "zh-TW/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "zh-TW/concepts/qa-e2e-automation/extending-the-stack",
+                      "zh-TW/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "zh-TW/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -6859,6 +6898,19 @@
                   },
                   "ja-JP/help/scripts",
                   "ja-JP/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "ja-JP/concepts/qa-e2e-automation/command-surface",
+                      "ja-JP/concepts/qa-e2e-automation/operator-flow",
+                      "ja-JP/concepts/qa-e2e-automation/scenario-coverage",
+                      "ja-JP/concepts/qa-e2e-automation/channel-qa-reference",
+                      "ja-JP/concepts/qa-e2e-automation/slack-qa",
+                      "ja-JP/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "ja-JP/concepts/qa-e2e-automation/extending-the-stack",
+                      "ja-JP/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "ja-JP/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -8247,6 +8299,19 @@
                   },
                   "es/help/scripts",
                   "es/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "es/concepts/qa-e2e-automation/command-surface",
+                      "es/concepts/qa-e2e-automation/operator-flow",
+                      "es/concepts/qa-e2e-automation/scenario-coverage",
+                      "es/concepts/qa-e2e-automation/channel-qa-reference",
+                      "es/concepts/qa-e2e-automation/slack-qa",
+                      "es/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "es/concepts/qa-e2e-automation/extending-the-stack",
+                      "es/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "es/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -9635,6 +9700,19 @@
                   },
                   "pt-BR/help/scripts",
                   "pt-BR/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "pt-BR/concepts/qa-e2e-automation/command-surface",
+                      "pt-BR/concepts/qa-e2e-automation/operator-flow",
+                      "pt-BR/concepts/qa-e2e-automation/scenario-coverage",
+                      "pt-BR/concepts/qa-e2e-automation/channel-qa-reference",
+                      "pt-BR/concepts/qa-e2e-automation/slack-qa",
+                      "pt-BR/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "pt-BR/concepts/qa-e2e-automation/extending-the-stack",
+                      "pt-BR/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "pt-BR/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -11023,6 +11101,19 @@
                   },
                   "ko/help/scripts",
                   "ko/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "ko/concepts/qa-e2e-automation/command-surface",
+                      "ko/concepts/qa-e2e-automation/operator-flow",
+                      "ko/concepts/qa-e2e-automation/scenario-coverage",
+                      "ko/concepts/qa-e2e-automation/channel-qa-reference",
+                      "ko/concepts/qa-e2e-automation/slack-qa",
+                      "ko/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "ko/concepts/qa-e2e-automation/extending-the-stack",
+                      "ko/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "ko/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -12411,6 +12502,19 @@
                   },
                   "de/help/scripts",
                   "de/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "de/concepts/qa-e2e-automation/command-surface",
+                      "de/concepts/qa-e2e-automation/operator-flow",
+                      "de/concepts/qa-e2e-automation/scenario-coverage",
+                      "de/concepts/qa-e2e-automation/channel-qa-reference",
+                      "de/concepts/qa-e2e-automation/slack-qa",
+                      "de/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "de/concepts/qa-e2e-automation/extending-the-stack",
+                      "de/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "de/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -13799,6 +13903,19 @@
                   },
                   "fr/help/scripts",
                   "fr/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "fr/concepts/qa-e2e-automation/command-surface",
+                      "fr/concepts/qa-e2e-automation/operator-flow",
+                      "fr/concepts/qa-e2e-automation/scenario-coverage",
+                      "fr/concepts/qa-e2e-automation/channel-qa-reference",
+                      "fr/concepts/qa-e2e-automation/slack-qa",
+                      "fr/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "fr/concepts/qa-e2e-automation/extending-the-stack",
+                      "fr/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "fr/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -15187,6 +15304,19 @@
                   },
                   "hi/help/scripts",
                   "hi/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "hi/concepts/qa-e2e-automation/command-surface",
+                      "hi/concepts/qa-e2e-automation/operator-flow",
+                      "hi/concepts/qa-e2e-automation/scenario-coverage",
+                      "hi/concepts/qa-e2e-automation/channel-qa-reference",
+                      "hi/concepts/qa-e2e-automation/slack-qa",
+                      "hi/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "hi/concepts/qa-e2e-automation/extending-the-stack",
+                      "hi/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "hi/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -16575,6 +16705,19 @@
                   },
                   "ar/help/scripts",
                   "ar/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "ar/concepts/qa-e2e-automation/command-surface",
+                      "ar/concepts/qa-e2e-automation/operator-flow",
+                      "ar/concepts/qa-e2e-automation/scenario-coverage",
+                      "ar/concepts/qa-e2e-automation/channel-qa-reference",
+                      "ar/concepts/qa-e2e-automation/slack-qa",
+                      "ar/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "ar/concepts/qa-e2e-automation/extending-the-stack",
+                      "ar/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "ar/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -17963,6 +18106,19 @@
                   },
                   "it/help/scripts",
                   "it/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "it/concepts/qa-e2e-automation/command-surface",
+                      "it/concepts/qa-e2e-automation/operator-flow",
+                      "it/concepts/qa-e2e-automation/scenario-coverage",
+                      "it/concepts/qa-e2e-automation/channel-qa-reference",
+                      "it/concepts/qa-e2e-automation/slack-qa",
+                      "it/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "it/concepts/qa-e2e-automation/extending-the-stack",
+                      "it/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "it/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -19351,6 +19507,19 @@
                   },
                   "vi/help/scripts",
                   "vi/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "vi/concepts/qa-e2e-automation/command-surface",
+                      "vi/concepts/qa-e2e-automation/operator-flow",
+                      "vi/concepts/qa-e2e-automation/scenario-coverage",
+                      "vi/concepts/qa-e2e-automation/channel-qa-reference",
+                      "vi/concepts/qa-e2e-automation/slack-qa",
+                      "vi/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "vi/concepts/qa-e2e-automation/extending-the-stack",
+                      "vi/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "vi/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -20739,6 +20908,19 @@
                   },
                   "nl/help/scripts",
                   "nl/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "nl/concepts/qa-e2e-automation/command-surface",
+                      "nl/concepts/qa-e2e-automation/operator-flow",
+                      "nl/concepts/qa-e2e-automation/scenario-coverage",
+                      "nl/concepts/qa-e2e-automation/channel-qa-reference",
+                      "nl/concepts/qa-e2e-automation/slack-qa",
+                      "nl/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "nl/concepts/qa-e2e-automation/extending-the-stack",
+                      "nl/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "nl/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -22127,6 +22309,19 @@
                   },
                   "tr/help/scripts",
                   "tr/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "tr/concepts/qa-e2e-automation/command-surface",
+                      "tr/concepts/qa-e2e-automation/operator-flow",
+                      "tr/concepts/qa-e2e-automation/scenario-coverage",
+                      "tr/concepts/qa-e2e-automation/channel-qa-reference",
+                      "tr/concepts/qa-e2e-automation/slack-qa",
+                      "tr/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "tr/concepts/qa-e2e-automation/extending-the-stack",
+                      "tr/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "tr/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -23515,6 +23710,19 @@
                   },
                   "uk/help/scripts",
                   "uk/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "uk/concepts/qa-e2e-automation/command-surface",
+                      "uk/concepts/qa-e2e-automation/operator-flow",
+                      "uk/concepts/qa-e2e-automation/scenario-coverage",
+                      "uk/concepts/qa-e2e-automation/channel-qa-reference",
+                      "uk/concepts/qa-e2e-automation/slack-qa",
+                      "uk/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "uk/concepts/qa-e2e-automation/extending-the-stack",
+                      "uk/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "uk/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -24903,6 +25111,19 @@
                   },
                   "id/help/scripts",
                   "id/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "id/concepts/qa-e2e-automation/command-surface",
+                      "id/concepts/qa-e2e-automation/operator-flow",
+                      "id/concepts/qa-e2e-automation/scenario-coverage",
+                      "id/concepts/qa-e2e-automation/channel-qa-reference",
+                      "id/concepts/qa-e2e-automation/slack-qa",
+                      "id/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "id/concepts/qa-e2e-automation/extending-the-stack",
+                      "id/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "id/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -26291,6 +26512,19 @@
                   },
                   "pl/help/scripts",
                   "pl/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "pl/concepts/qa-e2e-automation/command-surface",
+                      "pl/concepts/qa-e2e-automation/operator-flow",
+                      "pl/concepts/qa-e2e-automation/scenario-coverage",
+                      "pl/concepts/qa-e2e-automation/channel-qa-reference",
+                      "pl/concepts/qa-e2e-automation/slack-qa",
+                      "pl/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "pl/concepts/qa-e2e-automation/extending-the-stack",
+                      "pl/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "pl/concepts/personal-agent-benchmark-pack"
                 ]
               }
@@ -27679,6 +27913,19 @@
                   },
                   "ru/help/scripts",
                   "ru/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA stack",
+                    "pages": [
+                      "ru/concepts/qa-e2e-automation/command-surface",
+                      "ru/concepts/qa-e2e-automation/operator-flow",
+                      "ru/concepts/qa-e2e-automation/scenario-coverage",
+                      "ru/concepts/qa-e2e-automation/channel-qa-reference",
+                      "ru/concepts/qa-e2e-automation/slack-qa",
+                      "ru/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "ru/concepts/qa-e2e-automation/extending-the-stack",
+                      "ru/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
                   "ru/concepts/personal-agent-benchmark-pack"
                 ]
               }

@@ -3192,31 +3192,72 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/qa-e2e-automation
 - Headings:
+  - H2: Where each section moved
+  - H2: Related docs
+
+## concepts/qa-e2e-automation/channel-qa-reference.md
+
+- Route: /concepts/qa-e2e-automation/channel-qa-reference
+- Headings:
+  - H2: Buzz, Discord, Slack, Telegram, and WhatsApp QA reference
+  - H3: Shared CLI flags
+  - H3: Buzz QA
+  - H3: Telegram QA
+  - H3: Discord QA
+
+## concepts/qa-e2e-automation/command-surface.md
+
+- Route: /concepts/qa-e2e-automation/command-surface
+- Headings:
   - H2: Command surface
   - H3: Profile-backed qa run
+
+## concepts/qa-e2e-automation/extending-the-stack.md
+
+- Route: /concepts/qa-e2e-automation/extending-the-stack
+- Headings:
+  - H2: Repo-backed seeds
+  - H2: Provider mock lanes
+  - H2: Transport adapters
+  - H3: Adding a channel
+  - H3: Scenario helper names
+
+## concepts/qa-e2e-automation/operator-flow.md
+
+- Route: /concepts/qa-e2e-automation/operator-flow
+- Headings:
   - H2: Operator flow
   - H3: Observability smokes
   - H3: Matrix live lane
   - H3: Discord Mantis scenarios
   - H3: Mantis Slack desktop and visual-task runners
   - H3: Credential pool health check
-  - H2: Canonical scenario coverage
-  - H2: Buzz, Discord, Slack, Telegram, and WhatsApp QA reference
-  - H3: Shared CLI flags
-  - H3: Buzz QA
-  - H3: Telegram QA
-  - H3: Discord QA
-  - H3: Slack QA
-  - H4: Setting up the Slack workspace
-  - H3: WhatsApp QA
-  - H3: Convex credential pool
-  - H2: Repo-backed seeds
-  - H2: Provider mock lanes
-  - H2: Transport adapters
-  - H3: Adding a channel
-  - H3: Scenario helper names
+
+## concepts/qa-e2e-automation/qa-reporting.md
+
+- Route: /concepts/qa-e2e-automation/qa-reporting
+- Headings:
   - H2: Reporting
-  - H2: Related docs
+
+## concepts/qa-e2e-automation/scenario-coverage.md
+
+- Route: /concepts/qa-e2e-automation/scenario-coverage
+- Headings:
+  - H2: Canonical scenario coverage
+
+## concepts/qa-e2e-automation/slack-qa.md
+
+- Route: /concepts/qa-e2e-automation/slack-qa
+- Headings:
+  - H2: Slack QA
+  - H3: Setting up the Slack workspace
+
+## concepts/qa-e2e-automation/whatsapp-and-credentials.md
+
+- Route: /concepts/qa-e2e-automation/whatsapp-and-credentials
+- Headings:
+  - H2: WhatsApp QA
+  - H2: Convex credential pool
 
 ## concepts/queue-steering.md
 
