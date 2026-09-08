@@ -2668,6 +2668,17 @@
                 "group": "Testing",
                 "pages": [
                   "help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "help/testing/suites",
+                      "help/testing/live-workflows",
+                      "help/testing/docker",
+                      "help/testing/qa-runners",
+                      "help/testing/contracts",
+                      "help/testing/writing-tests"
+                    ]
+                  },
                   "help/testing-updates-plugins",
                   "help/testing-live"
                 ]
@@ -3990,6 +4001,17 @@
                 "group": "Testing",
                 "pages": [
                   "zh-CN/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "zh-CN/help/testing/suites",
+                      "zh-CN/help/testing/live-workflows",
+                      "zh-CN/help/testing/docker",
+                      "zh-CN/help/testing/qa-runners",
+                      "zh-CN/help/testing/contracts",
+                      "zh-CN/help/testing/writing-tests"
+                    ]
+                  },
                   "zh-CN/help/testing-updates-plugins",
                   "zh-CN/help/testing-live"
                 ]
@@ -5312,6 +5334,17 @@
                 "group": "Testing",
                 "pages": [
                   "zh-TW/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "zh-TW/help/testing/suites",
+                      "zh-TW/help/testing/live-workflows",
+                      "zh-TW/help/testing/docker",
+                      "zh-TW/help/testing/qa-runners",
+                      "zh-TW/help/testing/contracts",
+                      "zh-TW/help/testing/writing-tests"
+                    ]
+                  },
                   "zh-TW/help/testing-updates-plugins",
                   "zh-TW/help/testing-live"
                 ]
@@ -6634,6 +6667,17 @@
                 "group": "Testing",
                 "pages": [
                   "ja-JP/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "ja-JP/help/testing/suites",
+                      "ja-JP/help/testing/live-workflows",
+                      "ja-JP/help/testing/docker",
+                      "ja-JP/help/testing/qa-runners",
+                      "ja-JP/help/testing/contracts",
+                      "ja-JP/help/testing/writing-tests"
+                    ]
+                  },
                   "ja-JP/help/testing-updates-plugins",
                   "ja-JP/help/testing-live"
                 ]
@@ -7956,6 +8000,17 @@
                 "group": "Testing",
                 "pages": [
                   "es/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "es/help/testing/suites",
+                      "es/help/testing/live-workflows",
+                      "es/help/testing/docker",
+                      "es/help/testing/qa-runners",
+                      "es/help/testing/contracts",
+                      "es/help/testing/writing-tests"
+                    ]
+                  },
                   "es/help/testing-updates-plugins",
                   "es/help/testing-live"
                 ]
@@ -9278,6 +9333,17 @@
                 "group": "Testing",
                 "pages": [
                   "pt-BR/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "pt-BR/help/testing/suites",
+                      "pt-BR/help/testing/live-workflows",
+                      "pt-BR/help/testing/docker",
+                      "pt-BR/help/testing/qa-runners",
+                      "pt-BR/help/testing/contracts",
+                      "pt-BR/help/testing/writing-tests"
+                    ]
+                  },
                   "pt-BR/help/testing-updates-plugins",
                   "pt-BR/help/testing-live"
                 ]
@@ -10600,6 +10666,17 @@
                 "group": "Testing",
                 "pages": [
                   "ko/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "ko/help/testing/suites",
+                      "ko/help/testing/live-workflows",
+                      "ko/help/testing/docker",
+                      "ko/help/testing/qa-runners",
+                      "ko/help/testing/contracts",
+                      "ko/help/testing/writing-tests"
+                    ]
+                  },
                   "ko/help/testing-updates-plugins",
                   "ko/help/testing-live"
                 ]
@@ -11922,6 +11999,17 @@
                 "group": "Testing",
                 "pages": [
                   "de/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "de/help/testing/suites",
+                      "de/help/testing/live-workflows",
+                      "de/help/testing/docker",
+                      "de/help/testing/qa-runners",
+                      "de/help/testing/contracts",
+                      "de/help/testing/writing-tests"
+                    ]
+                  },
                   "de/help/testing-updates-plugins",
                   "de/help/testing-live"
                 ]
@@ -13244,6 +13332,17 @@
                 "group": "Testing",
                 "pages": [
                   "fr/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "fr/help/testing/suites",
+                      "fr/help/testing/live-workflows",
+                      "fr/help/testing/docker",
+                      "fr/help/testing/qa-runners",
+                      "fr/help/testing/contracts",
+                      "fr/help/testing/writing-tests"
+                    ]
+                  },
                   "fr/help/testing-updates-plugins",
                   "fr/help/testing-live"
                 ]
@@ -14566,6 +14665,17 @@
                 "group": "Testing",
                 "pages": [
                   "hi/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "hi/help/testing/suites",
+                      "hi/help/testing/live-workflows",
+                      "hi/help/testing/docker",
+                      "hi/help/testing/qa-runners",
+                      "hi/help/testing/contracts",
+                      "hi/help/testing/writing-tests"
+                    ]
+                  },
                   "hi/help/testing-updates-plugins",
                   "hi/help/testing-live"
                 ]
@@ -15888,6 +15998,17 @@
                 "group": "Testing",
                 "pages": [
                   "ar/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "ar/help/testing/suites",
+                      "ar/help/testing/live-workflows",
+                      "ar/help/testing/docker",
+                      "ar/help/testing/qa-runners",
+                      "ar/help/testing/contracts",
+                      "ar/help/testing/writing-tests"
+                    ]
+                  },
                   "ar/help/testing-updates-plugins",
                   "ar/help/testing-live"
                 ]
@@ -17210,6 +17331,17 @@
                 "group": "Testing",
                 "pages": [
                   "it/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "it/help/testing/suites",
+                      "it/help/testing/live-workflows",
+                      "it/help/testing/docker",
+                      "it/help/testing/qa-runners",
+                      "it/help/testing/contracts",
+                      "it/help/testing/writing-tests"
+                    ]
+                  },
                   "it/help/testing-updates-plugins",
                   "it/help/testing-live"
                 ]
@@ -18532,6 +18664,17 @@
                 "group": "Testing",
                 "pages": [
                   "vi/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "vi/help/testing/suites",
+                      "vi/help/testing/live-workflows",
+                      "vi/help/testing/docker",
+                      "vi/help/testing/qa-runners",
+                      "vi/help/testing/contracts",
+                      "vi/help/testing/writing-tests"
+                    ]
+                  },
                   "vi/help/testing-updates-plugins",
                   "vi/help/testing-live"
                 ]
@@ -19854,6 +19997,17 @@
                 "group": "Testing",
                 "pages": [
                   "nl/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "nl/help/testing/suites",
+                      "nl/help/testing/live-workflows",
+                      "nl/help/testing/docker",
+                      "nl/help/testing/qa-runners",
+                      "nl/help/testing/contracts",
+                      "nl/help/testing/writing-tests"
+                    ]
+                  },
                   "nl/help/testing-updates-plugins",
                   "nl/help/testing-live"
                 ]
@@ -21176,6 +21330,17 @@
                 "group": "Testing",
                 "pages": [
                   "tr/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "tr/help/testing/suites",
+                      "tr/help/testing/live-workflows",
+                      "tr/help/testing/docker",
+                      "tr/help/testing/qa-runners",
+                      "tr/help/testing/contracts",
+                      "tr/help/testing/writing-tests"
+                    ]
+                  },
                   "tr/help/testing-updates-plugins",
                   "tr/help/testing-live"
                 ]
@@ -22498,6 +22663,17 @@
                 "group": "Testing",
                 "pages": [
                   "uk/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "uk/help/testing/suites",
+                      "uk/help/testing/live-workflows",
+                      "uk/help/testing/docker",
+                      "uk/help/testing/qa-runners",
+                      "uk/help/testing/contracts",
+                      "uk/help/testing/writing-tests"
+                    ]
+                  },
                   "uk/help/testing-updates-plugins",
                   "uk/help/testing-live"
                 ]
@@ -23820,6 +23996,17 @@
                 "group": "Testing",
                 "pages": [
                   "id/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "id/help/testing/suites",
+                      "id/help/testing/live-workflows",
+                      "id/help/testing/docker",
+                      "id/help/testing/qa-runners",
+                      "id/help/testing/contracts",
+                      "id/help/testing/writing-tests"
+                    ]
+                  },
                   "id/help/testing-updates-plugins",
                   "id/help/testing-live"
                 ]
@@ -25142,6 +25329,17 @@
                 "group": "Testing",
                 "pages": [
                   "pl/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "pl/help/testing/suites",
+                      "pl/help/testing/live-workflows",
+                      "pl/help/testing/docker",
+                      "pl/help/testing/qa-runners",
+                      "pl/help/testing/contracts",
+                      "pl/help/testing/writing-tests"
+                    ]
+                  },
                   "pl/help/testing-updates-plugins",
                   "pl/help/testing-live"
                 ]
@@ -26464,6 +26662,17 @@
                 "group": "Testing",
                 "pages": [
                   "ru/help/testing",
+                  {
+                    "group": "Testing guide",
+                    "pages": [
+                      "ru/help/testing/suites",
+                      "ru/help/testing/live-workflows",
+                      "ru/help/testing/docker",
+                      "ru/help/testing/qa-runners",
+                      "ru/help/testing/contracts",
+                      "ru/help/testing/writing-tests"
+                    ]
+                  },
                   "ru/help/testing-updates-plugins",
                   "ru/help/testing-live"
                 ]

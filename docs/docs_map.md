@@ -1989,6 +1989,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw message
   - H2: Channel selection
+  - H2: Agent ownership
   - H2: Target formats (-t, --target)
   - H2: Common flags
   - H2: SecretRef resolution
@@ -5046,12 +5047,44 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help/testing
 - Headings:
-  - H2: Quick start
-  - H2: Test Temp Directories
+  - H2: Where each section moved
+  - H2: Related
+
+## help/testing/contracts.md
+
+- Route: /help/testing/contracts
+- Headings:
+  - H2: Contract tests (plugin and channel shape)
+  - H3: Commands
+  - H3: Channel contracts
+  - H3: Provider contracts
+  - H3: When to run
+
+## help/testing/docker.md
+
+- Route: /help/testing/docker
+- Headings:
+  - H2: Docker runners (optional "works in Linux" checks)
+
+## help/testing/live-workflows.md
+
+- Route: /help/testing/live-workflows
+- Headings:
   - H2: Live and Docker/Parallels workflows
+
+## help/testing/qa-runners.md
+
+- Route: /help/testing/qa-runners
+- Headings:
   - H2: QA-specific runners
   - H3: Shared Telegram credentials via Convex (v1)
   - H3: Adding a channel to QA
+
+## help/testing/suites.md
+
+- Route: /help/testing/suites
+- Headings:
+  - H2: Quick start
   - H2: Test suites (what runs where)
   - H3: Unit / integration (default)
   - H3: Stability (gateway)
@@ -5062,17 +5095,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Live (real providers + real models)
   - H2: Which suite should I run?
   - H2: Live (network-touching) tests
-  - H2: Docker runners (optional "works in Linux" checks)
   - H2: Docs sanity
   - H2: Offline regression (CI-safe)
+
+## help/testing/writing-tests.md
+
+- Route: /help/testing/writing-tests
+- Headings:
+  - H2: Test Temp Directories
   - H2: Agent reliability evals (skills)
-  - H2: Contract tests (plugin and channel shape)
-  - H3: Commands
-  - H3: Channel contracts
-  - H3: Provider contracts
-  - H3: When to run
   - H2: Adding regressions (guidance)
-  - H2: Related
 
 ## help/troubleshooting.md
 
