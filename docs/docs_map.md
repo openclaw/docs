@@ -6151,6 +6151,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Automatic setup
   - H2: Manual recovery
   - H2: Launchd (Gateway as LaunchAgent)
+  - H3: Unexpected repeated restarts
   - H3: Attach-only development
   - H2: Version compatibility
   - H2: State directory on macOS
