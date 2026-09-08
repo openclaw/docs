@@ -8,6 +8,7 @@ import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLoc
 import { siteCss, siteJs } from "./assets.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { createRenderCache } from "./render-cache.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
@@ -25,6 +26,7 @@ fs.rmSync(redirectMetadataPath, { force: true });
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
+const renderArticle = (markdown, options) => renderMdxish(markdown, md, options);
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
@@ -59,6 +61,9 @@ const previewPagesPerGroup = parseOptionalPositiveInt(
 const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
 const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
 const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const renderCache = !previewMode && process.env.DOCS_SITE_RENDER_CACHE !== "0"
+  ? createRenderCache(path.join(root, ".cache", "docs-render"), renderArticle)
+  : null;
 const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INCLUDE_FIXTURE === "1";
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
@@ -90,6 +95,11 @@ const localePickerLabels = {
 copyPublicFiles();
 if (!previewMode) await renderPageOgCards();
 for (const page of pages) writePage(page);
+if (renderCache) {
+  renderCache.prune();
+  const { hits, misses, bypassed } = renderCache.stats;
+  console.log(`article cache: ${hits} reused, ${misses} rendered, ${bypassed} snippet owners rendered`);
+}
 if (!shellOnly) {
   writeLlmsIndex();
   writeRobotsTxt();
@@ -257,7 +267,9 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(page.raw, md, { sourceFile: page.file, root, pageRoute: pageRoute(page) }), page.locale);
+  const options = { sourceFile: page.file, root, pageRoute: pageRoute(page) };
+  const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
+  const html = rewriteInternalUrls(article, page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });

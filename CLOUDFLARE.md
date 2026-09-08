@@ -98,7 +98,28 @@ The global `r2-pages` queue serializes admission, build, and publication. After 
 
 After successful R2 publication (or a Worker-only deployment), the same head/successor helper checks main again and dispatches a full successor for artifact-relevant drift with no verified run. This catches changes whose push did not trigger R2, including `GITHUB_TOKEN` and skip-ci pushes during the build. API lookup failure biases to dispatch; dispatch failure fails the job without undoing publication. Catch-up also runs if live-smoke scheduling failed after publication. It never changes the admission verdict or gates the completed upload. This ordering applies to the automatic R2 queue without relying on FIFO ordering; manual Pages router deployment remains operator-owned outside that queue.
 
-Production router deploy:
+### Incremental article rendering
+
+R2 upload already skips unchanged objects; the builder also reuses unchanged
+rendered articles from `.cache/docs-render`. The deployment restores this cache
+before building and saves it after publication and live-smoke scheduling. A cold
+or evicted cache still builds the complete site normally.
+
+Cache identity includes the raw page, its source-relative path and route, the
+renderer/parser source, locked dependencies, and Node version/platform. It does
+not include the source commit, so a one-page edit does not invalidate all locales.
+Pages containing `<Snippet` always render afresh, including nested or newly
+available snippet dependencies. Removed pages' entries are pruned.
+
+Only article HTML is cached. Navigation, locale-aware links, page chrome, edit
+links, redirects, Markdown exports, OG cards, and search indexes are rebuilt from
+the current snapshot. Deletions and publication ordering are unchanged. Logs
+report article hits, misses, and snippet bypasses. For an uncached comparison,
+run `DOCS_SITE_RENDER_CACHE=0 npm run docs:build:r2`; preview builds bypass the
+cache automatically. This optimization does not remove the upstream source-sync
+queue or full MDX validation, and the first deployment must populate the cache.
+
+### Router deployment
 
 1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
