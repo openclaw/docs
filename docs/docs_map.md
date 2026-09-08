@@ -6297,6 +6297,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Gateway auto-start before Windows login
   - H2: Expose WSL services over LAN
   - H2: Troubleshooting
+  - H3: The Scheduled Task stops before the Gateway is ready
   - H3: The tray icon does not appear
   - H3: Local setup fails
   - H3: The app says pairing is required
