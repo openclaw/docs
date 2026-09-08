@@ -3683,7 +3683,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Runtime support
   - H3: Codex on a paired device
   - H3: Codex or OpenClaw on a cloud profile
-  - H3: Choose a machine class per session
+  - H3: Choose an operating system and machine class per session
   - H2: What survives a dead machine
   - H2: Desktop (interactive)
   - H2: Security model
