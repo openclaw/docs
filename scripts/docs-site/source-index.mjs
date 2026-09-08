@@ -2,6 +2,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { finished } from "node:stream/promises";
 
 const root = process.cwd();
 const outDir = path.join(root, "dist", "docs-site");
@@ -127,16 +128,9 @@ for (const rel of files) {
   recordCount += 1;
 }
 
-await new Promise((resolve, reject) => {
-  output.on("error", reject);
-  output.end((err) => {
-    if (err) {
-      reject(err);
-      return;
-    }
-    resolve();
-  });
-});
+const completion = finished(output, { cleanup: true });
+output.end();
+await completion;
 
 const meta = {
   repository: sourceMeta.repository ?? "openclaw/openclaw",

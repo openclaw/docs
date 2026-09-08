@@ -45,60 +45,65 @@ test("indexes a repository whose tracked-file list exceeds Node's default buffer
   }
 });
 
-test("fails the process when the source-index write stream flush errors", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-source-index-flush-"));
-  const source = path.join(root, "source");
-  fs.mkdirSync(path.join(source, "src"), { recursive: true });
+for (const operation of ["write", "writev", "close"]) {
+  test(`does not publish completion metadata when fs.${operation} fails`, () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-source-index-flush-"));
+    const source = path.join(root, "source");
+    fs.mkdirSync(path.join(source, "src"), { recursive: true });
 
-  try {
-    git(source, ["init"]);
-    for (let index = 0; index < 101; index += 1) {
+    try {
+      git(source, ["init"]);
+      for (let index = 0; index < 101; index += 1) {
+        fs.writeFileSync(
+          path.join(source, "src", `file-${String(index).padStart(3, "0")}.js`),
+          `export const value = ${index};\n`,
+        );
+      }
+      git(source, ["add", "."]);
+
+      const stub = path.join(root, "stub-flush-error.mjs");
       fs.writeFileSync(
-        path.join(source, "src", `file-${String(index).padStart(3, "0")}.js`),
-        `export const value = ${index};\n`,
-      );
+        stub,
+        `import fs from "node:fs";
+  const createWriteStream = fs.createWriteStream;
+  fs.createWriteStream = function patchedCreateWriteStream(file, options) {
+    if (!String(file).includes("source-index.jsonl")) {
+      return createWriteStream.call(this, file, options);
     }
-    git(source, ["add", "."]);
-
-    const stub = path.join(root, "stub-flush-error.mjs");
-    fs.writeFileSync(
-      stub,
-      `import fs from "node:fs";
-const createWriteStream = fs.createWriteStream;
-fs.createWriteStream = function patchedCreateWriteStream(file, options) {
-  const stream = createWriteStream.call(this, file, options);
-  if (!String(file).includes("source-index.jsonl")) {
-    return stream;
-  }
-  stream.end = function end(cb) {
-    if (typeof cb === "function") {
-      cb(Object.assign(new Error("ENOSPC: mock flush"), { code: "ENOSPC" }));
-    }
-    return this;
-  };
-  return stream;
-};
-`,
-    );
-
-    const result = spawnSync(process.execPath, ["--import", pathToFileURL(stub).href, script], {
-      cwd: root,
-      encoding: "utf8",
-      env: {
-        ...process.env,
-        DOCS_SOURCE_REPO_DIR: source,
-        DOCS_SOURCE_SHA: "test-sha",
-      },
+    const fail = (...args) => {
+      const done = () => args.at(-1)(Object.assign(new Error("ENOSPC: injected ${operation} failure"), { code: "ENOSPC" }));
+      if ("${operation}" === "close") fs.close(args[0], done);
+      else process.nextTick(done);
+    };
+    const failingFs = { ...fs, ${operation}: fail };
+    if ("${operation}" === "write") failingFs.writev = undefined;
+    return createWriteStream.call(this, file, {
+      ...options,
+      fs: failingFs,
     });
+  };
+  `,
+      );
 
-    assert.notEqual(result.status, 0, result.stdout + result.stderr);
-    assert.match(`${result.stderr}\n${result.stdout}`, /ENOSPC: mock flush/);
-    assert.doesNotMatch(result.stdout, /indexed \d+ source files/);
-    assert.equal(fs.existsSync(path.join(root, "dist", "docs-site", "source-index-meta.json")), false);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
-  }
-});
+      const result = spawnSync(process.execPath, ["--import", pathToFileURL(stub).href, script], {
+        cwd: root,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          DOCS_SOURCE_REPO_DIR: source,
+          DOCS_SOURCE_SHA: "test-sha",
+        },
+      });
+
+      assert.equal(result.status, 1, result.stdout + result.stderr);
+      assert.match(result.stderr, new RegExp(`ENOSPC: injected ${operation} failure`));
+      assert.doesNotMatch(result.stdout, /indexed \d+ source files/);
+      assert.equal(fs.existsSync(path.join(root, "dist", "docs-site", "source-index-meta.json")), false);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+}
 
 function git(dir, args, options = {}) {
   return execFileSync("git", ["-C", dir, ...args], {
