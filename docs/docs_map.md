@@ -9747,6 +9747,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Regular release operator checklist
   - H2: Stable main closeout
   - H2: Release preflight
+  - H3: Previous updater compatibility
+  - H3: Design proposal: immutable runtime generations
+  - H3: Required checks
   - H2: Release test boxes
   - H3: Vitest
   - H3: Docker
