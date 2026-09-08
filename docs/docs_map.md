@@ -9580,6 +9580,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Non-interactive setup
   - H2: Built-in catalog
+  - H2: Existing TokenHub configurations
   - H2: Advanced configuration
   - H2: Related
 
