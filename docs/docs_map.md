@@ -9981,7 +9981,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Continue failed child jobs
   - H3: Post-merge continuation proof
-  - H2: Extended-stable exception
+  - H2: Extended-stable validation
   - H2: Top-level stages
   - H2: Release checks stages
   - H2: Docker release-path chunks
