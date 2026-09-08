@@ -5184,6 +5184,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Restore a database
   - H2: Related
 
+## install/bun-compatibility.md
+
+- Route: /install/bun-compatibility
+- Headings:
+  - H2: Requirements
+  - H2: SQLite library selection on macOS
+  - H2: Memory search without an extension-capable library
+  - H2: Known limitations
+  - H2: History across releases
+  - H2: Related
+
 ## install/bun.md
 
 - Route: /install/bun
@@ -5521,6 +5532,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: What changes in Nix mode
   - H3: Config and state paths
   - H3: Service PATH discovery
+  - H2: Related
+
+## install/node-compatibility.md
+
+- Route: /install/node-compatibility
+- Headings:
+  - H2: Supported versions
+  - H2: Why the floors exist
+  - H2: Platform consequences
+  - H2: What the installer provisions
+  - H2: Check your runtime
+  - H2: History across releases
   - H2: Related
 
 ## install/node.md

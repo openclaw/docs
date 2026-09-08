@@ -1377,8 +1377,16 @@
                 "group": "Install overview",
                 "pages": [
                   "install/index",
-                  "install/installer",
-                  "install/node"
+                  "install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "install/node",
+                  "install/node-compatibility",
+                  "install/bun",
+                  "install/bun-compatibility"
                 ]
               },
               {
@@ -1403,7 +1411,6 @@
                 "group": "Containers",
                 "pages": [
                   "install/ansible",
-                  "install/bun",
                   "install/docker",
                   "install/nix",
                   "install/podman"
@@ -2744,8 +2751,16 @@
                 "group": "安装概览",
                 "pages": [
                   "zh-CN/install/index",
-                  "zh-CN/install/installer",
-                  "zh-CN/install/node"
+                  "zh-CN/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "zh-CN/install/node",
+                  "zh-CN/install/node-compatibility",
+                  "zh-CN/install/bun",
+                  "zh-CN/install/bun-compatibility"
                 ]
               },
               {
@@ -2770,7 +2785,6 @@
                 "group": "安装方式",
                 "pages": [
                   "zh-CN/install/ansible",
-                  "zh-CN/install/bun",
                   "zh-CN/install/docker",
                   "zh-CN/install/nix",
                   "zh-CN/install/podman"
@@ -4077,8 +4091,16 @@
                 "group": "Install overview",
                 "pages": [
                   "zh-TW/install/index",
-                  "zh-TW/install/installer",
-                  "zh-TW/install/node"
+                  "zh-TW/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "zh-TW/install/node",
+                  "zh-TW/install/node-compatibility",
+                  "zh-TW/install/bun",
+                  "zh-TW/install/bun-compatibility"
                 ]
               },
               {
@@ -4103,7 +4125,6 @@
                 "group": "Containers",
                 "pages": [
                   "zh-TW/install/ansible",
-                  "zh-TW/install/bun",
                   "zh-TW/install/docker",
                   "zh-TW/install/nix",
                   "zh-TW/install/podman"
@@ -5410,8 +5431,16 @@
                 "group": "Install overview",
                 "pages": [
                   "ja-JP/install/index",
-                  "ja-JP/install/installer",
-                  "ja-JP/install/node"
+                  "ja-JP/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "ja-JP/install/node",
+                  "ja-JP/install/node-compatibility",
+                  "ja-JP/install/bun",
+                  "ja-JP/install/bun-compatibility"
                 ]
               },
               {
@@ -5436,7 +5465,6 @@
                 "group": "Containers",
                 "pages": [
                   "ja-JP/install/ansible",
-                  "ja-JP/install/bun",
                   "ja-JP/install/docker",
                   "ja-JP/install/nix",
                   "ja-JP/install/podman"
@@ -6743,8 +6771,16 @@
                 "group": "Install overview",
                 "pages": [
                   "es/install/index",
-                  "es/install/installer",
-                  "es/install/node"
+                  "es/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "es/install/node",
+                  "es/install/node-compatibility",
+                  "es/install/bun",
+                  "es/install/bun-compatibility"
                 ]
               },
               {
@@ -6769,7 +6805,6 @@
                 "group": "Containers",
                 "pages": [
                   "es/install/ansible",
-                  "es/install/bun",
                   "es/install/docker",
                   "es/install/nix",
                   "es/install/podman"
@@ -8076,8 +8111,16 @@
                 "group": "Install overview",
                 "pages": [
                   "pt-BR/install/index",
-                  "pt-BR/install/installer",
-                  "pt-BR/install/node"
+                  "pt-BR/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "pt-BR/install/node",
+                  "pt-BR/install/node-compatibility",
+                  "pt-BR/install/bun",
+                  "pt-BR/install/bun-compatibility"
                 ]
               },
               {
@@ -8102,7 +8145,6 @@
                 "group": "Containers",
                 "pages": [
                   "pt-BR/install/ansible",
-                  "pt-BR/install/bun",
                   "pt-BR/install/docker",
                   "pt-BR/install/nix",
                   "pt-BR/install/podman"
@@ -9409,8 +9451,16 @@
                 "group": "Install overview",
                 "pages": [
                   "ko/install/index",
-                  "ko/install/installer",
-                  "ko/install/node"
+                  "ko/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "ko/install/node",
+                  "ko/install/node-compatibility",
+                  "ko/install/bun",
+                  "ko/install/bun-compatibility"
                 ]
               },
               {
@@ -9435,7 +9485,6 @@
                 "group": "Containers",
                 "pages": [
                   "ko/install/ansible",
-                  "ko/install/bun",
                   "ko/install/docker",
                   "ko/install/nix",
                   "ko/install/podman"
@@ -10742,8 +10791,16 @@
                 "group": "Install overview",
                 "pages": [
                   "de/install/index",
-                  "de/install/installer",
-                  "de/install/node"
+                  "de/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "de/install/node",
+                  "de/install/node-compatibility",
+                  "de/install/bun",
+                  "de/install/bun-compatibility"
                 ]
               },
               {
@@ -10768,7 +10825,6 @@
                 "group": "Containers",
                 "pages": [
                   "de/install/ansible",
-                  "de/install/bun",
                   "de/install/docker",
                   "de/install/nix",
                   "de/install/podman"
@@ -12075,8 +12131,16 @@
                 "group": "Install overview",
                 "pages": [
                   "fr/install/index",
-                  "fr/install/installer",
-                  "fr/install/node"
+                  "fr/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "fr/install/node",
+                  "fr/install/node-compatibility",
+                  "fr/install/bun",
+                  "fr/install/bun-compatibility"
                 ]
               },
               {
@@ -12101,7 +12165,6 @@
                 "group": "Containers",
                 "pages": [
                   "fr/install/ansible",
-                  "fr/install/bun",
                   "fr/install/docker",
                   "fr/install/nix",
                   "fr/install/podman"
@@ -13408,8 +13471,16 @@
                 "group": "Install overview",
                 "pages": [
                   "hi/install/index",
-                  "hi/install/installer",
-                  "hi/install/node"
+                  "hi/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "hi/install/node",
+                  "hi/install/node-compatibility",
+                  "hi/install/bun",
+                  "hi/install/bun-compatibility"
                 ]
               },
               {
@@ -13434,7 +13505,6 @@
                 "group": "Containers",
                 "pages": [
                   "hi/install/ansible",
-                  "hi/install/bun",
                   "hi/install/docker",
                   "hi/install/nix",
                   "hi/install/podman"
@@ -14741,8 +14811,16 @@
                 "group": "Install overview",
                 "pages": [
                   "ar/install/index",
-                  "ar/install/installer",
-                  "ar/install/node"
+                  "ar/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "ar/install/node",
+                  "ar/install/node-compatibility",
+                  "ar/install/bun",
+                  "ar/install/bun-compatibility"
                 ]
               },
               {
@@ -14767,7 +14845,6 @@
                 "group": "Containers",
                 "pages": [
                   "ar/install/ansible",
-                  "ar/install/bun",
                   "ar/install/docker",
                   "ar/install/nix",
                   "ar/install/podman"
@@ -16074,8 +16151,16 @@
                 "group": "Install overview",
                 "pages": [
                   "it/install/index",
-                  "it/install/installer",
-                  "it/install/node"
+                  "it/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "it/install/node",
+                  "it/install/node-compatibility",
+                  "it/install/bun",
+                  "it/install/bun-compatibility"
                 ]
               },
               {
@@ -16100,7 +16185,6 @@
                 "group": "Containers",
                 "pages": [
                   "it/install/ansible",
-                  "it/install/bun",
                   "it/install/docker",
                   "it/install/nix",
                   "it/install/podman"
@@ -17407,8 +17491,16 @@
                 "group": "Install overview",
                 "pages": [
                   "vi/install/index",
-                  "vi/install/installer",
-                  "vi/install/node"
+                  "vi/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "vi/install/node",
+                  "vi/install/node-compatibility",
+                  "vi/install/bun",
+                  "vi/install/bun-compatibility"
                 ]
               },
               {
@@ -17433,7 +17525,6 @@
                 "group": "Containers",
                 "pages": [
                   "vi/install/ansible",
-                  "vi/install/bun",
                   "vi/install/docker",
                   "vi/install/nix",
                   "vi/install/podman"
@@ -18740,8 +18831,16 @@
                 "group": "Install overview",
                 "pages": [
                   "nl/install/index",
-                  "nl/install/installer",
-                  "nl/install/node"
+                  "nl/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "nl/install/node",
+                  "nl/install/node-compatibility",
+                  "nl/install/bun",
+                  "nl/install/bun-compatibility"
                 ]
               },
               {
@@ -18766,7 +18865,6 @@
                 "group": "Containers",
                 "pages": [
                   "nl/install/ansible",
-                  "nl/install/bun",
                   "nl/install/docker",
                   "nl/install/nix",
                   "nl/install/podman"
@@ -20073,8 +20171,16 @@
                 "group": "Install overview",
                 "pages": [
                   "tr/install/index",
-                  "tr/install/installer",
-                  "tr/install/node"
+                  "tr/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "tr/install/node",
+                  "tr/install/node-compatibility",
+                  "tr/install/bun",
+                  "tr/install/bun-compatibility"
                 ]
               },
               {
@@ -20099,7 +20205,6 @@
                 "group": "Containers",
                 "pages": [
                   "tr/install/ansible",
-                  "tr/install/bun",
                   "tr/install/docker",
                   "tr/install/nix",
                   "tr/install/podman"
@@ -21406,8 +21511,16 @@
                 "group": "Install overview",
                 "pages": [
                   "uk/install/index",
-                  "uk/install/installer",
-                  "uk/install/node"
+                  "uk/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "uk/install/node",
+                  "uk/install/node-compatibility",
+                  "uk/install/bun",
+                  "uk/install/bun-compatibility"
                 ]
               },
               {
@@ -21432,7 +21545,6 @@
                 "group": "Containers",
                 "pages": [
                   "uk/install/ansible",
-                  "uk/install/bun",
                   "uk/install/docker",
                   "uk/install/nix",
                   "uk/install/podman"
@@ -22739,8 +22851,16 @@
                 "group": "Install overview",
                 "pages": [
                   "id/install/index",
-                  "id/install/installer",
-                  "id/install/node"
+                  "id/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "id/install/node",
+                  "id/install/node-compatibility",
+                  "id/install/bun",
+                  "id/install/bun-compatibility"
                 ]
               },
               {
@@ -22765,7 +22885,6 @@
                 "group": "Containers",
                 "pages": [
                   "id/install/ansible",
-                  "id/install/bun",
                   "id/install/docker",
                   "id/install/nix",
                   "id/install/podman"
@@ -24072,8 +24191,16 @@
                 "group": "Install overview",
                 "pages": [
                   "pl/install/index",
-                  "pl/install/installer",
-                  "pl/install/node"
+                  "pl/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "pl/install/node",
+                  "pl/install/node-compatibility",
+                  "pl/install/bun",
+                  "pl/install/bun-compatibility"
                 ]
               },
               {
@@ -24098,7 +24225,6 @@
                 "group": "Containers",
                 "pages": [
                   "pl/install/ansible",
-                  "pl/install/bun",
                   "pl/install/docker",
                   "pl/install/nix",
                   "pl/install/podman"
@@ -25405,8 +25531,16 @@
                 "group": "Install overview",
                 "pages": [
                   "ru/install/index",
-                  "ru/install/installer",
-                  "ru/install/node"
+                  "ru/install/installer"
+                ]
+              },
+              {
+                "group": "Runtimes",
+                "pages": [
+                  "ru/install/node",
+                  "ru/install/node-compatibility",
+                  "ru/install/bun",
+                  "ru/install/bun-compatibility"
                 ]
               },
               {
@@ -25431,7 +25565,6 @@
                 "group": "Containers",
                 "pages": [
                   "ru/install/ansible",
-                  "ru/install/bun",
                   "ru/install/docker",
                   "ru/install/nix",
                   "ru/install/podman"
