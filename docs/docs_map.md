@@ -9435,30 +9435,71 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/openai
 - Headings:
-  - H2: Usage and cost tracking
-  - H2: Quick choice
-  - H3: Retired subscription model references
-  - H2: GPT-6 Astra
-  - H3: Async tools, steering, and reasoning changes
-  - H2: Naming map
-  - H2: Implicit agent runtime
-  - H2: GPT-5.6 limited preview
-  - H2: OpenClaw feature coverage
-  - H2: Memory embeddings
-  - H2: Getting started
-  - H2: Native Codex app-server auth
-  - H2: Image generation
-  - H2: Video generation
+  - H2: Where each section moved
+  - H2: Related
+
+## providers/openai/advanced.md
+
+- Route: /providers/openai/advanced
+- Headings:
   - H2: GPT-5 prompt contribution
-  - H2: Voice and speech
+  - H2: Advanced configuration
+
+## providers/openai/azure.md
+
+- Route: /providers/openai/azure
+- Headings:
   - H2: Azure OpenAI endpoints
   - H3: Configuration
   - H3: API version
   - H3: Model names are deployment names
   - H3: Regional availability
   - H3: Parameter differences
-  - H2: Advanced configuration
-  - H2: Related
+
+## providers/openai/coverage-and-cost.md
+
+- Route: /providers/openai/coverage-and-cost
+- Headings:
+  - H2: Usage and cost tracking
+  - H2: OpenClaw feature coverage
+  - H2: Memory embeddings
+
+## providers/openai/image-and-video.md
+
+- Route: /providers/openai/image-and-video
+- Headings:
+  - H2: Image generation
+  - H2: Video generation
+
+## providers/openai/models.md
+
+- Route: /providers/openai/models
+- Headings:
+  - H2: Quick choice
+  - H3: Retired subscription model references
+  - H2: GPT-6 Astra
+  - H3: Async tools, steering, and reasoning changes
+  - H2: GPT-5.6 limited preview
+
+## providers/openai/runtimes.md
+
+- Route: /providers/openai/runtimes
+- Headings:
+  - H2: Naming map
+  - H2: Implicit agent runtime
+  - H2: Native Codex app-server auth
+
+## providers/openai/setup.md
+
+- Route: /providers/openai/setup
+- Headings:
+  - H2: Getting started
+
+## providers/openai/voice-and-speech.md
+
+- Route: /providers/openai/voice-and-speech
+- Headings:
+  - H2: Voice and speech
 
 ## providers/opencode-go.md
 

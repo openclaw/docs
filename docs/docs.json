@@ -1986,6 +1986,19 @@
                       "providers/nvidia",
                       "providers/ollama-cloud",
                       "providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "providers/openai/setup",
+                          "providers/openai/models",
+                          "providers/openai/runtimes",
+                          "providers/openai/coverage-and-cost",
+                          "providers/openai/image-and-video",
+                          "providers/openai/voice-and-speech",
+                          "providers/openai/azure",
+                          "providers/openai/advanced"
+                        ]
+                      },
                       "providers/opencode",
                       "providers/opencode-go",
                       "providers/perplexity-provider",
@@ -3338,6 +3351,19 @@
                       "zh-CN/providers/nvidia",
                       "zh-CN/providers/ollama-cloud",
                       "zh-CN/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "zh-CN/providers/openai/setup",
+                          "zh-CN/providers/openai/models",
+                          "zh-CN/providers/openai/runtimes",
+                          "zh-CN/providers/openai/coverage-and-cost",
+                          "zh-CN/providers/openai/image-and-video",
+                          "zh-CN/providers/openai/voice-and-speech",
+                          "zh-CN/providers/openai/azure",
+                          "zh-CN/providers/openai/advanced"
+                        ]
+                      },
                       "zh-CN/providers/opencode",
                       "zh-CN/providers/opencode-go",
                       "zh-CN/providers/perplexity-provider",
@@ -4690,6 +4716,19 @@
                       "zh-TW/providers/nvidia",
                       "zh-TW/providers/ollama-cloud",
                       "zh-TW/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "zh-TW/providers/openai/setup",
+                          "zh-TW/providers/openai/models",
+                          "zh-TW/providers/openai/runtimes",
+                          "zh-TW/providers/openai/coverage-and-cost",
+                          "zh-TW/providers/openai/image-and-video",
+                          "zh-TW/providers/openai/voice-and-speech",
+                          "zh-TW/providers/openai/azure",
+                          "zh-TW/providers/openai/advanced"
+                        ]
+                      },
                       "zh-TW/providers/opencode",
                       "zh-TW/providers/opencode-go",
                       "zh-TW/providers/perplexity-provider",
@@ -6042,6 +6081,19 @@
                       "ja-JP/providers/nvidia",
                       "ja-JP/providers/ollama-cloud",
                       "ja-JP/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "ja-JP/providers/openai/setup",
+                          "ja-JP/providers/openai/models",
+                          "ja-JP/providers/openai/runtimes",
+                          "ja-JP/providers/openai/coverage-and-cost",
+                          "ja-JP/providers/openai/image-and-video",
+                          "ja-JP/providers/openai/voice-and-speech",
+                          "ja-JP/providers/openai/azure",
+                          "ja-JP/providers/openai/advanced"
+                        ]
+                      },
                       "ja-JP/providers/opencode",
                       "ja-JP/providers/opencode-go",
                       "ja-JP/providers/perplexity-provider",
@@ -7394,6 +7446,19 @@
                       "es/providers/nvidia",
                       "es/providers/ollama-cloud",
                       "es/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "es/providers/openai/setup",
+                          "es/providers/openai/models",
+                          "es/providers/openai/runtimes",
+                          "es/providers/openai/coverage-and-cost",
+                          "es/providers/openai/image-and-video",
+                          "es/providers/openai/voice-and-speech",
+                          "es/providers/openai/azure",
+                          "es/providers/openai/advanced"
+                        ]
+                      },
                       "es/providers/opencode",
                       "es/providers/opencode-go",
                       "es/providers/perplexity-provider",
@@ -8746,6 +8811,19 @@
                       "pt-BR/providers/nvidia",
                       "pt-BR/providers/ollama-cloud",
                       "pt-BR/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "pt-BR/providers/openai/setup",
+                          "pt-BR/providers/openai/models",
+                          "pt-BR/providers/openai/runtimes",
+                          "pt-BR/providers/openai/coverage-and-cost",
+                          "pt-BR/providers/openai/image-and-video",
+                          "pt-BR/providers/openai/voice-and-speech",
+                          "pt-BR/providers/openai/azure",
+                          "pt-BR/providers/openai/advanced"
+                        ]
+                      },
                       "pt-BR/providers/opencode",
                       "pt-BR/providers/opencode-go",
                       "pt-BR/providers/perplexity-provider",
@@ -10098,6 +10176,19 @@
                       "ko/providers/nvidia",
                       "ko/providers/ollama-cloud",
                       "ko/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "ko/providers/openai/setup",
+                          "ko/providers/openai/models",
+                          "ko/providers/openai/runtimes",
+                          "ko/providers/openai/coverage-and-cost",
+                          "ko/providers/openai/image-and-video",
+                          "ko/providers/openai/voice-and-speech",
+                          "ko/providers/openai/azure",
+                          "ko/providers/openai/advanced"
+                        ]
+                      },
                       "ko/providers/opencode",
                       "ko/providers/opencode-go",
                       "ko/providers/perplexity-provider",
@@ -11450,6 +11541,19 @@
                       "de/providers/nvidia",
                       "de/providers/ollama-cloud",
                       "de/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "de/providers/openai/setup",
+                          "de/providers/openai/models",
+                          "de/providers/openai/runtimes",
+                          "de/providers/openai/coverage-and-cost",
+                          "de/providers/openai/image-and-video",
+                          "de/providers/openai/voice-and-speech",
+                          "de/providers/openai/azure",
+                          "de/providers/openai/advanced"
+                        ]
+                      },
                       "de/providers/opencode",
                       "de/providers/opencode-go",
                       "de/providers/perplexity-provider",
@@ -12802,6 +12906,19 @@
                       "fr/providers/nvidia",
                       "fr/providers/ollama-cloud",
                       "fr/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "fr/providers/openai/setup",
+                          "fr/providers/openai/models",
+                          "fr/providers/openai/runtimes",
+                          "fr/providers/openai/coverage-and-cost",
+                          "fr/providers/openai/image-and-video",
+                          "fr/providers/openai/voice-and-speech",
+                          "fr/providers/openai/azure",
+                          "fr/providers/openai/advanced"
+                        ]
+                      },
                       "fr/providers/opencode",
                       "fr/providers/opencode-go",
                       "fr/providers/perplexity-provider",
@@ -14154,6 +14271,19 @@
                       "hi/providers/nvidia",
                       "hi/providers/ollama-cloud",
                       "hi/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "hi/providers/openai/setup",
+                          "hi/providers/openai/models",
+                          "hi/providers/openai/runtimes",
+                          "hi/providers/openai/coverage-and-cost",
+                          "hi/providers/openai/image-and-video",
+                          "hi/providers/openai/voice-and-speech",
+                          "hi/providers/openai/azure",
+                          "hi/providers/openai/advanced"
+                        ]
+                      },
                       "hi/providers/opencode",
                       "hi/providers/opencode-go",
                       "hi/providers/perplexity-provider",
@@ -15506,6 +15636,19 @@
                       "ar/providers/nvidia",
                       "ar/providers/ollama-cloud",
                       "ar/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "ar/providers/openai/setup",
+                          "ar/providers/openai/models",
+                          "ar/providers/openai/runtimes",
+                          "ar/providers/openai/coverage-and-cost",
+                          "ar/providers/openai/image-and-video",
+                          "ar/providers/openai/voice-and-speech",
+                          "ar/providers/openai/azure",
+                          "ar/providers/openai/advanced"
+                        ]
+                      },
                       "ar/providers/opencode",
                       "ar/providers/opencode-go",
                       "ar/providers/perplexity-provider",
@@ -16858,6 +17001,19 @@
                       "it/providers/nvidia",
                       "it/providers/ollama-cloud",
                       "it/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "it/providers/openai/setup",
+                          "it/providers/openai/models",
+                          "it/providers/openai/runtimes",
+                          "it/providers/openai/coverage-and-cost",
+                          "it/providers/openai/image-and-video",
+                          "it/providers/openai/voice-and-speech",
+                          "it/providers/openai/azure",
+                          "it/providers/openai/advanced"
+                        ]
+                      },
                       "it/providers/opencode",
                       "it/providers/opencode-go",
                       "it/providers/perplexity-provider",
@@ -18210,6 +18366,19 @@
                       "vi/providers/nvidia",
                       "vi/providers/ollama-cloud",
                       "vi/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "vi/providers/openai/setup",
+                          "vi/providers/openai/models",
+                          "vi/providers/openai/runtimes",
+                          "vi/providers/openai/coverage-and-cost",
+                          "vi/providers/openai/image-and-video",
+                          "vi/providers/openai/voice-and-speech",
+                          "vi/providers/openai/azure",
+                          "vi/providers/openai/advanced"
+                        ]
+                      },
                       "vi/providers/opencode",
                       "vi/providers/opencode-go",
                       "vi/providers/perplexity-provider",
@@ -19562,6 +19731,19 @@
                       "nl/providers/nvidia",
                       "nl/providers/ollama-cloud",
                       "nl/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "nl/providers/openai/setup",
+                          "nl/providers/openai/models",
+                          "nl/providers/openai/runtimes",
+                          "nl/providers/openai/coverage-and-cost",
+                          "nl/providers/openai/image-and-video",
+                          "nl/providers/openai/voice-and-speech",
+                          "nl/providers/openai/azure",
+                          "nl/providers/openai/advanced"
+                        ]
+                      },
                       "nl/providers/opencode",
                       "nl/providers/opencode-go",
                       "nl/providers/perplexity-provider",
@@ -20914,6 +21096,19 @@
                       "tr/providers/nvidia",
                       "tr/providers/ollama-cloud",
                       "tr/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "tr/providers/openai/setup",
+                          "tr/providers/openai/models",
+                          "tr/providers/openai/runtimes",
+                          "tr/providers/openai/coverage-and-cost",
+                          "tr/providers/openai/image-and-video",
+                          "tr/providers/openai/voice-and-speech",
+                          "tr/providers/openai/azure",
+                          "tr/providers/openai/advanced"
+                        ]
+                      },
                       "tr/providers/opencode",
                       "tr/providers/opencode-go",
                       "tr/providers/perplexity-provider",
@@ -22266,6 +22461,19 @@
                       "uk/providers/nvidia",
                       "uk/providers/ollama-cloud",
                       "uk/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "uk/providers/openai/setup",
+                          "uk/providers/openai/models",
+                          "uk/providers/openai/runtimes",
+                          "uk/providers/openai/coverage-and-cost",
+                          "uk/providers/openai/image-and-video",
+                          "uk/providers/openai/voice-and-speech",
+                          "uk/providers/openai/azure",
+                          "uk/providers/openai/advanced"
+                        ]
+                      },
                       "uk/providers/opencode",
                       "uk/providers/opencode-go",
                       "uk/providers/perplexity-provider",
@@ -23618,6 +23826,19 @@
                       "id/providers/nvidia",
                       "id/providers/ollama-cloud",
                       "id/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "id/providers/openai/setup",
+                          "id/providers/openai/models",
+                          "id/providers/openai/runtimes",
+                          "id/providers/openai/coverage-and-cost",
+                          "id/providers/openai/image-and-video",
+                          "id/providers/openai/voice-and-speech",
+                          "id/providers/openai/azure",
+                          "id/providers/openai/advanced"
+                        ]
+                      },
                       "id/providers/opencode",
                       "id/providers/opencode-go",
                       "id/providers/perplexity-provider",
@@ -24970,6 +25191,19 @@
                       "pl/providers/nvidia",
                       "pl/providers/ollama-cloud",
                       "pl/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "pl/providers/openai/setup",
+                          "pl/providers/openai/models",
+                          "pl/providers/openai/runtimes",
+                          "pl/providers/openai/coverage-and-cost",
+                          "pl/providers/openai/image-and-video",
+                          "pl/providers/openai/voice-and-speech",
+                          "pl/providers/openai/azure",
+                          "pl/providers/openai/advanced"
+                        ]
+                      },
                       "pl/providers/opencode",
                       "pl/providers/opencode-go",
                       "pl/providers/perplexity-provider",
@@ -26322,6 +26556,19 @@
                       "ru/providers/nvidia",
                       "ru/providers/ollama-cloud",
                       "ru/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "ru/providers/openai/setup",
+                          "ru/providers/openai/models",
+                          "ru/providers/openai/runtimes",
+                          "ru/providers/openai/coverage-and-cost",
+                          "ru/providers/openai/image-and-video",
+                          "ru/providers/openai/voice-and-speech",
+                          "ru/providers/openai/azure",
+                          "ru/providers/openai/advanced"
+                        ]
+                      },
                       "ru/providers/opencode",
                       "ru/providers/opencode-go",
                       "ru/providers/perplexity-provider",
