@@ -1626,6 +1626,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/config
 - Headings:
+  - H2: Externally managed config
   - H2: Root options
   - H2: Examples
   - H3: Paths
