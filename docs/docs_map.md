@@ -8700,28 +8700,70 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-overview
 - Headings:
   - H2: API stability
+  - H2: What each page covers
+  - H2: Registration API
+  - H3: API object fields
+  - H2: Where each section moved
+  - H2: Related
+
+## plugins/sdk-overview/capabilities.md
+
+- Route: /plugins/sdk-overview/capabilities
+- Headings:
+  - H2: Capability registration
+
+## plugins/sdk-overview/cli-and-discovery.md
+
+- Route: /plugins/sdk-overview/cli-and-discovery
+- Headings:
+  - H2: Gateway discovery registration
+  - H2: CLI registration metadata
+  - H2: CLI backend registration
+
+## plugins/sdk-overview/events-and-hooks.md
+
+- Route: /plugins/sdk-overview/events-and-hooks
+- Headings:
+  - H2: Events and lifecycle
+  - H2: Hook decision semantics
+
+## plugins/sdk-overview/host-hooks.md
+
+- Route: /plugins/sdk-overview/host-hooks
+- Headings:
+  - H2: Host hooks for workflow plugins
+
+## plugins/sdk-overview/imports.md
+
+- Route: /plugins/sdk-overview/imports
+- Headings:
   - H2: Import convention
   - H2: Subpath reference
-  - H2: Registration API
-  - H3: Capability registration
-  - H3: Tools and commands
-  - H3: Infrastructure
-  - H4: File-watch capacity errors
-  - H4: SQLite write admission
-  - H4: Webhook body rejection
-  - H4: Post-ack webhook work
-  - H4: Requester-scoped MCP connections
-  - H3: Host hooks for workflow plugins
-  - H3: Gateway discovery registration
-  - H3: CLI registration metadata
-  - H3: CLI backend registration
-  - H3: Exclusive slots
-  - H3: Memory embedding adapters
-  - H3: Events and lifecycle
-  - H3: Hook decision semantics
-  - H3: API object fields
   - H2: Internal module convention
-  - H2: Related
+
+## plugins/sdk-overview/infrastructure.md
+
+- Route: /plugins/sdk-overview/infrastructure
+- Headings:
+  - H2: Infrastructure
+  - H3: File-watch capacity errors
+  - H3: SQLite write admission
+  - H3: Webhook body rejection
+  - H3: Post-ack webhook work
+  - H3: Requester-scoped MCP connections
+
+## plugins/sdk-overview/memory-and-context.md
+
+- Route: /plugins/sdk-overview/memory-and-context
+- Headings:
+  - H2: Exclusive slots
+  - H2: Memory embedding adapters
+
+## plugins/sdk-overview/tools-and-commands.md
+
+- Route: /plugins/sdk-overview/tools-and-commands
+- Headings:
+  - H2: Tools and commands
 
 ## plugins/sdk-provider-plugins.md
 

@@ -2532,6 +2532,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "plugins/sdk-overview/imports",
+                      "plugins/sdk-overview/capabilities",
+                      "plugins/sdk-overview/tools-and-commands",
+                      "plugins/sdk-overview/infrastructure",
+                      "plugins/sdk-overview/host-hooks",
+                      "plugins/sdk-overview/cli-and-discovery",
+                      "plugins/sdk-overview/memory-and-context",
+                      "plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -3954,6 +3967,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "zh-CN/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "zh-CN/plugins/sdk-overview/imports",
+                      "zh-CN/plugins/sdk-overview/capabilities",
+                      "zh-CN/plugins/sdk-overview/tools-and-commands",
+                      "zh-CN/plugins/sdk-overview/infrastructure",
+                      "zh-CN/plugins/sdk-overview/host-hooks",
+                      "zh-CN/plugins/sdk-overview/cli-and-discovery",
+                      "zh-CN/plugins/sdk-overview/memory-and-context",
+                      "zh-CN/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "zh-CN/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -5376,6 +5402,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "zh-TW/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "zh-TW/plugins/sdk-overview/imports",
+                      "zh-TW/plugins/sdk-overview/capabilities",
+                      "zh-TW/plugins/sdk-overview/tools-and-commands",
+                      "zh-TW/plugins/sdk-overview/infrastructure",
+                      "zh-TW/plugins/sdk-overview/host-hooks",
+                      "zh-TW/plugins/sdk-overview/cli-and-discovery",
+                      "zh-TW/plugins/sdk-overview/memory-and-context",
+                      "zh-TW/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "zh-TW/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -6798,6 +6837,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ja-JP/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "ja-JP/plugins/sdk-overview/imports",
+                      "ja-JP/plugins/sdk-overview/capabilities",
+                      "ja-JP/plugins/sdk-overview/tools-and-commands",
+                      "ja-JP/plugins/sdk-overview/infrastructure",
+                      "ja-JP/plugins/sdk-overview/host-hooks",
+                      "ja-JP/plugins/sdk-overview/cli-and-discovery",
+                      "ja-JP/plugins/sdk-overview/memory-and-context",
+                      "ja-JP/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "ja-JP/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -8220,6 +8272,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "es/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "es/plugins/sdk-overview/imports",
+                      "es/plugins/sdk-overview/capabilities",
+                      "es/plugins/sdk-overview/tools-and-commands",
+                      "es/plugins/sdk-overview/infrastructure",
+                      "es/plugins/sdk-overview/host-hooks",
+                      "es/plugins/sdk-overview/cli-and-discovery",
+                      "es/plugins/sdk-overview/memory-and-context",
+                      "es/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "es/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -9642,6 +9707,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "pt-BR/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "pt-BR/plugins/sdk-overview/imports",
+                      "pt-BR/plugins/sdk-overview/capabilities",
+                      "pt-BR/plugins/sdk-overview/tools-and-commands",
+                      "pt-BR/plugins/sdk-overview/infrastructure",
+                      "pt-BR/plugins/sdk-overview/host-hooks",
+                      "pt-BR/plugins/sdk-overview/cli-and-discovery",
+                      "pt-BR/plugins/sdk-overview/memory-and-context",
+                      "pt-BR/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "pt-BR/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -11064,6 +11142,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ko/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "ko/plugins/sdk-overview/imports",
+                      "ko/plugins/sdk-overview/capabilities",
+                      "ko/plugins/sdk-overview/tools-and-commands",
+                      "ko/plugins/sdk-overview/infrastructure",
+                      "ko/plugins/sdk-overview/host-hooks",
+                      "ko/plugins/sdk-overview/cli-and-discovery",
+                      "ko/plugins/sdk-overview/memory-and-context",
+                      "ko/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "ko/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -12486,6 +12577,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "de/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "de/plugins/sdk-overview/imports",
+                      "de/plugins/sdk-overview/capabilities",
+                      "de/plugins/sdk-overview/tools-and-commands",
+                      "de/plugins/sdk-overview/infrastructure",
+                      "de/plugins/sdk-overview/host-hooks",
+                      "de/plugins/sdk-overview/cli-and-discovery",
+                      "de/plugins/sdk-overview/memory-and-context",
+                      "de/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "de/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -13908,6 +14012,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "fr/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "fr/plugins/sdk-overview/imports",
+                      "fr/plugins/sdk-overview/capabilities",
+                      "fr/plugins/sdk-overview/tools-and-commands",
+                      "fr/plugins/sdk-overview/infrastructure",
+                      "fr/plugins/sdk-overview/host-hooks",
+                      "fr/plugins/sdk-overview/cli-and-discovery",
+                      "fr/plugins/sdk-overview/memory-and-context",
+                      "fr/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "fr/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -15330,6 +15447,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "hi/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "hi/plugins/sdk-overview/imports",
+                      "hi/plugins/sdk-overview/capabilities",
+                      "hi/plugins/sdk-overview/tools-and-commands",
+                      "hi/plugins/sdk-overview/infrastructure",
+                      "hi/plugins/sdk-overview/host-hooks",
+                      "hi/plugins/sdk-overview/cli-and-discovery",
+                      "hi/plugins/sdk-overview/memory-and-context",
+                      "hi/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "hi/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -16752,6 +16882,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ar/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "ar/plugins/sdk-overview/imports",
+                      "ar/plugins/sdk-overview/capabilities",
+                      "ar/plugins/sdk-overview/tools-and-commands",
+                      "ar/plugins/sdk-overview/infrastructure",
+                      "ar/plugins/sdk-overview/host-hooks",
+                      "ar/plugins/sdk-overview/cli-and-discovery",
+                      "ar/plugins/sdk-overview/memory-and-context",
+                      "ar/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "ar/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -18174,6 +18317,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "it/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "it/plugins/sdk-overview/imports",
+                      "it/plugins/sdk-overview/capabilities",
+                      "it/plugins/sdk-overview/tools-and-commands",
+                      "it/plugins/sdk-overview/infrastructure",
+                      "it/plugins/sdk-overview/host-hooks",
+                      "it/plugins/sdk-overview/cli-and-discovery",
+                      "it/plugins/sdk-overview/memory-and-context",
+                      "it/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "it/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -19596,6 +19752,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "vi/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "vi/plugins/sdk-overview/imports",
+                      "vi/plugins/sdk-overview/capabilities",
+                      "vi/plugins/sdk-overview/tools-and-commands",
+                      "vi/plugins/sdk-overview/infrastructure",
+                      "vi/plugins/sdk-overview/host-hooks",
+                      "vi/plugins/sdk-overview/cli-and-discovery",
+                      "vi/plugins/sdk-overview/memory-and-context",
+                      "vi/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "vi/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -21018,6 +21187,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "nl/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "nl/plugins/sdk-overview/imports",
+                      "nl/plugins/sdk-overview/capabilities",
+                      "nl/plugins/sdk-overview/tools-and-commands",
+                      "nl/plugins/sdk-overview/infrastructure",
+                      "nl/plugins/sdk-overview/host-hooks",
+                      "nl/plugins/sdk-overview/cli-and-discovery",
+                      "nl/plugins/sdk-overview/memory-and-context",
+                      "nl/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "nl/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -22440,6 +22622,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "tr/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "tr/plugins/sdk-overview/imports",
+                      "tr/plugins/sdk-overview/capabilities",
+                      "tr/plugins/sdk-overview/tools-and-commands",
+                      "tr/plugins/sdk-overview/infrastructure",
+                      "tr/plugins/sdk-overview/host-hooks",
+                      "tr/plugins/sdk-overview/cli-and-discovery",
+                      "tr/plugins/sdk-overview/memory-and-context",
+                      "tr/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "tr/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -23862,6 +24057,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "uk/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "uk/plugins/sdk-overview/imports",
+                      "uk/plugins/sdk-overview/capabilities",
+                      "uk/plugins/sdk-overview/tools-and-commands",
+                      "uk/plugins/sdk-overview/infrastructure",
+                      "uk/plugins/sdk-overview/host-hooks",
+                      "uk/plugins/sdk-overview/cli-and-discovery",
+                      "uk/plugins/sdk-overview/memory-and-context",
+                      "uk/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "uk/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -25284,6 +25492,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "id/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "id/plugins/sdk-overview/imports",
+                      "id/plugins/sdk-overview/capabilities",
+                      "id/plugins/sdk-overview/tools-and-commands",
+                      "id/plugins/sdk-overview/infrastructure",
+                      "id/plugins/sdk-overview/host-hooks",
+                      "id/plugins/sdk-overview/cli-and-discovery",
+                      "id/plugins/sdk-overview/memory-and-context",
+                      "id/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "id/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -26706,6 +26927,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "pl/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "pl/plugins/sdk-overview/imports",
+                      "pl/plugins/sdk-overview/capabilities",
+                      "pl/plugins/sdk-overview/tools-and-commands",
+                      "pl/plugins/sdk-overview/infrastructure",
+                      "pl/plugins/sdk-overview/host-hooks",
+                      "pl/plugins/sdk-overview/cli-and-discovery",
+                      "pl/plugins/sdk-overview/memory-and-context",
+                      "pl/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "pl/plugins/manifest",
                   {
                     "group": "Plugin manifest",
@@ -28128,6 +28362,19 @@
                 "group": "Plugin SDK reference",
                 "pages": [
                   "ru/plugins/sdk-overview",
+                  {
+                    "group": "Plugin SDK overview",
+                    "pages": [
+                      "ru/plugins/sdk-overview/imports",
+                      "ru/plugins/sdk-overview/capabilities",
+                      "ru/plugins/sdk-overview/tools-and-commands",
+                      "ru/plugins/sdk-overview/infrastructure",
+                      "ru/plugins/sdk-overview/host-hooks",
+                      "ru/plugins/sdk-overview/cli-and-discovery",
+                      "ru/plugins/sdk-overview/memory-and-context",
+                      "ru/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
                   "ru/plugins/manifest",
                   {
                     "group": "Plugin manifest",
