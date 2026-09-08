@@ -215,6 +215,16 @@ jobs:
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
+      - name: Restore rendered articles
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
+        id: article-cache
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: .cache/docs-render
+          key: docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-
+
       - name: Build R2 artifact
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         env:
@@ -393,3 +403,11 @@ jobs:
           BEFORE_SHA: ${{ github.event.before || '' }}
           SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
         run: node scripts/docs-site/head-drift.mjs catch-up
+
+      # Cache storage must not hold up this run's publication or live smoke.
+      - name: Save rendered articles
+        if: ${{ !cancelled() && steps.upload-r2.outcome == 'success' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: .cache/docs-render
+          key: ${{ steps.article-cache.outputs.cache-primary-key }}
