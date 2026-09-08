@@ -6960,25 +6960,56 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H3: Permissions and scope
   - H3: Choose a hook
+  - H2: Troubleshooting
+  - H2: Upcoming deprecations
+  - H2: Where each section moved
+  - H3: Hook reference
+  - H3: Tool call policy hooks
+  - H3: Prompt and session hooks
+  - H3: Message and delivery hooks
+  - H3: Gateway and install lifecycle hooks
+  - H2: Related
+
+## plugins/hooks/lifecycle.md
+
+- Route: /plugins/hooks/lifecycle
+- Headings:
+  - H2: Install hooks
+  - H2: Gateway lifecycle
+  - H3: Safe external cron projection
+
+## plugins/hooks/messages.md
+
+- Route: /plugins/hooks/messages
+- Headings:
+  - H2: Message hooks
+
+## plugins/hooks/prompt-and-session.md
+
+- Route: /plugins/hooks/prompt-and-session
+- Headings:
+  - H2: Debug runtime hooks
+  - H2: Prompt and model hooks
+  - H3: Authorized prompt enrichment
+  - H3: Session extensions and next-turn injections
+
+## plugins/hooks/reference.md
+
+- Route: /plugins/hooks/reference
+- Headings:
   - H2: Registration and execution
   - H2: Hook catalog
   - H3: Skill lifecycle and evaluation
   - H3: Channel pairing requests
-  - H2: Debug runtime hooks
+
+## plugins/hooks/tool-policy.md
+
+- Route: /plugins/hooks/tool-policy
+- Headings:
   - H2: Tool call policy
   - H3: Sender-aware policy in one file
   - H3: Exec environment hook
   - H3: Tool result persistence
-  - H2: Prompt and model hooks
-  - H3: Authorized prompt enrichment
-  - H3: Session extensions and next-turn injections
-  - H2: Message hooks
-  - H2: Install hooks
-  - H2: Gateway lifecycle
-  - H3: Safe external cron projection
-  - H2: Troubleshooting
-  - H2: Upcoming deprecations
-  - H2: Related
 
 ## plugins/install-overrides.md
 

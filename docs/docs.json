@@ -1754,6 +1754,16 @@
                   },
                   "plugins/cli-backend-plugins",
                   "plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "plugins/hooks/reference",
+                      "plugins/hooks/tool-policy",
+                      "plugins/hooks/prompt-and-session",
+                      "plugins/hooks/messages",
+                      "plugins/hooks/lifecycle"
+                    ]
+                  },
                   "plugins/plugin-permission-requests",
                   "plugins/adding-capabilities"
                 ]
@@ -3189,6 +3199,16 @@
                   },
                   "zh-CN/plugins/cli-backend-plugins",
                   "zh-CN/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "zh-CN/plugins/hooks/reference",
+                      "zh-CN/plugins/hooks/tool-policy",
+                      "zh-CN/plugins/hooks/prompt-and-session",
+                      "zh-CN/plugins/hooks/messages",
+                      "zh-CN/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "zh-CN/plugins/plugin-permission-requests",
                   "zh-CN/plugins/adding-capabilities"
                 ]
@@ -4590,6 +4610,16 @@
                   },
                   "zh-TW/plugins/cli-backend-plugins",
                   "zh-TW/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "zh-TW/plugins/hooks/reference",
+                      "zh-TW/plugins/hooks/tool-policy",
+                      "zh-TW/plugins/hooks/prompt-and-session",
+                      "zh-TW/plugins/hooks/messages",
+                      "zh-TW/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "zh-TW/plugins/plugin-permission-requests",
                   "zh-TW/plugins/adding-capabilities"
                 ]
@@ -5991,6 +6021,16 @@
                   },
                   "ja-JP/plugins/cli-backend-plugins",
                   "ja-JP/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "ja-JP/plugins/hooks/reference",
+                      "ja-JP/plugins/hooks/tool-policy",
+                      "ja-JP/plugins/hooks/prompt-and-session",
+                      "ja-JP/plugins/hooks/messages",
+                      "ja-JP/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "ja-JP/plugins/plugin-permission-requests",
                   "ja-JP/plugins/adding-capabilities"
                 ]
@@ -7392,6 +7432,16 @@
                   },
                   "es/plugins/cli-backend-plugins",
                   "es/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "es/plugins/hooks/reference",
+                      "es/plugins/hooks/tool-policy",
+                      "es/plugins/hooks/prompt-and-session",
+                      "es/plugins/hooks/messages",
+                      "es/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "es/plugins/plugin-permission-requests",
                   "es/plugins/adding-capabilities"
                 ]
@@ -8793,6 +8843,16 @@
                   },
                   "pt-BR/plugins/cli-backend-plugins",
                   "pt-BR/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "pt-BR/plugins/hooks/reference",
+                      "pt-BR/plugins/hooks/tool-policy",
+                      "pt-BR/plugins/hooks/prompt-and-session",
+                      "pt-BR/plugins/hooks/messages",
+                      "pt-BR/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "pt-BR/plugins/plugin-permission-requests",
                   "pt-BR/plugins/adding-capabilities"
                 ]
@@ -10194,6 +10254,16 @@
                   },
                   "ko/plugins/cli-backend-plugins",
                   "ko/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "ko/plugins/hooks/reference",
+                      "ko/plugins/hooks/tool-policy",
+                      "ko/plugins/hooks/prompt-and-session",
+                      "ko/plugins/hooks/messages",
+                      "ko/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "ko/plugins/plugin-permission-requests",
                   "ko/plugins/adding-capabilities"
                 ]
@@ -11595,6 +11665,16 @@
                   },
                   "de/plugins/cli-backend-plugins",
                   "de/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "de/plugins/hooks/reference",
+                      "de/plugins/hooks/tool-policy",
+                      "de/plugins/hooks/prompt-and-session",
+                      "de/plugins/hooks/messages",
+                      "de/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "de/plugins/plugin-permission-requests",
                   "de/plugins/adding-capabilities"
                 ]
@@ -12996,6 +13076,16 @@
                   },
                   "fr/plugins/cli-backend-plugins",
                   "fr/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "fr/plugins/hooks/reference",
+                      "fr/plugins/hooks/tool-policy",
+                      "fr/plugins/hooks/prompt-and-session",
+                      "fr/plugins/hooks/messages",
+                      "fr/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "fr/plugins/plugin-permission-requests",
                   "fr/plugins/adding-capabilities"
                 ]
@@ -14397,6 +14487,16 @@
                   },
                   "hi/plugins/cli-backend-plugins",
                   "hi/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "hi/plugins/hooks/reference",
+                      "hi/plugins/hooks/tool-policy",
+                      "hi/plugins/hooks/prompt-and-session",
+                      "hi/plugins/hooks/messages",
+                      "hi/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "hi/plugins/plugin-permission-requests",
                   "hi/plugins/adding-capabilities"
                 ]
@@ -15798,6 +15898,16 @@
                   },
                   "ar/plugins/cli-backend-plugins",
                   "ar/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "ar/plugins/hooks/reference",
+                      "ar/plugins/hooks/tool-policy",
+                      "ar/plugins/hooks/prompt-and-session",
+                      "ar/plugins/hooks/messages",
+                      "ar/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "ar/plugins/plugin-permission-requests",
                   "ar/plugins/adding-capabilities"
                 ]
@@ -17199,6 +17309,16 @@
                   },
                   "it/plugins/cli-backend-plugins",
                   "it/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "it/plugins/hooks/reference",
+                      "it/plugins/hooks/tool-policy",
+                      "it/plugins/hooks/prompt-and-session",
+                      "it/plugins/hooks/messages",
+                      "it/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "it/plugins/plugin-permission-requests",
                   "it/plugins/adding-capabilities"
                 ]
@@ -18600,6 +18720,16 @@
                   },
                   "vi/plugins/cli-backend-plugins",
                   "vi/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "vi/plugins/hooks/reference",
+                      "vi/plugins/hooks/tool-policy",
+                      "vi/plugins/hooks/prompt-and-session",
+                      "vi/plugins/hooks/messages",
+                      "vi/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "vi/plugins/plugin-permission-requests",
                   "vi/plugins/adding-capabilities"
                 ]
@@ -20001,6 +20131,16 @@
                   },
                   "nl/plugins/cli-backend-plugins",
                   "nl/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "nl/plugins/hooks/reference",
+                      "nl/plugins/hooks/tool-policy",
+                      "nl/plugins/hooks/prompt-and-session",
+                      "nl/plugins/hooks/messages",
+                      "nl/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "nl/plugins/plugin-permission-requests",
                   "nl/plugins/adding-capabilities"
                 ]
@@ -21402,6 +21542,16 @@
                   },
                   "tr/plugins/cli-backend-plugins",
                   "tr/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "tr/plugins/hooks/reference",
+                      "tr/plugins/hooks/tool-policy",
+                      "tr/plugins/hooks/prompt-and-session",
+                      "tr/plugins/hooks/messages",
+                      "tr/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "tr/plugins/plugin-permission-requests",
                   "tr/plugins/adding-capabilities"
                 ]
@@ -22803,6 +22953,16 @@
                   },
                   "uk/plugins/cli-backend-plugins",
                   "uk/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "uk/plugins/hooks/reference",
+                      "uk/plugins/hooks/tool-policy",
+                      "uk/plugins/hooks/prompt-and-session",
+                      "uk/plugins/hooks/messages",
+                      "uk/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "uk/plugins/plugin-permission-requests",
                   "uk/plugins/adding-capabilities"
                 ]
@@ -24204,6 +24364,16 @@
                   },
                   "id/plugins/cli-backend-plugins",
                   "id/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "id/plugins/hooks/reference",
+                      "id/plugins/hooks/tool-policy",
+                      "id/plugins/hooks/prompt-and-session",
+                      "id/plugins/hooks/messages",
+                      "id/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "id/plugins/plugin-permission-requests",
                   "id/plugins/adding-capabilities"
                 ]
@@ -25605,6 +25775,16 @@
                   },
                   "pl/plugins/cli-backend-plugins",
                   "pl/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "pl/plugins/hooks/reference",
+                      "pl/plugins/hooks/tool-policy",
+                      "pl/plugins/hooks/prompt-and-session",
+                      "pl/plugins/hooks/messages",
+                      "pl/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "pl/plugins/plugin-permission-requests",
                   "pl/plugins/adding-capabilities"
                 ]
@@ -27006,6 +27186,16 @@
                   },
                   "ru/plugins/cli-backend-plugins",
                   "ru/plugins/hooks",
+                  {
+                    "group": "Plugin hooks",
+                    "pages": [
+                      "ru/plugins/hooks/reference",
+                      "ru/plugins/hooks/tool-policy",
+                      "ru/plugins/hooks/prompt-and-session",
+                      "ru/plugins/hooks/messages",
+                      "ru/plugins/hooks/lifecycle"
+                    ]
+                  },
                   "ru/plugins/plugin-permission-requests",
                   "ru/plugins/adding-capabilities"
                 ]
