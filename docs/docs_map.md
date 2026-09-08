@@ -11866,6 +11866,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui/offline-and-reconnect
 - Headings:
+  - H2: Warm reload
   - H2: Gateway updates and suspended tabs
   - H2: Connection loss and reconnect
 
