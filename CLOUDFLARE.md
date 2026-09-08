@@ -28,6 +28,11 @@ The repo-side pieces are in place:
 
 `r2-upload.mjs` downloads `.openclaw-docs-r2-manifest.json` from R2, compares hashes and metadata, uploads only changed objects through the R2 S3 API, and then writes the new manifest back. The first upload seeds everything; later uploads should be small.
 
+Manifest files refer directly to the checked `dist/docs-site` tree; preparation
+does not make a second `dist/docs-r2` copy. Keep that tree unchanged until upload
+finishes. Slashless aliases reuse their physical file's hashes and HTTP metadata;
+remote object comparison and deletion accounting are unchanged.
+
 ## Current Production State
 
 Production is cut over to R2-backed storage with a small Worker router in front:
@@ -111,13 +116,33 @@ not include the source commit, so a one-page edit does not invalidate all locale
 Pages containing `<Snippet` always render afresh, including nested or newly
 available snippet dependencies. Removed pages' entries are pruned.
 
-Only article HTML is cached. Navigation, locale-aware links, page chrome, edit
-links, redirects, Markdown exports, OG cards, and search indexes are rebuilt from
+Only article HTML is cached by this cache. Navigation, locale-aware links, page chrome, edit
+links, redirects, Markdown exports, and search indexes are rebuilt from
 the current snapshot. Deletions and publication ordering are unchanged. Logs
 report article hits, misses, and snippet bypasses. For an uncached comparison,
 run `DOCS_SITE_RENDER_CACHE=0 npm run docs:build:r2`; preview builds bypass the
 cache automatically. This optimization does not remove the upstream source-sync
 queue or full MDX validation, and the first deployment must populate the cache.
+
+### Preview image reuse
+
+Per-page social-preview PNGs use the separate `.cache/docs-og` cache. A hit needs
+the same generated SVG (title, summary and navigation label), renderer/options,
+font bytes, locked dependencies and Node/platform identity. Missing or damaged
+entries render again; only images selected by the current page/navigation snapshot
+are written to the output, and unselected cache entries are pruned. Preview mode
+still skips per-page OG generation.
+
+The deployment restores images before building and saves them after publication.
+Logs distinguish reused images from actual renders. `DOCS_SITE_RENDER_CACHE=0`
+also bypasses this cache, without creating or pruning it. The renderer uses the
+locked `@resvg/resvg-js` package with embedded fonts, not `rsvg-convert`, so the
+workflow does not install `librsvg2-bin`.
+
+Pagefind still builds a complete current index. Its immutable-file reuse is not
+enabled here: retaining an old output directory without an exact current-file
+inventory would also retain obsolete search fragments. Publication order, search
+coverage and old-object deletion remain unchanged.
 
 ### Router deployment
 

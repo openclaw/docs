@@ -42,9 +42,6 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
-
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 

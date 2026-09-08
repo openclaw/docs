@@ -13,6 +13,7 @@ import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from 
 import { elementsFixture } from "./elements-fixture.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
+import { createOgCache } from "./og-cache.mjs";
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
@@ -812,6 +813,9 @@ async function renderPageOgCards() {
     page.locale === "en" && page.slug !== "index" && navSlugs.has(page.slug)
   );
   const start = Date.now();
+  const cache = process.env.DOCS_SITE_RENDER_CACHE !== "0"
+    ? createOgCache(path.join(root, ".cache", "docs-og"), renderOgPng)
+    : null;
   const concurrency = Math.max(2, Math.min(8, Number(process.env.DOCS_SITE_OG_CONCURRENCY) || 6));
   let cursor = 0;
   let count = 0;
@@ -824,7 +828,7 @@ async function renderPageOgCards() {
       const outFile = path.join(ogDir, `${page.slug}.png`);
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
       try {
-        fs.writeFileSync(outFile, await renderOgPng(svg));
+        fs.writeFileSync(outFile, await (cache ? cache.render(page.slug, svg) : renderOgPng(svg)));
         renderedPageOgCards.add(page.slug);
         count++;
       } catch (err) {
@@ -836,7 +840,13 @@ async function renderPageOgCards() {
     const details = failures.slice(0, 5).join("; ");
     throw new Error(`failed to render ${failures.length}/${targets.length} per-page og cards: ${details}`);
   }
-  console.log(`rendered ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
+  if (cache) {
+    cache.prune();
+    console.log(`og cache: ${cache.stats.hits} reused, ${cache.stats.misses} rendered`);
+  } else {
+    console.log(`og cache: disabled, ${count} rendered`);
+  }
+  console.log(`prepared ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
 }
 
 function renderOgPng(svg) {

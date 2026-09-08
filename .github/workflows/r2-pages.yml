@@ -211,10 +211,6 @@ jobs:
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
         run: npm ci
 
-      - name: Install librsvg2-bin
-        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
-
       - name: Restore rendered articles
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
         id: article-cache
@@ -224,6 +220,16 @@ jobs:
           key: docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-
+
+      - name: Restore preview images
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
+        id: og-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-og
+          key: docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-
 
       - name: Build R2 artifact
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
@@ -411,3 +417,10 @@ jobs:
         with:
           path: .cache/docs-render
           key: ${{ steps.article-cache.outputs.cache-primary-key }}
+
+      - name: Save preview images
+        if: ${{ !cancelled() && steps.upload-r2.outcome == 'success' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-og
+          key: ${{ steps.og-cache.outputs.cache-primary-key }}
