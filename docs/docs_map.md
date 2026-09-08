@@ -2033,7 +2033,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw models
   - H2: Common commands
   - H3: Status
+  - H4: Read status correctly
   - H3: List
+  - H3: Refresh the hosted catalog
   - H3: Set default / image model
   - H3: Scan
   - H2: Aliases
