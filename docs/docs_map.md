@@ -4662,11 +4662,28 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Control UI
   - H2: Related
 
+## gateway/security/access-control.md
+
+- Route: /gateway/security/access-control
+- Headings:
+  - H2: DM access: pairing, allowlist, open, disabled
+  - H3: Allowlists (two layers)
+  - H3: DM session isolation (multi-user mode)
+  - H2: Context visibility vs trigger authorization
+  - H2: Command authorization
+
 ## gateway/security/audit-checks.md
 
 - Route: /gateway/security/audit-checks
 - Headings:
   - H2: Related
+
+## gateway/security/browser-control.md
+
+- Route: /gateway/security/browser-control
+- Headings:
+  - H2: Browser control risks
+  - H3: Browser SSRF policy (strict by default)
 
 ## gateway/security/dependency-locking.md
 
@@ -4693,42 +4710,26 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Rollback plan
   - H2: Review checklist
 
+## gateway/security/hardened-baseline.md
+
+- Route: /gateway/security/hardened-baseline
+- Headings:
+  - H2: Hardened baseline in 60 seconds
+  - H3: Requester-scoped controls and prompt context
+  - H2: Secure baseline (copy/paste)
+  - H3: Separate numbers (WhatsApp, Signal, Telegram)
+
 ## gateway/security/index.md
 
 - Route: /gateway/security
 - Headings:
-  - H2: Scope: one trust boundary per gateway
-  - H2: openclaw security audit
-  - H3: What the audit checks (high level)
-  - H3: Priority order when triaging findings
-  - H2: Hardened baseline in 60 seconds
-  - H3: Requester-scoped controls and prompt context
-  - H2: Trust boundary matrix
-  - H2: Not vulnerabilities by design
-  - H2: Gateway and node trust
-  - H2: Threat model
-  - H2: DM access: pairing, allowlist, open, disabled
-  - H3: Allowlists (two layers)
-  - H3: DM session isolation (multi-user mode)
-  - H2: Context visibility vs trigger authorization
-  - H2: Prompt injection
-  - H3: External content and untrusted-input wrapping
-  - H3: Bypass flags (keep off in production)
-  - H3: Reasoning and verbose output in groups
-  - H2: Command authorization
-  - H2: Control plane tools
-  - H2: Node execution (system.run)
-  - H2: Dynamic skills (watcher / remote nodes)
-  - H2: Plugins
-  - H2: Sandboxing
-  - H3: Sub-agent delegation guardrail
-  - H3: Read-only mode
-  - H2: Per-agent access profiles (multi-agent)
-  - H3: Full access (no sandbox)
-  - H3: Read-only tools + read-only workspace
-  - H3: No filesystem/shell access (provider messaging allowed)
-  - H2: Browser control risks
-  - H3: Browser SSRF policy (strict by default)
+  - H2: Security pages
+  - H2: Where each section moved
+
+## gateway/security/network-exposure.md
+
+- Route: /gateway/security/network-exposure
+- Headings:
   - H2: Network exposure
   - H3: Bind, port, firewall
   - H3: Docker port publishing with UFW
@@ -4739,21 +4740,25 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: HSTS and origin notes
   - H3: Control UI over HTTP
   - H3: Insecure/dangerous flags
-  - H2: Deployment and host trust
-  - H2: Secrets on disk
-  - H3: Credential storage map
-  - H3: File permissions
-  - H3: Workspace .env files
-  - H3: Logs and transcripts
-  - H2: Secure baseline (copy/paste)
-  - H3: Separate numbers (WhatsApp, Signal, Telegram)
+
+## gateway/security/operator-incident-response.md
+
+- Route: /gateway/security/operator-incident-response
+- Headings:
   - H2: Incident response
   - H3: Contain
   - H3: Rotate (assume compromise if secrets leaked)
   - H3: Audit
   - H3: Collect for a report
-  - H2: Secret scanning
-  - H2: Reporting security issues
+
+## gateway/security/prompt-injection.md
+
+- Route: /gateway/security/prompt-injection
+- Headings:
+  - H2: Prompt injection
+  - H3: External content and untrusted-input wrapping
+  - H3: Bypass flags (keep off in production)
+  - H3: Reasoning and verbose output in groups
 
 ## gateway/security/rate-limiting.md
 
@@ -4768,6 +4773,26 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Restart cooldown
   - H2: Operational notes
 
+## gateway/security/running-the-audit.md
+
+- Route: /gateway/security/running-the-audit
+- Headings:
+  - H2: openclaw security audit
+  - H3: What the audit checks (high level)
+  - H3: Priority order when triaging findings
+
+## gateway/security/secrets-and-storage.md
+
+- Route: /gateway/security/secrets-and-storage
+- Headings:
+  - H2: Deployment and host trust
+  - H2: Secrets on disk
+  - H3: Credential storage map
+  - H3: File permissions
+  - H3: Workspace .env files
+  - H3: Logs and transcripts
+  - H2: Secret scanning
+
 ## gateway/security/secure-file-operations.md
 
 - Route: /gateway/security/secure-file-operations
@@ -4776,6 +4801,33 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What stays protected without native acceleration
   - H2: What native acceleration adds
   - H2: Plugin and core guidance
+
+## gateway/security/tool-permissions.md
+
+- Route: /gateway/security/tool-permissions
+- Headings:
+  - H2: Control plane tools
+  - H2: Node execution (system.run)
+  - H2: Dynamic skills (watcher / remote nodes)
+  - H2: Plugins
+  - H2: Sandboxing
+  - H3: Sub-agent delegation guardrail
+  - H3: Read-only mode
+  - H2: Per-agent access profiles (multi-agent)
+  - H3: Full access (no sandbox)
+  - H3: Read-only tools + read-only workspace
+  - H3: No filesystem/shell access (provider messaging allowed)
+
+## gateway/security/trust-model.md
+
+- Route: /gateway/security/trust-model
+- Headings:
+  - H2: Scope: one trust boundary per gateway
+  - H2: Trust boundary matrix
+  - H2: Not vulnerabilities by design
+  - H2: Gateway and node trust
+  - H2: Threat model
+  - H2: Reporting security issues
 
 ## gateway/stable-https-url.md
 
