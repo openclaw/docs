@@ -1828,6 +1828,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "tools/code-mode/quickstart",
+                          "tools/code-mode/configuration",
+                          "tools/code-mode/tool-surface",
+                          "tools/code-mode/guest-api",
+                          "tools/code-mode/output",
+                          "tools/code-mode/internals",
+                          "tools/code-mode/troubleshooting",
+                          "tools/code-mode/maintainers"
+                        ]
+                      },
                       "tools/llm-task",
                       "tools/lobster",
                       "tools/mcp",
@@ -3227,6 +3240,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "zh-CN/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "zh-CN/tools/code-mode/quickstart",
+                          "zh-CN/tools/code-mode/configuration",
+                          "zh-CN/tools/code-mode/tool-surface",
+                          "zh-CN/tools/code-mode/guest-api",
+                          "zh-CN/tools/code-mode/output",
+                          "zh-CN/tools/code-mode/internals",
+                          "zh-CN/tools/code-mode/troubleshooting",
+                          "zh-CN/tools/code-mode/maintainers"
+                        ]
+                      },
                       "zh-CN/tools/llm-task",
                       "zh-CN/tools/lobster",
                       "zh-CN/tools/mcp",
@@ -4592,6 +4618,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "zh-TW/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "zh-TW/tools/code-mode/quickstart",
+                          "zh-TW/tools/code-mode/configuration",
+                          "zh-TW/tools/code-mode/tool-surface",
+                          "zh-TW/tools/code-mode/guest-api",
+                          "zh-TW/tools/code-mode/output",
+                          "zh-TW/tools/code-mode/internals",
+                          "zh-TW/tools/code-mode/troubleshooting",
+                          "zh-TW/tools/code-mode/maintainers"
+                        ]
+                      },
                       "zh-TW/tools/llm-task",
                       "zh-TW/tools/lobster",
                       "zh-TW/tools/mcp",
@@ -5957,6 +5996,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "ja-JP/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "ja-JP/tools/code-mode/quickstart",
+                          "ja-JP/tools/code-mode/configuration",
+                          "ja-JP/tools/code-mode/tool-surface",
+                          "ja-JP/tools/code-mode/guest-api",
+                          "ja-JP/tools/code-mode/output",
+                          "ja-JP/tools/code-mode/internals",
+                          "ja-JP/tools/code-mode/troubleshooting",
+                          "ja-JP/tools/code-mode/maintainers"
+                        ]
+                      },
                       "ja-JP/tools/llm-task",
                       "ja-JP/tools/lobster",
                       "ja-JP/tools/mcp",
@@ -7322,6 +7374,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "es/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "es/tools/code-mode/quickstart",
+                          "es/tools/code-mode/configuration",
+                          "es/tools/code-mode/tool-surface",
+                          "es/tools/code-mode/guest-api",
+                          "es/tools/code-mode/output",
+                          "es/tools/code-mode/internals",
+                          "es/tools/code-mode/troubleshooting",
+                          "es/tools/code-mode/maintainers"
+                        ]
+                      },
                       "es/tools/llm-task",
                       "es/tools/lobster",
                       "es/tools/mcp",
@@ -8687,6 +8752,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "pt-BR/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "pt-BR/tools/code-mode/quickstart",
+                          "pt-BR/tools/code-mode/configuration",
+                          "pt-BR/tools/code-mode/tool-surface",
+                          "pt-BR/tools/code-mode/guest-api",
+                          "pt-BR/tools/code-mode/output",
+                          "pt-BR/tools/code-mode/internals",
+                          "pt-BR/tools/code-mode/troubleshooting",
+                          "pt-BR/tools/code-mode/maintainers"
+                        ]
+                      },
                       "pt-BR/tools/llm-task",
                       "pt-BR/tools/lobster",
                       "pt-BR/tools/mcp",
@@ -10052,6 +10130,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "ko/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "ko/tools/code-mode/quickstart",
+                          "ko/tools/code-mode/configuration",
+                          "ko/tools/code-mode/tool-surface",
+                          "ko/tools/code-mode/guest-api",
+                          "ko/tools/code-mode/output",
+                          "ko/tools/code-mode/internals",
+                          "ko/tools/code-mode/troubleshooting",
+                          "ko/tools/code-mode/maintainers"
+                        ]
+                      },
                       "ko/tools/llm-task",
                       "ko/tools/lobster",
                       "ko/tools/mcp",
@@ -11417,6 +11508,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "de/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "de/tools/code-mode/quickstart",
+                          "de/tools/code-mode/configuration",
+                          "de/tools/code-mode/tool-surface",
+                          "de/tools/code-mode/guest-api",
+                          "de/tools/code-mode/output",
+                          "de/tools/code-mode/internals",
+                          "de/tools/code-mode/troubleshooting",
+                          "de/tools/code-mode/maintainers"
+                        ]
+                      },
                       "de/tools/llm-task",
                       "de/tools/lobster",
                       "de/tools/mcp",
@@ -12782,6 +12886,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "fr/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "fr/tools/code-mode/quickstart",
+                          "fr/tools/code-mode/configuration",
+                          "fr/tools/code-mode/tool-surface",
+                          "fr/tools/code-mode/guest-api",
+                          "fr/tools/code-mode/output",
+                          "fr/tools/code-mode/internals",
+                          "fr/tools/code-mode/troubleshooting",
+                          "fr/tools/code-mode/maintainers"
+                        ]
+                      },
                       "fr/tools/llm-task",
                       "fr/tools/lobster",
                       "fr/tools/mcp",
@@ -14147,6 +14264,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "hi/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "hi/tools/code-mode/quickstart",
+                          "hi/tools/code-mode/configuration",
+                          "hi/tools/code-mode/tool-surface",
+                          "hi/tools/code-mode/guest-api",
+                          "hi/tools/code-mode/output",
+                          "hi/tools/code-mode/internals",
+                          "hi/tools/code-mode/troubleshooting",
+                          "hi/tools/code-mode/maintainers"
+                        ]
+                      },
                       "hi/tools/llm-task",
                       "hi/tools/lobster",
                       "hi/tools/mcp",
@@ -15512,6 +15642,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "ar/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "ar/tools/code-mode/quickstart",
+                          "ar/tools/code-mode/configuration",
+                          "ar/tools/code-mode/tool-surface",
+                          "ar/tools/code-mode/guest-api",
+                          "ar/tools/code-mode/output",
+                          "ar/tools/code-mode/internals",
+                          "ar/tools/code-mode/troubleshooting",
+                          "ar/tools/code-mode/maintainers"
+                        ]
+                      },
                       "ar/tools/llm-task",
                       "ar/tools/lobster",
                       "ar/tools/mcp",
@@ -16877,6 +17020,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "it/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "it/tools/code-mode/quickstart",
+                          "it/tools/code-mode/configuration",
+                          "it/tools/code-mode/tool-surface",
+                          "it/tools/code-mode/guest-api",
+                          "it/tools/code-mode/output",
+                          "it/tools/code-mode/internals",
+                          "it/tools/code-mode/troubleshooting",
+                          "it/tools/code-mode/maintainers"
+                        ]
+                      },
                       "it/tools/llm-task",
                       "it/tools/lobster",
                       "it/tools/mcp",
@@ -18242,6 +18398,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "vi/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "vi/tools/code-mode/quickstart",
+                          "vi/tools/code-mode/configuration",
+                          "vi/tools/code-mode/tool-surface",
+                          "vi/tools/code-mode/guest-api",
+                          "vi/tools/code-mode/output",
+                          "vi/tools/code-mode/internals",
+                          "vi/tools/code-mode/troubleshooting",
+                          "vi/tools/code-mode/maintainers"
+                        ]
+                      },
                       "vi/tools/llm-task",
                       "vi/tools/lobster",
                       "vi/tools/mcp",
@@ -19607,6 +19776,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "nl/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "nl/tools/code-mode/quickstart",
+                          "nl/tools/code-mode/configuration",
+                          "nl/tools/code-mode/tool-surface",
+                          "nl/tools/code-mode/guest-api",
+                          "nl/tools/code-mode/output",
+                          "nl/tools/code-mode/internals",
+                          "nl/tools/code-mode/troubleshooting",
+                          "nl/tools/code-mode/maintainers"
+                        ]
+                      },
                       "nl/tools/llm-task",
                       "nl/tools/lobster",
                       "nl/tools/mcp",
@@ -20972,6 +21154,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "tr/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "tr/tools/code-mode/quickstart",
+                          "tr/tools/code-mode/configuration",
+                          "tr/tools/code-mode/tool-surface",
+                          "tr/tools/code-mode/guest-api",
+                          "tr/tools/code-mode/output",
+                          "tr/tools/code-mode/internals",
+                          "tr/tools/code-mode/troubleshooting",
+                          "tr/tools/code-mode/maintainers"
+                        ]
+                      },
                       "tr/tools/llm-task",
                       "tr/tools/lobster",
                       "tr/tools/mcp",
@@ -22337,6 +22532,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "uk/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "uk/tools/code-mode/quickstart",
+                          "uk/tools/code-mode/configuration",
+                          "uk/tools/code-mode/tool-surface",
+                          "uk/tools/code-mode/guest-api",
+                          "uk/tools/code-mode/output",
+                          "uk/tools/code-mode/internals",
+                          "uk/tools/code-mode/troubleshooting",
+                          "uk/tools/code-mode/maintainers"
+                        ]
+                      },
                       "uk/tools/llm-task",
                       "uk/tools/lobster",
                       "uk/tools/mcp",
@@ -23702,6 +23910,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "id/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "id/tools/code-mode/quickstart",
+                          "id/tools/code-mode/configuration",
+                          "id/tools/code-mode/tool-surface",
+                          "id/tools/code-mode/guest-api",
+                          "id/tools/code-mode/output",
+                          "id/tools/code-mode/internals",
+                          "id/tools/code-mode/troubleshooting",
+                          "id/tools/code-mode/maintainers"
+                        ]
+                      },
                       "id/tools/llm-task",
                       "id/tools/lobster",
                       "id/tools/mcp",
@@ -25067,6 +25288,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "pl/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "pl/tools/code-mode/quickstart",
+                          "pl/tools/code-mode/configuration",
+                          "pl/tools/code-mode/tool-surface",
+                          "pl/tools/code-mode/guest-api",
+                          "pl/tools/code-mode/output",
+                          "pl/tools/code-mode/internals",
+                          "pl/tools/code-mode/troubleshooting",
+                          "pl/tools/code-mode/maintainers"
+                        ]
+                      },
                       "pl/tools/llm-task",
                       "pl/tools/lobster",
                       "pl/tools/mcp",
@@ -26432,6 +26666,19 @@
                     "group": "Tool catalogs and workflows",
                     "pages": [
                       "ru/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "ru/tools/code-mode/quickstart",
+                          "ru/tools/code-mode/configuration",
+                          "ru/tools/code-mode/tool-surface",
+                          "ru/tools/code-mode/guest-api",
+                          "ru/tools/code-mode/output",
+                          "ru/tools/code-mode/internals",
+                          "ru/tools/code-mode/troubleshooting",
+                          "ru/tools/code-mode/maintainers"
+                        ]
+                      },
                       "ru/tools/llm-task",
                       "ru/tools/lobster",
                       "ru/tools/mcp",

@@ -11119,17 +11119,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H2: Why use it
-  - H2: Quickstart
-  - H3: Enable code mode
-  - H3: Override one model
-  - H3: What the model does
-  - H3: Recover from tool errors
-  - H3: Verify the active surface
-  - H2: Use Swarm for agent fan-out
   - H2: Technical tour
-  - H2: Runtime status
-  - H2: Scope
-  - H2: Terms
+  - H2: Where each section moved
+  - H2: Related
+
+## tools/code-mode/configuration.md
+
+- Route: /tools/code-mode/configuration
+- Headings:
   - H2: Configuration
   - H2: Automatic per-model activation
   - H3: The compat.codeMode catalog flag
@@ -11137,29 +11134,72 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Models shipped by more than one provider
   - H3: Choosing when to enable
   - H2: Activation
-  - H2: Model-visible tools
-  - H2: exec
-  - H3: Source in session history
-  - H2: wait
+
+## tools/code-mode/guest-api.md
+
+- Route: /tools/code-mode/guest-api
+- Headings:
   - H2: Guest runtime API
   - H3: Reading paginated file data
-  - H2: Declared output contracts
-  - H2: Output API
-  - H2: Tool catalog
-  - H2: Tool Search interaction
-  - H2: Tool names and collisions
+
+## tools/code-mode/internals.md
+
+- Route: /tools/code-mode/internals
+- Headings:
+  - H2: Runtime status
+  - H2: Scope
+  - H2: Terms
   - H2: Nested tool execution
   - H2: Run and snapshot lifecycle
   - H2: QuickJS-WASI runtime
   - H2: TypeScript
   - H2: Security boundary
-  - H2: Error codes
-  - H2: Telemetry
-  - H2: Debugging
+
+## tools/code-mode/maintainers.md
+
+- Route: /tools/code-mode/maintainers
+- Headings:
   - H2: Implementation layout
   - H2: Validation checklist
   - H2: E2E test plan
-  - H2: Related
+
+## tools/code-mode/output.md
+
+- Route: /tools/code-mode/output
+- Headings:
+  - H2: Declared output contracts
+  - H2: Output API
+
+## tools/code-mode/quickstart.md
+
+- Route: /tools/code-mode/quickstart
+- Headings:
+  - H2: Enable code mode
+  - H2: Override one model
+  - H2: What the model does
+  - H2: Recover from tool errors
+  - H2: Verify the active surface
+  - H2: Use Swarm for agent fan-out
+
+## tools/code-mode/tool-surface.md
+
+- Route: /tools/code-mode/tool-surface
+- Headings:
+  - H2: Model-visible tools
+  - H2: exec
+  - H3: Source in session history
+  - H2: wait
+  - H2: Tool catalog
+  - H2: Tool Search interaction
+  - H2: Tool names and collisions
+
+## tools/code-mode/troubleshooting.md
+
+- Route: /tools/code-mode/troubleshooting
+- Headings:
+  - H2: Error codes
+  - H2: Telemetry
+  - H2: Debugging
 
 ## tools/creating-skills.md
 
