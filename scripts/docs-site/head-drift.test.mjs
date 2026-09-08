@@ -121,7 +121,7 @@ test("a successorless docs push during an admitted build is scheduled after the 
 
 const sourceSteps = ["Read source metadata", "Check out OpenClaw source"];
 const setupSteps = ["Set up Node", "Install"];
-const artifactSteps = ["Install librsvg2-bin", "Build R2 artifact", "Smoke generated site", "Resolve R2 credentials", "Upload changed R2 objects"];
+const artifactSteps = ["Restore rendered articles", "Restore preview images", "Build R2 artifact", "Smoke generated site", "Resolve R2 credentials", "Upload changed R2 objects"];
 
 test("push trigger paths stay in sync with the R2 Pages workflow", () => {
   assert.deepEqual(pushTriggerPaths, workflow.on.push.paths);

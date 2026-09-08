@@ -84,6 +84,47 @@ test("manifest diff detects metadata additions, changes and removals with identi
   assert.deepEqual(puts(unchanged.stdout), []);
 });
 
+test("prepared artifact paths preserve uploaded bytes and reuse old manifest objects", (t) => {
+  const f = fixture(t);
+  const files = {
+    "index.html": "<html>Root</html>",
+    "guide.v2/index.html": "<html>Guide</html>",
+    "assets/image.png": Buffer.from([0, 255, 1, 128]),
+  };
+  for (const [key, body] of Object.entries(files)) write(f.root, `dist/docs-site/${key}`, body);
+  write(f.root, "dist/docs-site/_headers", "/*\n  Cache-Control: no-store\n");
+  write(f.root, "dist/docs-r2/removed.html", "old artifact");
+  const prepared = f.prepare();
+  assert.deepEqual(prepared.entries.map((entry) => entry.key), [
+    "assets/image.png", "guide.v2", "guide.v2/index.html", "index.html",
+  ]);
+  assert.equal(prepared.objectCount, 4);
+  for (const entry of prepared.entries) {
+    const expected = Buffer.from(files[entry.sourceKey]);
+    assert.deepEqual(fs.readFileSync(path.join(f.root, entry.file)), expected);
+    assert.equal(entry.size, expected.length);
+    assert.equal(entry.md5, crypto.createHash("md5").update(expected).digest("hex"));
+    assert.equal(entry.sha256, crypto.createHash("sha256").update(expected).digest("hex"));
+  }
+  const alias = prepared.entries.find((entry) => entry.key === "guide.v2");
+  assert.equal(alias.contentType, "text/html; charset=utf-8");
+  assert.equal(alias.cacheControl, "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800");
+
+  // A previous publication can name different local files; only object bytes
+  // and HTTP metadata determine whether an upload is necessary.
+  const old = prepared.entries.map((entry) => ({ ...entry, file: `old-copy/${entry.sourceKey}` }));
+  old.push({ ...old[0], key: "removed.html" });
+  const result = dryUpload(f.root, prepared.entries, old);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(puts(result.stdout), []);
+  assert.match(result.stdout, /^r2 dry-run delete: removed\.html$/m);
+
+  // A cold upload must be able to open every newly prepared file as well.
+  const cold = dryUpload(f.root, prepared.entries, []);
+  assert.equal(cold.status, 0, cold.stderr);
+  assert.deepEqual(puts(cold.stdout), prepared.entries.map((entry) => entry.key));
+});
+
 for (const mode of ["manifest", "head", "head-error"]) {
   test(`${mode} audit uploads metadata add/change/remove despite unchanged ETags using only mocked fetch`, (t) => {
     const f = uploadFixture(t);
