@@ -9792,6 +9792,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas
 - Headings:
   - H2: Database layout
+  - H3: Plugin state listing index
   - H3: Mentions Inbox
   - H3: ACP replay accounting
   - H3: Meeting transcript tables
