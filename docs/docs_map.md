@@ -5837,22 +5837,88 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: First 60 seconds if something is broken
   - H2: Quick start and first-run setup
-  - H2: What is OpenClaw?
-  - H2: Skills and automation
-  - H2: Sandboxing and memory
-  - H2: Where things live on disk
-  - H2: Config basics
-  - H2: Remote gateways and nodes
-  - H2: Env vars and .env loading
-  - H2: Sessions and multiple chats
   - H2: Models, failover, and auth profiles
-  - H2: Gateway: ports, "already running", and remote mode
-  - H2: Logging and debugging
-  - H2: Media and attachments
-  - H2: Security and access control
-  - H2: Chat commands, aborting tasks, and "it will not stop"
   - H2: Miscellaneous
+  - H2: Where each section moved
   - H2: Related
+
+## help/faq/chat-commands-and-stopping.md
+
+- Route: /help/faq/chat-commands-and-stopping
+- Headings:
+  - H2: Chat commands, aborting tasks, and "it will not stop"
+
+## help/faq/config-basics.md
+
+- Route: /help/faq/config-basics
+- Headings:
+  - H2: Config basics
+
+## help/faq/env-vars.md
+
+- Route: /help/faq/env-vars
+- Headings:
+  - H2: Env vars and .env loading
+
+## help/faq/gateway-ports-and-remote-mode.md
+
+- Route: /help/faq/gateway-ports-and-remote-mode
+- Headings:
+  - H2: Gateway: ports, "already running", and remote mode
+
+## help/faq/logging-and-debugging.md
+
+- Route: /help/faq/logging-and-debugging
+- Headings:
+  - H2: Logging and debugging
+
+## help/faq/media-and-attachments.md
+
+- Route: /help/faq/media-and-attachments
+- Headings:
+  - H2: Media and attachments
+
+## help/faq/remote-gateways-and-nodes.md
+
+- Route: /help/faq/remote-gateways-and-nodes
+- Headings:
+  - H2: Remote gateways and nodes
+
+## help/faq/sandboxing-and-memory.md
+
+- Route: /help/faq/sandboxing-and-memory
+- Headings:
+  - H2: Sandboxing and memory
+
+## help/faq/security-and-access-control.md
+
+- Route: /help/faq/security-and-access-control
+- Headings:
+  - H2: Security and access control
+
+## help/faq/sessions-and-chats.md
+
+- Route: /help/faq/sessions-and-chats
+- Headings:
+  - H2: Sessions and multiple chats
+
+## help/faq/skills-and-automation.md
+
+- Route: /help/faq/skills-and-automation
+- Headings:
+  - H2: Skills and automation
+
+## help/faq/what-is-openclaw.md
+
+- Route: /help/faq/what-is-openclaw
+- Headings:
+  - H2: What is OpenClaw?
+
+## help/faq/where-things-live-on-disk.md
+
+- Route: /help/faq/where-things-live-on-disk
+- Headings:
+  - H2: Where things live on disk
 
 ## help/index.md
 

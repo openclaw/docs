@@ -3238,6 +3238,24 @@
                 "group": "FAQ",
                 "pages": [
                   "help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "help/faq/what-is-openclaw",
+                      "help/faq/skills-and-automation",
+                      "help/faq/sandboxing-and-memory",
+                      "help/faq/where-things-live-on-disk",
+                      "help/faq/config-basics",
+                      "help/faq/remote-gateways-and-nodes",
+                      "help/faq/env-vars",
+                      "help/faq/sessions-and-chats",
+                      "help/faq/gateway-ports-and-remote-mode",
+                      "help/faq/logging-and-debugging",
+                      "help/faq/media-and-attachments",
+                      "help/faq/security-and-access-control",
+                      "help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -5167,6 +5185,24 @@
                 "group": "FAQ",
                 "pages": [
                   "zh-CN/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "zh-CN/help/faq/what-is-openclaw",
+                      "zh-CN/help/faq/skills-and-automation",
+                      "zh-CN/help/faq/sandboxing-and-memory",
+                      "zh-CN/help/faq/where-things-live-on-disk",
+                      "zh-CN/help/faq/config-basics",
+                      "zh-CN/help/faq/remote-gateways-and-nodes",
+                      "zh-CN/help/faq/env-vars",
+                      "zh-CN/help/faq/sessions-and-chats",
+                      "zh-CN/help/faq/gateway-ports-and-remote-mode",
+                      "zh-CN/help/faq/logging-and-debugging",
+                      "zh-CN/help/faq/media-and-attachments",
+                      "zh-CN/help/faq/security-and-access-control",
+                      "zh-CN/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "zh-CN/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -7096,6 +7132,24 @@
                 "group": "FAQ",
                 "pages": [
                   "zh-TW/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "zh-TW/help/faq/what-is-openclaw",
+                      "zh-TW/help/faq/skills-and-automation",
+                      "zh-TW/help/faq/sandboxing-and-memory",
+                      "zh-TW/help/faq/where-things-live-on-disk",
+                      "zh-TW/help/faq/config-basics",
+                      "zh-TW/help/faq/remote-gateways-and-nodes",
+                      "zh-TW/help/faq/env-vars",
+                      "zh-TW/help/faq/sessions-and-chats",
+                      "zh-TW/help/faq/gateway-ports-and-remote-mode",
+                      "zh-TW/help/faq/logging-and-debugging",
+                      "zh-TW/help/faq/media-and-attachments",
+                      "zh-TW/help/faq/security-and-access-control",
+                      "zh-TW/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "zh-TW/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -9025,6 +9079,24 @@
                 "group": "FAQ",
                 "pages": [
                   "ja-JP/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "ja-JP/help/faq/what-is-openclaw",
+                      "ja-JP/help/faq/skills-and-automation",
+                      "ja-JP/help/faq/sandboxing-and-memory",
+                      "ja-JP/help/faq/where-things-live-on-disk",
+                      "ja-JP/help/faq/config-basics",
+                      "ja-JP/help/faq/remote-gateways-and-nodes",
+                      "ja-JP/help/faq/env-vars",
+                      "ja-JP/help/faq/sessions-and-chats",
+                      "ja-JP/help/faq/gateway-ports-and-remote-mode",
+                      "ja-JP/help/faq/logging-and-debugging",
+                      "ja-JP/help/faq/media-and-attachments",
+                      "ja-JP/help/faq/security-and-access-control",
+                      "ja-JP/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "ja-JP/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -10954,6 +11026,24 @@
                 "group": "FAQ",
                 "pages": [
                   "es/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "es/help/faq/what-is-openclaw",
+                      "es/help/faq/skills-and-automation",
+                      "es/help/faq/sandboxing-and-memory",
+                      "es/help/faq/where-things-live-on-disk",
+                      "es/help/faq/config-basics",
+                      "es/help/faq/remote-gateways-and-nodes",
+                      "es/help/faq/env-vars",
+                      "es/help/faq/sessions-and-chats",
+                      "es/help/faq/gateway-ports-and-remote-mode",
+                      "es/help/faq/logging-and-debugging",
+                      "es/help/faq/media-and-attachments",
+                      "es/help/faq/security-and-access-control",
+                      "es/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "es/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -12883,6 +12973,24 @@
                 "group": "FAQ",
                 "pages": [
                   "pt-BR/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "pt-BR/help/faq/what-is-openclaw",
+                      "pt-BR/help/faq/skills-and-automation",
+                      "pt-BR/help/faq/sandboxing-and-memory",
+                      "pt-BR/help/faq/where-things-live-on-disk",
+                      "pt-BR/help/faq/config-basics",
+                      "pt-BR/help/faq/remote-gateways-and-nodes",
+                      "pt-BR/help/faq/env-vars",
+                      "pt-BR/help/faq/sessions-and-chats",
+                      "pt-BR/help/faq/gateway-ports-and-remote-mode",
+                      "pt-BR/help/faq/logging-and-debugging",
+                      "pt-BR/help/faq/media-and-attachments",
+                      "pt-BR/help/faq/security-and-access-control",
+                      "pt-BR/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "pt-BR/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -14812,6 +14920,24 @@
                 "group": "FAQ",
                 "pages": [
                   "ko/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "ko/help/faq/what-is-openclaw",
+                      "ko/help/faq/skills-and-automation",
+                      "ko/help/faq/sandboxing-and-memory",
+                      "ko/help/faq/where-things-live-on-disk",
+                      "ko/help/faq/config-basics",
+                      "ko/help/faq/remote-gateways-and-nodes",
+                      "ko/help/faq/env-vars",
+                      "ko/help/faq/sessions-and-chats",
+                      "ko/help/faq/gateway-ports-and-remote-mode",
+                      "ko/help/faq/logging-and-debugging",
+                      "ko/help/faq/media-and-attachments",
+                      "ko/help/faq/security-and-access-control",
+                      "ko/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "ko/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -16741,6 +16867,24 @@
                 "group": "FAQ",
                 "pages": [
                   "de/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "de/help/faq/what-is-openclaw",
+                      "de/help/faq/skills-and-automation",
+                      "de/help/faq/sandboxing-and-memory",
+                      "de/help/faq/where-things-live-on-disk",
+                      "de/help/faq/config-basics",
+                      "de/help/faq/remote-gateways-and-nodes",
+                      "de/help/faq/env-vars",
+                      "de/help/faq/sessions-and-chats",
+                      "de/help/faq/gateway-ports-and-remote-mode",
+                      "de/help/faq/logging-and-debugging",
+                      "de/help/faq/media-and-attachments",
+                      "de/help/faq/security-and-access-control",
+                      "de/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "de/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -18670,6 +18814,24 @@
                 "group": "FAQ",
                 "pages": [
                   "fr/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "fr/help/faq/what-is-openclaw",
+                      "fr/help/faq/skills-and-automation",
+                      "fr/help/faq/sandboxing-and-memory",
+                      "fr/help/faq/where-things-live-on-disk",
+                      "fr/help/faq/config-basics",
+                      "fr/help/faq/remote-gateways-and-nodes",
+                      "fr/help/faq/env-vars",
+                      "fr/help/faq/sessions-and-chats",
+                      "fr/help/faq/gateway-ports-and-remote-mode",
+                      "fr/help/faq/logging-and-debugging",
+                      "fr/help/faq/media-and-attachments",
+                      "fr/help/faq/security-and-access-control",
+                      "fr/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "fr/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -20599,6 +20761,24 @@
                 "group": "FAQ",
                 "pages": [
                   "hi/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "hi/help/faq/what-is-openclaw",
+                      "hi/help/faq/skills-and-automation",
+                      "hi/help/faq/sandboxing-and-memory",
+                      "hi/help/faq/where-things-live-on-disk",
+                      "hi/help/faq/config-basics",
+                      "hi/help/faq/remote-gateways-and-nodes",
+                      "hi/help/faq/env-vars",
+                      "hi/help/faq/sessions-and-chats",
+                      "hi/help/faq/gateway-ports-and-remote-mode",
+                      "hi/help/faq/logging-and-debugging",
+                      "hi/help/faq/media-and-attachments",
+                      "hi/help/faq/security-and-access-control",
+                      "hi/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "hi/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -22528,6 +22708,24 @@
                 "group": "FAQ",
                 "pages": [
                   "ar/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "ar/help/faq/what-is-openclaw",
+                      "ar/help/faq/skills-and-automation",
+                      "ar/help/faq/sandboxing-and-memory",
+                      "ar/help/faq/where-things-live-on-disk",
+                      "ar/help/faq/config-basics",
+                      "ar/help/faq/remote-gateways-and-nodes",
+                      "ar/help/faq/env-vars",
+                      "ar/help/faq/sessions-and-chats",
+                      "ar/help/faq/gateway-ports-and-remote-mode",
+                      "ar/help/faq/logging-and-debugging",
+                      "ar/help/faq/media-and-attachments",
+                      "ar/help/faq/security-and-access-control",
+                      "ar/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "ar/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -24457,6 +24655,24 @@
                 "group": "FAQ",
                 "pages": [
                   "it/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "it/help/faq/what-is-openclaw",
+                      "it/help/faq/skills-and-automation",
+                      "it/help/faq/sandboxing-and-memory",
+                      "it/help/faq/where-things-live-on-disk",
+                      "it/help/faq/config-basics",
+                      "it/help/faq/remote-gateways-and-nodes",
+                      "it/help/faq/env-vars",
+                      "it/help/faq/sessions-and-chats",
+                      "it/help/faq/gateway-ports-and-remote-mode",
+                      "it/help/faq/logging-and-debugging",
+                      "it/help/faq/media-and-attachments",
+                      "it/help/faq/security-and-access-control",
+                      "it/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "it/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -26386,6 +26602,24 @@
                 "group": "FAQ",
                 "pages": [
                   "vi/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "vi/help/faq/what-is-openclaw",
+                      "vi/help/faq/skills-and-automation",
+                      "vi/help/faq/sandboxing-and-memory",
+                      "vi/help/faq/where-things-live-on-disk",
+                      "vi/help/faq/config-basics",
+                      "vi/help/faq/remote-gateways-and-nodes",
+                      "vi/help/faq/env-vars",
+                      "vi/help/faq/sessions-and-chats",
+                      "vi/help/faq/gateway-ports-and-remote-mode",
+                      "vi/help/faq/logging-and-debugging",
+                      "vi/help/faq/media-and-attachments",
+                      "vi/help/faq/security-and-access-control",
+                      "vi/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "vi/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -28315,6 +28549,24 @@
                 "group": "FAQ",
                 "pages": [
                   "nl/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "nl/help/faq/what-is-openclaw",
+                      "nl/help/faq/skills-and-automation",
+                      "nl/help/faq/sandboxing-and-memory",
+                      "nl/help/faq/where-things-live-on-disk",
+                      "nl/help/faq/config-basics",
+                      "nl/help/faq/remote-gateways-and-nodes",
+                      "nl/help/faq/env-vars",
+                      "nl/help/faq/sessions-and-chats",
+                      "nl/help/faq/gateway-ports-and-remote-mode",
+                      "nl/help/faq/logging-and-debugging",
+                      "nl/help/faq/media-and-attachments",
+                      "nl/help/faq/security-and-access-control",
+                      "nl/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "nl/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -30244,6 +30496,24 @@
                 "group": "FAQ",
                 "pages": [
                   "tr/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "tr/help/faq/what-is-openclaw",
+                      "tr/help/faq/skills-and-automation",
+                      "tr/help/faq/sandboxing-and-memory",
+                      "tr/help/faq/where-things-live-on-disk",
+                      "tr/help/faq/config-basics",
+                      "tr/help/faq/remote-gateways-and-nodes",
+                      "tr/help/faq/env-vars",
+                      "tr/help/faq/sessions-and-chats",
+                      "tr/help/faq/gateway-ports-and-remote-mode",
+                      "tr/help/faq/logging-and-debugging",
+                      "tr/help/faq/media-and-attachments",
+                      "tr/help/faq/security-and-access-control",
+                      "tr/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "tr/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -32173,6 +32443,24 @@
                 "group": "FAQ",
                 "pages": [
                   "uk/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "uk/help/faq/what-is-openclaw",
+                      "uk/help/faq/skills-and-automation",
+                      "uk/help/faq/sandboxing-and-memory",
+                      "uk/help/faq/where-things-live-on-disk",
+                      "uk/help/faq/config-basics",
+                      "uk/help/faq/remote-gateways-and-nodes",
+                      "uk/help/faq/env-vars",
+                      "uk/help/faq/sessions-and-chats",
+                      "uk/help/faq/gateway-ports-and-remote-mode",
+                      "uk/help/faq/logging-and-debugging",
+                      "uk/help/faq/media-and-attachments",
+                      "uk/help/faq/security-and-access-control",
+                      "uk/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "uk/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -34102,6 +34390,24 @@
                 "group": "FAQ",
                 "pages": [
                   "id/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "id/help/faq/what-is-openclaw",
+                      "id/help/faq/skills-and-automation",
+                      "id/help/faq/sandboxing-and-memory",
+                      "id/help/faq/where-things-live-on-disk",
+                      "id/help/faq/config-basics",
+                      "id/help/faq/remote-gateways-and-nodes",
+                      "id/help/faq/env-vars",
+                      "id/help/faq/sessions-and-chats",
+                      "id/help/faq/gateway-ports-and-remote-mode",
+                      "id/help/faq/logging-and-debugging",
+                      "id/help/faq/media-and-attachments",
+                      "id/help/faq/security-and-access-control",
+                      "id/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "id/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -36031,6 +36337,24 @@
                 "group": "FAQ",
                 "pages": [
                   "pl/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "pl/help/faq/what-is-openclaw",
+                      "pl/help/faq/skills-and-automation",
+                      "pl/help/faq/sandboxing-and-memory",
+                      "pl/help/faq/where-things-live-on-disk",
+                      "pl/help/faq/config-basics",
+                      "pl/help/faq/remote-gateways-and-nodes",
+                      "pl/help/faq/env-vars",
+                      "pl/help/faq/sessions-and-chats",
+                      "pl/help/faq/gateway-ports-and-remote-mode",
+                      "pl/help/faq/logging-and-debugging",
+                      "pl/help/faq/media-and-attachments",
+                      "pl/help/faq/security-and-access-control",
+                      "pl/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "pl/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
@@ -37960,6 +38284,24 @@
                 "group": "FAQ",
                 "pages": [
                   "ru/help/faq",
+                  {
+                    "group": "FAQ topics",
+                    "pages": [
+                      "ru/help/faq/what-is-openclaw",
+                      "ru/help/faq/skills-and-automation",
+                      "ru/help/faq/sandboxing-and-memory",
+                      "ru/help/faq/where-things-live-on-disk",
+                      "ru/help/faq/config-basics",
+                      "ru/help/faq/remote-gateways-and-nodes",
+                      "ru/help/faq/env-vars",
+                      "ru/help/faq/sessions-and-chats",
+                      "ru/help/faq/gateway-ports-and-remote-mode",
+                      "ru/help/faq/logging-and-debugging",
+                      "ru/help/faq/media-and-attachments",
+                      "ru/help/faq/security-and-access-control",
+                      "ru/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
                   "ru/help/faq-first-run",
                   {
                     "group": "First-run FAQ",
