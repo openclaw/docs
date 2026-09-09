@@ -1836,24 +1836,61 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/doctor
 - Headings:
   - H1: openclaw doctor
-  - H2: Postures
+  - H2: Doctor pages
+  - H2: Where each section moved
+  - H2: Related
+
+## cli/doctor/checks.md
+
+- Route: /cli/doctor/checks
+- Headings:
+  - H2: Notes
+
+## cli/doctor/health-contract.md
+
+- Route: /cli/doctor/health-contract
+- Headings:
+  - H2: Structured health checks
+
+## cli/doctor/lint.md
+
+- Route: /cli/doctor/lint
+- Headings:
+  - H2: Lint mode
+  - H2: Check selection
+  - H2: Post-upgrade mode
+
+## cli/doctor/recovery.md
+
+- Route: /cli/doctor/recovery
+- Headings:
   - H2: Gateway service recovery
   - H2: Remote Gateway recovery
   - H2: Control UI assets
+  - H2: Invalid Gateway tokens
+  - H2: macOS: launchctl env overrides
+
+## cli/doctor/running.md
+
+- Route: /cli/doctor/running
+- Headings:
+  - H2: Postures
   - H2: Examples
   - H2: Options
-  - H2: Lint mode
-  - H2: Structured health checks
-  - H2: Check selection
-  - H2: Post-upgrade mode
-  - H2: Legacy state migration
+
+## cli/doctor/sqlite-maintenance.md
+
+- Route: /cli/doctor/sqlite-maintenance
+- Headings:
   - H2: Shared state SQLite compaction
   - H2: Session SQLite migration
   - H3: Downgrading After Session SQLite Migration
-  - H2: Notes
-  - H2: Invalid Gateway tokens
-  - H2: macOS: launchctl env overrides
-  - H2: Related
+
+## cli/doctor/state-migrations.md
+
+- Route: /cli/doctor/state-migrations
+- Headings:
+  - H2: Legacy state migration
 
 ## cli/fleet.md
 

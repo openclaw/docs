@@ -2451,6 +2451,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "cli/doctor/running",
+                          "cli/doctor/recovery",
+                          "cli/doctor/lint",
+                          "cli/doctor/health-contract",
+                          "cli/doctor/state-migrations",
+                          "cli/doctor/sqlite-maintenance",
+                          "cli/doctor/checks"
+                        ]
+                      },
                       "cli/secrets",
                       "cli/security",
                       "cli/triage"
@@ -3966,6 +3978,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "zh-CN/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "zh-CN/cli/doctor/running",
+                          "zh-CN/cli/doctor/recovery",
+                          "zh-CN/cli/doctor/lint",
+                          "zh-CN/cli/doctor/health-contract",
+                          "zh-CN/cli/doctor/state-migrations",
+                          "zh-CN/cli/doctor/sqlite-maintenance",
+                          "zh-CN/cli/doctor/checks"
+                        ]
+                      },
                       "zh-CN/cli/secrets",
                       "zh-CN/cli/security",
                       "zh-CN/cli/triage"
@@ -5481,6 +5505,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "zh-TW/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "zh-TW/cli/doctor/running",
+                          "zh-TW/cli/doctor/recovery",
+                          "zh-TW/cli/doctor/lint",
+                          "zh-TW/cli/doctor/health-contract",
+                          "zh-TW/cli/doctor/state-migrations",
+                          "zh-TW/cli/doctor/sqlite-maintenance",
+                          "zh-TW/cli/doctor/checks"
+                        ]
+                      },
                       "zh-TW/cli/secrets",
                       "zh-TW/cli/security",
                       "zh-TW/cli/triage"
@@ -6996,6 +7032,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "ja-JP/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ja-JP/cli/doctor/running",
+                          "ja-JP/cli/doctor/recovery",
+                          "ja-JP/cli/doctor/lint",
+                          "ja-JP/cli/doctor/health-contract",
+                          "ja-JP/cli/doctor/state-migrations",
+                          "ja-JP/cli/doctor/sqlite-maintenance",
+                          "ja-JP/cli/doctor/checks"
+                        ]
+                      },
                       "ja-JP/cli/secrets",
                       "ja-JP/cli/security",
                       "ja-JP/cli/triage"
@@ -8511,6 +8559,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "es/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "es/cli/doctor/running",
+                          "es/cli/doctor/recovery",
+                          "es/cli/doctor/lint",
+                          "es/cli/doctor/health-contract",
+                          "es/cli/doctor/state-migrations",
+                          "es/cli/doctor/sqlite-maintenance",
+                          "es/cli/doctor/checks"
+                        ]
+                      },
                       "es/cli/secrets",
                       "es/cli/security",
                       "es/cli/triage"
@@ -10026,6 +10086,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "pt-BR/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "pt-BR/cli/doctor/running",
+                          "pt-BR/cli/doctor/recovery",
+                          "pt-BR/cli/doctor/lint",
+                          "pt-BR/cli/doctor/health-contract",
+                          "pt-BR/cli/doctor/state-migrations",
+                          "pt-BR/cli/doctor/sqlite-maintenance",
+                          "pt-BR/cli/doctor/checks"
+                        ]
+                      },
                       "pt-BR/cli/secrets",
                       "pt-BR/cli/security",
                       "pt-BR/cli/triage"
@@ -11541,6 +11613,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "ko/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ko/cli/doctor/running",
+                          "ko/cli/doctor/recovery",
+                          "ko/cli/doctor/lint",
+                          "ko/cli/doctor/health-contract",
+                          "ko/cli/doctor/state-migrations",
+                          "ko/cli/doctor/sqlite-maintenance",
+                          "ko/cli/doctor/checks"
+                        ]
+                      },
                       "ko/cli/secrets",
                       "ko/cli/security",
                       "ko/cli/triage"
@@ -13056,6 +13140,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "de/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "de/cli/doctor/running",
+                          "de/cli/doctor/recovery",
+                          "de/cli/doctor/lint",
+                          "de/cli/doctor/health-contract",
+                          "de/cli/doctor/state-migrations",
+                          "de/cli/doctor/sqlite-maintenance",
+                          "de/cli/doctor/checks"
+                        ]
+                      },
                       "de/cli/secrets",
                       "de/cli/security",
                       "de/cli/triage"
@@ -14571,6 +14667,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "fr/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "fr/cli/doctor/running",
+                          "fr/cli/doctor/recovery",
+                          "fr/cli/doctor/lint",
+                          "fr/cli/doctor/health-contract",
+                          "fr/cli/doctor/state-migrations",
+                          "fr/cli/doctor/sqlite-maintenance",
+                          "fr/cli/doctor/checks"
+                        ]
+                      },
                       "fr/cli/secrets",
                       "fr/cli/security",
                       "fr/cli/triage"
@@ -16086,6 +16194,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "hi/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "hi/cli/doctor/running",
+                          "hi/cli/doctor/recovery",
+                          "hi/cli/doctor/lint",
+                          "hi/cli/doctor/health-contract",
+                          "hi/cli/doctor/state-migrations",
+                          "hi/cli/doctor/sqlite-maintenance",
+                          "hi/cli/doctor/checks"
+                        ]
+                      },
                       "hi/cli/secrets",
                       "hi/cli/security",
                       "hi/cli/triage"
@@ -17601,6 +17721,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "ar/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ar/cli/doctor/running",
+                          "ar/cli/doctor/recovery",
+                          "ar/cli/doctor/lint",
+                          "ar/cli/doctor/health-contract",
+                          "ar/cli/doctor/state-migrations",
+                          "ar/cli/doctor/sqlite-maintenance",
+                          "ar/cli/doctor/checks"
+                        ]
+                      },
                       "ar/cli/secrets",
                       "ar/cli/security",
                       "ar/cli/triage"
@@ -19116,6 +19248,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "it/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "it/cli/doctor/running",
+                          "it/cli/doctor/recovery",
+                          "it/cli/doctor/lint",
+                          "it/cli/doctor/health-contract",
+                          "it/cli/doctor/state-migrations",
+                          "it/cli/doctor/sqlite-maintenance",
+                          "it/cli/doctor/checks"
+                        ]
+                      },
                       "it/cli/secrets",
                       "it/cli/security",
                       "it/cli/triage"
@@ -20631,6 +20775,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "vi/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "vi/cli/doctor/running",
+                          "vi/cli/doctor/recovery",
+                          "vi/cli/doctor/lint",
+                          "vi/cli/doctor/health-contract",
+                          "vi/cli/doctor/state-migrations",
+                          "vi/cli/doctor/sqlite-maintenance",
+                          "vi/cli/doctor/checks"
+                        ]
+                      },
                       "vi/cli/secrets",
                       "vi/cli/security",
                       "vi/cli/triage"
@@ -22146,6 +22302,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "nl/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "nl/cli/doctor/running",
+                          "nl/cli/doctor/recovery",
+                          "nl/cli/doctor/lint",
+                          "nl/cli/doctor/health-contract",
+                          "nl/cli/doctor/state-migrations",
+                          "nl/cli/doctor/sqlite-maintenance",
+                          "nl/cli/doctor/checks"
+                        ]
+                      },
                       "nl/cli/secrets",
                       "nl/cli/security",
                       "nl/cli/triage"
@@ -23661,6 +23829,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "tr/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "tr/cli/doctor/running",
+                          "tr/cli/doctor/recovery",
+                          "tr/cli/doctor/lint",
+                          "tr/cli/doctor/health-contract",
+                          "tr/cli/doctor/state-migrations",
+                          "tr/cli/doctor/sqlite-maintenance",
+                          "tr/cli/doctor/checks"
+                        ]
+                      },
                       "tr/cli/secrets",
                       "tr/cli/security",
                       "tr/cli/triage"
@@ -25176,6 +25356,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "uk/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "uk/cli/doctor/running",
+                          "uk/cli/doctor/recovery",
+                          "uk/cli/doctor/lint",
+                          "uk/cli/doctor/health-contract",
+                          "uk/cli/doctor/state-migrations",
+                          "uk/cli/doctor/sqlite-maintenance",
+                          "uk/cli/doctor/checks"
+                        ]
+                      },
                       "uk/cli/secrets",
                       "uk/cli/security",
                       "uk/cli/triage"
@@ -26691,6 +26883,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "id/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "id/cli/doctor/running",
+                          "id/cli/doctor/recovery",
+                          "id/cli/doctor/lint",
+                          "id/cli/doctor/health-contract",
+                          "id/cli/doctor/state-migrations",
+                          "id/cli/doctor/sqlite-maintenance",
+                          "id/cli/doctor/checks"
+                        ]
+                      },
                       "id/cli/secrets",
                       "id/cli/security",
                       "id/cli/triage"
@@ -28206,6 +28410,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "pl/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "pl/cli/doctor/running",
+                          "pl/cli/doctor/recovery",
+                          "pl/cli/doctor/lint",
+                          "pl/cli/doctor/health-contract",
+                          "pl/cli/doctor/state-migrations",
+                          "pl/cli/doctor/sqlite-maintenance",
+                          "pl/cli/doctor/checks"
+                        ]
+                      },
                       "pl/cli/secrets",
                       "pl/cli/security",
                       "pl/cli/triage"
@@ -29721,6 +29937,18 @@
                     "group": "Diagnostics and security",
                     "pages": [
                       "ru/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "ru/cli/doctor/running",
+                          "ru/cli/doctor/recovery",
+                          "ru/cli/doctor/lint",
+                          "ru/cli/doctor/health-contract",
+                          "ru/cli/doctor/state-migrations",
+                          "ru/cli/doctor/sqlite-maintenance",
+                          "ru/cli/doctor/checks"
+                        ]
+                      },
                       "ru/cli/secrets",
                       "ru/cli/security",
                       "ru/cli/triage"
