@@ -2444,7 +2444,15 @@
                       "cli/reset",
                       "cli/setup",
                       "cli/uninstall",
-                      "cli/update"
+                      "cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "cli/update/status-and-history",
+                          "cli/update/repair-and-recovery",
+                          "cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -3971,7 +3979,15 @@
                       "zh-CN/cli/reset",
                       "zh-CN/cli/setup",
                       "zh-CN/cli/uninstall",
-                      "zh-CN/cli/update"
+                      "zh-CN/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "zh-CN/cli/update/status-and-history",
+                          "zh-CN/cli/update/repair-and-recovery",
+                          "zh-CN/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -5498,7 +5514,15 @@
                       "zh-TW/cli/reset",
                       "zh-TW/cli/setup",
                       "zh-TW/cli/uninstall",
-                      "zh-TW/cli/update"
+                      "zh-TW/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "zh-TW/cli/update/status-and-history",
+                          "zh-TW/cli/update/repair-and-recovery",
+                          "zh-TW/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -7025,7 +7049,15 @@
                       "ja-JP/cli/reset",
                       "ja-JP/cli/setup",
                       "ja-JP/cli/uninstall",
-                      "ja-JP/cli/update"
+                      "ja-JP/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "ja-JP/cli/update/status-and-history",
+                          "ja-JP/cli/update/repair-and-recovery",
+                          "ja-JP/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -8552,7 +8584,15 @@
                       "es/cli/reset",
                       "es/cli/setup",
                       "es/cli/uninstall",
-                      "es/cli/update"
+                      "es/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "es/cli/update/status-and-history",
+                          "es/cli/update/repair-and-recovery",
+                          "es/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -10079,7 +10119,15 @@
                       "pt-BR/cli/reset",
                       "pt-BR/cli/setup",
                       "pt-BR/cli/uninstall",
-                      "pt-BR/cli/update"
+                      "pt-BR/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "pt-BR/cli/update/status-and-history",
+                          "pt-BR/cli/update/repair-and-recovery",
+                          "pt-BR/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -11606,7 +11654,15 @@
                       "ko/cli/reset",
                       "ko/cli/setup",
                       "ko/cli/uninstall",
-                      "ko/cli/update"
+                      "ko/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "ko/cli/update/status-and-history",
+                          "ko/cli/update/repair-and-recovery",
+                          "ko/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -13133,7 +13189,15 @@
                       "de/cli/reset",
                       "de/cli/setup",
                       "de/cli/uninstall",
-                      "de/cli/update"
+                      "de/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "de/cli/update/status-and-history",
+                          "de/cli/update/repair-and-recovery",
+                          "de/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -14660,7 +14724,15 @@
                       "fr/cli/reset",
                       "fr/cli/setup",
                       "fr/cli/uninstall",
-                      "fr/cli/update"
+                      "fr/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "fr/cli/update/status-and-history",
+                          "fr/cli/update/repair-and-recovery",
+                          "fr/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -16187,7 +16259,15 @@
                       "hi/cli/reset",
                       "hi/cli/setup",
                       "hi/cli/uninstall",
-                      "hi/cli/update"
+                      "hi/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "hi/cli/update/status-and-history",
+                          "hi/cli/update/repair-and-recovery",
+                          "hi/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -17714,7 +17794,15 @@
                       "ar/cli/reset",
                       "ar/cli/setup",
                       "ar/cli/uninstall",
-                      "ar/cli/update"
+                      "ar/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "ar/cli/update/status-and-history",
+                          "ar/cli/update/repair-and-recovery",
+                          "ar/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -19241,7 +19329,15 @@
                       "it/cli/reset",
                       "it/cli/setup",
                       "it/cli/uninstall",
-                      "it/cli/update"
+                      "it/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "it/cli/update/status-and-history",
+                          "it/cli/update/repair-and-recovery",
+                          "it/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -20768,7 +20864,15 @@
                       "vi/cli/reset",
                       "vi/cli/setup",
                       "vi/cli/uninstall",
-                      "vi/cli/update"
+                      "vi/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "vi/cli/update/status-and-history",
+                          "vi/cli/update/repair-and-recovery",
+                          "vi/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -22295,7 +22399,15 @@
                       "nl/cli/reset",
                       "nl/cli/setup",
                       "nl/cli/uninstall",
-                      "nl/cli/update"
+                      "nl/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "nl/cli/update/status-and-history",
+                          "nl/cli/update/repair-and-recovery",
+                          "nl/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -23822,7 +23934,15 @@
                       "tr/cli/reset",
                       "tr/cli/setup",
                       "tr/cli/uninstall",
-                      "tr/cli/update"
+                      "tr/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "tr/cli/update/status-and-history",
+                          "tr/cli/update/repair-and-recovery",
+                          "tr/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -25349,7 +25469,15 @@
                       "uk/cli/reset",
                       "uk/cli/setup",
                       "uk/cli/uninstall",
-                      "uk/cli/update"
+                      "uk/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "uk/cli/update/status-and-history",
+                          "uk/cli/update/repair-and-recovery",
+                          "uk/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -26876,7 +27004,15 @@
                       "id/cli/reset",
                       "id/cli/setup",
                       "id/cli/uninstall",
-                      "id/cli/update"
+                      "id/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "id/cli/update/status-and-history",
+                          "id/cli/update/repair-and-recovery",
+                          "id/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -28403,7 +28539,15 @@
                       "pl/cli/reset",
                       "pl/cli/setup",
                       "pl/cli/uninstall",
-                      "pl/cli/update"
+                      "pl/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "pl/cli/update/status-and-history",
+                          "pl/cli/update/repair-and-recovery",
+                          "pl/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -29930,7 +30074,15 @@
                       "ru/cli/reset",
                       "ru/cli/setup",
                       "ru/cli/uninstall",
-                      "ru/cli/update"
+                      "ru/cli/update",
+                      {
+                        "group": "Update",
+                        "pages": [
+                          "ru/cli/update/status-and-history",
+                          "ru/cli/update/repair-and-recovery",
+                          "ru/cli/update/how-updates-run"
+                        ]
+                      }
                     ]
                   },
                   {

@@ -3186,5 +3186,17 @@
   {
     "source": "Other checks and repairs",
     "target": "其他检查与修复"
+  },
+  {
+    "source": "Update status and run history",
+    "target": "更新状态与运行历史"
+  },
+  {
+    "source": "Update repair and recovery",
+    "target": "更新修复与恢复"
+  },
+  {
+    "source": "How an update runs",
+    "target": "更新的运行方式"
   }
 ]

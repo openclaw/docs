@@ -2535,12 +2535,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw update
   - H2: Usage
   - H2: Options
-  - H2: Recover a failed update
-  - H2: update status
-  - H2: Run history and reports
-  - H2: update repair
-  - H2: update cleanup
   - H2: update wizard
+  - H2: Detailed topics
+  - H2: Related
+
+## cli/update/how-updates-run.md
+
+- Route: /cli/update/how-updates-run
+- Headings:
   - H2: What it does
   - H3: Validation and activation
   - H3: Restart handoff
@@ -2549,7 +2551,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel selection
   - H3: Update steps
   - H3: Plugin sync details
-  - H2: Related
+
+## cli/update/repair-and-recovery.md
+
+- Route: /cli/update/repair-and-recovery
+- Headings:
+  - H2: Recover a failed update
+  - H2: update repair
+  - H2: update cleanup
+
+## cli/update/status-and-history.md
+
+- Route: /cli/update/status-and-history
+- Headings:
+  - H2: update status
+  - H2: Run history and reports
 
 ## cli/voicecall.md
 
