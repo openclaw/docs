@@ -6587,31 +6587,81 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/architecture-internals
 - Headings:
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H3: Load pipeline and registry
+  - H3: Provider hooks and catalogs
+  - H3: Core runtime helpers
+  - H3: Gateway routes
+  - H3: Channel surfaces
+  - H3: Packs and import paths
+  - H3: Context engines
+  - H3: New capability
+  - H2: Related
+
+## plugins/architecture-internals/channel-surfaces.md
+
+- Route: /plugins/architecture-internals/channel-surfaces
+- Headings:
+  - H2: Conversation binding callbacks
+  - H2: Message tool schemas
+  - H2: Channel target resolution
+  - H2: Config-backed directories
+  - H2: Read-only channel inspection
+
+## plugins/architecture-internals/context-engines.md
+
+- Route: /plugins/architecture-internals/context-engines
+- Headings:
+  - H2: Context engine plugins
+
+## plugins/architecture-internals/gateway-routes.md
+
+- Route: /plugins/architecture-internals/gateway-routes
+- Headings:
+  - H2: Gateway HTTP routes
+
+## plugins/architecture-internals/load-pipeline.md
+
+- Route: /plugins/architecture-internals/load-pipeline
+- Headings:
   - H2: Load pipeline
   - H3: Manifest-first behavior
   - H3: Plugin cache boundary
   - H2: Registry model
-  - H2: Conversation binding callbacks
+
+## plugins/architecture-internals/new-capability.md
+
+- Route: /plugins/architecture-internals/new-capability
+- Headings:
+  - H2: Adding a new capability
+  - H3: Capability checklist
+  - H3: Capability template
+
+## plugins/architecture-internals/packaging.md
+
+- Route: /plugins/architecture-internals/packaging
+- Headings:
+  - H2: Plugin SDK import paths
+  - H2: Package packs
+  - H3: Channel catalog metadata
+
+## plugins/architecture-internals/provider-hooks.md
+
+- Route: /plugins/architecture-internals/provider-hooks
+- Headings:
   - H2: Provider runtime hooks
   - H3: Hook order and usage
   - H3: Provider example
   - H3: Built-in examples
+  - H2: Provider catalogs
+
+## plugins/architecture-internals/runtime-helpers.md
+
+- Route: /plugins/architecture-internals/runtime-helpers
+- Headings:
   - H2: Runtime helpers
   - H3: api.runtime.imageGeneration
-  - H2: Gateway HTTP routes
-  - H2: Plugin SDK import paths
-  - H2: Message tool schemas
-  - H2: Channel target resolution
-  - H2: Config-backed directories
-  - H2: Provider catalogs
-  - H2: Read-only channel inspection
-  - H2: Package packs
-  - H3: Channel catalog metadata
-  - H2: Context engine plugins
-  - H2: Adding a new capability
-  - H3: Capability checklist
-  - H3: Capability template
-  - H2: Related
 
 ## plugins/architecture.md
 

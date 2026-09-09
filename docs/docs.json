@@ -2606,6 +2606,19 @@
                 "pages": [
                   "plugins/architecture",
                   "plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "plugins/architecture-internals/load-pipeline",
+                      "plugins/architecture-internals/provider-hooks",
+                      "plugins/architecture-internals/runtime-helpers",
+                      "plugins/architecture-internals/gateway-routes",
+                      "plugins/architecture-internals/channel-surfaces",
+                      "plugins/architecture-internals/packaging",
+                      "plugins/architecture-internals/context-engines",
+                      "plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -4063,6 +4076,19 @@
                 "pages": [
                   "zh-CN/plugins/architecture",
                   "zh-CN/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "zh-CN/plugins/architecture-internals/load-pipeline",
+                      "zh-CN/plugins/architecture-internals/provider-hooks",
+                      "zh-CN/plugins/architecture-internals/runtime-helpers",
+                      "zh-CN/plugins/architecture-internals/gateway-routes",
+                      "zh-CN/plugins/architecture-internals/channel-surfaces",
+                      "zh-CN/plugins/architecture-internals/packaging",
+                      "zh-CN/plugins/architecture-internals/context-engines",
+                      "zh-CN/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -5520,6 +5546,19 @@
                 "pages": [
                   "zh-TW/plugins/architecture",
                   "zh-TW/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "zh-TW/plugins/architecture-internals/load-pipeline",
+                      "zh-TW/plugins/architecture-internals/provider-hooks",
+                      "zh-TW/plugins/architecture-internals/runtime-helpers",
+                      "zh-TW/plugins/architecture-internals/gateway-routes",
+                      "zh-TW/plugins/architecture-internals/channel-surfaces",
+                      "zh-TW/plugins/architecture-internals/packaging",
+                      "zh-TW/plugins/architecture-internals/context-engines",
+                      "zh-TW/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -6977,6 +7016,19 @@
                 "pages": [
                   "ja-JP/plugins/architecture",
                   "ja-JP/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "ja-JP/plugins/architecture-internals/load-pipeline",
+                      "ja-JP/plugins/architecture-internals/provider-hooks",
+                      "ja-JP/plugins/architecture-internals/runtime-helpers",
+                      "ja-JP/plugins/architecture-internals/gateway-routes",
+                      "ja-JP/plugins/architecture-internals/channel-surfaces",
+                      "ja-JP/plugins/architecture-internals/packaging",
+                      "ja-JP/plugins/architecture-internals/context-engines",
+                      "ja-JP/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -8434,6 +8486,19 @@
                 "pages": [
                   "es/plugins/architecture",
                   "es/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "es/plugins/architecture-internals/load-pipeline",
+                      "es/plugins/architecture-internals/provider-hooks",
+                      "es/plugins/architecture-internals/runtime-helpers",
+                      "es/plugins/architecture-internals/gateway-routes",
+                      "es/plugins/architecture-internals/channel-surfaces",
+                      "es/plugins/architecture-internals/packaging",
+                      "es/plugins/architecture-internals/context-engines",
+                      "es/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "es/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -9891,6 +9956,19 @@
                 "pages": [
                   "pt-BR/plugins/architecture",
                   "pt-BR/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "pt-BR/plugins/architecture-internals/load-pipeline",
+                      "pt-BR/plugins/architecture-internals/provider-hooks",
+                      "pt-BR/plugins/architecture-internals/runtime-helpers",
+                      "pt-BR/plugins/architecture-internals/gateway-routes",
+                      "pt-BR/plugins/architecture-internals/channel-surfaces",
+                      "pt-BR/plugins/architecture-internals/packaging",
+                      "pt-BR/plugins/architecture-internals/context-engines",
+                      "pt-BR/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -11348,6 +11426,19 @@
                 "pages": [
                   "ko/plugins/architecture",
                   "ko/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "ko/plugins/architecture-internals/load-pipeline",
+                      "ko/plugins/architecture-internals/provider-hooks",
+                      "ko/plugins/architecture-internals/runtime-helpers",
+                      "ko/plugins/architecture-internals/gateway-routes",
+                      "ko/plugins/architecture-internals/channel-surfaces",
+                      "ko/plugins/architecture-internals/packaging",
+                      "ko/plugins/architecture-internals/context-engines",
+                      "ko/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "ko/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -12805,6 +12896,19 @@
                 "pages": [
                   "de/plugins/architecture",
                   "de/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "de/plugins/architecture-internals/load-pipeline",
+                      "de/plugins/architecture-internals/provider-hooks",
+                      "de/plugins/architecture-internals/runtime-helpers",
+                      "de/plugins/architecture-internals/gateway-routes",
+                      "de/plugins/architecture-internals/channel-surfaces",
+                      "de/plugins/architecture-internals/packaging",
+                      "de/plugins/architecture-internals/context-engines",
+                      "de/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "de/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -14262,6 +14366,19 @@
                 "pages": [
                   "fr/plugins/architecture",
                   "fr/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "fr/plugins/architecture-internals/load-pipeline",
+                      "fr/plugins/architecture-internals/provider-hooks",
+                      "fr/plugins/architecture-internals/runtime-helpers",
+                      "fr/plugins/architecture-internals/gateway-routes",
+                      "fr/plugins/architecture-internals/channel-surfaces",
+                      "fr/plugins/architecture-internals/packaging",
+                      "fr/plugins/architecture-internals/context-engines",
+                      "fr/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "fr/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -15719,6 +15836,19 @@
                 "pages": [
                   "hi/plugins/architecture",
                   "hi/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "hi/plugins/architecture-internals/load-pipeline",
+                      "hi/plugins/architecture-internals/provider-hooks",
+                      "hi/plugins/architecture-internals/runtime-helpers",
+                      "hi/plugins/architecture-internals/gateway-routes",
+                      "hi/plugins/architecture-internals/channel-surfaces",
+                      "hi/plugins/architecture-internals/packaging",
+                      "hi/plugins/architecture-internals/context-engines",
+                      "hi/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "hi/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -17176,6 +17306,19 @@
                 "pages": [
                   "ar/plugins/architecture",
                   "ar/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "ar/plugins/architecture-internals/load-pipeline",
+                      "ar/plugins/architecture-internals/provider-hooks",
+                      "ar/plugins/architecture-internals/runtime-helpers",
+                      "ar/plugins/architecture-internals/gateway-routes",
+                      "ar/plugins/architecture-internals/channel-surfaces",
+                      "ar/plugins/architecture-internals/packaging",
+                      "ar/plugins/architecture-internals/context-engines",
+                      "ar/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "ar/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -18633,6 +18776,19 @@
                 "pages": [
                   "it/plugins/architecture",
                   "it/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "it/plugins/architecture-internals/load-pipeline",
+                      "it/plugins/architecture-internals/provider-hooks",
+                      "it/plugins/architecture-internals/runtime-helpers",
+                      "it/plugins/architecture-internals/gateway-routes",
+                      "it/plugins/architecture-internals/channel-surfaces",
+                      "it/plugins/architecture-internals/packaging",
+                      "it/plugins/architecture-internals/context-engines",
+                      "it/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "it/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -20090,6 +20246,19 @@
                 "pages": [
                   "vi/plugins/architecture",
                   "vi/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "vi/plugins/architecture-internals/load-pipeline",
+                      "vi/plugins/architecture-internals/provider-hooks",
+                      "vi/plugins/architecture-internals/runtime-helpers",
+                      "vi/plugins/architecture-internals/gateway-routes",
+                      "vi/plugins/architecture-internals/channel-surfaces",
+                      "vi/plugins/architecture-internals/packaging",
+                      "vi/plugins/architecture-internals/context-engines",
+                      "vi/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "vi/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -21547,6 +21716,19 @@
                 "pages": [
                   "nl/plugins/architecture",
                   "nl/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "nl/plugins/architecture-internals/load-pipeline",
+                      "nl/plugins/architecture-internals/provider-hooks",
+                      "nl/plugins/architecture-internals/runtime-helpers",
+                      "nl/plugins/architecture-internals/gateway-routes",
+                      "nl/plugins/architecture-internals/channel-surfaces",
+                      "nl/plugins/architecture-internals/packaging",
+                      "nl/plugins/architecture-internals/context-engines",
+                      "nl/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "nl/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -23004,6 +23186,19 @@
                 "pages": [
                   "tr/plugins/architecture",
                   "tr/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "tr/plugins/architecture-internals/load-pipeline",
+                      "tr/plugins/architecture-internals/provider-hooks",
+                      "tr/plugins/architecture-internals/runtime-helpers",
+                      "tr/plugins/architecture-internals/gateway-routes",
+                      "tr/plugins/architecture-internals/channel-surfaces",
+                      "tr/plugins/architecture-internals/packaging",
+                      "tr/plugins/architecture-internals/context-engines",
+                      "tr/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "tr/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -24461,6 +24656,19 @@
                 "pages": [
                   "uk/plugins/architecture",
                   "uk/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "uk/plugins/architecture-internals/load-pipeline",
+                      "uk/plugins/architecture-internals/provider-hooks",
+                      "uk/plugins/architecture-internals/runtime-helpers",
+                      "uk/plugins/architecture-internals/gateway-routes",
+                      "uk/plugins/architecture-internals/channel-surfaces",
+                      "uk/plugins/architecture-internals/packaging",
+                      "uk/plugins/architecture-internals/context-engines",
+                      "uk/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "uk/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -25918,6 +26126,19 @@
                 "pages": [
                   "id/plugins/architecture",
                   "id/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "id/plugins/architecture-internals/load-pipeline",
+                      "id/plugins/architecture-internals/provider-hooks",
+                      "id/plugins/architecture-internals/runtime-helpers",
+                      "id/plugins/architecture-internals/gateway-routes",
+                      "id/plugins/architecture-internals/channel-surfaces",
+                      "id/plugins/architecture-internals/packaging",
+                      "id/plugins/architecture-internals/context-engines",
+                      "id/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "id/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -27375,6 +27596,19 @@
                 "pages": [
                   "pl/plugins/architecture",
                   "pl/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "pl/plugins/architecture-internals/load-pipeline",
+                      "pl/plugins/architecture-internals/provider-hooks",
+                      "pl/plugins/architecture-internals/runtime-helpers",
+                      "pl/plugins/architecture-internals/gateway-routes",
+                      "pl/plugins/architecture-internals/channel-surfaces",
+                      "pl/plugins/architecture-internals/packaging",
+                      "pl/plugins/architecture-internals/context-engines",
+                      "pl/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "pl/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
@@ -28832,6 +29066,19 @@
                 "pages": [
                   "ru/plugins/architecture",
                   "ru/plugins/architecture-internals",
+                  {
+                    "group": "Plugin architecture internals",
+                    "pages": [
+                      "ru/plugins/architecture-internals/load-pipeline",
+                      "ru/plugins/architecture-internals/provider-hooks",
+                      "ru/plugins/architecture-internals/runtime-helpers",
+                      "ru/plugins/architecture-internals/gateway-routes",
+                      "ru/plugins/architecture-internals/channel-surfaces",
+                      "ru/plugins/architecture-internals/packaging",
+                      "ru/plugins/architecture-internals/context-engines",
+                      "ru/plugins/architecture-internals/new-capability"
+                    ]
+                  },
                   "ru/plugins/sdk-migration",
                   {
                     "group": "Plugin SDK migration",
