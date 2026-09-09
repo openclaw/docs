@@ -1734,6 +1734,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw automations
   - H2: Create jobs quickly
+  - H2: Schedule types
   - H2: Sessions
   - H2: Delivery
   - H3: Delivery ownership
