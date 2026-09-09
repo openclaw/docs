@@ -1513,6 +1513,13 @@
                     "group": "Matrix",
                     "pages": [
                       "channels/matrix",
+                      "channels/matrix/setup",
+                      "channels/matrix/access-control",
+                      "channels/matrix/messaging",
+                      "channels/matrix/rich-messages",
+                      "channels/matrix/encryption",
+                      "channels/matrix/threads-and-sessions",
+                      "channels/matrix/accounts-and-homeservers",
                       "channels/matrix-migration",
                       "channels/matrix-presentation",
                       "channels/matrix-push-rules"
@@ -3257,6 +3264,13 @@
                     "group": "Matrix",
                     "pages": [
                       "zh-CN/channels/matrix",
+                      "zh-CN/channels/matrix/setup",
+                      "zh-CN/channels/matrix/access-control",
+                      "zh-CN/channels/matrix/messaging",
+                      "zh-CN/channels/matrix/rich-messages",
+                      "zh-CN/channels/matrix/encryption",
+                      "zh-CN/channels/matrix/threads-and-sessions",
+                      "zh-CN/channels/matrix/accounts-and-homeservers",
                       "zh-CN/channels/matrix-migration",
                       "zh-CN/channels/matrix-presentation",
                       "zh-CN/channels/matrix-push-rules"
@@ -4967,6 +4981,13 @@
                     "group": "Matrix",
                     "pages": [
                       "zh-TW/channels/matrix",
+                      "zh-TW/channels/matrix/setup",
+                      "zh-TW/channels/matrix/access-control",
+                      "zh-TW/channels/matrix/messaging",
+                      "zh-TW/channels/matrix/rich-messages",
+                      "zh-TW/channels/matrix/encryption",
+                      "zh-TW/channels/matrix/threads-and-sessions",
+                      "zh-TW/channels/matrix/accounts-and-homeservers",
                       "zh-TW/channels/matrix-migration",
                       "zh-TW/channels/matrix-presentation",
                       "zh-TW/channels/matrix-push-rules"
@@ -6677,6 +6698,13 @@
                     "group": "Matrix",
                     "pages": [
                       "ja-JP/channels/matrix",
+                      "ja-JP/channels/matrix/setup",
+                      "ja-JP/channels/matrix/access-control",
+                      "ja-JP/channels/matrix/messaging",
+                      "ja-JP/channels/matrix/rich-messages",
+                      "ja-JP/channels/matrix/encryption",
+                      "ja-JP/channels/matrix/threads-and-sessions",
+                      "ja-JP/channels/matrix/accounts-and-homeservers",
                       "ja-JP/channels/matrix-migration",
                       "ja-JP/channels/matrix-presentation",
                       "ja-JP/channels/matrix-push-rules"
@@ -8387,6 +8415,13 @@
                     "group": "Matrix",
                     "pages": [
                       "es/channels/matrix",
+                      "es/channels/matrix/setup",
+                      "es/channels/matrix/access-control",
+                      "es/channels/matrix/messaging",
+                      "es/channels/matrix/rich-messages",
+                      "es/channels/matrix/encryption",
+                      "es/channels/matrix/threads-and-sessions",
+                      "es/channels/matrix/accounts-and-homeservers",
                       "es/channels/matrix-migration",
                       "es/channels/matrix-presentation",
                       "es/channels/matrix-push-rules"
@@ -10097,6 +10132,13 @@
                     "group": "Matrix",
                     "pages": [
                       "pt-BR/channels/matrix",
+                      "pt-BR/channels/matrix/setup",
+                      "pt-BR/channels/matrix/access-control",
+                      "pt-BR/channels/matrix/messaging",
+                      "pt-BR/channels/matrix/rich-messages",
+                      "pt-BR/channels/matrix/encryption",
+                      "pt-BR/channels/matrix/threads-and-sessions",
+                      "pt-BR/channels/matrix/accounts-and-homeservers",
                       "pt-BR/channels/matrix-migration",
                       "pt-BR/channels/matrix-presentation",
                       "pt-BR/channels/matrix-push-rules"
@@ -11807,6 +11849,13 @@
                     "group": "Matrix",
                     "pages": [
                       "ko/channels/matrix",
+                      "ko/channels/matrix/setup",
+                      "ko/channels/matrix/access-control",
+                      "ko/channels/matrix/messaging",
+                      "ko/channels/matrix/rich-messages",
+                      "ko/channels/matrix/encryption",
+                      "ko/channels/matrix/threads-and-sessions",
+                      "ko/channels/matrix/accounts-and-homeservers",
                       "ko/channels/matrix-migration",
                       "ko/channels/matrix-presentation",
                       "ko/channels/matrix-push-rules"
@@ -13517,6 +13566,13 @@
                     "group": "Matrix",
                     "pages": [
                       "de/channels/matrix",
+                      "de/channels/matrix/setup",
+                      "de/channels/matrix/access-control",
+                      "de/channels/matrix/messaging",
+                      "de/channels/matrix/rich-messages",
+                      "de/channels/matrix/encryption",
+                      "de/channels/matrix/threads-and-sessions",
+                      "de/channels/matrix/accounts-and-homeservers",
                       "de/channels/matrix-migration",
                       "de/channels/matrix-presentation",
                       "de/channels/matrix-push-rules"
@@ -15227,6 +15283,13 @@
                     "group": "Matrix",
                     "pages": [
                       "fr/channels/matrix",
+                      "fr/channels/matrix/setup",
+                      "fr/channels/matrix/access-control",
+                      "fr/channels/matrix/messaging",
+                      "fr/channels/matrix/rich-messages",
+                      "fr/channels/matrix/encryption",
+                      "fr/channels/matrix/threads-and-sessions",
+                      "fr/channels/matrix/accounts-and-homeservers",
                       "fr/channels/matrix-migration",
                       "fr/channels/matrix-presentation",
                       "fr/channels/matrix-push-rules"
@@ -16937,6 +17000,13 @@
                     "group": "Matrix",
                     "pages": [
                       "hi/channels/matrix",
+                      "hi/channels/matrix/setup",
+                      "hi/channels/matrix/access-control",
+                      "hi/channels/matrix/messaging",
+                      "hi/channels/matrix/rich-messages",
+                      "hi/channels/matrix/encryption",
+                      "hi/channels/matrix/threads-and-sessions",
+                      "hi/channels/matrix/accounts-and-homeservers",
                       "hi/channels/matrix-migration",
                       "hi/channels/matrix-presentation",
                       "hi/channels/matrix-push-rules"
@@ -18647,6 +18717,13 @@
                     "group": "Matrix",
                     "pages": [
                       "ar/channels/matrix",
+                      "ar/channels/matrix/setup",
+                      "ar/channels/matrix/access-control",
+                      "ar/channels/matrix/messaging",
+                      "ar/channels/matrix/rich-messages",
+                      "ar/channels/matrix/encryption",
+                      "ar/channels/matrix/threads-and-sessions",
+                      "ar/channels/matrix/accounts-and-homeservers",
                       "ar/channels/matrix-migration",
                       "ar/channels/matrix-presentation",
                       "ar/channels/matrix-push-rules"
@@ -20357,6 +20434,13 @@
                     "group": "Matrix",
                     "pages": [
                       "it/channels/matrix",
+                      "it/channels/matrix/setup",
+                      "it/channels/matrix/access-control",
+                      "it/channels/matrix/messaging",
+                      "it/channels/matrix/rich-messages",
+                      "it/channels/matrix/encryption",
+                      "it/channels/matrix/threads-and-sessions",
+                      "it/channels/matrix/accounts-and-homeservers",
                       "it/channels/matrix-migration",
                       "it/channels/matrix-presentation",
                       "it/channels/matrix-push-rules"
@@ -22067,6 +22151,13 @@
                     "group": "Matrix",
                     "pages": [
                       "vi/channels/matrix",
+                      "vi/channels/matrix/setup",
+                      "vi/channels/matrix/access-control",
+                      "vi/channels/matrix/messaging",
+                      "vi/channels/matrix/rich-messages",
+                      "vi/channels/matrix/encryption",
+                      "vi/channels/matrix/threads-and-sessions",
+                      "vi/channels/matrix/accounts-and-homeservers",
                       "vi/channels/matrix-migration",
                       "vi/channels/matrix-presentation",
                       "vi/channels/matrix-push-rules"
@@ -23777,6 +23868,13 @@
                     "group": "Matrix",
                     "pages": [
                       "nl/channels/matrix",
+                      "nl/channels/matrix/setup",
+                      "nl/channels/matrix/access-control",
+                      "nl/channels/matrix/messaging",
+                      "nl/channels/matrix/rich-messages",
+                      "nl/channels/matrix/encryption",
+                      "nl/channels/matrix/threads-and-sessions",
+                      "nl/channels/matrix/accounts-and-homeservers",
                       "nl/channels/matrix-migration",
                       "nl/channels/matrix-presentation",
                       "nl/channels/matrix-push-rules"
@@ -25487,6 +25585,13 @@
                     "group": "Matrix",
                     "pages": [
                       "tr/channels/matrix",
+                      "tr/channels/matrix/setup",
+                      "tr/channels/matrix/access-control",
+                      "tr/channels/matrix/messaging",
+                      "tr/channels/matrix/rich-messages",
+                      "tr/channels/matrix/encryption",
+                      "tr/channels/matrix/threads-and-sessions",
+                      "tr/channels/matrix/accounts-and-homeservers",
                       "tr/channels/matrix-migration",
                       "tr/channels/matrix-presentation",
                       "tr/channels/matrix-push-rules"
@@ -27197,6 +27302,13 @@
                     "group": "Matrix",
                     "pages": [
                       "uk/channels/matrix",
+                      "uk/channels/matrix/setup",
+                      "uk/channels/matrix/access-control",
+                      "uk/channels/matrix/messaging",
+                      "uk/channels/matrix/rich-messages",
+                      "uk/channels/matrix/encryption",
+                      "uk/channels/matrix/threads-and-sessions",
+                      "uk/channels/matrix/accounts-and-homeservers",
                       "uk/channels/matrix-migration",
                       "uk/channels/matrix-presentation",
                       "uk/channels/matrix-push-rules"
@@ -28907,6 +29019,13 @@
                     "group": "Matrix",
                     "pages": [
                       "id/channels/matrix",
+                      "id/channels/matrix/setup",
+                      "id/channels/matrix/access-control",
+                      "id/channels/matrix/messaging",
+                      "id/channels/matrix/rich-messages",
+                      "id/channels/matrix/encryption",
+                      "id/channels/matrix/threads-and-sessions",
+                      "id/channels/matrix/accounts-and-homeservers",
                       "id/channels/matrix-migration",
                       "id/channels/matrix-presentation",
                       "id/channels/matrix-push-rules"
@@ -30617,6 +30736,13 @@
                     "group": "Matrix",
                     "pages": [
                       "pl/channels/matrix",
+                      "pl/channels/matrix/setup",
+                      "pl/channels/matrix/access-control",
+                      "pl/channels/matrix/messaging",
+                      "pl/channels/matrix/rich-messages",
+                      "pl/channels/matrix/encryption",
+                      "pl/channels/matrix/threads-and-sessions",
+                      "pl/channels/matrix/accounts-and-homeservers",
                       "pl/channels/matrix-migration",
                       "pl/channels/matrix-presentation",
                       "pl/channels/matrix-push-rules"
@@ -32327,6 +32453,13 @@
                     "group": "Matrix",
                     "pages": [
                       "ru/channels/matrix",
+                      "ru/channels/matrix/setup",
+                      "ru/channels/matrix/access-control",
+                      "ru/channels/matrix/messaging",
+                      "ru/channels/matrix/rich-messages",
+                      "ru/channels/matrix/encryption",
+                      "ru/channels/matrix/threads-and-sessions",
+                      "ru/channels/matrix/accounts-and-homeservers",
                       "ru/channels/matrix-migration",
                       "ru/channels/matrix-presentation",
                       "ru/channels/matrix-push-rules"

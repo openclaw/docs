@@ -751,6 +751,72 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/matrix
 - Headings:
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Configuration reference
+  - H3: Account and connection
+  - H3: Encryption
+  - H3: Access and policy
+  - H3: Reply behavior
+  - H3: Reaction settings
+  - H3: Tooling and per-room overrides
+  - H3: Exec approval settings
+  - H2: Related
+
+## channels/matrix/access-control.md
+
+- Route: /channels/matrix/access-control
+- Headings:
+  - H2: Bot-to-bot rooms
+  - H2: Context visibility
+  - H2: DM and room policy
+  - H2: Slash commands
+
+## channels/matrix/accounts-and-homeservers.md
+
+- Route: /channels/matrix/accounts-and-homeservers
+- Headings:
+  - H2: Profile management
+  - H2: Direct room repair
+  - H2: Multi-account
+  - H2: Private/LAN homeservers
+  - H2: Proxying Matrix traffic
+  - H2: Target resolution
+
+## channels/matrix/encryption.md
+
+- Route: /channels/matrix/encryption
+- Headings:
+  - H2: Encryption and verification
+  - H3: Enable encryption
+  - H3: Status and trust signals
+  - H3: Verify this device with a recovery key
+  - H3: Bootstrap or repair cross-signing
+  - H3: Room-key backup
+  - H3: Listing, requesting, and responding to verifications
+  - H3: Multi-account notes
+
+## channels/matrix/messaging.md
+
+- Route: /channels/matrix/messaging
+- Headings:
+  - H2: Streaming previews
+  - H2: Voice messages
+  - H2: Reactions
+
+## channels/matrix/rich-messages.md
+
+- Route: /channels/matrix/rich-messages
+- Headings:
+  - H2: Reply controls and presentations
+  - H2: Approval metadata
+  - H3: Self-hosted push rules for quiet finalized previews
+  - H2: Exec approvals
+
+## channels/matrix/setup.md
+
+- Route: /channels/matrix/setup
+- Headings:
   - H2: Install
   - H2: Setup
   - H3: Interactive setup
@@ -762,47 +828,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Cached credentials
   - H3: Environment variables
   - H2: Configuration example
-  - H2: Streaming previews
-  - H2: Voice messages
-  - H2: Reply controls and presentations
-  - H2: Approval metadata
-  - H3: Self-hosted push rules for quiet finalized previews
-  - H2: Bot-to-bot rooms
-  - H2: Encryption and verification
-  - H3: Enable encryption
-  - H3: Status and trust signals
-  - H3: Verify this device with a recovery key
-  - H3: Bootstrap or repair cross-signing
-  - H3: Room-key backup
-  - H3: Listing, requesting, and responding to verifications
-  - H3: Multi-account notes
-  - H2: Profile management
+
+## channels/matrix/threads-and-sessions.md
+
+- Route: /channels/matrix/threads-and-sessions
+- Headings:
   - H2: Threads
   - H3: Session routing (sessionScope)
   - H3: Reply threading (threadReplies)
   - H3: Thread inheritance and slash commands
   - H2: ACP conversation bindings
   - H3: Thread binding config
-  - H2: Reactions
   - H2: History context
-  - H2: Context visibility
-  - H2: DM and room policy
-  - H2: Direct room repair
-  - H2: Exec approvals
-  - H2: Slash commands
-  - H2: Multi-account
-  - H2: Private/LAN homeservers
-  - H2: Proxying Matrix traffic
-  - H2: Target resolution
-  - H2: Configuration reference
-  - H3: Account and connection
-  - H3: Encryption
-  - H3: Access and policy
-  - H3: Reply behavior
-  - H3: Reaction settings
-  - H3: Tooling and per-room overrides
-  - H3: Exec approval settings
-  - H2: Related
 
 ## channels/mattermost.md
 
