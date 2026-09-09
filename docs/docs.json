@@ -2126,6 +2126,15 @@
                 "pages": [
                   "concepts/models",
                   "concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "concepts/model-providers/quick-rules",
+                      "concepts/model-providers/control-ui-and-keys",
+                      "concepts/model-providers/official-provider-plugins",
+                      "concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "concepts/model-failover"
                 ]
               },
@@ -3894,6 +3903,15 @@
                 "pages": [
                   "zh-CN/concepts/models",
                   "zh-CN/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "zh-CN/concepts/model-providers/quick-rules",
+                      "zh-CN/concepts/model-providers/control-ui-and-keys",
+                      "zh-CN/concepts/model-providers/official-provider-plugins",
+                      "zh-CN/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "zh-CN/concepts/model-failover"
                 ]
               },
@@ -5662,6 +5680,15 @@
                 "pages": [
                   "zh-TW/concepts/models",
                   "zh-TW/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "zh-TW/concepts/model-providers/quick-rules",
+                      "zh-TW/concepts/model-providers/control-ui-and-keys",
+                      "zh-TW/concepts/model-providers/official-provider-plugins",
+                      "zh-TW/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "zh-TW/concepts/model-failover"
                 ]
               },
@@ -7430,6 +7457,15 @@
                 "pages": [
                   "ja-JP/concepts/models",
                   "ja-JP/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "ja-JP/concepts/model-providers/quick-rules",
+                      "ja-JP/concepts/model-providers/control-ui-and-keys",
+                      "ja-JP/concepts/model-providers/official-provider-plugins",
+                      "ja-JP/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "ja-JP/concepts/model-failover"
                 ]
               },
@@ -9198,6 +9234,15 @@
                 "pages": [
                   "es/concepts/models",
                   "es/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "es/concepts/model-providers/quick-rules",
+                      "es/concepts/model-providers/control-ui-and-keys",
+                      "es/concepts/model-providers/official-provider-plugins",
+                      "es/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "es/concepts/model-failover"
                 ]
               },
@@ -10966,6 +11011,15 @@
                 "pages": [
                   "pt-BR/concepts/models",
                   "pt-BR/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "pt-BR/concepts/model-providers/quick-rules",
+                      "pt-BR/concepts/model-providers/control-ui-and-keys",
+                      "pt-BR/concepts/model-providers/official-provider-plugins",
+                      "pt-BR/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "pt-BR/concepts/model-failover"
                 ]
               },
@@ -12734,6 +12788,15 @@
                 "pages": [
                   "ko/concepts/models",
                   "ko/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "ko/concepts/model-providers/quick-rules",
+                      "ko/concepts/model-providers/control-ui-and-keys",
+                      "ko/concepts/model-providers/official-provider-plugins",
+                      "ko/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "ko/concepts/model-failover"
                 ]
               },
@@ -14502,6 +14565,15 @@
                 "pages": [
                   "de/concepts/models",
                   "de/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "de/concepts/model-providers/quick-rules",
+                      "de/concepts/model-providers/control-ui-and-keys",
+                      "de/concepts/model-providers/official-provider-plugins",
+                      "de/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "de/concepts/model-failover"
                 ]
               },
@@ -16270,6 +16342,15 @@
                 "pages": [
                   "fr/concepts/models",
                   "fr/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "fr/concepts/model-providers/quick-rules",
+                      "fr/concepts/model-providers/control-ui-and-keys",
+                      "fr/concepts/model-providers/official-provider-plugins",
+                      "fr/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "fr/concepts/model-failover"
                 ]
               },
@@ -18038,6 +18119,15 @@
                 "pages": [
                   "hi/concepts/models",
                   "hi/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "hi/concepts/model-providers/quick-rules",
+                      "hi/concepts/model-providers/control-ui-and-keys",
+                      "hi/concepts/model-providers/official-provider-plugins",
+                      "hi/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "hi/concepts/model-failover"
                 ]
               },
@@ -19806,6 +19896,15 @@
                 "pages": [
                   "ar/concepts/models",
                   "ar/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "ar/concepts/model-providers/quick-rules",
+                      "ar/concepts/model-providers/control-ui-and-keys",
+                      "ar/concepts/model-providers/official-provider-plugins",
+                      "ar/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "ar/concepts/model-failover"
                 ]
               },
@@ -21574,6 +21673,15 @@
                 "pages": [
                   "it/concepts/models",
                   "it/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "it/concepts/model-providers/quick-rules",
+                      "it/concepts/model-providers/control-ui-and-keys",
+                      "it/concepts/model-providers/official-provider-plugins",
+                      "it/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "it/concepts/model-failover"
                 ]
               },
@@ -23342,6 +23450,15 @@
                 "pages": [
                   "vi/concepts/models",
                   "vi/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "vi/concepts/model-providers/quick-rules",
+                      "vi/concepts/model-providers/control-ui-and-keys",
+                      "vi/concepts/model-providers/official-provider-plugins",
+                      "vi/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "vi/concepts/model-failover"
                 ]
               },
@@ -25110,6 +25227,15 @@
                 "pages": [
                   "nl/concepts/models",
                   "nl/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "nl/concepts/model-providers/quick-rules",
+                      "nl/concepts/model-providers/control-ui-and-keys",
+                      "nl/concepts/model-providers/official-provider-plugins",
+                      "nl/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "nl/concepts/model-failover"
                 ]
               },
@@ -26878,6 +27004,15 @@
                 "pages": [
                   "tr/concepts/models",
                   "tr/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "tr/concepts/model-providers/quick-rules",
+                      "tr/concepts/model-providers/control-ui-and-keys",
+                      "tr/concepts/model-providers/official-provider-plugins",
+                      "tr/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "tr/concepts/model-failover"
                 ]
               },
@@ -28646,6 +28781,15 @@
                 "pages": [
                   "uk/concepts/models",
                   "uk/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "uk/concepts/model-providers/quick-rules",
+                      "uk/concepts/model-providers/control-ui-and-keys",
+                      "uk/concepts/model-providers/official-provider-plugins",
+                      "uk/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "uk/concepts/model-failover"
                 ]
               },
@@ -30414,6 +30558,15 @@
                 "pages": [
                   "id/concepts/models",
                   "id/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "id/concepts/model-providers/quick-rules",
+                      "id/concepts/model-providers/control-ui-and-keys",
+                      "id/concepts/model-providers/official-provider-plugins",
+                      "id/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "id/concepts/model-failover"
                 ]
               },
@@ -32182,6 +32335,15 @@
                 "pages": [
                   "pl/concepts/models",
                   "pl/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "pl/concepts/model-providers/quick-rules",
+                      "pl/concepts/model-providers/control-ui-and-keys",
+                      "pl/concepts/model-providers/official-provider-plugins",
+                      "pl/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "pl/concepts/model-failover"
                 ]
               },
@@ -33950,6 +34112,15 @@
                 "pages": [
                   "ru/concepts/models",
                   "ru/concepts/model-providers",
+                  {
+                    "group": "Model providers",
+                    "pages": [
+                      "ru/concepts/model-providers/quick-rules",
+                      "ru/concepts/model-providers/control-ui-and-keys",
+                      "ru/concepts/model-providers/official-provider-plugins",
+                      "ru/concepts/model-providers/custom-providers"
+                    ]
+                  },
                   "ru/concepts/model-failover"
                 ]
               },

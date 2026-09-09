@@ -3507,22 +3507,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/model-providers
 - Headings:
-  - H2: Quick rules
+  - H2: Where each section moved
+  - H2: CLI examples
+  - H2: Related
+
+## concepts/model-providers/control-ui-and-keys.md
+
+- Route: /concepts/model-providers/control-ui-and-keys
+- Headings:
   - H2: Configure providers in the Control UI
   - H2: Plugin-owned provider behavior
   - H2: API key rotation
-  - H2: Official provider plugins
-  - H3: OpenAI
-  - H3: Anthropic
-  - H3: OpenAI ChatGPT/Codex OAuth
-  - H3: Other subscription-style hosted options
-  - H3: OpenCode
-  - H3: Google Gemini (API key)
-  - H3: Google Vertex and Gemini CLI runtime
-  - H3: Z.AI (GLM)
-  - H3: Vercel AI Gateway
-  - H3: Other bundled provider plugins
-  - H4: Quirks worth knowing
+
+## concepts/model-providers/custom-providers.md
+
+- Route: /concepts/model-providers/custom-providers
+- Headings:
   - H2: Providers via models.providers (custom/base URL)
   - H3: Moonshot AI (Kimi)
   - H3: Kimi Coding
@@ -3536,8 +3536,29 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: vLLM
   - H3: SGLang
   - H3: Local proxies (LM Studio, vLLM, LiteLLM, etc.)
-  - H2: CLI examples
-  - H2: Related
+
+## concepts/model-providers/official-provider-plugins.md
+
+- Route: /concepts/model-providers/official-provider-plugins
+- Headings:
+  - H2: Official provider plugins
+  - H3: OpenAI
+  - H3: Anthropic
+  - H3: OpenAI ChatGPT/Codex OAuth
+  - H3: Other subscription-style hosted options
+  - H3: OpenCode
+  - H3: Google Gemini (API key)
+  - H3: Google Vertex and Gemini CLI runtime
+  - H3: Z.AI (GLM)
+  - H3: Vercel AI Gateway
+  - H3: Other bundled provider plugins
+  - H4: Quirks worth knowing
+
+## concepts/model-providers/quick-rules.md
+
+- Route: /concepts/model-providers/quick-rules
+- Headings:
+  - H2: Quick rules
 
 ## concepts/models.md
 
