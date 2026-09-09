@@ -1955,6 +1955,18 @@
                       "tools/music-generation",
                       "tools/pdf",
                       "tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "tools/tts/quickstart",
+                          "tools/tts/configuration",
+                          "tools/tts/personas",
+                          "tools/tts/commands",
+                          "tools/tts/output",
+                          "tools/tts/field-reference",
+                          "tools/tts/api"
+                        ]
+                      },
                       "tools/video-generation"
                     ]
                   },
@@ -3776,6 +3788,18 @@
                       "zh-CN/tools/music-generation",
                       "zh-CN/tools/pdf",
                       "zh-CN/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "zh-CN/tools/tts/quickstart",
+                          "zh-CN/tools/tts/configuration",
+                          "zh-CN/tools/tts/personas",
+                          "zh-CN/tools/tts/commands",
+                          "zh-CN/tools/tts/output",
+                          "zh-CN/tools/tts/field-reference",
+                          "zh-CN/tools/tts/api"
+                        ]
+                      },
                       "zh-CN/tools/video-generation"
                     ]
                   },
@@ -5563,6 +5587,18 @@
                       "zh-TW/tools/music-generation",
                       "zh-TW/tools/pdf",
                       "zh-TW/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "zh-TW/tools/tts/quickstart",
+                          "zh-TW/tools/tts/configuration",
+                          "zh-TW/tools/tts/personas",
+                          "zh-TW/tools/tts/commands",
+                          "zh-TW/tools/tts/output",
+                          "zh-TW/tools/tts/field-reference",
+                          "zh-TW/tools/tts/api"
+                        ]
+                      },
                       "zh-TW/tools/video-generation"
                     ]
                   },
@@ -7350,6 +7386,18 @@
                       "ja-JP/tools/music-generation",
                       "ja-JP/tools/pdf",
                       "ja-JP/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "ja-JP/tools/tts/quickstart",
+                          "ja-JP/tools/tts/configuration",
+                          "ja-JP/tools/tts/personas",
+                          "ja-JP/tools/tts/commands",
+                          "ja-JP/tools/tts/output",
+                          "ja-JP/tools/tts/field-reference",
+                          "ja-JP/tools/tts/api"
+                        ]
+                      },
                       "ja-JP/tools/video-generation"
                     ]
                   },
@@ -9137,6 +9185,18 @@
                       "es/tools/music-generation",
                       "es/tools/pdf",
                       "es/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "es/tools/tts/quickstart",
+                          "es/tools/tts/configuration",
+                          "es/tools/tts/personas",
+                          "es/tools/tts/commands",
+                          "es/tools/tts/output",
+                          "es/tools/tts/field-reference",
+                          "es/tools/tts/api"
+                        ]
+                      },
                       "es/tools/video-generation"
                     ]
                   },
@@ -10924,6 +10984,18 @@
                       "pt-BR/tools/music-generation",
                       "pt-BR/tools/pdf",
                       "pt-BR/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "pt-BR/tools/tts/quickstart",
+                          "pt-BR/tools/tts/configuration",
+                          "pt-BR/tools/tts/personas",
+                          "pt-BR/tools/tts/commands",
+                          "pt-BR/tools/tts/output",
+                          "pt-BR/tools/tts/field-reference",
+                          "pt-BR/tools/tts/api"
+                        ]
+                      },
                       "pt-BR/tools/video-generation"
                     ]
                   },
@@ -12711,6 +12783,18 @@
                       "ko/tools/music-generation",
                       "ko/tools/pdf",
                       "ko/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "ko/tools/tts/quickstart",
+                          "ko/tools/tts/configuration",
+                          "ko/tools/tts/personas",
+                          "ko/tools/tts/commands",
+                          "ko/tools/tts/output",
+                          "ko/tools/tts/field-reference",
+                          "ko/tools/tts/api"
+                        ]
+                      },
                       "ko/tools/video-generation"
                     ]
                   },
@@ -14498,6 +14582,18 @@
                       "de/tools/music-generation",
                       "de/tools/pdf",
                       "de/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "de/tools/tts/quickstart",
+                          "de/tools/tts/configuration",
+                          "de/tools/tts/personas",
+                          "de/tools/tts/commands",
+                          "de/tools/tts/output",
+                          "de/tools/tts/field-reference",
+                          "de/tools/tts/api"
+                        ]
+                      },
                       "de/tools/video-generation"
                     ]
                   },
@@ -16285,6 +16381,18 @@
                       "fr/tools/music-generation",
                       "fr/tools/pdf",
                       "fr/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "fr/tools/tts/quickstart",
+                          "fr/tools/tts/configuration",
+                          "fr/tools/tts/personas",
+                          "fr/tools/tts/commands",
+                          "fr/tools/tts/output",
+                          "fr/tools/tts/field-reference",
+                          "fr/tools/tts/api"
+                        ]
+                      },
                       "fr/tools/video-generation"
                     ]
                   },
@@ -18072,6 +18180,18 @@
                       "hi/tools/music-generation",
                       "hi/tools/pdf",
                       "hi/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "hi/tools/tts/quickstart",
+                          "hi/tools/tts/configuration",
+                          "hi/tools/tts/personas",
+                          "hi/tools/tts/commands",
+                          "hi/tools/tts/output",
+                          "hi/tools/tts/field-reference",
+                          "hi/tools/tts/api"
+                        ]
+                      },
                       "hi/tools/video-generation"
                     ]
                   },
@@ -19859,6 +19979,18 @@
                       "ar/tools/music-generation",
                       "ar/tools/pdf",
                       "ar/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "ar/tools/tts/quickstart",
+                          "ar/tools/tts/configuration",
+                          "ar/tools/tts/personas",
+                          "ar/tools/tts/commands",
+                          "ar/tools/tts/output",
+                          "ar/tools/tts/field-reference",
+                          "ar/tools/tts/api"
+                        ]
+                      },
                       "ar/tools/video-generation"
                     ]
                   },
@@ -21646,6 +21778,18 @@
                       "it/tools/music-generation",
                       "it/tools/pdf",
                       "it/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "it/tools/tts/quickstart",
+                          "it/tools/tts/configuration",
+                          "it/tools/tts/personas",
+                          "it/tools/tts/commands",
+                          "it/tools/tts/output",
+                          "it/tools/tts/field-reference",
+                          "it/tools/tts/api"
+                        ]
+                      },
                       "it/tools/video-generation"
                     ]
                   },
@@ -23433,6 +23577,18 @@
                       "vi/tools/music-generation",
                       "vi/tools/pdf",
                       "vi/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "vi/tools/tts/quickstart",
+                          "vi/tools/tts/configuration",
+                          "vi/tools/tts/personas",
+                          "vi/tools/tts/commands",
+                          "vi/tools/tts/output",
+                          "vi/tools/tts/field-reference",
+                          "vi/tools/tts/api"
+                        ]
+                      },
                       "vi/tools/video-generation"
                     ]
                   },
@@ -25220,6 +25376,18 @@
                       "nl/tools/music-generation",
                       "nl/tools/pdf",
                       "nl/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "nl/tools/tts/quickstart",
+                          "nl/tools/tts/configuration",
+                          "nl/tools/tts/personas",
+                          "nl/tools/tts/commands",
+                          "nl/tools/tts/output",
+                          "nl/tools/tts/field-reference",
+                          "nl/tools/tts/api"
+                        ]
+                      },
                       "nl/tools/video-generation"
                     ]
                   },
@@ -27007,6 +27175,18 @@
                       "tr/tools/music-generation",
                       "tr/tools/pdf",
                       "tr/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "tr/tools/tts/quickstart",
+                          "tr/tools/tts/configuration",
+                          "tr/tools/tts/personas",
+                          "tr/tools/tts/commands",
+                          "tr/tools/tts/output",
+                          "tr/tools/tts/field-reference",
+                          "tr/tools/tts/api"
+                        ]
+                      },
                       "tr/tools/video-generation"
                     ]
                   },
@@ -28794,6 +28974,18 @@
                       "uk/tools/music-generation",
                       "uk/tools/pdf",
                       "uk/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "uk/tools/tts/quickstart",
+                          "uk/tools/tts/configuration",
+                          "uk/tools/tts/personas",
+                          "uk/tools/tts/commands",
+                          "uk/tools/tts/output",
+                          "uk/tools/tts/field-reference",
+                          "uk/tools/tts/api"
+                        ]
+                      },
                       "uk/tools/video-generation"
                     ]
                   },
@@ -30581,6 +30773,18 @@
                       "id/tools/music-generation",
                       "id/tools/pdf",
                       "id/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "id/tools/tts/quickstart",
+                          "id/tools/tts/configuration",
+                          "id/tools/tts/personas",
+                          "id/tools/tts/commands",
+                          "id/tools/tts/output",
+                          "id/tools/tts/field-reference",
+                          "id/tools/tts/api"
+                        ]
+                      },
                       "id/tools/video-generation"
                     ]
                   },
@@ -32368,6 +32572,18 @@
                       "pl/tools/music-generation",
                       "pl/tools/pdf",
                       "pl/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "pl/tools/tts/quickstart",
+                          "pl/tools/tts/configuration",
+                          "pl/tools/tts/personas",
+                          "pl/tools/tts/commands",
+                          "pl/tools/tts/output",
+                          "pl/tools/tts/field-reference",
+                          "pl/tools/tts/api"
+                        ]
+                      },
                       "pl/tools/video-generation"
                     ]
                   },
@@ -34155,6 +34371,18 @@
                       "ru/tools/music-generation",
                       "ru/tools/pdf",
                       "ru/tools/tts",
+                      {
+                        "group": "Text to speech",
+                        "pages": [
+                          "ru/tools/tts/quickstart",
+                          "ru/tools/tts/configuration",
+                          "ru/tools/tts/personas",
+                          "ru/tools/tts/commands",
+                          "ru/tools/tts/output",
+                          "ru/tools/tts/field-reference",
+                          "ru/tools/tts/api"
+                        ]
+                      },
                       "ru/tools/video-generation"
                     ]
                   },

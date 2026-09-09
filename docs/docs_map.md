@@ -13376,27 +13376,64 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/tts
 - Headings:
-  - H2: Quick start
-  - H2: Supported providers
+  - H2: Where each section moved
+  - H2: Component anchors
+  - H2: Service links
+  - H2: Related
+
+## tools/tts/api.md
+
+- Route: /tools/tts/api
+- Headings:
+  - H2: Agent tool
+  - H2: Gateway RPC
+
+## tools/tts/commands.md
+
+- Route: /tools/tts/commands
+- Headings:
+  - H2: Model-driven directives
+  - H2: Slash commands
+  - H2: Per-user preferences
+
+## tools/tts/configuration.md
+
+- Route: /tools/tts/configuration
+- Headings:
   - H2: Configuration
   - H3: Local Speech Swift and speech-core
   - H3: Per-agent voice overrides
+
+## tools/tts/field-reference.md
+
+- Route: /tools/tts/field-reference
+- Headings:
+  - H2: Field reference
+
+## tools/tts/output.md
+
+- Route: /tools/tts/output
+- Headings:
+  - H2: Output formats
+  - H2: Auto-TTS behavior
+
+## tools/tts/personas.md
+
+- Route: /tools/tts/personas
+- Headings:
   - H2: Personas
   - H3: Minimal persona
   - H3: Full persona (provider-specific shaping)
   - H3: Persona resolution
   - H3: Custom persona shaping
   - H3: Fallback policy
-  - H2: Model-driven directives
-  - H2: Slash commands
-  - H2: Per-user preferences
-  - H2: Output formats
-  - H2: Auto-TTS behavior
-  - H2: Field reference
-  - H2: Agent tool
-  - H2: Gateway RPC
-  - H2: Service links
-  - H2: Related
+
+## tools/tts/quickstart.md
+
+- Route: /tools/tts/quickstart
+- Headings:
+  - H2: Quick start
+  - H2: Supported providers
 
 ## tools/video-generation.md
 
