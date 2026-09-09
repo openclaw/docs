@@ -1977,6 +1977,18 @@
                   "tools/goal",
                   "tools/steer",
                   "tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "tools/subagents/slash-command",
+                      "tools/subagents/tool-reference",
+                      "tools/subagents/thread-bound-sessions",
+                      "tools/subagents/nesting",
+                      "tools/subagents/announce",
+                      "tools/subagents/tool-policy",
+                      "tools/subagents/operations"
+                    ]
+                  },
                   "tools/swarm",
                   "tools/acp-agents",
                   {
@@ -3663,6 +3675,18 @@
                   "zh-CN/tools/goal",
                   "zh-CN/tools/steer",
                   "zh-CN/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "zh-CN/tools/subagents/slash-command",
+                      "zh-CN/tools/subagents/tool-reference",
+                      "zh-CN/tools/subagents/thread-bound-sessions",
+                      "zh-CN/tools/subagents/nesting",
+                      "zh-CN/tools/subagents/announce",
+                      "zh-CN/tools/subagents/tool-policy",
+                      "zh-CN/tools/subagents/operations"
+                    ]
+                  },
                   "zh-CN/tools/swarm",
                   "zh-CN/tools/acp-agents",
                   {
@@ -5315,6 +5339,18 @@
                   "zh-TW/tools/goal",
                   "zh-TW/tools/steer",
                   "zh-TW/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "zh-TW/tools/subagents/slash-command",
+                      "zh-TW/tools/subagents/tool-reference",
+                      "zh-TW/tools/subagents/thread-bound-sessions",
+                      "zh-TW/tools/subagents/nesting",
+                      "zh-TW/tools/subagents/announce",
+                      "zh-TW/tools/subagents/tool-policy",
+                      "zh-TW/tools/subagents/operations"
+                    ]
+                  },
                   "zh-TW/tools/swarm",
                   "zh-TW/tools/acp-agents",
                   {
@@ -6967,6 +7003,18 @@
                   "ja-JP/tools/goal",
                   "ja-JP/tools/steer",
                   "ja-JP/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "ja-JP/tools/subagents/slash-command",
+                      "ja-JP/tools/subagents/tool-reference",
+                      "ja-JP/tools/subagents/thread-bound-sessions",
+                      "ja-JP/tools/subagents/nesting",
+                      "ja-JP/tools/subagents/announce",
+                      "ja-JP/tools/subagents/tool-policy",
+                      "ja-JP/tools/subagents/operations"
+                    ]
+                  },
                   "ja-JP/tools/swarm",
                   "ja-JP/tools/acp-agents",
                   {
@@ -8619,6 +8667,18 @@
                   "es/tools/goal",
                   "es/tools/steer",
                   "es/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "es/tools/subagents/slash-command",
+                      "es/tools/subagents/tool-reference",
+                      "es/tools/subagents/thread-bound-sessions",
+                      "es/tools/subagents/nesting",
+                      "es/tools/subagents/announce",
+                      "es/tools/subagents/tool-policy",
+                      "es/tools/subagents/operations"
+                    ]
+                  },
                   "es/tools/swarm",
                   "es/tools/acp-agents",
                   {
@@ -10271,6 +10331,18 @@
                   "pt-BR/tools/goal",
                   "pt-BR/tools/steer",
                   "pt-BR/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "pt-BR/tools/subagents/slash-command",
+                      "pt-BR/tools/subagents/tool-reference",
+                      "pt-BR/tools/subagents/thread-bound-sessions",
+                      "pt-BR/tools/subagents/nesting",
+                      "pt-BR/tools/subagents/announce",
+                      "pt-BR/tools/subagents/tool-policy",
+                      "pt-BR/tools/subagents/operations"
+                    ]
+                  },
                   "pt-BR/tools/swarm",
                   "pt-BR/tools/acp-agents",
                   {
@@ -11923,6 +11995,18 @@
                   "ko/tools/goal",
                   "ko/tools/steer",
                   "ko/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "ko/tools/subagents/slash-command",
+                      "ko/tools/subagents/tool-reference",
+                      "ko/tools/subagents/thread-bound-sessions",
+                      "ko/tools/subagents/nesting",
+                      "ko/tools/subagents/announce",
+                      "ko/tools/subagents/tool-policy",
+                      "ko/tools/subagents/operations"
+                    ]
+                  },
                   "ko/tools/swarm",
                   "ko/tools/acp-agents",
                   {
@@ -13575,6 +13659,18 @@
                   "de/tools/goal",
                   "de/tools/steer",
                   "de/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "de/tools/subagents/slash-command",
+                      "de/tools/subagents/tool-reference",
+                      "de/tools/subagents/thread-bound-sessions",
+                      "de/tools/subagents/nesting",
+                      "de/tools/subagents/announce",
+                      "de/tools/subagents/tool-policy",
+                      "de/tools/subagents/operations"
+                    ]
+                  },
                   "de/tools/swarm",
                   "de/tools/acp-agents",
                   {
@@ -15227,6 +15323,18 @@
                   "fr/tools/goal",
                   "fr/tools/steer",
                   "fr/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "fr/tools/subagents/slash-command",
+                      "fr/tools/subagents/tool-reference",
+                      "fr/tools/subagents/thread-bound-sessions",
+                      "fr/tools/subagents/nesting",
+                      "fr/tools/subagents/announce",
+                      "fr/tools/subagents/tool-policy",
+                      "fr/tools/subagents/operations"
+                    ]
+                  },
                   "fr/tools/swarm",
                   "fr/tools/acp-agents",
                   {
@@ -16879,6 +16987,18 @@
                   "hi/tools/goal",
                   "hi/tools/steer",
                   "hi/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "hi/tools/subagents/slash-command",
+                      "hi/tools/subagents/tool-reference",
+                      "hi/tools/subagents/thread-bound-sessions",
+                      "hi/tools/subagents/nesting",
+                      "hi/tools/subagents/announce",
+                      "hi/tools/subagents/tool-policy",
+                      "hi/tools/subagents/operations"
+                    ]
+                  },
                   "hi/tools/swarm",
                   "hi/tools/acp-agents",
                   {
@@ -18531,6 +18651,18 @@
                   "ar/tools/goal",
                   "ar/tools/steer",
                   "ar/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "ar/tools/subagents/slash-command",
+                      "ar/tools/subagents/tool-reference",
+                      "ar/tools/subagents/thread-bound-sessions",
+                      "ar/tools/subagents/nesting",
+                      "ar/tools/subagents/announce",
+                      "ar/tools/subagents/tool-policy",
+                      "ar/tools/subagents/operations"
+                    ]
+                  },
                   "ar/tools/swarm",
                   "ar/tools/acp-agents",
                   {
@@ -20183,6 +20315,18 @@
                   "it/tools/goal",
                   "it/tools/steer",
                   "it/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "it/tools/subagents/slash-command",
+                      "it/tools/subagents/tool-reference",
+                      "it/tools/subagents/thread-bound-sessions",
+                      "it/tools/subagents/nesting",
+                      "it/tools/subagents/announce",
+                      "it/tools/subagents/tool-policy",
+                      "it/tools/subagents/operations"
+                    ]
+                  },
                   "it/tools/swarm",
                   "it/tools/acp-agents",
                   {
@@ -21835,6 +21979,18 @@
                   "vi/tools/goal",
                   "vi/tools/steer",
                   "vi/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "vi/tools/subagents/slash-command",
+                      "vi/tools/subagents/tool-reference",
+                      "vi/tools/subagents/thread-bound-sessions",
+                      "vi/tools/subagents/nesting",
+                      "vi/tools/subagents/announce",
+                      "vi/tools/subagents/tool-policy",
+                      "vi/tools/subagents/operations"
+                    ]
+                  },
                   "vi/tools/swarm",
                   "vi/tools/acp-agents",
                   {
@@ -23487,6 +23643,18 @@
                   "nl/tools/goal",
                   "nl/tools/steer",
                   "nl/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "nl/tools/subagents/slash-command",
+                      "nl/tools/subagents/tool-reference",
+                      "nl/tools/subagents/thread-bound-sessions",
+                      "nl/tools/subagents/nesting",
+                      "nl/tools/subagents/announce",
+                      "nl/tools/subagents/tool-policy",
+                      "nl/tools/subagents/operations"
+                    ]
+                  },
                   "nl/tools/swarm",
                   "nl/tools/acp-agents",
                   {
@@ -25139,6 +25307,18 @@
                   "tr/tools/goal",
                   "tr/tools/steer",
                   "tr/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "tr/tools/subagents/slash-command",
+                      "tr/tools/subagents/tool-reference",
+                      "tr/tools/subagents/thread-bound-sessions",
+                      "tr/tools/subagents/nesting",
+                      "tr/tools/subagents/announce",
+                      "tr/tools/subagents/tool-policy",
+                      "tr/tools/subagents/operations"
+                    ]
+                  },
                   "tr/tools/swarm",
                   "tr/tools/acp-agents",
                   {
@@ -26791,6 +26971,18 @@
                   "uk/tools/goal",
                   "uk/tools/steer",
                   "uk/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "uk/tools/subagents/slash-command",
+                      "uk/tools/subagents/tool-reference",
+                      "uk/tools/subagents/thread-bound-sessions",
+                      "uk/tools/subagents/nesting",
+                      "uk/tools/subagents/announce",
+                      "uk/tools/subagents/tool-policy",
+                      "uk/tools/subagents/operations"
+                    ]
+                  },
                   "uk/tools/swarm",
                   "uk/tools/acp-agents",
                   {
@@ -28443,6 +28635,18 @@
                   "id/tools/goal",
                   "id/tools/steer",
                   "id/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "id/tools/subagents/slash-command",
+                      "id/tools/subagents/tool-reference",
+                      "id/tools/subagents/thread-bound-sessions",
+                      "id/tools/subagents/nesting",
+                      "id/tools/subagents/announce",
+                      "id/tools/subagents/tool-policy",
+                      "id/tools/subagents/operations"
+                    ]
+                  },
                   "id/tools/swarm",
                   "id/tools/acp-agents",
                   {
@@ -30095,6 +30299,18 @@
                   "pl/tools/goal",
                   "pl/tools/steer",
                   "pl/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "pl/tools/subagents/slash-command",
+                      "pl/tools/subagents/tool-reference",
+                      "pl/tools/subagents/thread-bound-sessions",
+                      "pl/tools/subagents/nesting",
+                      "pl/tools/subagents/announce",
+                      "pl/tools/subagents/tool-policy",
+                      "pl/tools/subagents/operations"
+                    ]
+                  },
                   "pl/tools/swarm",
                   "pl/tools/acp-agents",
                   {
@@ -31747,6 +31963,18 @@
                   "ru/tools/goal",
                   "ru/tools/steer",
                   "ru/tools/subagents",
+                  {
+                    "group": "Sub-agents",
+                    "pages": [
+                      "ru/tools/subagents/slash-command",
+                      "ru/tools/subagents/tool-reference",
+                      "ru/tools/subagents/thread-bound-sessions",
+                      "ru/tools/subagents/nesting",
+                      "ru/tools/subagents/announce",
+                      "ru/tools/subagents/tool-policy",
+                      "ru/tools/subagents/operations"
+                    ]
+                  },
                   "ru/tools/swarm",
                   "ru/tools/acp-agents",
                   {

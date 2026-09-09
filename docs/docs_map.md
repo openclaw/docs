@@ -12803,24 +12803,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/subagents
 - Headings:
-  - H2: Slash command
-  - H3: Thread binding controls
-  - H3: Spawn behavior
-  - H2: Context modes
-  - H2: Tool: `sessions_spawn`
-  - H3: Delegation prompt mode
-  - H3: Tool parameters
-  - H3: Task names and targeting
-  - H2: Tool: `sessions_yield`
-  - H2: Tool: subagents
-  - H2: Thread-bound sessions
-  - H3: Thread supporting channels
-  - H3: Quick flow
-  - H3: Manual controls
-  - H3: Config switches
-  - H3: Allowlist
-  - H3: Discovery
-  - H3: Auto-archive
+  - H2: Where each section moved
+  - H2: Related
+
+## tools/subagents/announce.md
+
+- Route: /tools/subagents/announce
+- Headings:
+  - H2: Announce
+  - H3: Announce context
+  - H3: Stats line
+  - H3: Why prefer `sessions_history`
+
+## tools/subagents/nesting.md
+
+- Route: /tools/subagents/nesting
+- Headings:
   - H2: Nested sub-agents
   - H3: Depth levels
   - H3: Announce chain
@@ -12829,17 +12827,55 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Reset a conversation
   - H3: Cascade stop
   - H2: Authentication
-  - H2: Announce
-  - H3: Announce context
-  - H3: Stats line
-  - H3: Why prefer `sessions_history`
-  - H2: Tool policy
-  - H3: Override via config
+
+## tools/subagents/operations.md
+
+- Route: /tools/subagents/operations
+- Headings:
   - H2: Concurrency
   - H2: Liveness and recovery
   - H2: Stopping
   - H2: Limitations
-  - H2: Related
+
+## tools/subagents/slash-command.md
+
+- Route: /tools/subagents/slash-command
+- Headings:
+  - H2: Slash command
+  - H3: Thread binding controls
+  - H3: Spawn behavior
+
+## tools/subagents/thread-bound-sessions.md
+
+- Route: /tools/subagents/thread-bound-sessions
+- Headings:
+  - H2: Thread-bound sessions
+  - H3: Thread supporting channels
+  - H3: Quick flow
+  - H3: Manual controls
+  - H3: Config switches
+  - H3: Allowlist
+  - H3: Discovery
+  - H3: Auto-archive
+
+## tools/subagents/tool-policy.md
+
+- Route: /tools/subagents/tool-policy
+- Headings:
+  - H2: Tool policy
+  - H3: Override via config
+
+## tools/subagents/tool-reference.md
+
+- Route: /tools/subagents/tool-reference
+- Headings:
+  - H2: Context modes
+  - H2: Tool: `sessions_spawn`
+  - H3: Delegation prompt mode
+  - H3: Tool parameters
+  - H3: Task names and targeting
+  - H2: Tool: `sessions_yield`
+  - H2: Tool: subagents
 
 ## tools/swarm.md
 
