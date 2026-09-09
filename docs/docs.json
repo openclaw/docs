@@ -2610,6 +2610,15 @@
                     "pages": [
                       "nodes/computer-use",
                       "nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "nodes/talk/realtime-sessions",
+                          "nodes/talk/session-ownership",
+                          "nodes/talk/macos-relay",
+                          "nodes/talk/client-ui"
+                        ]
+                      },
                       "nodes/voicewake",
                       "nodes/location-command"
                     ]
@@ -4462,6 +4471,15 @@
                     "pages": [
                       "zh-CN/nodes/computer-use",
                       "zh-CN/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "zh-CN/nodes/talk/realtime-sessions",
+                          "zh-CN/nodes/talk/session-ownership",
+                          "zh-CN/nodes/talk/macos-relay",
+                          "zh-CN/nodes/talk/client-ui"
+                        ]
+                      },
                       "zh-CN/nodes/voicewake",
                       "zh-CN/nodes/location-command"
                     ]
@@ -6314,6 +6332,15 @@
                     "pages": [
                       "zh-TW/nodes/computer-use",
                       "zh-TW/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "zh-TW/nodes/talk/realtime-sessions",
+                          "zh-TW/nodes/talk/session-ownership",
+                          "zh-TW/nodes/talk/macos-relay",
+                          "zh-TW/nodes/talk/client-ui"
+                        ]
+                      },
                       "zh-TW/nodes/voicewake",
                       "zh-TW/nodes/location-command"
                     ]
@@ -8166,6 +8193,15 @@
                     "pages": [
                       "ja-JP/nodes/computer-use",
                       "ja-JP/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "ja-JP/nodes/talk/realtime-sessions",
+                          "ja-JP/nodes/talk/session-ownership",
+                          "ja-JP/nodes/talk/macos-relay",
+                          "ja-JP/nodes/talk/client-ui"
+                        ]
+                      },
                       "ja-JP/nodes/voicewake",
                       "ja-JP/nodes/location-command"
                     ]
@@ -10018,6 +10054,15 @@
                     "pages": [
                       "es/nodes/computer-use",
                       "es/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "es/nodes/talk/realtime-sessions",
+                          "es/nodes/talk/session-ownership",
+                          "es/nodes/talk/macos-relay",
+                          "es/nodes/talk/client-ui"
+                        ]
+                      },
                       "es/nodes/voicewake",
                       "es/nodes/location-command"
                     ]
@@ -11870,6 +11915,15 @@
                     "pages": [
                       "pt-BR/nodes/computer-use",
                       "pt-BR/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "pt-BR/nodes/talk/realtime-sessions",
+                          "pt-BR/nodes/talk/session-ownership",
+                          "pt-BR/nodes/talk/macos-relay",
+                          "pt-BR/nodes/talk/client-ui"
+                        ]
+                      },
                       "pt-BR/nodes/voicewake",
                       "pt-BR/nodes/location-command"
                     ]
@@ -13722,6 +13776,15 @@
                     "pages": [
                       "ko/nodes/computer-use",
                       "ko/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "ko/nodes/talk/realtime-sessions",
+                          "ko/nodes/talk/session-ownership",
+                          "ko/nodes/talk/macos-relay",
+                          "ko/nodes/talk/client-ui"
+                        ]
+                      },
                       "ko/nodes/voicewake",
                       "ko/nodes/location-command"
                     ]
@@ -15574,6 +15637,15 @@
                     "pages": [
                       "de/nodes/computer-use",
                       "de/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "de/nodes/talk/realtime-sessions",
+                          "de/nodes/talk/session-ownership",
+                          "de/nodes/talk/macos-relay",
+                          "de/nodes/talk/client-ui"
+                        ]
+                      },
                       "de/nodes/voicewake",
                       "de/nodes/location-command"
                     ]
@@ -17426,6 +17498,15 @@
                     "pages": [
                       "fr/nodes/computer-use",
                       "fr/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "fr/nodes/talk/realtime-sessions",
+                          "fr/nodes/talk/session-ownership",
+                          "fr/nodes/talk/macos-relay",
+                          "fr/nodes/talk/client-ui"
+                        ]
+                      },
                       "fr/nodes/voicewake",
                       "fr/nodes/location-command"
                     ]
@@ -19278,6 +19359,15 @@
                     "pages": [
                       "hi/nodes/computer-use",
                       "hi/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "hi/nodes/talk/realtime-sessions",
+                          "hi/nodes/talk/session-ownership",
+                          "hi/nodes/talk/macos-relay",
+                          "hi/nodes/talk/client-ui"
+                        ]
+                      },
                       "hi/nodes/voicewake",
                       "hi/nodes/location-command"
                     ]
@@ -21130,6 +21220,15 @@
                     "pages": [
                       "ar/nodes/computer-use",
                       "ar/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "ar/nodes/talk/realtime-sessions",
+                          "ar/nodes/talk/session-ownership",
+                          "ar/nodes/talk/macos-relay",
+                          "ar/nodes/talk/client-ui"
+                        ]
+                      },
                       "ar/nodes/voicewake",
                       "ar/nodes/location-command"
                     ]
@@ -22982,6 +23081,15 @@
                     "pages": [
                       "it/nodes/computer-use",
                       "it/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "it/nodes/talk/realtime-sessions",
+                          "it/nodes/talk/session-ownership",
+                          "it/nodes/talk/macos-relay",
+                          "it/nodes/talk/client-ui"
+                        ]
+                      },
                       "it/nodes/voicewake",
                       "it/nodes/location-command"
                     ]
@@ -24834,6 +24942,15 @@
                     "pages": [
                       "vi/nodes/computer-use",
                       "vi/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "vi/nodes/talk/realtime-sessions",
+                          "vi/nodes/talk/session-ownership",
+                          "vi/nodes/talk/macos-relay",
+                          "vi/nodes/talk/client-ui"
+                        ]
+                      },
                       "vi/nodes/voicewake",
                       "vi/nodes/location-command"
                     ]
@@ -26686,6 +26803,15 @@
                     "pages": [
                       "nl/nodes/computer-use",
                       "nl/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "nl/nodes/talk/realtime-sessions",
+                          "nl/nodes/talk/session-ownership",
+                          "nl/nodes/talk/macos-relay",
+                          "nl/nodes/talk/client-ui"
+                        ]
+                      },
                       "nl/nodes/voicewake",
                       "nl/nodes/location-command"
                     ]
@@ -28538,6 +28664,15 @@
                     "pages": [
                       "tr/nodes/computer-use",
                       "tr/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "tr/nodes/talk/realtime-sessions",
+                          "tr/nodes/talk/session-ownership",
+                          "tr/nodes/talk/macos-relay",
+                          "tr/nodes/talk/client-ui"
+                        ]
+                      },
                       "tr/nodes/voicewake",
                       "tr/nodes/location-command"
                     ]
@@ -30390,6 +30525,15 @@
                     "pages": [
                       "uk/nodes/computer-use",
                       "uk/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "uk/nodes/talk/realtime-sessions",
+                          "uk/nodes/talk/session-ownership",
+                          "uk/nodes/talk/macos-relay",
+                          "uk/nodes/talk/client-ui"
+                        ]
+                      },
                       "uk/nodes/voicewake",
                       "uk/nodes/location-command"
                     ]
@@ -32242,6 +32386,15 @@
                     "pages": [
                       "id/nodes/computer-use",
                       "id/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "id/nodes/talk/realtime-sessions",
+                          "id/nodes/talk/session-ownership",
+                          "id/nodes/talk/macos-relay",
+                          "id/nodes/talk/client-ui"
+                        ]
+                      },
                       "id/nodes/voicewake",
                       "id/nodes/location-command"
                     ]
@@ -34094,6 +34247,15 @@
                     "pages": [
                       "pl/nodes/computer-use",
                       "pl/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "pl/nodes/talk/realtime-sessions",
+                          "pl/nodes/talk/session-ownership",
+                          "pl/nodes/talk/macos-relay",
+                          "pl/nodes/talk/client-ui"
+                        ]
+                      },
                       "pl/nodes/voicewake",
                       "pl/nodes/location-command"
                     ]
@@ -35946,6 +36108,15 @@
                     "pages": [
                       "ru/nodes/computer-use",
                       "ru/nodes/talk",
+                      {
+                        "group": "Talk mode",
+                        "pages": [
+                          "ru/nodes/talk/realtime-sessions",
+                          "ru/nodes/talk/session-ownership",
+                          "ru/nodes/talk/macos-relay",
+                          "ru/nodes/talk/client-ui"
+                        ]
+                      },
                       "ru/nodes/voicewake",
                       "ru/nodes/location-command"
                     ]

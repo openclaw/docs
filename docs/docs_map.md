@@ -6825,18 +6825,40 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /nodes/talk
 - Headings:
-  - H2: Choose a Talk voice from chat
-  - H2: Session ownership
-  - H2: Behavior (macOS)
-  - H2: Realtime Talk over the Gateway relay (macOS)
-  - H3: When realtime cannot start
+  - H2: Talk documentation pages
+  - H2: Where each section moved
   - H2: Voice directives in replies
   - H2: Config (`~/.openclaw/openclaw.json`)
+  - H2: Notes
+  - H2: Related
+
+## nodes/talk/client-ui.md
+
+- Route: /nodes/talk/client-ui
+- Headings:
   - H2: macOS UI
   - H2: Apple Watch UI
   - H2: Android UI
-  - H2: Notes
-  - H2: Related
+
+## nodes/talk/macos-relay.md
+
+- Route: /nodes/talk/macos-relay
+- Headings:
+  - H2: Behavior (macOS)
+  - H2: Realtime Talk over the Gateway relay (macOS)
+  - H3: When realtime cannot start
+
+## nodes/talk/realtime-sessions.md
+
+- Route: /nodes/talk/realtime-sessions
+- Headings:
+  - H2: Choose a Talk voice from chat
+
+## nodes/talk/session-ownership.md
+
+- Route: /nodes/talk/session-ownership
+- Headings:
+  - H2: Session ownership
 
 ## nodes/troubleshooting.md
 
