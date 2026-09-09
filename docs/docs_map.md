@@ -9921,10 +9921,27 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/voice-call
 - Headings:
   - H2: Quick start
+  - H2: Where each section moved
+  - H3: Voice call configuration
+  - H3: Voice call realtime and streaming
+  - H3: Voice call TTS and inbound calls
+  - H3: Voice call security and interfaces
+  - H3: Voice call troubleshooting
+  - H2: Related
+
+## plugins/voice-call/configuration.md
+
+- Route: /plugins/voice-call/configuration
+- Headings:
   - H2: Configuration
   - H3: Choose the call owner
   - H3: Config reference
   - H2: Session scope
+
+## plugins/voice-call/realtime-and-streaming.md
+
+- Route: /plugins/voice-call/realtime-and-streaming
+- Headings:
   - H2: Realtime voice conversations
   - H3: Hangup detection
   - H3: Tool policy
@@ -9932,18 +9949,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Realtime provider examples
   - H2: Streaming transcription
   - H3: Streaming provider examples
-  - H2: TTS for calls
-  - H3: TTS examples
-  - H2: Inbound calls
-  - H3: Per-number routing
-  - H3: Spoken output contract
-  - H3: Conversation startup behavior
-  - H3: Twilio stream disconnect grace
-  - H2: Stale call reaper
+
+## plugins/voice-call/security-and-interfaces.md
+
+- Route: /plugins/voice-call/security-and-interfaces
+- Headings:
   - H2: Webhook security
   - H2: CLI
   - H2: Agent tool
   - H2: Gateway RPC
+
+## plugins/voice-call/troubleshooting.md
+
+- Route: /plugins/voice-call/troubleshooting
+- Headings:
   - H2: Troubleshooting
   - H3: Call placement fails to save its initial record
   - H3: Setup fails webhook exposure
@@ -9952,7 +9971,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Signature verification fails
   - H3: Google Meet Twilio joins fail
   - H3: Realtime call has no speech
-  - H2: Related
+
+## plugins/voice-call/tts-and-inbound-calls.md
+
+- Route: /plugins/voice-call/tts-and-inbound-calls
+- Headings:
+  - H2: TTS for calls
+  - H3: TTS examples
+  - H2: Inbound calls
+  - H3: Per-number routing
+  - H3: Spoken output contract
+  - H3: Conversation startup behavior
+  - H3: Twilio stream disconnect grace
+  - H2: Stale call reaper
 
 ## plugins/webhooks.md
 

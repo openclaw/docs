@@ -1793,6 +1793,16 @@
                       },
                       "plugins/teams-meetings",
                       "plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "plugins/voice-call/configuration",
+                          "plugins/voice-call/realtime-and-streaming",
+                          "plugins/voice-call/tts-and-inbound-calls",
+                          "plugins/voice-call/security-and-interfaces",
+                          "plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "plugins/zoom-meetings"
                     ]
                   },
@@ -3604,6 +3614,16 @@
                       },
                       "zh-CN/plugins/teams-meetings",
                       "zh-CN/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "zh-CN/plugins/voice-call/configuration",
+                          "zh-CN/plugins/voice-call/realtime-and-streaming",
+                          "zh-CN/plugins/voice-call/tts-and-inbound-calls",
+                          "zh-CN/plugins/voice-call/security-and-interfaces",
+                          "zh-CN/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "zh-CN/plugins/zoom-meetings"
                     ]
                   },
@@ -5381,6 +5401,16 @@
                       },
                       "zh-TW/plugins/teams-meetings",
                       "zh-TW/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "zh-TW/plugins/voice-call/configuration",
+                          "zh-TW/plugins/voice-call/realtime-and-streaming",
+                          "zh-TW/plugins/voice-call/tts-and-inbound-calls",
+                          "zh-TW/plugins/voice-call/security-and-interfaces",
+                          "zh-TW/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "zh-TW/plugins/zoom-meetings"
                     ]
                   },
@@ -7158,6 +7188,16 @@
                       },
                       "ja-JP/plugins/teams-meetings",
                       "ja-JP/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "ja-JP/plugins/voice-call/configuration",
+                          "ja-JP/plugins/voice-call/realtime-and-streaming",
+                          "ja-JP/plugins/voice-call/tts-and-inbound-calls",
+                          "ja-JP/plugins/voice-call/security-and-interfaces",
+                          "ja-JP/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "ja-JP/plugins/zoom-meetings"
                     ]
                   },
@@ -8935,6 +8975,16 @@
                       },
                       "es/plugins/teams-meetings",
                       "es/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "es/plugins/voice-call/configuration",
+                          "es/plugins/voice-call/realtime-and-streaming",
+                          "es/plugins/voice-call/tts-and-inbound-calls",
+                          "es/plugins/voice-call/security-and-interfaces",
+                          "es/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "es/plugins/zoom-meetings"
                     ]
                   },
@@ -10712,6 +10762,16 @@
                       },
                       "pt-BR/plugins/teams-meetings",
                       "pt-BR/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "pt-BR/plugins/voice-call/configuration",
+                          "pt-BR/plugins/voice-call/realtime-and-streaming",
+                          "pt-BR/plugins/voice-call/tts-and-inbound-calls",
+                          "pt-BR/plugins/voice-call/security-and-interfaces",
+                          "pt-BR/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "pt-BR/plugins/zoom-meetings"
                     ]
                   },
@@ -12489,6 +12549,16 @@
                       },
                       "ko/plugins/teams-meetings",
                       "ko/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "ko/plugins/voice-call/configuration",
+                          "ko/plugins/voice-call/realtime-and-streaming",
+                          "ko/plugins/voice-call/tts-and-inbound-calls",
+                          "ko/plugins/voice-call/security-and-interfaces",
+                          "ko/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "ko/plugins/zoom-meetings"
                     ]
                   },
@@ -14266,6 +14336,16 @@
                       },
                       "de/plugins/teams-meetings",
                       "de/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "de/plugins/voice-call/configuration",
+                          "de/plugins/voice-call/realtime-and-streaming",
+                          "de/plugins/voice-call/tts-and-inbound-calls",
+                          "de/plugins/voice-call/security-and-interfaces",
+                          "de/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "de/plugins/zoom-meetings"
                     ]
                   },
@@ -16043,6 +16123,16 @@
                       },
                       "fr/plugins/teams-meetings",
                       "fr/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "fr/plugins/voice-call/configuration",
+                          "fr/plugins/voice-call/realtime-and-streaming",
+                          "fr/plugins/voice-call/tts-and-inbound-calls",
+                          "fr/plugins/voice-call/security-and-interfaces",
+                          "fr/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "fr/plugins/zoom-meetings"
                     ]
                   },
@@ -17820,6 +17910,16 @@
                       },
                       "hi/plugins/teams-meetings",
                       "hi/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "hi/plugins/voice-call/configuration",
+                          "hi/plugins/voice-call/realtime-and-streaming",
+                          "hi/plugins/voice-call/tts-and-inbound-calls",
+                          "hi/plugins/voice-call/security-and-interfaces",
+                          "hi/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "hi/plugins/zoom-meetings"
                     ]
                   },
@@ -19597,6 +19697,16 @@
                       },
                       "ar/plugins/teams-meetings",
                       "ar/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "ar/plugins/voice-call/configuration",
+                          "ar/plugins/voice-call/realtime-and-streaming",
+                          "ar/plugins/voice-call/tts-and-inbound-calls",
+                          "ar/plugins/voice-call/security-and-interfaces",
+                          "ar/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "ar/plugins/zoom-meetings"
                     ]
                   },
@@ -21374,6 +21484,16 @@
                       },
                       "it/plugins/teams-meetings",
                       "it/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "it/plugins/voice-call/configuration",
+                          "it/plugins/voice-call/realtime-and-streaming",
+                          "it/plugins/voice-call/tts-and-inbound-calls",
+                          "it/plugins/voice-call/security-and-interfaces",
+                          "it/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "it/plugins/zoom-meetings"
                     ]
                   },
@@ -23151,6 +23271,16 @@
                       },
                       "vi/plugins/teams-meetings",
                       "vi/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "vi/plugins/voice-call/configuration",
+                          "vi/plugins/voice-call/realtime-and-streaming",
+                          "vi/plugins/voice-call/tts-and-inbound-calls",
+                          "vi/plugins/voice-call/security-and-interfaces",
+                          "vi/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "vi/plugins/zoom-meetings"
                     ]
                   },
@@ -24928,6 +25058,16 @@
                       },
                       "nl/plugins/teams-meetings",
                       "nl/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "nl/plugins/voice-call/configuration",
+                          "nl/plugins/voice-call/realtime-and-streaming",
+                          "nl/plugins/voice-call/tts-and-inbound-calls",
+                          "nl/plugins/voice-call/security-and-interfaces",
+                          "nl/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "nl/plugins/zoom-meetings"
                     ]
                   },
@@ -26705,6 +26845,16 @@
                       },
                       "tr/plugins/teams-meetings",
                       "tr/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "tr/plugins/voice-call/configuration",
+                          "tr/plugins/voice-call/realtime-and-streaming",
+                          "tr/plugins/voice-call/tts-and-inbound-calls",
+                          "tr/plugins/voice-call/security-and-interfaces",
+                          "tr/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "tr/plugins/zoom-meetings"
                     ]
                   },
@@ -28482,6 +28632,16 @@
                       },
                       "uk/plugins/teams-meetings",
                       "uk/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "uk/plugins/voice-call/configuration",
+                          "uk/plugins/voice-call/realtime-and-streaming",
+                          "uk/plugins/voice-call/tts-and-inbound-calls",
+                          "uk/plugins/voice-call/security-and-interfaces",
+                          "uk/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "uk/plugins/zoom-meetings"
                     ]
                   },
@@ -30259,6 +30419,16 @@
                       },
                       "id/plugins/teams-meetings",
                       "id/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "id/plugins/voice-call/configuration",
+                          "id/plugins/voice-call/realtime-and-streaming",
+                          "id/plugins/voice-call/tts-and-inbound-calls",
+                          "id/plugins/voice-call/security-and-interfaces",
+                          "id/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "id/plugins/zoom-meetings"
                     ]
                   },
@@ -32036,6 +32206,16 @@
                       },
                       "pl/plugins/teams-meetings",
                       "pl/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "pl/plugins/voice-call/configuration",
+                          "pl/plugins/voice-call/realtime-and-streaming",
+                          "pl/plugins/voice-call/tts-and-inbound-calls",
+                          "pl/plugins/voice-call/security-and-interfaces",
+                          "pl/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "pl/plugins/zoom-meetings"
                     ]
                   },
@@ -33813,6 +33993,16 @@
                       },
                       "ru/plugins/teams-meetings",
                       "ru/plugins/voice-call",
+                      {
+                        "group": "Voice call",
+                        "pages": [
+                          "ru/plugins/voice-call/configuration",
+                          "ru/plugins/voice-call/realtime-and-streaming",
+                          "ru/plugins/voice-call/tts-and-inbound-calls",
+                          "ru/plugins/voice-call/security-and-interfaces",
+                          "ru/plugins/voice-call/troubleshooting"
+                        ]
+                      },
                       "ru/plugins/zoom-meetings"
                     ]
                   },
