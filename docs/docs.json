@@ -2929,6 +2929,19 @@
                   },
                   "plugins/sdk-subpaths",
                   "plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "plugins/sdk-entrypoints/package-entries",
+                      "plugins/sdk-entrypoints/define-tool-plugin",
+                      "plugins/sdk-entrypoints/define-plugin-entry",
+                      "plugins/sdk-entrypoints/native-providers",
+                      "plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -4820,6 +4833,19 @@
                   },
                   "zh-CN/plugins/sdk-subpaths",
                   "zh-CN/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "zh-CN/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "zh-CN/plugins/sdk-entrypoints/package-entries",
+                      "zh-CN/plugins/sdk-entrypoints/define-tool-plugin",
+                      "zh-CN/plugins/sdk-entrypoints/define-plugin-entry",
+                      "zh-CN/plugins/sdk-entrypoints/native-providers",
+                      "zh-CN/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "zh-CN/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "zh-CN/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -6711,6 +6737,19 @@
                   },
                   "zh-TW/plugins/sdk-subpaths",
                   "zh-TW/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "zh-TW/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "zh-TW/plugins/sdk-entrypoints/package-entries",
+                      "zh-TW/plugins/sdk-entrypoints/define-tool-plugin",
+                      "zh-TW/plugins/sdk-entrypoints/define-plugin-entry",
+                      "zh-TW/plugins/sdk-entrypoints/native-providers",
+                      "zh-TW/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "zh-TW/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "zh-TW/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -8602,6 +8641,19 @@
                   },
                   "ja-JP/plugins/sdk-subpaths",
                   "ja-JP/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "ja-JP/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "ja-JP/plugins/sdk-entrypoints/package-entries",
+                      "ja-JP/plugins/sdk-entrypoints/define-tool-plugin",
+                      "ja-JP/plugins/sdk-entrypoints/define-plugin-entry",
+                      "ja-JP/plugins/sdk-entrypoints/native-providers",
+                      "ja-JP/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "ja-JP/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "ja-JP/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -10493,6 +10545,19 @@
                   },
                   "es/plugins/sdk-subpaths",
                   "es/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "es/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "es/plugins/sdk-entrypoints/package-entries",
+                      "es/plugins/sdk-entrypoints/define-tool-plugin",
+                      "es/plugins/sdk-entrypoints/define-plugin-entry",
+                      "es/plugins/sdk-entrypoints/native-providers",
+                      "es/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "es/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "es/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "es/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -12384,6 +12449,19 @@
                   },
                   "pt-BR/plugins/sdk-subpaths",
                   "pt-BR/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "pt-BR/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "pt-BR/plugins/sdk-entrypoints/package-entries",
+                      "pt-BR/plugins/sdk-entrypoints/define-tool-plugin",
+                      "pt-BR/plugins/sdk-entrypoints/define-plugin-entry",
+                      "pt-BR/plugins/sdk-entrypoints/native-providers",
+                      "pt-BR/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "pt-BR/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "pt-BR/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -14275,6 +14353,19 @@
                   },
                   "ko/plugins/sdk-subpaths",
                   "ko/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "ko/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "ko/plugins/sdk-entrypoints/package-entries",
+                      "ko/plugins/sdk-entrypoints/define-tool-plugin",
+                      "ko/plugins/sdk-entrypoints/define-plugin-entry",
+                      "ko/plugins/sdk-entrypoints/native-providers",
+                      "ko/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "ko/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "ko/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "ko/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -16166,6 +16257,19 @@
                   },
                   "de/plugins/sdk-subpaths",
                   "de/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "de/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "de/plugins/sdk-entrypoints/package-entries",
+                      "de/plugins/sdk-entrypoints/define-tool-plugin",
+                      "de/plugins/sdk-entrypoints/define-plugin-entry",
+                      "de/plugins/sdk-entrypoints/native-providers",
+                      "de/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "de/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "de/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "de/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -18057,6 +18161,19 @@
                   },
                   "fr/plugins/sdk-subpaths",
                   "fr/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "fr/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "fr/plugins/sdk-entrypoints/package-entries",
+                      "fr/plugins/sdk-entrypoints/define-tool-plugin",
+                      "fr/plugins/sdk-entrypoints/define-plugin-entry",
+                      "fr/plugins/sdk-entrypoints/native-providers",
+                      "fr/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "fr/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "fr/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "fr/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -19948,6 +20065,19 @@
                   },
                   "hi/plugins/sdk-subpaths",
                   "hi/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "hi/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "hi/plugins/sdk-entrypoints/package-entries",
+                      "hi/plugins/sdk-entrypoints/define-tool-plugin",
+                      "hi/plugins/sdk-entrypoints/define-plugin-entry",
+                      "hi/plugins/sdk-entrypoints/native-providers",
+                      "hi/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "hi/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "hi/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "hi/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -21839,6 +21969,19 @@
                   },
                   "ar/plugins/sdk-subpaths",
                   "ar/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "ar/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "ar/plugins/sdk-entrypoints/package-entries",
+                      "ar/plugins/sdk-entrypoints/define-tool-plugin",
+                      "ar/plugins/sdk-entrypoints/define-plugin-entry",
+                      "ar/plugins/sdk-entrypoints/native-providers",
+                      "ar/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "ar/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "ar/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "ar/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -23730,6 +23873,19 @@
                   },
                   "it/plugins/sdk-subpaths",
                   "it/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "it/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "it/plugins/sdk-entrypoints/package-entries",
+                      "it/plugins/sdk-entrypoints/define-tool-plugin",
+                      "it/plugins/sdk-entrypoints/define-plugin-entry",
+                      "it/plugins/sdk-entrypoints/native-providers",
+                      "it/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "it/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "it/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "it/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -25621,6 +25777,19 @@
                   },
                   "vi/plugins/sdk-subpaths",
                   "vi/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "vi/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "vi/plugins/sdk-entrypoints/package-entries",
+                      "vi/plugins/sdk-entrypoints/define-tool-plugin",
+                      "vi/plugins/sdk-entrypoints/define-plugin-entry",
+                      "vi/plugins/sdk-entrypoints/native-providers",
+                      "vi/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "vi/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "vi/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "vi/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -27512,6 +27681,19 @@
                   },
                   "nl/plugins/sdk-subpaths",
                   "nl/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "nl/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "nl/plugins/sdk-entrypoints/package-entries",
+                      "nl/plugins/sdk-entrypoints/define-tool-plugin",
+                      "nl/plugins/sdk-entrypoints/define-plugin-entry",
+                      "nl/plugins/sdk-entrypoints/native-providers",
+                      "nl/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "nl/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "nl/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "nl/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -29403,6 +29585,19 @@
                   },
                   "tr/plugins/sdk-subpaths",
                   "tr/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "tr/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "tr/plugins/sdk-entrypoints/package-entries",
+                      "tr/plugins/sdk-entrypoints/define-tool-plugin",
+                      "tr/plugins/sdk-entrypoints/define-plugin-entry",
+                      "tr/plugins/sdk-entrypoints/native-providers",
+                      "tr/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "tr/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "tr/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "tr/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -31294,6 +31489,19 @@
                   },
                   "uk/plugins/sdk-subpaths",
                   "uk/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "uk/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "uk/plugins/sdk-entrypoints/package-entries",
+                      "uk/plugins/sdk-entrypoints/define-tool-plugin",
+                      "uk/plugins/sdk-entrypoints/define-plugin-entry",
+                      "uk/plugins/sdk-entrypoints/native-providers",
+                      "uk/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "uk/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "uk/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "uk/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -33185,6 +33393,19 @@
                   },
                   "id/plugins/sdk-subpaths",
                   "id/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "id/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "id/plugins/sdk-entrypoints/package-entries",
+                      "id/plugins/sdk-entrypoints/define-tool-plugin",
+                      "id/plugins/sdk-entrypoints/define-plugin-entry",
+                      "id/plugins/sdk-entrypoints/native-providers",
+                      "id/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "id/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "id/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "id/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -35076,6 +35297,19 @@
                   },
                   "pl/plugins/sdk-subpaths",
                   "pl/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "pl/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "pl/plugins/sdk-entrypoints/package-entries",
+                      "pl/plugins/sdk-entrypoints/define-tool-plugin",
+                      "pl/plugins/sdk-entrypoints/define-plugin-entry",
+                      "pl/plugins/sdk-entrypoints/native-providers",
+                      "pl/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "pl/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "pl/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "pl/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",
@@ -36967,6 +37201,19 @@
                   },
                   "ru/plugins/sdk-subpaths",
                   "ru/plugins/sdk-entrypoints",
+                  {
+                    "group": "Plugin entry points",
+                    "pages": [
+                      "ru/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "ru/plugins/sdk-entrypoints/package-entries",
+                      "ru/plugins/sdk-entrypoints/define-tool-plugin",
+                      "ru/plugins/sdk-entrypoints/define-plugin-entry",
+                      "ru/plugins/sdk-entrypoints/native-providers",
+                      "ru/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "ru/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "ru/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
                   "ru/plugins/sdk-runtime",
                   {
                     "group": "Plugin runtime helpers",

@@ -9680,19 +9680,60 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-entrypoints
 - Headings:
-  - H2: Tool policy vocabulary
-  - H2: Sandbox bind parsing
-  - H2: Package entries
-  - H2: defineToolPlugin
-  - H2: definePluginEntry
-  - H3: Native provider factories
-  - H3: Computer Use providers
-  - H2: defineChannelPluginEntry
-  - H2: defineSetupPluginEntry
-  - H2: Registration mode
+  - H2: Where each section moved
   - H2: Plugin shapes
   - H2: Related
   - H2: MCP subprocess runtime
+
+## plugins/sdk-entrypoints/define-channel-plugin-entry.md
+
+- Route: /plugins/sdk-entrypoints/define-channel-plugin-entry
+- Headings:
+  - H2: defineChannelPluginEntry
+
+## plugins/sdk-entrypoints/define-plugin-entry.md
+
+- Route: /plugins/sdk-entrypoints/define-plugin-entry
+- Headings:
+  - H2: definePluginEntry
+
+## plugins/sdk-entrypoints/define-setup-plugin-entry.md
+
+- Route: /plugins/sdk-entrypoints/define-setup-plugin-entry
+- Headings:
+  - H2: defineSetupPluginEntry
+
+## plugins/sdk-entrypoints/define-tool-plugin.md
+
+- Route: /plugins/sdk-entrypoints/define-tool-plugin
+- Headings:
+  - H2: defineToolPlugin
+
+## plugins/sdk-entrypoints/native-providers.md
+
+- Route: /plugins/sdk-entrypoints/native-providers
+- Headings:
+  - H2: Native provider factories
+  - H2: Computer Use providers
+
+## plugins/sdk-entrypoints/package-entries.md
+
+- Route: /plugins/sdk-entrypoints/package-entries
+- Headings:
+  - H2: Package entries
+
+## plugins/sdk-entrypoints/registration-mode.md
+
+- Route: /plugins/sdk-entrypoints/registration-mode
+- Headings:
+  - H2: Registration mode
+
+## plugins/sdk-entrypoints/tool-policy-and-sandbox.md
+
+- Route: /plugins/sdk-entrypoints/tool-policy-and-sandbox
+- Headings:
+  - H2: Tool policy vocabulary
+  - H2: Sandbox bind parsing
 
 ## plugins/sdk-migration.md
 
