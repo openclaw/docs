@@ -1347,6 +1347,13 @@
                   "index",
                   "start/showcase",
                   "start/why-openclaw",
+                  "start/why-openclaw/the-trust-boundary",
+                  "start/why-openclaw/policy-as-code",
+                  "start/why-openclaw/identity-and-roles",
+                  "start/why-openclaw/secrets",
+                  "start/why-openclaw/versioned-state-guarded-upgrades",
+                  "start/why-openclaw/provenance",
+                  "start/why-openclaw/openclaw-and-hermes-agent",
                   "concepts/features"
                 ]
               },
@@ -3059,6 +3066,13 @@
                   "zh-CN/index",
                   "zh-CN/start/showcase",
                   "zh-CN/start/why-openclaw",
+                  "zh-CN/start/why-openclaw/the-trust-boundary",
+                  "zh-CN/start/why-openclaw/policy-as-code",
+                  "zh-CN/start/why-openclaw/identity-and-roles",
+                  "zh-CN/start/why-openclaw/secrets",
+                  "zh-CN/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "zh-CN/start/why-openclaw/provenance",
+                  "zh-CN/start/why-openclaw/openclaw-and-hermes-agent",
                   "zh-CN/concepts/features"
                 ]
               },
@@ -4737,6 +4751,13 @@
                   "zh-TW/index",
                   "zh-TW/start/showcase",
                   "zh-TW/start/why-openclaw",
+                  "zh-TW/start/why-openclaw/the-trust-boundary",
+                  "zh-TW/start/why-openclaw/policy-as-code",
+                  "zh-TW/start/why-openclaw/identity-and-roles",
+                  "zh-TW/start/why-openclaw/secrets",
+                  "zh-TW/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "zh-TW/start/why-openclaw/provenance",
+                  "zh-TW/start/why-openclaw/openclaw-and-hermes-agent",
                   "zh-TW/concepts/features"
                 ]
               },
@@ -6415,6 +6436,13 @@
                   "ja-JP/index",
                   "ja-JP/start/showcase",
                   "ja-JP/start/why-openclaw",
+                  "ja-JP/start/why-openclaw/the-trust-boundary",
+                  "ja-JP/start/why-openclaw/policy-as-code",
+                  "ja-JP/start/why-openclaw/identity-and-roles",
+                  "ja-JP/start/why-openclaw/secrets",
+                  "ja-JP/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "ja-JP/start/why-openclaw/provenance",
+                  "ja-JP/start/why-openclaw/openclaw-and-hermes-agent",
                   "ja-JP/concepts/features"
                 ]
               },
@@ -8093,6 +8121,13 @@
                   "es/index",
                   "es/start/showcase",
                   "es/start/why-openclaw",
+                  "es/start/why-openclaw/the-trust-boundary",
+                  "es/start/why-openclaw/policy-as-code",
+                  "es/start/why-openclaw/identity-and-roles",
+                  "es/start/why-openclaw/secrets",
+                  "es/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "es/start/why-openclaw/provenance",
+                  "es/start/why-openclaw/openclaw-and-hermes-agent",
                   "es/concepts/features"
                 ]
               },
@@ -9771,6 +9806,13 @@
                   "pt-BR/index",
                   "pt-BR/start/showcase",
                   "pt-BR/start/why-openclaw",
+                  "pt-BR/start/why-openclaw/the-trust-boundary",
+                  "pt-BR/start/why-openclaw/policy-as-code",
+                  "pt-BR/start/why-openclaw/identity-and-roles",
+                  "pt-BR/start/why-openclaw/secrets",
+                  "pt-BR/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "pt-BR/start/why-openclaw/provenance",
+                  "pt-BR/start/why-openclaw/openclaw-and-hermes-agent",
                   "pt-BR/concepts/features"
                 ]
               },
@@ -11449,6 +11491,13 @@
                   "ko/index",
                   "ko/start/showcase",
                   "ko/start/why-openclaw",
+                  "ko/start/why-openclaw/the-trust-boundary",
+                  "ko/start/why-openclaw/policy-as-code",
+                  "ko/start/why-openclaw/identity-and-roles",
+                  "ko/start/why-openclaw/secrets",
+                  "ko/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "ko/start/why-openclaw/provenance",
+                  "ko/start/why-openclaw/openclaw-and-hermes-agent",
                   "ko/concepts/features"
                 ]
               },
@@ -13127,6 +13176,13 @@
                   "de/index",
                   "de/start/showcase",
                   "de/start/why-openclaw",
+                  "de/start/why-openclaw/the-trust-boundary",
+                  "de/start/why-openclaw/policy-as-code",
+                  "de/start/why-openclaw/identity-and-roles",
+                  "de/start/why-openclaw/secrets",
+                  "de/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "de/start/why-openclaw/provenance",
+                  "de/start/why-openclaw/openclaw-and-hermes-agent",
                   "de/concepts/features"
                 ]
               },
@@ -14805,6 +14861,13 @@
                   "fr/index",
                   "fr/start/showcase",
                   "fr/start/why-openclaw",
+                  "fr/start/why-openclaw/the-trust-boundary",
+                  "fr/start/why-openclaw/policy-as-code",
+                  "fr/start/why-openclaw/identity-and-roles",
+                  "fr/start/why-openclaw/secrets",
+                  "fr/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "fr/start/why-openclaw/provenance",
+                  "fr/start/why-openclaw/openclaw-and-hermes-agent",
                   "fr/concepts/features"
                 ]
               },
@@ -16483,6 +16546,13 @@
                   "hi/index",
                   "hi/start/showcase",
                   "hi/start/why-openclaw",
+                  "hi/start/why-openclaw/the-trust-boundary",
+                  "hi/start/why-openclaw/policy-as-code",
+                  "hi/start/why-openclaw/identity-and-roles",
+                  "hi/start/why-openclaw/secrets",
+                  "hi/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "hi/start/why-openclaw/provenance",
+                  "hi/start/why-openclaw/openclaw-and-hermes-agent",
                   "hi/concepts/features"
                 ]
               },
@@ -18161,6 +18231,13 @@
                   "ar/index",
                   "ar/start/showcase",
                   "ar/start/why-openclaw",
+                  "ar/start/why-openclaw/the-trust-boundary",
+                  "ar/start/why-openclaw/policy-as-code",
+                  "ar/start/why-openclaw/identity-and-roles",
+                  "ar/start/why-openclaw/secrets",
+                  "ar/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "ar/start/why-openclaw/provenance",
+                  "ar/start/why-openclaw/openclaw-and-hermes-agent",
                   "ar/concepts/features"
                 ]
               },
@@ -19839,6 +19916,13 @@
                   "it/index",
                   "it/start/showcase",
                   "it/start/why-openclaw",
+                  "it/start/why-openclaw/the-trust-boundary",
+                  "it/start/why-openclaw/policy-as-code",
+                  "it/start/why-openclaw/identity-and-roles",
+                  "it/start/why-openclaw/secrets",
+                  "it/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "it/start/why-openclaw/provenance",
+                  "it/start/why-openclaw/openclaw-and-hermes-agent",
                   "it/concepts/features"
                 ]
               },
@@ -21517,6 +21601,13 @@
                   "vi/index",
                   "vi/start/showcase",
                   "vi/start/why-openclaw",
+                  "vi/start/why-openclaw/the-trust-boundary",
+                  "vi/start/why-openclaw/policy-as-code",
+                  "vi/start/why-openclaw/identity-and-roles",
+                  "vi/start/why-openclaw/secrets",
+                  "vi/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "vi/start/why-openclaw/provenance",
+                  "vi/start/why-openclaw/openclaw-and-hermes-agent",
                   "vi/concepts/features"
                 ]
               },
@@ -23195,6 +23286,13 @@
                   "nl/index",
                   "nl/start/showcase",
                   "nl/start/why-openclaw",
+                  "nl/start/why-openclaw/the-trust-boundary",
+                  "nl/start/why-openclaw/policy-as-code",
+                  "nl/start/why-openclaw/identity-and-roles",
+                  "nl/start/why-openclaw/secrets",
+                  "nl/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "nl/start/why-openclaw/provenance",
+                  "nl/start/why-openclaw/openclaw-and-hermes-agent",
                   "nl/concepts/features"
                 ]
               },
@@ -24873,6 +24971,13 @@
                   "tr/index",
                   "tr/start/showcase",
                   "tr/start/why-openclaw",
+                  "tr/start/why-openclaw/the-trust-boundary",
+                  "tr/start/why-openclaw/policy-as-code",
+                  "tr/start/why-openclaw/identity-and-roles",
+                  "tr/start/why-openclaw/secrets",
+                  "tr/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "tr/start/why-openclaw/provenance",
+                  "tr/start/why-openclaw/openclaw-and-hermes-agent",
                   "tr/concepts/features"
                 ]
               },
@@ -26551,6 +26656,13 @@
                   "uk/index",
                   "uk/start/showcase",
                   "uk/start/why-openclaw",
+                  "uk/start/why-openclaw/the-trust-boundary",
+                  "uk/start/why-openclaw/policy-as-code",
+                  "uk/start/why-openclaw/identity-and-roles",
+                  "uk/start/why-openclaw/secrets",
+                  "uk/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "uk/start/why-openclaw/provenance",
+                  "uk/start/why-openclaw/openclaw-and-hermes-agent",
                   "uk/concepts/features"
                 ]
               },
@@ -28229,6 +28341,13 @@
                   "id/index",
                   "id/start/showcase",
                   "id/start/why-openclaw",
+                  "id/start/why-openclaw/the-trust-boundary",
+                  "id/start/why-openclaw/policy-as-code",
+                  "id/start/why-openclaw/identity-and-roles",
+                  "id/start/why-openclaw/secrets",
+                  "id/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "id/start/why-openclaw/provenance",
+                  "id/start/why-openclaw/openclaw-and-hermes-agent",
                   "id/concepts/features"
                 ]
               },
@@ -29907,6 +30026,13 @@
                   "pl/index",
                   "pl/start/showcase",
                   "pl/start/why-openclaw",
+                  "pl/start/why-openclaw/the-trust-boundary",
+                  "pl/start/why-openclaw/policy-as-code",
+                  "pl/start/why-openclaw/identity-and-roles",
+                  "pl/start/why-openclaw/secrets",
+                  "pl/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "pl/start/why-openclaw/provenance",
+                  "pl/start/why-openclaw/openclaw-and-hermes-agent",
                   "pl/concepts/features"
                 ]
               },
@@ -31585,6 +31711,13 @@
                   "ru/index",
                   "ru/start/showcase",
                   "ru/start/why-openclaw",
+                  "ru/start/why-openclaw/the-trust-boundary",
+                  "ru/start/why-openclaw/policy-as-code",
+                  "ru/start/why-openclaw/identity-and-roles",
+                  "ru/start/why-openclaw/secrets",
+                  "ru/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "ru/start/why-openclaw/provenance",
+                  "ru/start/why-openclaw/openclaw-and-hermes-agent",
                   "ru/concepts/features"
                 ]
               },

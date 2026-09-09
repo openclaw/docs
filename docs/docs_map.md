@@ -11743,19 +11743,48 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What an enterprise harness has to prove
   - H2: How OpenClaw answers
-  - H3: The trust boundary
-  - H3: Policy as code
-  - H3: Identity and roles
-  - H3: Secrets
-  - H3: Versioned state, guarded upgrades
-  - H3: Provenance
   - H2: The vendor's harness, as a plugin
   - H2: Open standards
   - H2: Working together
   - H2: Governance
   - H2: What we do not claim
-  - H2: OpenClaw and Hermes Agent
   - H2: The hardened setup
+  - H2: Where each section moved
+
+## start/why-openclaw/identity-and-roles.md
+
+- Route: /start/why-openclaw/identity-and-roles
+- Headings: none
+
+## start/why-openclaw/openclaw-and-hermes-agent.md
+
+- Route: /start/why-openclaw/openclaw-and-hermes-agent
+- Headings: none
+
+## start/why-openclaw/policy-as-code.md
+
+- Route: /start/why-openclaw/policy-as-code
+- Headings: none
+
+## start/why-openclaw/provenance.md
+
+- Route: /start/why-openclaw/provenance
+- Headings: none
+
+## start/why-openclaw/secrets.md
+
+- Route: /start/why-openclaw/secrets
+- Headings: none
+
+## start/why-openclaw/the-trust-boundary.md
+
+- Route: /start/why-openclaw/the-trust-boundary
+- Headings: none
+
+## start/why-openclaw/versioned-state-guarded-upgrades.md
+
+- Route: /start/why-openclaw/versioned-state-guarded-upgrades
+- Headings: none
 
 ## start/wizard-cli-automation.md
 
