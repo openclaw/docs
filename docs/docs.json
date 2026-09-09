@@ -2980,6 +2980,16 @@
                   "reference/memory-config",
                   "reference/rich-output-protocol",
                   "reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "reference/session-management-compaction/store",
+                      "reference/session-management-compaction/maintenance",
+                      "reference/session-management-compaction/schema",
+                      "reference/session-management-compaction/compaction",
+                      "reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "date-time"
                 ]
               },
@@ -4779,6 +4789,16 @@
                   "zh-CN/reference/memory-config",
                   "zh-CN/reference/rich-output-protocol",
                   "zh-CN/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "zh-CN/reference/session-management-compaction/store",
+                      "zh-CN/reference/session-management-compaction/maintenance",
+                      "zh-CN/reference/session-management-compaction/schema",
+                      "zh-CN/reference/session-management-compaction/compaction",
+                      "zh-CN/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "zh-CN/date-time"
                 ]
               },
@@ -6578,6 +6598,16 @@
                   "zh-TW/reference/memory-config",
                   "zh-TW/reference/rich-output-protocol",
                   "zh-TW/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "zh-TW/reference/session-management-compaction/store",
+                      "zh-TW/reference/session-management-compaction/maintenance",
+                      "zh-TW/reference/session-management-compaction/schema",
+                      "zh-TW/reference/session-management-compaction/compaction",
+                      "zh-TW/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "zh-TW/date-time"
                 ]
               },
@@ -8377,6 +8407,16 @@
                   "ja-JP/reference/memory-config",
                   "ja-JP/reference/rich-output-protocol",
                   "ja-JP/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "ja-JP/reference/session-management-compaction/store",
+                      "ja-JP/reference/session-management-compaction/maintenance",
+                      "ja-JP/reference/session-management-compaction/schema",
+                      "ja-JP/reference/session-management-compaction/compaction",
+                      "ja-JP/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "ja-JP/date-time"
                 ]
               },
@@ -10176,6 +10216,16 @@
                   "es/reference/memory-config",
                   "es/reference/rich-output-protocol",
                   "es/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "es/reference/session-management-compaction/store",
+                      "es/reference/session-management-compaction/maintenance",
+                      "es/reference/session-management-compaction/schema",
+                      "es/reference/session-management-compaction/compaction",
+                      "es/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "es/date-time"
                 ]
               },
@@ -11975,6 +12025,16 @@
                   "pt-BR/reference/memory-config",
                   "pt-BR/reference/rich-output-protocol",
                   "pt-BR/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "pt-BR/reference/session-management-compaction/store",
+                      "pt-BR/reference/session-management-compaction/maintenance",
+                      "pt-BR/reference/session-management-compaction/schema",
+                      "pt-BR/reference/session-management-compaction/compaction",
+                      "pt-BR/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "pt-BR/date-time"
                 ]
               },
@@ -13774,6 +13834,16 @@
                   "ko/reference/memory-config",
                   "ko/reference/rich-output-protocol",
                   "ko/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "ko/reference/session-management-compaction/store",
+                      "ko/reference/session-management-compaction/maintenance",
+                      "ko/reference/session-management-compaction/schema",
+                      "ko/reference/session-management-compaction/compaction",
+                      "ko/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "ko/date-time"
                 ]
               },
@@ -15573,6 +15643,16 @@
                   "de/reference/memory-config",
                   "de/reference/rich-output-protocol",
                   "de/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "de/reference/session-management-compaction/store",
+                      "de/reference/session-management-compaction/maintenance",
+                      "de/reference/session-management-compaction/schema",
+                      "de/reference/session-management-compaction/compaction",
+                      "de/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "de/date-time"
                 ]
               },
@@ -17372,6 +17452,16 @@
                   "fr/reference/memory-config",
                   "fr/reference/rich-output-protocol",
                   "fr/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "fr/reference/session-management-compaction/store",
+                      "fr/reference/session-management-compaction/maintenance",
+                      "fr/reference/session-management-compaction/schema",
+                      "fr/reference/session-management-compaction/compaction",
+                      "fr/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "fr/date-time"
                 ]
               },
@@ -19171,6 +19261,16 @@
                   "hi/reference/memory-config",
                   "hi/reference/rich-output-protocol",
                   "hi/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "hi/reference/session-management-compaction/store",
+                      "hi/reference/session-management-compaction/maintenance",
+                      "hi/reference/session-management-compaction/schema",
+                      "hi/reference/session-management-compaction/compaction",
+                      "hi/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "hi/date-time"
                 ]
               },
@@ -20970,6 +21070,16 @@
                   "ar/reference/memory-config",
                   "ar/reference/rich-output-protocol",
                   "ar/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "ar/reference/session-management-compaction/store",
+                      "ar/reference/session-management-compaction/maintenance",
+                      "ar/reference/session-management-compaction/schema",
+                      "ar/reference/session-management-compaction/compaction",
+                      "ar/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "ar/date-time"
                 ]
               },
@@ -22769,6 +22879,16 @@
                   "it/reference/memory-config",
                   "it/reference/rich-output-protocol",
                   "it/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "it/reference/session-management-compaction/store",
+                      "it/reference/session-management-compaction/maintenance",
+                      "it/reference/session-management-compaction/schema",
+                      "it/reference/session-management-compaction/compaction",
+                      "it/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "it/date-time"
                 ]
               },
@@ -24568,6 +24688,16 @@
                   "vi/reference/memory-config",
                   "vi/reference/rich-output-protocol",
                   "vi/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "vi/reference/session-management-compaction/store",
+                      "vi/reference/session-management-compaction/maintenance",
+                      "vi/reference/session-management-compaction/schema",
+                      "vi/reference/session-management-compaction/compaction",
+                      "vi/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "vi/date-time"
                 ]
               },
@@ -26367,6 +26497,16 @@
                   "nl/reference/memory-config",
                   "nl/reference/rich-output-protocol",
                   "nl/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "nl/reference/session-management-compaction/store",
+                      "nl/reference/session-management-compaction/maintenance",
+                      "nl/reference/session-management-compaction/schema",
+                      "nl/reference/session-management-compaction/compaction",
+                      "nl/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "nl/date-time"
                 ]
               },
@@ -28166,6 +28306,16 @@
                   "tr/reference/memory-config",
                   "tr/reference/rich-output-protocol",
                   "tr/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "tr/reference/session-management-compaction/store",
+                      "tr/reference/session-management-compaction/maintenance",
+                      "tr/reference/session-management-compaction/schema",
+                      "tr/reference/session-management-compaction/compaction",
+                      "tr/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "tr/date-time"
                 ]
               },
@@ -29965,6 +30115,16 @@
                   "uk/reference/memory-config",
                   "uk/reference/rich-output-protocol",
                   "uk/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "uk/reference/session-management-compaction/store",
+                      "uk/reference/session-management-compaction/maintenance",
+                      "uk/reference/session-management-compaction/schema",
+                      "uk/reference/session-management-compaction/compaction",
+                      "uk/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "uk/date-time"
                 ]
               },
@@ -31764,6 +31924,16 @@
                   "id/reference/memory-config",
                   "id/reference/rich-output-protocol",
                   "id/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "id/reference/session-management-compaction/store",
+                      "id/reference/session-management-compaction/maintenance",
+                      "id/reference/session-management-compaction/schema",
+                      "id/reference/session-management-compaction/compaction",
+                      "id/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "id/date-time"
                 ]
               },
@@ -33563,6 +33733,16 @@
                   "pl/reference/memory-config",
                   "pl/reference/rich-output-protocol",
                   "pl/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "pl/reference/session-management-compaction/store",
+                      "pl/reference/session-management-compaction/maintenance",
+                      "pl/reference/session-management-compaction/schema",
+                      "pl/reference/session-management-compaction/compaction",
+                      "pl/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "pl/date-time"
                 ]
               },
@@ -35362,6 +35542,16 @@
                   "ru/reference/memory-config",
                   "ru/reference/rich-output-protocol",
                   "ru/reference/session-management-compaction",
+                  {
+                    "group": "Session management deep dive",
+                    "pages": [
+                      "ru/reference/session-management-compaction/store",
+                      "ru/reference/session-management-compaction/maintenance",
+                      "ru/reference/session-management-compaction/schema",
+                      "ru/reference/session-management-compaction/compaction",
+                      "ru/reference/session-management-compaction/housekeeping"
+                    ]
+                  },
                   "ru/date-time"
                 ]
               },

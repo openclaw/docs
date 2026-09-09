@@ -10676,6 +10676,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/image-and-video
 - Headings:
   - H2: Image generation
+  - H3: GPT Image 2.5
+  - H3: Other Image Models
   - H2: Video generation
 
 ## providers/openai/models.md
@@ -11279,15 +11281,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/session-management-compaction
 - Headings:
-  - H2: Two persistence layers
-  - H2: On-disk locations
-  - H2: Store maintenance and disk controls
-  - H3: Downgrading After The SQLite Flip
-  - H2: Cron sessions and run logs
-  - H2: Session keys (sessionKey)
-  - H2: Session ids (sessionId)
-  - H2: Session store schema
-  - H2: Transcript event structure
+  - H2: Where each section moved
+  - H2: Troubleshooting checklist
+  - H2: Related
+
+## reference/session-management-compaction/compaction.md
+
+- Route: /reference/session-management-compaction/compaction
+- Headings:
   - H2: Context windows vs tracked tokens
   - H2: Compaction: what it is
   - H3: Chunk boundaries and tool pairing
@@ -11295,10 +11296,37 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Compaction settings
   - H2: Pluggable compaction providers
   - H2: User-visible surfaces
+
+## reference/session-management-compaction/housekeeping.md
+
+- Route: /reference/session-management-compaction/housekeeping
+- Headings:
   - H2: Silent housekeeping (`NO_REPLY`)
   - H2: Pre-compaction memory flush
-  - H2: Troubleshooting checklist
-  - H2: Related
+
+## reference/session-management-compaction/maintenance.md
+
+- Route: /reference/session-management-compaction/maintenance
+- Headings:
+  - H2: Store maintenance and disk controls
+  - H3: Downgrading After The SQLite Flip
+  - H2: Cron sessions and run logs
+
+## reference/session-management-compaction/schema.md
+
+- Route: /reference/session-management-compaction/schema
+- Headings:
+  - H2: Session keys (sessionKey)
+  - H2: Session ids (sessionId)
+  - H2: Session store schema
+  - H2: Transcript event structure
+
+## reference/session-management-compaction/store.md
+
+- Route: /reference/session-management-compaction/store
+- Headings:
+  - H2: Two persistence layers
+  - H2: On-disk locations
 
 ## reference/templates/AGENTS.dev.md
 
