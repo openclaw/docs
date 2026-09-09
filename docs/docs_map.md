@@ -634,22 +634,65 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/imessage
 - Headings:
-  - H2: Install the plugin
-  - H2: Quick setup
-  - H2: Requirements and permissions (macOS)
-  - H2: Enabling the imsg private API
-  - H3: Setup
-  - H3: When SIP stays enabled
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Related
+
+## channels/imessage/access-control.md
+
+- Route: /channels/imessage/access-control
+- Headings:
   - H2: Access control and routing
   - H2: ACP conversation bindings
-  - H2: Deployment patterns
-  - H2: Media, chunking, and delivery targets
-  - H2: Private API actions
   - H2: Config writes
+
+## channels/imessage/deployment.md
+
+- Route: /channels/imessage/deployment
+- Headings:
+  - H2: Deployment patterns
+
+## channels/imessage/media.md
+
+- Route: /channels/imessage/media
+- Headings:
+  - H2: Media, chunking, and delivery targets
+
+## channels/imessage/messaging.md
+
+- Route: /channels/imessage/messaging
+- Headings:
   - H2: Coalescing split-send DMs (command + URL in one composition)
   - H2: Inbound recovery after a bridge or gateway restart
   - H3: Operator-visible signal
   - H3: Migration
+
+## channels/imessage/private-api.md
+
+- Route: /channels/imessage/private-api
+- Headings:
+  - H2: Enabling the imsg private API
+  - H3: Setup
+  - H3: When SIP stays enabled
+
+## channels/imessage/rich-messages.md
+
+- Route: /channels/imessage/rich-messages
+- Headings:
+  - H2: Private API actions
+
+## channels/imessage/setup.md
+
+- Route: /channels/imessage/setup
+- Headings:
+  - H2: Install the plugin
+  - H2: Quick setup
+  - H2: Requirements and permissions (macOS)
+
+## channels/imessage/troubleshooting.md
+
+- Route: /channels/imessage/troubleshooting
+- Headings:
   - H2: Troubleshooting
   - H2: Configuration reference pointers
   - H2: Related

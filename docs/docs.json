@@ -1514,6 +1514,14 @@
                     "group": "iMessage",
                     "pages": [
                       "channels/imessage",
+                      "channels/imessage/setup",
+                      "channels/imessage/private-api",
+                      "channels/imessage/access-control",
+                      "channels/imessage/deployment",
+                      "channels/imessage/media",
+                      "channels/imessage/rich-messages",
+                      "channels/imessage/messaging",
+                      "channels/imessage/troubleshooting",
                       "channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -3284,6 +3292,14 @@
                     "group": "iMessage",
                     "pages": [
                       "zh-CN/channels/imessage",
+                      "zh-CN/channels/imessage/setup",
+                      "zh-CN/channels/imessage/private-api",
+                      "zh-CN/channels/imessage/access-control",
+                      "zh-CN/channels/imessage/deployment",
+                      "zh-CN/channels/imessage/media",
+                      "zh-CN/channels/imessage/rich-messages",
+                      "zh-CN/channels/imessage/messaging",
+                      "zh-CN/channels/imessage/troubleshooting",
                       "zh-CN/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -5020,6 +5036,14 @@
                     "group": "iMessage",
                     "pages": [
                       "zh-TW/channels/imessage",
+                      "zh-TW/channels/imessage/setup",
+                      "zh-TW/channels/imessage/private-api",
+                      "zh-TW/channels/imessage/access-control",
+                      "zh-TW/channels/imessage/deployment",
+                      "zh-TW/channels/imessage/media",
+                      "zh-TW/channels/imessage/rich-messages",
+                      "zh-TW/channels/imessage/messaging",
+                      "zh-TW/channels/imessage/troubleshooting",
                       "zh-TW/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -6756,6 +6780,14 @@
                     "group": "iMessage",
                     "pages": [
                       "ja-JP/channels/imessage",
+                      "ja-JP/channels/imessage/setup",
+                      "ja-JP/channels/imessage/private-api",
+                      "ja-JP/channels/imessage/access-control",
+                      "ja-JP/channels/imessage/deployment",
+                      "ja-JP/channels/imessage/media",
+                      "ja-JP/channels/imessage/rich-messages",
+                      "ja-JP/channels/imessage/messaging",
+                      "ja-JP/channels/imessage/troubleshooting",
                       "ja-JP/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -8492,6 +8524,14 @@
                     "group": "iMessage",
                     "pages": [
                       "es/channels/imessage",
+                      "es/channels/imessage/setup",
+                      "es/channels/imessage/private-api",
+                      "es/channels/imessage/access-control",
+                      "es/channels/imessage/deployment",
+                      "es/channels/imessage/media",
+                      "es/channels/imessage/rich-messages",
+                      "es/channels/imessage/messaging",
+                      "es/channels/imessage/troubleshooting",
                       "es/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -10228,6 +10268,14 @@
                     "group": "iMessage",
                     "pages": [
                       "pt-BR/channels/imessage",
+                      "pt-BR/channels/imessage/setup",
+                      "pt-BR/channels/imessage/private-api",
+                      "pt-BR/channels/imessage/access-control",
+                      "pt-BR/channels/imessage/deployment",
+                      "pt-BR/channels/imessage/media",
+                      "pt-BR/channels/imessage/rich-messages",
+                      "pt-BR/channels/imessage/messaging",
+                      "pt-BR/channels/imessage/troubleshooting",
                       "pt-BR/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -11964,6 +12012,14 @@
                     "group": "iMessage",
                     "pages": [
                       "ko/channels/imessage",
+                      "ko/channels/imessage/setup",
+                      "ko/channels/imessage/private-api",
+                      "ko/channels/imessage/access-control",
+                      "ko/channels/imessage/deployment",
+                      "ko/channels/imessage/media",
+                      "ko/channels/imessage/rich-messages",
+                      "ko/channels/imessage/messaging",
+                      "ko/channels/imessage/troubleshooting",
                       "ko/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -13700,6 +13756,14 @@
                     "group": "iMessage",
                     "pages": [
                       "de/channels/imessage",
+                      "de/channels/imessage/setup",
+                      "de/channels/imessage/private-api",
+                      "de/channels/imessage/access-control",
+                      "de/channels/imessage/deployment",
+                      "de/channels/imessage/media",
+                      "de/channels/imessage/rich-messages",
+                      "de/channels/imessage/messaging",
+                      "de/channels/imessage/troubleshooting",
                       "de/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -15436,6 +15500,14 @@
                     "group": "iMessage",
                     "pages": [
                       "fr/channels/imessage",
+                      "fr/channels/imessage/setup",
+                      "fr/channels/imessage/private-api",
+                      "fr/channels/imessage/access-control",
+                      "fr/channels/imessage/deployment",
+                      "fr/channels/imessage/media",
+                      "fr/channels/imessage/rich-messages",
+                      "fr/channels/imessage/messaging",
+                      "fr/channels/imessage/troubleshooting",
                       "fr/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -17172,6 +17244,14 @@
                     "group": "iMessage",
                     "pages": [
                       "hi/channels/imessage",
+                      "hi/channels/imessage/setup",
+                      "hi/channels/imessage/private-api",
+                      "hi/channels/imessage/access-control",
+                      "hi/channels/imessage/deployment",
+                      "hi/channels/imessage/media",
+                      "hi/channels/imessage/rich-messages",
+                      "hi/channels/imessage/messaging",
+                      "hi/channels/imessage/troubleshooting",
                       "hi/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -18908,6 +18988,14 @@
                     "group": "iMessage",
                     "pages": [
                       "ar/channels/imessage",
+                      "ar/channels/imessage/setup",
+                      "ar/channels/imessage/private-api",
+                      "ar/channels/imessage/access-control",
+                      "ar/channels/imessage/deployment",
+                      "ar/channels/imessage/media",
+                      "ar/channels/imessage/rich-messages",
+                      "ar/channels/imessage/messaging",
+                      "ar/channels/imessage/troubleshooting",
                       "ar/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -20644,6 +20732,14 @@
                     "group": "iMessage",
                     "pages": [
                       "it/channels/imessage",
+                      "it/channels/imessage/setup",
+                      "it/channels/imessage/private-api",
+                      "it/channels/imessage/access-control",
+                      "it/channels/imessage/deployment",
+                      "it/channels/imessage/media",
+                      "it/channels/imessage/rich-messages",
+                      "it/channels/imessage/messaging",
+                      "it/channels/imessage/troubleshooting",
                       "it/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -22380,6 +22476,14 @@
                     "group": "iMessage",
                     "pages": [
                       "vi/channels/imessage",
+                      "vi/channels/imessage/setup",
+                      "vi/channels/imessage/private-api",
+                      "vi/channels/imessage/access-control",
+                      "vi/channels/imessage/deployment",
+                      "vi/channels/imessage/media",
+                      "vi/channels/imessage/rich-messages",
+                      "vi/channels/imessage/messaging",
+                      "vi/channels/imessage/troubleshooting",
                       "vi/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -24116,6 +24220,14 @@
                     "group": "iMessage",
                     "pages": [
                       "nl/channels/imessage",
+                      "nl/channels/imessage/setup",
+                      "nl/channels/imessage/private-api",
+                      "nl/channels/imessage/access-control",
+                      "nl/channels/imessage/deployment",
+                      "nl/channels/imessage/media",
+                      "nl/channels/imessage/rich-messages",
+                      "nl/channels/imessage/messaging",
+                      "nl/channels/imessage/troubleshooting",
                       "nl/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -25852,6 +25964,14 @@
                     "group": "iMessage",
                     "pages": [
                       "tr/channels/imessage",
+                      "tr/channels/imessage/setup",
+                      "tr/channels/imessage/private-api",
+                      "tr/channels/imessage/access-control",
+                      "tr/channels/imessage/deployment",
+                      "tr/channels/imessage/media",
+                      "tr/channels/imessage/rich-messages",
+                      "tr/channels/imessage/messaging",
+                      "tr/channels/imessage/troubleshooting",
                       "tr/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -27588,6 +27708,14 @@
                     "group": "iMessage",
                     "pages": [
                       "uk/channels/imessage",
+                      "uk/channels/imessage/setup",
+                      "uk/channels/imessage/private-api",
+                      "uk/channels/imessage/access-control",
+                      "uk/channels/imessage/deployment",
+                      "uk/channels/imessage/media",
+                      "uk/channels/imessage/rich-messages",
+                      "uk/channels/imessage/messaging",
+                      "uk/channels/imessage/troubleshooting",
                       "uk/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -29324,6 +29452,14 @@
                     "group": "iMessage",
                     "pages": [
                       "id/channels/imessage",
+                      "id/channels/imessage/setup",
+                      "id/channels/imessage/private-api",
+                      "id/channels/imessage/access-control",
+                      "id/channels/imessage/deployment",
+                      "id/channels/imessage/media",
+                      "id/channels/imessage/rich-messages",
+                      "id/channels/imessage/messaging",
+                      "id/channels/imessage/troubleshooting",
                       "id/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -31060,6 +31196,14 @@
                     "group": "iMessage",
                     "pages": [
                       "pl/channels/imessage",
+                      "pl/channels/imessage/setup",
+                      "pl/channels/imessage/private-api",
+                      "pl/channels/imessage/access-control",
+                      "pl/channels/imessage/deployment",
+                      "pl/channels/imessage/media",
+                      "pl/channels/imessage/rich-messages",
+                      "pl/channels/imessage/messaging",
+                      "pl/channels/imessage/troubleshooting",
                       "pl/channels/imessage-from-bluebubbles"
                     ]
                   },
@@ -32796,6 +32940,14 @@
                     "group": "iMessage",
                     "pages": [
                       "ru/channels/imessage",
+                      "ru/channels/imessage/setup",
+                      "ru/channels/imessage/private-api",
+                      "ru/channels/imessage/access-control",
+                      "ru/channels/imessage/deployment",
+                      "ru/channels/imessage/media",
+                      "ru/channels/imessage/rich-messages",
+                      "ru/channels/imessage/messaging",
+                      "ru/channels/imessage/troubleshooting",
                       "ru/channels/imessage-from-bluebubbles"
                     ]
                   },

@@ -3532,6 +3532,38 @@
     "target": "Telegram 故障排查"
   },
   {
+    "source": "iMessage setup",
+    "target": "iMessage 设置"
+  },
+  {
+    "source": "Enabling the imsg private API",
+    "target": "启用 imsg 私有 API"
+  },
+  {
+    "source": "iMessage access control and routing",
+    "target": "iMessage 访问控制与路由"
+  },
+  {
+    "source": "iMessage deployment patterns",
+    "target": "iMessage 部署模式"
+  },
+  {
+    "source": "iMessage media and attachments",
+    "target": "iMessage 媒体与附件"
+  },
+  {
+    "source": "iMessage private API actions",
+    "target": "iMessage 私有 API 操作"
+  },
+  {
+    "source": "iMessage message behavior",
+    "target": "iMessage 消息行为"
+  },
+  {
+    "source": "iMessage troubleshooting",
+    "target": "iMessage 故障排查"
+  },
+  {
     "source": "Microsoft Teams setup",
     "target": "Microsoft Teams 设置"
   },
