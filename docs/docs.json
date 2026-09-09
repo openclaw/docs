@@ -2696,6 +2696,17 @@
                       "cli/dns",
                       "cli/docs",
                       "cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "cli/mcp/serve",
+                          "cli/mcp/registry",
+                          "cli/mcp/json-output",
+                          "cli/mcp/transports",
+                          "cli/mcp/control-ui",
+                          "cli/mcp/apps"
+                        ]
+                      },
                       "cli/proxy",
                       "cli/wiki"
                     ]
@@ -4381,6 +4392,17 @@
                       "zh-CN/cli/dns",
                       "zh-CN/cli/docs",
                       "zh-CN/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "zh-CN/cli/mcp/serve",
+                          "zh-CN/cli/mcp/registry",
+                          "zh-CN/cli/mcp/json-output",
+                          "zh-CN/cli/mcp/transports",
+                          "zh-CN/cli/mcp/control-ui",
+                          "zh-CN/cli/mcp/apps"
+                        ]
+                      },
                       "zh-CN/cli/proxy",
                       "zh-CN/cli/wiki"
                     ]
@@ -6066,6 +6088,17 @@
                       "zh-TW/cli/dns",
                       "zh-TW/cli/docs",
                       "zh-TW/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "zh-TW/cli/mcp/serve",
+                          "zh-TW/cli/mcp/registry",
+                          "zh-TW/cli/mcp/json-output",
+                          "zh-TW/cli/mcp/transports",
+                          "zh-TW/cli/mcp/control-ui",
+                          "zh-TW/cli/mcp/apps"
+                        ]
+                      },
                       "zh-TW/cli/proxy",
                       "zh-TW/cli/wiki"
                     ]
@@ -7751,6 +7784,17 @@
                       "ja-JP/cli/dns",
                       "ja-JP/cli/docs",
                       "ja-JP/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "ja-JP/cli/mcp/serve",
+                          "ja-JP/cli/mcp/registry",
+                          "ja-JP/cli/mcp/json-output",
+                          "ja-JP/cli/mcp/transports",
+                          "ja-JP/cli/mcp/control-ui",
+                          "ja-JP/cli/mcp/apps"
+                        ]
+                      },
                       "ja-JP/cli/proxy",
                       "ja-JP/cli/wiki"
                     ]
@@ -9436,6 +9480,17 @@
                       "es/cli/dns",
                       "es/cli/docs",
                       "es/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "es/cli/mcp/serve",
+                          "es/cli/mcp/registry",
+                          "es/cli/mcp/json-output",
+                          "es/cli/mcp/transports",
+                          "es/cli/mcp/control-ui",
+                          "es/cli/mcp/apps"
+                        ]
+                      },
                       "es/cli/proxy",
                       "es/cli/wiki"
                     ]
@@ -11121,6 +11176,17 @@
                       "pt-BR/cli/dns",
                       "pt-BR/cli/docs",
                       "pt-BR/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "pt-BR/cli/mcp/serve",
+                          "pt-BR/cli/mcp/registry",
+                          "pt-BR/cli/mcp/json-output",
+                          "pt-BR/cli/mcp/transports",
+                          "pt-BR/cli/mcp/control-ui",
+                          "pt-BR/cli/mcp/apps"
+                        ]
+                      },
                       "pt-BR/cli/proxy",
                       "pt-BR/cli/wiki"
                     ]
@@ -12806,6 +12872,17 @@
                       "ko/cli/dns",
                       "ko/cli/docs",
                       "ko/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "ko/cli/mcp/serve",
+                          "ko/cli/mcp/registry",
+                          "ko/cli/mcp/json-output",
+                          "ko/cli/mcp/transports",
+                          "ko/cli/mcp/control-ui",
+                          "ko/cli/mcp/apps"
+                        ]
+                      },
                       "ko/cli/proxy",
                       "ko/cli/wiki"
                     ]
@@ -14491,6 +14568,17 @@
                       "de/cli/dns",
                       "de/cli/docs",
                       "de/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "de/cli/mcp/serve",
+                          "de/cli/mcp/registry",
+                          "de/cli/mcp/json-output",
+                          "de/cli/mcp/transports",
+                          "de/cli/mcp/control-ui",
+                          "de/cli/mcp/apps"
+                        ]
+                      },
                       "de/cli/proxy",
                       "de/cli/wiki"
                     ]
@@ -16176,6 +16264,17 @@
                       "fr/cli/dns",
                       "fr/cli/docs",
                       "fr/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "fr/cli/mcp/serve",
+                          "fr/cli/mcp/registry",
+                          "fr/cli/mcp/json-output",
+                          "fr/cli/mcp/transports",
+                          "fr/cli/mcp/control-ui",
+                          "fr/cli/mcp/apps"
+                        ]
+                      },
                       "fr/cli/proxy",
                       "fr/cli/wiki"
                     ]
@@ -17861,6 +17960,17 @@
                       "hi/cli/dns",
                       "hi/cli/docs",
                       "hi/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "hi/cli/mcp/serve",
+                          "hi/cli/mcp/registry",
+                          "hi/cli/mcp/json-output",
+                          "hi/cli/mcp/transports",
+                          "hi/cli/mcp/control-ui",
+                          "hi/cli/mcp/apps"
+                        ]
+                      },
                       "hi/cli/proxy",
                       "hi/cli/wiki"
                     ]
@@ -19546,6 +19656,17 @@
                       "ar/cli/dns",
                       "ar/cli/docs",
                       "ar/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "ar/cli/mcp/serve",
+                          "ar/cli/mcp/registry",
+                          "ar/cli/mcp/json-output",
+                          "ar/cli/mcp/transports",
+                          "ar/cli/mcp/control-ui",
+                          "ar/cli/mcp/apps"
+                        ]
+                      },
                       "ar/cli/proxy",
                       "ar/cli/wiki"
                     ]
@@ -21231,6 +21352,17 @@
                       "it/cli/dns",
                       "it/cli/docs",
                       "it/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "it/cli/mcp/serve",
+                          "it/cli/mcp/registry",
+                          "it/cli/mcp/json-output",
+                          "it/cli/mcp/transports",
+                          "it/cli/mcp/control-ui",
+                          "it/cli/mcp/apps"
+                        ]
+                      },
                       "it/cli/proxy",
                       "it/cli/wiki"
                     ]
@@ -22916,6 +23048,17 @@
                       "vi/cli/dns",
                       "vi/cli/docs",
                       "vi/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "vi/cli/mcp/serve",
+                          "vi/cli/mcp/registry",
+                          "vi/cli/mcp/json-output",
+                          "vi/cli/mcp/transports",
+                          "vi/cli/mcp/control-ui",
+                          "vi/cli/mcp/apps"
+                        ]
+                      },
                       "vi/cli/proxy",
                       "vi/cli/wiki"
                     ]
@@ -24601,6 +24744,17 @@
                       "nl/cli/dns",
                       "nl/cli/docs",
                       "nl/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "nl/cli/mcp/serve",
+                          "nl/cli/mcp/registry",
+                          "nl/cli/mcp/json-output",
+                          "nl/cli/mcp/transports",
+                          "nl/cli/mcp/control-ui",
+                          "nl/cli/mcp/apps"
+                        ]
+                      },
                       "nl/cli/proxy",
                       "nl/cli/wiki"
                     ]
@@ -26286,6 +26440,17 @@
                       "tr/cli/dns",
                       "tr/cli/docs",
                       "tr/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "tr/cli/mcp/serve",
+                          "tr/cli/mcp/registry",
+                          "tr/cli/mcp/json-output",
+                          "tr/cli/mcp/transports",
+                          "tr/cli/mcp/control-ui",
+                          "tr/cli/mcp/apps"
+                        ]
+                      },
                       "tr/cli/proxy",
                       "tr/cli/wiki"
                     ]
@@ -27971,6 +28136,17 @@
                       "uk/cli/dns",
                       "uk/cli/docs",
                       "uk/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "uk/cli/mcp/serve",
+                          "uk/cli/mcp/registry",
+                          "uk/cli/mcp/json-output",
+                          "uk/cli/mcp/transports",
+                          "uk/cli/mcp/control-ui",
+                          "uk/cli/mcp/apps"
+                        ]
+                      },
                       "uk/cli/proxy",
                       "uk/cli/wiki"
                     ]
@@ -29656,6 +29832,17 @@
                       "id/cli/dns",
                       "id/cli/docs",
                       "id/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "id/cli/mcp/serve",
+                          "id/cli/mcp/registry",
+                          "id/cli/mcp/json-output",
+                          "id/cli/mcp/transports",
+                          "id/cli/mcp/control-ui",
+                          "id/cli/mcp/apps"
+                        ]
+                      },
                       "id/cli/proxy",
                       "id/cli/wiki"
                     ]
@@ -31341,6 +31528,17 @@
                       "pl/cli/dns",
                       "pl/cli/docs",
                       "pl/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "pl/cli/mcp/serve",
+                          "pl/cli/mcp/registry",
+                          "pl/cli/mcp/json-output",
+                          "pl/cli/mcp/transports",
+                          "pl/cli/mcp/control-ui",
+                          "pl/cli/mcp/apps"
+                        ]
+                      },
                       "pl/cli/proxy",
                       "pl/cli/wiki"
                     ]
@@ -33026,6 +33224,17 @@
                       "ru/cli/dns",
                       "ru/cli/docs",
                       "ru/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "ru/cli/mcp/serve",
+                          "ru/cli/mcp/registry",
+                          "ru/cli/mcp/json-output",
+                          "ru/cli/mcp/transports",
+                          "ru/cli/mcp/control-ui",
+                          "ru/cli/mcp/apps"
+                        ]
+                      },
                       "ru/cli/proxy",
                       "ru/cli/wiki"
                     ]

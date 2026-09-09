@@ -2153,6 +2153,41 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/mcp
 - Headings:
   - H2: Choose the right MCP path
+  - H2: MCP pages
+  - H2: Where each section moved
+  - H2: Related
+
+## cli/mcp/apps.md
+
+- Route: /cli/mcp/apps
+- Headings:
+  - H2: MCP Apps
+
+## cli/mcp/control-ui.md
+
+- Route: /cli/mcp/control-ui
+- Headings:
+  - H2: Control UI
+
+## cli/mcp/json-output.md
+
+- Route: /cli/mcp/json-output
+- Headings:
+  - H2: JSON output shapes
+
+## cli/mcp/registry.md
+
+- Route: /cli/mcp/registry
+- Headings:
+  - H2: OpenClaw as an MCP client registry
+  - H3: Codex tool approvals
+  - H3: Saved MCP server definitions
+  - H3: Common server recipes
+
+## cli/mcp/serve.md
+
+- Route: /cli/mcp/serve
+- Headings:
   - H2: OpenClaw as an MCP server
   - H3: When to use serve
   - H3: How it works
@@ -2167,19 +2202,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Security and trust boundary
   - H3: Testing
   - H3: Troubleshooting
-  - H2: OpenClaw as an MCP client registry
-  - H3: Codex tool approvals
-  - H3: Saved MCP server definitions
-  - H3: Common server recipes
-  - H3: JSON output shapes
-  - H3: Stdio transport
-  - H3: SSE / HTTP transport
-  - H3: OAuth workflow
-  - H3: Streamable HTTP transport
-  - H2: Control UI
-  - H2: MCP Apps
   - H2: Current limits
-  - H2: Related
+
+## cli/mcp/transports.md
+
+- Route: /cli/mcp/transports
+- Headings:
+  - H2: Stdio transport
+  - H2: SSE / HTTP transport
+  - H2: OAuth workflow
+  - H2: Streamable HTTP transport
 
 ## cli/memory.md
 
