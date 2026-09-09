@@ -626,9 +626,11 @@ Query params:
 - `cursor` (optional): pagination cursor
 - `isOfficial` (optional): `true` or `false`
 - `sort` (optional): `recommended` (default), `trending`, `downloads`, `updated`, legacy alias `installs`
-- `category` (optional): plugin category filter. Current values:
-  `channels`, `models`, `memory`, `context`, `voice`, `media`, `web`,
-  `tools`, `runtime`, `gateway`, `security`, `other`.
+- `category` (optional): plugin category filter. The active browse values are
+  returned by `GET /api/v1/plugins/categories`, including their descriptions and
+  icons. The 22 categories cover core configuration surfaces and product uses.
+  Retired values `tools`, `runtime`, and `gateway` remain readable for existing
+  metadata and links, but do not appear in the active browse list.
 
 Legacy v1 filter aliases remain accepted on read endpoints:
 
@@ -647,6 +649,19 @@ Legacy aliases are not accepted as stored or author-declared category values.
 Returns the canonical plugin discovery taxonomy in display order. Each category
 contains `slug`, `label`, `description`, a bare Lucide `icon` key, and numeric
 `order`.
+
+Use each category's description to choose the main reason someone installs the
+plugin. New plugin releases may declare exactly one category in
+`openclaw.plugin.json`, for example `"categories": ["developer-tools"]`. When the
+declaration is absent, ClawHub generates one category from bounded manifest,
+package, and documentation evidence using `gpt-5.6-luna` by default. Operators can
+override this with `OPENAI_PLUGIN_CATEGORY_MODEL`; the skill-summary model setting
+does not affect plugin classification.
+
+Already-published multi-category declarations remain readable and are preserved
+during metadata refresh. New generated assignments and bundled manifests use one
+category. A failed model request falls back to `other` during publication and is
+not accepted by the reviewed backfill.
 
 ### `GET /api/v1/skills/export`
 
@@ -738,9 +753,9 @@ Query params:
 - `q` (required): query string
 - `limit` (optional): integer (1-100)
 - `isOfficial` (optional): `true` or `false`
-- `category` (optional): plugin category filter. Current values:
-  `channels`, `models`, `memory`, `context`, `voice`, `media`, `web`,
-  `tools`, `runtime`, `gateway`, `security`, `other`.
+- `category` (optional): plugin category filter. Use the 22 active values from
+  `GET /api/v1/plugins/categories`. Retired `tools`, `runtime`, and `gateway`
+  values remain readable for existing metadata and links.
 
 Notes:
 
