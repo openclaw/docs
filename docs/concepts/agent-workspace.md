@@ -84,7 +84,7 @@ Standard files OpenClaw expects inside the workspace:
     The `## Tools` section holds local environment notes and conventions. It does not control tool availability; it is only guidance. Template: [AGENTS.md Tools section](/reference/templates/AGENTS#tools).
   </Accordion>
   <Accordion title="BOOT.md - startup checklist">
-    Optional startup checklist run on Gateway startup when the [boot-md hook](/automation/hooks#boot-md) is enabled. Enabling a different internal hook does not enable `boot-md`. Keep it short; use the message tool for outbound sends. Template: [BOOT.md](/reference/templates/BOOT).
+    Optional startup checklist run on Gateway startup when the [boot-md hook](/automation/hooks/bundled-hooks#boot-md) is enabled. Enabling a different internal hook does not enable `boot-md`. Keep it short; use the message tool for outbound sends. Template: [BOOT.md](/reference/templates/BOOT).
   </Accordion>
   <Accordion title="BOOTSTRAP.md - first-run ritual">
     One-time first-run ritual. Only created for a brand-new workspace. Delete it after the ritual is complete. Template: [BOOTSTRAP.md](/reference/templates/BOOTSTRAP).

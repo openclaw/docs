@@ -152,31 +152,58 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H3: Eligible, enabled, and loaded
   - H3: Local, remote, and agent scope
-  - H2: Writing hooks
-  - H3: Hook structure
-  - H3: Handler implementation
-  - H3: Reply delivery
-  - H3: HOOK.md format
-  - H2: Configuration
-  - H2: Hook discovery
-  - H3: Hook packs
+  - H2: Plugin hooks
+  - H2: Best practices
+  - H2: CLI reference
+  - H2: Detailed topics
+  - H2: Where each section moved
+  - H2: Related
+
+## automation/hooks/bundled-hooks.md
+
+- Route: /automation/hooks/bundled-hooks
+- Headings:
   - H2: Bundled hooks
   - H3: boot-md details
   - H3: bootstrap-extra-files config
   - H3: command-logger details
   - H3: compaction-notifier details
   - H3: session-memory details
+
+## automation/hooks/configuration.md
+
+- Route: /automation/hooks/configuration
+- Headings:
+  - H2: Configuration
+  - H2: Hook discovery
+  - H3: Hook packs
+
+## automation/hooks/event-types.md
+
+- Route: /automation/hooks/event-types
+- Headings:
   - H2: Event types
   - H3: Event context highlights
   - H4: Message context
-  - H2: Plugin hooks
-  - H2: Best practices
-  - H2: CLI reference
+
+## automation/hooks/troubleshooting.md
+
+- Route: /automation/hooks/troubleshooting
+- Headings:
   - H2: Troubleshooting
   - H3: Hook not discovered
   - H3: Hook not eligible
   - H3: Hook not executing
-  - H2: Related
+
+## automation/hooks/writing-hooks.md
+
+- Route: /automation/hooks/writing-hooks
+- Headings:
+  - H2: Writing hooks
+  - H3: Hook structure
+  - H3: Handler implementation
+  - H3: Reply delivery
+  - H3: HOOK.md format
 
 ## automation/imap.md
 

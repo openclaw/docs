@@ -1588,6 +1588,26 @@
     "target": "Hooks"
   },
   {
+    "source": "Writing hooks",
+    "target": "编写 Hook"
+  },
+  {
+    "source": "Hook configuration and discovery",
+    "target": "Hook 配置与发现"
+  },
+  {
+    "source": "Bundled hooks",
+    "target": "内置 Hook"
+  },
+  {
+    "source": "Hook event types and context",
+    "target": "Hook 事件类型与上下文"
+  },
+  {
+    "source": "Hook troubleshooting",
+    "target": "Hook 故障排查"
+  },
+  {
     "source": "Incident response",
     "target": "事件响应"
   },

@@ -1893,7 +1893,17 @@
                   "automation/tasks",
                   "automation/taskflow",
                   "automation/standing-orders",
-                  "automation/hooks"
+                  "automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "automation/hooks/writing-hooks",
+                      "automation/hooks/configuration",
+                      "automation/hooks/bundled-hooks",
+                      "automation/hooks/event-types",
+                      "automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -3671,7 +3681,17 @@
                   "zh-CN/automation/tasks",
                   "zh-CN/automation/taskflow",
                   "zh-CN/automation/standing-orders",
-                  "zh-CN/automation/hooks"
+                  "zh-CN/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "zh-CN/automation/hooks/writing-hooks",
+                      "zh-CN/automation/hooks/configuration",
+                      "zh-CN/automation/hooks/bundled-hooks",
+                      "zh-CN/automation/hooks/event-types",
+                      "zh-CN/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -5415,7 +5435,17 @@
                   "zh-TW/automation/tasks",
                   "zh-TW/automation/taskflow",
                   "zh-TW/automation/standing-orders",
-                  "zh-TW/automation/hooks"
+                  "zh-TW/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "zh-TW/automation/hooks/writing-hooks",
+                      "zh-TW/automation/hooks/configuration",
+                      "zh-TW/automation/hooks/bundled-hooks",
+                      "zh-TW/automation/hooks/event-types",
+                      "zh-TW/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -7159,7 +7189,17 @@
                   "ja-JP/automation/tasks",
                   "ja-JP/automation/taskflow",
                   "ja-JP/automation/standing-orders",
-                  "ja-JP/automation/hooks"
+                  "ja-JP/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "ja-JP/automation/hooks/writing-hooks",
+                      "ja-JP/automation/hooks/configuration",
+                      "ja-JP/automation/hooks/bundled-hooks",
+                      "ja-JP/automation/hooks/event-types",
+                      "ja-JP/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -8903,7 +8943,17 @@
                   "es/automation/tasks",
                   "es/automation/taskflow",
                   "es/automation/standing-orders",
-                  "es/automation/hooks"
+                  "es/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "es/automation/hooks/writing-hooks",
+                      "es/automation/hooks/configuration",
+                      "es/automation/hooks/bundled-hooks",
+                      "es/automation/hooks/event-types",
+                      "es/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -10647,7 +10697,17 @@
                   "pt-BR/automation/tasks",
                   "pt-BR/automation/taskflow",
                   "pt-BR/automation/standing-orders",
-                  "pt-BR/automation/hooks"
+                  "pt-BR/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "pt-BR/automation/hooks/writing-hooks",
+                      "pt-BR/automation/hooks/configuration",
+                      "pt-BR/automation/hooks/bundled-hooks",
+                      "pt-BR/automation/hooks/event-types",
+                      "pt-BR/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -12391,7 +12451,17 @@
                   "ko/automation/tasks",
                   "ko/automation/taskflow",
                   "ko/automation/standing-orders",
-                  "ko/automation/hooks"
+                  "ko/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "ko/automation/hooks/writing-hooks",
+                      "ko/automation/hooks/configuration",
+                      "ko/automation/hooks/bundled-hooks",
+                      "ko/automation/hooks/event-types",
+                      "ko/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -14135,7 +14205,17 @@
                   "de/automation/tasks",
                   "de/automation/taskflow",
                   "de/automation/standing-orders",
-                  "de/automation/hooks"
+                  "de/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "de/automation/hooks/writing-hooks",
+                      "de/automation/hooks/configuration",
+                      "de/automation/hooks/bundled-hooks",
+                      "de/automation/hooks/event-types",
+                      "de/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -15879,7 +15959,17 @@
                   "fr/automation/tasks",
                   "fr/automation/taskflow",
                   "fr/automation/standing-orders",
-                  "fr/automation/hooks"
+                  "fr/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "fr/automation/hooks/writing-hooks",
+                      "fr/automation/hooks/configuration",
+                      "fr/automation/hooks/bundled-hooks",
+                      "fr/automation/hooks/event-types",
+                      "fr/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -17623,7 +17713,17 @@
                   "hi/automation/tasks",
                   "hi/automation/taskflow",
                   "hi/automation/standing-orders",
-                  "hi/automation/hooks"
+                  "hi/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "hi/automation/hooks/writing-hooks",
+                      "hi/automation/hooks/configuration",
+                      "hi/automation/hooks/bundled-hooks",
+                      "hi/automation/hooks/event-types",
+                      "hi/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -19367,7 +19467,17 @@
                   "ar/automation/tasks",
                   "ar/automation/taskflow",
                   "ar/automation/standing-orders",
-                  "ar/automation/hooks"
+                  "ar/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "ar/automation/hooks/writing-hooks",
+                      "ar/automation/hooks/configuration",
+                      "ar/automation/hooks/bundled-hooks",
+                      "ar/automation/hooks/event-types",
+                      "ar/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -21111,7 +21221,17 @@
                   "it/automation/tasks",
                   "it/automation/taskflow",
                   "it/automation/standing-orders",
-                  "it/automation/hooks"
+                  "it/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "it/automation/hooks/writing-hooks",
+                      "it/automation/hooks/configuration",
+                      "it/automation/hooks/bundled-hooks",
+                      "it/automation/hooks/event-types",
+                      "it/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -22855,7 +22975,17 @@
                   "vi/automation/tasks",
                   "vi/automation/taskflow",
                   "vi/automation/standing-orders",
-                  "vi/automation/hooks"
+                  "vi/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "vi/automation/hooks/writing-hooks",
+                      "vi/automation/hooks/configuration",
+                      "vi/automation/hooks/bundled-hooks",
+                      "vi/automation/hooks/event-types",
+                      "vi/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -24599,7 +24729,17 @@
                   "nl/automation/tasks",
                   "nl/automation/taskflow",
                   "nl/automation/standing-orders",
-                  "nl/automation/hooks"
+                  "nl/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "nl/automation/hooks/writing-hooks",
+                      "nl/automation/hooks/configuration",
+                      "nl/automation/hooks/bundled-hooks",
+                      "nl/automation/hooks/event-types",
+                      "nl/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -26343,7 +26483,17 @@
                   "tr/automation/tasks",
                   "tr/automation/taskflow",
                   "tr/automation/standing-orders",
-                  "tr/automation/hooks"
+                  "tr/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "tr/automation/hooks/writing-hooks",
+                      "tr/automation/hooks/configuration",
+                      "tr/automation/hooks/bundled-hooks",
+                      "tr/automation/hooks/event-types",
+                      "tr/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -28087,7 +28237,17 @@
                   "uk/automation/tasks",
                   "uk/automation/taskflow",
                   "uk/automation/standing-orders",
-                  "uk/automation/hooks"
+                  "uk/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "uk/automation/hooks/writing-hooks",
+                      "uk/automation/hooks/configuration",
+                      "uk/automation/hooks/bundled-hooks",
+                      "uk/automation/hooks/event-types",
+                      "uk/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -29831,7 +29991,17 @@
                   "id/automation/tasks",
                   "id/automation/taskflow",
                   "id/automation/standing-orders",
-                  "id/automation/hooks"
+                  "id/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "id/automation/hooks/writing-hooks",
+                      "id/automation/hooks/configuration",
+                      "id/automation/hooks/bundled-hooks",
+                      "id/automation/hooks/event-types",
+                      "id/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -31575,7 +31745,17 @@
                   "pl/automation/tasks",
                   "pl/automation/taskflow",
                   "pl/automation/standing-orders",
-                  "pl/automation/hooks"
+                  "pl/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "pl/automation/hooks/writing-hooks",
+                      "pl/automation/hooks/configuration",
+                      "pl/automation/hooks/bundled-hooks",
+                      "pl/automation/hooks/event-types",
+                      "pl/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
@@ -33319,7 +33499,17 @@
                   "ru/automation/tasks",
                   "ru/automation/taskflow",
                   "ru/automation/standing-orders",
-                  "ru/automation/hooks"
+                  "ru/automation/hooks",
+                  {
+                    "group": "Hooks",
+                    "pages": [
+                      "ru/automation/hooks/writing-hooks",
+                      "ru/automation/hooks/configuration",
+                      "ru/automation/hooks/bundled-hooks",
+                      "ru/automation/hooks/event-types",
+                      "ru/automation/hooks/troubleshooting"
+                    ]
+                  }
                 ]
               },
               {
