@@ -5326,6 +5326,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/rpc-methods
 - Headings:
   - H2: RPC method families
+  - H3: System and identity
+  - H3: Models and usage
+  - H3: Channels and login helpers
+  - H3: Plugin management
+  - H3: Messaging and logs
+  - H3: Operator terminal
+  - H3: Talk and TTS
+  - H3: Secrets, config, update, and wizard
+  - H3: Agent and workspace helpers
+  - H3: Session control
+  - H3: Device pairing and device tokens
+  - H3: Node pairing, invoke, and pending work
+  - H3: Approval families
+  - H3: Control UI commands
+  - H3: Automation, skills, and tools
   - H3: Session list bootstrap
   - H3: Common event families
   - H3: Node helper methods
