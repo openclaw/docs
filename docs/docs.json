@@ -2650,6 +2650,19 @@
                     ]
                   },
                   "plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "plugins/sdk-agent-harness/core-ownership",
+                      "plugins/sdk-agent-harness/registration",
+                      "plugins/sdk-agent-harness/selection-policy",
+                      "plugins/sdk-agent-harness/attempt-runtime",
+                      "plugins/sdk-agent-harness/user-input-and-execution",
+                      "plugins/sdk-agent-harness/native-inventories",
+                      "plugins/sdk-agent-harness/runtime-config",
+                      "plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "plugins/sdk-setup",
                   "plugins/sdk-testing"
                 ]
@@ -4185,6 +4198,19 @@
                     ]
                   },
                   "zh-CN/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "zh-CN/plugins/sdk-agent-harness/core-ownership",
+                      "zh-CN/plugins/sdk-agent-harness/registration",
+                      "zh-CN/plugins/sdk-agent-harness/selection-policy",
+                      "zh-CN/plugins/sdk-agent-harness/attempt-runtime",
+                      "zh-CN/plugins/sdk-agent-harness/user-input-and-execution",
+                      "zh-CN/plugins/sdk-agent-harness/native-inventories",
+                      "zh-CN/plugins/sdk-agent-harness/runtime-config",
+                      "zh-CN/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-setup",
                   "zh-CN/plugins/sdk-testing"
                 ]
@@ -5720,6 +5746,19 @@
                     ]
                   },
                   "zh-TW/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "zh-TW/plugins/sdk-agent-harness/core-ownership",
+                      "zh-TW/plugins/sdk-agent-harness/registration",
+                      "zh-TW/plugins/sdk-agent-harness/selection-policy",
+                      "zh-TW/plugins/sdk-agent-harness/attempt-runtime",
+                      "zh-TW/plugins/sdk-agent-harness/user-input-and-execution",
+                      "zh-TW/plugins/sdk-agent-harness/native-inventories",
+                      "zh-TW/plugins/sdk-agent-harness/runtime-config",
+                      "zh-TW/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-setup",
                   "zh-TW/plugins/sdk-testing"
                 ]
@@ -7255,6 +7294,19 @@
                     ]
                   },
                   "ja-JP/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "ja-JP/plugins/sdk-agent-harness/core-ownership",
+                      "ja-JP/plugins/sdk-agent-harness/registration",
+                      "ja-JP/plugins/sdk-agent-harness/selection-policy",
+                      "ja-JP/plugins/sdk-agent-harness/attempt-runtime",
+                      "ja-JP/plugins/sdk-agent-harness/user-input-and-execution",
+                      "ja-JP/plugins/sdk-agent-harness/native-inventories",
+                      "ja-JP/plugins/sdk-agent-harness/runtime-config",
+                      "ja-JP/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-setup",
                   "ja-JP/plugins/sdk-testing"
                 ]
@@ -8790,6 +8842,19 @@
                     ]
                   },
                   "es/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "es/plugins/sdk-agent-harness/core-ownership",
+                      "es/plugins/sdk-agent-harness/registration",
+                      "es/plugins/sdk-agent-harness/selection-policy",
+                      "es/plugins/sdk-agent-harness/attempt-runtime",
+                      "es/plugins/sdk-agent-harness/user-input-and-execution",
+                      "es/plugins/sdk-agent-harness/native-inventories",
+                      "es/plugins/sdk-agent-harness/runtime-config",
+                      "es/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "es/plugins/sdk-setup",
                   "es/plugins/sdk-testing"
                 ]
@@ -10325,6 +10390,19 @@
                     ]
                   },
                   "pt-BR/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "pt-BR/plugins/sdk-agent-harness/core-ownership",
+                      "pt-BR/plugins/sdk-agent-harness/registration",
+                      "pt-BR/plugins/sdk-agent-harness/selection-policy",
+                      "pt-BR/plugins/sdk-agent-harness/attempt-runtime",
+                      "pt-BR/plugins/sdk-agent-harness/user-input-and-execution",
+                      "pt-BR/plugins/sdk-agent-harness/native-inventories",
+                      "pt-BR/plugins/sdk-agent-harness/runtime-config",
+                      "pt-BR/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-setup",
                   "pt-BR/plugins/sdk-testing"
                 ]
@@ -11860,6 +11938,19 @@
                     ]
                   },
                   "ko/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "ko/plugins/sdk-agent-harness/core-ownership",
+                      "ko/plugins/sdk-agent-harness/registration",
+                      "ko/plugins/sdk-agent-harness/selection-policy",
+                      "ko/plugins/sdk-agent-harness/attempt-runtime",
+                      "ko/plugins/sdk-agent-harness/user-input-and-execution",
+                      "ko/plugins/sdk-agent-harness/native-inventories",
+                      "ko/plugins/sdk-agent-harness/runtime-config",
+                      "ko/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "ko/plugins/sdk-setup",
                   "ko/plugins/sdk-testing"
                 ]
@@ -13395,6 +13486,19 @@
                     ]
                   },
                   "de/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "de/plugins/sdk-agent-harness/core-ownership",
+                      "de/plugins/sdk-agent-harness/registration",
+                      "de/plugins/sdk-agent-harness/selection-policy",
+                      "de/plugins/sdk-agent-harness/attempt-runtime",
+                      "de/plugins/sdk-agent-harness/user-input-and-execution",
+                      "de/plugins/sdk-agent-harness/native-inventories",
+                      "de/plugins/sdk-agent-harness/runtime-config",
+                      "de/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "de/plugins/sdk-setup",
                   "de/plugins/sdk-testing"
                 ]
@@ -14930,6 +15034,19 @@
                     ]
                   },
                   "fr/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "fr/plugins/sdk-agent-harness/core-ownership",
+                      "fr/plugins/sdk-agent-harness/registration",
+                      "fr/plugins/sdk-agent-harness/selection-policy",
+                      "fr/plugins/sdk-agent-harness/attempt-runtime",
+                      "fr/plugins/sdk-agent-harness/user-input-and-execution",
+                      "fr/plugins/sdk-agent-harness/native-inventories",
+                      "fr/plugins/sdk-agent-harness/runtime-config",
+                      "fr/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "fr/plugins/sdk-setup",
                   "fr/plugins/sdk-testing"
                 ]
@@ -16465,6 +16582,19 @@
                     ]
                   },
                   "hi/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "hi/plugins/sdk-agent-harness/core-ownership",
+                      "hi/plugins/sdk-agent-harness/registration",
+                      "hi/plugins/sdk-agent-harness/selection-policy",
+                      "hi/plugins/sdk-agent-harness/attempt-runtime",
+                      "hi/plugins/sdk-agent-harness/user-input-and-execution",
+                      "hi/plugins/sdk-agent-harness/native-inventories",
+                      "hi/plugins/sdk-agent-harness/runtime-config",
+                      "hi/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "hi/plugins/sdk-setup",
                   "hi/plugins/sdk-testing"
                 ]
@@ -18000,6 +18130,19 @@
                     ]
                   },
                   "ar/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "ar/plugins/sdk-agent-harness/core-ownership",
+                      "ar/plugins/sdk-agent-harness/registration",
+                      "ar/plugins/sdk-agent-harness/selection-policy",
+                      "ar/plugins/sdk-agent-harness/attempt-runtime",
+                      "ar/plugins/sdk-agent-harness/user-input-and-execution",
+                      "ar/plugins/sdk-agent-harness/native-inventories",
+                      "ar/plugins/sdk-agent-harness/runtime-config",
+                      "ar/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "ar/plugins/sdk-setup",
                   "ar/plugins/sdk-testing"
                 ]
@@ -19535,6 +19678,19 @@
                     ]
                   },
                   "it/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "it/plugins/sdk-agent-harness/core-ownership",
+                      "it/plugins/sdk-agent-harness/registration",
+                      "it/plugins/sdk-agent-harness/selection-policy",
+                      "it/plugins/sdk-agent-harness/attempt-runtime",
+                      "it/plugins/sdk-agent-harness/user-input-and-execution",
+                      "it/plugins/sdk-agent-harness/native-inventories",
+                      "it/plugins/sdk-agent-harness/runtime-config",
+                      "it/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "it/plugins/sdk-setup",
                   "it/plugins/sdk-testing"
                 ]
@@ -21070,6 +21226,19 @@
                     ]
                   },
                   "vi/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "vi/plugins/sdk-agent-harness/core-ownership",
+                      "vi/plugins/sdk-agent-harness/registration",
+                      "vi/plugins/sdk-agent-harness/selection-policy",
+                      "vi/plugins/sdk-agent-harness/attempt-runtime",
+                      "vi/plugins/sdk-agent-harness/user-input-and-execution",
+                      "vi/plugins/sdk-agent-harness/native-inventories",
+                      "vi/plugins/sdk-agent-harness/runtime-config",
+                      "vi/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "vi/plugins/sdk-setup",
                   "vi/plugins/sdk-testing"
                 ]
@@ -22605,6 +22774,19 @@
                     ]
                   },
                   "nl/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "nl/plugins/sdk-agent-harness/core-ownership",
+                      "nl/plugins/sdk-agent-harness/registration",
+                      "nl/plugins/sdk-agent-harness/selection-policy",
+                      "nl/plugins/sdk-agent-harness/attempt-runtime",
+                      "nl/plugins/sdk-agent-harness/user-input-and-execution",
+                      "nl/plugins/sdk-agent-harness/native-inventories",
+                      "nl/plugins/sdk-agent-harness/runtime-config",
+                      "nl/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "nl/plugins/sdk-setup",
                   "nl/plugins/sdk-testing"
                 ]
@@ -24140,6 +24322,19 @@
                     ]
                   },
                   "tr/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "tr/plugins/sdk-agent-harness/core-ownership",
+                      "tr/plugins/sdk-agent-harness/registration",
+                      "tr/plugins/sdk-agent-harness/selection-policy",
+                      "tr/plugins/sdk-agent-harness/attempt-runtime",
+                      "tr/plugins/sdk-agent-harness/user-input-and-execution",
+                      "tr/plugins/sdk-agent-harness/native-inventories",
+                      "tr/plugins/sdk-agent-harness/runtime-config",
+                      "tr/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "tr/plugins/sdk-setup",
                   "tr/plugins/sdk-testing"
                 ]
@@ -25675,6 +25870,19 @@
                     ]
                   },
                   "uk/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "uk/plugins/sdk-agent-harness/core-ownership",
+                      "uk/plugins/sdk-agent-harness/registration",
+                      "uk/plugins/sdk-agent-harness/selection-policy",
+                      "uk/plugins/sdk-agent-harness/attempt-runtime",
+                      "uk/plugins/sdk-agent-harness/user-input-and-execution",
+                      "uk/plugins/sdk-agent-harness/native-inventories",
+                      "uk/plugins/sdk-agent-harness/runtime-config",
+                      "uk/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "uk/plugins/sdk-setup",
                   "uk/plugins/sdk-testing"
                 ]
@@ -27210,6 +27418,19 @@
                     ]
                   },
                   "id/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "id/plugins/sdk-agent-harness/core-ownership",
+                      "id/plugins/sdk-agent-harness/registration",
+                      "id/plugins/sdk-agent-harness/selection-policy",
+                      "id/plugins/sdk-agent-harness/attempt-runtime",
+                      "id/plugins/sdk-agent-harness/user-input-and-execution",
+                      "id/plugins/sdk-agent-harness/native-inventories",
+                      "id/plugins/sdk-agent-harness/runtime-config",
+                      "id/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "id/plugins/sdk-setup",
                   "id/plugins/sdk-testing"
                 ]
@@ -28745,6 +28966,19 @@
                     ]
                   },
                   "pl/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "pl/plugins/sdk-agent-harness/core-ownership",
+                      "pl/plugins/sdk-agent-harness/registration",
+                      "pl/plugins/sdk-agent-harness/selection-policy",
+                      "pl/plugins/sdk-agent-harness/attempt-runtime",
+                      "pl/plugins/sdk-agent-harness/user-input-and-execution",
+                      "pl/plugins/sdk-agent-harness/native-inventories",
+                      "pl/plugins/sdk-agent-harness/runtime-config",
+                      "pl/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "pl/plugins/sdk-setup",
                   "pl/plugins/sdk-testing"
                 ]
@@ -30280,6 +30514,19 @@
                     ]
                   },
                   "ru/plugins/sdk-agent-harness",
+                  {
+                    "group": "Agent harness plugins",
+                    "pages": [
+                      "ru/plugins/sdk-agent-harness/core-ownership",
+                      "ru/plugins/sdk-agent-harness/registration",
+                      "ru/plugins/sdk-agent-harness/selection-policy",
+                      "ru/plugins/sdk-agent-harness/attempt-runtime",
+                      "ru/plugins/sdk-agent-harness/user-input-and-execution",
+                      "ru/plugins/sdk-agent-harness/native-inventories",
+                      "ru/plugins/sdk-agent-harness/runtime-config",
+                      "ru/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
                   "ru/plugins/sdk-setup",
                   "ru/plugins/sdk-testing"
                 ]

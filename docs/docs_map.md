@@ -8792,6 +8792,32 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness
 - Headings:
   - H2: When to use a harness
+  - H2: Where each section moved
+  - H3: Core ownership contract
+  - H3: Harness registration
+  - H3: Harness selection and provider pairing
+  - H3: Attempt runtime helpers
+  - H3: User input and execution authority
+  - H3: Native inventories
+  - H3: Runtime configuration
+  - H3: Sessions and results
+  - H2: Current limitations
+  - H2: Related
+
+## plugins/sdk-agent-harness/attempt-runtime.md
+
+- Route: /plugins/sdk-agent-harness/attempt-runtime
+- Headings:
+  - H2: Guarded active-run injection
+  - H2: Tool-result middleware
+  - H2: Terminal outcome classification
+  - H2: Live output-token usage
+  - H2: Agent-end side effects
+
+## plugins/sdk-agent-harness/core-ownership.md
+
+- Route: /plugins/sdk-agent-harness/core-ownership
+- Headings:
   - H2: What core still owns
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
@@ -8799,29 +8825,52 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Verified setup runtime artifacts
   - H3: Request-transport contract
   - H3: Per-turn temporal context
+
+## plugins/sdk-agent-harness/native-inventories.md
+
+- Route: /plugins/sdk-agent-harness/native-inventories
+- Headings:
+  - H2: Native model inventory
+  - H2: Native MCP inventory
+
+## plugins/sdk-agent-harness/registration.md
+
+- Route: /plugins/sdk-agent-harness/registration
+- Headings:
   - H2: Register a harness
   - H3: Isolated completion
   - H3: Delegated execution
+
+## plugins/sdk-agent-harness/runtime-config.md
+
+- Route: /plugins/sdk-agent-harness/runtime-config
+- Headings:
+  - H2: Native Codex harness mode
+  - H2: Runtime strictness
+
+## plugins/sdk-agent-harness/selection-policy.md
+
+- Route: /plugins/sdk-agent-harness/selection-policy
+- Headings:
   - H2: Selection policy
   - H2: Provider plus harness pairing
-  - H3: Guarded active-run injection
-  - H3: Tool-result middleware
-  - H3: Terminal outcome classification
-  - H3: Live output-token usage
-  - H3: Agent-end side effects
-  - H3: User input and tool surfaces
-  - H3: Exec reviewer outcomes
-  - H3: Paired-device execution
-  - H3: Native model inventory
-  - H3: Native MCP inventory
-  - H3: Native Codex harness mode
-  - H2: Runtime strictness
+
+## plugins/sdk-agent-harness/sessions-and-results.md
+
+- Route: /plugins/sdk-agent-harness/sessions-and-results
+- Headings:
   - H2: Native sessions and transcript mirror
   - H2: Tool and media results
-  - H3: Terminal tool outcomes
-  - H3: Settled tool finalization
-  - H2: Current limitations
-  - H2: Related
+  - H2: Terminal tool outcomes
+  - H2: Settled tool finalization
+
+## plugins/sdk-agent-harness/user-input-and-execution.md
+
+- Route: /plugins/sdk-agent-harness/user-input-and-execution
+- Headings:
+  - H2: User input and tool surfaces
+  - H2: Exec reviewer outcomes
+  - H2: Paired-device execution
 
 ## plugins/sdk-channel-inbound.md
 
