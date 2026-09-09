@@ -1544,7 +1544,22 @@
                     ]
                   },
                   "channels/sms",
-                  "channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "channels/telegram",
+                      "channels/telegram/setup",
+                      "channels/telegram/access-control",
+                      "channels/telegram/messaging",
+                      "channels/telegram/threads-and-sessions",
+                      "channels/telegram/rich-messages",
+                      "channels/telegram/media",
+                      "channels/telegram/events",
+                      "channels/telegram/transports",
+                      "channels/telegram/mini-app",
+                      "channels/telegram/troubleshooting"
+                    ]
+                  },
                   "channels/whatsapp"
                 ]
               },
@@ -2592,6 +2607,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "cli/plugins/authoring",
+                          "cli/plugins/install",
+                          "cli/plugins/list",
+                          "cli/plugins/uninstall-and-update",
+                          "cli/plugins/inspect-and-diagnose",
+                          "cli/plugins/marketplace"
+                        ]
+                      },
                       "cli/path",
                       "cli/policy",
                       {
@@ -3194,7 +3220,22 @@
                     ]
                   },
                   "zh-CN/channels/sms",
-                  "zh-CN/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "zh-CN/channels/telegram",
+                      "zh-CN/channels/telegram/setup",
+                      "zh-CN/channels/telegram/access-control",
+                      "zh-CN/channels/telegram/messaging",
+                      "zh-CN/channels/telegram/threads-and-sessions",
+                      "zh-CN/channels/telegram/rich-messages",
+                      "zh-CN/channels/telegram/media",
+                      "zh-CN/channels/telegram/events",
+                      "zh-CN/channels/telegram/transports",
+                      "zh-CN/channels/telegram/mini-app",
+                      "zh-CN/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "zh-CN/channels/whatsapp"
                 ]
               },
@@ -4208,6 +4249,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "zh-CN/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "zh-CN/cli/plugins/authoring",
+                          "zh-CN/cli/plugins/install",
+                          "zh-CN/cli/plugins/list",
+                          "zh-CN/cli/plugins/uninstall-and-update",
+                          "zh-CN/cli/plugins/inspect-and-diagnose",
+                          "zh-CN/cli/plugins/marketplace"
+                        ]
+                      },
                       "zh-CN/cli/path",
                       "zh-CN/cli/policy",
                       {
@@ -4810,7 +4862,22 @@
                     ]
                   },
                   "zh-TW/channels/sms",
-                  "zh-TW/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "zh-TW/channels/telegram",
+                      "zh-TW/channels/telegram/setup",
+                      "zh-TW/channels/telegram/access-control",
+                      "zh-TW/channels/telegram/messaging",
+                      "zh-TW/channels/telegram/threads-and-sessions",
+                      "zh-TW/channels/telegram/rich-messages",
+                      "zh-TW/channels/telegram/media",
+                      "zh-TW/channels/telegram/events",
+                      "zh-TW/channels/telegram/transports",
+                      "zh-TW/channels/telegram/mini-app",
+                      "zh-TW/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "zh-TW/channels/whatsapp"
                 ]
               },
@@ -5824,6 +5891,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "zh-TW/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "zh-TW/cli/plugins/authoring",
+                          "zh-TW/cli/plugins/install",
+                          "zh-TW/cli/plugins/list",
+                          "zh-TW/cli/plugins/uninstall-and-update",
+                          "zh-TW/cli/plugins/inspect-and-diagnose",
+                          "zh-TW/cli/plugins/marketplace"
+                        ]
+                      },
                       "zh-TW/cli/path",
                       "zh-TW/cli/policy",
                       {
@@ -6426,7 +6504,22 @@
                     ]
                   },
                   "ja-JP/channels/sms",
-                  "ja-JP/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "ja-JP/channels/telegram",
+                      "ja-JP/channels/telegram/setup",
+                      "ja-JP/channels/telegram/access-control",
+                      "ja-JP/channels/telegram/messaging",
+                      "ja-JP/channels/telegram/threads-and-sessions",
+                      "ja-JP/channels/telegram/rich-messages",
+                      "ja-JP/channels/telegram/media",
+                      "ja-JP/channels/telegram/events",
+                      "ja-JP/channels/telegram/transports",
+                      "ja-JP/channels/telegram/mini-app",
+                      "ja-JP/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "ja-JP/channels/whatsapp"
                 ]
               },
@@ -7440,6 +7533,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ja-JP/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "ja-JP/cli/plugins/authoring",
+                          "ja-JP/cli/plugins/install",
+                          "ja-JP/cli/plugins/list",
+                          "ja-JP/cli/plugins/uninstall-and-update",
+                          "ja-JP/cli/plugins/inspect-and-diagnose",
+                          "ja-JP/cli/plugins/marketplace"
+                        ]
+                      },
                       "ja-JP/cli/path",
                       "ja-JP/cli/policy",
                       {
@@ -8042,7 +8146,22 @@
                     ]
                   },
                   "es/channels/sms",
-                  "es/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "es/channels/telegram",
+                      "es/channels/telegram/setup",
+                      "es/channels/telegram/access-control",
+                      "es/channels/telegram/messaging",
+                      "es/channels/telegram/threads-and-sessions",
+                      "es/channels/telegram/rich-messages",
+                      "es/channels/telegram/media",
+                      "es/channels/telegram/events",
+                      "es/channels/telegram/transports",
+                      "es/channels/telegram/mini-app",
+                      "es/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "es/channels/whatsapp"
                 ]
               },
@@ -9056,6 +9175,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "es/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "es/cli/plugins/authoring",
+                          "es/cli/plugins/install",
+                          "es/cli/plugins/list",
+                          "es/cli/plugins/uninstall-and-update",
+                          "es/cli/plugins/inspect-and-diagnose",
+                          "es/cli/plugins/marketplace"
+                        ]
+                      },
                       "es/cli/path",
                       "es/cli/policy",
                       {
@@ -9658,7 +9788,22 @@
                     ]
                   },
                   "pt-BR/channels/sms",
-                  "pt-BR/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "pt-BR/channels/telegram",
+                      "pt-BR/channels/telegram/setup",
+                      "pt-BR/channels/telegram/access-control",
+                      "pt-BR/channels/telegram/messaging",
+                      "pt-BR/channels/telegram/threads-and-sessions",
+                      "pt-BR/channels/telegram/rich-messages",
+                      "pt-BR/channels/telegram/media",
+                      "pt-BR/channels/telegram/events",
+                      "pt-BR/channels/telegram/transports",
+                      "pt-BR/channels/telegram/mini-app",
+                      "pt-BR/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "pt-BR/channels/whatsapp"
                 ]
               },
@@ -10672,6 +10817,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "pt-BR/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "pt-BR/cli/plugins/authoring",
+                          "pt-BR/cli/plugins/install",
+                          "pt-BR/cli/plugins/list",
+                          "pt-BR/cli/plugins/uninstall-and-update",
+                          "pt-BR/cli/plugins/inspect-and-diagnose",
+                          "pt-BR/cli/plugins/marketplace"
+                        ]
+                      },
                       "pt-BR/cli/path",
                       "pt-BR/cli/policy",
                       {
@@ -11274,7 +11430,22 @@
                     ]
                   },
                   "ko/channels/sms",
-                  "ko/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "ko/channels/telegram",
+                      "ko/channels/telegram/setup",
+                      "ko/channels/telegram/access-control",
+                      "ko/channels/telegram/messaging",
+                      "ko/channels/telegram/threads-and-sessions",
+                      "ko/channels/telegram/rich-messages",
+                      "ko/channels/telegram/media",
+                      "ko/channels/telegram/events",
+                      "ko/channels/telegram/transports",
+                      "ko/channels/telegram/mini-app",
+                      "ko/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "ko/channels/whatsapp"
                 ]
               },
@@ -12288,6 +12459,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ko/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "ko/cli/plugins/authoring",
+                          "ko/cli/plugins/install",
+                          "ko/cli/plugins/list",
+                          "ko/cli/plugins/uninstall-and-update",
+                          "ko/cli/plugins/inspect-and-diagnose",
+                          "ko/cli/plugins/marketplace"
+                        ]
+                      },
                       "ko/cli/path",
                       "ko/cli/policy",
                       {
@@ -12890,7 +13072,22 @@
                     ]
                   },
                   "de/channels/sms",
-                  "de/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "de/channels/telegram",
+                      "de/channels/telegram/setup",
+                      "de/channels/telegram/access-control",
+                      "de/channels/telegram/messaging",
+                      "de/channels/telegram/threads-and-sessions",
+                      "de/channels/telegram/rich-messages",
+                      "de/channels/telegram/media",
+                      "de/channels/telegram/events",
+                      "de/channels/telegram/transports",
+                      "de/channels/telegram/mini-app",
+                      "de/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "de/channels/whatsapp"
                 ]
               },
@@ -13904,6 +14101,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "de/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "de/cli/plugins/authoring",
+                          "de/cli/plugins/install",
+                          "de/cli/plugins/list",
+                          "de/cli/plugins/uninstall-and-update",
+                          "de/cli/plugins/inspect-and-diagnose",
+                          "de/cli/plugins/marketplace"
+                        ]
+                      },
                       "de/cli/path",
                       "de/cli/policy",
                       {
@@ -14506,7 +14714,22 @@
                     ]
                   },
                   "fr/channels/sms",
-                  "fr/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "fr/channels/telegram",
+                      "fr/channels/telegram/setup",
+                      "fr/channels/telegram/access-control",
+                      "fr/channels/telegram/messaging",
+                      "fr/channels/telegram/threads-and-sessions",
+                      "fr/channels/telegram/rich-messages",
+                      "fr/channels/telegram/media",
+                      "fr/channels/telegram/events",
+                      "fr/channels/telegram/transports",
+                      "fr/channels/telegram/mini-app",
+                      "fr/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "fr/channels/whatsapp"
                 ]
               },
@@ -15520,6 +15743,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "fr/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "fr/cli/plugins/authoring",
+                          "fr/cli/plugins/install",
+                          "fr/cli/plugins/list",
+                          "fr/cli/plugins/uninstall-and-update",
+                          "fr/cli/plugins/inspect-and-diagnose",
+                          "fr/cli/plugins/marketplace"
+                        ]
+                      },
                       "fr/cli/path",
                       "fr/cli/policy",
                       {
@@ -16122,7 +16356,22 @@
                     ]
                   },
                   "hi/channels/sms",
-                  "hi/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "hi/channels/telegram",
+                      "hi/channels/telegram/setup",
+                      "hi/channels/telegram/access-control",
+                      "hi/channels/telegram/messaging",
+                      "hi/channels/telegram/threads-and-sessions",
+                      "hi/channels/telegram/rich-messages",
+                      "hi/channels/telegram/media",
+                      "hi/channels/telegram/events",
+                      "hi/channels/telegram/transports",
+                      "hi/channels/telegram/mini-app",
+                      "hi/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "hi/channels/whatsapp"
                 ]
               },
@@ -17136,6 +17385,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "hi/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "hi/cli/plugins/authoring",
+                          "hi/cli/plugins/install",
+                          "hi/cli/plugins/list",
+                          "hi/cli/plugins/uninstall-and-update",
+                          "hi/cli/plugins/inspect-and-diagnose",
+                          "hi/cli/plugins/marketplace"
+                        ]
+                      },
                       "hi/cli/path",
                       "hi/cli/policy",
                       {
@@ -17738,7 +17998,22 @@
                     ]
                   },
                   "ar/channels/sms",
-                  "ar/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "ar/channels/telegram",
+                      "ar/channels/telegram/setup",
+                      "ar/channels/telegram/access-control",
+                      "ar/channels/telegram/messaging",
+                      "ar/channels/telegram/threads-and-sessions",
+                      "ar/channels/telegram/rich-messages",
+                      "ar/channels/telegram/media",
+                      "ar/channels/telegram/events",
+                      "ar/channels/telegram/transports",
+                      "ar/channels/telegram/mini-app",
+                      "ar/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "ar/channels/whatsapp"
                 ]
               },
@@ -18752,6 +19027,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ar/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "ar/cli/plugins/authoring",
+                          "ar/cli/plugins/install",
+                          "ar/cli/plugins/list",
+                          "ar/cli/plugins/uninstall-and-update",
+                          "ar/cli/plugins/inspect-and-diagnose",
+                          "ar/cli/plugins/marketplace"
+                        ]
+                      },
                       "ar/cli/path",
                       "ar/cli/policy",
                       {
@@ -19354,7 +19640,22 @@
                     ]
                   },
                   "it/channels/sms",
-                  "it/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "it/channels/telegram",
+                      "it/channels/telegram/setup",
+                      "it/channels/telegram/access-control",
+                      "it/channels/telegram/messaging",
+                      "it/channels/telegram/threads-and-sessions",
+                      "it/channels/telegram/rich-messages",
+                      "it/channels/telegram/media",
+                      "it/channels/telegram/events",
+                      "it/channels/telegram/transports",
+                      "it/channels/telegram/mini-app",
+                      "it/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "it/channels/whatsapp"
                 ]
               },
@@ -20368,6 +20669,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "it/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "it/cli/plugins/authoring",
+                          "it/cli/plugins/install",
+                          "it/cli/plugins/list",
+                          "it/cli/plugins/uninstall-and-update",
+                          "it/cli/plugins/inspect-and-diagnose",
+                          "it/cli/plugins/marketplace"
+                        ]
+                      },
                       "it/cli/path",
                       "it/cli/policy",
                       {
@@ -20970,7 +21282,22 @@
                     ]
                   },
                   "vi/channels/sms",
-                  "vi/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "vi/channels/telegram",
+                      "vi/channels/telegram/setup",
+                      "vi/channels/telegram/access-control",
+                      "vi/channels/telegram/messaging",
+                      "vi/channels/telegram/threads-and-sessions",
+                      "vi/channels/telegram/rich-messages",
+                      "vi/channels/telegram/media",
+                      "vi/channels/telegram/events",
+                      "vi/channels/telegram/transports",
+                      "vi/channels/telegram/mini-app",
+                      "vi/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "vi/channels/whatsapp"
                 ]
               },
@@ -21984,6 +22311,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "vi/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "vi/cli/plugins/authoring",
+                          "vi/cli/plugins/install",
+                          "vi/cli/plugins/list",
+                          "vi/cli/plugins/uninstall-and-update",
+                          "vi/cli/plugins/inspect-and-diagnose",
+                          "vi/cli/plugins/marketplace"
+                        ]
+                      },
                       "vi/cli/path",
                       "vi/cli/policy",
                       {
@@ -22586,7 +22924,22 @@
                     ]
                   },
                   "nl/channels/sms",
-                  "nl/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "nl/channels/telegram",
+                      "nl/channels/telegram/setup",
+                      "nl/channels/telegram/access-control",
+                      "nl/channels/telegram/messaging",
+                      "nl/channels/telegram/threads-and-sessions",
+                      "nl/channels/telegram/rich-messages",
+                      "nl/channels/telegram/media",
+                      "nl/channels/telegram/events",
+                      "nl/channels/telegram/transports",
+                      "nl/channels/telegram/mini-app",
+                      "nl/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "nl/channels/whatsapp"
                 ]
               },
@@ -23600,6 +23953,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "nl/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "nl/cli/plugins/authoring",
+                          "nl/cli/plugins/install",
+                          "nl/cli/plugins/list",
+                          "nl/cli/plugins/uninstall-and-update",
+                          "nl/cli/plugins/inspect-and-diagnose",
+                          "nl/cli/plugins/marketplace"
+                        ]
+                      },
                       "nl/cli/path",
                       "nl/cli/policy",
                       {
@@ -24202,7 +24566,22 @@
                     ]
                   },
                   "tr/channels/sms",
-                  "tr/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "tr/channels/telegram",
+                      "tr/channels/telegram/setup",
+                      "tr/channels/telegram/access-control",
+                      "tr/channels/telegram/messaging",
+                      "tr/channels/telegram/threads-and-sessions",
+                      "tr/channels/telegram/rich-messages",
+                      "tr/channels/telegram/media",
+                      "tr/channels/telegram/events",
+                      "tr/channels/telegram/transports",
+                      "tr/channels/telegram/mini-app",
+                      "tr/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "tr/channels/whatsapp"
                 ]
               },
@@ -25216,6 +25595,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "tr/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "tr/cli/plugins/authoring",
+                          "tr/cli/plugins/install",
+                          "tr/cli/plugins/list",
+                          "tr/cli/plugins/uninstall-and-update",
+                          "tr/cli/plugins/inspect-and-diagnose",
+                          "tr/cli/plugins/marketplace"
+                        ]
+                      },
                       "tr/cli/path",
                       "tr/cli/policy",
                       {
@@ -25818,7 +26208,22 @@
                     ]
                   },
                   "uk/channels/sms",
-                  "uk/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "uk/channels/telegram",
+                      "uk/channels/telegram/setup",
+                      "uk/channels/telegram/access-control",
+                      "uk/channels/telegram/messaging",
+                      "uk/channels/telegram/threads-and-sessions",
+                      "uk/channels/telegram/rich-messages",
+                      "uk/channels/telegram/media",
+                      "uk/channels/telegram/events",
+                      "uk/channels/telegram/transports",
+                      "uk/channels/telegram/mini-app",
+                      "uk/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "uk/channels/whatsapp"
                 ]
               },
@@ -26832,6 +27237,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "uk/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "uk/cli/plugins/authoring",
+                          "uk/cli/plugins/install",
+                          "uk/cli/plugins/list",
+                          "uk/cli/plugins/uninstall-and-update",
+                          "uk/cli/plugins/inspect-and-diagnose",
+                          "uk/cli/plugins/marketplace"
+                        ]
+                      },
                       "uk/cli/path",
                       "uk/cli/policy",
                       {
@@ -27434,7 +27850,22 @@
                     ]
                   },
                   "id/channels/sms",
-                  "id/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "id/channels/telegram",
+                      "id/channels/telegram/setup",
+                      "id/channels/telegram/access-control",
+                      "id/channels/telegram/messaging",
+                      "id/channels/telegram/threads-and-sessions",
+                      "id/channels/telegram/rich-messages",
+                      "id/channels/telegram/media",
+                      "id/channels/telegram/events",
+                      "id/channels/telegram/transports",
+                      "id/channels/telegram/mini-app",
+                      "id/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "id/channels/whatsapp"
                 ]
               },
@@ -28448,6 +28879,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "id/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "id/cli/plugins/authoring",
+                          "id/cli/plugins/install",
+                          "id/cli/plugins/list",
+                          "id/cli/plugins/uninstall-and-update",
+                          "id/cli/plugins/inspect-and-diagnose",
+                          "id/cli/plugins/marketplace"
+                        ]
+                      },
                       "id/cli/path",
                       "id/cli/policy",
                       {
@@ -29050,7 +29492,22 @@
                     ]
                   },
                   "pl/channels/sms",
-                  "pl/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "pl/channels/telegram",
+                      "pl/channels/telegram/setup",
+                      "pl/channels/telegram/access-control",
+                      "pl/channels/telegram/messaging",
+                      "pl/channels/telegram/threads-and-sessions",
+                      "pl/channels/telegram/rich-messages",
+                      "pl/channels/telegram/media",
+                      "pl/channels/telegram/events",
+                      "pl/channels/telegram/transports",
+                      "pl/channels/telegram/mini-app",
+                      "pl/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "pl/channels/whatsapp"
                 ]
               },
@@ -30064,6 +30521,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "pl/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "pl/cli/plugins/authoring",
+                          "pl/cli/plugins/install",
+                          "pl/cli/plugins/list",
+                          "pl/cli/plugins/uninstall-and-update",
+                          "pl/cli/plugins/inspect-and-diagnose",
+                          "pl/cli/plugins/marketplace"
+                        ]
+                      },
                       "pl/cli/path",
                       "pl/cli/policy",
                       {
@@ -30666,7 +31134,22 @@
                     ]
                   },
                   "ru/channels/sms",
-                  "ru/channels/telegram",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "ru/channels/telegram",
+                      "ru/channels/telegram/setup",
+                      "ru/channels/telegram/access-control",
+                      "ru/channels/telegram/messaging",
+                      "ru/channels/telegram/threads-and-sessions",
+                      "ru/channels/telegram/rich-messages",
+                      "ru/channels/telegram/media",
+                      "ru/channels/telegram/events",
+                      "ru/channels/telegram/transports",
+                      "ru/channels/telegram/mini-app",
+                      "ru/channels/telegram/troubleshooting"
+                    ]
+                  },
                   "ru/channels/whatsapp"
                 ]
               },
@@ -31680,6 +32163,17 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ru/cli/plugins",
+                      {
+                        "group": "Plugins CLI",
+                        "pages": [
+                          "ru/cli/plugins/authoring",
+                          "ru/cli/plugins/install",
+                          "ru/cli/plugins/list",
+                          "ru/cli/plugins/uninstall-and-update",
+                          "ru/cli/plugins/inspect-and-diagnose",
+                          "ru/cli/plugins/marketplace"
+                        ]
+                      },
                       "ru/cli/path",
                       "ru/cli/policy",
                       {

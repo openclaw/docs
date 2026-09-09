@@ -1225,17 +1225,74 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/telegram
 - Headings:
-  - H2: Quick setup
-  - H2: Telegram side settings
-  - H2: Dashboard Mini App
-  - H2: Access control and activation
-  - H3: Group bot identity
-  - H2: Runtime behavior
-  - H2: Feature reference
-  - H2: Error reply controls
-  - H2: Troubleshooting
+  - H2: What each page covers
+  - H2: Where each section moved
   - H2: Configuration reference
   - H2: Related
+
+## channels/telegram/access-control.md
+
+- Route: /channels/telegram/access-control
+- Headings:
+  - H2: Access control and activation
+  - H3: Group bot identity
+
+## channels/telegram/events.md
+
+- Route: /channels/telegram/events
+- Headings:
+  - H2: Events and operations
+  - H2: Error reply controls
+
+## channels/telegram/media.md
+
+- Route: /channels/telegram/media
+- Headings:
+  - H2: Media and attachments
+
+## channels/telegram/messaging.md
+
+- Route: /channels/telegram/messaging
+- Headings:
+  - H2: Runtime behavior
+  - H2: Message behavior
+
+## channels/telegram/mini-app.md
+
+- Route: /channels/telegram/mini-app
+- Headings:
+  - H2: Dashboard Mini App
+
+## channels/telegram/rich-messages.md
+
+- Route: /channels/telegram/rich-messages
+- Headings:
+  - H2: Rich messages and approvals
+
+## channels/telegram/setup.md
+
+- Route: /channels/telegram/setup
+- Headings:
+  - H2: Quick setup
+  - H2: Telegram side settings
+
+## channels/telegram/threads-and-sessions.md
+
+- Route: /channels/telegram/threads-and-sessions
+- Headings:
+  - H2: Forum topics and sessions
+
+## channels/telegram/transports.md
+
+- Route: /channels/telegram/transports
+- Headings:
+  - H2: Long polling and webhooks
+
+## channels/telegram/troubleshooting.md
+
+- Route: /channels/telegram/troubleshooting
+- Headings:
+  - H2: Troubleshooting
 
 ## channels/tlon.md
 
@@ -2296,20 +2353,52 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/plugins
 - Headings:
   - H2: Commands
+  - H2: Plugins pages
+  - H2: Where each section moved
+  - H2: Related
+
+## cli/plugins/authoring.md
+
+- Route: /cli/plugins/authoring
+- Headings:
   - H2: Author
   - H3: Feature scaffold and artifacts
   - H3: Provider scaffold
-  - H2: Install
-  - H3: Marketplace shorthand
-  - H2: List
-  - H3: Plugin index
-  - H2: Uninstall
-  - H2: Update
+
+## cli/plugins/inspect-and-diagnose.md
+
+- Route: /cli/plugins/inspect-and-diagnose
+- Headings:
   - H2: Inspect
   - H2: Doctor
   - H2: Registry
+
+## cli/plugins/install.md
+
+- Route: /cli/plugins/install
+- Headings:
+  - H2: Install
+  - H3: Marketplace shorthand
+
+## cli/plugins/list.md
+
+- Route: /cli/plugins/list
+- Headings:
+  - H2: List
+  - H3: Plugin index
+
+## cli/plugins/marketplace.md
+
+- Route: /cli/plugins/marketplace
+- Headings:
   - H2: Marketplace
-  - H2: Related
+
+## cli/plugins/uninstall-and-update.md
+
+- Route: /cli/plugins/uninstall-and-update
+- Headings:
+  - H2: Uninstall
+  - H2: Update
 
 ## cli/policy.md
 
