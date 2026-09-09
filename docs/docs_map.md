@@ -11820,6 +11820,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Full Docker suite (pnpm test:docker:all)
   - H3: Notable Docker lanes
+  - H3: Anthropic runtime-context cache regression
   - H3: Sandbox compatibility lanes
   - H2: Onboarding E2E (Docker)
   - H2: QR import smoke (Docker)
