@@ -6542,6 +6542,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/node
 - Headings:
   - H2: Check your version
+  - H3: Update from the CLI
   - H2: Install Node
   - H2: Troubleshooting
   - H3: openclaw: command not found
