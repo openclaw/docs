@@ -7954,6 +7954,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Inspect status and audit history
   - H2: 1Password CLI behavior
   - H2: Error codes
+  - H2: Related
 
 ## plugins/plugin-inventory.md
 
@@ -11741,6 +11742,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Compatibility
   - H2: Future work
   - H2: Acceptance tests
+  - H2: Related
 
 ## start/bootstrapping.md
 

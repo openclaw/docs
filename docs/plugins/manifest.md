@@ -372,4 +372,19 @@ See [Configuration reference](/gateway/configuration) for the full `plugins.*` s
   <Card title="Manifest vs package.json" href="/plugins/manifest/package-json" icon="list">
     Which pre-runtime metadata lives in package.json, and which duplicate plugin id wins.
   </Card>
+  <Card title="Plugin setup and config" href="/plugins/sdk-setup" icon="sliders">
+    Packaging and config schemas that consume this manifest.
+  </Card>
+  <Card title="Plugin entry points" href="/plugins/sdk-entrypoints" icon="door-open">
+    `definePluginEntry` and the other entry helpers a plugin's code exports.
+  </Card>
+  <Card title="Tool plugins" href="/plugins/tool-plugins" icon="wrench">
+    Declaring `contracts.tools` for agent tools.
+  </Card>
+  <Card title="Manage plugins" href="/plugins/manage-plugins" icon="plug">
+    Installing and enabling the plugins this manifest describes.
+  </Card>
+  <Card title="Backup" href="/cli/backup" icon="box-archive">
+    The `backupResources` surface declared here.
+  </Card>
 </CardGroup>
