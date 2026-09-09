@@ -3974,28 +3974,60 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-channels
 - Headings:
   - H2: Channels
-  - H3: DM and group access
-  - H3: Channel model overrides
-  - H3: Channel defaults and heartbeat
-  - H3: WhatsApp
-  - H3: Telegram
-  - H3: Discord
-  - H3: Google Chat
-  - H3: Slack
-  - H3: Mattermost
-  - H3: Signal
-  - H3: iMessage
-  - H3: LINE
-  - H3: Matrix
-  - H3: Microsoft Teams
-  - H3: IRC
-  - H3: Multi-account (all channels)
-  - H3: Other plugin channels
-  - H3: Group chat mention gating
-  - H4: DM history limits
-  - H4: Self-chat mode
-  - H3: Commands (chat command handling)
+  - H2: Other plugin channels
+  - H2: What each page covers
+  - H2: Where each section moved
   - H2: Related
+
+## gateway/config-channels/commands.md
+
+- Route: /gateway/config-channels/commands
+- Headings:
+  - H2: Commands (chat command handling)
+
+## gateway/config-channels/community-chat.md
+
+- Route: /gateway/config-channels/community-chat
+- Headings:
+  - H2: Discord
+  - H2: Matrix
+  - H2: IRC
+
+## gateway/config-channels/mention-gating-and-history.md
+
+- Route: /gateway/config-channels/mention-gating-and-history
+- Headings:
+  - H2: Group chat mention gating
+  - H3: DM history limits
+  - H3: Self-chat mode
+
+## gateway/config-channels/personal-messaging.md
+
+- Route: /gateway/config-channels/personal-messaging
+- Headings:
+  - H2: WhatsApp
+  - H2: Telegram
+  - H2: Signal
+  - H2: iMessage
+  - H2: LINE
+
+## gateway/config-channels/shared-policies.md
+
+- Route: /gateway/config-channels/shared-policies
+- Headings:
+  - H2: DM and group access
+  - H2: Channel model overrides
+  - H2: Channel defaults and heartbeat
+  - H2: Multi-account (all channels)
+
+## gateway/config-channels/workplace-chat.md
+
+- Route: /gateway/config-channels/workplace-chat
+- Headings:
+  - H2: Google Chat
+  - H2: Slack
+  - H2: Mattermost
+  - H2: Microsoft Teams
 
 ## gateway/config-cloud-workers.md
 

@@ -2203,6 +2203,17 @@
                       "gateway/config-automation",
                       "gateway/config-browser-ui-desktop",
                       "gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "gateway/config-channels/shared-policies",
+                          "gateway/config-channels/personal-messaging",
+                          "gateway/config-channels/workplace-chat",
+                          "gateway/config-channels/community-chat",
+                          "gateway/config-channels/mention-gating-and-history",
+                          "gateway/config-channels/commands"
+                        ]
+                      },
                       "gateway/config-cloud-workers",
                       "gateway/config-extensions",
                       "gateway/config-gateway",
@@ -3751,6 +3762,17 @@
                       "zh-CN/gateway/config-automation",
                       "zh-CN/gateway/config-browser-ui-desktop",
                       "zh-CN/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "zh-CN/gateway/config-channels/shared-policies",
+                          "zh-CN/gateway/config-channels/personal-messaging",
+                          "zh-CN/gateway/config-channels/workplace-chat",
+                          "zh-CN/gateway/config-channels/community-chat",
+                          "zh-CN/gateway/config-channels/mention-gating-and-history",
+                          "zh-CN/gateway/config-channels/commands"
+                        ]
+                      },
                       "zh-CN/gateway/config-cloud-workers",
                       "zh-CN/gateway/config-extensions",
                       "zh-CN/gateway/config-gateway",
@@ -5299,6 +5321,17 @@
                       "zh-TW/gateway/config-automation",
                       "zh-TW/gateway/config-browser-ui-desktop",
                       "zh-TW/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "zh-TW/gateway/config-channels/shared-policies",
+                          "zh-TW/gateway/config-channels/personal-messaging",
+                          "zh-TW/gateway/config-channels/workplace-chat",
+                          "zh-TW/gateway/config-channels/community-chat",
+                          "zh-TW/gateway/config-channels/mention-gating-and-history",
+                          "zh-TW/gateway/config-channels/commands"
+                        ]
+                      },
                       "zh-TW/gateway/config-cloud-workers",
                       "zh-TW/gateway/config-extensions",
                       "zh-TW/gateway/config-gateway",
@@ -6847,6 +6880,17 @@
                       "ja-JP/gateway/config-automation",
                       "ja-JP/gateway/config-browser-ui-desktop",
                       "ja-JP/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "ja-JP/gateway/config-channels/shared-policies",
+                          "ja-JP/gateway/config-channels/personal-messaging",
+                          "ja-JP/gateway/config-channels/workplace-chat",
+                          "ja-JP/gateway/config-channels/community-chat",
+                          "ja-JP/gateway/config-channels/mention-gating-and-history",
+                          "ja-JP/gateway/config-channels/commands"
+                        ]
+                      },
                       "ja-JP/gateway/config-cloud-workers",
                       "ja-JP/gateway/config-extensions",
                       "ja-JP/gateway/config-gateway",
@@ -8395,6 +8439,17 @@
                       "es/gateway/config-automation",
                       "es/gateway/config-browser-ui-desktop",
                       "es/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "es/gateway/config-channels/shared-policies",
+                          "es/gateway/config-channels/personal-messaging",
+                          "es/gateway/config-channels/workplace-chat",
+                          "es/gateway/config-channels/community-chat",
+                          "es/gateway/config-channels/mention-gating-and-history",
+                          "es/gateway/config-channels/commands"
+                        ]
+                      },
                       "es/gateway/config-cloud-workers",
                       "es/gateway/config-extensions",
                       "es/gateway/config-gateway",
@@ -9943,6 +9998,17 @@
                       "pt-BR/gateway/config-automation",
                       "pt-BR/gateway/config-browser-ui-desktop",
                       "pt-BR/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "pt-BR/gateway/config-channels/shared-policies",
+                          "pt-BR/gateway/config-channels/personal-messaging",
+                          "pt-BR/gateway/config-channels/workplace-chat",
+                          "pt-BR/gateway/config-channels/community-chat",
+                          "pt-BR/gateway/config-channels/mention-gating-and-history",
+                          "pt-BR/gateway/config-channels/commands"
+                        ]
+                      },
                       "pt-BR/gateway/config-cloud-workers",
                       "pt-BR/gateway/config-extensions",
                       "pt-BR/gateway/config-gateway",
@@ -11491,6 +11557,17 @@
                       "ko/gateway/config-automation",
                       "ko/gateway/config-browser-ui-desktop",
                       "ko/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "ko/gateway/config-channels/shared-policies",
+                          "ko/gateway/config-channels/personal-messaging",
+                          "ko/gateway/config-channels/workplace-chat",
+                          "ko/gateway/config-channels/community-chat",
+                          "ko/gateway/config-channels/mention-gating-and-history",
+                          "ko/gateway/config-channels/commands"
+                        ]
+                      },
                       "ko/gateway/config-cloud-workers",
                       "ko/gateway/config-extensions",
                       "ko/gateway/config-gateway",
@@ -13039,6 +13116,17 @@
                       "de/gateway/config-automation",
                       "de/gateway/config-browser-ui-desktop",
                       "de/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "de/gateway/config-channels/shared-policies",
+                          "de/gateway/config-channels/personal-messaging",
+                          "de/gateway/config-channels/workplace-chat",
+                          "de/gateway/config-channels/community-chat",
+                          "de/gateway/config-channels/mention-gating-and-history",
+                          "de/gateway/config-channels/commands"
+                        ]
+                      },
                       "de/gateway/config-cloud-workers",
                       "de/gateway/config-extensions",
                       "de/gateway/config-gateway",
@@ -14587,6 +14675,17 @@
                       "fr/gateway/config-automation",
                       "fr/gateway/config-browser-ui-desktop",
                       "fr/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "fr/gateway/config-channels/shared-policies",
+                          "fr/gateway/config-channels/personal-messaging",
+                          "fr/gateway/config-channels/workplace-chat",
+                          "fr/gateway/config-channels/community-chat",
+                          "fr/gateway/config-channels/mention-gating-and-history",
+                          "fr/gateway/config-channels/commands"
+                        ]
+                      },
                       "fr/gateway/config-cloud-workers",
                       "fr/gateway/config-extensions",
                       "fr/gateway/config-gateway",
@@ -16135,6 +16234,17 @@
                       "hi/gateway/config-automation",
                       "hi/gateway/config-browser-ui-desktop",
                       "hi/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "hi/gateway/config-channels/shared-policies",
+                          "hi/gateway/config-channels/personal-messaging",
+                          "hi/gateway/config-channels/workplace-chat",
+                          "hi/gateway/config-channels/community-chat",
+                          "hi/gateway/config-channels/mention-gating-and-history",
+                          "hi/gateway/config-channels/commands"
+                        ]
+                      },
                       "hi/gateway/config-cloud-workers",
                       "hi/gateway/config-extensions",
                       "hi/gateway/config-gateway",
@@ -17683,6 +17793,17 @@
                       "ar/gateway/config-automation",
                       "ar/gateway/config-browser-ui-desktop",
                       "ar/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "ar/gateway/config-channels/shared-policies",
+                          "ar/gateway/config-channels/personal-messaging",
+                          "ar/gateway/config-channels/workplace-chat",
+                          "ar/gateway/config-channels/community-chat",
+                          "ar/gateway/config-channels/mention-gating-and-history",
+                          "ar/gateway/config-channels/commands"
+                        ]
+                      },
                       "ar/gateway/config-cloud-workers",
                       "ar/gateway/config-extensions",
                       "ar/gateway/config-gateway",
@@ -19231,6 +19352,17 @@
                       "it/gateway/config-automation",
                       "it/gateway/config-browser-ui-desktop",
                       "it/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "it/gateway/config-channels/shared-policies",
+                          "it/gateway/config-channels/personal-messaging",
+                          "it/gateway/config-channels/workplace-chat",
+                          "it/gateway/config-channels/community-chat",
+                          "it/gateway/config-channels/mention-gating-and-history",
+                          "it/gateway/config-channels/commands"
+                        ]
+                      },
                       "it/gateway/config-cloud-workers",
                       "it/gateway/config-extensions",
                       "it/gateway/config-gateway",
@@ -20779,6 +20911,17 @@
                       "vi/gateway/config-automation",
                       "vi/gateway/config-browser-ui-desktop",
                       "vi/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "vi/gateway/config-channels/shared-policies",
+                          "vi/gateway/config-channels/personal-messaging",
+                          "vi/gateway/config-channels/workplace-chat",
+                          "vi/gateway/config-channels/community-chat",
+                          "vi/gateway/config-channels/mention-gating-and-history",
+                          "vi/gateway/config-channels/commands"
+                        ]
+                      },
                       "vi/gateway/config-cloud-workers",
                       "vi/gateway/config-extensions",
                       "vi/gateway/config-gateway",
@@ -22327,6 +22470,17 @@
                       "nl/gateway/config-automation",
                       "nl/gateway/config-browser-ui-desktop",
                       "nl/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "nl/gateway/config-channels/shared-policies",
+                          "nl/gateway/config-channels/personal-messaging",
+                          "nl/gateway/config-channels/workplace-chat",
+                          "nl/gateway/config-channels/community-chat",
+                          "nl/gateway/config-channels/mention-gating-and-history",
+                          "nl/gateway/config-channels/commands"
+                        ]
+                      },
                       "nl/gateway/config-cloud-workers",
                       "nl/gateway/config-extensions",
                       "nl/gateway/config-gateway",
@@ -23875,6 +24029,17 @@
                       "tr/gateway/config-automation",
                       "tr/gateway/config-browser-ui-desktop",
                       "tr/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "tr/gateway/config-channels/shared-policies",
+                          "tr/gateway/config-channels/personal-messaging",
+                          "tr/gateway/config-channels/workplace-chat",
+                          "tr/gateway/config-channels/community-chat",
+                          "tr/gateway/config-channels/mention-gating-and-history",
+                          "tr/gateway/config-channels/commands"
+                        ]
+                      },
                       "tr/gateway/config-cloud-workers",
                       "tr/gateway/config-extensions",
                       "tr/gateway/config-gateway",
@@ -25423,6 +25588,17 @@
                       "uk/gateway/config-automation",
                       "uk/gateway/config-browser-ui-desktop",
                       "uk/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "uk/gateway/config-channels/shared-policies",
+                          "uk/gateway/config-channels/personal-messaging",
+                          "uk/gateway/config-channels/workplace-chat",
+                          "uk/gateway/config-channels/community-chat",
+                          "uk/gateway/config-channels/mention-gating-and-history",
+                          "uk/gateway/config-channels/commands"
+                        ]
+                      },
                       "uk/gateway/config-cloud-workers",
                       "uk/gateway/config-extensions",
                       "uk/gateway/config-gateway",
@@ -26971,6 +27147,17 @@
                       "id/gateway/config-automation",
                       "id/gateway/config-browser-ui-desktop",
                       "id/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "id/gateway/config-channels/shared-policies",
+                          "id/gateway/config-channels/personal-messaging",
+                          "id/gateway/config-channels/workplace-chat",
+                          "id/gateway/config-channels/community-chat",
+                          "id/gateway/config-channels/mention-gating-and-history",
+                          "id/gateway/config-channels/commands"
+                        ]
+                      },
                       "id/gateway/config-cloud-workers",
                       "id/gateway/config-extensions",
                       "id/gateway/config-gateway",
@@ -28519,6 +28706,17 @@
                       "pl/gateway/config-automation",
                       "pl/gateway/config-browser-ui-desktop",
                       "pl/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "pl/gateway/config-channels/shared-policies",
+                          "pl/gateway/config-channels/personal-messaging",
+                          "pl/gateway/config-channels/workplace-chat",
+                          "pl/gateway/config-channels/community-chat",
+                          "pl/gateway/config-channels/mention-gating-and-history",
+                          "pl/gateway/config-channels/commands"
+                        ]
+                      },
                       "pl/gateway/config-cloud-workers",
                       "pl/gateway/config-extensions",
                       "pl/gateway/config-gateway",
@@ -30067,6 +30265,17 @@
                       "ru/gateway/config-automation",
                       "ru/gateway/config-browser-ui-desktop",
                       "ru/gateway/config-channels",
+                      {
+                        "group": "Channels",
+                        "pages": [
+                          "ru/gateway/config-channels/shared-policies",
+                          "ru/gateway/config-channels/personal-messaging",
+                          "ru/gateway/config-channels/workplace-chat",
+                          "ru/gateway/config-channels/community-chat",
+                          "ru/gateway/config-channels/mention-gating-and-history",
+                          "ru/gateway/config-channels/commands"
+                        ]
+                      },
                       "ru/gateway/config-cloud-workers",
                       "ru/gateway/config-extensions",
                       "ru/gateway/config-gateway",
