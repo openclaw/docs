@@ -66,7 +66,7 @@
     },
     {
       "source": "/install/clawdock",
-      "destination": "/install/docker#clawdock-migration"
+      "destination": "/install/docker/compose-operations#clawdock-migration"
     },
     {
       "source": "/plan/swarms",
@@ -1427,6 +1427,15 @@
                 "pages": [
                   "install/ansible",
                   "install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "install/docker/environment-variables",
+                      "install/docker/networking-and-storage",
+                      "install/docker/compose-operations",
+                      "install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "install/nix",
                   "install/podman"
                 ]
@@ -3295,6 +3304,15 @@
                 "pages": [
                   "zh-CN/install/ansible",
                   "zh-CN/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "zh-CN/install/docker/environment-variables",
+                      "zh-CN/install/docker/networking-and-storage",
+                      "zh-CN/install/docker/compose-operations",
+                      "zh-CN/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "zh-CN/install/nix",
                   "zh-CN/install/podman"
                 ]
@@ -5129,6 +5147,15 @@
                 "pages": [
                   "zh-TW/install/ansible",
                   "zh-TW/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "zh-TW/install/docker/environment-variables",
+                      "zh-TW/install/docker/networking-and-storage",
+                      "zh-TW/install/docker/compose-operations",
+                      "zh-TW/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "zh-TW/install/nix",
                   "zh-TW/install/podman"
                 ]
@@ -6963,6 +6990,15 @@
                 "pages": [
                   "ja-JP/install/ansible",
                   "ja-JP/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "ja-JP/install/docker/environment-variables",
+                      "ja-JP/install/docker/networking-and-storage",
+                      "ja-JP/install/docker/compose-operations",
+                      "ja-JP/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "ja-JP/install/nix",
                   "ja-JP/install/podman"
                 ]
@@ -8797,6 +8833,15 @@
                 "pages": [
                   "es/install/ansible",
                   "es/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "es/install/docker/environment-variables",
+                      "es/install/docker/networking-and-storage",
+                      "es/install/docker/compose-operations",
+                      "es/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "es/install/nix",
                   "es/install/podman"
                 ]
@@ -10631,6 +10676,15 @@
                 "pages": [
                   "pt-BR/install/ansible",
                   "pt-BR/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "pt-BR/install/docker/environment-variables",
+                      "pt-BR/install/docker/networking-and-storage",
+                      "pt-BR/install/docker/compose-operations",
+                      "pt-BR/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "pt-BR/install/nix",
                   "pt-BR/install/podman"
                 ]
@@ -12465,6 +12519,15 @@
                 "pages": [
                   "ko/install/ansible",
                   "ko/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "ko/install/docker/environment-variables",
+                      "ko/install/docker/networking-and-storage",
+                      "ko/install/docker/compose-operations",
+                      "ko/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "ko/install/nix",
                   "ko/install/podman"
                 ]
@@ -14299,6 +14362,15 @@
                 "pages": [
                   "de/install/ansible",
                   "de/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "de/install/docker/environment-variables",
+                      "de/install/docker/networking-and-storage",
+                      "de/install/docker/compose-operations",
+                      "de/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "de/install/nix",
                   "de/install/podman"
                 ]
@@ -16133,6 +16205,15 @@
                 "pages": [
                   "fr/install/ansible",
                   "fr/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "fr/install/docker/environment-variables",
+                      "fr/install/docker/networking-and-storage",
+                      "fr/install/docker/compose-operations",
+                      "fr/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "fr/install/nix",
                   "fr/install/podman"
                 ]
@@ -17967,6 +18048,15 @@
                 "pages": [
                   "hi/install/ansible",
                   "hi/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "hi/install/docker/environment-variables",
+                      "hi/install/docker/networking-and-storage",
+                      "hi/install/docker/compose-operations",
+                      "hi/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "hi/install/nix",
                   "hi/install/podman"
                 ]
@@ -19801,6 +19891,15 @@
                 "pages": [
                   "ar/install/ansible",
                   "ar/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "ar/install/docker/environment-variables",
+                      "ar/install/docker/networking-and-storage",
+                      "ar/install/docker/compose-operations",
+                      "ar/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "ar/install/nix",
                   "ar/install/podman"
                 ]
@@ -21635,6 +21734,15 @@
                 "pages": [
                   "it/install/ansible",
                   "it/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "it/install/docker/environment-variables",
+                      "it/install/docker/networking-and-storage",
+                      "it/install/docker/compose-operations",
+                      "it/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "it/install/nix",
                   "it/install/podman"
                 ]
@@ -23469,6 +23577,15 @@
                 "pages": [
                   "vi/install/ansible",
                   "vi/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "vi/install/docker/environment-variables",
+                      "vi/install/docker/networking-and-storage",
+                      "vi/install/docker/compose-operations",
+                      "vi/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "vi/install/nix",
                   "vi/install/podman"
                 ]
@@ -25303,6 +25420,15 @@
                 "pages": [
                   "nl/install/ansible",
                   "nl/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "nl/install/docker/environment-variables",
+                      "nl/install/docker/networking-and-storage",
+                      "nl/install/docker/compose-operations",
+                      "nl/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "nl/install/nix",
                   "nl/install/podman"
                 ]
@@ -27137,6 +27263,15 @@
                 "pages": [
                   "tr/install/ansible",
                   "tr/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "tr/install/docker/environment-variables",
+                      "tr/install/docker/networking-and-storage",
+                      "tr/install/docker/compose-operations",
+                      "tr/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "tr/install/nix",
                   "tr/install/podman"
                 ]
@@ -28971,6 +29106,15 @@
                 "pages": [
                   "uk/install/ansible",
                   "uk/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "uk/install/docker/environment-variables",
+                      "uk/install/docker/networking-and-storage",
+                      "uk/install/docker/compose-operations",
+                      "uk/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "uk/install/nix",
                   "uk/install/podman"
                 ]
@@ -30805,6 +30949,15 @@
                 "pages": [
                   "id/install/ansible",
                   "id/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "id/install/docker/environment-variables",
+                      "id/install/docker/networking-and-storage",
+                      "id/install/docker/compose-operations",
+                      "id/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "id/install/nix",
                   "id/install/podman"
                 ]
@@ -32639,6 +32792,15 @@
                 "pages": [
                   "pl/install/ansible",
                   "pl/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "pl/install/docker/environment-variables",
+                      "pl/install/docker/networking-and-storage",
+                      "pl/install/docker/compose-operations",
+                      "pl/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "pl/install/nix",
                   "pl/install/podman"
                 ]
@@ -34473,6 +34635,15 @@
                 "pages": [
                   "ru/install/ansible",
                   "ru/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "ru/install/docker/environment-variables",
+                      "ru/install/docker/networking-and-storage",
+                      "ru/install/docker/compose-operations",
+                      "ru/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
                   "ru/install/nix",
                   "ru/install/podman"
                 ]

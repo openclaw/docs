@@ -6057,23 +6057,44 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Headless bootstrap
   - H3: Manual flow
   - H3: Upgrading container images
-  - H3: Environment variables
   - H3: Source-built images with selected plugins
   - H3: Observability
   - H3: Health checks
-  - H3: LAN vs loopback
-  - H3: Host local providers
-  - H3: Claude CLI backend in Docker
-  - H3: Bonjour / mDNS
-  - H3: Storage and persistence
-  - H3: ClawDock migration
-  - H3: Image contents and security scanning
-  - H3: Weekly image refreshes
-  - H3: Running on a VPS?
+  - H2: Detailed topics
+  - H2: Related
+
+## install/docker/compose-operations.md
+
+- Route: /install/docker/compose-operations
+- Headings:
+  - H2: ClawDock migration
+  - H2: Image contents and security scanning
+  - H2: Weekly image refreshes
+  - H2: Running on a VPS?
+
+## install/docker/environment-variables.md
+
+- Route: /install/docker/environment-variables
+- Headings:
+  - H2: Environment variables
+
+## install/docker/networking-and-storage.md
+
+- Route: /install/docker/networking-and-storage
+- Headings:
+  - H2: LAN vs loopback
+  - H2: Host local providers
+  - H2: Claude CLI backend in Docker
+  - H2: Bonjour / mDNS
+  - H2: Storage and persistence
+
+## install/docker/sandbox-and-troubleshooting.md
+
+- Route: /install/docker/sandbox-and-troubleshooting
+- Headings:
   - H2: Agent sandbox
   - H3: Quick enable
   - H2: Troubleshooting
-  - H2: Related
 
 ## install/exe-dev.md
 
