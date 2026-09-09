@@ -5341,10 +5341,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Approval families
   - H3: Control UI commands
   - H3: Automation, skills, and tools
-  - H3: Session list bootstrap
-  - H3: Common event families
-  - H3: Node helper methods
-  - H3: Node exec lifecycle events
+  - H2: Session list bootstrap
+  - H2: Common event families
+  - H2: Node helper methods
+  - H2: Node exec lifecycle events
 
 ## gateway/protocol/transport.md
 
