@@ -832,29 +832,52 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/msteams
 - Headings:
-  - H2: Bundled plugin
-  - H2: Quick setup
-  - H2: Goals
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Related
+
+## channels/msteams/access-control.md
+
+- Route: /channels/msteams/access-control
+- Headings:
   - H2: Config writes
   - H2: Access control (DMs + groups)
-  - H3: How it works
-  - H3: Step 1: Create Azure Bot
-  - H3: Step 2: Get credentials
-  - H3: Step 3: Configure messaging endpoint
-  - H3: Step 4: Enable Teams channel
-  - H3: Step 5: Build Teams app manifest
-  - H3: Step 6: Configure OpenClaw
-  - H3: Step 7: Run the gateway
+  - H2: Team and Channel IDs (Common Gotcha)
+  - H2: Private channels
+
+## channels/msteams/authentication.md
+
+- Route: /channels/msteams/authentication
+- Headings:
   - H2: Federated authentication (certificate plus managed identity)
   - H3: Option A: Certificate-based authentication
   - H3: Option B: Azure Managed Identity
   - H3: AKS Workload Identity setup
   - H3: Auth type comparison
-  - H2: Local development (tunneling)
-  - H2: Testing the bot
-  - H2: Environment variables
+
+## channels/msteams/cards-and-actions.md
+
+- Route: /channels/msteams/cards-and-actions
+- Headings:
   - H2: Member info action
+  - H2: Native approval cards
+  - H2: Polls (Adaptive Cards)
+  - H2: Presentation cards
+  - H2: Target formats
+  - H2: Proactive messaging
+
+## channels/msteams/configuration.md
+
+- Route: /channels/msteams/configuration
+- Headings:
+  - H2: Environment variables
   - H2: History context
+  - H2: Configuration
+
+## channels/msteams/manifest-and-permissions.md
+
+- Route: /channels/msteams/manifest-and-permissions
+- Headings:
   - H2: Current Teams RSC permissions (manifest)
   - H2: Example Teams manifest (redacted)
   - H3: Manifest caveats (must-have fields)
@@ -865,11 +888,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: RSC vs Graph API
   - H2: Graph-enabled media + history
   - H3: Channel/group file recovery (graphMediaFallback)
-  - H2: Known limitations
-  - H3: Webhook timeouts
-  - H3: Teams cloud and service URL support
-  - H3: Formatting
-  - H2: Configuration
+
+## channels/msteams/messaging.md
+
+- Route: /channels/msteams/messaging
+- Headings:
   - H2: Routing and sessions
   - H2: Reply style: threads vs posts
   - H3: Resolution precedence
@@ -881,13 +904,33 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Sharing behavior
   - H3: Fallback behavior
   - H3: Files stored location
-  - H2: Native approval cards
-  - H2: Polls (Adaptive Cards)
-  - H2: Presentation cards
-  - H2: Target formats
-  - H2: Proactive messaging
-  - H2: Team and Channel IDs (Common Gotcha)
-  - H2: Private channels
+
+## channels/msteams/setup.md
+
+- Route: /channels/msteams/setup
+- Headings:
+  - H2: Bundled plugin
+  - H2: Quick setup
+  - H2: Goals
+  - H3: How it works
+  - H3: Step 1: Create Azure Bot
+  - H3: Step 2: Get credentials
+  - H3: Step 3: Configure messaging endpoint
+  - H3: Step 4: Enable Teams channel
+  - H3: Step 5: Build Teams app manifest
+  - H3: Step 6: Configure OpenClaw
+  - H3: Step 7: Run the gateway
+  - H2: Local development (tunneling)
+  - H2: Testing the bot
+
+## channels/msteams/troubleshooting.md
+
+- Route: /channels/msteams/troubleshooting
+- Headings:
+  - H2: Known limitations
+  - H3: Webhook timeouts
+  - H3: Teams cloud and service URL support
+  - H3: Formatting
   - H2: Troubleshooting
   - H3: Common issues
   - H3: Manifest upload errors

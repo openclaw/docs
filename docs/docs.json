@@ -1511,7 +1511,20 @@
                       "channels/matrix-push-rules"
                     ]
                   },
-                  "channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "channels/msteams",
+                      "channels/msteams/setup",
+                      "channels/msteams/access-control",
+                      "channels/msteams/authentication",
+                      "channels/msteams/manifest-and-permissions",
+                      "channels/msteams/configuration",
+                      "channels/msteams/messaging",
+                      "channels/msteams/cards-and-actions",
+                      "channels/msteams/troubleshooting"
+                    ]
+                  },
                   "channels/signal",
                   {
                     "group": "Slack",
@@ -3148,7 +3161,20 @@
                       "zh-CN/channels/matrix-push-rules"
                     ]
                   },
-                  "zh-CN/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "zh-CN/channels/msteams",
+                      "zh-CN/channels/msteams/setup",
+                      "zh-CN/channels/msteams/access-control",
+                      "zh-CN/channels/msteams/authentication",
+                      "zh-CN/channels/msteams/manifest-and-permissions",
+                      "zh-CN/channels/msteams/configuration",
+                      "zh-CN/channels/msteams/messaging",
+                      "zh-CN/channels/msteams/cards-and-actions",
+                      "zh-CN/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "zh-CN/channels/signal",
                   {
                     "group": "Slack",
@@ -4751,7 +4777,20 @@
                       "zh-TW/channels/matrix-push-rules"
                     ]
                   },
-                  "zh-TW/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "zh-TW/channels/msteams",
+                      "zh-TW/channels/msteams/setup",
+                      "zh-TW/channels/msteams/access-control",
+                      "zh-TW/channels/msteams/authentication",
+                      "zh-TW/channels/msteams/manifest-and-permissions",
+                      "zh-TW/channels/msteams/configuration",
+                      "zh-TW/channels/msteams/messaging",
+                      "zh-TW/channels/msteams/cards-and-actions",
+                      "zh-TW/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "zh-TW/channels/signal",
                   {
                     "group": "Slack",
@@ -6354,7 +6393,20 @@
                       "ja-JP/channels/matrix-push-rules"
                     ]
                   },
-                  "ja-JP/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "ja-JP/channels/msteams",
+                      "ja-JP/channels/msteams/setup",
+                      "ja-JP/channels/msteams/access-control",
+                      "ja-JP/channels/msteams/authentication",
+                      "ja-JP/channels/msteams/manifest-and-permissions",
+                      "ja-JP/channels/msteams/configuration",
+                      "ja-JP/channels/msteams/messaging",
+                      "ja-JP/channels/msteams/cards-and-actions",
+                      "ja-JP/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "ja-JP/channels/signal",
                   {
                     "group": "Slack",
@@ -7957,7 +8009,20 @@
                       "es/channels/matrix-push-rules"
                     ]
                   },
-                  "es/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "es/channels/msteams",
+                      "es/channels/msteams/setup",
+                      "es/channels/msteams/access-control",
+                      "es/channels/msteams/authentication",
+                      "es/channels/msteams/manifest-and-permissions",
+                      "es/channels/msteams/configuration",
+                      "es/channels/msteams/messaging",
+                      "es/channels/msteams/cards-and-actions",
+                      "es/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "es/channels/signal",
                   {
                     "group": "Slack",
@@ -9560,7 +9625,20 @@
                       "pt-BR/channels/matrix-push-rules"
                     ]
                   },
-                  "pt-BR/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "pt-BR/channels/msteams",
+                      "pt-BR/channels/msteams/setup",
+                      "pt-BR/channels/msteams/access-control",
+                      "pt-BR/channels/msteams/authentication",
+                      "pt-BR/channels/msteams/manifest-and-permissions",
+                      "pt-BR/channels/msteams/configuration",
+                      "pt-BR/channels/msteams/messaging",
+                      "pt-BR/channels/msteams/cards-and-actions",
+                      "pt-BR/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "pt-BR/channels/signal",
                   {
                     "group": "Slack",
@@ -11163,7 +11241,20 @@
                       "ko/channels/matrix-push-rules"
                     ]
                   },
-                  "ko/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "ko/channels/msteams",
+                      "ko/channels/msteams/setup",
+                      "ko/channels/msteams/access-control",
+                      "ko/channels/msteams/authentication",
+                      "ko/channels/msteams/manifest-and-permissions",
+                      "ko/channels/msteams/configuration",
+                      "ko/channels/msteams/messaging",
+                      "ko/channels/msteams/cards-and-actions",
+                      "ko/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "ko/channels/signal",
                   {
                     "group": "Slack",
@@ -12766,7 +12857,20 @@
                       "de/channels/matrix-push-rules"
                     ]
                   },
-                  "de/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "de/channels/msteams",
+                      "de/channels/msteams/setup",
+                      "de/channels/msteams/access-control",
+                      "de/channels/msteams/authentication",
+                      "de/channels/msteams/manifest-and-permissions",
+                      "de/channels/msteams/configuration",
+                      "de/channels/msteams/messaging",
+                      "de/channels/msteams/cards-and-actions",
+                      "de/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "de/channels/signal",
                   {
                     "group": "Slack",
@@ -14369,7 +14473,20 @@
                       "fr/channels/matrix-push-rules"
                     ]
                   },
-                  "fr/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "fr/channels/msteams",
+                      "fr/channels/msteams/setup",
+                      "fr/channels/msteams/access-control",
+                      "fr/channels/msteams/authentication",
+                      "fr/channels/msteams/manifest-and-permissions",
+                      "fr/channels/msteams/configuration",
+                      "fr/channels/msteams/messaging",
+                      "fr/channels/msteams/cards-and-actions",
+                      "fr/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "fr/channels/signal",
                   {
                     "group": "Slack",
@@ -15972,7 +16089,20 @@
                       "hi/channels/matrix-push-rules"
                     ]
                   },
-                  "hi/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "hi/channels/msteams",
+                      "hi/channels/msteams/setup",
+                      "hi/channels/msteams/access-control",
+                      "hi/channels/msteams/authentication",
+                      "hi/channels/msteams/manifest-and-permissions",
+                      "hi/channels/msteams/configuration",
+                      "hi/channels/msteams/messaging",
+                      "hi/channels/msteams/cards-and-actions",
+                      "hi/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "hi/channels/signal",
                   {
                     "group": "Slack",
@@ -17575,7 +17705,20 @@
                       "ar/channels/matrix-push-rules"
                     ]
                   },
-                  "ar/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "ar/channels/msteams",
+                      "ar/channels/msteams/setup",
+                      "ar/channels/msteams/access-control",
+                      "ar/channels/msteams/authentication",
+                      "ar/channels/msteams/manifest-and-permissions",
+                      "ar/channels/msteams/configuration",
+                      "ar/channels/msteams/messaging",
+                      "ar/channels/msteams/cards-and-actions",
+                      "ar/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "ar/channels/signal",
                   {
                     "group": "Slack",
@@ -19178,7 +19321,20 @@
                       "it/channels/matrix-push-rules"
                     ]
                   },
-                  "it/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "it/channels/msteams",
+                      "it/channels/msteams/setup",
+                      "it/channels/msteams/access-control",
+                      "it/channels/msteams/authentication",
+                      "it/channels/msteams/manifest-and-permissions",
+                      "it/channels/msteams/configuration",
+                      "it/channels/msteams/messaging",
+                      "it/channels/msteams/cards-and-actions",
+                      "it/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "it/channels/signal",
                   {
                     "group": "Slack",
@@ -20781,7 +20937,20 @@
                       "vi/channels/matrix-push-rules"
                     ]
                   },
-                  "vi/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "vi/channels/msteams",
+                      "vi/channels/msteams/setup",
+                      "vi/channels/msteams/access-control",
+                      "vi/channels/msteams/authentication",
+                      "vi/channels/msteams/manifest-and-permissions",
+                      "vi/channels/msteams/configuration",
+                      "vi/channels/msteams/messaging",
+                      "vi/channels/msteams/cards-and-actions",
+                      "vi/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "vi/channels/signal",
                   {
                     "group": "Slack",
@@ -22384,7 +22553,20 @@
                       "nl/channels/matrix-push-rules"
                     ]
                   },
-                  "nl/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "nl/channels/msteams",
+                      "nl/channels/msteams/setup",
+                      "nl/channels/msteams/access-control",
+                      "nl/channels/msteams/authentication",
+                      "nl/channels/msteams/manifest-and-permissions",
+                      "nl/channels/msteams/configuration",
+                      "nl/channels/msteams/messaging",
+                      "nl/channels/msteams/cards-and-actions",
+                      "nl/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "nl/channels/signal",
                   {
                     "group": "Slack",
@@ -23987,7 +24169,20 @@
                       "tr/channels/matrix-push-rules"
                     ]
                   },
-                  "tr/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "tr/channels/msteams",
+                      "tr/channels/msteams/setup",
+                      "tr/channels/msteams/access-control",
+                      "tr/channels/msteams/authentication",
+                      "tr/channels/msteams/manifest-and-permissions",
+                      "tr/channels/msteams/configuration",
+                      "tr/channels/msteams/messaging",
+                      "tr/channels/msteams/cards-and-actions",
+                      "tr/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "tr/channels/signal",
                   {
                     "group": "Slack",
@@ -25590,7 +25785,20 @@
                       "uk/channels/matrix-push-rules"
                     ]
                   },
-                  "uk/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "uk/channels/msteams",
+                      "uk/channels/msteams/setup",
+                      "uk/channels/msteams/access-control",
+                      "uk/channels/msteams/authentication",
+                      "uk/channels/msteams/manifest-and-permissions",
+                      "uk/channels/msteams/configuration",
+                      "uk/channels/msteams/messaging",
+                      "uk/channels/msteams/cards-and-actions",
+                      "uk/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "uk/channels/signal",
                   {
                     "group": "Slack",
@@ -27193,7 +27401,20 @@
                       "id/channels/matrix-push-rules"
                     ]
                   },
-                  "id/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "id/channels/msteams",
+                      "id/channels/msteams/setup",
+                      "id/channels/msteams/access-control",
+                      "id/channels/msteams/authentication",
+                      "id/channels/msteams/manifest-and-permissions",
+                      "id/channels/msteams/configuration",
+                      "id/channels/msteams/messaging",
+                      "id/channels/msteams/cards-and-actions",
+                      "id/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "id/channels/signal",
                   {
                     "group": "Slack",
@@ -28796,7 +29017,20 @@
                       "pl/channels/matrix-push-rules"
                     ]
                   },
-                  "pl/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "pl/channels/msteams",
+                      "pl/channels/msteams/setup",
+                      "pl/channels/msteams/access-control",
+                      "pl/channels/msteams/authentication",
+                      "pl/channels/msteams/manifest-and-permissions",
+                      "pl/channels/msteams/configuration",
+                      "pl/channels/msteams/messaging",
+                      "pl/channels/msteams/cards-and-actions",
+                      "pl/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "pl/channels/signal",
                   {
                     "group": "Slack",
@@ -30399,7 +30633,20 @@
                       "ru/channels/matrix-push-rules"
                     ]
                   },
-                  "ru/channels/msteams",
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "ru/channels/msteams",
+                      "ru/channels/msteams/setup",
+                      "ru/channels/msteams/access-control",
+                      "ru/channels/msteams/authentication",
+                      "ru/channels/msteams/manifest-and-permissions",
+                      "ru/channels/msteams/configuration",
+                      "ru/channels/msteams/messaging",
+                      "ru/channels/msteams/cards-and-actions",
+                      "ru/channels/msteams/troubleshooting"
+                    ]
+                  },
                   "ru/channels/signal",
                   {
                     "group": "Slack",
