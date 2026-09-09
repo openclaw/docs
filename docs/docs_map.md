@@ -7826,20 +7826,75 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-runtime
 - Headings:
   - H2: Overview
-  - H2: Recovery after a hard Gateway stop
-  - H2: Thread bindings and model changes
-  - H2: Supervision and safe continuation
-  - H2: Visible replies and heartbeats
-  - H2: Final answers after settled tool work
+  - H2: Media and delivery
+  - H2: Where each section moved
+  - H3: Codex process recovery
+  - H3: Codex thread bindings and supervision
+  - H3: Codex replies and final answers
+  - H3: Codex hook boundaries
+  - H3: Codex sandbox process streaming
+  - H3: Codex runtime v1 support contract
+  - H3: Codex native permissions and elicitations
+  - H3: Codex queue steering and feedback upload
+  - H3: Codex compaction and transcript mirror
+  - H2: Related
+
+## plugins/codex-harness-runtime/compaction.md
+
+- Route: /plugins/codex-harness-runtime/compaction
+- Headings:
+  - H2: Compaction and transcript mirror
+
+## plugins/codex-harness-runtime/hooks.md
+
+- Route: /plugins/codex-harness-runtime/hooks
+- Headings:
   - H2: Hook boundaries
-  - H2: Experimental sandbox process streaming
-  - H2: V1 support contract
+
+## plugins/codex-harness-runtime/permissions.md
+
+- Route: /plugins/codex-harness-runtime/permissions
+- Headings:
   - H2: Native permissions and MCP elicitations
+
+## plugins/codex-harness-runtime/queue-and-feedback.md
+
+- Route: /plugins/codex-harness-runtime/queue-and-feedback
+- Headings:
   - H2: Queue steering
   - H2: Codex feedback upload
-  - H2: Compaction and transcript mirror
-  - H2: Media and delivery
-  - H2: Related
+
+## plugins/codex-harness-runtime/recovery.md
+
+- Route: /plugins/codex-harness-runtime/recovery
+- Headings:
+  - H2: Recovery after a hard Gateway stop
+
+## plugins/codex-harness-runtime/replies.md
+
+- Route: /plugins/codex-harness-runtime/replies
+- Headings:
+  - H2: Visible replies and heartbeats
+  - H2: Final answers after settled tool work
+
+## plugins/codex-harness-runtime/sandbox-streaming.md
+
+- Route: /plugins/codex-harness-runtime/sandbox-streaming
+- Headings:
+  - H2: Experimental sandbox process streaming
+
+## plugins/codex-harness-runtime/threads.md
+
+- Route: /plugins/codex-harness-runtime/threads
+- Headings:
+  - H2: Thread bindings and model changes
+  - H2: Supervision and safe continuation
+
+## plugins/codex-harness-runtime/v1-support-contract.md
+
+- Route: /plugins/codex-harness-runtime/v1-support-contract
+- Headings:
+  - H2: V1 support contract
 
 ## plugins/codex-harness.md
 

@@ -2909,7 +2909,21 @@
                       "plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "plugins/codex-harness-runtime"
+                  "plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "plugins/codex-harness-runtime/recovery",
+                      "plugins/codex-harness-runtime/threads",
+                      "plugins/codex-harness-runtime/replies",
+                      "plugins/codex-harness-runtime/hooks",
+                      "plugins/codex-harness-runtime/sandbox-streaming",
+                      "plugins/codex-harness-runtime/v1-support-contract",
+                      "plugins/codex-harness-runtime/permissions",
+                      "plugins/codex-harness-runtime/queue-and-feedback",
+                      "plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -4865,7 +4879,21 @@
                       "zh-CN/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "zh-CN/plugins/codex-harness-runtime"
+                  "zh-CN/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "zh-CN/plugins/codex-harness-runtime/recovery",
+                      "zh-CN/plugins/codex-harness-runtime/threads",
+                      "zh-CN/plugins/codex-harness-runtime/replies",
+                      "zh-CN/plugins/codex-harness-runtime/hooks",
+                      "zh-CN/plugins/codex-harness-runtime/sandbox-streaming",
+                      "zh-CN/plugins/codex-harness-runtime/v1-support-contract",
+                      "zh-CN/plugins/codex-harness-runtime/permissions",
+                      "zh-CN/plugins/codex-harness-runtime/queue-and-feedback",
+                      "zh-CN/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -6821,7 +6849,21 @@
                       "zh-TW/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "zh-TW/plugins/codex-harness-runtime"
+                  "zh-TW/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "zh-TW/plugins/codex-harness-runtime/recovery",
+                      "zh-TW/plugins/codex-harness-runtime/threads",
+                      "zh-TW/plugins/codex-harness-runtime/replies",
+                      "zh-TW/plugins/codex-harness-runtime/hooks",
+                      "zh-TW/plugins/codex-harness-runtime/sandbox-streaming",
+                      "zh-TW/plugins/codex-harness-runtime/v1-support-contract",
+                      "zh-TW/plugins/codex-harness-runtime/permissions",
+                      "zh-TW/plugins/codex-harness-runtime/queue-and-feedback",
+                      "zh-TW/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -8777,7 +8819,21 @@
                       "ja-JP/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "ja-JP/plugins/codex-harness-runtime"
+                  "ja-JP/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "ja-JP/plugins/codex-harness-runtime/recovery",
+                      "ja-JP/plugins/codex-harness-runtime/threads",
+                      "ja-JP/plugins/codex-harness-runtime/replies",
+                      "ja-JP/plugins/codex-harness-runtime/hooks",
+                      "ja-JP/plugins/codex-harness-runtime/sandbox-streaming",
+                      "ja-JP/plugins/codex-harness-runtime/v1-support-contract",
+                      "ja-JP/plugins/codex-harness-runtime/permissions",
+                      "ja-JP/plugins/codex-harness-runtime/queue-and-feedback",
+                      "ja-JP/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -10733,7 +10789,21 @@
                       "es/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "es/plugins/codex-harness-runtime"
+                  "es/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "es/plugins/codex-harness-runtime/recovery",
+                      "es/plugins/codex-harness-runtime/threads",
+                      "es/plugins/codex-harness-runtime/replies",
+                      "es/plugins/codex-harness-runtime/hooks",
+                      "es/plugins/codex-harness-runtime/sandbox-streaming",
+                      "es/plugins/codex-harness-runtime/v1-support-contract",
+                      "es/plugins/codex-harness-runtime/permissions",
+                      "es/plugins/codex-harness-runtime/queue-and-feedback",
+                      "es/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -12689,7 +12759,21 @@
                       "pt-BR/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "pt-BR/plugins/codex-harness-runtime"
+                  "pt-BR/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "pt-BR/plugins/codex-harness-runtime/recovery",
+                      "pt-BR/plugins/codex-harness-runtime/threads",
+                      "pt-BR/plugins/codex-harness-runtime/replies",
+                      "pt-BR/plugins/codex-harness-runtime/hooks",
+                      "pt-BR/plugins/codex-harness-runtime/sandbox-streaming",
+                      "pt-BR/plugins/codex-harness-runtime/v1-support-contract",
+                      "pt-BR/plugins/codex-harness-runtime/permissions",
+                      "pt-BR/plugins/codex-harness-runtime/queue-and-feedback",
+                      "pt-BR/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -14645,7 +14729,21 @@
                       "ko/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "ko/plugins/codex-harness-runtime"
+                  "ko/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "ko/plugins/codex-harness-runtime/recovery",
+                      "ko/plugins/codex-harness-runtime/threads",
+                      "ko/plugins/codex-harness-runtime/replies",
+                      "ko/plugins/codex-harness-runtime/hooks",
+                      "ko/plugins/codex-harness-runtime/sandbox-streaming",
+                      "ko/plugins/codex-harness-runtime/v1-support-contract",
+                      "ko/plugins/codex-harness-runtime/permissions",
+                      "ko/plugins/codex-harness-runtime/queue-and-feedback",
+                      "ko/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -16601,7 +16699,21 @@
                       "de/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "de/plugins/codex-harness-runtime"
+                  "de/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "de/plugins/codex-harness-runtime/recovery",
+                      "de/plugins/codex-harness-runtime/threads",
+                      "de/plugins/codex-harness-runtime/replies",
+                      "de/plugins/codex-harness-runtime/hooks",
+                      "de/plugins/codex-harness-runtime/sandbox-streaming",
+                      "de/plugins/codex-harness-runtime/v1-support-contract",
+                      "de/plugins/codex-harness-runtime/permissions",
+                      "de/plugins/codex-harness-runtime/queue-and-feedback",
+                      "de/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -18557,7 +18669,21 @@
                       "fr/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "fr/plugins/codex-harness-runtime"
+                  "fr/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "fr/plugins/codex-harness-runtime/recovery",
+                      "fr/plugins/codex-harness-runtime/threads",
+                      "fr/plugins/codex-harness-runtime/replies",
+                      "fr/plugins/codex-harness-runtime/hooks",
+                      "fr/plugins/codex-harness-runtime/sandbox-streaming",
+                      "fr/plugins/codex-harness-runtime/v1-support-contract",
+                      "fr/plugins/codex-harness-runtime/permissions",
+                      "fr/plugins/codex-harness-runtime/queue-and-feedback",
+                      "fr/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -20513,7 +20639,21 @@
                       "hi/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "hi/plugins/codex-harness-runtime"
+                  "hi/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "hi/plugins/codex-harness-runtime/recovery",
+                      "hi/plugins/codex-harness-runtime/threads",
+                      "hi/plugins/codex-harness-runtime/replies",
+                      "hi/plugins/codex-harness-runtime/hooks",
+                      "hi/plugins/codex-harness-runtime/sandbox-streaming",
+                      "hi/plugins/codex-harness-runtime/v1-support-contract",
+                      "hi/plugins/codex-harness-runtime/permissions",
+                      "hi/plugins/codex-harness-runtime/queue-and-feedback",
+                      "hi/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -22469,7 +22609,21 @@
                       "ar/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "ar/plugins/codex-harness-runtime"
+                  "ar/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "ar/plugins/codex-harness-runtime/recovery",
+                      "ar/plugins/codex-harness-runtime/threads",
+                      "ar/plugins/codex-harness-runtime/replies",
+                      "ar/plugins/codex-harness-runtime/hooks",
+                      "ar/plugins/codex-harness-runtime/sandbox-streaming",
+                      "ar/plugins/codex-harness-runtime/v1-support-contract",
+                      "ar/plugins/codex-harness-runtime/permissions",
+                      "ar/plugins/codex-harness-runtime/queue-and-feedback",
+                      "ar/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -24425,7 +24579,21 @@
                       "it/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "it/plugins/codex-harness-runtime"
+                  "it/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "it/plugins/codex-harness-runtime/recovery",
+                      "it/plugins/codex-harness-runtime/threads",
+                      "it/plugins/codex-harness-runtime/replies",
+                      "it/plugins/codex-harness-runtime/hooks",
+                      "it/plugins/codex-harness-runtime/sandbox-streaming",
+                      "it/plugins/codex-harness-runtime/v1-support-contract",
+                      "it/plugins/codex-harness-runtime/permissions",
+                      "it/plugins/codex-harness-runtime/queue-and-feedback",
+                      "it/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -26381,7 +26549,21 @@
                       "vi/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "vi/plugins/codex-harness-runtime"
+                  "vi/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "vi/plugins/codex-harness-runtime/recovery",
+                      "vi/plugins/codex-harness-runtime/threads",
+                      "vi/plugins/codex-harness-runtime/replies",
+                      "vi/plugins/codex-harness-runtime/hooks",
+                      "vi/plugins/codex-harness-runtime/sandbox-streaming",
+                      "vi/plugins/codex-harness-runtime/v1-support-contract",
+                      "vi/plugins/codex-harness-runtime/permissions",
+                      "vi/plugins/codex-harness-runtime/queue-and-feedback",
+                      "vi/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -28337,7 +28519,21 @@
                       "nl/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "nl/plugins/codex-harness-runtime"
+                  "nl/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "nl/plugins/codex-harness-runtime/recovery",
+                      "nl/plugins/codex-harness-runtime/threads",
+                      "nl/plugins/codex-harness-runtime/replies",
+                      "nl/plugins/codex-harness-runtime/hooks",
+                      "nl/plugins/codex-harness-runtime/sandbox-streaming",
+                      "nl/plugins/codex-harness-runtime/v1-support-contract",
+                      "nl/plugins/codex-harness-runtime/permissions",
+                      "nl/plugins/codex-harness-runtime/queue-and-feedback",
+                      "nl/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -30293,7 +30489,21 @@
                       "tr/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "tr/plugins/codex-harness-runtime"
+                  "tr/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "tr/plugins/codex-harness-runtime/recovery",
+                      "tr/plugins/codex-harness-runtime/threads",
+                      "tr/plugins/codex-harness-runtime/replies",
+                      "tr/plugins/codex-harness-runtime/hooks",
+                      "tr/plugins/codex-harness-runtime/sandbox-streaming",
+                      "tr/plugins/codex-harness-runtime/v1-support-contract",
+                      "tr/plugins/codex-harness-runtime/permissions",
+                      "tr/plugins/codex-harness-runtime/queue-and-feedback",
+                      "tr/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -32249,7 +32459,21 @@
                       "uk/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "uk/plugins/codex-harness-runtime"
+                  "uk/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "uk/plugins/codex-harness-runtime/recovery",
+                      "uk/plugins/codex-harness-runtime/threads",
+                      "uk/plugins/codex-harness-runtime/replies",
+                      "uk/plugins/codex-harness-runtime/hooks",
+                      "uk/plugins/codex-harness-runtime/sandbox-streaming",
+                      "uk/plugins/codex-harness-runtime/v1-support-contract",
+                      "uk/plugins/codex-harness-runtime/permissions",
+                      "uk/plugins/codex-harness-runtime/queue-and-feedback",
+                      "uk/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -34205,7 +34429,21 @@
                       "id/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "id/plugins/codex-harness-runtime"
+                  "id/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "id/plugins/codex-harness-runtime/recovery",
+                      "id/plugins/codex-harness-runtime/threads",
+                      "id/plugins/codex-harness-runtime/replies",
+                      "id/plugins/codex-harness-runtime/hooks",
+                      "id/plugins/codex-harness-runtime/sandbox-streaming",
+                      "id/plugins/codex-harness-runtime/v1-support-contract",
+                      "id/plugins/codex-harness-runtime/permissions",
+                      "id/plugins/codex-harness-runtime/queue-and-feedback",
+                      "id/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -36161,7 +36399,21 @@
                       "pl/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "pl/plugins/codex-harness-runtime"
+                  "pl/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "pl/plugins/codex-harness-runtime/recovery",
+                      "pl/plugins/codex-harness-runtime/threads",
+                      "pl/plugins/codex-harness-runtime/replies",
+                      "pl/plugins/codex-harness-runtime/hooks",
+                      "pl/plugins/codex-harness-runtime/sandbox-streaming",
+                      "pl/plugins/codex-harness-runtime/v1-support-contract",
+                      "pl/plugins/codex-harness-runtime/permissions",
+                      "pl/plugins/codex-harness-runtime/queue-and-feedback",
+                      "pl/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
@@ -38117,7 +38369,21 @@
                       "ru/plugins/codex-harness-reference/workspace-bootstrap-files"
                     ]
                   },
-                  "ru/plugins/codex-harness-runtime"
+                  "ru/plugins/codex-harness-runtime",
+                  {
+                    "group": "Codex harness runtime",
+                    "pages": [
+                      "ru/plugins/codex-harness-runtime/recovery",
+                      "ru/plugins/codex-harness-runtime/threads",
+                      "ru/plugins/codex-harness-runtime/replies",
+                      "ru/plugins/codex-harness-runtime/hooks",
+                      "ru/plugins/codex-harness-runtime/sandbox-streaming",
+                      "ru/plugins/codex-harness-runtime/v1-support-contract",
+                      "ru/plugins/codex-harness-runtime/permissions",
+                      "ru/plugins/codex-harness-runtime/queue-and-feedback",
+                      "ru/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
                 ]
               },
               {
