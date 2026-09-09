@@ -6530,6 +6530,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/node-compatibility
 - Headings:
   - H2: Supported versions
+  - H2: How the gate decides
   - H2: Why the floors exist
   - H2: Platform consequences
   - H2: What the installer provisions
