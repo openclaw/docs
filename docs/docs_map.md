@@ -11989,16 +11989,49 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser
 - Headings:
   - H2: What you get
-  - H2: Quick start
-  - H2: Plugin control
-  - H2: Agent guidance
-  - H2: Missing browser command or tool
-  - H2: Profiles: openclaw, user, chrome
-  - H3: Browser panel in the Control UI
+  - H2: Where each section moved
+  - H2: Related
+
+## tools/browser/agent-tools.md
+
+- Route: /tools/browser/agent-tools
+- Headings: none
+
+## tools/browser/configuration.md
+
+- Route: /tools/browser/configuration
+- Headings:
   - H2: Configuration
   - H3: Tab cleanup ownership
   - H3: Screenshot vision (text-only model support)
   - H2: Use Brave or another Chromium-based browser
+
+## tools/browser/existing-session.md
+
+- Route: /tools/browser/existing-session
+- Headings:
+  - H2: Profiles (multi-browser)
+  - H2: Existing session via Chrome DevTools MCP
+  - H3: Custom Chrome MCP launch
+
+## tools/browser/isolation.md
+
+- Route: /tools/browser/isolation
+- Headings:
+  - H2: Isolation guarantees
+  - H2: Browser selection
+  - H2: Control API (optional)
+
+## tools/browser/profiles.md
+
+- Route: /tools/browser/profiles
+- Headings:
+  - H2: Browser panel in the Control UI
+
+## tools/browser/remote.md
+
+- Route: /tools/browser/remote
+- Headings:
   - H2: Local vs remote control
   - H2: Node browser proxy (zero-config default)
   - H2: Browserless (hosted remote CDP)
@@ -12006,17 +12039,26 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Direct WebSocket CDP providers
   - H3: Browserbase
   - H3: Notte
-  - H2: Security
-  - H2: Profiles (multi-browser)
-  - H2: Existing session via Chrome DevTools MCP
-  - H3: Custom Chrome MCP launch
-  - H2: Isolation guarantees
-  - H2: Browser selection
-  - H2: Control API (optional)
-  - H2: Troubleshooting
-  - H3: CDP startup failure vs navigation SSRF block
-  - H2: Agent tools + how control works
-  - H2: Related
+
+## tools/browser/security.md
+
+- Route: /tools/browser/security
+- Headings: none
+
+## tools/browser/setup.md
+
+- Route: /tools/browser/setup
+- Headings:
+  - H2: Quick start
+  - H2: Plugin control
+  - H2: Agent guidance
+  - H2: Missing browser command or tool
+
+## tools/browser/troubleshooting.md
+
+- Route: /tools/browser/troubleshooting
+- Headings:
+  - H2: CDP startup failure vs navigation SSRF block
 
 ## tools/btw.md
 

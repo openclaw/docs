@@ -1941,6 +1941,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "tools/browser/setup",
+                          "tools/browser/profiles",
+                          "tools/browser/configuration",
+                          "tools/browser/remote",
+                          "tools/browser/security",
+                          "tools/browser/existing-session",
+                          "tools/browser/isolation",
+                          "tools/browser/troubleshooting",
+                          "tools/browser/agent-tools"
+                        ]
+                      },
                       "tools/browser-control",
                       "tools/browser-linux-troubleshooting",
                       "tools/browser-login",
@@ -3639,6 +3653,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "zh-CN/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "zh-CN/tools/browser/setup",
+                          "zh-CN/tools/browser/profiles",
+                          "zh-CN/tools/browser/configuration",
+                          "zh-CN/tools/browser/remote",
+                          "zh-CN/tools/browser/security",
+                          "zh-CN/tools/browser/existing-session",
+                          "zh-CN/tools/browser/isolation",
+                          "zh-CN/tools/browser/troubleshooting",
+                          "zh-CN/tools/browser/agent-tools"
+                        ]
+                      },
                       "zh-CN/tools/browser-control",
                       "zh-CN/tools/browser-linux-troubleshooting",
                       "zh-CN/tools/browser-login",
@@ -5303,6 +5331,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "zh-TW/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "zh-TW/tools/browser/setup",
+                          "zh-TW/tools/browser/profiles",
+                          "zh-TW/tools/browser/configuration",
+                          "zh-TW/tools/browser/remote",
+                          "zh-TW/tools/browser/security",
+                          "zh-TW/tools/browser/existing-session",
+                          "zh-TW/tools/browser/isolation",
+                          "zh-TW/tools/browser/troubleshooting",
+                          "zh-TW/tools/browser/agent-tools"
+                        ]
+                      },
                       "zh-TW/tools/browser-control",
                       "zh-TW/tools/browser-linux-troubleshooting",
                       "zh-TW/tools/browser-login",
@@ -6967,6 +7009,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "ja-JP/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "ja-JP/tools/browser/setup",
+                          "ja-JP/tools/browser/profiles",
+                          "ja-JP/tools/browser/configuration",
+                          "ja-JP/tools/browser/remote",
+                          "ja-JP/tools/browser/security",
+                          "ja-JP/tools/browser/existing-session",
+                          "ja-JP/tools/browser/isolation",
+                          "ja-JP/tools/browser/troubleshooting",
+                          "ja-JP/tools/browser/agent-tools"
+                        ]
+                      },
                       "ja-JP/tools/browser-control",
                       "ja-JP/tools/browser-linux-troubleshooting",
                       "ja-JP/tools/browser-login",
@@ -8631,6 +8687,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "es/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "es/tools/browser/setup",
+                          "es/tools/browser/profiles",
+                          "es/tools/browser/configuration",
+                          "es/tools/browser/remote",
+                          "es/tools/browser/security",
+                          "es/tools/browser/existing-session",
+                          "es/tools/browser/isolation",
+                          "es/tools/browser/troubleshooting",
+                          "es/tools/browser/agent-tools"
+                        ]
+                      },
                       "es/tools/browser-control",
                       "es/tools/browser-linux-troubleshooting",
                       "es/tools/browser-login",
@@ -10295,6 +10365,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "pt-BR/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "pt-BR/tools/browser/setup",
+                          "pt-BR/tools/browser/profiles",
+                          "pt-BR/tools/browser/configuration",
+                          "pt-BR/tools/browser/remote",
+                          "pt-BR/tools/browser/security",
+                          "pt-BR/tools/browser/existing-session",
+                          "pt-BR/tools/browser/isolation",
+                          "pt-BR/tools/browser/troubleshooting",
+                          "pt-BR/tools/browser/agent-tools"
+                        ]
+                      },
                       "pt-BR/tools/browser-control",
                       "pt-BR/tools/browser-linux-troubleshooting",
                       "pt-BR/tools/browser-login",
@@ -11959,6 +12043,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "ko/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "ko/tools/browser/setup",
+                          "ko/tools/browser/profiles",
+                          "ko/tools/browser/configuration",
+                          "ko/tools/browser/remote",
+                          "ko/tools/browser/security",
+                          "ko/tools/browser/existing-session",
+                          "ko/tools/browser/isolation",
+                          "ko/tools/browser/troubleshooting",
+                          "ko/tools/browser/agent-tools"
+                        ]
+                      },
                       "ko/tools/browser-control",
                       "ko/tools/browser-linux-troubleshooting",
                       "ko/tools/browser-login",
@@ -13623,6 +13721,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "de/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "de/tools/browser/setup",
+                          "de/tools/browser/profiles",
+                          "de/tools/browser/configuration",
+                          "de/tools/browser/remote",
+                          "de/tools/browser/security",
+                          "de/tools/browser/existing-session",
+                          "de/tools/browser/isolation",
+                          "de/tools/browser/troubleshooting",
+                          "de/tools/browser/agent-tools"
+                        ]
+                      },
                       "de/tools/browser-control",
                       "de/tools/browser-linux-troubleshooting",
                       "de/tools/browser-login",
@@ -15287,6 +15399,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "fr/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "fr/tools/browser/setup",
+                          "fr/tools/browser/profiles",
+                          "fr/tools/browser/configuration",
+                          "fr/tools/browser/remote",
+                          "fr/tools/browser/security",
+                          "fr/tools/browser/existing-session",
+                          "fr/tools/browser/isolation",
+                          "fr/tools/browser/troubleshooting",
+                          "fr/tools/browser/agent-tools"
+                        ]
+                      },
                       "fr/tools/browser-control",
                       "fr/tools/browser-linux-troubleshooting",
                       "fr/tools/browser-login",
@@ -16951,6 +17077,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "hi/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "hi/tools/browser/setup",
+                          "hi/tools/browser/profiles",
+                          "hi/tools/browser/configuration",
+                          "hi/tools/browser/remote",
+                          "hi/tools/browser/security",
+                          "hi/tools/browser/existing-session",
+                          "hi/tools/browser/isolation",
+                          "hi/tools/browser/troubleshooting",
+                          "hi/tools/browser/agent-tools"
+                        ]
+                      },
                       "hi/tools/browser-control",
                       "hi/tools/browser-linux-troubleshooting",
                       "hi/tools/browser-login",
@@ -18615,6 +18755,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "ar/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "ar/tools/browser/setup",
+                          "ar/tools/browser/profiles",
+                          "ar/tools/browser/configuration",
+                          "ar/tools/browser/remote",
+                          "ar/tools/browser/security",
+                          "ar/tools/browser/existing-session",
+                          "ar/tools/browser/isolation",
+                          "ar/tools/browser/troubleshooting",
+                          "ar/tools/browser/agent-tools"
+                        ]
+                      },
                       "ar/tools/browser-control",
                       "ar/tools/browser-linux-troubleshooting",
                       "ar/tools/browser-login",
@@ -20279,6 +20433,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "it/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "it/tools/browser/setup",
+                          "it/tools/browser/profiles",
+                          "it/tools/browser/configuration",
+                          "it/tools/browser/remote",
+                          "it/tools/browser/security",
+                          "it/tools/browser/existing-session",
+                          "it/tools/browser/isolation",
+                          "it/tools/browser/troubleshooting",
+                          "it/tools/browser/agent-tools"
+                        ]
+                      },
                       "it/tools/browser-control",
                       "it/tools/browser-linux-troubleshooting",
                       "it/tools/browser-login",
@@ -21943,6 +22111,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "vi/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "vi/tools/browser/setup",
+                          "vi/tools/browser/profiles",
+                          "vi/tools/browser/configuration",
+                          "vi/tools/browser/remote",
+                          "vi/tools/browser/security",
+                          "vi/tools/browser/existing-session",
+                          "vi/tools/browser/isolation",
+                          "vi/tools/browser/troubleshooting",
+                          "vi/tools/browser/agent-tools"
+                        ]
+                      },
                       "vi/tools/browser-control",
                       "vi/tools/browser-linux-troubleshooting",
                       "vi/tools/browser-login",
@@ -23607,6 +23789,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "nl/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "nl/tools/browser/setup",
+                          "nl/tools/browser/profiles",
+                          "nl/tools/browser/configuration",
+                          "nl/tools/browser/remote",
+                          "nl/tools/browser/security",
+                          "nl/tools/browser/existing-session",
+                          "nl/tools/browser/isolation",
+                          "nl/tools/browser/troubleshooting",
+                          "nl/tools/browser/agent-tools"
+                        ]
+                      },
                       "nl/tools/browser-control",
                       "nl/tools/browser-linux-troubleshooting",
                       "nl/tools/browser-login",
@@ -25271,6 +25467,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "tr/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "tr/tools/browser/setup",
+                          "tr/tools/browser/profiles",
+                          "tr/tools/browser/configuration",
+                          "tr/tools/browser/remote",
+                          "tr/tools/browser/security",
+                          "tr/tools/browser/existing-session",
+                          "tr/tools/browser/isolation",
+                          "tr/tools/browser/troubleshooting",
+                          "tr/tools/browser/agent-tools"
+                        ]
+                      },
                       "tr/tools/browser-control",
                       "tr/tools/browser-linux-troubleshooting",
                       "tr/tools/browser-login",
@@ -26935,6 +27145,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "uk/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "uk/tools/browser/setup",
+                          "uk/tools/browser/profiles",
+                          "uk/tools/browser/configuration",
+                          "uk/tools/browser/remote",
+                          "uk/tools/browser/security",
+                          "uk/tools/browser/existing-session",
+                          "uk/tools/browser/isolation",
+                          "uk/tools/browser/troubleshooting",
+                          "uk/tools/browser/agent-tools"
+                        ]
+                      },
                       "uk/tools/browser-control",
                       "uk/tools/browser-linux-troubleshooting",
                       "uk/tools/browser-login",
@@ -28599,6 +28823,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "id/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "id/tools/browser/setup",
+                          "id/tools/browser/profiles",
+                          "id/tools/browser/configuration",
+                          "id/tools/browser/remote",
+                          "id/tools/browser/security",
+                          "id/tools/browser/existing-session",
+                          "id/tools/browser/isolation",
+                          "id/tools/browser/troubleshooting",
+                          "id/tools/browser/agent-tools"
+                        ]
+                      },
                       "id/tools/browser-control",
                       "id/tools/browser-linux-troubleshooting",
                       "id/tools/browser-login",
@@ -30263,6 +30501,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "pl/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "pl/tools/browser/setup",
+                          "pl/tools/browser/profiles",
+                          "pl/tools/browser/configuration",
+                          "pl/tools/browser/remote",
+                          "pl/tools/browser/security",
+                          "pl/tools/browser/existing-session",
+                          "pl/tools/browser/isolation",
+                          "pl/tools/browser/troubleshooting",
+                          "pl/tools/browser/agent-tools"
+                        ]
+                      },
                       "pl/tools/browser-control",
                       "pl/tools/browser-linux-troubleshooting",
                       "pl/tools/browser-login",
@@ -31927,6 +32179,20 @@
                     "group": "Browsing and fetching pages",
                     "pages": [
                       "ru/tools/browser",
+                      {
+                        "group": "Browser",
+                        "pages": [
+                          "ru/tools/browser/setup",
+                          "ru/tools/browser/profiles",
+                          "ru/tools/browser/configuration",
+                          "ru/tools/browser/remote",
+                          "ru/tools/browser/security",
+                          "ru/tools/browser/existing-session",
+                          "ru/tools/browser/isolation",
+                          "ru/tools/browser/troubleshooting",
+                          "ru/tools/browser/agent-tools"
+                        ]
+                      },
                       "ru/tools/browser-control",
                       "ru/tools/browser-linux-troubleshooting",
                       "ru/tools/browser-login",
