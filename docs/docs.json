@@ -2184,6 +2184,20 @@
                       "providers/llmman",
                       "providers/lmstudio",
                       "providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "providers/ollama/setup",
+                          "providers/ollama/model-discovery",
+                          "providers/ollama/node-local-inference",
+                          "providers/ollama/vision",
+                          "providers/ollama/configuration",
+                          "providers/ollama/recipes",
+                          "providers/ollama/web-search",
+                          "providers/ollama/advanced",
+                          "providers/ollama/troubleshooting"
+                        ]
+                      },
                       "providers/sglang",
                       "providers/vllm"
                     ]
@@ -3880,6 +3894,20 @@
                       "zh-CN/providers/llmman",
                       "zh-CN/providers/lmstudio",
                       "zh-CN/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "zh-CN/providers/ollama/setup",
+                          "zh-CN/providers/ollama/model-discovery",
+                          "zh-CN/providers/ollama/node-local-inference",
+                          "zh-CN/providers/ollama/vision",
+                          "zh-CN/providers/ollama/configuration",
+                          "zh-CN/providers/ollama/recipes",
+                          "zh-CN/providers/ollama/web-search",
+                          "zh-CN/providers/ollama/advanced",
+                          "zh-CN/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "zh-CN/providers/sglang",
                       "zh-CN/providers/vllm"
                     ]
@@ -5576,6 +5604,20 @@
                       "zh-TW/providers/llmman",
                       "zh-TW/providers/lmstudio",
                       "zh-TW/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "zh-TW/providers/ollama/setup",
+                          "zh-TW/providers/ollama/model-discovery",
+                          "zh-TW/providers/ollama/node-local-inference",
+                          "zh-TW/providers/ollama/vision",
+                          "zh-TW/providers/ollama/configuration",
+                          "zh-TW/providers/ollama/recipes",
+                          "zh-TW/providers/ollama/web-search",
+                          "zh-TW/providers/ollama/advanced",
+                          "zh-TW/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "zh-TW/providers/sglang",
                       "zh-TW/providers/vllm"
                     ]
@@ -7272,6 +7314,20 @@
                       "ja-JP/providers/llmman",
                       "ja-JP/providers/lmstudio",
                       "ja-JP/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "ja-JP/providers/ollama/setup",
+                          "ja-JP/providers/ollama/model-discovery",
+                          "ja-JP/providers/ollama/node-local-inference",
+                          "ja-JP/providers/ollama/vision",
+                          "ja-JP/providers/ollama/configuration",
+                          "ja-JP/providers/ollama/recipes",
+                          "ja-JP/providers/ollama/web-search",
+                          "ja-JP/providers/ollama/advanced",
+                          "ja-JP/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "ja-JP/providers/sglang",
                       "ja-JP/providers/vllm"
                     ]
@@ -8968,6 +9024,20 @@
                       "es/providers/llmman",
                       "es/providers/lmstudio",
                       "es/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "es/providers/ollama/setup",
+                          "es/providers/ollama/model-discovery",
+                          "es/providers/ollama/node-local-inference",
+                          "es/providers/ollama/vision",
+                          "es/providers/ollama/configuration",
+                          "es/providers/ollama/recipes",
+                          "es/providers/ollama/web-search",
+                          "es/providers/ollama/advanced",
+                          "es/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "es/providers/sglang",
                       "es/providers/vllm"
                     ]
@@ -10664,6 +10734,20 @@
                       "pt-BR/providers/llmman",
                       "pt-BR/providers/lmstudio",
                       "pt-BR/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "pt-BR/providers/ollama/setup",
+                          "pt-BR/providers/ollama/model-discovery",
+                          "pt-BR/providers/ollama/node-local-inference",
+                          "pt-BR/providers/ollama/vision",
+                          "pt-BR/providers/ollama/configuration",
+                          "pt-BR/providers/ollama/recipes",
+                          "pt-BR/providers/ollama/web-search",
+                          "pt-BR/providers/ollama/advanced",
+                          "pt-BR/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "pt-BR/providers/sglang",
                       "pt-BR/providers/vllm"
                     ]
@@ -12360,6 +12444,20 @@
                       "ko/providers/llmman",
                       "ko/providers/lmstudio",
                       "ko/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "ko/providers/ollama/setup",
+                          "ko/providers/ollama/model-discovery",
+                          "ko/providers/ollama/node-local-inference",
+                          "ko/providers/ollama/vision",
+                          "ko/providers/ollama/configuration",
+                          "ko/providers/ollama/recipes",
+                          "ko/providers/ollama/web-search",
+                          "ko/providers/ollama/advanced",
+                          "ko/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "ko/providers/sglang",
                       "ko/providers/vllm"
                     ]
@@ -14056,6 +14154,20 @@
                       "de/providers/llmman",
                       "de/providers/lmstudio",
                       "de/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "de/providers/ollama/setup",
+                          "de/providers/ollama/model-discovery",
+                          "de/providers/ollama/node-local-inference",
+                          "de/providers/ollama/vision",
+                          "de/providers/ollama/configuration",
+                          "de/providers/ollama/recipes",
+                          "de/providers/ollama/web-search",
+                          "de/providers/ollama/advanced",
+                          "de/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "de/providers/sglang",
                       "de/providers/vllm"
                     ]
@@ -15752,6 +15864,20 @@
                       "fr/providers/llmman",
                       "fr/providers/lmstudio",
                       "fr/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "fr/providers/ollama/setup",
+                          "fr/providers/ollama/model-discovery",
+                          "fr/providers/ollama/node-local-inference",
+                          "fr/providers/ollama/vision",
+                          "fr/providers/ollama/configuration",
+                          "fr/providers/ollama/recipes",
+                          "fr/providers/ollama/web-search",
+                          "fr/providers/ollama/advanced",
+                          "fr/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "fr/providers/sglang",
                       "fr/providers/vllm"
                     ]
@@ -17448,6 +17574,20 @@
                       "hi/providers/llmman",
                       "hi/providers/lmstudio",
                       "hi/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "hi/providers/ollama/setup",
+                          "hi/providers/ollama/model-discovery",
+                          "hi/providers/ollama/node-local-inference",
+                          "hi/providers/ollama/vision",
+                          "hi/providers/ollama/configuration",
+                          "hi/providers/ollama/recipes",
+                          "hi/providers/ollama/web-search",
+                          "hi/providers/ollama/advanced",
+                          "hi/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "hi/providers/sglang",
                       "hi/providers/vllm"
                     ]
@@ -19144,6 +19284,20 @@
                       "ar/providers/llmman",
                       "ar/providers/lmstudio",
                       "ar/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "ar/providers/ollama/setup",
+                          "ar/providers/ollama/model-discovery",
+                          "ar/providers/ollama/node-local-inference",
+                          "ar/providers/ollama/vision",
+                          "ar/providers/ollama/configuration",
+                          "ar/providers/ollama/recipes",
+                          "ar/providers/ollama/web-search",
+                          "ar/providers/ollama/advanced",
+                          "ar/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "ar/providers/sglang",
                       "ar/providers/vllm"
                     ]
@@ -20840,6 +20994,20 @@
                       "it/providers/llmman",
                       "it/providers/lmstudio",
                       "it/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "it/providers/ollama/setup",
+                          "it/providers/ollama/model-discovery",
+                          "it/providers/ollama/node-local-inference",
+                          "it/providers/ollama/vision",
+                          "it/providers/ollama/configuration",
+                          "it/providers/ollama/recipes",
+                          "it/providers/ollama/web-search",
+                          "it/providers/ollama/advanced",
+                          "it/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "it/providers/sglang",
                       "it/providers/vllm"
                     ]
@@ -22536,6 +22704,20 @@
                       "vi/providers/llmman",
                       "vi/providers/lmstudio",
                       "vi/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "vi/providers/ollama/setup",
+                          "vi/providers/ollama/model-discovery",
+                          "vi/providers/ollama/node-local-inference",
+                          "vi/providers/ollama/vision",
+                          "vi/providers/ollama/configuration",
+                          "vi/providers/ollama/recipes",
+                          "vi/providers/ollama/web-search",
+                          "vi/providers/ollama/advanced",
+                          "vi/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "vi/providers/sglang",
                       "vi/providers/vllm"
                     ]
@@ -24232,6 +24414,20 @@
                       "nl/providers/llmman",
                       "nl/providers/lmstudio",
                       "nl/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "nl/providers/ollama/setup",
+                          "nl/providers/ollama/model-discovery",
+                          "nl/providers/ollama/node-local-inference",
+                          "nl/providers/ollama/vision",
+                          "nl/providers/ollama/configuration",
+                          "nl/providers/ollama/recipes",
+                          "nl/providers/ollama/web-search",
+                          "nl/providers/ollama/advanced",
+                          "nl/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "nl/providers/sglang",
                       "nl/providers/vllm"
                     ]
@@ -25928,6 +26124,20 @@
                       "tr/providers/llmman",
                       "tr/providers/lmstudio",
                       "tr/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "tr/providers/ollama/setup",
+                          "tr/providers/ollama/model-discovery",
+                          "tr/providers/ollama/node-local-inference",
+                          "tr/providers/ollama/vision",
+                          "tr/providers/ollama/configuration",
+                          "tr/providers/ollama/recipes",
+                          "tr/providers/ollama/web-search",
+                          "tr/providers/ollama/advanced",
+                          "tr/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "tr/providers/sglang",
                       "tr/providers/vllm"
                     ]
@@ -27624,6 +27834,20 @@
                       "uk/providers/llmman",
                       "uk/providers/lmstudio",
                       "uk/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "uk/providers/ollama/setup",
+                          "uk/providers/ollama/model-discovery",
+                          "uk/providers/ollama/node-local-inference",
+                          "uk/providers/ollama/vision",
+                          "uk/providers/ollama/configuration",
+                          "uk/providers/ollama/recipes",
+                          "uk/providers/ollama/web-search",
+                          "uk/providers/ollama/advanced",
+                          "uk/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "uk/providers/sglang",
                       "uk/providers/vllm"
                     ]
@@ -29320,6 +29544,20 @@
                       "id/providers/llmman",
                       "id/providers/lmstudio",
                       "id/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "id/providers/ollama/setup",
+                          "id/providers/ollama/model-discovery",
+                          "id/providers/ollama/node-local-inference",
+                          "id/providers/ollama/vision",
+                          "id/providers/ollama/configuration",
+                          "id/providers/ollama/recipes",
+                          "id/providers/ollama/web-search",
+                          "id/providers/ollama/advanced",
+                          "id/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "id/providers/sglang",
                       "id/providers/vllm"
                     ]
@@ -31016,6 +31254,20 @@
                       "pl/providers/llmman",
                       "pl/providers/lmstudio",
                       "pl/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "pl/providers/ollama/setup",
+                          "pl/providers/ollama/model-discovery",
+                          "pl/providers/ollama/node-local-inference",
+                          "pl/providers/ollama/vision",
+                          "pl/providers/ollama/configuration",
+                          "pl/providers/ollama/recipes",
+                          "pl/providers/ollama/web-search",
+                          "pl/providers/ollama/advanced",
+                          "pl/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "pl/providers/sglang",
                       "pl/providers/vllm"
                     ]
@@ -32712,6 +32964,20 @@
                       "ru/providers/llmman",
                       "ru/providers/lmstudio",
                       "ru/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "ru/providers/ollama/setup",
+                          "ru/providers/ollama/model-discovery",
+                          "ru/providers/ollama/node-local-inference",
+                          "ru/providers/ollama/vision",
+                          "ru/providers/ollama/configuration",
+                          "ru/providers/ollama/recipes",
+                          "ru/providers/ollama/web-search",
+                          "ru/providers/ollama/advanced",
+                          "ru/providers/ollama/troubleshooting"
+                        ]
+                      },
                       "ru/providers/sglang",
                       "ru/providers/vllm"
                     ]

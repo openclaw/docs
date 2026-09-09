@@ -10318,21 +10318,67 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/ollama
 - Headings:
-  - H2: Auth rules
-  - H2: Getting started
-  - H2: Cloud models through a local host
+  - H2: Where each section moved
+  - H2: Related
+
+## providers/ollama/advanced.md
+
+- Route: /providers/ollama/advanced
+- Headings:
+  - H2: Advanced configuration
+
+## providers/ollama/configuration.md
+
+- Route: /providers/ollama/configuration
+- Headings:
+  - H2: Configuration
+
+## providers/ollama/model-discovery.md
+
+- Route: /providers/ollama/model-discovery
+- Headings:
   - H2: Model discovery (implicit provider)
   - H3: Smoke tests
+
+## providers/ollama/node-local-inference.md
+
+- Route: /providers/ollama/node-local-inference
+- Headings:
   - H2: Node-local inference
-  - H2: Vision and image description
-  - H2: Configuration
+
+## providers/ollama/recipes.md
+
+- Route: /providers/ollama/recipes
+- Headings:
   - H2: Common recipes
   - H3: Model selection
   - H3: Quick verification
-  - H2: Ollama Web Search
-  - H2: Advanced configuration
+
+## providers/ollama/setup.md
+
+- Route: /providers/ollama/setup
+- Headings:
+  - H2: Auth rules
+  - H2: Getting started
+  - H2: Cloud models through a local host
+
+## providers/ollama/troubleshooting.md
+
+- Route: /providers/ollama/troubleshooting
+- Headings:
   - H2: Troubleshooting
-  - H2: Related
+
+## providers/ollama/vision.md
+
+- Route: /providers/ollama/vision
+- Headings:
+  - H2: Vision and image description
+
+## providers/ollama/web-search.md
+
+- Route: /providers/ollama/web-search
+- Headings:
+  - H2: Ollama Web Search
 
 ## providers/openai.md
 
