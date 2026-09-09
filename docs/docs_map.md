@@ -7028,12 +7028,27 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Create a meeting
   - H3: Observe-only join
   - H3: Realtime session health
-  - H2: Local Gateway + Parallels Chrome
-  - H3: Common failure checks
-  - H2: Install notes
-  - H2: Transports
-  - H3: Chrome
-  - H3: Twilio
+  - H2: Notes
+  - H2: Where each section moved
+  - H3: Google Meet transports and hosts
+  - H3: Google Meet OAuth and artifacts
+  - H3: Google Meet configuration
+  - H3: Google Meet tool and modes
+  - H3: Google Meet troubleshooting
+  - H2: Related
+
+## plugins/google-meet/config.md
+
+- Route: /plugins/google-meet/config
+- Headings:
+  - H2: Config
+  - H3: Defaults
+  - H3: Optional overrides
+
+## plugins/google-meet/oauth-and-artifacts.md
+
+- Route: /plugins/google-meet/oauth-and-artifacts
+- Headings:
   - H2: OAuth and preflight
   - H3: Create Google credentials
   - H3: Mint the refresh token
@@ -7041,11 +7056,29 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Resolve, preflight, and read artifacts
   - H3: Live smoke test
   - H3: Create examples
-  - H2: Config
-  - H3: Defaults
-  - H3: Optional overrides
+
+## plugins/google-meet/tool-and-modes.md
+
+- Route: /plugins/google-meet/tool-and-modes
+- Headings:
   - H2: Tool
   - H2: Agent and bidi modes
+
+## plugins/google-meet/transports.md
+
+- Route: /plugins/google-meet/transports
+- Headings:
+  - H2: Local Gateway + Parallels Chrome
+  - H3: Common failure checks
+  - H2: Install notes
+  - H2: Transports
+  - H3: Chrome
+  - H3: Twilio
+
+## plugins/google-meet/troubleshooting.md
+
+- Route: /plugins/google-meet/troubleshooting
+- Headings:
   - H2: Live test checklist
   - H2: Troubleshooting
   - H3: Agent cannot see the Google Meet tool
@@ -7055,8 +7088,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Agent joins but does not talk
   - H3: Twilio setup checks fail
   - H3: Twilio call starts but never enters the meeting
-  - H2: Notes
-  - H2: Related
 
 ## plugins/hooks.md
 

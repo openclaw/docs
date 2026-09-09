@@ -1709,6 +1709,16 @@
                     "pages": [
                       "plugins/meeting-plugins",
                       "plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "plugins/google-meet/transports",
+                          "plugins/google-meet/oauth-and-artifacts",
+                          "plugins/google-meet/config",
+                          "plugins/google-meet/tool-and-modes",
+                          "plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "plugins/teams-meetings",
                       "plugins/voice-call",
                       "plugins/zoom-meetings"
@@ -3213,6 +3223,16 @@
                     "pages": [
                       "zh-CN/plugins/meeting-plugins",
                       "zh-CN/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "zh-CN/plugins/google-meet/transports",
+                          "zh-CN/plugins/google-meet/oauth-and-artifacts",
+                          "zh-CN/plugins/google-meet/config",
+                          "zh-CN/plugins/google-meet/tool-and-modes",
+                          "zh-CN/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "zh-CN/plugins/teams-meetings",
                       "zh-CN/plugins/voice-call",
                       "zh-CN/plugins/zoom-meetings"
@@ -4683,6 +4703,16 @@
                     "pages": [
                       "zh-TW/plugins/meeting-plugins",
                       "zh-TW/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "zh-TW/plugins/google-meet/transports",
+                          "zh-TW/plugins/google-meet/oauth-and-artifacts",
+                          "zh-TW/plugins/google-meet/config",
+                          "zh-TW/plugins/google-meet/tool-and-modes",
+                          "zh-TW/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "zh-TW/plugins/teams-meetings",
                       "zh-TW/plugins/voice-call",
                       "zh-TW/plugins/zoom-meetings"
@@ -6153,6 +6183,16 @@
                     "pages": [
                       "ja-JP/plugins/meeting-plugins",
                       "ja-JP/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "ja-JP/plugins/google-meet/transports",
+                          "ja-JP/plugins/google-meet/oauth-and-artifacts",
+                          "ja-JP/plugins/google-meet/config",
+                          "ja-JP/plugins/google-meet/tool-and-modes",
+                          "ja-JP/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "ja-JP/plugins/teams-meetings",
                       "ja-JP/plugins/voice-call",
                       "ja-JP/plugins/zoom-meetings"
@@ -7623,6 +7663,16 @@
                     "pages": [
                       "es/plugins/meeting-plugins",
                       "es/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "es/plugins/google-meet/transports",
+                          "es/plugins/google-meet/oauth-and-artifacts",
+                          "es/plugins/google-meet/config",
+                          "es/plugins/google-meet/tool-and-modes",
+                          "es/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "es/plugins/teams-meetings",
                       "es/plugins/voice-call",
                       "es/plugins/zoom-meetings"
@@ -9093,6 +9143,16 @@
                     "pages": [
                       "pt-BR/plugins/meeting-plugins",
                       "pt-BR/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "pt-BR/plugins/google-meet/transports",
+                          "pt-BR/plugins/google-meet/oauth-and-artifacts",
+                          "pt-BR/plugins/google-meet/config",
+                          "pt-BR/plugins/google-meet/tool-and-modes",
+                          "pt-BR/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "pt-BR/plugins/teams-meetings",
                       "pt-BR/plugins/voice-call",
                       "pt-BR/plugins/zoom-meetings"
@@ -10563,6 +10623,16 @@
                     "pages": [
                       "ko/plugins/meeting-plugins",
                       "ko/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "ko/plugins/google-meet/transports",
+                          "ko/plugins/google-meet/oauth-and-artifacts",
+                          "ko/plugins/google-meet/config",
+                          "ko/plugins/google-meet/tool-and-modes",
+                          "ko/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "ko/plugins/teams-meetings",
                       "ko/plugins/voice-call",
                       "ko/plugins/zoom-meetings"
@@ -12033,6 +12103,16 @@
                     "pages": [
                       "de/plugins/meeting-plugins",
                       "de/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "de/plugins/google-meet/transports",
+                          "de/plugins/google-meet/oauth-and-artifacts",
+                          "de/plugins/google-meet/config",
+                          "de/plugins/google-meet/tool-and-modes",
+                          "de/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "de/plugins/teams-meetings",
                       "de/plugins/voice-call",
                       "de/plugins/zoom-meetings"
@@ -13503,6 +13583,16 @@
                     "pages": [
                       "fr/plugins/meeting-plugins",
                       "fr/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "fr/plugins/google-meet/transports",
+                          "fr/plugins/google-meet/oauth-and-artifacts",
+                          "fr/plugins/google-meet/config",
+                          "fr/plugins/google-meet/tool-and-modes",
+                          "fr/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "fr/plugins/teams-meetings",
                       "fr/plugins/voice-call",
                       "fr/plugins/zoom-meetings"
@@ -14973,6 +15063,16 @@
                     "pages": [
                       "hi/plugins/meeting-plugins",
                       "hi/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "hi/plugins/google-meet/transports",
+                          "hi/plugins/google-meet/oauth-and-artifacts",
+                          "hi/plugins/google-meet/config",
+                          "hi/plugins/google-meet/tool-and-modes",
+                          "hi/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "hi/plugins/teams-meetings",
                       "hi/plugins/voice-call",
                       "hi/plugins/zoom-meetings"
@@ -16443,6 +16543,16 @@
                     "pages": [
                       "ar/plugins/meeting-plugins",
                       "ar/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "ar/plugins/google-meet/transports",
+                          "ar/plugins/google-meet/oauth-and-artifacts",
+                          "ar/plugins/google-meet/config",
+                          "ar/plugins/google-meet/tool-and-modes",
+                          "ar/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "ar/plugins/teams-meetings",
                       "ar/plugins/voice-call",
                       "ar/plugins/zoom-meetings"
@@ -17913,6 +18023,16 @@
                     "pages": [
                       "it/plugins/meeting-plugins",
                       "it/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "it/plugins/google-meet/transports",
+                          "it/plugins/google-meet/oauth-and-artifacts",
+                          "it/plugins/google-meet/config",
+                          "it/plugins/google-meet/tool-and-modes",
+                          "it/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "it/plugins/teams-meetings",
                       "it/plugins/voice-call",
                       "it/plugins/zoom-meetings"
@@ -19383,6 +19503,16 @@
                     "pages": [
                       "vi/plugins/meeting-plugins",
                       "vi/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "vi/plugins/google-meet/transports",
+                          "vi/plugins/google-meet/oauth-and-artifacts",
+                          "vi/plugins/google-meet/config",
+                          "vi/plugins/google-meet/tool-and-modes",
+                          "vi/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "vi/plugins/teams-meetings",
                       "vi/plugins/voice-call",
                       "vi/plugins/zoom-meetings"
@@ -20853,6 +20983,16 @@
                     "pages": [
                       "nl/plugins/meeting-plugins",
                       "nl/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "nl/plugins/google-meet/transports",
+                          "nl/plugins/google-meet/oauth-and-artifacts",
+                          "nl/plugins/google-meet/config",
+                          "nl/plugins/google-meet/tool-and-modes",
+                          "nl/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "nl/plugins/teams-meetings",
                       "nl/plugins/voice-call",
                       "nl/plugins/zoom-meetings"
@@ -22323,6 +22463,16 @@
                     "pages": [
                       "tr/plugins/meeting-plugins",
                       "tr/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "tr/plugins/google-meet/transports",
+                          "tr/plugins/google-meet/oauth-and-artifacts",
+                          "tr/plugins/google-meet/config",
+                          "tr/plugins/google-meet/tool-and-modes",
+                          "tr/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "tr/plugins/teams-meetings",
                       "tr/plugins/voice-call",
                       "tr/plugins/zoom-meetings"
@@ -23793,6 +23943,16 @@
                     "pages": [
                       "uk/plugins/meeting-plugins",
                       "uk/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "uk/plugins/google-meet/transports",
+                          "uk/plugins/google-meet/oauth-and-artifacts",
+                          "uk/plugins/google-meet/config",
+                          "uk/plugins/google-meet/tool-and-modes",
+                          "uk/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "uk/plugins/teams-meetings",
                       "uk/plugins/voice-call",
                       "uk/plugins/zoom-meetings"
@@ -25263,6 +25423,16 @@
                     "pages": [
                       "id/plugins/meeting-plugins",
                       "id/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "id/plugins/google-meet/transports",
+                          "id/plugins/google-meet/oauth-and-artifacts",
+                          "id/plugins/google-meet/config",
+                          "id/plugins/google-meet/tool-and-modes",
+                          "id/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "id/plugins/teams-meetings",
                       "id/plugins/voice-call",
                       "id/plugins/zoom-meetings"
@@ -26733,6 +26903,16 @@
                     "pages": [
                       "pl/plugins/meeting-plugins",
                       "pl/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "pl/plugins/google-meet/transports",
+                          "pl/plugins/google-meet/oauth-and-artifacts",
+                          "pl/plugins/google-meet/config",
+                          "pl/plugins/google-meet/tool-and-modes",
+                          "pl/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "pl/plugins/teams-meetings",
                       "pl/plugins/voice-call",
                       "pl/plugins/zoom-meetings"
@@ -28203,6 +28383,16 @@
                     "pages": [
                       "ru/plugins/meeting-plugins",
                       "ru/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "ru/plugins/google-meet/transports",
+                          "ru/plugins/google-meet/oauth-and-artifacts",
+                          "ru/plugins/google-meet/config",
+                          "ru/plugins/google-meet/tool-and-modes",
+                          "ru/plugins/google-meet/troubleshooting"
+                        ]
+                      },
                       "ru/plugins/teams-meetings",
                       "ru/plugins/voice-call",
                       "ru/plugins/zoom-meetings"
