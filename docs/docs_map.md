@@ -5598,30 +5598,62 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/troubleshooting
 - Headings:
   - H2: Command ladder
-  - H2: After an update
-  - H2: Prepared model runtime publication timeout
-  - H2: Split brain installs and newer config guard
-  - H2: Protocol mismatch after rollback
-  - H2: Skill symlink skipped as path escape
-  - H2: Anthropic 429 extra usage required for long context
-  - H2: Upstream 403 blocked responses
-  - H2: Local OpenAI-compatible backend passes direct probes but agent runs fail
+  - H2: Symptom index
+  - H2: Where each section moved
+  - H2: If you upgraded and something suddenly broke
+  - H2: Related
+
+## gateway/troubleshooting/agent-replies-and-control-ui.md
+
+- Route: /gateway/troubleshooting/agent-replies-and-control-ui
+- Headings:
   - H2: Agent run failed with a storage error
   - H2: No replies
   - H2: Dashboard control UI connectivity
   - H3: Auth detail codes quick map
-  - H2: Gateway service not running
-  - H2: macOS gateway silently stops responding, then resumes when you touch the dashboard
-  - H2: macOS launchd supervisor loop with duplicate gateway/node LaunchAgents
-  - H2: Gateway exits during high memory use
-  - H2: Gateway rejected invalid config
-  - H2: Gateway probe warnings
+
+## gateway/troubleshooting/channel-delivery-and-tools.md
+
+- Route: /gateway/troubleshooting/channel-delivery-and-tools
+- Headings:
   - H2: Channel connected, messages not flowing
   - H2: Cron and heartbeat delivery
   - H2: Node paired, tool fails
   - H2: Browser tool fails
-  - H2: If you upgraded and something suddenly broke
-  - H2: Related
+
+## gateway/troubleshooting/config-validation-and-probes.md
+
+- Route: /gateway/troubleshooting/config-validation-and-probes
+- Headings:
+  - H2: Gateway rejected invalid config
+  - H2: Gateway probe warnings
+
+## gateway/troubleshooting/gateway-service-and-process.md
+
+- Route: /gateway/troubleshooting/gateway-service-and-process
+- Headings:
+  - H2: Gateway service not running
+  - H2: macOS gateway silently stops responding, then resumes when you touch the dashboard
+  - H2: macOS launchd supervisor loop with duplicate gateway/node LaunchAgents
+  - H2: Gateway exits during high memory use
+
+## gateway/troubleshooting/skills-and-model-providers.md
+
+- Route: /gateway/troubleshooting/skills-and-model-providers
+- Headings:
+  - H2: Skill symlink skipped as path escape
+  - H2: Anthropic 429 extra usage required for long context
+  - H2: Upstream 403 blocked responses
+  - H2: Local OpenAI-compatible backend passes direct probes but agent runs fail
+
+## gateway/troubleshooting/updates-and-rollbacks.md
+
+- Route: /gateway/troubleshooting/updates-and-rollbacks
+- Headings:
+  - H2: After an update
+  - H2: Prepared model runtime publication timeout
+  - H2: Split brain installs and newer config guard
+  - H2: Protocol mismatch after rollback
 
 ## gateway/trusted-proxy-auth.md
 
@@ -11154,6 +11186,31 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas
 - Headings:
+  - H2: Where each section moved
+
+## reference/database-schemas/agent-schema-history.md
+
+- Route: /reference/database-schemas/agent-schema-history
+- Headings:
+  - H2: Agent schema history
+  - H3: Creator namespace migration
+  - H3: Participant identity migration
+
+## reference/database-schemas/integrity-and-recovery.md
+
+- Route: /reference/database-schemas/integrity-and-recovery
+- Headings:
+  - H2: Integrity checks
+  - H2: Troubleshooting
+  - H3: Why you cannot go back after updating to 2026.7.2
+  - H3: The Gateway refuses to start with a newer schema version error
+  - H3: A database is quarantined after integrity verification failed
+  - H2: Downgrade recovery
+
+## reference/database-schemas/layout.md
+
+- Route: /reference/database-schemas/layout
+- Headings:
   - H2: Database layout
   - H3: Plugin state listing index
   - H3: Mentions Inbox
@@ -11164,33 +11221,44 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: `meeting_transcript_summaries`
   - H3: Update run ledger
   - H3: Cloud repository workspaces
-  - H2: Versioning contract
-  - H3: Schema bumps and older updaters
-  - H3: Profile-owned skill library
+
+## reference/database-schemas/personal-data.md
+
+- Route: /reference/database-schemas/personal-data
+- Headings:
   - H2: Personal GitHub connections and publication
   - H2: Personal model accounts
   - H2: Apple companion delivery journals
-  - H2: Preparing for another database backend
-  - H3: Keep operations at the owning store
-  - H3: Preserve the data and concurrency contracts
-  - H3: Keep engine-specific capabilities owned
-  - H2: Review checkpoint for material changes
-  - H2: Preflight a target release
-  - H2: Agent schema history
-  - H3: Creator namespace migration
-  - H3: Participant identity migration
+
+## reference/database-schemas/state-schema-history.md
+
+- Route: /reference/database-schemas/state-schema-history
+- Headings:
   - H2: State schema history
   - H3: State schema 16
   - H3: State schema 15
   - H3: State schema 13
   - H3: State schema 11
   - H3: State schema 9
-  - H2: Integrity checks
-  - H2: Troubleshooting
-  - H3: Why you cannot go back after updating to 2026.7.2
-  - H3: The Gateway refuses to start with a newer schema version error
-  - H3: A database is quarantined after integrity verification failed
-  - H2: Downgrade recovery
+
+## reference/database-schemas/storage-changes.md
+
+- Route: /reference/database-schemas/storage-changes
+- Headings:
+  - H2: Preparing for another database backend
+  - H3: Keep operations at the owning store
+  - H3: Preserve the data and concurrency contracts
+  - H3: Keep engine-specific capabilities owned
+  - H2: Review checkpoint for material changes
+  - H2: Preflight a target release
+
+## reference/database-schemas/versioning.md
+
+- Route: /reference/database-schemas/versioning
+- Headings:
+  - H2: Versioning contract
+  - H3: Schema bumps and older updaters
+  - H3: Profile-owned skill library
 
 ## reference/device-models.md
 

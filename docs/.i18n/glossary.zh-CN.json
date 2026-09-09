@@ -1928,6 +1928,90 @@
     "target": "故障排查"
   },
   {
+    "source": "Updates and rollbacks",
+    "target": "更新与回滚"
+  },
+  {
+    "source": "Skills and model providers",
+    "target": "Skills 与模型提供商"
+  },
+  {
+    "source": "Agent replies and Control UI",
+    "target": "智能体回复与 Control UI"
+  },
+  {
+    "source": "Gateway service and process",
+    "target": "Gateway 网关服务与进程"
+  },
+  {
+    "source": "Config validation and probes",
+    "target": "配置校验与探针"
+  },
+  {
+    "source": "Channel delivery and tools",
+    "target": "渠道投递与工具"
+  },
+  {
+    "source": "Configuration",
+    "target": "配置"
+  },
+  {
+    "source": "Configuration examples",
+    "target": "配置示例"
+  },
+  {
+    "source": "Configuration: hot reload",
+    "target": "配置：热重载"
+  },
+  {
+    "source": "Configuration: strict validation",
+    "target": "配置：严格校验"
+  },
+  {
+    "source": "Remote access",
+    "target": "远程访问"
+  },
+  {
+    "source": "Multiple gateways on the same host",
+    "target": "同一主机上的多个 Gateway 网关"
+  },
+  {
+    "source": "Background exec and process tool",
+    "target": "后台执行与进程工具"
+  },
+  {
+    "source": "Scheduled tasks: troubleshooting",
+    "target": "定时任务：故障排查"
+  },
+  {
+    "source": "Browser (OpenClaw-managed)",
+    "target": "浏览器（OpenClaw 托管）"
+  },
+  {
+    "source": "Anthropic",
+    "target": "Anthropic"
+  },
+  {
+    "source": "Token use and costs",
+    "target": "Token 用量与成本"
+  },
+  {
+    "source": "OpenAI-compatible endpoints",
+    "target": "OpenAI 兼容端点"
+  },
+  {
+    "source": "Provider configuration",
+    "target": "提供商配置"
+  },
+  {
+    "source": "Local models",
+    "target": "本地模型"
+  },
+  {
+    "source": "Logs",
+    "target": "日志"
+  },
+  {
     "source": "Update troubleshooting",
     "target": "更新故障排查"
   },
@@ -3494,6 +3578,34 @@
   {
     "source": "SQLite maintenance and session migration",
     "target": "SQLite 维护与会话迁移"
+  },
+  {
+    "source": "Database layout",
+    "target": "数据库布局"
+  },
+  {
+    "source": "Versioning contract",
+    "target": "版本契约"
+  },
+  {
+    "source": "Per-person and companion storage",
+    "target": "个人与配套设备存储"
+  },
+  {
+    "source": "Storage changes and release preflight",
+    "target": "存储变更与发布预检"
+  },
+  {
+    "source": "Agent schema history",
+    "target": "Agent 数据库 schema 历史"
+  },
+  {
+    "source": "State schema history",
+    "target": "状态数据库 schema 历史"
+  },
+  {
+    "source": "Integrity, troubleshooting, and recovery",
+    "target": "完整性、故障排查与恢复"
   },
   {
     "source": "Other checks and repairs",

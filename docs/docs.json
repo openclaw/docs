@@ -2481,7 +2481,18 @@
                       "gateway/prometheus",
                       "gateway/logging",
                       "gateway/diagnostics",
-                      "gateway/troubleshooting"
+                      "gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "gateway/troubleshooting/updates-and-rollbacks",
+                          "gateway/troubleshooting/skills-and-model-providers",
+                          "gateway/troubleshooting/agent-replies-and-control-ui",
+                          "gateway/troubleshooting/gateway-service-and-process",
+                          "gateway/troubleshooting/config-validation-and-probes",
+                          "gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -3020,6 +3031,18 @@
                   "reference/api-usage-costs",
                   "reference/transcript-hygiene",
                   "reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "reference/database-schemas/layout",
+                      "reference/database-schemas/versioning",
+                      "reference/database-schemas/personal-data",
+                      "reference/database-schemas/storage-changes",
+                      "reference/database-schemas/agent-schema-history",
+                      "reference/database-schemas/state-schema-history",
+                      "reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "reference/memory-config",
                   "reference/rich-output-protocol",
                   "reference/session-management-compaction",
@@ -4349,7 +4372,18 @@
                       "zh-CN/gateway/prometheus",
                       "zh-CN/gateway/logging",
                       "zh-CN/gateway/diagnostics",
-                      "zh-CN/gateway/troubleshooting"
+                      "zh-CN/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "zh-CN/gateway/troubleshooting/updates-and-rollbacks",
+                          "zh-CN/gateway/troubleshooting/skills-and-model-providers",
+                          "zh-CN/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "zh-CN/gateway/troubleshooting/gateway-service-and-process",
+                          "zh-CN/gateway/troubleshooting/config-validation-and-probes",
+                          "zh-CN/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -4888,6 +4922,18 @@
                   "zh-CN/reference/api-usage-costs",
                   "zh-CN/reference/transcript-hygiene",
                   "zh-CN/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "zh-CN/reference/database-schemas/layout",
+                      "zh-CN/reference/database-schemas/versioning",
+                      "zh-CN/reference/database-schemas/personal-data",
+                      "zh-CN/reference/database-schemas/storage-changes",
+                      "zh-CN/reference/database-schemas/agent-schema-history",
+                      "zh-CN/reference/database-schemas/state-schema-history",
+                      "zh-CN/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "zh-CN/reference/memory-config",
                   "zh-CN/reference/rich-output-protocol",
                   "zh-CN/reference/session-management-compaction",
@@ -6217,7 +6263,18 @@
                       "zh-TW/gateway/prometheus",
                       "zh-TW/gateway/logging",
                       "zh-TW/gateway/diagnostics",
-                      "zh-TW/gateway/troubleshooting"
+                      "zh-TW/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "zh-TW/gateway/troubleshooting/updates-and-rollbacks",
+                          "zh-TW/gateway/troubleshooting/skills-and-model-providers",
+                          "zh-TW/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "zh-TW/gateway/troubleshooting/gateway-service-and-process",
+                          "zh-TW/gateway/troubleshooting/config-validation-and-probes",
+                          "zh-TW/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -6756,6 +6813,18 @@
                   "zh-TW/reference/api-usage-costs",
                   "zh-TW/reference/transcript-hygiene",
                   "zh-TW/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "zh-TW/reference/database-schemas/layout",
+                      "zh-TW/reference/database-schemas/versioning",
+                      "zh-TW/reference/database-schemas/personal-data",
+                      "zh-TW/reference/database-schemas/storage-changes",
+                      "zh-TW/reference/database-schemas/agent-schema-history",
+                      "zh-TW/reference/database-schemas/state-schema-history",
+                      "zh-TW/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "zh-TW/reference/memory-config",
                   "zh-TW/reference/rich-output-protocol",
                   "zh-TW/reference/session-management-compaction",
@@ -8085,7 +8154,18 @@
                       "ja-JP/gateway/prometheus",
                       "ja-JP/gateway/logging",
                       "ja-JP/gateway/diagnostics",
-                      "ja-JP/gateway/troubleshooting"
+                      "ja-JP/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "ja-JP/gateway/troubleshooting/updates-and-rollbacks",
+                          "ja-JP/gateway/troubleshooting/skills-and-model-providers",
+                          "ja-JP/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "ja-JP/gateway/troubleshooting/gateway-service-and-process",
+                          "ja-JP/gateway/troubleshooting/config-validation-and-probes",
+                          "ja-JP/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -8624,6 +8704,18 @@
                   "ja-JP/reference/api-usage-costs",
                   "ja-JP/reference/transcript-hygiene",
                   "ja-JP/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "ja-JP/reference/database-schemas/layout",
+                      "ja-JP/reference/database-schemas/versioning",
+                      "ja-JP/reference/database-schemas/personal-data",
+                      "ja-JP/reference/database-schemas/storage-changes",
+                      "ja-JP/reference/database-schemas/agent-schema-history",
+                      "ja-JP/reference/database-schemas/state-schema-history",
+                      "ja-JP/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "ja-JP/reference/memory-config",
                   "ja-JP/reference/rich-output-protocol",
                   "ja-JP/reference/session-management-compaction",
@@ -9953,7 +10045,18 @@
                       "es/gateway/prometheus",
                       "es/gateway/logging",
                       "es/gateway/diagnostics",
-                      "es/gateway/troubleshooting"
+                      "es/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "es/gateway/troubleshooting/updates-and-rollbacks",
+                          "es/gateway/troubleshooting/skills-and-model-providers",
+                          "es/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "es/gateway/troubleshooting/gateway-service-and-process",
+                          "es/gateway/troubleshooting/config-validation-and-probes",
+                          "es/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -10492,6 +10595,18 @@
                   "es/reference/api-usage-costs",
                   "es/reference/transcript-hygiene",
                   "es/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "es/reference/database-schemas/layout",
+                      "es/reference/database-schemas/versioning",
+                      "es/reference/database-schemas/personal-data",
+                      "es/reference/database-schemas/storage-changes",
+                      "es/reference/database-schemas/agent-schema-history",
+                      "es/reference/database-schemas/state-schema-history",
+                      "es/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "es/reference/memory-config",
                   "es/reference/rich-output-protocol",
                   "es/reference/session-management-compaction",
@@ -11821,7 +11936,18 @@
                       "pt-BR/gateway/prometheus",
                       "pt-BR/gateway/logging",
                       "pt-BR/gateway/diagnostics",
-                      "pt-BR/gateway/troubleshooting"
+                      "pt-BR/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "pt-BR/gateway/troubleshooting/updates-and-rollbacks",
+                          "pt-BR/gateway/troubleshooting/skills-and-model-providers",
+                          "pt-BR/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "pt-BR/gateway/troubleshooting/gateway-service-and-process",
+                          "pt-BR/gateway/troubleshooting/config-validation-and-probes",
+                          "pt-BR/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -12360,6 +12486,18 @@
                   "pt-BR/reference/api-usage-costs",
                   "pt-BR/reference/transcript-hygiene",
                   "pt-BR/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "pt-BR/reference/database-schemas/layout",
+                      "pt-BR/reference/database-schemas/versioning",
+                      "pt-BR/reference/database-schemas/personal-data",
+                      "pt-BR/reference/database-schemas/storage-changes",
+                      "pt-BR/reference/database-schemas/agent-schema-history",
+                      "pt-BR/reference/database-schemas/state-schema-history",
+                      "pt-BR/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "pt-BR/reference/memory-config",
                   "pt-BR/reference/rich-output-protocol",
                   "pt-BR/reference/session-management-compaction",
@@ -13689,7 +13827,18 @@
                       "ko/gateway/prometheus",
                       "ko/gateway/logging",
                       "ko/gateway/diagnostics",
-                      "ko/gateway/troubleshooting"
+                      "ko/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "ko/gateway/troubleshooting/updates-and-rollbacks",
+                          "ko/gateway/troubleshooting/skills-and-model-providers",
+                          "ko/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "ko/gateway/troubleshooting/gateway-service-and-process",
+                          "ko/gateway/troubleshooting/config-validation-and-probes",
+                          "ko/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -14228,6 +14377,18 @@
                   "ko/reference/api-usage-costs",
                   "ko/reference/transcript-hygiene",
                   "ko/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "ko/reference/database-schemas/layout",
+                      "ko/reference/database-schemas/versioning",
+                      "ko/reference/database-schemas/personal-data",
+                      "ko/reference/database-schemas/storage-changes",
+                      "ko/reference/database-schemas/agent-schema-history",
+                      "ko/reference/database-schemas/state-schema-history",
+                      "ko/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "ko/reference/memory-config",
                   "ko/reference/rich-output-protocol",
                   "ko/reference/session-management-compaction",
@@ -15557,7 +15718,18 @@
                       "de/gateway/prometheus",
                       "de/gateway/logging",
                       "de/gateway/diagnostics",
-                      "de/gateway/troubleshooting"
+                      "de/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "de/gateway/troubleshooting/updates-and-rollbacks",
+                          "de/gateway/troubleshooting/skills-and-model-providers",
+                          "de/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "de/gateway/troubleshooting/gateway-service-and-process",
+                          "de/gateway/troubleshooting/config-validation-and-probes",
+                          "de/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -16096,6 +16268,18 @@
                   "de/reference/api-usage-costs",
                   "de/reference/transcript-hygiene",
                   "de/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "de/reference/database-schemas/layout",
+                      "de/reference/database-schemas/versioning",
+                      "de/reference/database-schemas/personal-data",
+                      "de/reference/database-schemas/storage-changes",
+                      "de/reference/database-schemas/agent-schema-history",
+                      "de/reference/database-schemas/state-schema-history",
+                      "de/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "de/reference/memory-config",
                   "de/reference/rich-output-protocol",
                   "de/reference/session-management-compaction",
@@ -17425,7 +17609,18 @@
                       "fr/gateway/prometheus",
                       "fr/gateway/logging",
                       "fr/gateway/diagnostics",
-                      "fr/gateway/troubleshooting"
+                      "fr/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "fr/gateway/troubleshooting/updates-and-rollbacks",
+                          "fr/gateway/troubleshooting/skills-and-model-providers",
+                          "fr/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "fr/gateway/troubleshooting/gateway-service-and-process",
+                          "fr/gateway/troubleshooting/config-validation-and-probes",
+                          "fr/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -17964,6 +18159,18 @@
                   "fr/reference/api-usage-costs",
                   "fr/reference/transcript-hygiene",
                   "fr/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "fr/reference/database-schemas/layout",
+                      "fr/reference/database-schemas/versioning",
+                      "fr/reference/database-schemas/personal-data",
+                      "fr/reference/database-schemas/storage-changes",
+                      "fr/reference/database-schemas/agent-schema-history",
+                      "fr/reference/database-schemas/state-schema-history",
+                      "fr/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "fr/reference/memory-config",
                   "fr/reference/rich-output-protocol",
                   "fr/reference/session-management-compaction",
@@ -19293,7 +19500,18 @@
                       "hi/gateway/prometheus",
                       "hi/gateway/logging",
                       "hi/gateway/diagnostics",
-                      "hi/gateway/troubleshooting"
+                      "hi/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "hi/gateway/troubleshooting/updates-and-rollbacks",
+                          "hi/gateway/troubleshooting/skills-and-model-providers",
+                          "hi/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "hi/gateway/troubleshooting/gateway-service-and-process",
+                          "hi/gateway/troubleshooting/config-validation-and-probes",
+                          "hi/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -19832,6 +20050,18 @@
                   "hi/reference/api-usage-costs",
                   "hi/reference/transcript-hygiene",
                   "hi/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "hi/reference/database-schemas/layout",
+                      "hi/reference/database-schemas/versioning",
+                      "hi/reference/database-schemas/personal-data",
+                      "hi/reference/database-schemas/storage-changes",
+                      "hi/reference/database-schemas/agent-schema-history",
+                      "hi/reference/database-schemas/state-schema-history",
+                      "hi/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "hi/reference/memory-config",
                   "hi/reference/rich-output-protocol",
                   "hi/reference/session-management-compaction",
@@ -21161,7 +21391,18 @@
                       "ar/gateway/prometheus",
                       "ar/gateway/logging",
                       "ar/gateway/diagnostics",
-                      "ar/gateway/troubleshooting"
+                      "ar/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "ar/gateway/troubleshooting/updates-and-rollbacks",
+                          "ar/gateway/troubleshooting/skills-and-model-providers",
+                          "ar/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "ar/gateway/troubleshooting/gateway-service-and-process",
+                          "ar/gateway/troubleshooting/config-validation-and-probes",
+                          "ar/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -21700,6 +21941,18 @@
                   "ar/reference/api-usage-costs",
                   "ar/reference/transcript-hygiene",
                   "ar/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "ar/reference/database-schemas/layout",
+                      "ar/reference/database-schemas/versioning",
+                      "ar/reference/database-schemas/personal-data",
+                      "ar/reference/database-schemas/storage-changes",
+                      "ar/reference/database-schemas/agent-schema-history",
+                      "ar/reference/database-schemas/state-schema-history",
+                      "ar/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "ar/reference/memory-config",
                   "ar/reference/rich-output-protocol",
                   "ar/reference/session-management-compaction",
@@ -23029,7 +23282,18 @@
                       "it/gateway/prometheus",
                       "it/gateway/logging",
                       "it/gateway/diagnostics",
-                      "it/gateway/troubleshooting"
+                      "it/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "it/gateway/troubleshooting/updates-and-rollbacks",
+                          "it/gateway/troubleshooting/skills-and-model-providers",
+                          "it/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "it/gateway/troubleshooting/gateway-service-and-process",
+                          "it/gateway/troubleshooting/config-validation-and-probes",
+                          "it/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -23568,6 +23832,18 @@
                   "it/reference/api-usage-costs",
                   "it/reference/transcript-hygiene",
                   "it/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "it/reference/database-schemas/layout",
+                      "it/reference/database-schemas/versioning",
+                      "it/reference/database-schemas/personal-data",
+                      "it/reference/database-schemas/storage-changes",
+                      "it/reference/database-schemas/agent-schema-history",
+                      "it/reference/database-schemas/state-schema-history",
+                      "it/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "it/reference/memory-config",
                   "it/reference/rich-output-protocol",
                   "it/reference/session-management-compaction",
@@ -24897,7 +25173,18 @@
                       "vi/gateway/prometheus",
                       "vi/gateway/logging",
                       "vi/gateway/diagnostics",
-                      "vi/gateway/troubleshooting"
+                      "vi/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "vi/gateway/troubleshooting/updates-and-rollbacks",
+                          "vi/gateway/troubleshooting/skills-and-model-providers",
+                          "vi/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "vi/gateway/troubleshooting/gateway-service-and-process",
+                          "vi/gateway/troubleshooting/config-validation-and-probes",
+                          "vi/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -25436,6 +25723,18 @@
                   "vi/reference/api-usage-costs",
                   "vi/reference/transcript-hygiene",
                   "vi/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "vi/reference/database-schemas/layout",
+                      "vi/reference/database-schemas/versioning",
+                      "vi/reference/database-schemas/personal-data",
+                      "vi/reference/database-schemas/storage-changes",
+                      "vi/reference/database-schemas/agent-schema-history",
+                      "vi/reference/database-schemas/state-schema-history",
+                      "vi/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "vi/reference/memory-config",
                   "vi/reference/rich-output-protocol",
                   "vi/reference/session-management-compaction",
@@ -26765,7 +27064,18 @@
                       "nl/gateway/prometheus",
                       "nl/gateway/logging",
                       "nl/gateway/diagnostics",
-                      "nl/gateway/troubleshooting"
+                      "nl/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "nl/gateway/troubleshooting/updates-and-rollbacks",
+                          "nl/gateway/troubleshooting/skills-and-model-providers",
+                          "nl/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "nl/gateway/troubleshooting/gateway-service-and-process",
+                          "nl/gateway/troubleshooting/config-validation-and-probes",
+                          "nl/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -27304,6 +27614,18 @@
                   "nl/reference/api-usage-costs",
                   "nl/reference/transcript-hygiene",
                   "nl/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "nl/reference/database-schemas/layout",
+                      "nl/reference/database-schemas/versioning",
+                      "nl/reference/database-schemas/personal-data",
+                      "nl/reference/database-schemas/storage-changes",
+                      "nl/reference/database-schemas/agent-schema-history",
+                      "nl/reference/database-schemas/state-schema-history",
+                      "nl/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "nl/reference/memory-config",
                   "nl/reference/rich-output-protocol",
                   "nl/reference/session-management-compaction",
@@ -28633,7 +28955,18 @@
                       "tr/gateway/prometheus",
                       "tr/gateway/logging",
                       "tr/gateway/diagnostics",
-                      "tr/gateway/troubleshooting"
+                      "tr/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "tr/gateway/troubleshooting/updates-and-rollbacks",
+                          "tr/gateway/troubleshooting/skills-and-model-providers",
+                          "tr/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "tr/gateway/troubleshooting/gateway-service-and-process",
+                          "tr/gateway/troubleshooting/config-validation-and-probes",
+                          "tr/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -29172,6 +29505,18 @@
                   "tr/reference/api-usage-costs",
                   "tr/reference/transcript-hygiene",
                   "tr/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "tr/reference/database-schemas/layout",
+                      "tr/reference/database-schemas/versioning",
+                      "tr/reference/database-schemas/personal-data",
+                      "tr/reference/database-schemas/storage-changes",
+                      "tr/reference/database-schemas/agent-schema-history",
+                      "tr/reference/database-schemas/state-schema-history",
+                      "tr/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "tr/reference/memory-config",
                   "tr/reference/rich-output-protocol",
                   "tr/reference/session-management-compaction",
@@ -30501,7 +30846,18 @@
                       "uk/gateway/prometheus",
                       "uk/gateway/logging",
                       "uk/gateway/diagnostics",
-                      "uk/gateway/troubleshooting"
+                      "uk/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "uk/gateway/troubleshooting/updates-and-rollbacks",
+                          "uk/gateway/troubleshooting/skills-and-model-providers",
+                          "uk/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "uk/gateway/troubleshooting/gateway-service-and-process",
+                          "uk/gateway/troubleshooting/config-validation-and-probes",
+                          "uk/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -31040,6 +31396,18 @@
                   "uk/reference/api-usage-costs",
                   "uk/reference/transcript-hygiene",
                   "uk/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "uk/reference/database-schemas/layout",
+                      "uk/reference/database-schemas/versioning",
+                      "uk/reference/database-schemas/personal-data",
+                      "uk/reference/database-schemas/storage-changes",
+                      "uk/reference/database-schemas/agent-schema-history",
+                      "uk/reference/database-schemas/state-schema-history",
+                      "uk/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "uk/reference/memory-config",
                   "uk/reference/rich-output-protocol",
                   "uk/reference/session-management-compaction",
@@ -32369,7 +32737,18 @@
                       "id/gateway/prometheus",
                       "id/gateway/logging",
                       "id/gateway/diagnostics",
-                      "id/gateway/troubleshooting"
+                      "id/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "id/gateway/troubleshooting/updates-and-rollbacks",
+                          "id/gateway/troubleshooting/skills-and-model-providers",
+                          "id/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "id/gateway/troubleshooting/gateway-service-and-process",
+                          "id/gateway/troubleshooting/config-validation-and-probes",
+                          "id/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -32908,6 +33287,18 @@
                   "id/reference/api-usage-costs",
                   "id/reference/transcript-hygiene",
                   "id/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "id/reference/database-schemas/layout",
+                      "id/reference/database-schemas/versioning",
+                      "id/reference/database-schemas/personal-data",
+                      "id/reference/database-schemas/storage-changes",
+                      "id/reference/database-schemas/agent-schema-history",
+                      "id/reference/database-schemas/state-schema-history",
+                      "id/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "id/reference/memory-config",
                   "id/reference/rich-output-protocol",
                   "id/reference/session-management-compaction",
@@ -34237,7 +34628,18 @@
                       "pl/gateway/prometheus",
                       "pl/gateway/logging",
                       "pl/gateway/diagnostics",
-                      "pl/gateway/troubleshooting"
+                      "pl/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "pl/gateway/troubleshooting/updates-and-rollbacks",
+                          "pl/gateway/troubleshooting/skills-and-model-providers",
+                          "pl/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "pl/gateway/troubleshooting/gateway-service-and-process",
+                          "pl/gateway/troubleshooting/config-validation-and-probes",
+                          "pl/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -34776,6 +35178,18 @@
                   "pl/reference/api-usage-costs",
                   "pl/reference/transcript-hygiene",
                   "pl/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "pl/reference/database-schemas/layout",
+                      "pl/reference/database-schemas/versioning",
+                      "pl/reference/database-schemas/personal-data",
+                      "pl/reference/database-schemas/storage-changes",
+                      "pl/reference/database-schemas/agent-schema-history",
+                      "pl/reference/database-schemas/state-schema-history",
+                      "pl/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "pl/reference/memory-config",
                   "pl/reference/rich-output-protocol",
                   "pl/reference/session-management-compaction",
@@ -36105,7 +36519,18 @@
                       "ru/gateway/prometheus",
                       "ru/gateway/logging",
                       "ru/gateway/diagnostics",
-                      "ru/gateway/troubleshooting"
+                      "ru/gateway/troubleshooting",
+                      {
+                        "group": "Troubleshooting",
+                        "pages": [
+                          "ru/gateway/troubleshooting/updates-and-rollbacks",
+                          "ru/gateway/troubleshooting/skills-and-model-providers",
+                          "ru/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "ru/gateway/troubleshooting/gateway-service-and-process",
+                          "ru/gateway/troubleshooting/config-validation-and-probes",
+                          "ru/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -36644,6 +37069,18 @@
                   "ru/reference/api-usage-costs",
                   "ru/reference/transcript-hygiene",
                   "ru/reference/database-schemas",
+                  {
+                    "group": "Database schemas",
+                    "pages": [
+                      "ru/reference/database-schemas/layout",
+                      "ru/reference/database-schemas/versioning",
+                      "ru/reference/database-schemas/personal-data",
+                      "ru/reference/database-schemas/storage-changes",
+                      "ru/reference/database-schemas/agent-schema-history",
+                      "ru/reference/database-schemas/state-schema-history",
+                      "ru/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
                   "ru/reference/memory-config",
                   "ru/reference/rich-output-protocol",
                   "ru/reference/session-management-compaction",
