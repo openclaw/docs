@@ -3479,6 +3479,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Scenarios
   - H2: Privacy Model
   - H2: Extending the pack
+  - H2: Related
 
 ## concepts/presence.md
 
@@ -3675,6 +3676,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Visibility and output
   - H2: Index lifecycle
   - H2: Session search vs. memory search
+  - H2: Related
 
 ## concepts/session-state.md
 
@@ -6627,6 +6629,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Verify
   - H2: Updates and backups
   - H2: Troubleshooting
+  - H2: Related
 
 ## platforms/index.md
 
