@@ -1951,6 +1951,18 @@
                   "tools/subagents",
                   "tools/swarm",
                   "tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "tools/acp-agents/quickstart",
+                      "tools/acp-agents/runbook",
+                      "tools/acp-agents/bindings",
+                      "tools/acp-agents/sessions",
+                      "tools/acp-agents/delivery",
+                      "tools/acp-agents/controls",
+                      "tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "tools/acp-agents-setup",
                   "tools/multi-agent-sandbox-tools"
                 ]
@@ -3565,6 +3577,18 @@
                   "zh-CN/tools/subagents",
                   "zh-CN/tools/swarm",
                   "zh-CN/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "zh-CN/tools/acp-agents/quickstart",
+                      "zh-CN/tools/acp-agents/runbook",
+                      "zh-CN/tools/acp-agents/bindings",
+                      "zh-CN/tools/acp-agents/sessions",
+                      "zh-CN/tools/acp-agents/delivery",
+                      "zh-CN/tools/acp-agents/controls",
+                      "zh-CN/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "zh-CN/tools/acp-agents-setup",
                   "zh-CN/tools/multi-agent-sandbox-tools"
                 ]
@@ -5145,6 +5169,18 @@
                   "zh-TW/tools/subagents",
                   "zh-TW/tools/swarm",
                   "zh-TW/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "zh-TW/tools/acp-agents/quickstart",
+                      "zh-TW/tools/acp-agents/runbook",
+                      "zh-TW/tools/acp-agents/bindings",
+                      "zh-TW/tools/acp-agents/sessions",
+                      "zh-TW/tools/acp-agents/delivery",
+                      "zh-TW/tools/acp-agents/controls",
+                      "zh-TW/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "zh-TW/tools/acp-agents-setup",
                   "zh-TW/tools/multi-agent-sandbox-tools"
                 ]
@@ -6725,6 +6761,18 @@
                   "ja-JP/tools/subagents",
                   "ja-JP/tools/swarm",
                   "ja-JP/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "ja-JP/tools/acp-agents/quickstart",
+                      "ja-JP/tools/acp-agents/runbook",
+                      "ja-JP/tools/acp-agents/bindings",
+                      "ja-JP/tools/acp-agents/sessions",
+                      "ja-JP/tools/acp-agents/delivery",
+                      "ja-JP/tools/acp-agents/controls",
+                      "ja-JP/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "ja-JP/tools/acp-agents-setup",
                   "ja-JP/tools/multi-agent-sandbox-tools"
                 ]
@@ -8305,6 +8353,18 @@
                   "es/tools/subagents",
                   "es/tools/swarm",
                   "es/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "es/tools/acp-agents/quickstart",
+                      "es/tools/acp-agents/runbook",
+                      "es/tools/acp-agents/bindings",
+                      "es/tools/acp-agents/sessions",
+                      "es/tools/acp-agents/delivery",
+                      "es/tools/acp-agents/controls",
+                      "es/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "es/tools/acp-agents-setup",
                   "es/tools/multi-agent-sandbox-tools"
                 ]
@@ -9885,6 +9945,18 @@
                   "pt-BR/tools/subagents",
                   "pt-BR/tools/swarm",
                   "pt-BR/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "pt-BR/tools/acp-agents/quickstart",
+                      "pt-BR/tools/acp-agents/runbook",
+                      "pt-BR/tools/acp-agents/bindings",
+                      "pt-BR/tools/acp-agents/sessions",
+                      "pt-BR/tools/acp-agents/delivery",
+                      "pt-BR/tools/acp-agents/controls",
+                      "pt-BR/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "pt-BR/tools/acp-agents-setup",
                   "pt-BR/tools/multi-agent-sandbox-tools"
                 ]
@@ -11465,6 +11537,18 @@
                   "ko/tools/subagents",
                   "ko/tools/swarm",
                   "ko/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "ko/tools/acp-agents/quickstart",
+                      "ko/tools/acp-agents/runbook",
+                      "ko/tools/acp-agents/bindings",
+                      "ko/tools/acp-agents/sessions",
+                      "ko/tools/acp-agents/delivery",
+                      "ko/tools/acp-agents/controls",
+                      "ko/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "ko/tools/acp-agents-setup",
                   "ko/tools/multi-agent-sandbox-tools"
                 ]
@@ -13045,6 +13129,18 @@
                   "de/tools/subagents",
                   "de/tools/swarm",
                   "de/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "de/tools/acp-agents/quickstart",
+                      "de/tools/acp-agents/runbook",
+                      "de/tools/acp-agents/bindings",
+                      "de/tools/acp-agents/sessions",
+                      "de/tools/acp-agents/delivery",
+                      "de/tools/acp-agents/controls",
+                      "de/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "de/tools/acp-agents-setup",
                   "de/tools/multi-agent-sandbox-tools"
                 ]
@@ -14625,6 +14721,18 @@
                   "fr/tools/subagents",
                   "fr/tools/swarm",
                   "fr/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "fr/tools/acp-agents/quickstart",
+                      "fr/tools/acp-agents/runbook",
+                      "fr/tools/acp-agents/bindings",
+                      "fr/tools/acp-agents/sessions",
+                      "fr/tools/acp-agents/delivery",
+                      "fr/tools/acp-agents/controls",
+                      "fr/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "fr/tools/acp-agents-setup",
                   "fr/tools/multi-agent-sandbox-tools"
                 ]
@@ -16205,6 +16313,18 @@
                   "hi/tools/subagents",
                   "hi/tools/swarm",
                   "hi/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "hi/tools/acp-agents/quickstart",
+                      "hi/tools/acp-agents/runbook",
+                      "hi/tools/acp-agents/bindings",
+                      "hi/tools/acp-agents/sessions",
+                      "hi/tools/acp-agents/delivery",
+                      "hi/tools/acp-agents/controls",
+                      "hi/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "hi/tools/acp-agents-setup",
                   "hi/tools/multi-agent-sandbox-tools"
                 ]
@@ -17785,6 +17905,18 @@
                   "ar/tools/subagents",
                   "ar/tools/swarm",
                   "ar/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "ar/tools/acp-agents/quickstart",
+                      "ar/tools/acp-agents/runbook",
+                      "ar/tools/acp-agents/bindings",
+                      "ar/tools/acp-agents/sessions",
+                      "ar/tools/acp-agents/delivery",
+                      "ar/tools/acp-agents/controls",
+                      "ar/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "ar/tools/acp-agents-setup",
                   "ar/tools/multi-agent-sandbox-tools"
                 ]
@@ -19365,6 +19497,18 @@
                   "it/tools/subagents",
                   "it/tools/swarm",
                   "it/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "it/tools/acp-agents/quickstart",
+                      "it/tools/acp-agents/runbook",
+                      "it/tools/acp-agents/bindings",
+                      "it/tools/acp-agents/sessions",
+                      "it/tools/acp-agents/delivery",
+                      "it/tools/acp-agents/controls",
+                      "it/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "it/tools/acp-agents-setup",
                   "it/tools/multi-agent-sandbox-tools"
                 ]
@@ -20945,6 +21089,18 @@
                   "vi/tools/subagents",
                   "vi/tools/swarm",
                   "vi/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "vi/tools/acp-agents/quickstart",
+                      "vi/tools/acp-agents/runbook",
+                      "vi/tools/acp-agents/bindings",
+                      "vi/tools/acp-agents/sessions",
+                      "vi/tools/acp-agents/delivery",
+                      "vi/tools/acp-agents/controls",
+                      "vi/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "vi/tools/acp-agents-setup",
                   "vi/tools/multi-agent-sandbox-tools"
                 ]
@@ -22525,6 +22681,18 @@
                   "nl/tools/subagents",
                   "nl/tools/swarm",
                   "nl/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "nl/tools/acp-agents/quickstart",
+                      "nl/tools/acp-agents/runbook",
+                      "nl/tools/acp-agents/bindings",
+                      "nl/tools/acp-agents/sessions",
+                      "nl/tools/acp-agents/delivery",
+                      "nl/tools/acp-agents/controls",
+                      "nl/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "nl/tools/acp-agents-setup",
                   "nl/tools/multi-agent-sandbox-tools"
                 ]
@@ -24105,6 +24273,18 @@
                   "tr/tools/subagents",
                   "tr/tools/swarm",
                   "tr/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "tr/tools/acp-agents/quickstart",
+                      "tr/tools/acp-agents/runbook",
+                      "tr/tools/acp-agents/bindings",
+                      "tr/tools/acp-agents/sessions",
+                      "tr/tools/acp-agents/delivery",
+                      "tr/tools/acp-agents/controls",
+                      "tr/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "tr/tools/acp-agents-setup",
                   "tr/tools/multi-agent-sandbox-tools"
                 ]
@@ -25685,6 +25865,18 @@
                   "uk/tools/subagents",
                   "uk/tools/swarm",
                   "uk/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "uk/tools/acp-agents/quickstart",
+                      "uk/tools/acp-agents/runbook",
+                      "uk/tools/acp-agents/bindings",
+                      "uk/tools/acp-agents/sessions",
+                      "uk/tools/acp-agents/delivery",
+                      "uk/tools/acp-agents/controls",
+                      "uk/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "uk/tools/acp-agents-setup",
                   "uk/tools/multi-agent-sandbox-tools"
                 ]
@@ -27265,6 +27457,18 @@
                   "id/tools/subagents",
                   "id/tools/swarm",
                   "id/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "id/tools/acp-agents/quickstart",
+                      "id/tools/acp-agents/runbook",
+                      "id/tools/acp-agents/bindings",
+                      "id/tools/acp-agents/sessions",
+                      "id/tools/acp-agents/delivery",
+                      "id/tools/acp-agents/controls",
+                      "id/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "id/tools/acp-agents-setup",
                   "id/tools/multi-agent-sandbox-tools"
                 ]
@@ -28845,6 +29049,18 @@
                   "pl/tools/subagents",
                   "pl/tools/swarm",
                   "pl/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "pl/tools/acp-agents/quickstart",
+                      "pl/tools/acp-agents/runbook",
+                      "pl/tools/acp-agents/bindings",
+                      "pl/tools/acp-agents/sessions",
+                      "pl/tools/acp-agents/delivery",
+                      "pl/tools/acp-agents/controls",
+                      "pl/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "pl/tools/acp-agents-setup",
                   "pl/tools/multi-agent-sandbox-tools"
                 ]
@@ -30425,6 +30641,18 @@
                   "ru/tools/subagents",
                   "ru/tools/swarm",
                   "ru/tools/acp-agents",
+                  {
+                    "group": "ACP agents",
+                    "pages": [
+                      "ru/tools/acp-agents/quickstart",
+                      "ru/tools/acp-agents/runbook",
+                      "ru/tools/acp-agents/bindings",
+                      "ru/tools/acp-agents/sessions",
+                      "ru/tools/acp-agents/delivery",
+                      "ru/tools/acp-agents/controls",
+                      "ru/tools/acp-agents/troubleshooting"
+                    ]
+                  },
                   "ru/tools/acp-agents-setup",
                   "ru/tools/multi-agent-sandbox-tools"
                 ]

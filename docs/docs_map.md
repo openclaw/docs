@@ -11630,11 +11630,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/acp-agents
 - Headings:
   - H2: Which page do I want?
-  - H2: Does this work out of the box?
-  - H2: Supported harness targets
-  - H2: Operator runbook
+  - H2: ACP agents documentation pages
   - H2: ACP versus sub-agents
   - H2: How ACP runs Claude Code
+  - H2: acpx harness, plugin setup, and permissions
+  - H2: Where each section moved
+  - H2: Related
+
+## tools/acp-agents/bindings.md
+
+- Route: /tools/acp-agents/bindings
+- Headings:
   - H2: Bound sessions
   - H3: Mental model
   - H3: Current-conversation binds
@@ -11643,18 +11649,49 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Runtime defaults per agent
   - H3: Example
   - H3: Behavior
-  - H2: Start ACP sessions
-  - H3: `sessions_spawn` parameters
-  - H2: Spawn bind and thread modes
-  - H2: Delivery model
-  - H2: Sandbox compatibility
+
+## tools/acp-agents/controls.md
+
+- Route: /tools/acp-agents/controls
+- Headings:
   - H2: Session target resolution
   - H3: Session owner and harness
   - H2: ACP controls
   - H3: Runtime options mapping
-  - H2: acpx harness, plugin setup, and permissions
+
+## tools/acp-agents/delivery.md
+
+- Route: /tools/acp-agents/delivery
+- Headings:
+  - H2: Delivery model
+  - H2: Sandbox compatibility
+
+## tools/acp-agents/quickstart.md
+
+- Route: /tools/acp-agents/quickstart
+- Headings:
+  - H2: Does this work out of the box?
+  - H2: Supported harness targets
+
+## tools/acp-agents/runbook.md
+
+- Route: /tools/acp-agents/runbook
+- Headings:
+  - H2: Operator runbook
+
+## tools/acp-agents/sessions.md
+
+- Route: /tools/acp-agents/sessions
+- Headings:
+  - H2: Start ACP sessions
+  - H3: `sessions_spawn` parameters
+  - H2: Spawn bind and thread modes
+
+## tools/acp-agents/troubleshooting.md
+
+- Route: /tools/acp-agents/troubleshooting
+- Headings:
   - H2: Troubleshooting
-  - H2: Related
 
 ## tools/agent-send.md
 
