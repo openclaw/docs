@@ -6261,24 +6261,40 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: From chat
   - H2: Stale update history
   - H2: Retire update recovery data
+  - H2: After updating
+  - H3: Run doctor
+  - H3: Restart the gateway
+  - H3: Verify
+  - H2: Detailed topics
+  - H2: Related
+
+## install/updating/automatic-updates.md
+
+- Route: /install/updating/automatic-updates
+- Headings:
+  - H2: Auto-updater
+  - H3: Update campaigns
+
+## install/updating/rollback-and-recovery.md
+
+- Route: /install/updating/rollback-and-recovery
+- Headings:
+  - H2: Downgrade
+  - H3: Automatic schema-neutral rollback
+  - H3: Before updating: create a verified backup
+  - H2: If you are stuck
+  - H3: Unattended repair on your own inference
+
+## install/updating/update-methods.md
+
+- Route: /install/updating/update-methods
+- Headings:
   - H2: Switch between npm and git installs
   - H2: Source-checkout servers (reference script)
   - H2: Alternative: re-run the installer
   - H2: Alternative: manual npm, pnpm, or bun
   - H3: Package lifecycle and operator state
   - H3: Advanced npm install topics
-  - H2: Auto-updater
-  - H3: Update campaigns
-  - H2: After updating
-  - H3: Run doctor
-  - H3: Restart the gateway
-  - H3: Verify
-  - H2: Downgrade
-  - H3: Automatic schema-neutral rollback
-  - H3: Before updating: create a verified backup
-  - H2: If you are stuck
-  - H3: Unattended repair on your own inference
-  - H2: Related
 
 ## install/upstash.md
 

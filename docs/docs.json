@@ -1401,6 +1401,14 @@
                 "pages": [
                   "install/backups",
                   "install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "install/updating/update-methods",
+                      "install/updating/automatic-updates",
+                      "install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -3163,6 +3171,14 @@
                 "pages": [
                   "zh-CN/install/backups",
                   "zh-CN/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "zh-CN/install/updating/update-methods",
+                      "zh-CN/install/updating/automatic-updates",
+                      "zh-CN/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "zh-CN/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -4891,6 +4907,14 @@
                 "pages": [
                   "zh-TW/install/backups",
                   "zh-TW/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "zh-TW/install/updating/update-methods",
+                      "zh-TW/install/updating/automatic-updates",
+                      "zh-TW/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "zh-TW/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -6619,6 +6643,14 @@
                 "pages": [
                   "ja-JP/install/backups",
                   "ja-JP/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "ja-JP/install/updating/update-methods",
+                      "ja-JP/install/updating/automatic-updates",
+                      "ja-JP/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "ja-JP/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -8347,6 +8379,14 @@
                 "pages": [
                   "es/install/backups",
                   "es/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "es/install/updating/update-methods",
+                      "es/install/updating/automatic-updates",
+                      "es/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "es/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -10075,6 +10115,14 @@
                 "pages": [
                   "pt-BR/install/backups",
                   "pt-BR/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "pt-BR/install/updating/update-methods",
+                      "pt-BR/install/updating/automatic-updates",
+                      "pt-BR/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "pt-BR/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -11803,6 +11851,14 @@
                 "pages": [
                   "ko/install/backups",
                   "ko/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "ko/install/updating/update-methods",
+                      "ko/install/updating/automatic-updates",
+                      "ko/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "ko/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -13531,6 +13587,14 @@
                 "pages": [
                   "de/install/backups",
                   "de/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "de/install/updating/update-methods",
+                      "de/install/updating/automatic-updates",
+                      "de/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "de/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -15259,6 +15323,14 @@
                 "pages": [
                   "fr/install/backups",
                   "fr/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "fr/install/updating/update-methods",
+                      "fr/install/updating/automatic-updates",
+                      "fr/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "fr/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -16987,6 +17059,14 @@
                 "pages": [
                   "hi/install/backups",
                   "hi/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "hi/install/updating/update-methods",
+                      "hi/install/updating/automatic-updates",
+                      "hi/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "hi/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -18715,6 +18795,14 @@
                 "pages": [
                   "ar/install/backups",
                   "ar/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "ar/install/updating/update-methods",
+                      "ar/install/updating/automatic-updates",
+                      "ar/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "ar/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -20443,6 +20531,14 @@
                 "pages": [
                   "it/install/backups",
                   "it/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "it/install/updating/update-methods",
+                      "it/install/updating/automatic-updates",
+                      "it/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "it/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -22171,6 +22267,14 @@
                 "pages": [
                   "vi/install/backups",
                   "vi/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "vi/install/updating/update-methods",
+                      "vi/install/updating/automatic-updates",
+                      "vi/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "vi/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -23899,6 +24003,14 @@
                 "pages": [
                   "nl/install/backups",
                   "nl/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "nl/install/updating/update-methods",
+                      "nl/install/updating/automatic-updates",
+                      "nl/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "nl/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -25627,6 +25739,14 @@
                 "pages": [
                   "tr/install/backups",
                   "tr/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "tr/install/updating/update-methods",
+                      "tr/install/updating/automatic-updates",
+                      "tr/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "tr/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -27355,6 +27475,14 @@
                 "pages": [
                   "uk/install/backups",
                   "uk/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "uk/install/updating/update-methods",
+                      "uk/install/updating/automatic-updates",
+                      "uk/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "uk/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -29083,6 +29211,14 @@
                 "pages": [
                   "id/install/backups",
                   "id/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "id/install/updating/update-methods",
+                      "id/install/updating/automatic-updates",
+                      "id/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "id/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -30811,6 +30947,14 @@
                 "pages": [
                   "pl/install/backups",
                   "pl/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "pl/install/updating/update-methods",
+                      "pl/install/updating/automatic-updates",
+                      "pl/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "pl/install/update-troubleshooting",
                   {
                     "group": "Migrating",
@@ -32539,6 +32683,14 @@
                 "pages": [
                   "ru/install/backups",
                   "ru/install/updating",
+                  {
+                    "group": "Updating",
+                    "pages": [
+                      "ru/install/updating/update-methods",
+                      "ru/install/updating/automatic-updates",
+                      "ru/install/updating/rollback-and-recovery"
+                    ]
+                  },
                   "ru/install/update-troubleshooting",
                   {
                     "group": "Migrating",
