@@ -642,3 +642,4 @@ path even if the Codex turn has no assistant text.
 - [Agent runtimes](/concepts/agent-runtimes)
 - [Diagnostics export](/gateway/diagnostics)
 - [Trajectory export](/tools/trajectory)
+- [ACP agents](/tools/acp-agents) — how ACP agents are configured and bound

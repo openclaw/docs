@@ -466,3 +466,4 @@ For OTLP export to a collector, see [OpenTelemetry export](/gateway/opentelemetr
 - [Diagnostics flags](/diagnostics/flags) — targeted debug-log flags
 - [Gateway logging internals](/gateway/logging) — WS log styles, subsystem prefixes, and console capture
 - [Configuration reference](/gateway/config-observability#diagnostics) — full `diagnostics.*` field reference
+- [`openclaw logs`](/cli/logs) — tail Gateway logs over RPC from the CLI

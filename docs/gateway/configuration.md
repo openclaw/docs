@@ -966,3 +966,7 @@ _Related: [Configuration Examples](/gateway/configuration-examples) · [Configur
 - [Configuration reference](/gateway/configuration-reference)
 - [Configuration examples](/gateway/configuration-examples)
 - [Gateway runbook](/gateway)
+- [`openclaw config`](/cli/config) — read and write these settings from the CLI
+- [`openclaw configure`](/cli/configure) — guided editor for these settings
+- [Security audit checks](/gateway/security/audit-checks) — what the audit flags in this configuration
+- [Trusted proxy auth](/gateway/trusted-proxy-auth) — configuring the Gateway behind a reverse proxy

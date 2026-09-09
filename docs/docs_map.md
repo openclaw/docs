@@ -315,6 +315,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin diagnostics
   - H2: Security notes
   - H2: Troubleshooting
+  - H2: Related
 
 ## channels/ambient-room-events.md
 
@@ -1349,6 +1350,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Outbound sends fail
   - H3: Twilio accepts the send but delivery later fails
   - H3: Messages arrive but the agent does not answer
+  - H2: Related
 
 ## channels/synology-chat.md
 
@@ -2539,6 +2541,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Web-search follow-ups
   - H2: Other behaviors
   - H2: Common follow-up commands
+  - H2: Related
 
 ## cli/openclaw.md
 
@@ -2722,6 +2725,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: openclaw promos list
   - H2: openclaw promos claim &lt;slug&gt;
   - H2: Model inventory and offers
+  - H2: Related
 
 ## cli/proxy.md
 
@@ -2907,6 +2911,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Missing summaries
   - H2: Upgrading the legacy file store
   - H2: Configuration
+  - H2: Related
 
 ## cli/triage.md
 
@@ -3547,6 +3552,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Grounded backfill and live promotion
   - H2: CLI
   - H2: Further reading
+  - H2: Related
 
 ## concepts/messages.md
 
@@ -5174,6 +5180,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Device pairing approvals
   - H2: Node pairing approvals
   - H2: Shared-secret auth
+  - H2: Related
 
 ## gateway/pairing.md
 
@@ -13439,6 +13446,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where the card appears
   - H2: Gateway requests
   - H2: Pin the card to the dashboard
+  - H2: Related
 
 ## tools/reactions.md
 
