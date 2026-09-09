@@ -39,6 +39,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Eligibility rules
   - H3: Resolution rules
   - H2: Agent copy portability
+  - H2: Plugin SDK OAuth validation
   - H2: Personal model accounts
   - H2: Config-only auth routes
   - H2: Explicit auth order filtering
@@ -9007,6 +9008,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/agent
 - Headings:
   - H2: Plugin command runtime helpers
+  - H2: Auth-profile resolution
   - H2: Agent and session namespaces
 
 ## plugins/sdk-runtime/background-work.md
