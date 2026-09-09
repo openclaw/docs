@@ -4540,17 +4540,24 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/opentelemetry
 - Headings:
-  - H2: Quick start
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/opentelemetry/configuration.md
+
+- Route: /gateway/opentelemetry/configuration
+- Headings:
   - H2: Signals exported
-  - H2: Which processes export
-  - H2: Exporter health
   - H2: Configuration reference
   - H3: Environment variables
-  - H2: Continue an upstream WebSocket trace
-  - H2: Privacy and content capture
   - H2: Sampling and flushing
-  - H3: Model-call observation units
-  - H3: Claude Code CLI model-call fidelity
+
+## gateway/opentelemetry/model-calls-and-metrics.md
+
+- Route: /gateway/opentelemetry/model-calls-and-metrics
+- Headings:
+  - H2: Model-call observation units
+  - H2: Claude Code CLI model-call fidelity
   - H2: Exported metrics
   - H3: Gateway RPC
   - H3: Model usage
@@ -4563,11 +4570,30 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Tool execution and loop detection
   - H3: Exec
   - H3: Diagnostics internals (memory, payloads, exporter health)
-  - H2: Exported spans
-  - H2: Diagnostic event catalog
+
+## gateway/opentelemetry/privacy-and-trace-context.md
+
+- Route: /gateway/opentelemetry/privacy-and-trace-context
+- Headings:
+  - H2: Continue an upstream WebSocket trace
+  - H2: Privacy and content capture
+
+## gateway/opentelemetry/setup.md
+
+- Route: /gateway/opentelemetry/setup
+- Headings:
+  - H2: Quick start
+  - H2: Which processes export
+  - H2: Exporter health
   - H2: Without an exporter
   - H2: Disable
-  - H2: Related
+
+## gateway/opentelemetry/spans-and-events.md
+
+- Route: /gateway/opentelemetry/spans-and-events
+- Headings:
+  - H2: Exported spans
+  - H2: Diagnostic event catalog
 
 ## gateway/operator-scopes.md
 

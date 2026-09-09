@@ -2258,6 +2258,16 @@
                       "gateway/telemetry",
                       "logging",
                       "gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "gateway/opentelemetry/setup",
+                          "gateway/opentelemetry/configuration",
+                          "gateway/opentelemetry/privacy-and-trace-context",
+                          "gateway/opentelemetry/model-calls-and-metrics",
+                          "gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "gateway/prometheus",
                       "gateway/logging",
                       "gateway/diagnostics",
@@ -3817,6 +3827,16 @@
                       "zh-CN/gateway/telemetry",
                       "zh-CN/logging",
                       "zh-CN/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "zh-CN/gateway/opentelemetry/setup",
+                          "zh-CN/gateway/opentelemetry/configuration",
+                          "zh-CN/gateway/opentelemetry/privacy-and-trace-context",
+                          "zh-CN/gateway/opentelemetry/model-calls-and-metrics",
+                          "zh-CN/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "zh-CN/gateway/prometheus",
                       "zh-CN/gateway/logging",
                       "zh-CN/gateway/diagnostics",
@@ -5376,6 +5396,16 @@
                       "zh-TW/gateway/telemetry",
                       "zh-TW/logging",
                       "zh-TW/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "zh-TW/gateway/opentelemetry/setup",
+                          "zh-TW/gateway/opentelemetry/configuration",
+                          "zh-TW/gateway/opentelemetry/privacy-and-trace-context",
+                          "zh-TW/gateway/opentelemetry/model-calls-and-metrics",
+                          "zh-TW/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "zh-TW/gateway/prometheus",
                       "zh-TW/gateway/logging",
                       "zh-TW/gateway/diagnostics",
@@ -6935,6 +6965,16 @@
                       "ja-JP/gateway/telemetry",
                       "ja-JP/logging",
                       "ja-JP/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "ja-JP/gateway/opentelemetry/setup",
+                          "ja-JP/gateway/opentelemetry/configuration",
+                          "ja-JP/gateway/opentelemetry/privacy-and-trace-context",
+                          "ja-JP/gateway/opentelemetry/model-calls-and-metrics",
+                          "ja-JP/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "ja-JP/gateway/prometheus",
                       "ja-JP/gateway/logging",
                       "ja-JP/gateway/diagnostics",
@@ -8494,6 +8534,16 @@
                       "es/gateway/telemetry",
                       "es/logging",
                       "es/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "es/gateway/opentelemetry/setup",
+                          "es/gateway/opentelemetry/configuration",
+                          "es/gateway/opentelemetry/privacy-and-trace-context",
+                          "es/gateway/opentelemetry/model-calls-and-metrics",
+                          "es/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "es/gateway/prometheus",
                       "es/gateway/logging",
                       "es/gateway/diagnostics",
@@ -10053,6 +10103,16 @@
                       "pt-BR/gateway/telemetry",
                       "pt-BR/logging",
                       "pt-BR/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "pt-BR/gateway/opentelemetry/setup",
+                          "pt-BR/gateway/opentelemetry/configuration",
+                          "pt-BR/gateway/opentelemetry/privacy-and-trace-context",
+                          "pt-BR/gateway/opentelemetry/model-calls-and-metrics",
+                          "pt-BR/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "pt-BR/gateway/prometheus",
                       "pt-BR/gateway/logging",
                       "pt-BR/gateway/diagnostics",
@@ -11612,6 +11672,16 @@
                       "ko/gateway/telemetry",
                       "ko/logging",
                       "ko/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "ko/gateway/opentelemetry/setup",
+                          "ko/gateway/opentelemetry/configuration",
+                          "ko/gateway/opentelemetry/privacy-and-trace-context",
+                          "ko/gateway/opentelemetry/model-calls-and-metrics",
+                          "ko/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "ko/gateway/prometheus",
                       "ko/gateway/logging",
                       "ko/gateway/diagnostics",
@@ -13171,6 +13241,16 @@
                       "de/gateway/telemetry",
                       "de/logging",
                       "de/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "de/gateway/opentelemetry/setup",
+                          "de/gateway/opentelemetry/configuration",
+                          "de/gateway/opentelemetry/privacy-and-trace-context",
+                          "de/gateway/opentelemetry/model-calls-and-metrics",
+                          "de/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "de/gateway/prometheus",
                       "de/gateway/logging",
                       "de/gateway/diagnostics",
@@ -14730,6 +14810,16 @@
                       "fr/gateway/telemetry",
                       "fr/logging",
                       "fr/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "fr/gateway/opentelemetry/setup",
+                          "fr/gateway/opentelemetry/configuration",
+                          "fr/gateway/opentelemetry/privacy-and-trace-context",
+                          "fr/gateway/opentelemetry/model-calls-and-metrics",
+                          "fr/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "fr/gateway/prometheus",
                       "fr/gateway/logging",
                       "fr/gateway/diagnostics",
@@ -16289,6 +16379,16 @@
                       "hi/gateway/telemetry",
                       "hi/logging",
                       "hi/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "hi/gateway/opentelemetry/setup",
+                          "hi/gateway/opentelemetry/configuration",
+                          "hi/gateway/opentelemetry/privacy-and-trace-context",
+                          "hi/gateway/opentelemetry/model-calls-and-metrics",
+                          "hi/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "hi/gateway/prometheus",
                       "hi/gateway/logging",
                       "hi/gateway/diagnostics",
@@ -17848,6 +17948,16 @@
                       "ar/gateway/telemetry",
                       "ar/logging",
                       "ar/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "ar/gateway/opentelemetry/setup",
+                          "ar/gateway/opentelemetry/configuration",
+                          "ar/gateway/opentelemetry/privacy-and-trace-context",
+                          "ar/gateway/opentelemetry/model-calls-and-metrics",
+                          "ar/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "ar/gateway/prometheus",
                       "ar/gateway/logging",
                       "ar/gateway/diagnostics",
@@ -19407,6 +19517,16 @@
                       "it/gateway/telemetry",
                       "it/logging",
                       "it/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "it/gateway/opentelemetry/setup",
+                          "it/gateway/opentelemetry/configuration",
+                          "it/gateway/opentelemetry/privacy-and-trace-context",
+                          "it/gateway/opentelemetry/model-calls-and-metrics",
+                          "it/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "it/gateway/prometheus",
                       "it/gateway/logging",
                       "it/gateway/diagnostics",
@@ -20966,6 +21086,16 @@
                       "vi/gateway/telemetry",
                       "vi/logging",
                       "vi/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "vi/gateway/opentelemetry/setup",
+                          "vi/gateway/opentelemetry/configuration",
+                          "vi/gateway/opentelemetry/privacy-and-trace-context",
+                          "vi/gateway/opentelemetry/model-calls-and-metrics",
+                          "vi/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "vi/gateway/prometheus",
                       "vi/gateway/logging",
                       "vi/gateway/diagnostics",
@@ -22525,6 +22655,16 @@
                       "nl/gateway/telemetry",
                       "nl/logging",
                       "nl/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "nl/gateway/opentelemetry/setup",
+                          "nl/gateway/opentelemetry/configuration",
+                          "nl/gateway/opentelemetry/privacy-and-trace-context",
+                          "nl/gateway/opentelemetry/model-calls-and-metrics",
+                          "nl/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "nl/gateway/prometheus",
                       "nl/gateway/logging",
                       "nl/gateway/diagnostics",
@@ -24084,6 +24224,16 @@
                       "tr/gateway/telemetry",
                       "tr/logging",
                       "tr/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "tr/gateway/opentelemetry/setup",
+                          "tr/gateway/opentelemetry/configuration",
+                          "tr/gateway/opentelemetry/privacy-and-trace-context",
+                          "tr/gateway/opentelemetry/model-calls-and-metrics",
+                          "tr/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "tr/gateway/prometheus",
                       "tr/gateway/logging",
                       "tr/gateway/diagnostics",
@@ -25643,6 +25793,16 @@
                       "uk/gateway/telemetry",
                       "uk/logging",
                       "uk/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "uk/gateway/opentelemetry/setup",
+                          "uk/gateway/opentelemetry/configuration",
+                          "uk/gateway/opentelemetry/privacy-and-trace-context",
+                          "uk/gateway/opentelemetry/model-calls-and-metrics",
+                          "uk/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "uk/gateway/prometheus",
                       "uk/gateway/logging",
                       "uk/gateway/diagnostics",
@@ -27202,6 +27362,16 @@
                       "id/gateway/telemetry",
                       "id/logging",
                       "id/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "id/gateway/opentelemetry/setup",
+                          "id/gateway/opentelemetry/configuration",
+                          "id/gateway/opentelemetry/privacy-and-trace-context",
+                          "id/gateway/opentelemetry/model-calls-and-metrics",
+                          "id/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "id/gateway/prometheus",
                       "id/gateway/logging",
                       "id/gateway/diagnostics",
@@ -28761,6 +28931,16 @@
                       "pl/gateway/telemetry",
                       "pl/logging",
                       "pl/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "pl/gateway/opentelemetry/setup",
+                          "pl/gateway/opentelemetry/configuration",
+                          "pl/gateway/opentelemetry/privacy-and-trace-context",
+                          "pl/gateway/opentelemetry/model-calls-and-metrics",
+                          "pl/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "pl/gateway/prometheus",
                       "pl/gateway/logging",
                       "pl/gateway/diagnostics",
@@ -30320,6 +30500,16 @@
                       "ru/gateway/telemetry",
                       "ru/logging",
                       "ru/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "ru/gateway/opentelemetry/setup",
+                          "ru/gateway/opentelemetry/configuration",
+                          "ru/gateway/opentelemetry/privacy-and-trace-context",
+                          "ru/gateway/opentelemetry/model-calls-and-metrics",
+                          "ru/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
                       "ru/gateway/prometheus",
                       "ru/gateway/logging",
                       "ru/gateway/diagnostics",
