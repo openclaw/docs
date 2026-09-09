@@ -5965,6 +5965,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: macOS screen video (OS-level)
   - H2: Related
 
+## nodes/command-policy.md
+
+- Route: /nodes/command-policy
+- Headings:
+  - H2: Command policy
+  - H2: Config (openclaw.json)
+  - H2: Permissions map
+
 ## nodes/computer-use.md
 
 - Route: /nodes/computer-use
@@ -5987,6 +5995,24 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: macOS permission troubleshooting
   - H2: Relationship to other desktop-control paths
 
+## nodes/device-commands.md
+
+- Route: /nodes/device-commands
+- Headings:
+  - H2: macOS widget panel
+  - H2: Photos + videos (node camera)
+  - H2: Screen recordings (nodes)
+  - H2: Location (nodes)
+  - H2: SMS (Android nodes)
+  - H2: Device and personal data commands
+
+## nodes/file-transfers.md
+
+- Route: /nodes/file-transfers
+- Headings:
+  - H2: Terminal file uploads
+  - H2: Agent file transfers
+
 ## nodes/images.md
 
 - Route: /nodes/images
@@ -6005,41 +6031,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /nodes
 - Headings:
-  - H2: Pairing + status
-  - H2: Version skew and upgrade order
-  - H2: Remote node host (system.run)
-  - H3: Gateway deployments that cannot host nodes
-  - H3: Start a node host (foreground)
-  - H3: Remote gateway via SSH tunnel (loopback bind)
-  - H3: Start a node host (service)
-  - H3: Pair + name
-  - H3: Node-hosted MCP servers
-  - H3: Node-hosted skills
-  - H3: Headless identity state
-  - H3: Allowlist the commands
-  - H3: Point exec at the node
-  - H3: Local model inference
-  - H3: Codex sessions and transcripts
-  - H3: Claude sessions and transcripts
-  - H3: Host OpenClaw sessions
-  - H4: Isolate hosted worker sessions in containers
-  - H3: OpenCode and Pi sessions
-  - H3: Terminal file uploads
-  - H3: Agent file transfers
-  - H2: Invoking commands
-  - H2: Command policy
-  - H2: Config (openclaw.json)
-  - H2: macOS widget panel
-  - H2: Photos + videos (node camera)
-  - H2: Screen recordings (nodes)
-  - H2: Location (nodes)
-  - H2: SMS (Android nodes)
-  - H2: Device and personal data commands
-  - H2: System commands (node host / mac node)
-  - H2: Exec node binding
-  - H2: Permissions map
-  - H2: Headless node host (cross-platform)
-  - H2: Mac node mode
+  - H2: Node pages
+  - H2: Where each section moved
 
 ## nodes/location-command.md
 
@@ -6055,6 +6048,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model/tooling integration
   - H2: UX copy (suggested)
   - H2: Related
+
+## nodes/mcp-and-skills.md
+
+- Route: /nodes/mcp-and-skills
+- Headings:
+  - H2: Node-hosted MCP servers
+  - H2: Node-hosted skills
+  - H2: Local model inference
 
 ## nodes/media-playback.md
 
@@ -6094,6 +6095,37 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Notes
   - H2: Related
 
+## nodes/node-exec.md
+
+- Route: /nodes/node-exec
+- Headings:
+  - H2: Allowlist the commands
+  - H2: Point exec at the node
+  - H2: Invoking commands
+  - H2: Exec node binding
+
+## nodes/node-host.md
+
+- Route: /nodes/node-host
+- Headings:
+  - H2: Remote node host (system.run)
+  - H3: Gateway deployments that cannot host nodes
+  - H3: Start a node host (foreground)
+  - H3: Remote gateway via SSH tunnel (loopback bind)
+  - H3: Start a node host (service)
+  - H3: Pair + name
+  - H3: Headless identity state
+  - H2: System commands (node host / mac node)
+  - H2: Headless node host (cross-platform)
+  - H2: Mac node mode
+
+## nodes/pairing-and-status.md
+
+- Route: /nodes/pairing-and-status
+- Headings:
+  - H2: Pairing + status
+  - H2: Version skew and upgrade order
+
 ## nodes/presence.md
 
 - Route: /nodes/presence
@@ -6105,6 +6137,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How connection alerts are routed
   - H2: Troubleshooting
   - H2: Related
+
+## nodes/session-catalogs.md
+
+- Route: /nodes/session-catalogs
+- Headings:
+  - H2: Codex sessions and transcripts
+  - H2: Claude sessions and transcripts
+  - H2: OpenCode and Pi sessions
+
+## nodes/session-hosting.md
+
+- Route: /nodes/session-hosting
+- Headings:
+  - H2: Host OpenClaw sessions
+  - H3: Isolate hosted worker sessions in containers
 
 ## nodes/talk.md
 
