@@ -2384,6 +2384,15 @@
                     "group": "Configuration",
                     "pages": [
                       "gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "gateway/configuration/common-tasks",
+                          "gateway/configuration/hot-reload",
+                          "gateway/configuration/config-rpc",
+                          "gateway/configuration/environment-variables"
+                        ]
+                      },
                       "gateway/configuration-reference",
                       "gateway/config-agents",
                       {
@@ -4331,6 +4340,15 @@
                     "group": "Configuration",
                     "pages": [
                       "zh-CN/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "zh-CN/gateway/configuration/common-tasks",
+                          "zh-CN/gateway/configuration/hot-reload",
+                          "zh-CN/gateway/configuration/config-rpc",
+                          "zh-CN/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "zh-CN/gateway/configuration-reference",
                       "zh-CN/gateway/config-agents",
                       {
@@ -6278,6 +6296,15 @@
                     "group": "Configuration",
                     "pages": [
                       "zh-TW/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "zh-TW/gateway/configuration/common-tasks",
+                          "zh-TW/gateway/configuration/hot-reload",
+                          "zh-TW/gateway/configuration/config-rpc",
+                          "zh-TW/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "zh-TW/gateway/configuration-reference",
                       "zh-TW/gateway/config-agents",
                       {
@@ -8225,6 +8252,15 @@
                     "group": "Configuration",
                     "pages": [
                       "ja-JP/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "ja-JP/gateway/configuration/common-tasks",
+                          "ja-JP/gateway/configuration/hot-reload",
+                          "ja-JP/gateway/configuration/config-rpc",
+                          "ja-JP/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "ja-JP/gateway/configuration-reference",
                       "ja-JP/gateway/config-agents",
                       {
@@ -10172,6 +10208,15 @@
                     "group": "Configuration",
                     "pages": [
                       "es/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "es/gateway/configuration/common-tasks",
+                          "es/gateway/configuration/hot-reload",
+                          "es/gateway/configuration/config-rpc",
+                          "es/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "es/gateway/configuration-reference",
                       "es/gateway/config-agents",
                       {
@@ -12119,6 +12164,15 @@
                     "group": "Configuration",
                     "pages": [
                       "pt-BR/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "pt-BR/gateway/configuration/common-tasks",
+                          "pt-BR/gateway/configuration/hot-reload",
+                          "pt-BR/gateway/configuration/config-rpc",
+                          "pt-BR/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "pt-BR/gateway/configuration-reference",
                       "pt-BR/gateway/config-agents",
                       {
@@ -14066,6 +14120,15 @@
                     "group": "Configuration",
                     "pages": [
                       "ko/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "ko/gateway/configuration/common-tasks",
+                          "ko/gateway/configuration/hot-reload",
+                          "ko/gateway/configuration/config-rpc",
+                          "ko/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "ko/gateway/configuration-reference",
                       "ko/gateway/config-agents",
                       {
@@ -16013,6 +16076,15 @@
                     "group": "Configuration",
                     "pages": [
                       "de/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "de/gateway/configuration/common-tasks",
+                          "de/gateway/configuration/hot-reload",
+                          "de/gateway/configuration/config-rpc",
+                          "de/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "de/gateway/configuration-reference",
                       "de/gateway/config-agents",
                       {
@@ -17960,6 +18032,15 @@
                     "group": "Configuration",
                     "pages": [
                       "fr/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "fr/gateway/configuration/common-tasks",
+                          "fr/gateway/configuration/hot-reload",
+                          "fr/gateway/configuration/config-rpc",
+                          "fr/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "fr/gateway/configuration-reference",
                       "fr/gateway/config-agents",
                       {
@@ -19907,6 +19988,15 @@
                     "group": "Configuration",
                     "pages": [
                       "hi/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "hi/gateway/configuration/common-tasks",
+                          "hi/gateway/configuration/hot-reload",
+                          "hi/gateway/configuration/config-rpc",
+                          "hi/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "hi/gateway/configuration-reference",
                       "hi/gateway/config-agents",
                       {
@@ -21854,6 +21944,15 @@
                     "group": "Configuration",
                     "pages": [
                       "ar/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "ar/gateway/configuration/common-tasks",
+                          "ar/gateway/configuration/hot-reload",
+                          "ar/gateway/configuration/config-rpc",
+                          "ar/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "ar/gateway/configuration-reference",
                       "ar/gateway/config-agents",
                       {
@@ -23801,6 +23900,15 @@
                     "group": "Configuration",
                     "pages": [
                       "it/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "it/gateway/configuration/common-tasks",
+                          "it/gateway/configuration/hot-reload",
+                          "it/gateway/configuration/config-rpc",
+                          "it/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "it/gateway/configuration-reference",
                       "it/gateway/config-agents",
                       {
@@ -25748,6 +25856,15 @@
                     "group": "Configuration",
                     "pages": [
                       "vi/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "vi/gateway/configuration/common-tasks",
+                          "vi/gateway/configuration/hot-reload",
+                          "vi/gateway/configuration/config-rpc",
+                          "vi/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "vi/gateway/configuration-reference",
                       "vi/gateway/config-agents",
                       {
@@ -27695,6 +27812,15 @@
                     "group": "Configuration",
                     "pages": [
                       "nl/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "nl/gateway/configuration/common-tasks",
+                          "nl/gateway/configuration/hot-reload",
+                          "nl/gateway/configuration/config-rpc",
+                          "nl/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "nl/gateway/configuration-reference",
                       "nl/gateway/config-agents",
                       {
@@ -29642,6 +29768,15 @@
                     "group": "Configuration",
                     "pages": [
                       "tr/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "tr/gateway/configuration/common-tasks",
+                          "tr/gateway/configuration/hot-reload",
+                          "tr/gateway/configuration/config-rpc",
+                          "tr/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "tr/gateway/configuration-reference",
                       "tr/gateway/config-agents",
                       {
@@ -31589,6 +31724,15 @@
                     "group": "Configuration",
                     "pages": [
                       "uk/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "uk/gateway/configuration/common-tasks",
+                          "uk/gateway/configuration/hot-reload",
+                          "uk/gateway/configuration/config-rpc",
+                          "uk/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "uk/gateway/configuration-reference",
                       "uk/gateway/config-agents",
                       {
@@ -33536,6 +33680,15 @@
                     "group": "Configuration",
                     "pages": [
                       "id/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "id/gateway/configuration/common-tasks",
+                          "id/gateway/configuration/hot-reload",
+                          "id/gateway/configuration/config-rpc",
+                          "id/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "id/gateway/configuration-reference",
                       "id/gateway/config-agents",
                       {
@@ -35483,6 +35636,15 @@
                     "group": "Configuration",
                     "pages": [
                       "pl/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "pl/gateway/configuration/common-tasks",
+                          "pl/gateway/configuration/hot-reload",
+                          "pl/gateway/configuration/config-rpc",
+                          "pl/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "pl/gateway/configuration-reference",
                       "pl/gateway/config-agents",
                       {
@@ -37430,6 +37592,15 @@
                     "group": "Configuration",
                     "pages": [
                       "ru/gateway/configuration",
+                      {
+                        "group": "Configuration",
+                        "pages": [
+                          "ru/gateway/configuration/common-tasks",
+                          "ru/gateway/configuration/hot-reload",
+                          "ru/gateway/configuration/config-rpc",
+                          "ru/gateway/configuration/environment-variables"
+                        ]
+                      },
                       "ru/gateway/configuration-reference",
                       "ru/gateway/config-agents",
                       {

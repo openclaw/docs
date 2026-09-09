@@ -4773,15 +4773,37 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Minimal config
   - H2: Editing config
   - H2: Strict validation
+  - H2: Configuration pages
+  - H2: Where each section moved
+  - H2: Full reference
+  - H2: Related
+
+## gateway/configuration/common-tasks.md
+
+- Route: /gateway/configuration/common-tasks
+- Headings:
   - H2: Common tasks
+
+## gateway/configuration/config-rpc.md
+
+- Route: /gateway/configuration/config-rpc
+- Headings:
+  - H2: Config RPC (programmatic updates)
+
+## gateway/configuration/environment-variables.md
+
+- Route: /gateway/configuration/environment-variables
+- Headings:
+  - H2: Environment variables
+
+## gateway/configuration/hot-reload.md
+
+- Route: /gateway/configuration/hot-reload
+- Headings:
   - H2: Config hot reload
   - H3: Reload modes
   - H3: What hot-applies vs what needs a restart
   - H3: Reload planning
-  - H2: Config RPC (programmatic updates)
-  - H2: Environment variables
-  - H2: Full reference
-  - H2: Related
 
 ## gateway/diagnostics.md
 
