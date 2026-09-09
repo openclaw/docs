@@ -1684,21 +1684,47 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/release-validation
 - Headings:
+  - H2: Where each section moved
+  - H2: Related
+
+## ci/release-validation/full-release-validation.md
+
+- Route: /ci/release-validation/full-release-validation
+- Headings:
   - H2: Full Release Validation
+
+## ci/release-validation/install-smoke-and-docker-e2e.md
+
+- Route: /ci/release-validation/install-smoke-and-docker-e2e
+- Headings:
+  - H2: Install smoke
+  - H2: Local Docker E2E
+  - H3: Tunables
+  - H3: Reusable live/E2E workflow
+  - H3: Release-path chunks
+
+## ci/release-validation/live-and-e2e-shards.md
+
+- Route: /ci/release-validation/live-and-e2e-shards
+- Headings:
   - H2: Live and E2E shards
+
+## ci/release-validation/package-acceptance.md
+
+- Route: /ci/release-validation/package-acceptance
+- Headings:
   - H2: Package Acceptance
   - H3: Jobs
   - H3: Candidate sources
   - H3: Suite profiles
   - H3: Legacy compatibility windows
   - H3: Examples
-  - H2: Install smoke
-  - H2: Local Docker E2E
-  - H3: Tunables
-  - H3: Reusable live/E2E workflow
-  - H3: Release-path chunks
+
+## ci/release-validation/plugin-prerelease.md
+
+- Route: /ci/release-validation/plugin-prerelease
+- Headings:
   - H2: Plugin Prerelease
-  - H2: Related
 
 ## ci/runners.md
 

@@ -3174,6 +3174,16 @@
                       "ci/runners",
                       "ci/capacity",
                       "ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "ci/release-validation/full-release-validation",
+                          "ci/release-validation/live-and-e2e-shards",
+                          "ci/release-validation/package-acceptance",
+                          "ci/release-validation/install-smoke-and-docker-e2e",
+                          "ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "ci/scheduled-workflows",
                       "ci/local-proof"
                     ]
@@ -5078,6 +5088,16 @@
                       "zh-CN/ci/runners",
                       "zh-CN/ci/capacity",
                       "zh-CN/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "zh-CN/ci/release-validation/full-release-validation",
+                          "zh-CN/ci/release-validation/live-and-e2e-shards",
+                          "zh-CN/ci/release-validation/package-acceptance",
+                          "zh-CN/ci/release-validation/install-smoke-and-docker-e2e",
+                          "zh-CN/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "zh-CN/ci/scheduled-workflows",
                       "zh-CN/ci/local-proof"
                     ]
@@ -6982,6 +7002,16 @@
                       "zh-TW/ci/runners",
                       "zh-TW/ci/capacity",
                       "zh-TW/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "zh-TW/ci/release-validation/full-release-validation",
+                          "zh-TW/ci/release-validation/live-and-e2e-shards",
+                          "zh-TW/ci/release-validation/package-acceptance",
+                          "zh-TW/ci/release-validation/install-smoke-and-docker-e2e",
+                          "zh-TW/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "zh-TW/ci/scheduled-workflows",
                       "zh-TW/ci/local-proof"
                     ]
@@ -8886,6 +8916,16 @@
                       "ja-JP/ci/runners",
                       "ja-JP/ci/capacity",
                       "ja-JP/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "ja-JP/ci/release-validation/full-release-validation",
+                          "ja-JP/ci/release-validation/live-and-e2e-shards",
+                          "ja-JP/ci/release-validation/package-acceptance",
+                          "ja-JP/ci/release-validation/install-smoke-and-docker-e2e",
+                          "ja-JP/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "ja-JP/ci/scheduled-workflows",
                       "ja-JP/ci/local-proof"
                     ]
@@ -10790,6 +10830,16 @@
                       "es/ci/runners",
                       "es/ci/capacity",
                       "es/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "es/ci/release-validation/full-release-validation",
+                          "es/ci/release-validation/live-and-e2e-shards",
+                          "es/ci/release-validation/package-acceptance",
+                          "es/ci/release-validation/install-smoke-and-docker-e2e",
+                          "es/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "es/ci/scheduled-workflows",
                       "es/ci/local-proof"
                     ]
@@ -12694,6 +12744,16 @@
                       "pt-BR/ci/runners",
                       "pt-BR/ci/capacity",
                       "pt-BR/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "pt-BR/ci/release-validation/full-release-validation",
+                          "pt-BR/ci/release-validation/live-and-e2e-shards",
+                          "pt-BR/ci/release-validation/package-acceptance",
+                          "pt-BR/ci/release-validation/install-smoke-and-docker-e2e",
+                          "pt-BR/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "pt-BR/ci/scheduled-workflows",
                       "pt-BR/ci/local-proof"
                     ]
@@ -14598,6 +14658,16 @@
                       "ko/ci/runners",
                       "ko/ci/capacity",
                       "ko/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "ko/ci/release-validation/full-release-validation",
+                          "ko/ci/release-validation/live-and-e2e-shards",
+                          "ko/ci/release-validation/package-acceptance",
+                          "ko/ci/release-validation/install-smoke-and-docker-e2e",
+                          "ko/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "ko/ci/scheduled-workflows",
                       "ko/ci/local-proof"
                     ]
@@ -16502,6 +16572,16 @@
                       "de/ci/runners",
                       "de/ci/capacity",
                       "de/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "de/ci/release-validation/full-release-validation",
+                          "de/ci/release-validation/live-and-e2e-shards",
+                          "de/ci/release-validation/package-acceptance",
+                          "de/ci/release-validation/install-smoke-and-docker-e2e",
+                          "de/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "de/ci/scheduled-workflows",
                       "de/ci/local-proof"
                     ]
@@ -18406,6 +18486,16 @@
                       "fr/ci/runners",
                       "fr/ci/capacity",
                       "fr/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "fr/ci/release-validation/full-release-validation",
+                          "fr/ci/release-validation/live-and-e2e-shards",
+                          "fr/ci/release-validation/package-acceptance",
+                          "fr/ci/release-validation/install-smoke-and-docker-e2e",
+                          "fr/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "fr/ci/scheduled-workflows",
                       "fr/ci/local-proof"
                     ]
@@ -20310,6 +20400,16 @@
                       "hi/ci/runners",
                       "hi/ci/capacity",
                       "hi/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "hi/ci/release-validation/full-release-validation",
+                          "hi/ci/release-validation/live-and-e2e-shards",
+                          "hi/ci/release-validation/package-acceptance",
+                          "hi/ci/release-validation/install-smoke-and-docker-e2e",
+                          "hi/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "hi/ci/scheduled-workflows",
                       "hi/ci/local-proof"
                     ]
@@ -22214,6 +22314,16 @@
                       "ar/ci/runners",
                       "ar/ci/capacity",
                       "ar/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "ar/ci/release-validation/full-release-validation",
+                          "ar/ci/release-validation/live-and-e2e-shards",
+                          "ar/ci/release-validation/package-acceptance",
+                          "ar/ci/release-validation/install-smoke-and-docker-e2e",
+                          "ar/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "ar/ci/scheduled-workflows",
                       "ar/ci/local-proof"
                     ]
@@ -24118,6 +24228,16 @@
                       "it/ci/runners",
                       "it/ci/capacity",
                       "it/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "it/ci/release-validation/full-release-validation",
+                          "it/ci/release-validation/live-and-e2e-shards",
+                          "it/ci/release-validation/package-acceptance",
+                          "it/ci/release-validation/install-smoke-and-docker-e2e",
+                          "it/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "it/ci/scheduled-workflows",
                       "it/ci/local-proof"
                     ]
@@ -26022,6 +26142,16 @@
                       "vi/ci/runners",
                       "vi/ci/capacity",
                       "vi/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "vi/ci/release-validation/full-release-validation",
+                          "vi/ci/release-validation/live-and-e2e-shards",
+                          "vi/ci/release-validation/package-acceptance",
+                          "vi/ci/release-validation/install-smoke-and-docker-e2e",
+                          "vi/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "vi/ci/scheduled-workflows",
                       "vi/ci/local-proof"
                     ]
@@ -27926,6 +28056,16 @@
                       "nl/ci/runners",
                       "nl/ci/capacity",
                       "nl/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "nl/ci/release-validation/full-release-validation",
+                          "nl/ci/release-validation/live-and-e2e-shards",
+                          "nl/ci/release-validation/package-acceptance",
+                          "nl/ci/release-validation/install-smoke-and-docker-e2e",
+                          "nl/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "nl/ci/scheduled-workflows",
                       "nl/ci/local-proof"
                     ]
@@ -29830,6 +29970,16 @@
                       "tr/ci/runners",
                       "tr/ci/capacity",
                       "tr/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "tr/ci/release-validation/full-release-validation",
+                          "tr/ci/release-validation/live-and-e2e-shards",
+                          "tr/ci/release-validation/package-acceptance",
+                          "tr/ci/release-validation/install-smoke-and-docker-e2e",
+                          "tr/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "tr/ci/scheduled-workflows",
                       "tr/ci/local-proof"
                     ]
@@ -31734,6 +31884,16 @@
                       "uk/ci/runners",
                       "uk/ci/capacity",
                       "uk/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "uk/ci/release-validation/full-release-validation",
+                          "uk/ci/release-validation/live-and-e2e-shards",
+                          "uk/ci/release-validation/package-acceptance",
+                          "uk/ci/release-validation/install-smoke-and-docker-e2e",
+                          "uk/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "uk/ci/scheduled-workflows",
                       "uk/ci/local-proof"
                     ]
@@ -33638,6 +33798,16 @@
                       "id/ci/runners",
                       "id/ci/capacity",
                       "id/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "id/ci/release-validation/full-release-validation",
+                          "id/ci/release-validation/live-and-e2e-shards",
+                          "id/ci/release-validation/package-acceptance",
+                          "id/ci/release-validation/install-smoke-and-docker-e2e",
+                          "id/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "id/ci/scheduled-workflows",
                       "id/ci/local-proof"
                     ]
@@ -35542,6 +35712,16 @@
                       "pl/ci/runners",
                       "pl/ci/capacity",
                       "pl/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "pl/ci/release-validation/full-release-validation",
+                          "pl/ci/release-validation/live-and-e2e-shards",
+                          "pl/ci/release-validation/package-acceptance",
+                          "pl/ci/release-validation/install-smoke-and-docker-e2e",
+                          "pl/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "pl/ci/scheduled-workflows",
                       "pl/ci/local-proof"
                     ]
@@ -37446,6 +37626,16 @@
                       "ru/ci/runners",
                       "ru/ci/capacity",
                       "ru/ci/release-validation",
+                      {
+                        "group": "Release validation",
+                        "pages": [
+                          "ru/ci/release-validation/full-release-validation",
+                          "ru/ci/release-validation/live-and-e2e-shards",
+                          "ru/ci/release-validation/package-acceptance",
+                          "ru/ci/release-validation/install-smoke-and-docker-e2e",
+                          "ru/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
                       "ru/ci/scheduled-workflows",
                       "ru/ci/local-proof"
                     ]
