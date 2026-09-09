@@ -10611,6 +10611,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Image generation
+  - H3: GPT Image 2.5
+  - H3: Krea 2
   - H2: Video generation
   - H2: Music generation
   - H2: Related
