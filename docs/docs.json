@@ -1751,6 +1751,18 @@
                   "plugins/feature-plugins",
                   "plugins/tool-plugins",
                   "plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "plugins/sdk-channel-plugins/message-adapter",
+                      "plugins/sdk-channel-plugins/durable-ingress",
+                      "plugins/sdk-channel-plugins/status-and-media",
+                      "plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "plugins/sdk-channel-plugins/approvals",
+                      "plugins/sdk-channel-plugins/setup-and-config",
+                      "plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -3230,6 +3242,18 @@
                   "zh-CN/plugins/feature-plugins",
                   "zh-CN/plugins/tool-plugins",
                   "zh-CN/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "zh-CN/plugins/sdk-channel-plugins/message-adapter",
+                      "zh-CN/plugins/sdk-channel-plugins/durable-ingress",
+                      "zh-CN/plugins/sdk-channel-plugins/status-and-media",
+                      "zh-CN/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "zh-CN/plugins/sdk-channel-plugins/approvals",
+                      "zh-CN/plugins/sdk-channel-plugins/setup-and-config",
+                      "zh-CN/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "zh-CN/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -4675,6 +4699,18 @@
                   "zh-TW/plugins/feature-plugins",
                   "zh-TW/plugins/tool-plugins",
                   "zh-TW/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "zh-TW/plugins/sdk-channel-plugins/message-adapter",
+                      "zh-TW/plugins/sdk-channel-plugins/durable-ingress",
+                      "zh-TW/plugins/sdk-channel-plugins/status-and-media",
+                      "zh-TW/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "zh-TW/plugins/sdk-channel-plugins/approvals",
+                      "zh-TW/plugins/sdk-channel-plugins/setup-and-config",
+                      "zh-TW/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "zh-TW/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -6120,6 +6156,18 @@
                   "ja-JP/plugins/feature-plugins",
                   "ja-JP/plugins/tool-plugins",
                   "ja-JP/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "ja-JP/plugins/sdk-channel-plugins/message-adapter",
+                      "ja-JP/plugins/sdk-channel-plugins/durable-ingress",
+                      "ja-JP/plugins/sdk-channel-plugins/status-and-media",
+                      "ja-JP/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "ja-JP/plugins/sdk-channel-plugins/approvals",
+                      "ja-JP/plugins/sdk-channel-plugins/setup-and-config",
+                      "ja-JP/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "ja-JP/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -7565,6 +7613,18 @@
                   "es/plugins/feature-plugins",
                   "es/plugins/tool-plugins",
                   "es/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "es/plugins/sdk-channel-plugins/message-adapter",
+                      "es/plugins/sdk-channel-plugins/durable-ingress",
+                      "es/plugins/sdk-channel-plugins/status-and-media",
+                      "es/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "es/plugins/sdk-channel-plugins/approvals",
+                      "es/plugins/sdk-channel-plugins/setup-and-config",
+                      "es/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "es/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -9010,6 +9070,18 @@
                   "pt-BR/plugins/feature-plugins",
                   "pt-BR/plugins/tool-plugins",
                   "pt-BR/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "pt-BR/plugins/sdk-channel-plugins/message-adapter",
+                      "pt-BR/plugins/sdk-channel-plugins/durable-ingress",
+                      "pt-BR/plugins/sdk-channel-plugins/status-and-media",
+                      "pt-BR/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "pt-BR/plugins/sdk-channel-plugins/approvals",
+                      "pt-BR/plugins/sdk-channel-plugins/setup-and-config",
+                      "pt-BR/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "pt-BR/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -10455,6 +10527,18 @@
                   "ko/plugins/feature-plugins",
                   "ko/plugins/tool-plugins",
                   "ko/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "ko/plugins/sdk-channel-plugins/message-adapter",
+                      "ko/plugins/sdk-channel-plugins/durable-ingress",
+                      "ko/plugins/sdk-channel-plugins/status-and-media",
+                      "ko/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "ko/plugins/sdk-channel-plugins/approvals",
+                      "ko/plugins/sdk-channel-plugins/setup-and-config",
+                      "ko/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "ko/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -11900,6 +11984,18 @@
                   "de/plugins/feature-plugins",
                   "de/plugins/tool-plugins",
                   "de/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "de/plugins/sdk-channel-plugins/message-adapter",
+                      "de/plugins/sdk-channel-plugins/durable-ingress",
+                      "de/plugins/sdk-channel-plugins/status-and-media",
+                      "de/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "de/plugins/sdk-channel-plugins/approvals",
+                      "de/plugins/sdk-channel-plugins/setup-and-config",
+                      "de/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "de/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -13345,6 +13441,18 @@
                   "fr/plugins/feature-plugins",
                   "fr/plugins/tool-plugins",
                   "fr/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "fr/plugins/sdk-channel-plugins/message-adapter",
+                      "fr/plugins/sdk-channel-plugins/durable-ingress",
+                      "fr/plugins/sdk-channel-plugins/status-and-media",
+                      "fr/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "fr/plugins/sdk-channel-plugins/approvals",
+                      "fr/plugins/sdk-channel-plugins/setup-and-config",
+                      "fr/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "fr/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -14790,6 +14898,18 @@
                   "hi/plugins/feature-plugins",
                   "hi/plugins/tool-plugins",
                   "hi/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "hi/plugins/sdk-channel-plugins/message-adapter",
+                      "hi/plugins/sdk-channel-plugins/durable-ingress",
+                      "hi/plugins/sdk-channel-plugins/status-and-media",
+                      "hi/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "hi/plugins/sdk-channel-plugins/approvals",
+                      "hi/plugins/sdk-channel-plugins/setup-and-config",
+                      "hi/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "hi/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -16235,6 +16355,18 @@
                   "ar/plugins/feature-plugins",
                   "ar/plugins/tool-plugins",
                   "ar/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "ar/plugins/sdk-channel-plugins/message-adapter",
+                      "ar/plugins/sdk-channel-plugins/durable-ingress",
+                      "ar/plugins/sdk-channel-plugins/status-and-media",
+                      "ar/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "ar/plugins/sdk-channel-plugins/approvals",
+                      "ar/plugins/sdk-channel-plugins/setup-and-config",
+                      "ar/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "ar/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -17680,6 +17812,18 @@
                   "it/plugins/feature-plugins",
                   "it/plugins/tool-plugins",
                   "it/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "it/plugins/sdk-channel-plugins/message-adapter",
+                      "it/plugins/sdk-channel-plugins/durable-ingress",
+                      "it/plugins/sdk-channel-plugins/status-and-media",
+                      "it/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "it/plugins/sdk-channel-plugins/approvals",
+                      "it/plugins/sdk-channel-plugins/setup-and-config",
+                      "it/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "it/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -19125,6 +19269,18 @@
                   "vi/plugins/feature-plugins",
                   "vi/plugins/tool-plugins",
                   "vi/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "vi/plugins/sdk-channel-plugins/message-adapter",
+                      "vi/plugins/sdk-channel-plugins/durable-ingress",
+                      "vi/plugins/sdk-channel-plugins/status-and-media",
+                      "vi/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "vi/plugins/sdk-channel-plugins/approvals",
+                      "vi/plugins/sdk-channel-plugins/setup-and-config",
+                      "vi/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "vi/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -20570,6 +20726,18 @@
                   "nl/plugins/feature-plugins",
                   "nl/plugins/tool-plugins",
                   "nl/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "nl/plugins/sdk-channel-plugins/message-adapter",
+                      "nl/plugins/sdk-channel-plugins/durable-ingress",
+                      "nl/plugins/sdk-channel-plugins/status-and-media",
+                      "nl/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "nl/plugins/sdk-channel-plugins/approvals",
+                      "nl/plugins/sdk-channel-plugins/setup-and-config",
+                      "nl/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "nl/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -22015,6 +22183,18 @@
                   "tr/plugins/feature-plugins",
                   "tr/plugins/tool-plugins",
                   "tr/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "tr/plugins/sdk-channel-plugins/message-adapter",
+                      "tr/plugins/sdk-channel-plugins/durable-ingress",
+                      "tr/plugins/sdk-channel-plugins/status-and-media",
+                      "tr/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "tr/plugins/sdk-channel-plugins/approvals",
+                      "tr/plugins/sdk-channel-plugins/setup-and-config",
+                      "tr/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "tr/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -23460,6 +23640,18 @@
                   "uk/plugins/feature-plugins",
                   "uk/plugins/tool-plugins",
                   "uk/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "uk/plugins/sdk-channel-plugins/message-adapter",
+                      "uk/plugins/sdk-channel-plugins/durable-ingress",
+                      "uk/plugins/sdk-channel-plugins/status-and-media",
+                      "uk/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "uk/plugins/sdk-channel-plugins/approvals",
+                      "uk/plugins/sdk-channel-plugins/setup-and-config",
+                      "uk/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "uk/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -24905,6 +25097,18 @@
                   "id/plugins/feature-plugins",
                   "id/plugins/tool-plugins",
                   "id/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "id/plugins/sdk-channel-plugins/message-adapter",
+                      "id/plugins/sdk-channel-plugins/durable-ingress",
+                      "id/plugins/sdk-channel-plugins/status-and-media",
+                      "id/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "id/plugins/sdk-channel-plugins/approvals",
+                      "id/plugins/sdk-channel-plugins/setup-and-config",
+                      "id/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "id/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -26350,6 +26554,18 @@
                   "pl/plugins/feature-plugins",
                   "pl/plugins/tool-plugins",
                   "pl/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "pl/plugins/sdk-channel-plugins/message-adapter",
+                      "pl/plugins/sdk-channel-plugins/durable-ingress",
+                      "pl/plugins/sdk-channel-plugins/status-and-media",
+                      "pl/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "pl/plugins/sdk-channel-plugins/approvals",
+                      "pl/plugins/sdk-channel-plugins/setup-and-config",
+                      "pl/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "pl/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",
@@ -27795,6 +28011,18 @@
                   "ru/plugins/feature-plugins",
                   "ru/plugins/tool-plugins",
                   "ru/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Channel plugins",
+                    "pages": [
+                      "ru/plugins/sdk-channel-plugins/message-adapter",
+                      "ru/plugins/sdk-channel-plugins/durable-ingress",
+                      "ru/plugins/sdk-channel-plugins/status-and-media",
+                      "ru/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "ru/plugins/sdk-channel-plugins/approvals",
+                      "ru/plugins/sdk-channel-plugins/setup-and-config",
+                      "ru/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
                   "ru/plugins/sdk-provider-plugins",
                   {
                     "group": "Provider plugins",

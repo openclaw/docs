@@ -8631,39 +8631,82 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-plugins
 - Headings:
   - H2: What your plugin owns
+  - H2: Walkthrough
+  - H2: File structure
+  - H2: Advanced topics
+  - H2: Next steps
+  - H2: Where each section moved
+  - H3: Channel message adapter
+  - H3: Durable channel ingress
+  - H3: Channel status and media
+  - H3: Channel sessions and bindings
+  - H3: Channel approvals
+  - H3: Channel setup and config
+  - H3: Channel mention policy
+  - H2: Related
+
+## plugins/sdk-channel-plugins/approvals.md
+
+- Route: /plugins/sdk-channel-plugins/approvals
+- Headings:
+  - H2: Approvals and channel capabilities
+  - H3: Approval auth
+  - H3: Payload lifecycle and setup guidance
+  - H3: Native approval delivery
+  - H3: Narrower approval runtime subpaths
+
+## plugins/sdk-channel-plugins/durable-ingress.md
+
+- Route: /plugins/sdk-channel-plugins/durable-ingress
+- Headings:
+  - H2: Inbound ingress (experimental)
+  - H2: Durable ingress and replay dedupe
+  - H3: Transport classes and retention
+  - H3: At-least-once side effects
+  - H3: Dynamic policy publication
+  - H3: Account-scoped restart contract
+
+## plugins/sdk-channel-plugins/mention-policy.md
+
+- Route: /plugins/sdk-channel-plugins/mention-policy
+- Headings:
+  - H2: Inbound mention policy
+
+## plugins/sdk-channel-plugins/message-adapter.md
+
+- Route: /plugins/sdk-channel-plugins/message-adapter
+- Headings:
   - H2: Message adapter
   - H3: Progress visibility acceptance
   - H3: Quiet progress presentation
   - H3: Quiet acknowledgement and coalesced progress
   - H3: Commentary delivery ownership
   - H3: TTS voice delivery
-  - H3: Inbound ingress (experimental)
-  - H3: Durable ingress and replay dedupe
-  - H4: Transport classes and retention
-  - H4: At-least-once side effects
-  - H4: Dynamic policy publication
-  - H4: Account-scoped restart contract
-  - H3: Runtime lifecycle status
-  - H3: Typing indicators
-  - H3: Media source params
-  - H3: Native payload shaping
-  - H3: Session conversation grammar
-  - H3: Conversation route ownership
-  - H3: Account-scoped conversation binding support
-  - H2: Approvals and channel capabilities
-  - H3: Approval auth
-  - H3: Payload lifecycle and setup guidance
-  - H3: Native approval delivery
-  - H3: Narrower approval runtime subpaths
-  - H3: Setup subpaths
-  - H3: Account schemas and inheritance
-  - H3: Other narrow channel subpaths
-  - H2: Inbound mention policy
-  - H2: Walkthrough
-  - H2: File structure
-  - H2: Advanced topics
-  - H2: Next steps
-  - H2: Related
+
+## plugins/sdk-channel-plugins/sessions-and-bindings.md
+
+- Route: /plugins/sdk-channel-plugins/sessions-and-bindings
+- Headings:
+  - H2: Session conversation grammar
+  - H2: Conversation route ownership
+  - H2: Account-scoped conversation binding support
+
+## plugins/sdk-channel-plugins/setup-and-config.md
+
+- Route: /plugins/sdk-channel-plugins/setup-and-config
+- Headings:
+  - H2: Setup subpaths
+  - H2: Account schemas and inheritance
+  - H2: Other narrow channel subpaths
+
+## plugins/sdk-channel-plugins/status-and-media.md
+
+- Route: /plugins/sdk-channel-plugins/status-and-media
+- Headings:
+  - H2: Runtime lifecycle status
+  - H2: Typing indicators
+  - H2: Media source params
+  - H2: Native payload shaping
 
 ## plugins/sdk-entrypoints.md
 
