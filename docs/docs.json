@@ -2581,6 +2581,17 @@
                       "cli/plugins",
                       "cli/path",
                       "cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "cli/policy/authoring",
+                          "cli/policy/rules",
+                          "cli/policy/scopes",
+                          "cli/policy/running-checks",
+                          "cli/policy/attestation",
+                          "cli/policy/findings"
+                        ]
+                      },
                       "cli/skills",
                       "cli/workboard"
                     ]
@@ -4173,6 +4184,17 @@
                       "zh-CN/cli/plugins",
                       "zh-CN/cli/path",
                       "zh-CN/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "zh-CN/cli/policy/authoring",
+                          "zh-CN/cli/policy/rules",
+                          "zh-CN/cli/policy/scopes",
+                          "zh-CN/cli/policy/running-checks",
+                          "zh-CN/cli/policy/attestation",
+                          "zh-CN/cli/policy/findings"
+                        ]
+                      },
                       "zh-CN/cli/skills",
                       "zh-CN/cli/workboard"
                     ]
@@ -5765,6 +5787,17 @@
                       "zh-TW/cli/plugins",
                       "zh-TW/cli/path",
                       "zh-TW/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "zh-TW/cli/policy/authoring",
+                          "zh-TW/cli/policy/rules",
+                          "zh-TW/cli/policy/scopes",
+                          "zh-TW/cli/policy/running-checks",
+                          "zh-TW/cli/policy/attestation",
+                          "zh-TW/cli/policy/findings"
+                        ]
+                      },
                       "zh-TW/cli/skills",
                       "zh-TW/cli/workboard"
                     ]
@@ -7357,6 +7390,17 @@
                       "ja-JP/cli/plugins",
                       "ja-JP/cli/path",
                       "ja-JP/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "ja-JP/cli/policy/authoring",
+                          "ja-JP/cli/policy/rules",
+                          "ja-JP/cli/policy/scopes",
+                          "ja-JP/cli/policy/running-checks",
+                          "ja-JP/cli/policy/attestation",
+                          "ja-JP/cli/policy/findings"
+                        ]
+                      },
                       "ja-JP/cli/skills",
                       "ja-JP/cli/workboard"
                     ]
@@ -8949,6 +8993,17 @@
                       "es/cli/plugins",
                       "es/cli/path",
                       "es/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "es/cli/policy/authoring",
+                          "es/cli/policy/rules",
+                          "es/cli/policy/scopes",
+                          "es/cli/policy/running-checks",
+                          "es/cli/policy/attestation",
+                          "es/cli/policy/findings"
+                        ]
+                      },
                       "es/cli/skills",
                       "es/cli/workboard"
                     ]
@@ -10541,6 +10596,17 @@
                       "pt-BR/cli/plugins",
                       "pt-BR/cli/path",
                       "pt-BR/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "pt-BR/cli/policy/authoring",
+                          "pt-BR/cli/policy/rules",
+                          "pt-BR/cli/policy/scopes",
+                          "pt-BR/cli/policy/running-checks",
+                          "pt-BR/cli/policy/attestation",
+                          "pt-BR/cli/policy/findings"
+                        ]
+                      },
                       "pt-BR/cli/skills",
                       "pt-BR/cli/workboard"
                     ]
@@ -12133,6 +12199,17 @@
                       "ko/cli/plugins",
                       "ko/cli/path",
                       "ko/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "ko/cli/policy/authoring",
+                          "ko/cli/policy/rules",
+                          "ko/cli/policy/scopes",
+                          "ko/cli/policy/running-checks",
+                          "ko/cli/policy/attestation",
+                          "ko/cli/policy/findings"
+                        ]
+                      },
                       "ko/cli/skills",
                       "ko/cli/workboard"
                     ]
@@ -13725,6 +13802,17 @@
                       "de/cli/plugins",
                       "de/cli/path",
                       "de/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "de/cli/policy/authoring",
+                          "de/cli/policy/rules",
+                          "de/cli/policy/scopes",
+                          "de/cli/policy/running-checks",
+                          "de/cli/policy/attestation",
+                          "de/cli/policy/findings"
+                        ]
+                      },
                       "de/cli/skills",
                       "de/cli/workboard"
                     ]
@@ -15317,6 +15405,17 @@
                       "fr/cli/plugins",
                       "fr/cli/path",
                       "fr/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "fr/cli/policy/authoring",
+                          "fr/cli/policy/rules",
+                          "fr/cli/policy/scopes",
+                          "fr/cli/policy/running-checks",
+                          "fr/cli/policy/attestation",
+                          "fr/cli/policy/findings"
+                        ]
+                      },
                       "fr/cli/skills",
                       "fr/cli/workboard"
                     ]
@@ -16909,6 +17008,17 @@
                       "hi/cli/plugins",
                       "hi/cli/path",
                       "hi/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "hi/cli/policy/authoring",
+                          "hi/cli/policy/rules",
+                          "hi/cli/policy/scopes",
+                          "hi/cli/policy/running-checks",
+                          "hi/cli/policy/attestation",
+                          "hi/cli/policy/findings"
+                        ]
+                      },
                       "hi/cli/skills",
                       "hi/cli/workboard"
                     ]
@@ -18501,6 +18611,17 @@
                       "ar/cli/plugins",
                       "ar/cli/path",
                       "ar/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "ar/cli/policy/authoring",
+                          "ar/cli/policy/rules",
+                          "ar/cli/policy/scopes",
+                          "ar/cli/policy/running-checks",
+                          "ar/cli/policy/attestation",
+                          "ar/cli/policy/findings"
+                        ]
+                      },
                       "ar/cli/skills",
                       "ar/cli/workboard"
                     ]
@@ -20093,6 +20214,17 @@
                       "it/cli/plugins",
                       "it/cli/path",
                       "it/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "it/cli/policy/authoring",
+                          "it/cli/policy/rules",
+                          "it/cli/policy/scopes",
+                          "it/cli/policy/running-checks",
+                          "it/cli/policy/attestation",
+                          "it/cli/policy/findings"
+                        ]
+                      },
                       "it/cli/skills",
                       "it/cli/workboard"
                     ]
@@ -21685,6 +21817,17 @@
                       "vi/cli/plugins",
                       "vi/cli/path",
                       "vi/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "vi/cli/policy/authoring",
+                          "vi/cli/policy/rules",
+                          "vi/cli/policy/scopes",
+                          "vi/cli/policy/running-checks",
+                          "vi/cli/policy/attestation",
+                          "vi/cli/policy/findings"
+                        ]
+                      },
                       "vi/cli/skills",
                       "vi/cli/workboard"
                     ]
@@ -23277,6 +23420,17 @@
                       "nl/cli/plugins",
                       "nl/cli/path",
                       "nl/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "nl/cli/policy/authoring",
+                          "nl/cli/policy/rules",
+                          "nl/cli/policy/scopes",
+                          "nl/cli/policy/running-checks",
+                          "nl/cli/policy/attestation",
+                          "nl/cli/policy/findings"
+                        ]
+                      },
                       "nl/cli/skills",
                       "nl/cli/workboard"
                     ]
@@ -24869,6 +25023,17 @@
                       "tr/cli/plugins",
                       "tr/cli/path",
                       "tr/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "tr/cli/policy/authoring",
+                          "tr/cli/policy/rules",
+                          "tr/cli/policy/scopes",
+                          "tr/cli/policy/running-checks",
+                          "tr/cli/policy/attestation",
+                          "tr/cli/policy/findings"
+                        ]
+                      },
                       "tr/cli/skills",
                       "tr/cli/workboard"
                     ]
@@ -26461,6 +26626,17 @@
                       "uk/cli/plugins",
                       "uk/cli/path",
                       "uk/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "uk/cli/policy/authoring",
+                          "uk/cli/policy/rules",
+                          "uk/cli/policy/scopes",
+                          "uk/cli/policy/running-checks",
+                          "uk/cli/policy/attestation",
+                          "uk/cli/policy/findings"
+                        ]
+                      },
                       "uk/cli/skills",
                       "uk/cli/workboard"
                     ]
@@ -28053,6 +28229,17 @@
                       "id/cli/plugins",
                       "id/cli/path",
                       "id/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "id/cli/policy/authoring",
+                          "id/cli/policy/rules",
+                          "id/cli/policy/scopes",
+                          "id/cli/policy/running-checks",
+                          "id/cli/policy/attestation",
+                          "id/cli/policy/findings"
+                        ]
+                      },
                       "id/cli/skills",
                       "id/cli/workboard"
                     ]
@@ -29645,6 +29832,17 @@
                       "pl/cli/plugins",
                       "pl/cli/path",
                       "pl/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "pl/cli/policy/authoring",
+                          "pl/cli/policy/rules",
+                          "pl/cli/policy/scopes",
+                          "pl/cli/policy/running-checks",
+                          "pl/cli/policy/attestation",
+                          "pl/cli/policy/findings"
+                        ]
+                      },
                       "pl/cli/skills",
                       "pl/cli/workboard"
                     ]
@@ -31237,6 +31435,17 @@
                       "ru/cli/plugins",
                       "ru/cli/path",
                       "ru/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "ru/cli/policy/authoring",
+                          "ru/cli/policy/rules",
+                          "ru/cli/policy/scopes",
+                          "ru/cli/policy/running-checks",
+                          "ru/cli/policy/attestation",
+                          "ru/cli/policy/findings"
+                        ]
+                      },
                       "ru/cli/skills",
                       "ru/cli/workboard"
                     ]

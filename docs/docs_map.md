@@ -2273,31 +2273,62 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/policy
 - Headings:
   - H1: openclaw policy
-  - H2: Quick start
-  - H3: Policy rule reference
-  - H4: Scoped overlays
-  - H4: Channels
-  - H4: MCP servers
-  - H4: Model providers
-  - H4: Network
-  - H4: Message routing
-  - H4: Ingress and channel access
-  - H4: Gateway
-  - H4: Agent workspace
-  - H4: Sandbox posture
-  - H4: Data Handling
-  - H4: Secrets
-  - H4: Exec approvals
-  - H4: Auth profiles
-  - H4: Tool metadata
-  - H4: Tool posture
-  - H2: Run checks
-  - H2: Configure policy
+  - H2: Detailed topics
+  - H2: Related
+
+## cli/policy/attestation.md
+
+- Route: /cli/policy/attestation
+- Headings:
   - H2: Accept policy state
+
+## cli/policy/authoring.md
+
+- Route: /cli/policy/authoring
+- Headings:
+  - H2: Quick start
+
+## cli/policy/findings.md
+
+- Route: /cli/policy/findings
+- Headings:
   - H2: Findings
   - H2: Repair
   - H2: Exit codes
-  - H2: Related
+
+## cli/policy/rules.md
+
+- Route: /cli/policy/rules
+- Headings:
+  - H2: Policy rule reference
+  - H3: Channels
+  - H3: MCP servers
+  - H3: Model providers
+  - H3: Network
+  - H3: Message routing
+  - H3: Ingress and channel access
+  - H3: Gateway
+  - H3: Agent workspace
+  - H3: Sandbox posture
+  - H3: Data Handling
+  - H3: Secrets
+  - H3: Exec approvals
+  - H3: Auth profiles
+  - H3: Tool metadata
+  - H3: Tool posture
+
+## cli/policy/running-checks.md
+
+- Route: /cli/policy/running-checks
+- Headings:
+  - H2: Run checks
+  - H2: Configure policy
+
+## cli/policy/scopes.md
+
+- Route: /cli/policy/scopes
+- Headings:
+  - H2: Scoped overlays
 
 ## cli/promos.md
 
