@@ -11465,6 +11465,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/full-release-validation/continuation
 - Headings:
   - H2: Continue failed child jobs
+  - H3: Read publication observations
   - H3: Post-merge continuation proof
 
 ## reference/full-release-validation/dispatch.md
