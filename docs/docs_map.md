@@ -14172,6 +14172,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Mental model: agents + sessions
   - H2: Sending + delivery
   - H2: Pickers + overlays
+  - H2: Questions
   - H2: Keyboard shortcuts
   - H2: Slash commands
   - H2: Local shell commands
