@@ -95,6 +95,15 @@ jobs retain `planConcurrency: 1`. The refit preserves each complete child span,
 including contention, without subtracting setup or rewriting historical costs. Runner-profile
 calibration remains a separate admission policy.
 
+For split compact groups, the refit also records the parent cost from a complete
+generation within one run and runner profile. It sums each part's median span,
+takes the largest complete generation or direct parent measurement in that run,
+and applies the same two-run minimum and median rules. The stable parent estimate
+survives file additions and repartitioning, while exact child keys continue to
+describe only their original inventory. Partial generations cannot create or
+lower a parent estimate; observing a child preserves an existing parent during
+pruning. Parts from different runs, profiles, or generations never form a total.
+
 Gateway E2E uses the same greedy partition owner as UI E2E. Measured file durations
 include suite hooks; new files use source bytes scaled by the discovered files'
 measured seconds per byte. Without measurements, Gateway partitions use source

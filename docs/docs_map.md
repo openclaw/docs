@@ -5698,8 +5698,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help/faq-first-run
 - Headings:
-  - H2: Quick start and first-run setup
+  - H2: Where each section moved
   - H2: Related
+
+## help/faq-first-run/providers-and-hosting.md
+
+- Route: /help/faq-first-run/providers-and-hosting
+- Headings: none
+
+## help/faq-first-run/quick-start.md
+
+- Route: /help/faq-first-run/quick-start
+- Headings:
+  - H2: Quick start and first-run setup
 
 ## help/faq-models.md
 

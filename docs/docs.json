@@ -3178,6 +3178,13 @@
                 "pages": [
                   "help/faq",
                   "help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "help/faq-first-run/quick-start",
+                      "help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "help/faq-models"
                 ]
               },
@@ -5039,6 +5046,13 @@
                 "pages": [
                   "zh-CN/help/faq",
                   "zh-CN/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "zh-CN/help/faq-first-run/quick-start",
+                      "zh-CN/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "zh-CN/help/faq-models"
                 ]
               },
@@ -6900,6 +6914,13 @@
                 "pages": [
                   "zh-TW/help/faq",
                   "zh-TW/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "zh-TW/help/faq-first-run/quick-start",
+                      "zh-TW/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "zh-TW/help/faq-models"
                 ]
               },
@@ -8761,6 +8782,13 @@
                 "pages": [
                   "ja-JP/help/faq",
                   "ja-JP/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "ja-JP/help/faq-first-run/quick-start",
+                      "ja-JP/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "ja-JP/help/faq-models"
                 ]
               },
@@ -10622,6 +10650,13 @@
                 "pages": [
                   "es/help/faq",
                   "es/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "es/help/faq-first-run/quick-start",
+                      "es/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "es/help/faq-models"
                 ]
               },
@@ -12483,6 +12518,13 @@
                 "pages": [
                   "pt-BR/help/faq",
                   "pt-BR/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "pt-BR/help/faq-first-run/quick-start",
+                      "pt-BR/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "pt-BR/help/faq-models"
                 ]
               },
@@ -14344,6 +14386,13 @@
                 "pages": [
                   "ko/help/faq",
                   "ko/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "ko/help/faq-first-run/quick-start",
+                      "ko/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "ko/help/faq-models"
                 ]
               },
@@ -16205,6 +16254,13 @@
                 "pages": [
                   "de/help/faq",
                   "de/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "de/help/faq-first-run/quick-start",
+                      "de/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "de/help/faq-models"
                 ]
               },
@@ -18066,6 +18122,13 @@
                 "pages": [
                   "fr/help/faq",
                   "fr/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "fr/help/faq-first-run/quick-start",
+                      "fr/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "fr/help/faq-models"
                 ]
               },
@@ -19927,6 +19990,13 @@
                 "pages": [
                   "hi/help/faq",
                   "hi/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "hi/help/faq-first-run/quick-start",
+                      "hi/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "hi/help/faq-models"
                 ]
               },
@@ -21788,6 +21858,13 @@
                 "pages": [
                   "ar/help/faq",
                   "ar/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "ar/help/faq-first-run/quick-start",
+                      "ar/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "ar/help/faq-models"
                 ]
               },
@@ -23649,6 +23726,13 @@
                 "pages": [
                   "it/help/faq",
                   "it/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "it/help/faq-first-run/quick-start",
+                      "it/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "it/help/faq-models"
                 ]
               },
@@ -25510,6 +25594,13 @@
                 "pages": [
                   "vi/help/faq",
                   "vi/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "vi/help/faq-first-run/quick-start",
+                      "vi/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "vi/help/faq-models"
                 ]
               },
@@ -27371,6 +27462,13 @@
                 "pages": [
                   "nl/help/faq",
                   "nl/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "nl/help/faq-first-run/quick-start",
+                      "nl/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "nl/help/faq-models"
                 ]
               },
@@ -29232,6 +29330,13 @@
                 "pages": [
                   "tr/help/faq",
                   "tr/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "tr/help/faq-first-run/quick-start",
+                      "tr/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "tr/help/faq-models"
                 ]
               },
@@ -31093,6 +31198,13 @@
                 "pages": [
                   "uk/help/faq",
                   "uk/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "uk/help/faq-first-run/quick-start",
+                      "uk/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "uk/help/faq-models"
                 ]
               },
@@ -32954,6 +33066,13 @@
                 "pages": [
                   "id/help/faq",
                   "id/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "id/help/faq-first-run/quick-start",
+                      "id/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "id/help/faq-models"
                 ]
               },
@@ -34815,6 +34934,13 @@
                 "pages": [
                   "pl/help/faq",
                   "pl/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "pl/help/faq-first-run/quick-start",
+                      "pl/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "pl/help/faq-models"
                 ]
               },
@@ -36676,6 +36802,13 @@
                 "pages": [
                   "ru/help/faq",
                   "ru/help/faq-first-run",
+                  {
+                    "group": "First-run FAQ",
+                    "pages": [
+                      "ru/help/faq-first-run/quick-start",
+                      "ru/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
                   "ru/help/faq-models"
                 ]
               },
