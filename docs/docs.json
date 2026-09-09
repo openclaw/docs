@@ -2557,6 +2557,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "plugins/codex-harness-reference/supervision",
+                      "plugins/codex-harness-reference/app-server-transport",
+                      "plugins/codex-harness-reference/approval-and-sandbox",
+                      "plugins/codex-harness-reference/auth",
+                      "plugins/codex-harness-reference/dynamic-tools",
+                      "plugins/codex-harness-reference/timeouts",
+                      "plugins/codex-harness-reference/model-discovery",
+                      "plugins/codex-harness-reference/restricted-turns",
+                      "plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "plugins/codex-harness-runtime"
                 ]
               },
@@ -4058,6 +4072,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "zh-CN/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "zh-CN/plugins/codex-harness-reference/supervision",
+                      "zh-CN/plugins/codex-harness-reference/app-server-transport",
+                      "zh-CN/plugins/codex-harness-reference/approval-and-sandbox",
+                      "zh-CN/plugins/codex-harness-reference/auth",
+                      "zh-CN/plugins/codex-harness-reference/dynamic-tools",
+                      "zh-CN/plugins/codex-harness-reference/timeouts",
+                      "zh-CN/plugins/codex-harness-reference/model-discovery",
+                      "zh-CN/plugins/codex-harness-reference/restricted-turns",
+                      "zh-CN/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "zh-CN/plugins/codex-harness-runtime"
                 ]
               },
@@ -5559,6 +5587,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "zh-TW/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "zh-TW/plugins/codex-harness-reference/supervision",
+                      "zh-TW/plugins/codex-harness-reference/app-server-transport",
+                      "zh-TW/plugins/codex-harness-reference/approval-and-sandbox",
+                      "zh-TW/plugins/codex-harness-reference/auth",
+                      "zh-TW/plugins/codex-harness-reference/dynamic-tools",
+                      "zh-TW/plugins/codex-harness-reference/timeouts",
+                      "zh-TW/plugins/codex-harness-reference/model-discovery",
+                      "zh-TW/plugins/codex-harness-reference/restricted-turns",
+                      "zh-TW/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "zh-TW/plugins/codex-harness-runtime"
                 ]
               },
@@ -7060,6 +7102,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "ja-JP/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "ja-JP/plugins/codex-harness-reference/supervision",
+                      "ja-JP/plugins/codex-harness-reference/app-server-transport",
+                      "ja-JP/plugins/codex-harness-reference/approval-and-sandbox",
+                      "ja-JP/plugins/codex-harness-reference/auth",
+                      "ja-JP/plugins/codex-harness-reference/dynamic-tools",
+                      "ja-JP/plugins/codex-harness-reference/timeouts",
+                      "ja-JP/plugins/codex-harness-reference/model-discovery",
+                      "ja-JP/plugins/codex-harness-reference/restricted-turns",
+                      "ja-JP/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "ja-JP/plugins/codex-harness-runtime"
                 ]
               },
@@ -8561,6 +8617,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "es/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "es/plugins/codex-harness-reference/supervision",
+                      "es/plugins/codex-harness-reference/app-server-transport",
+                      "es/plugins/codex-harness-reference/approval-and-sandbox",
+                      "es/plugins/codex-harness-reference/auth",
+                      "es/plugins/codex-harness-reference/dynamic-tools",
+                      "es/plugins/codex-harness-reference/timeouts",
+                      "es/plugins/codex-harness-reference/model-discovery",
+                      "es/plugins/codex-harness-reference/restricted-turns",
+                      "es/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "es/plugins/codex-harness-runtime"
                 ]
               },
@@ -10062,6 +10132,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "pt-BR/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "pt-BR/plugins/codex-harness-reference/supervision",
+                      "pt-BR/plugins/codex-harness-reference/app-server-transport",
+                      "pt-BR/plugins/codex-harness-reference/approval-and-sandbox",
+                      "pt-BR/plugins/codex-harness-reference/auth",
+                      "pt-BR/plugins/codex-harness-reference/dynamic-tools",
+                      "pt-BR/plugins/codex-harness-reference/timeouts",
+                      "pt-BR/plugins/codex-harness-reference/model-discovery",
+                      "pt-BR/plugins/codex-harness-reference/restricted-turns",
+                      "pt-BR/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "pt-BR/plugins/codex-harness-runtime"
                 ]
               },
@@ -11563,6 +11647,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "ko/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "ko/plugins/codex-harness-reference/supervision",
+                      "ko/plugins/codex-harness-reference/app-server-transport",
+                      "ko/plugins/codex-harness-reference/approval-and-sandbox",
+                      "ko/plugins/codex-harness-reference/auth",
+                      "ko/plugins/codex-harness-reference/dynamic-tools",
+                      "ko/plugins/codex-harness-reference/timeouts",
+                      "ko/plugins/codex-harness-reference/model-discovery",
+                      "ko/plugins/codex-harness-reference/restricted-turns",
+                      "ko/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "ko/plugins/codex-harness-runtime"
                 ]
               },
@@ -13064,6 +13162,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "de/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "de/plugins/codex-harness-reference/supervision",
+                      "de/plugins/codex-harness-reference/app-server-transport",
+                      "de/plugins/codex-harness-reference/approval-and-sandbox",
+                      "de/plugins/codex-harness-reference/auth",
+                      "de/plugins/codex-harness-reference/dynamic-tools",
+                      "de/plugins/codex-harness-reference/timeouts",
+                      "de/plugins/codex-harness-reference/model-discovery",
+                      "de/plugins/codex-harness-reference/restricted-turns",
+                      "de/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "de/plugins/codex-harness-runtime"
                 ]
               },
@@ -14565,6 +14677,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "fr/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "fr/plugins/codex-harness-reference/supervision",
+                      "fr/plugins/codex-harness-reference/app-server-transport",
+                      "fr/plugins/codex-harness-reference/approval-and-sandbox",
+                      "fr/plugins/codex-harness-reference/auth",
+                      "fr/plugins/codex-harness-reference/dynamic-tools",
+                      "fr/plugins/codex-harness-reference/timeouts",
+                      "fr/plugins/codex-harness-reference/model-discovery",
+                      "fr/plugins/codex-harness-reference/restricted-turns",
+                      "fr/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "fr/plugins/codex-harness-runtime"
                 ]
               },
@@ -16066,6 +16192,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "hi/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "hi/plugins/codex-harness-reference/supervision",
+                      "hi/plugins/codex-harness-reference/app-server-transport",
+                      "hi/plugins/codex-harness-reference/approval-and-sandbox",
+                      "hi/plugins/codex-harness-reference/auth",
+                      "hi/plugins/codex-harness-reference/dynamic-tools",
+                      "hi/plugins/codex-harness-reference/timeouts",
+                      "hi/plugins/codex-harness-reference/model-discovery",
+                      "hi/plugins/codex-harness-reference/restricted-turns",
+                      "hi/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "hi/plugins/codex-harness-runtime"
                 ]
               },
@@ -17567,6 +17707,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "ar/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "ar/plugins/codex-harness-reference/supervision",
+                      "ar/plugins/codex-harness-reference/app-server-transport",
+                      "ar/plugins/codex-harness-reference/approval-and-sandbox",
+                      "ar/plugins/codex-harness-reference/auth",
+                      "ar/plugins/codex-harness-reference/dynamic-tools",
+                      "ar/plugins/codex-harness-reference/timeouts",
+                      "ar/plugins/codex-harness-reference/model-discovery",
+                      "ar/plugins/codex-harness-reference/restricted-turns",
+                      "ar/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "ar/plugins/codex-harness-runtime"
                 ]
               },
@@ -19068,6 +19222,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "it/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "it/plugins/codex-harness-reference/supervision",
+                      "it/plugins/codex-harness-reference/app-server-transport",
+                      "it/plugins/codex-harness-reference/approval-and-sandbox",
+                      "it/plugins/codex-harness-reference/auth",
+                      "it/plugins/codex-harness-reference/dynamic-tools",
+                      "it/plugins/codex-harness-reference/timeouts",
+                      "it/plugins/codex-harness-reference/model-discovery",
+                      "it/plugins/codex-harness-reference/restricted-turns",
+                      "it/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "it/plugins/codex-harness-runtime"
                 ]
               },
@@ -20569,6 +20737,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "vi/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "vi/plugins/codex-harness-reference/supervision",
+                      "vi/plugins/codex-harness-reference/app-server-transport",
+                      "vi/plugins/codex-harness-reference/approval-and-sandbox",
+                      "vi/plugins/codex-harness-reference/auth",
+                      "vi/plugins/codex-harness-reference/dynamic-tools",
+                      "vi/plugins/codex-harness-reference/timeouts",
+                      "vi/plugins/codex-harness-reference/model-discovery",
+                      "vi/plugins/codex-harness-reference/restricted-turns",
+                      "vi/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "vi/plugins/codex-harness-runtime"
                 ]
               },
@@ -22070,6 +22252,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "nl/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "nl/plugins/codex-harness-reference/supervision",
+                      "nl/plugins/codex-harness-reference/app-server-transport",
+                      "nl/plugins/codex-harness-reference/approval-and-sandbox",
+                      "nl/plugins/codex-harness-reference/auth",
+                      "nl/plugins/codex-harness-reference/dynamic-tools",
+                      "nl/plugins/codex-harness-reference/timeouts",
+                      "nl/plugins/codex-harness-reference/model-discovery",
+                      "nl/plugins/codex-harness-reference/restricted-turns",
+                      "nl/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "nl/plugins/codex-harness-runtime"
                 ]
               },
@@ -23571,6 +23767,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "tr/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "tr/plugins/codex-harness-reference/supervision",
+                      "tr/plugins/codex-harness-reference/app-server-transport",
+                      "tr/plugins/codex-harness-reference/approval-and-sandbox",
+                      "tr/plugins/codex-harness-reference/auth",
+                      "tr/plugins/codex-harness-reference/dynamic-tools",
+                      "tr/plugins/codex-harness-reference/timeouts",
+                      "tr/plugins/codex-harness-reference/model-discovery",
+                      "tr/plugins/codex-harness-reference/restricted-turns",
+                      "tr/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "tr/plugins/codex-harness-runtime"
                 ]
               },
@@ -25072,6 +25282,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "uk/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "uk/plugins/codex-harness-reference/supervision",
+                      "uk/plugins/codex-harness-reference/app-server-transport",
+                      "uk/plugins/codex-harness-reference/approval-and-sandbox",
+                      "uk/plugins/codex-harness-reference/auth",
+                      "uk/plugins/codex-harness-reference/dynamic-tools",
+                      "uk/plugins/codex-harness-reference/timeouts",
+                      "uk/plugins/codex-harness-reference/model-discovery",
+                      "uk/plugins/codex-harness-reference/restricted-turns",
+                      "uk/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "uk/plugins/codex-harness-runtime"
                 ]
               },
@@ -26573,6 +26797,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "id/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "id/plugins/codex-harness-reference/supervision",
+                      "id/plugins/codex-harness-reference/app-server-transport",
+                      "id/plugins/codex-harness-reference/approval-and-sandbox",
+                      "id/plugins/codex-harness-reference/auth",
+                      "id/plugins/codex-harness-reference/dynamic-tools",
+                      "id/plugins/codex-harness-reference/timeouts",
+                      "id/plugins/codex-harness-reference/model-discovery",
+                      "id/plugins/codex-harness-reference/restricted-turns",
+                      "id/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "id/plugins/codex-harness-runtime"
                 ]
               },
@@ -28074,6 +28312,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "pl/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "pl/plugins/codex-harness-reference/supervision",
+                      "pl/plugins/codex-harness-reference/app-server-transport",
+                      "pl/plugins/codex-harness-reference/approval-and-sandbox",
+                      "pl/plugins/codex-harness-reference/auth",
+                      "pl/plugins/codex-harness-reference/dynamic-tools",
+                      "pl/plugins/codex-harness-reference/timeouts",
+                      "pl/plugins/codex-harness-reference/model-discovery",
+                      "pl/plugins/codex-harness-reference/restricted-turns",
+                      "pl/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "pl/plugins/codex-harness-runtime"
                 ]
               },
@@ -29575,6 +29827,20 @@
                 "group": "Codex harness",
                 "pages": [
                   "ru/plugins/codex-harness-reference",
+                  {
+                    "group": "Codex harness reference",
+                    "pages": [
+                      "ru/plugins/codex-harness-reference/supervision",
+                      "ru/plugins/codex-harness-reference/app-server-transport",
+                      "ru/plugins/codex-harness-reference/approval-and-sandbox",
+                      "ru/plugins/codex-harness-reference/auth",
+                      "ru/plugins/codex-harness-reference/dynamic-tools",
+                      "ru/plugins/codex-harness-reference/timeouts",
+                      "ru/plugins/codex-harness-reference/model-discovery",
+                      "ru/plugins/codex-harness-reference/restricted-turns",
+                      "ru/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
                   "ru/plugins/codex-harness-runtime"
                 ]
               },

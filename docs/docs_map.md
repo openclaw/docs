@@ -6825,19 +6825,74 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference
 - Headings:
   - H2: Plugin config surface
-  - H2: Supervision
+  - H2: Where each section moved
+  - H3: Codex session catalog and supervision
+  - H3: Codex app-server transport
+  - H3: Codex approval and sandbox modes
+  - H3: Codex auth and environment isolation
+  - H3: Codex dynamic tools
+  - H3: Codex timeouts and turn settlement
+  - H3: Codex model discovery
+  - H3: Codex restricted turns
+  - H3: Codex workspace bootstrap files
+  - H2: Related
+
+## plugins/codex-harness-reference/app-server-transport.md
+
+- Route: /plugins/codex-harness-reference/app-server-transport
+- Headings:
   - H2: App-server transport
+  - H2: Environment overrides
+
+## plugins/codex-harness-reference/approval-and-sandbox.md
+
+- Route: /plugins/codex-harness-reference/approval-and-sandbox
+- Headings:
   - H2: Approval and sandbox modes
   - H2: Sandboxed native execution
+
+## plugins/codex-harness-reference/auth.md
+
+- Route: /plugins/codex-harness-reference/auth
+- Headings:
   - H2: Auth and environment isolation
+
+## plugins/codex-harness-reference/dynamic-tools.md
+
+- Route: /plugins/codex-harness-reference/dynamic-tools
+- Headings:
   - H2: Dynamic tools
+
+## plugins/codex-harness-reference/model-discovery.md
+
+- Route: /plugins/codex-harness-reference/model-discovery
+- Headings:
+  - H2: Model discovery
+
+## plugins/codex-harness-reference/restricted-turns.md
+
+- Route: /plugins/codex-harness-reference/restricted-turns
+- Headings:
+  - H2: Restricted turns
+
+## plugins/codex-harness-reference/supervision.md
+
+- Route: /plugins/codex-harness-reference/supervision
+- Headings:
+  - H2: Supervision
+
+## plugins/codex-harness-reference/timeouts.md
+
+- Route: /plugins/codex-harness-reference/timeouts
+- Headings:
   - H2: Timeouts
   - H3: Turn execution and settlement
-  - H2: Model discovery
-  - H2: Restricted turns
+
+## plugins/codex-harness-reference/workspace-bootstrap-files.md
+
+- Route: /plugins/codex-harness-reference/workspace-bootstrap-files
+- Headings:
   - H2: Workspace bootstrap files
-  - H2: Environment overrides
-  - H2: Related
 
 ## plugins/codex-harness-runtime.md
 
