@@ -540,8 +540,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/feishu
 - Headings:
-  - H2: Quick start
-  - H2: Inbound durability
+  - H2: What each page covers
+  - H2: Where each section moved
+  - H2: Common commands
+  - H2: Related
+
+## channels/feishu/access-control.md
+
+- Route: /channels/feishu/access-control
+- Headings:
   - H2: Access control
   - H3: Direct messages
   - H3: Group chats
@@ -554,12 +561,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Get group/user IDs
   - H3: Group IDs (`chat_id`, format: `oc_xxx`)
   - H3: User IDs (`open_id`, format: `ou_xxx`)
-  - H2: Common commands
-  - H2: Troubleshooting
-  - H3: Bot does not respond in group chats
-  - H3: Bot does not receive messages
-  - H3: QR setup does not react in the Feishu mobile app
-  - H3: App Secret leaked
+
+## channels/feishu/advanced-configuration.md
+
+- Route: /channels/feishu/advanced-configuration
+- Headings:
   - H2: Advanced configuration
   - H3: Multiple accounts
   - H3: Message limits
@@ -571,6 +577,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Persistent ACP binding
   - H4: Spawn ACP from chat
   - H3: Multi-agent routing
+
+## channels/feishu/configuration-reference.md
+
+- Route: /channels/feishu/configuration-reference
+- Headings:
+  - H2: Configuration reference
+
+## channels/feishu/dynamic-agents.md
+
+- Route: /channels/feishu/dynamic-agents
+- Headings:
   - H2: Per-user agent isolation (Dynamic Agent Creation)
   - H3: Quick setup
   - H3: How it works
@@ -579,14 +596,34 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Typical multi-user deployment
   - H3: Verification
   - H3: Notes
-  - H2: Configuration reference
+
+## channels/feishu/messaging.md
+
+- Route: /channels/feishu/messaging
+- Headings:
   - H2: Supported message types
   - H3: Receive
   - H3: Send
   - H3: Sticker replies
   - H3: Sticker keyword search
   - H3: Threads and replies
-  - H2: Related
+
+## channels/feishu/setup.md
+
+- Route: /channels/feishu/setup
+- Headings:
+  - H2: Quick start
+  - H2: Inbound durability
+
+## channels/feishu/troubleshooting.md
+
+- Route: /channels/feishu/troubleshooting
+- Headings:
+  - H2: Troubleshooting
+  - H3: Bot does not respond in group chats
+  - H3: Bot does not receive messages
+  - H3: QR setup does not react in the Feishu mobile app
+  - H3: App Secret leaked
 
 ## channels/googlechat.md
 
@@ -13136,29 +13173,70 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/skill-workshop
 - Headings:
-  - H2: Personal library authoring
-  - H2: How it works
-  - H2: Review in the Control UI
-  - H2: Lifecycle
-  - H2: Collection review
-  - H3: Changes and recovery
-  - H3: When an older backup cannot be restored automatically
+  - H2: Where each section moved
+  - H2: Related
+
+## tools/skill-workshop/authoring.md
+
+- Route: /tools/skill-workshop/authoring
+- Headings:
   - H2: Chat
   - H3: Learn from recent work
   - H2: CLI
+
+## tools/skill-workshop/collection-review.md
+
+- Route: /tools/skill-workshop/collection-review
+- Headings:
+  - H2: Collection review
+  - H3: Changes and recovery
+  - H3: When an older backup cannot be restored automatically
+
+## tools/skill-workshop/configuration.md
+
+- Route: /tools/skill-workshop/configuration
+- Headings:
+  - H2: Self-learning
+  - H3: Scan past sessions
+  - H2: Approval and autonomy
+
+## tools/skill-workshop/how-it-works.md
+
+- Route: /tools/skill-workshop/how-it-works
+- Headings:
+  - H2: How it works
+  - H2: Review in the Control UI
+  - H2: Lifecycle
+
+## tools/skill-workshop/personal-library.md
+
+- Route: /tools/skill-workshop/personal-library
+- Headings:
+  - H2: Personal library authoring
+
+## tools/skill-workshop/proposals.md
+
+- Route: /tools/skill-workshop/proposals
+- Headings:
   - H2: Plugin evaluation and lifecycle hooks
   - H2: Proposal content
   - H2: Support files
   - H2: Agent tool
-  - H2: Self-learning
-  - H3: Scan past sessions
-  - H2: Approval and autonomy
+
+## tools/skill-workshop/reference.md
+
+- Route: /tools/skill-workshop/reference
+- Headings:
   - H2: Gateway methods
   - H2: Storage
   - H2: Limits
+
+## tools/skill-workshop/troubleshooting.md
+
+- Route: /tools/skill-workshop/troubleshooting
+- Headings:
   - H2: Troubleshooting
   - H3: Tool-policy diagnostic
-  - H2: Related
 
 ## tools/skills-config.md
 

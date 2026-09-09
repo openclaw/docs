@@ -1613,7 +1613,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "channels/feishu",
+                      "channels/feishu/setup",
+                      "channels/feishu/access-control",
+                      "channels/feishu/advanced-configuration",
+                      "channels/feishu/dynamic-agents",
+                      "channels/feishu/messaging",
+                      "channels/feishu/configuration-reference",
+                      "channels/feishu/troubleshooting"
+                    ]
+                  },
                   "channels/line",
                   "channels/qqbot",
                   "channels/wechat",
@@ -1888,6 +1900,19 @@
                   "tools/skills",
                   "tools/custodian-skills",
                   "tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "tools/skill-workshop/personal-library",
+                      "tools/skill-workshop/how-it-works",
+                      "tools/skill-workshop/collection-review",
+                      "tools/skill-workshop/authoring",
+                      "tools/skill-workshop/proposals",
+                      "tools/skill-workshop/configuration",
+                      "tools/skill-workshop/reference",
+                      "tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "tools/self-learning",
                   "tools/creating-skills",
                   "tools/skills-config",
@@ -3456,7 +3481,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "zh-CN/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "zh-CN/channels/feishu",
+                      "zh-CN/channels/feishu/setup",
+                      "zh-CN/channels/feishu/access-control",
+                      "zh-CN/channels/feishu/advanced-configuration",
+                      "zh-CN/channels/feishu/dynamic-agents",
+                      "zh-CN/channels/feishu/messaging",
+                      "zh-CN/channels/feishu/configuration-reference",
+                      "zh-CN/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "zh-CN/channels/line",
                   "zh-CN/channels/qqbot",
                   "zh-CN/channels/wechat",
@@ -3731,6 +3768,19 @@
                   "zh-CN/tools/skills",
                   "zh-CN/tools/custodian-skills",
                   "zh-CN/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "zh-CN/tools/skill-workshop/personal-library",
+                      "zh-CN/tools/skill-workshop/how-it-works",
+                      "zh-CN/tools/skill-workshop/collection-review",
+                      "zh-CN/tools/skill-workshop/authoring",
+                      "zh-CN/tools/skill-workshop/proposals",
+                      "zh-CN/tools/skill-workshop/configuration",
+                      "zh-CN/tools/skill-workshop/reference",
+                      "zh-CN/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "zh-CN/tools/self-learning",
                   "zh-CN/tools/creating-skills",
                   "zh-CN/tools/skills-config",
@@ -5265,7 +5315,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "zh-TW/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "zh-TW/channels/feishu",
+                      "zh-TW/channels/feishu/setup",
+                      "zh-TW/channels/feishu/access-control",
+                      "zh-TW/channels/feishu/advanced-configuration",
+                      "zh-TW/channels/feishu/dynamic-agents",
+                      "zh-TW/channels/feishu/messaging",
+                      "zh-TW/channels/feishu/configuration-reference",
+                      "zh-TW/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "zh-TW/channels/line",
                   "zh-TW/channels/qqbot",
                   "zh-TW/channels/wechat",
@@ -5540,6 +5602,19 @@
                   "zh-TW/tools/skills",
                   "zh-TW/tools/custodian-skills",
                   "zh-TW/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "zh-TW/tools/skill-workshop/personal-library",
+                      "zh-TW/tools/skill-workshop/how-it-works",
+                      "zh-TW/tools/skill-workshop/collection-review",
+                      "zh-TW/tools/skill-workshop/authoring",
+                      "zh-TW/tools/skill-workshop/proposals",
+                      "zh-TW/tools/skill-workshop/configuration",
+                      "zh-TW/tools/skill-workshop/reference",
+                      "zh-TW/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "zh-TW/tools/self-learning",
                   "zh-TW/tools/creating-skills",
                   "zh-TW/tools/skills-config",
@@ -7074,7 +7149,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "ja-JP/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "ja-JP/channels/feishu",
+                      "ja-JP/channels/feishu/setup",
+                      "ja-JP/channels/feishu/access-control",
+                      "ja-JP/channels/feishu/advanced-configuration",
+                      "ja-JP/channels/feishu/dynamic-agents",
+                      "ja-JP/channels/feishu/messaging",
+                      "ja-JP/channels/feishu/configuration-reference",
+                      "ja-JP/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "ja-JP/channels/line",
                   "ja-JP/channels/qqbot",
                   "ja-JP/channels/wechat",
@@ -7349,6 +7436,19 @@
                   "ja-JP/tools/skills",
                   "ja-JP/tools/custodian-skills",
                   "ja-JP/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "ja-JP/tools/skill-workshop/personal-library",
+                      "ja-JP/tools/skill-workshop/how-it-works",
+                      "ja-JP/tools/skill-workshop/collection-review",
+                      "ja-JP/tools/skill-workshop/authoring",
+                      "ja-JP/tools/skill-workshop/proposals",
+                      "ja-JP/tools/skill-workshop/configuration",
+                      "ja-JP/tools/skill-workshop/reference",
+                      "ja-JP/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "ja-JP/tools/self-learning",
                   "ja-JP/tools/creating-skills",
                   "ja-JP/tools/skills-config",
@@ -8883,7 +8983,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "es/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "es/channels/feishu",
+                      "es/channels/feishu/setup",
+                      "es/channels/feishu/access-control",
+                      "es/channels/feishu/advanced-configuration",
+                      "es/channels/feishu/dynamic-agents",
+                      "es/channels/feishu/messaging",
+                      "es/channels/feishu/configuration-reference",
+                      "es/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "es/channels/line",
                   "es/channels/qqbot",
                   "es/channels/wechat",
@@ -9158,6 +9270,19 @@
                   "es/tools/skills",
                   "es/tools/custodian-skills",
                   "es/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "es/tools/skill-workshop/personal-library",
+                      "es/tools/skill-workshop/how-it-works",
+                      "es/tools/skill-workshop/collection-review",
+                      "es/tools/skill-workshop/authoring",
+                      "es/tools/skill-workshop/proposals",
+                      "es/tools/skill-workshop/configuration",
+                      "es/tools/skill-workshop/reference",
+                      "es/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "es/tools/self-learning",
                   "es/tools/creating-skills",
                   "es/tools/skills-config",
@@ -10692,7 +10817,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "pt-BR/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "pt-BR/channels/feishu",
+                      "pt-BR/channels/feishu/setup",
+                      "pt-BR/channels/feishu/access-control",
+                      "pt-BR/channels/feishu/advanced-configuration",
+                      "pt-BR/channels/feishu/dynamic-agents",
+                      "pt-BR/channels/feishu/messaging",
+                      "pt-BR/channels/feishu/configuration-reference",
+                      "pt-BR/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "pt-BR/channels/line",
                   "pt-BR/channels/qqbot",
                   "pt-BR/channels/wechat",
@@ -10967,6 +11104,19 @@
                   "pt-BR/tools/skills",
                   "pt-BR/tools/custodian-skills",
                   "pt-BR/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "pt-BR/tools/skill-workshop/personal-library",
+                      "pt-BR/tools/skill-workshop/how-it-works",
+                      "pt-BR/tools/skill-workshop/collection-review",
+                      "pt-BR/tools/skill-workshop/authoring",
+                      "pt-BR/tools/skill-workshop/proposals",
+                      "pt-BR/tools/skill-workshop/configuration",
+                      "pt-BR/tools/skill-workshop/reference",
+                      "pt-BR/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "pt-BR/tools/self-learning",
                   "pt-BR/tools/creating-skills",
                   "pt-BR/tools/skills-config",
@@ -12501,7 +12651,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "ko/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "ko/channels/feishu",
+                      "ko/channels/feishu/setup",
+                      "ko/channels/feishu/access-control",
+                      "ko/channels/feishu/advanced-configuration",
+                      "ko/channels/feishu/dynamic-agents",
+                      "ko/channels/feishu/messaging",
+                      "ko/channels/feishu/configuration-reference",
+                      "ko/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "ko/channels/line",
                   "ko/channels/qqbot",
                   "ko/channels/wechat",
@@ -12776,6 +12938,19 @@
                   "ko/tools/skills",
                   "ko/tools/custodian-skills",
                   "ko/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "ko/tools/skill-workshop/personal-library",
+                      "ko/tools/skill-workshop/how-it-works",
+                      "ko/tools/skill-workshop/collection-review",
+                      "ko/tools/skill-workshop/authoring",
+                      "ko/tools/skill-workshop/proposals",
+                      "ko/tools/skill-workshop/configuration",
+                      "ko/tools/skill-workshop/reference",
+                      "ko/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "ko/tools/self-learning",
                   "ko/tools/creating-skills",
                   "ko/tools/skills-config",
@@ -14310,7 +14485,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "de/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "de/channels/feishu",
+                      "de/channels/feishu/setup",
+                      "de/channels/feishu/access-control",
+                      "de/channels/feishu/advanced-configuration",
+                      "de/channels/feishu/dynamic-agents",
+                      "de/channels/feishu/messaging",
+                      "de/channels/feishu/configuration-reference",
+                      "de/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "de/channels/line",
                   "de/channels/qqbot",
                   "de/channels/wechat",
@@ -14585,6 +14772,19 @@
                   "de/tools/skills",
                   "de/tools/custodian-skills",
                   "de/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "de/tools/skill-workshop/personal-library",
+                      "de/tools/skill-workshop/how-it-works",
+                      "de/tools/skill-workshop/collection-review",
+                      "de/tools/skill-workshop/authoring",
+                      "de/tools/skill-workshop/proposals",
+                      "de/tools/skill-workshop/configuration",
+                      "de/tools/skill-workshop/reference",
+                      "de/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "de/tools/self-learning",
                   "de/tools/creating-skills",
                   "de/tools/skills-config",
@@ -16119,7 +16319,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "fr/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "fr/channels/feishu",
+                      "fr/channels/feishu/setup",
+                      "fr/channels/feishu/access-control",
+                      "fr/channels/feishu/advanced-configuration",
+                      "fr/channels/feishu/dynamic-agents",
+                      "fr/channels/feishu/messaging",
+                      "fr/channels/feishu/configuration-reference",
+                      "fr/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "fr/channels/line",
                   "fr/channels/qqbot",
                   "fr/channels/wechat",
@@ -16394,6 +16606,19 @@
                   "fr/tools/skills",
                   "fr/tools/custodian-skills",
                   "fr/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "fr/tools/skill-workshop/personal-library",
+                      "fr/tools/skill-workshop/how-it-works",
+                      "fr/tools/skill-workshop/collection-review",
+                      "fr/tools/skill-workshop/authoring",
+                      "fr/tools/skill-workshop/proposals",
+                      "fr/tools/skill-workshop/configuration",
+                      "fr/tools/skill-workshop/reference",
+                      "fr/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "fr/tools/self-learning",
                   "fr/tools/creating-skills",
                   "fr/tools/skills-config",
@@ -17928,7 +18153,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "hi/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "hi/channels/feishu",
+                      "hi/channels/feishu/setup",
+                      "hi/channels/feishu/access-control",
+                      "hi/channels/feishu/advanced-configuration",
+                      "hi/channels/feishu/dynamic-agents",
+                      "hi/channels/feishu/messaging",
+                      "hi/channels/feishu/configuration-reference",
+                      "hi/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "hi/channels/line",
                   "hi/channels/qqbot",
                   "hi/channels/wechat",
@@ -18203,6 +18440,19 @@
                   "hi/tools/skills",
                   "hi/tools/custodian-skills",
                   "hi/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "hi/tools/skill-workshop/personal-library",
+                      "hi/tools/skill-workshop/how-it-works",
+                      "hi/tools/skill-workshop/collection-review",
+                      "hi/tools/skill-workshop/authoring",
+                      "hi/tools/skill-workshop/proposals",
+                      "hi/tools/skill-workshop/configuration",
+                      "hi/tools/skill-workshop/reference",
+                      "hi/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "hi/tools/self-learning",
                   "hi/tools/creating-skills",
                   "hi/tools/skills-config",
@@ -19737,7 +19987,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "ar/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "ar/channels/feishu",
+                      "ar/channels/feishu/setup",
+                      "ar/channels/feishu/access-control",
+                      "ar/channels/feishu/advanced-configuration",
+                      "ar/channels/feishu/dynamic-agents",
+                      "ar/channels/feishu/messaging",
+                      "ar/channels/feishu/configuration-reference",
+                      "ar/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "ar/channels/line",
                   "ar/channels/qqbot",
                   "ar/channels/wechat",
@@ -20012,6 +20274,19 @@
                   "ar/tools/skills",
                   "ar/tools/custodian-skills",
                   "ar/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "ar/tools/skill-workshop/personal-library",
+                      "ar/tools/skill-workshop/how-it-works",
+                      "ar/tools/skill-workshop/collection-review",
+                      "ar/tools/skill-workshop/authoring",
+                      "ar/tools/skill-workshop/proposals",
+                      "ar/tools/skill-workshop/configuration",
+                      "ar/tools/skill-workshop/reference",
+                      "ar/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "ar/tools/self-learning",
                   "ar/tools/creating-skills",
                   "ar/tools/skills-config",
@@ -21546,7 +21821,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "it/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "it/channels/feishu",
+                      "it/channels/feishu/setup",
+                      "it/channels/feishu/access-control",
+                      "it/channels/feishu/advanced-configuration",
+                      "it/channels/feishu/dynamic-agents",
+                      "it/channels/feishu/messaging",
+                      "it/channels/feishu/configuration-reference",
+                      "it/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "it/channels/line",
                   "it/channels/qqbot",
                   "it/channels/wechat",
@@ -21821,6 +22108,19 @@
                   "it/tools/skills",
                   "it/tools/custodian-skills",
                   "it/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "it/tools/skill-workshop/personal-library",
+                      "it/tools/skill-workshop/how-it-works",
+                      "it/tools/skill-workshop/collection-review",
+                      "it/tools/skill-workshop/authoring",
+                      "it/tools/skill-workshop/proposals",
+                      "it/tools/skill-workshop/configuration",
+                      "it/tools/skill-workshop/reference",
+                      "it/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "it/tools/self-learning",
                   "it/tools/creating-skills",
                   "it/tools/skills-config",
@@ -23355,7 +23655,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "vi/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "vi/channels/feishu",
+                      "vi/channels/feishu/setup",
+                      "vi/channels/feishu/access-control",
+                      "vi/channels/feishu/advanced-configuration",
+                      "vi/channels/feishu/dynamic-agents",
+                      "vi/channels/feishu/messaging",
+                      "vi/channels/feishu/configuration-reference",
+                      "vi/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "vi/channels/line",
                   "vi/channels/qqbot",
                   "vi/channels/wechat",
@@ -23630,6 +23942,19 @@
                   "vi/tools/skills",
                   "vi/tools/custodian-skills",
                   "vi/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "vi/tools/skill-workshop/personal-library",
+                      "vi/tools/skill-workshop/how-it-works",
+                      "vi/tools/skill-workshop/collection-review",
+                      "vi/tools/skill-workshop/authoring",
+                      "vi/tools/skill-workshop/proposals",
+                      "vi/tools/skill-workshop/configuration",
+                      "vi/tools/skill-workshop/reference",
+                      "vi/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "vi/tools/self-learning",
                   "vi/tools/creating-skills",
                   "vi/tools/skills-config",
@@ -25164,7 +25489,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "nl/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "nl/channels/feishu",
+                      "nl/channels/feishu/setup",
+                      "nl/channels/feishu/access-control",
+                      "nl/channels/feishu/advanced-configuration",
+                      "nl/channels/feishu/dynamic-agents",
+                      "nl/channels/feishu/messaging",
+                      "nl/channels/feishu/configuration-reference",
+                      "nl/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "nl/channels/line",
                   "nl/channels/qqbot",
                   "nl/channels/wechat",
@@ -25439,6 +25776,19 @@
                   "nl/tools/skills",
                   "nl/tools/custodian-skills",
                   "nl/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "nl/tools/skill-workshop/personal-library",
+                      "nl/tools/skill-workshop/how-it-works",
+                      "nl/tools/skill-workshop/collection-review",
+                      "nl/tools/skill-workshop/authoring",
+                      "nl/tools/skill-workshop/proposals",
+                      "nl/tools/skill-workshop/configuration",
+                      "nl/tools/skill-workshop/reference",
+                      "nl/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "nl/tools/self-learning",
                   "nl/tools/creating-skills",
                   "nl/tools/skills-config",
@@ -26973,7 +27323,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "tr/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "tr/channels/feishu",
+                      "tr/channels/feishu/setup",
+                      "tr/channels/feishu/access-control",
+                      "tr/channels/feishu/advanced-configuration",
+                      "tr/channels/feishu/dynamic-agents",
+                      "tr/channels/feishu/messaging",
+                      "tr/channels/feishu/configuration-reference",
+                      "tr/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "tr/channels/line",
                   "tr/channels/qqbot",
                   "tr/channels/wechat",
@@ -27248,6 +27610,19 @@
                   "tr/tools/skills",
                   "tr/tools/custodian-skills",
                   "tr/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "tr/tools/skill-workshop/personal-library",
+                      "tr/tools/skill-workshop/how-it-works",
+                      "tr/tools/skill-workshop/collection-review",
+                      "tr/tools/skill-workshop/authoring",
+                      "tr/tools/skill-workshop/proposals",
+                      "tr/tools/skill-workshop/configuration",
+                      "tr/tools/skill-workshop/reference",
+                      "tr/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "tr/tools/self-learning",
                   "tr/tools/creating-skills",
                   "tr/tools/skills-config",
@@ -28782,7 +29157,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "uk/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "uk/channels/feishu",
+                      "uk/channels/feishu/setup",
+                      "uk/channels/feishu/access-control",
+                      "uk/channels/feishu/advanced-configuration",
+                      "uk/channels/feishu/dynamic-agents",
+                      "uk/channels/feishu/messaging",
+                      "uk/channels/feishu/configuration-reference",
+                      "uk/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "uk/channels/line",
                   "uk/channels/qqbot",
                   "uk/channels/wechat",
@@ -29057,6 +29444,19 @@
                   "uk/tools/skills",
                   "uk/tools/custodian-skills",
                   "uk/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "uk/tools/skill-workshop/personal-library",
+                      "uk/tools/skill-workshop/how-it-works",
+                      "uk/tools/skill-workshop/collection-review",
+                      "uk/tools/skill-workshop/authoring",
+                      "uk/tools/skill-workshop/proposals",
+                      "uk/tools/skill-workshop/configuration",
+                      "uk/tools/skill-workshop/reference",
+                      "uk/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "uk/tools/self-learning",
                   "uk/tools/creating-skills",
                   "uk/tools/skills-config",
@@ -30591,7 +30991,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "id/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "id/channels/feishu",
+                      "id/channels/feishu/setup",
+                      "id/channels/feishu/access-control",
+                      "id/channels/feishu/advanced-configuration",
+                      "id/channels/feishu/dynamic-agents",
+                      "id/channels/feishu/messaging",
+                      "id/channels/feishu/configuration-reference",
+                      "id/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "id/channels/line",
                   "id/channels/qqbot",
                   "id/channels/wechat",
@@ -30866,6 +31278,19 @@
                   "id/tools/skills",
                   "id/tools/custodian-skills",
                   "id/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "id/tools/skill-workshop/personal-library",
+                      "id/tools/skill-workshop/how-it-works",
+                      "id/tools/skill-workshop/collection-review",
+                      "id/tools/skill-workshop/authoring",
+                      "id/tools/skill-workshop/proposals",
+                      "id/tools/skill-workshop/configuration",
+                      "id/tools/skill-workshop/reference",
+                      "id/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "id/tools/self-learning",
                   "id/tools/creating-skills",
                   "id/tools/skills-config",
@@ -32400,7 +32825,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "pl/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "pl/channels/feishu",
+                      "pl/channels/feishu/setup",
+                      "pl/channels/feishu/access-control",
+                      "pl/channels/feishu/advanced-configuration",
+                      "pl/channels/feishu/dynamic-agents",
+                      "pl/channels/feishu/messaging",
+                      "pl/channels/feishu/configuration-reference",
+                      "pl/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "pl/channels/line",
                   "pl/channels/qqbot",
                   "pl/channels/wechat",
@@ -32675,6 +33112,19 @@
                   "pl/tools/skills",
                   "pl/tools/custodian-skills",
                   "pl/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "pl/tools/skill-workshop/personal-library",
+                      "pl/tools/skill-workshop/how-it-works",
+                      "pl/tools/skill-workshop/collection-review",
+                      "pl/tools/skill-workshop/authoring",
+                      "pl/tools/skill-workshop/proposals",
+                      "pl/tools/skill-workshop/configuration",
+                      "pl/tools/skill-workshop/reference",
+                      "pl/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "pl/tools/self-learning",
                   "pl/tools/creating-skills",
                   "pl/tools/skills-config",
@@ -34209,7 +34659,19 @@
               {
                 "group": "Regional platforms",
                 "pages": [
-                  "ru/channels/feishu",
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "ru/channels/feishu",
+                      "ru/channels/feishu/setup",
+                      "ru/channels/feishu/access-control",
+                      "ru/channels/feishu/advanced-configuration",
+                      "ru/channels/feishu/dynamic-agents",
+                      "ru/channels/feishu/messaging",
+                      "ru/channels/feishu/configuration-reference",
+                      "ru/channels/feishu/troubleshooting"
+                    ]
+                  },
                   "ru/channels/line",
                   "ru/channels/qqbot",
                   "ru/channels/wechat",
@@ -34484,6 +34946,19 @@
                   "ru/tools/skills",
                   "ru/tools/custodian-skills",
                   "ru/tools/skill-workshop",
+                  {
+                    "group": "Skill Workshop",
+                    "pages": [
+                      "ru/tools/skill-workshop/personal-library",
+                      "ru/tools/skill-workshop/how-it-works",
+                      "ru/tools/skill-workshop/collection-review",
+                      "ru/tools/skill-workshop/authoring",
+                      "ru/tools/skill-workshop/proposals",
+                      "ru/tools/skill-workshop/configuration",
+                      "ru/tools/skill-workshop/reference",
+                      "ru/tools/skill-workshop/troubleshooting"
+                    ]
+                  },
                   "ru/tools/self-learning",
                   "ru/tools/creating-skills",
                   "ru/tools/skills-config",
