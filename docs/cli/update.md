@@ -899,6 +899,13 @@ previously pinned.
 Already-current runtime plugins are kept in place; a no-op startup repair does
 not reinstall the package or invalidate the migration checkpoint.
 
+When the npm update probe finds a newer release for an exact-pinned official
+plugin and post-core convergence retains that pin, the update prints the pin
+advisory and reports `postUpdate.plugins.status: "warning"` in JSON. The warning
+includes the observed installed and available versions and an explicit command
+to replace the pin. Keep the pin if intentional. This advisory does not establish
+incompatibility, change the pin, or fail an otherwise successful core update.
+
 <Warning>
 If an exact pinned npm plugin update resolves to an artifact whose integrity differs from the stored install record, `openclaw update` aborts that plugin artifact update instead of installing it. Reinstall or update the plugin explicitly only after verifying you trust the new artifact.
 </Warning>
