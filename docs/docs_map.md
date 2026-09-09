@@ -6408,6 +6408,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/installer
 - Headings:
+  - H2: Private Node recovery
+  - H3: Diagnostics on an unsupported Node
   - H2: Source build toolchain
   - H2: Quick commands
   - H2: install.sh
