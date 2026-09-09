@@ -2739,6 +2739,18 @@
                 "pages": [
                   "reference/RELEASING",
                   "reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "reference/full-release-validation/dispatch",
+                      "reference/full-release-validation/continuation",
+                      "reference/full-release-validation/extended-stable",
+                      "reference/full-release-validation/stages",
+                      "reference/full-release-validation/release-checks",
+                      "reference/full-release-validation/profiles",
+                      "reference/full-release-validation/evidence"
+                    ]
+                  },
                   "reference/release-performance-sweep"
                 ]
               },
@@ -4219,6 +4231,18 @@
                 "pages": [
                   "zh-CN/reference/RELEASING",
                   "zh-CN/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "zh-CN/reference/full-release-validation/dispatch",
+                      "zh-CN/reference/full-release-validation/continuation",
+                      "zh-CN/reference/full-release-validation/extended-stable",
+                      "zh-CN/reference/full-release-validation/stages",
+                      "zh-CN/reference/full-release-validation/release-checks",
+                      "zh-CN/reference/full-release-validation/profiles",
+                      "zh-CN/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "zh-CN/reference/release-performance-sweep"
                 ]
               },
@@ -5699,6 +5723,18 @@
                 "pages": [
                   "zh-TW/reference/RELEASING",
                   "zh-TW/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "zh-TW/reference/full-release-validation/dispatch",
+                      "zh-TW/reference/full-release-validation/continuation",
+                      "zh-TW/reference/full-release-validation/extended-stable",
+                      "zh-TW/reference/full-release-validation/stages",
+                      "zh-TW/reference/full-release-validation/release-checks",
+                      "zh-TW/reference/full-release-validation/profiles",
+                      "zh-TW/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "zh-TW/reference/release-performance-sweep"
                 ]
               },
@@ -7179,6 +7215,18 @@
                 "pages": [
                   "ja-JP/reference/RELEASING",
                   "ja-JP/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "ja-JP/reference/full-release-validation/dispatch",
+                      "ja-JP/reference/full-release-validation/continuation",
+                      "ja-JP/reference/full-release-validation/extended-stable",
+                      "ja-JP/reference/full-release-validation/stages",
+                      "ja-JP/reference/full-release-validation/release-checks",
+                      "ja-JP/reference/full-release-validation/profiles",
+                      "ja-JP/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "ja-JP/reference/release-performance-sweep"
                 ]
               },
@@ -8659,6 +8707,18 @@
                 "pages": [
                   "es/reference/RELEASING",
                   "es/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "es/reference/full-release-validation/dispatch",
+                      "es/reference/full-release-validation/continuation",
+                      "es/reference/full-release-validation/extended-stable",
+                      "es/reference/full-release-validation/stages",
+                      "es/reference/full-release-validation/release-checks",
+                      "es/reference/full-release-validation/profiles",
+                      "es/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "es/reference/release-performance-sweep"
                 ]
               },
@@ -10139,6 +10199,18 @@
                 "pages": [
                   "pt-BR/reference/RELEASING",
                   "pt-BR/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "pt-BR/reference/full-release-validation/dispatch",
+                      "pt-BR/reference/full-release-validation/continuation",
+                      "pt-BR/reference/full-release-validation/extended-stable",
+                      "pt-BR/reference/full-release-validation/stages",
+                      "pt-BR/reference/full-release-validation/release-checks",
+                      "pt-BR/reference/full-release-validation/profiles",
+                      "pt-BR/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "pt-BR/reference/release-performance-sweep"
                 ]
               },
@@ -11619,6 +11691,18 @@
                 "pages": [
                   "ko/reference/RELEASING",
                   "ko/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "ko/reference/full-release-validation/dispatch",
+                      "ko/reference/full-release-validation/continuation",
+                      "ko/reference/full-release-validation/extended-stable",
+                      "ko/reference/full-release-validation/stages",
+                      "ko/reference/full-release-validation/release-checks",
+                      "ko/reference/full-release-validation/profiles",
+                      "ko/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "ko/reference/release-performance-sweep"
                 ]
               },
@@ -13099,6 +13183,18 @@
                 "pages": [
                   "de/reference/RELEASING",
                   "de/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "de/reference/full-release-validation/dispatch",
+                      "de/reference/full-release-validation/continuation",
+                      "de/reference/full-release-validation/extended-stable",
+                      "de/reference/full-release-validation/stages",
+                      "de/reference/full-release-validation/release-checks",
+                      "de/reference/full-release-validation/profiles",
+                      "de/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "de/reference/release-performance-sweep"
                 ]
               },
@@ -14579,6 +14675,18 @@
                 "pages": [
                   "fr/reference/RELEASING",
                   "fr/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "fr/reference/full-release-validation/dispatch",
+                      "fr/reference/full-release-validation/continuation",
+                      "fr/reference/full-release-validation/extended-stable",
+                      "fr/reference/full-release-validation/stages",
+                      "fr/reference/full-release-validation/release-checks",
+                      "fr/reference/full-release-validation/profiles",
+                      "fr/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "fr/reference/release-performance-sweep"
                 ]
               },
@@ -16059,6 +16167,18 @@
                 "pages": [
                   "hi/reference/RELEASING",
                   "hi/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "hi/reference/full-release-validation/dispatch",
+                      "hi/reference/full-release-validation/continuation",
+                      "hi/reference/full-release-validation/extended-stable",
+                      "hi/reference/full-release-validation/stages",
+                      "hi/reference/full-release-validation/release-checks",
+                      "hi/reference/full-release-validation/profiles",
+                      "hi/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "hi/reference/release-performance-sweep"
                 ]
               },
@@ -17539,6 +17659,18 @@
                 "pages": [
                   "ar/reference/RELEASING",
                   "ar/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "ar/reference/full-release-validation/dispatch",
+                      "ar/reference/full-release-validation/continuation",
+                      "ar/reference/full-release-validation/extended-stable",
+                      "ar/reference/full-release-validation/stages",
+                      "ar/reference/full-release-validation/release-checks",
+                      "ar/reference/full-release-validation/profiles",
+                      "ar/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "ar/reference/release-performance-sweep"
                 ]
               },
@@ -19019,6 +19151,18 @@
                 "pages": [
                   "it/reference/RELEASING",
                   "it/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "it/reference/full-release-validation/dispatch",
+                      "it/reference/full-release-validation/continuation",
+                      "it/reference/full-release-validation/extended-stable",
+                      "it/reference/full-release-validation/stages",
+                      "it/reference/full-release-validation/release-checks",
+                      "it/reference/full-release-validation/profiles",
+                      "it/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "it/reference/release-performance-sweep"
                 ]
               },
@@ -20499,6 +20643,18 @@
                 "pages": [
                   "vi/reference/RELEASING",
                   "vi/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "vi/reference/full-release-validation/dispatch",
+                      "vi/reference/full-release-validation/continuation",
+                      "vi/reference/full-release-validation/extended-stable",
+                      "vi/reference/full-release-validation/stages",
+                      "vi/reference/full-release-validation/release-checks",
+                      "vi/reference/full-release-validation/profiles",
+                      "vi/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "vi/reference/release-performance-sweep"
                 ]
               },
@@ -21979,6 +22135,18 @@
                 "pages": [
                   "nl/reference/RELEASING",
                   "nl/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "nl/reference/full-release-validation/dispatch",
+                      "nl/reference/full-release-validation/continuation",
+                      "nl/reference/full-release-validation/extended-stable",
+                      "nl/reference/full-release-validation/stages",
+                      "nl/reference/full-release-validation/release-checks",
+                      "nl/reference/full-release-validation/profiles",
+                      "nl/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "nl/reference/release-performance-sweep"
                 ]
               },
@@ -23459,6 +23627,18 @@
                 "pages": [
                   "tr/reference/RELEASING",
                   "tr/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "tr/reference/full-release-validation/dispatch",
+                      "tr/reference/full-release-validation/continuation",
+                      "tr/reference/full-release-validation/extended-stable",
+                      "tr/reference/full-release-validation/stages",
+                      "tr/reference/full-release-validation/release-checks",
+                      "tr/reference/full-release-validation/profiles",
+                      "tr/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "tr/reference/release-performance-sweep"
                 ]
               },
@@ -24939,6 +25119,18 @@
                 "pages": [
                   "uk/reference/RELEASING",
                   "uk/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "uk/reference/full-release-validation/dispatch",
+                      "uk/reference/full-release-validation/continuation",
+                      "uk/reference/full-release-validation/extended-stable",
+                      "uk/reference/full-release-validation/stages",
+                      "uk/reference/full-release-validation/release-checks",
+                      "uk/reference/full-release-validation/profiles",
+                      "uk/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "uk/reference/release-performance-sweep"
                 ]
               },
@@ -26419,6 +26611,18 @@
                 "pages": [
                   "id/reference/RELEASING",
                   "id/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "id/reference/full-release-validation/dispatch",
+                      "id/reference/full-release-validation/continuation",
+                      "id/reference/full-release-validation/extended-stable",
+                      "id/reference/full-release-validation/stages",
+                      "id/reference/full-release-validation/release-checks",
+                      "id/reference/full-release-validation/profiles",
+                      "id/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "id/reference/release-performance-sweep"
                 ]
               },
@@ -27899,6 +28103,18 @@
                 "pages": [
                   "pl/reference/RELEASING",
                   "pl/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "pl/reference/full-release-validation/dispatch",
+                      "pl/reference/full-release-validation/continuation",
+                      "pl/reference/full-release-validation/extended-stable",
+                      "pl/reference/full-release-validation/stages",
+                      "pl/reference/full-release-validation/release-checks",
+                      "pl/reference/full-release-validation/profiles",
+                      "pl/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "pl/reference/release-performance-sweep"
                 ]
               },
@@ -29379,6 +29595,18 @@
                 "pages": [
                   "ru/reference/RELEASING",
                   "ru/reference/full-release-validation",
+                  {
+                    "group": "Full release validation",
+                    "pages": [
+                      "ru/reference/full-release-validation/dispatch",
+                      "ru/reference/full-release-validation/continuation",
+                      "ru/reference/full-release-validation/extended-stable",
+                      "ru/reference/full-release-validation/stages",
+                      "ru/reference/full-release-validation/release-checks",
+                      "ru/reference/full-release-validation/profiles",
+                      "ru/reference/full-release-validation/evidence"
+                    ]
+                  },
                   "ru/reference/release-performance-sweep"
                 ]
               },

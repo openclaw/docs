@@ -10268,17 +10268,54 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/full-release-validation
 - Headings:
+  - H2: Where each section moved
+  - H2: Related
+
+## reference/full-release-validation/continuation.md
+
+- Route: /reference/full-release-validation/continuation
+- Headings:
   - H2: Continue failed child jobs
   - H3: Post-merge continuation proof
+
+## reference/full-release-validation/dispatch.md
+
+- Route: /reference/full-release-validation/dispatch
+- Headings: none
+
+## reference/full-release-validation/evidence.md
+
+- Route: /reference/full-release-validation/evidence
+- Headings:
+  - H2: Evidence to keep
+  - H2: Workflow files
+
+## reference/full-release-validation/extended-stable.md
+
+- Route: /reference/full-release-validation/extended-stable
+- Headings:
   - H2: Extended-stable validation
-  - H2: Top-level stages
-  - H2: Release checks stages
-  - H2: Docker release-path chunks
+
+## reference/full-release-validation/profiles.md
+
+- Route: /reference/full-release-validation/profiles
+- Headings:
   - H2: Release profiles
   - H2: Full-only additions
   - H2: Focused reruns
-  - H2: Evidence to keep
-  - H2: Workflow files
+
+## reference/full-release-validation/release-checks.md
+
+- Route: /reference/full-release-validation/release-checks
+- Headings:
+  - H2: Release checks stages
+  - H2: Docker release-path chunks
+
+## reference/full-release-validation/stages.md
+
+- Route: /reference/full-release-validation/stages
+- Headings:
+  - H2: Top-level stages
 
 ## reference/memory-config.md
 
