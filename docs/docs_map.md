@@ -1733,10 +1733,31 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/scope-and-routing
 - Headings:
-  - H2: Scope and routing
+  - H2: Where each section moved
+  - H2: Related
+
+## ci/scope-and-routing/job-budgets.md
+
+- Route: /ci/scope-and-routing/job-budgets
+- Headings: none
+
+## ci/scope-and-routing/manual-dispatches.md
+
+- Route: /ci/scope-and-routing/manual-dispatches
+- Headings:
   - H2: Manual dispatches
   - H3: Windows Testbox Probe
-  - H2: Related
+
+## ci/scope-and-routing/node-test-lanes.md
+
+- Route: /ci/scope-and-routing/node-test-lanes
+- Headings: none
+
+## ci/scope-and-routing/selection.md
+
+- Route: /ci/scope-and-routing/selection
+- Headings:
+  - H2: Scope and routing
 
 ## ci/watching-runs.md
 

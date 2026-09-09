@@ -3117,6 +3117,15 @@
                       "ci/watching-runs",
                       "ci/checkout",
                       "ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "ci/scope-and-routing/selection",
+                          "ci/scope-and-routing/node-test-lanes",
+                          "ci/scope-and-routing/job-budgets",
+                          "ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "ci/runners",
                       "ci/capacity",
                       "ci/release-validation",
@@ -4960,6 +4969,15 @@
                       "zh-CN/ci/watching-runs",
                       "zh-CN/ci/checkout",
                       "zh-CN/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "zh-CN/ci/scope-and-routing/selection",
+                          "zh-CN/ci/scope-and-routing/node-test-lanes",
+                          "zh-CN/ci/scope-and-routing/job-budgets",
+                          "zh-CN/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "zh-CN/ci/runners",
                       "zh-CN/ci/capacity",
                       "zh-CN/ci/release-validation",
@@ -6803,6 +6821,15 @@
                       "zh-TW/ci/watching-runs",
                       "zh-TW/ci/checkout",
                       "zh-TW/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "zh-TW/ci/scope-and-routing/selection",
+                          "zh-TW/ci/scope-and-routing/node-test-lanes",
+                          "zh-TW/ci/scope-and-routing/job-budgets",
+                          "zh-TW/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "zh-TW/ci/runners",
                       "zh-TW/ci/capacity",
                       "zh-TW/ci/release-validation",
@@ -8646,6 +8673,15 @@
                       "ja-JP/ci/watching-runs",
                       "ja-JP/ci/checkout",
                       "ja-JP/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "ja-JP/ci/scope-and-routing/selection",
+                          "ja-JP/ci/scope-and-routing/node-test-lanes",
+                          "ja-JP/ci/scope-and-routing/job-budgets",
+                          "ja-JP/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "ja-JP/ci/runners",
                       "ja-JP/ci/capacity",
                       "ja-JP/ci/release-validation",
@@ -10489,6 +10525,15 @@
                       "es/ci/watching-runs",
                       "es/ci/checkout",
                       "es/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "es/ci/scope-and-routing/selection",
+                          "es/ci/scope-and-routing/node-test-lanes",
+                          "es/ci/scope-and-routing/job-budgets",
+                          "es/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "es/ci/runners",
                       "es/ci/capacity",
                       "es/ci/release-validation",
@@ -12332,6 +12377,15 @@
                       "pt-BR/ci/watching-runs",
                       "pt-BR/ci/checkout",
                       "pt-BR/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "pt-BR/ci/scope-and-routing/selection",
+                          "pt-BR/ci/scope-and-routing/node-test-lanes",
+                          "pt-BR/ci/scope-and-routing/job-budgets",
+                          "pt-BR/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "pt-BR/ci/runners",
                       "pt-BR/ci/capacity",
                       "pt-BR/ci/release-validation",
@@ -14175,6 +14229,15 @@
                       "ko/ci/watching-runs",
                       "ko/ci/checkout",
                       "ko/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "ko/ci/scope-and-routing/selection",
+                          "ko/ci/scope-and-routing/node-test-lanes",
+                          "ko/ci/scope-and-routing/job-budgets",
+                          "ko/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "ko/ci/runners",
                       "ko/ci/capacity",
                       "ko/ci/release-validation",
@@ -16018,6 +16081,15 @@
                       "de/ci/watching-runs",
                       "de/ci/checkout",
                       "de/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "de/ci/scope-and-routing/selection",
+                          "de/ci/scope-and-routing/node-test-lanes",
+                          "de/ci/scope-and-routing/job-budgets",
+                          "de/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "de/ci/runners",
                       "de/ci/capacity",
                       "de/ci/release-validation",
@@ -17861,6 +17933,15 @@
                       "fr/ci/watching-runs",
                       "fr/ci/checkout",
                       "fr/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "fr/ci/scope-and-routing/selection",
+                          "fr/ci/scope-and-routing/node-test-lanes",
+                          "fr/ci/scope-and-routing/job-budgets",
+                          "fr/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "fr/ci/runners",
                       "fr/ci/capacity",
                       "fr/ci/release-validation",
@@ -19704,6 +19785,15 @@
                       "hi/ci/watching-runs",
                       "hi/ci/checkout",
                       "hi/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "hi/ci/scope-and-routing/selection",
+                          "hi/ci/scope-and-routing/node-test-lanes",
+                          "hi/ci/scope-and-routing/job-budgets",
+                          "hi/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "hi/ci/runners",
                       "hi/ci/capacity",
                       "hi/ci/release-validation",
@@ -21547,6 +21637,15 @@
                       "ar/ci/watching-runs",
                       "ar/ci/checkout",
                       "ar/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "ar/ci/scope-and-routing/selection",
+                          "ar/ci/scope-and-routing/node-test-lanes",
+                          "ar/ci/scope-and-routing/job-budgets",
+                          "ar/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "ar/ci/runners",
                       "ar/ci/capacity",
                       "ar/ci/release-validation",
@@ -23390,6 +23489,15 @@
                       "it/ci/watching-runs",
                       "it/ci/checkout",
                       "it/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "it/ci/scope-and-routing/selection",
+                          "it/ci/scope-and-routing/node-test-lanes",
+                          "it/ci/scope-and-routing/job-budgets",
+                          "it/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "it/ci/runners",
                       "it/ci/capacity",
                       "it/ci/release-validation",
@@ -25233,6 +25341,15 @@
                       "vi/ci/watching-runs",
                       "vi/ci/checkout",
                       "vi/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "vi/ci/scope-and-routing/selection",
+                          "vi/ci/scope-and-routing/node-test-lanes",
+                          "vi/ci/scope-and-routing/job-budgets",
+                          "vi/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "vi/ci/runners",
                       "vi/ci/capacity",
                       "vi/ci/release-validation",
@@ -27076,6 +27193,15 @@
                       "nl/ci/watching-runs",
                       "nl/ci/checkout",
                       "nl/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "nl/ci/scope-and-routing/selection",
+                          "nl/ci/scope-and-routing/node-test-lanes",
+                          "nl/ci/scope-and-routing/job-budgets",
+                          "nl/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "nl/ci/runners",
                       "nl/ci/capacity",
                       "nl/ci/release-validation",
@@ -28919,6 +29045,15 @@
                       "tr/ci/watching-runs",
                       "tr/ci/checkout",
                       "tr/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "tr/ci/scope-and-routing/selection",
+                          "tr/ci/scope-and-routing/node-test-lanes",
+                          "tr/ci/scope-and-routing/job-budgets",
+                          "tr/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "tr/ci/runners",
                       "tr/ci/capacity",
                       "tr/ci/release-validation",
@@ -30762,6 +30897,15 @@
                       "uk/ci/watching-runs",
                       "uk/ci/checkout",
                       "uk/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "uk/ci/scope-and-routing/selection",
+                          "uk/ci/scope-and-routing/node-test-lanes",
+                          "uk/ci/scope-and-routing/job-budgets",
+                          "uk/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "uk/ci/runners",
                       "uk/ci/capacity",
                       "uk/ci/release-validation",
@@ -32605,6 +32749,15 @@
                       "id/ci/watching-runs",
                       "id/ci/checkout",
                       "id/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "id/ci/scope-and-routing/selection",
+                          "id/ci/scope-and-routing/node-test-lanes",
+                          "id/ci/scope-and-routing/job-budgets",
+                          "id/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "id/ci/runners",
                       "id/ci/capacity",
                       "id/ci/release-validation",
@@ -34448,6 +34601,15 @@
                       "pl/ci/watching-runs",
                       "pl/ci/checkout",
                       "pl/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "pl/ci/scope-and-routing/selection",
+                          "pl/ci/scope-and-routing/node-test-lanes",
+                          "pl/ci/scope-and-routing/job-budgets",
+                          "pl/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "pl/ci/runners",
                       "pl/ci/capacity",
                       "pl/ci/release-validation",
@@ -36291,6 +36453,15 @@
                       "ru/ci/watching-runs",
                       "ru/ci/checkout",
                       "ru/ci/scope-and-routing",
+                      {
+                        "group": "Scope and routing",
+                        "pages": [
+                          "ru/ci/scope-and-routing/selection",
+                          "ru/ci/scope-and-routing/node-test-lanes",
+                          "ru/ci/scope-and-routing/job-budgets",
+                          "ru/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
                       "ru/ci/runners",
                       "ru/ci/capacity",
                       "ru/ci/release-validation",
