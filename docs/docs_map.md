@@ -5561,21 +5561,38 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/testing-live
 - Headings:
   - H2: Live tests vs your real gateway
-  - H2: Live: local smoke commands
-  - H2: Live: Android node capability sweep
-  - H2: Live: model smoke (profile keys)
-  - H3: Layer 1: Direct model completion (no gateway)
-  - H3: Layer 2: Gateway + dev agent smoke (what "@openclaw" actually does)
-  - H2: Live: CLI backend smoke (Claude, Gemini, or other local CLIs)
-  - H2: Live: APNs HTTP/2 proxy reachability
+  - H2: Credentials (never commit)
+  - H2: Where each section moved
+  - H2: Related
+
+## help/testing-live/acp-and-codex.md
+
+- Route: /help/testing-live/acp-and-codex
+- Headings:
   - H2: Live: ACP bind smoke (/acp spawn ... --bind here)
   - H2: Live: Codex app-server harness smoke
+
+## help/testing-live/cli-backends.md
+
+- Route: /help/testing-live/cli-backends
+- Headings:
+  - H2: Live: CLI backend smoke (Claude, Gemini, or other local CLIs)
+  - H2: Live: APNs HTTP/2 proxy reachability
+
+## help/testing-live/long-context-and-matrix.md
+
+- Route: /help/testing-live/long-context-and-matrix
+- Headings:
   - H2: Live: OpenAI long context
   - H3: Long-context hard oracles
   - H3: Recommended live recipes
   - H2: Live: model matrix (what we cover)
   - H3: Aggregators / alternate gateways
-  - H2: Credentials (never commit)
+
+## help/testing-live/media-providers.md
+
+- Route: /help/testing-live/media-providers
+- Headings:
   - H2: Deepgram live (audio transcription)
   - H2: BytePlus coding plan live
   - H2: ComfyUI workflow media live
@@ -5583,7 +5600,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Music generation live
   - H2: Video generation live
   - H2: Media live harness
-  - H2: Related
+
+## help/testing-live/model-smoke.md
+
+- Route: /help/testing-live/model-smoke
+- Headings:
+  - H2: Live: model smoke (profile keys)
+  - H3: Layer 1: Direct model completion (no gateway)
+  - H3: Layer 2: Gateway + dev agent smoke (what "@openclaw" actually does)
+
+## help/testing-live/quick-smokes.md
+
+- Route: /help/testing-live/quick-smokes
+- Headings:
+  - H2: Live: local smoke commands
+  - H2: Live: Android node capability sweep
 
 ## help/testing-updates-plugins.md
 

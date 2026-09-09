@@ -3064,7 +3064,18 @@
                     ]
                   },
                   "help/testing-updates-plugins",
-                  "help/testing-live"
+                  "help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "help/testing-live/quick-smokes",
+                      "help/testing-live/model-smoke",
+                      "help/testing-live/cli-backends",
+                      "help/testing-live/acp-and-codex",
+                      "help/testing-live/long-context-and-matrix",
+                      "help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -4781,7 +4792,18 @@
                     ]
                   },
                   "zh-CN/help/testing-updates-plugins",
-                  "zh-CN/help/testing-live"
+                  "zh-CN/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "zh-CN/help/testing-live/quick-smokes",
+                      "zh-CN/help/testing-live/model-smoke",
+                      "zh-CN/help/testing-live/cli-backends",
+                      "zh-CN/help/testing-live/acp-and-codex",
+                      "zh-CN/help/testing-live/long-context-and-matrix",
+                      "zh-CN/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -6498,7 +6520,18 @@
                     ]
                   },
                   "zh-TW/help/testing-updates-plugins",
-                  "zh-TW/help/testing-live"
+                  "zh-TW/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "zh-TW/help/testing-live/quick-smokes",
+                      "zh-TW/help/testing-live/model-smoke",
+                      "zh-TW/help/testing-live/cli-backends",
+                      "zh-TW/help/testing-live/acp-and-codex",
+                      "zh-TW/help/testing-live/long-context-and-matrix",
+                      "zh-TW/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -8215,7 +8248,18 @@
                     ]
                   },
                   "ja-JP/help/testing-updates-plugins",
-                  "ja-JP/help/testing-live"
+                  "ja-JP/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "ja-JP/help/testing-live/quick-smokes",
+                      "ja-JP/help/testing-live/model-smoke",
+                      "ja-JP/help/testing-live/cli-backends",
+                      "ja-JP/help/testing-live/acp-and-codex",
+                      "ja-JP/help/testing-live/long-context-and-matrix",
+                      "ja-JP/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -9932,7 +9976,18 @@
                     ]
                   },
                   "es/help/testing-updates-plugins",
-                  "es/help/testing-live"
+                  "es/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "es/help/testing-live/quick-smokes",
+                      "es/help/testing-live/model-smoke",
+                      "es/help/testing-live/cli-backends",
+                      "es/help/testing-live/acp-and-codex",
+                      "es/help/testing-live/long-context-and-matrix",
+                      "es/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -11649,7 +11704,18 @@
                     ]
                   },
                   "pt-BR/help/testing-updates-plugins",
-                  "pt-BR/help/testing-live"
+                  "pt-BR/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "pt-BR/help/testing-live/quick-smokes",
+                      "pt-BR/help/testing-live/model-smoke",
+                      "pt-BR/help/testing-live/cli-backends",
+                      "pt-BR/help/testing-live/acp-and-codex",
+                      "pt-BR/help/testing-live/long-context-and-matrix",
+                      "pt-BR/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -13366,7 +13432,18 @@
                     ]
                   },
                   "ko/help/testing-updates-plugins",
-                  "ko/help/testing-live"
+                  "ko/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "ko/help/testing-live/quick-smokes",
+                      "ko/help/testing-live/model-smoke",
+                      "ko/help/testing-live/cli-backends",
+                      "ko/help/testing-live/acp-and-codex",
+                      "ko/help/testing-live/long-context-and-matrix",
+                      "ko/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -15083,7 +15160,18 @@
                     ]
                   },
                   "de/help/testing-updates-plugins",
-                  "de/help/testing-live"
+                  "de/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "de/help/testing-live/quick-smokes",
+                      "de/help/testing-live/model-smoke",
+                      "de/help/testing-live/cli-backends",
+                      "de/help/testing-live/acp-and-codex",
+                      "de/help/testing-live/long-context-and-matrix",
+                      "de/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -16800,7 +16888,18 @@
                     ]
                   },
                   "fr/help/testing-updates-plugins",
-                  "fr/help/testing-live"
+                  "fr/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "fr/help/testing-live/quick-smokes",
+                      "fr/help/testing-live/model-smoke",
+                      "fr/help/testing-live/cli-backends",
+                      "fr/help/testing-live/acp-and-codex",
+                      "fr/help/testing-live/long-context-and-matrix",
+                      "fr/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -18517,7 +18616,18 @@
                     ]
                   },
                   "hi/help/testing-updates-plugins",
-                  "hi/help/testing-live"
+                  "hi/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "hi/help/testing-live/quick-smokes",
+                      "hi/help/testing-live/model-smoke",
+                      "hi/help/testing-live/cli-backends",
+                      "hi/help/testing-live/acp-and-codex",
+                      "hi/help/testing-live/long-context-and-matrix",
+                      "hi/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -20234,7 +20344,18 @@
                     ]
                   },
                   "ar/help/testing-updates-plugins",
-                  "ar/help/testing-live"
+                  "ar/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "ar/help/testing-live/quick-smokes",
+                      "ar/help/testing-live/model-smoke",
+                      "ar/help/testing-live/cli-backends",
+                      "ar/help/testing-live/acp-and-codex",
+                      "ar/help/testing-live/long-context-and-matrix",
+                      "ar/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -21951,7 +22072,18 @@
                     ]
                   },
                   "it/help/testing-updates-plugins",
-                  "it/help/testing-live"
+                  "it/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "it/help/testing-live/quick-smokes",
+                      "it/help/testing-live/model-smoke",
+                      "it/help/testing-live/cli-backends",
+                      "it/help/testing-live/acp-and-codex",
+                      "it/help/testing-live/long-context-and-matrix",
+                      "it/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -23668,7 +23800,18 @@
                     ]
                   },
                   "vi/help/testing-updates-plugins",
-                  "vi/help/testing-live"
+                  "vi/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "vi/help/testing-live/quick-smokes",
+                      "vi/help/testing-live/model-smoke",
+                      "vi/help/testing-live/cli-backends",
+                      "vi/help/testing-live/acp-and-codex",
+                      "vi/help/testing-live/long-context-and-matrix",
+                      "vi/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -25385,7 +25528,18 @@
                     ]
                   },
                   "nl/help/testing-updates-plugins",
-                  "nl/help/testing-live"
+                  "nl/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "nl/help/testing-live/quick-smokes",
+                      "nl/help/testing-live/model-smoke",
+                      "nl/help/testing-live/cli-backends",
+                      "nl/help/testing-live/acp-and-codex",
+                      "nl/help/testing-live/long-context-and-matrix",
+                      "nl/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -27102,7 +27256,18 @@
                     ]
                   },
                   "tr/help/testing-updates-plugins",
-                  "tr/help/testing-live"
+                  "tr/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "tr/help/testing-live/quick-smokes",
+                      "tr/help/testing-live/model-smoke",
+                      "tr/help/testing-live/cli-backends",
+                      "tr/help/testing-live/acp-and-codex",
+                      "tr/help/testing-live/long-context-and-matrix",
+                      "tr/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -28819,7 +28984,18 @@
                     ]
                   },
                   "uk/help/testing-updates-plugins",
-                  "uk/help/testing-live"
+                  "uk/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "uk/help/testing-live/quick-smokes",
+                      "uk/help/testing-live/model-smoke",
+                      "uk/help/testing-live/cli-backends",
+                      "uk/help/testing-live/acp-and-codex",
+                      "uk/help/testing-live/long-context-and-matrix",
+                      "uk/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -30536,7 +30712,18 @@
                     ]
                   },
                   "id/help/testing-updates-plugins",
-                  "id/help/testing-live"
+                  "id/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "id/help/testing-live/quick-smokes",
+                      "id/help/testing-live/model-smoke",
+                      "id/help/testing-live/cli-backends",
+                      "id/help/testing-live/acp-and-codex",
+                      "id/help/testing-live/long-context-and-matrix",
+                      "id/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -32253,7 +32440,18 @@
                     ]
                   },
                   "pl/help/testing-updates-plugins",
-                  "pl/help/testing-live"
+                  "pl/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "pl/help/testing-live/quick-smokes",
+                      "pl/help/testing-live/model-smoke",
+                      "pl/help/testing-live/cli-backends",
+                      "pl/help/testing-live/acp-and-codex",
+                      "pl/help/testing-live/long-context-and-matrix",
+                      "pl/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
@@ -33970,7 +34168,18 @@
                     ]
                   },
                   "ru/help/testing-updates-plugins",
-                  "ru/help/testing-live"
+                  "ru/help/testing-live",
+                  {
+                    "group": "Live testing guide",
+                    "pages": [
+                      "ru/help/testing-live/quick-smokes",
+                      "ru/help/testing-live/model-smoke",
+                      "ru/help/testing-live/cli-backends",
+                      "ru/help/testing-live/acp-and-codex",
+                      "ru/help/testing-live/long-context-and-matrix",
+                      "ru/help/testing-live/media-providers"
+                    ]
+                  }
                 ]
               },
               {
