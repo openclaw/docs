@@ -13570,6 +13570,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/skill-workshop/troubleshooting
 - Headings:
   - H2: Troubleshooting
+  - H3: Legacy ownership warnings during an update
   - H3: Tool-policy diagnostic
 
 ## tools/skills-config.md
