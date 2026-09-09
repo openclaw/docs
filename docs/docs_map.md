@@ -4111,29 +4111,60 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/config-tools
 - Headings:
-  - H2: Tools
-  - H3: Tool profiles
-  - H3: Tool groups
-  - H3: MCP and plugin tools inside sandbox tool policy
-  - H3: tools.codeMode
-  - H3: tools.allow / tools.deny
-  - H3: tools.byProvider
-  - H3: tools.toolsBySender
-  - H3: tools.elevated
-  - H3: tools.github
-  - H3: tools.exec
-  - H3: tools.loopDetection
-  - H3: tools.web
-  - H3: tools.media
-  - H3: tools.agentToAgent
-  - H3: tools.sessions
-  - H3: `tools.sessions_spawn`
-  - H3: tools.updatePlan
-  - H3: agents.defaults.subagents
-  - H2: Custom providers and base URLs
-  - H3: Provider field details
-  - H3: Provider examples
+  - H2: What each page covers
+  - H2: Where each section moved
   - H2: Related
+
+## gateway/config-tools/built-in-tools.md
+
+- Route: /gateway/config-tools/built-in-tools
+- Headings:
+  - H2: tools.exec
+  - H2: tools.loopDetection
+  - H2: tools.web
+  - H2: tools.media
+  - H2: tools.updatePlan
+
+## gateway/config-tools/custom-providers.md
+
+- Route: /gateway/config-tools/custom-providers
+- Headings:
+  - H2: Custom providers and base URLs
+  - H2: Provider field details
+
+## gateway/config-tools/github-identity.md
+
+- Route: /gateway/config-tools/github-identity
+- Headings:
+  - H2: tools.github
+
+## gateway/config-tools/provider-examples.md
+
+- Route: /gateway/config-tools/provider-examples
+- Headings:
+  - H2: Provider examples
+
+## gateway/config-tools/sessions-and-subagents.md
+
+- Route: /gateway/config-tools/sessions-and-subagents
+- Headings:
+  - H2: tools.agentToAgent
+  - H2: tools.sessions
+  - H2: `tools.sessions_spawn`
+  - H2: agents.defaults.subagents
+
+## gateway/config-tools/tool-policy.md
+
+- Route: /gateway/config-tools/tool-policy
+- Headings:
+  - H2: Tool profiles
+  - H2: Tool groups
+  - H2: MCP and plugin tools inside sandbox tool policy
+  - H2: tools.codeMode
+  - H2: tools.allow / tools.deny
+  - H2: tools.byProvider
+  - H2: tools.toolsBySender
+  - H2: tools.elevated
 
 ## gateway/configuration-examples.md
 

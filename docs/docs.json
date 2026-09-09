@@ -2222,6 +2222,17 @@
                       "gateway/config-runtime",
                       "gateway/config-secrets-env",
                       "gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "gateway/config-tools/tool-policy",
+                          "gateway/config-tools/github-identity",
+                          "gateway/config-tools/built-in-tools",
+                          "gateway/config-tools/sessions-and-subagents",
+                          "gateway/config-tools/custom-providers",
+                          "gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "gateway/configuration-examples"
                     ]
                   },
@@ -3791,6 +3802,17 @@
                       "zh-CN/gateway/config-runtime",
                       "zh-CN/gateway/config-secrets-env",
                       "zh-CN/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "zh-CN/gateway/config-tools/tool-policy",
+                          "zh-CN/gateway/config-tools/github-identity",
+                          "zh-CN/gateway/config-tools/built-in-tools",
+                          "zh-CN/gateway/config-tools/sessions-and-subagents",
+                          "zh-CN/gateway/config-tools/custom-providers",
+                          "zh-CN/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "zh-CN/gateway/configuration-examples"
                     ]
                   },
@@ -5360,6 +5382,17 @@
                       "zh-TW/gateway/config-runtime",
                       "zh-TW/gateway/config-secrets-env",
                       "zh-TW/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "zh-TW/gateway/config-tools/tool-policy",
+                          "zh-TW/gateway/config-tools/github-identity",
+                          "zh-TW/gateway/config-tools/built-in-tools",
+                          "zh-TW/gateway/config-tools/sessions-and-subagents",
+                          "zh-TW/gateway/config-tools/custom-providers",
+                          "zh-TW/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "zh-TW/gateway/configuration-examples"
                     ]
                   },
@@ -6929,6 +6962,17 @@
                       "ja-JP/gateway/config-runtime",
                       "ja-JP/gateway/config-secrets-env",
                       "ja-JP/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "ja-JP/gateway/config-tools/tool-policy",
+                          "ja-JP/gateway/config-tools/github-identity",
+                          "ja-JP/gateway/config-tools/built-in-tools",
+                          "ja-JP/gateway/config-tools/sessions-and-subagents",
+                          "ja-JP/gateway/config-tools/custom-providers",
+                          "ja-JP/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "ja-JP/gateway/configuration-examples"
                     ]
                   },
@@ -8498,6 +8542,17 @@
                       "es/gateway/config-runtime",
                       "es/gateway/config-secrets-env",
                       "es/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "es/gateway/config-tools/tool-policy",
+                          "es/gateway/config-tools/github-identity",
+                          "es/gateway/config-tools/built-in-tools",
+                          "es/gateway/config-tools/sessions-and-subagents",
+                          "es/gateway/config-tools/custom-providers",
+                          "es/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "es/gateway/configuration-examples"
                     ]
                   },
@@ -10067,6 +10122,17 @@
                       "pt-BR/gateway/config-runtime",
                       "pt-BR/gateway/config-secrets-env",
                       "pt-BR/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "pt-BR/gateway/config-tools/tool-policy",
+                          "pt-BR/gateway/config-tools/github-identity",
+                          "pt-BR/gateway/config-tools/built-in-tools",
+                          "pt-BR/gateway/config-tools/sessions-and-subagents",
+                          "pt-BR/gateway/config-tools/custom-providers",
+                          "pt-BR/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "pt-BR/gateway/configuration-examples"
                     ]
                   },
@@ -11636,6 +11702,17 @@
                       "ko/gateway/config-runtime",
                       "ko/gateway/config-secrets-env",
                       "ko/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "ko/gateway/config-tools/tool-policy",
+                          "ko/gateway/config-tools/github-identity",
+                          "ko/gateway/config-tools/built-in-tools",
+                          "ko/gateway/config-tools/sessions-and-subagents",
+                          "ko/gateway/config-tools/custom-providers",
+                          "ko/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "ko/gateway/configuration-examples"
                     ]
                   },
@@ -13205,6 +13282,17 @@
                       "de/gateway/config-runtime",
                       "de/gateway/config-secrets-env",
                       "de/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "de/gateway/config-tools/tool-policy",
+                          "de/gateway/config-tools/github-identity",
+                          "de/gateway/config-tools/built-in-tools",
+                          "de/gateway/config-tools/sessions-and-subagents",
+                          "de/gateway/config-tools/custom-providers",
+                          "de/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "de/gateway/configuration-examples"
                     ]
                   },
@@ -14774,6 +14862,17 @@
                       "fr/gateway/config-runtime",
                       "fr/gateway/config-secrets-env",
                       "fr/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "fr/gateway/config-tools/tool-policy",
+                          "fr/gateway/config-tools/github-identity",
+                          "fr/gateway/config-tools/built-in-tools",
+                          "fr/gateway/config-tools/sessions-and-subagents",
+                          "fr/gateway/config-tools/custom-providers",
+                          "fr/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "fr/gateway/configuration-examples"
                     ]
                   },
@@ -16343,6 +16442,17 @@
                       "hi/gateway/config-runtime",
                       "hi/gateway/config-secrets-env",
                       "hi/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "hi/gateway/config-tools/tool-policy",
+                          "hi/gateway/config-tools/github-identity",
+                          "hi/gateway/config-tools/built-in-tools",
+                          "hi/gateway/config-tools/sessions-and-subagents",
+                          "hi/gateway/config-tools/custom-providers",
+                          "hi/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "hi/gateway/configuration-examples"
                     ]
                   },
@@ -17912,6 +18022,17 @@
                       "ar/gateway/config-runtime",
                       "ar/gateway/config-secrets-env",
                       "ar/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "ar/gateway/config-tools/tool-policy",
+                          "ar/gateway/config-tools/github-identity",
+                          "ar/gateway/config-tools/built-in-tools",
+                          "ar/gateway/config-tools/sessions-and-subagents",
+                          "ar/gateway/config-tools/custom-providers",
+                          "ar/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "ar/gateway/configuration-examples"
                     ]
                   },
@@ -19481,6 +19602,17 @@
                       "it/gateway/config-runtime",
                       "it/gateway/config-secrets-env",
                       "it/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "it/gateway/config-tools/tool-policy",
+                          "it/gateway/config-tools/github-identity",
+                          "it/gateway/config-tools/built-in-tools",
+                          "it/gateway/config-tools/sessions-and-subagents",
+                          "it/gateway/config-tools/custom-providers",
+                          "it/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "it/gateway/configuration-examples"
                     ]
                   },
@@ -21050,6 +21182,17 @@
                       "vi/gateway/config-runtime",
                       "vi/gateway/config-secrets-env",
                       "vi/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "vi/gateway/config-tools/tool-policy",
+                          "vi/gateway/config-tools/github-identity",
+                          "vi/gateway/config-tools/built-in-tools",
+                          "vi/gateway/config-tools/sessions-and-subagents",
+                          "vi/gateway/config-tools/custom-providers",
+                          "vi/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "vi/gateway/configuration-examples"
                     ]
                   },
@@ -22619,6 +22762,17 @@
                       "nl/gateway/config-runtime",
                       "nl/gateway/config-secrets-env",
                       "nl/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "nl/gateway/config-tools/tool-policy",
+                          "nl/gateway/config-tools/github-identity",
+                          "nl/gateway/config-tools/built-in-tools",
+                          "nl/gateway/config-tools/sessions-and-subagents",
+                          "nl/gateway/config-tools/custom-providers",
+                          "nl/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "nl/gateway/configuration-examples"
                     ]
                   },
@@ -24188,6 +24342,17 @@
                       "tr/gateway/config-runtime",
                       "tr/gateway/config-secrets-env",
                       "tr/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "tr/gateway/config-tools/tool-policy",
+                          "tr/gateway/config-tools/github-identity",
+                          "tr/gateway/config-tools/built-in-tools",
+                          "tr/gateway/config-tools/sessions-and-subagents",
+                          "tr/gateway/config-tools/custom-providers",
+                          "tr/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "tr/gateway/configuration-examples"
                     ]
                   },
@@ -25757,6 +25922,17 @@
                       "uk/gateway/config-runtime",
                       "uk/gateway/config-secrets-env",
                       "uk/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "uk/gateway/config-tools/tool-policy",
+                          "uk/gateway/config-tools/github-identity",
+                          "uk/gateway/config-tools/built-in-tools",
+                          "uk/gateway/config-tools/sessions-and-subagents",
+                          "uk/gateway/config-tools/custom-providers",
+                          "uk/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "uk/gateway/configuration-examples"
                     ]
                   },
@@ -27326,6 +27502,17 @@
                       "id/gateway/config-runtime",
                       "id/gateway/config-secrets-env",
                       "id/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "id/gateway/config-tools/tool-policy",
+                          "id/gateway/config-tools/github-identity",
+                          "id/gateway/config-tools/built-in-tools",
+                          "id/gateway/config-tools/sessions-and-subagents",
+                          "id/gateway/config-tools/custom-providers",
+                          "id/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "id/gateway/configuration-examples"
                     ]
                   },
@@ -28895,6 +29082,17 @@
                       "pl/gateway/config-runtime",
                       "pl/gateway/config-secrets-env",
                       "pl/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "pl/gateway/config-tools/tool-policy",
+                          "pl/gateway/config-tools/github-identity",
+                          "pl/gateway/config-tools/built-in-tools",
+                          "pl/gateway/config-tools/sessions-and-subagents",
+                          "pl/gateway/config-tools/custom-providers",
+                          "pl/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "pl/gateway/configuration-examples"
                     ]
                   },
@@ -30464,6 +30662,17 @@
                       "ru/gateway/config-runtime",
                       "ru/gateway/config-secrets-env",
                       "ru/gateway/config-tools",
+                      {
+                        "group": "Tools",
+                        "pages": [
+                          "ru/gateway/config-tools/tool-policy",
+                          "ru/gateway/config-tools/github-identity",
+                          "ru/gateway/config-tools/built-in-tools",
+                          "ru/gateway/config-tools/sessions-and-subagents",
+                          "ru/gateway/config-tools/custom-providers",
+                          "ru/gateway/config-tools/provider-examples"
+                        ]
+                      },
                       "ru/gateway/configuration-examples"
                     ]
                   },
