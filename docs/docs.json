@@ -2503,6 +2503,21 @@
                       "gateway/restart-recovery",
                       "gateway/cloud-sessions",
                       "gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "gateway/cloud-workers/warm-images",
+                          "gateway/cloud-workers/per-project-default-profiles",
+                          "gateway/cloud-workers/setup-and-bundle-installation",
+                          "gateway/cloud-workers/verify-the-profile",
+                          "gateway/cloud-workers/dispatching-a-session",
+                          "gateway/cloud-workers/placement-and-machine-selection",
+                          "gateway/cloud-workers/session-lifecycle",
+                          "gateway/cloud-workers/desktop",
+                          "gateway/cloud-workers/security-model",
+                          "gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "gateway/multiple-gateways",
                       "gateway/multi-tenant-hosting"
                     ]
@@ -4417,6 +4432,21 @@
                       "zh-CN/gateway/restart-recovery",
                       "zh-CN/gateway/cloud-sessions",
                       "zh-CN/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "zh-CN/gateway/cloud-workers/warm-images",
+                          "zh-CN/gateway/cloud-workers/per-project-default-profiles",
+                          "zh-CN/gateway/cloud-workers/setup-and-bundle-installation",
+                          "zh-CN/gateway/cloud-workers/verify-the-profile",
+                          "zh-CN/gateway/cloud-workers/dispatching-a-session",
+                          "zh-CN/gateway/cloud-workers/placement-and-machine-selection",
+                          "zh-CN/gateway/cloud-workers/session-lifecycle",
+                          "zh-CN/gateway/cloud-workers/desktop",
+                          "zh-CN/gateway/cloud-workers/security-model",
+                          "zh-CN/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "zh-CN/gateway/multiple-gateways",
                       "zh-CN/gateway/multi-tenant-hosting"
                     ]
@@ -6331,6 +6361,21 @@
                       "zh-TW/gateway/restart-recovery",
                       "zh-TW/gateway/cloud-sessions",
                       "zh-TW/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "zh-TW/gateway/cloud-workers/warm-images",
+                          "zh-TW/gateway/cloud-workers/per-project-default-profiles",
+                          "zh-TW/gateway/cloud-workers/setup-and-bundle-installation",
+                          "zh-TW/gateway/cloud-workers/verify-the-profile",
+                          "zh-TW/gateway/cloud-workers/dispatching-a-session",
+                          "zh-TW/gateway/cloud-workers/placement-and-machine-selection",
+                          "zh-TW/gateway/cloud-workers/session-lifecycle",
+                          "zh-TW/gateway/cloud-workers/desktop",
+                          "zh-TW/gateway/cloud-workers/security-model",
+                          "zh-TW/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "zh-TW/gateway/multiple-gateways",
                       "zh-TW/gateway/multi-tenant-hosting"
                     ]
@@ -8245,6 +8290,21 @@
                       "ja-JP/gateway/restart-recovery",
                       "ja-JP/gateway/cloud-sessions",
                       "ja-JP/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "ja-JP/gateway/cloud-workers/warm-images",
+                          "ja-JP/gateway/cloud-workers/per-project-default-profiles",
+                          "ja-JP/gateway/cloud-workers/setup-and-bundle-installation",
+                          "ja-JP/gateway/cloud-workers/verify-the-profile",
+                          "ja-JP/gateway/cloud-workers/dispatching-a-session",
+                          "ja-JP/gateway/cloud-workers/placement-and-machine-selection",
+                          "ja-JP/gateway/cloud-workers/session-lifecycle",
+                          "ja-JP/gateway/cloud-workers/desktop",
+                          "ja-JP/gateway/cloud-workers/security-model",
+                          "ja-JP/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "ja-JP/gateway/multiple-gateways",
                       "ja-JP/gateway/multi-tenant-hosting"
                     ]
@@ -10159,6 +10219,21 @@
                       "es/gateway/restart-recovery",
                       "es/gateway/cloud-sessions",
                       "es/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "es/gateway/cloud-workers/warm-images",
+                          "es/gateway/cloud-workers/per-project-default-profiles",
+                          "es/gateway/cloud-workers/setup-and-bundle-installation",
+                          "es/gateway/cloud-workers/verify-the-profile",
+                          "es/gateway/cloud-workers/dispatching-a-session",
+                          "es/gateway/cloud-workers/placement-and-machine-selection",
+                          "es/gateway/cloud-workers/session-lifecycle",
+                          "es/gateway/cloud-workers/desktop",
+                          "es/gateway/cloud-workers/security-model",
+                          "es/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "es/gateway/multiple-gateways",
                       "es/gateway/multi-tenant-hosting"
                     ]
@@ -12073,6 +12148,21 @@
                       "pt-BR/gateway/restart-recovery",
                       "pt-BR/gateway/cloud-sessions",
                       "pt-BR/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "pt-BR/gateway/cloud-workers/warm-images",
+                          "pt-BR/gateway/cloud-workers/per-project-default-profiles",
+                          "pt-BR/gateway/cloud-workers/setup-and-bundle-installation",
+                          "pt-BR/gateway/cloud-workers/verify-the-profile",
+                          "pt-BR/gateway/cloud-workers/dispatching-a-session",
+                          "pt-BR/gateway/cloud-workers/placement-and-machine-selection",
+                          "pt-BR/gateway/cloud-workers/session-lifecycle",
+                          "pt-BR/gateway/cloud-workers/desktop",
+                          "pt-BR/gateway/cloud-workers/security-model",
+                          "pt-BR/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "pt-BR/gateway/multiple-gateways",
                       "pt-BR/gateway/multi-tenant-hosting"
                     ]
@@ -13987,6 +14077,21 @@
                       "ko/gateway/restart-recovery",
                       "ko/gateway/cloud-sessions",
                       "ko/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "ko/gateway/cloud-workers/warm-images",
+                          "ko/gateway/cloud-workers/per-project-default-profiles",
+                          "ko/gateway/cloud-workers/setup-and-bundle-installation",
+                          "ko/gateway/cloud-workers/verify-the-profile",
+                          "ko/gateway/cloud-workers/dispatching-a-session",
+                          "ko/gateway/cloud-workers/placement-and-machine-selection",
+                          "ko/gateway/cloud-workers/session-lifecycle",
+                          "ko/gateway/cloud-workers/desktop",
+                          "ko/gateway/cloud-workers/security-model",
+                          "ko/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "ko/gateway/multiple-gateways",
                       "ko/gateway/multi-tenant-hosting"
                     ]
@@ -15901,6 +16006,21 @@
                       "de/gateway/restart-recovery",
                       "de/gateway/cloud-sessions",
                       "de/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "de/gateway/cloud-workers/warm-images",
+                          "de/gateway/cloud-workers/per-project-default-profiles",
+                          "de/gateway/cloud-workers/setup-and-bundle-installation",
+                          "de/gateway/cloud-workers/verify-the-profile",
+                          "de/gateway/cloud-workers/dispatching-a-session",
+                          "de/gateway/cloud-workers/placement-and-machine-selection",
+                          "de/gateway/cloud-workers/session-lifecycle",
+                          "de/gateway/cloud-workers/desktop",
+                          "de/gateway/cloud-workers/security-model",
+                          "de/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "de/gateway/multiple-gateways",
                       "de/gateway/multi-tenant-hosting"
                     ]
@@ -17815,6 +17935,21 @@
                       "fr/gateway/restart-recovery",
                       "fr/gateway/cloud-sessions",
                       "fr/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "fr/gateway/cloud-workers/warm-images",
+                          "fr/gateway/cloud-workers/per-project-default-profiles",
+                          "fr/gateway/cloud-workers/setup-and-bundle-installation",
+                          "fr/gateway/cloud-workers/verify-the-profile",
+                          "fr/gateway/cloud-workers/dispatching-a-session",
+                          "fr/gateway/cloud-workers/placement-and-machine-selection",
+                          "fr/gateway/cloud-workers/session-lifecycle",
+                          "fr/gateway/cloud-workers/desktop",
+                          "fr/gateway/cloud-workers/security-model",
+                          "fr/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "fr/gateway/multiple-gateways",
                       "fr/gateway/multi-tenant-hosting"
                     ]
@@ -19729,6 +19864,21 @@
                       "hi/gateway/restart-recovery",
                       "hi/gateway/cloud-sessions",
                       "hi/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "hi/gateway/cloud-workers/warm-images",
+                          "hi/gateway/cloud-workers/per-project-default-profiles",
+                          "hi/gateway/cloud-workers/setup-and-bundle-installation",
+                          "hi/gateway/cloud-workers/verify-the-profile",
+                          "hi/gateway/cloud-workers/dispatching-a-session",
+                          "hi/gateway/cloud-workers/placement-and-machine-selection",
+                          "hi/gateway/cloud-workers/session-lifecycle",
+                          "hi/gateway/cloud-workers/desktop",
+                          "hi/gateway/cloud-workers/security-model",
+                          "hi/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "hi/gateway/multiple-gateways",
                       "hi/gateway/multi-tenant-hosting"
                     ]
@@ -21643,6 +21793,21 @@
                       "ar/gateway/restart-recovery",
                       "ar/gateway/cloud-sessions",
                       "ar/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "ar/gateway/cloud-workers/warm-images",
+                          "ar/gateway/cloud-workers/per-project-default-profiles",
+                          "ar/gateway/cloud-workers/setup-and-bundle-installation",
+                          "ar/gateway/cloud-workers/verify-the-profile",
+                          "ar/gateway/cloud-workers/dispatching-a-session",
+                          "ar/gateway/cloud-workers/placement-and-machine-selection",
+                          "ar/gateway/cloud-workers/session-lifecycle",
+                          "ar/gateway/cloud-workers/desktop",
+                          "ar/gateway/cloud-workers/security-model",
+                          "ar/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "ar/gateway/multiple-gateways",
                       "ar/gateway/multi-tenant-hosting"
                     ]
@@ -23557,6 +23722,21 @@
                       "it/gateway/restart-recovery",
                       "it/gateway/cloud-sessions",
                       "it/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "it/gateway/cloud-workers/warm-images",
+                          "it/gateway/cloud-workers/per-project-default-profiles",
+                          "it/gateway/cloud-workers/setup-and-bundle-installation",
+                          "it/gateway/cloud-workers/verify-the-profile",
+                          "it/gateway/cloud-workers/dispatching-a-session",
+                          "it/gateway/cloud-workers/placement-and-machine-selection",
+                          "it/gateway/cloud-workers/session-lifecycle",
+                          "it/gateway/cloud-workers/desktop",
+                          "it/gateway/cloud-workers/security-model",
+                          "it/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "it/gateway/multiple-gateways",
                       "it/gateway/multi-tenant-hosting"
                     ]
@@ -25471,6 +25651,21 @@
                       "vi/gateway/restart-recovery",
                       "vi/gateway/cloud-sessions",
                       "vi/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "vi/gateway/cloud-workers/warm-images",
+                          "vi/gateway/cloud-workers/per-project-default-profiles",
+                          "vi/gateway/cloud-workers/setup-and-bundle-installation",
+                          "vi/gateway/cloud-workers/verify-the-profile",
+                          "vi/gateway/cloud-workers/dispatching-a-session",
+                          "vi/gateway/cloud-workers/placement-and-machine-selection",
+                          "vi/gateway/cloud-workers/session-lifecycle",
+                          "vi/gateway/cloud-workers/desktop",
+                          "vi/gateway/cloud-workers/security-model",
+                          "vi/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "vi/gateway/multiple-gateways",
                       "vi/gateway/multi-tenant-hosting"
                     ]
@@ -27385,6 +27580,21 @@
                       "nl/gateway/restart-recovery",
                       "nl/gateway/cloud-sessions",
                       "nl/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "nl/gateway/cloud-workers/warm-images",
+                          "nl/gateway/cloud-workers/per-project-default-profiles",
+                          "nl/gateway/cloud-workers/setup-and-bundle-installation",
+                          "nl/gateway/cloud-workers/verify-the-profile",
+                          "nl/gateway/cloud-workers/dispatching-a-session",
+                          "nl/gateway/cloud-workers/placement-and-machine-selection",
+                          "nl/gateway/cloud-workers/session-lifecycle",
+                          "nl/gateway/cloud-workers/desktop",
+                          "nl/gateway/cloud-workers/security-model",
+                          "nl/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "nl/gateway/multiple-gateways",
                       "nl/gateway/multi-tenant-hosting"
                     ]
@@ -29299,6 +29509,21 @@
                       "tr/gateway/restart-recovery",
                       "tr/gateway/cloud-sessions",
                       "tr/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "tr/gateway/cloud-workers/warm-images",
+                          "tr/gateway/cloud-workers/per-project-default-profiles",
+                          "tr/gateway/cloud-workers/setup-and-bundle-installation",
+                          "tr/gateway/cloud-workers/verify-the-profile",
+                          "tr/gateway/cloud-workers/dispatching-a-session",
+                          "tr/gateway/cloud-workers/placement-and-machine-selection",
+                          "tr/gateway/cloud-workers/session-lifecycle",
+                          "tr/gateway/cloud-workers/desktop",
+                          "tr/gateway/cloud-workers/security-model",
+                          "tr/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "tr/gateway/multiple-gateways",
                       "tr/gateway/multi-tenant-hosting"
                     ]
@@ -31213,6 +31438,21 @@
                       "uk/gateway/restart-recovery",
                       "uk/gateway/cloud-sessions",
                       "uk/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "uk/gateway/cloud-workers/warm-images",
+                          "uk/gateway/cloud-workers/per-project-default-profiles",
+                          "uk/gateway/cloud-workers/setup-and-bundle-installation",
+                          "uk/gateway/cloud-workers/verify-the-profile",
+                          "uk/gateway/cloud-workers/dispatching-a-session",
+                          "uk/gateway/cloud-workers/placement-and-machine-selection",
+                          "uk/gateway/cloud-workers/session-lifecycle",
+                          "uk/gateway/cloud-workers/desktop",
+                          "uk/gateway/cloud-workers/security-model",
+                          "uk/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "uk/gateway/multiple-gateways",
                       "uk/gateway/multi-tenant-hosting"
                     ]
@@ -33127,6 +33367,21 @@
                       "id/gateway/restart-recovery",
                       "id/gateway/cloud-sessions",
                       "id/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "id/gateway/cloud-workers/warm-images",
+                          "id/gateway/cloud-workers/per-project-default-profiles",
+                          "id/gateway/cloud-workers/setup-and-bundle-installation",
+                          "id/gateway/cloud-workers/verify-the-profile",
+                          "id/gateway/cloud-workers/dispatching-a-session",
+                          "id/gateway/cloud-workers/placement-and-machine-selection",
+                          "id/gateway/cloud-workers/session-lifecycle",
+                          "id/gateway/cloud-workers/desktop",
+                          "id/gateway/cloud-workers/security-model",
+                          "id/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "id/gateway/multiple-gateways",
                       "id/gateway/multi-tenant-hosting"
                     ]
@@ -35041,6 +35296,21 @@
                       "pl/gateway/restart-recovery",
                       "pl/gateway/cloud-sessions",
                       "pl/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "pl/gateway/cloud-workers/warm-images",
+                          "pl/gateway/cloud-workers/per-project-default-profiles",
+                          "pl/gateway/cloud-workers/setup-and-bundle-installation",
+                          "pl/gateway/cloud-workers/verify-the-profile",
+                          "pl/gateway/cloud-workers/dispatching-a-session",
+                          "pl/gateway/cloud-workers/placement-and-machine-selection",
+                          "pl/gateway/cloud-workers/session-lifecycle",
+                          "pl/gateway/cloud-workers/desktop",
+                          "pl/gateway/cloud-workers/security-model",
+                          "pl/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "pl/gateway/multiple-gateways",
                       "pl/gateway/multi-tenant-hosting"
                     ]
@@ -36955,6 +37225,21 @@
                       "ru/gateway/restart-recovery",
                       "ru/gateway/cloud-sessions",
                       "ru/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "ru/gateway/cloud-workers/warm-images",
+                          "ru/gateway/cloud-workers/per-project-default-profiles",
+                          "ru/gateway/cloud-workers/setup-and-bundle-installation",
+                          "ru/gateway/cloud-workers/verify-the-profile",
+                          "ru/gateway/cloud-workers/dispatching-a-session",
+                          "ru/gateway/cloud-workers/placement-and-machine-selection",
+                          "ru/gateway/cloud-workers/session-lifecycle",
+                          "ru/gateway/cloud-workers/desktop",
+                          "ru/gateway/cloud-workers/security-model",
+                          "ru/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
                       "ru/gateway/multiple-gateways",
                       "ru/gateway/multi-tenant-hosting"
                     ]

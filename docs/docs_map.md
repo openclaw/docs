@@ -4302,29 +4302,81 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers
 - Headings:
+  - H2: What each page covers
   - H2: What runs where
   - H2: Requirements
   - H3: Crabbox provider support
   - H2: Configuration
-  - H3: Warm images
-  - H4: Recover a paused capture
-  - H4: Upgrade warm-image state
-  - H3: Per-project default profiles
-  - H3: The setup command
-  - H3: Bundle installation
-  - H3: Build a complete custom node package
-  - H3: Verify the profile
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/cloud-workers/desktop.md
+
+- Route: /gateway/cloud-workers/desktop
+- Headings:
+  - H2: Desktop (interactive)
+
+## gateway/cloud-workers/dispatching-a-session.md
+
+- Route: /gateway/cloud-workers/dispatching-a-session
+- Headings:
   - H2: Dispatching a session
   - H3: Cloud child sessions
   - H3: Runtime support
-  - H3: Codex on a paired device
-  - H3: Codex or OpenClaw on a cloud profile
-  - H3: Choose an operating system and machine class per session
-  - H2: What survives a dead machine
-  - H2: Desktop (interactive)
+
+## gateway/cloud-workers/per-project-default-profiles.md
+
+- Route: /gateway/cloud-workers/per-project-default-profiles
+- Headings:
+  - H2: Per-project default profiles
+
+## gateway/cloud-workers/placement-and-machine-selection.md
+
+- Route: /gateway/cloud-workers/placement-and-machine-selection
+- Headings:
+  - H2: Codex on a paired device
+  - H2: Codex or OpenClaw on a cloud profile
+  - H2: Choose an operating system and machine class per session
+
+## gateway/cloud-workers/security-model.md
+
+- Route: /gateway/cloud-workers/security-model
+- Headings:
   - H2: Security model
+
+## gateway/cloud-workers/session-lifecycle.md
+
+- Route: /gateway/cloud-workers/session-lifecycle
+- Headings:
+  - H2: What survives a dead machine
+
+## gateway/cloud-workers/setup-and-bundle-installation.md
+
+- Route: /gateway/cloud-workers/setup-and-bundle-installation
+- Headings:
+  - H2: The setup command
+  - H2: Bundle installation
+  - H2: Build a complete custom node package
+
+## gateway/cloud-workers/troubleshooting.md
+
+- Route: /gateway/cloud-workers/troubleshooting
+- Headings:
   - H2: Troubleshooting
-  - H2: Related
+
+## gateway/cloud-workers/verify-the-profile.md
+
+- Route: /gateway/cloud-workers/verify-the-profile
+- Headings:
+  - H2: Verify the profile
+
+## gateway/cloud-workers/warm-images.md
+
+- Route: /gateway/cloud-workers/warm-images
+- Headings:
+  - H2: Warm images
+  - H3: Recover a paused capture
+  - H3: Upgrade warm-image state
 
 ## gateway/cloudflare-access.md
 
