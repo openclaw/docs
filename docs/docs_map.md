@@ -11184,7 +11184,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## reference/full-release-validation/dispatch.md
 
 - Route: /reference/full-release-validation/dispatch
-- Headings: none
+- Headings:
+  - H2: Retain and reconcile the root request
+  - H2: Select coverage
 
 ## reference/full-release-validation/evidence.md
 
