@@ -2021,13 +2021,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/gateway
 - Headings:
-  - H2: Run the Gateway
-  - H3: Options
-  - H2: Reveal the configured token
-  - H2: Restart the Gateway
-  - H3: Install identity
-  - H3: External supervisors
-  - H3: Gateway profiling
+  - H2: Gateway CLI pages
+  - H2: Where each section moved
+  - H2: Related
+
+## cli/gateway/discovery.md
+
+- Route: /cli/gateway/discovery
+- Headings:
+  - H2: Discover gateways (Bonjour)
+  - H3: gateway discover
+
+## cli/gateway/query.md
+
+- Route: /cli/gateway/query
+- Headings:
   - H2: Query a running Gateway
   - H3: gateway health
   - H3: gateway usage-cost
@@ -2039,13 +2047,32 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: gateway call &lt;method&gt;
   - H3: gateway suspend
   - H3: gateway resume &lt;suspensionId&gt;
+
+## cli/gateway/restart-and-supervision.md
+
+- Route: /cli/gateway/restart-and-supervision
+- Headings:
+  - H2: Restart the Gateway
+  - H3: Install identity
+  - H3: External supervisors
+  - H3: Gateway profiling
+
+## cli/gateway/running.md
+
+- Route: /cli/gateway/running
+- Headings:
+  - H2: Run the Gateway
+  - H3: Options
+  - H2: Reveal the configured token
+
+## cli/gateway/service.md
+
+- Route: /cli/gateway/service
+- Headings:
   - H2: Manage the Gateway service
   - H3: Recover an unreadable native service definition
   - H3: Lifecycle requests from Gateway chat
   - H3: Install with a wrapper
-  - H2: Discover gateways (Bonjour)
-  - H3: gateway discover
-  - H2: Related
 
 ## cli/health.md
 

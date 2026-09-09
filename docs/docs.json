@@ -2502,6 +2502,16 @@
                       "cli/daemon",
                       "cli/fleet",
                       "cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "cli/gateway/running",
+                          "cli/gateway/restart-and-supervision",
+                          "cli/gateway/query",
+                          "cli/gateway/service",
+                          "cli/gateway/discovery"
+                        ]
+                      },
                       "cli/health",
                       "cli/logs",
                       "cli/status"
@@ -4144,6 +4154,16 @@
                       "zh-CN/cli/daemon",
                       "zh-CN/cli/fleet",
                       "zh-CN/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "zh-CN/cli/gateway/running",
+                          "zh-CN/cli/gateway/restart-and-supervision",
+                          "zh-CN/cli/gateway/query",
+                          "zh-CN/cli/gateway/service",
+                          "zh-CN/cli/gateway/discovery"
+                        ]
+                      },
                       "zh-CN/cli/health",
                       "zh-CN/cli/logs",
                       "zh-CN/cli/status"
@@ -5786,6 +5806,16 @@
                       "zh-TW/cli/daemon",
                       "zh-TW/cli/fleet",
                       "zh-TW/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "zh-TW/cli/gateway/running",
+                          "zh-TW/cli/gateway/restart-and-supervision",
+                          "zh-TW/cli/gateway/query",
+                          "zh-TW/cli/gateway/service",
+                          "zh-TW/cli/gateway/discovery"
+                        ]
+                      },
                       "zh-TW/cli/health",
                       "zh-TW/cli/logs",
                       "zh-TW/cli/status"
@@ -7428,6 +7458,16 @@
                       "ja-JP/cli/daemon",
                       "ja-JP/cli/fleet",
                       "ja-JP/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "ja-JP/cli/gateway/running",
+                          "ja-JP/cli/gateway/restart-and-supervision",
+                          "ja-JP/cli/gateway/query",
+                          "ja-JP/cli/gateway/service",
+                          "ja-JP/cli/gateway/discovery"
+                        ]
+                      },
                       "ja-JP/cli/health",
                       "ja-JP/cli/logs",
                       "ja-JP/cli/status"
@@ -9070,6 +9110,16 @@
                       "es/cli/daemon",
                       "es/cli/fleet",
                       "es/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "es/cli/gateway/running",
+                          "es/cli/gateway/restart-and-supervision",
+                          "es/cli/gateway/query",
+                          "es/cli/gateway/service",
+                          "es/cli/gateway/discovery"
+                        ]
+                      },
                       "es/cli/health",
                       "es/cli/logs",
                       "es/cli/status"
@@ -10712,6 +10762,16 @@
                       "pt-BR/cli/daemon",
                       "pt-BR/cli/fleet",
                       "pt-BR/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "pt-BR/cli/gateway/running",
+                          "pt-BR/cli/gateway/restart-and-supervision",
+                          "pt-BR/cli/gateway/query",
+                          "pt-BR/cli/gateway/service",
+                          "pt-BR/cli/gateway/discovery"
+                        ]
+                      },
                       "pt-BR/cli/health",
                       "pt-BR/cli/logs",
                       "pt-BR/cli/status"
@@ -12354,6 +12414,16 @@
                       "ko/cli/daemon",
                       "ko/cli/fleet",
                       "ko/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "ko/cli/gateway/running",
+                          "ko/cli/gateway/restart-and-supervision",
+                          "ko/cli/gateway/query",
+                          "ko/cli/gateway/service",
+                          "ko/cli/gateway/discovery"
+                        ]
+                      },
                       "ko/cli/health",
                       "ko/cli/logs",
                       "ko/cli/status"
@@ -13996,6 +14066,16 @@
                       "de/cli/daemon",
                       "de/cli/fleet",
                       "de/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "de/cli/gateway/running",
+                          "de/cli/gateway/restart-and-supervision",
+                          "de/cli/gateway/query",
+                          "de/cli/gateway/service",
+                          "de/cli/gateway/discovery"
+                        ]
+                      },
                       "de/cli/health",
                       "de/cli/logs",
                       "de/cli/status"
@@ -15638,6 +15718,16 @@
                       "fr/cli/daemon",
                       "fr/cli/fleet",
                       "fr/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "fr/cli/gateway/running",
+                          "fr/cli/gateway/restart-and-supervision",
+                          "fr/cli/gateway/query",
+                          "fr/cli/gateway/service",
+                          "fr/cli/gateway/discovery"
+                        ]
+                      },
                       "fr/cli/health",
                       "fr/cli/logs",
                       "fr/cli/status"
@@ -17280,6 +17370,16 @@
                       "hi/cli/daemon",
                       "hi/cli/fleet",
                       "hi/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "hi/cli/gateway/running",
+                          "hi/cli/gateway/restart-and-supervision",
+                          "hi/cli/gateway/query",
+                          "hi/cli/gateway/service",
+                          "hi/cli/gateway/discovery"
+                        ]
+                      },
                       "hi/cli/health",
                       "hi/cli/logs",
                       "hi/cli/status"
@@ -18922,6 +19022,16 @@
                       "ar/cli/daemon",
                       "ar/cli/fleet",
                       "ar/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "ar/cli/gateway/running",
+                          "ar/cli/gateway/restart-and-supervision",
+                          "ar/cli/gateway/query",
+                          "ar/cli/gateway/service",
+                          "ar/cli/gateway/discovery"
+                        ]
+                      },
                       "ar/cli/health",
                       "ar/cli/logs",
                       "ar/cli/status"
@@ -20564,6 +20674,16 @@
                       "it/cli/daemon",
                       "it/cli/fleet",
                       "it/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "it/cli/gateway/running",
+                          "it/cli/gateway/restart-and-supervision",
+                          "it/cli/gateway/query",
+                          "it/cli/gateway/service",
+                          "it/cli/gateway/discovery"
+                        ]
+                      },
                       "it/cli/health",
                       "it/cli/logs",
                       "it/cli/status"
@@ -22206,6 +22326,16 @@
                       "vi/cli/daemon",
                       "vi/cli/fleet",
                       "vi/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "vi/cli/gateway/running",
+                          "vi/cli/gateway/restart-and-supervision",
+                          "vi/cli/gateway/query",
+                          "vi/cli/gateway/service",
+                          "vi/cli/gateway/discovery"
+                        ]
+                      },
                       "vi/cli/health",
                       "vi/cli/logs",
                       "vi/cli/status"
@@ -23848,6 +23978,16 @@
                       "nl/cli/daemon",
                       "nl/cli/fleet",
                       "nl/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "nl/cli/gateway/running",
+                          "nl/cli/gateway/restart-and-supervision",
+                          "nl/cli/gateway/query",
+                          "nl/cli/gateway/service",
+                          "nl/cli/gateway/discovery"
+                        ]
+                      },
                       "nl/cli/health",
                       "nl/cli/logs",
                       "nl/cli/status"
@@ -25490,6 +25630,16 @@
                       "tr/cli/daemon",
                       "tr/cli/fleet",
                       "tr/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "tr/cli/gateway/running",
+                          "tr/cli/gateway/restart-and-supervision",
+                          "tr/cli/gateway/query",
+                          "tr/cli/gateway/service",
+                          "tr/cli/gateway/discovery"
+                        ]
+                      },
                       "tr/cli/health",
                       "tr/cli/logs",
                       "tr/cli/status"
@@ -27132,6 +27282,16 @@
                       "uk/cli/daemon",
                       "uk/cli/fleet",
                       "uk/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "uk/cli/gateway/running",
+                          "uk/cli/gateway/restart-and-supervision",
+                          "uk/cli/gateway/query",
+                          "uk/cli/gateway/service",
+                          "uk/cli/gateway/discovery"
+                        ]
+                      },
                       "uk/cli/health",
                       "uk/cli/logs",
                       "uk/cli/status"
@@ -28774,6 +28934,16 @@
                       "id/cli/daemon",
                       "id/cli/fleet",
                       "id/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "id/cli/gateway/running",
+                          "id/cli/gateway/restart-and-supervision",
+                          "id/cli/gateway/query",
+                          "id/cli/gateway/service",
+                          "id/cli/gateway/discovery"
+                        ]
+                      },
                       "id/cli/health",
                       "id/cli/logs",
                       "id/cli/status"
@@ -30416,6 +30586,16 @@
                       "pl/cli/daemon",
                       "pl/cli/fleet",
                       "pl/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "pl/cli/gateway/running",
+                          "pl/cli/gateway/restart-and-supervision",
+                          "pl/cli/gateway/query",
+                          "pl/cli/gateway/service",
+                          "pl/cli/gateway/discovery"
+                        ]
+                      },
                       "pl/cli/health",
                       "pl/cli/logs",
                       "pl/cli/status"
@@ -32058,6 +32238,16 @@
                       "ru/cli/daemon",
                       "ru/cli/fleet",
                       "ru/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "ru/cli/gateway/running",
+                          "ru/cli/gateway/restart-and-supervision",
+                          "ru/cli/gateway/query",
+                          "ru/cli/gateway/service",
+                          "ru/cli/gateway/discovery"
+                        ]
+                      },
                       "ru/cli/health",
                       "ru/cli/logs",
                       "ru/cli/status"
