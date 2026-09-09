@@ -1689,6 +1689,20 @@
                       "concepts/memory-honcho",
                       "concepts/memory-search",
                       "concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "concepts/active-memory/enabling",
+                          "concepts/active-memory/how-it-works",
+                          "concepts/active-memory/session-controls",
+                          "concepts/active-memory/tuning",
+                          "concepts/active-memory/memory-tools",
+                          "concepts/active-memory/advanced-options",
+                          "concepts/active-memory/configuration",
+                          "concepts/active-memory/recommended-setup",
+                          "concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "concepts/dreaming"
                     ]
                   },
@@ -3477,6 +3491,20 @@
                       "zh-CN/concepts/memory-honcho",
                       "zh-CN/concepts/memory-search",
                       "zh-CN/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "zh-CN/concepts/active-memory/enabling",
+                          "zh-CN/concepts/active-memory/how-it-works",
+                          "zh-CN/concepts/active-memory/session-controls",
+                          "zh-CN/concepts/active-memory/tuning",
+                          "zh-CN/concepts/active-memory/memory-tools",
+                          "zh-CN/concepts/active-memory/advanced-options",
+                          "zh-CN/concepts/active-memory/configuration",
+                          "zh-CN/concepts/active-memory/recommended-setup",
+                          "zh-CN/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "zh-CN/concepts/dreaming"
                     ]
                   },
@@ -5231,6 +5259,20 @@
                       "zh-TW/concepts/memory-honcho",
                       "zh-TW/concepts/memory-search",
                       "zh-TW/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "zh-TW/concepts/active-memory/enabling",
+                          "zh-TW/concepts/active-memory/how-it-works",
+                          "zh-TW/concepts/active-memory/session-controls",
+                          "zh-TW/concepts/active-memory/tuning",
+                          "zh-TW/concepts/active-memory/memory-tools",
+                          "zh-TW/concepts/active-memory/advanced-options",
+                          "zh-TW/concepts/active-memory/configuration",
+                          "zh-TW/concepts/active-memory/recommended-setup",
+                          "zh-TW/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "zh-TW/concepts/dreaming"
                     ]
                   },
@@ -6985,6 +7027,20 @@
                       "ja-JP/concepts/memory-honcho",
                       "ja-JP/concepts/memory-search",
                       "ja-JP/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "ja-JP/concepts/active-memory/enabling",
+                          "ja-JP/concepts/active-memory/how-it-works",
+                          "ja-JP/concepts/active-memory/session-controls",
+                          "ja-JP/concepts/active-memory/tuning",
+                          "ja-JP/concepts/active-memory/memory-tools",
+                          "ja-JP/concepts/active-memory/advanced-options",
+                          "ja-JP/concepts/active-memory/configuration",
+                          "ja-JP/concepts/active-memory/recommended-setup",
+                          "ja-JP/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "ja-JP/concepts/dreaming"
                     ]
                   },
@@ -8739,6 +8795,20 @@
                       "es/concepts/memory-honcho",
                       "es/concepts/memory-search",
                       "es/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "es/concepts/active-memory/enabling",
+                          "es/concepts/active-memory/how-it-works",
+                          "es/concepts/active-memory/session-controls",
+                          "es/concepts/active-memory/tuning",
+                          "es/concepts/active-memory/memory-tools",
+                          "es/concepts/active-memory/advanced-options",
+                          "es/concepts/active-memory/configuration",
+                          "es/concepts/active-memory/recommended-setup",
+                          "es/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "es/concepts/dreaming"
                     ]
                   },
@@ -10493,6 +10563,20 @@
                       "pt-BR/concepts/memory-honcho",
                       "pt-BR/concepts/memory-search",
                       "pt-BR/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "pt-BR/concepts/active-memory/enabling",
+                          "pt-BR/concepts/active-memory/how-it-works",
+                          "pt-BR/concepts/active-memory/session-controls",
+                          "pt-BR/concepts/active-memory/tuning",
+                          "pt-BR/concepts/active-memory/memory-tools",
+                          "pt-BR/concepts/active-memory/advanced-options",
+                          "pt-BR/concepts/active-memory/configuration",
+                          "pt-BR/concepts/active-memory/recommended-setup",
+                          "pt-BR/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "pt-BR/concepts/dreaming"
                     ]
                   },
@@ -12247,6 +12331,20 @@
                       "ko/concepts/memory-honcho",
                       "ko/concepts/memory-search",
                       "ko/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "ko/concepts/active-memory/enabling",
+                          "ko/concepts/active-memory/how-it-works",
+                          "ko/concepts/active-memory/session-controls",
+                          "ko/concepts/active-memory/tuning",
+                          "ko/concepts/active-memory/memory-tools",
+                          "ko/concepts/active-memory/advanced-options",
+                          "ko/concepts/active-memory/configuration",
+                          "ko/concepts/active-memory/recommended-setup",
+                          "ko/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "ko/concepts/dreaming"
                     ]
                   },
@@ -14001,6 +14099,20 @@
                       "de/concepts/memory-honcho",
                       "de/concepts/memory-search",
                       "de/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "de/concepts/active-memory/enabling",
+                          "de/concepts/active-memory/how-it-works",
+                          "de/concepts/active-memory/session-controls",
+                          "de/concepts/active-memory/tuning",
+                          "de/concepts/active-memory/memory-tools",
+                          "de/concepts/active-memory/advanced-options",
+                          "de/concepts/active-memory/configuration",
+                          "de/concepts/active-memory/recommended-setup",
+                          "de/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "de/concepts/dreaming"
                     ]
                   },
@@ -15755,6 +15867,20 @@
                       "fr/concepts/memory-honcho",
                       "fr/concepts/memory-search",
                       "fr/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "fr/concepts/active-memory/enabling",
+                          "fr/concepts/active-memory/how-it-works",
+                          "fr/concepts/active-memory/session-controls",
+                          "fr/concepts/active-memory/tuning",
+                          "fr/concepts/active-memory/memory-tools",
+                          "fr/concepts/active-memory/advanced-options",
+                          "fr/concepts/active-memory/configuration",
+                          "fr/concepts/active-memory/recommended-setup",
+                          "fr/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "fr/concepts/dreaming"
                     ]
                   },
@@ -17509,6 +17635,20 @@
                       "hi/concepts/memory-honcho",
                       "hi/concepts/memory-search",
                       "hi/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "hi/concepts/active-memory/enabling",
+                          "hi/concepts/active-memory/how-it-works",
+                          "hi/concepts/active-memory/session-controls",
+                          "hi/concepts/active-memory/tuning",
+                          "hi/concepts/active-memory/memory-tools",
+                          "hi/concepts/active-memory/advanced-options",
+                          "hi/concepts/active-memory/configuration",
+                          "hi/concepts/active-memory/recommended-setup",
+                          "hi/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "hi/concepts/dreaming"
                     ]
                   },
@@ -19263,6 +19403,20 @@
                       "ar/concepts/memory-honcho",
                       "ar/concepts/memory-search",
                       "ar/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "ar/concepts/active-memory/enabling",
+                          "ar/concepts/active-memory/how-it-works",
+                          "ar/concepts/active-memory/session-controls",
+                          "ar/concepts/active-memory/tuning",
+                          "ar/concepts/active-memory/memory-tools",
+                          "ar/concepts/active-memory/advanced-options",
+                          "ar/concepts/active-memory/configuration",
+                          "ar/concepts/active-memory/recommended-setup",
+                          "ar/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "ar/concepts/dreaming"
                     ]
                   },
@@ -21017,6 +21171,20 @@
                       "it/concepts/memory-honcho",
                       "it/concepts/memory-search",
                       "it/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "it/concepts/active-memory/enabling",
+                          "it/concepts/active-memory/how-it-works",
+                          "it/concepts/active-memory/session-controls",
+                          "it/concepts/active-memory/tuning",
+                          "it/concepts/active-memory/memory-tools",
+                          "it/concepts/active-memory/advanced-options",
+                          "it/concepts/active-memory/configuration",
+                          "it/concepts/active-memory/recommended-setup",
+                          "it/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "it/concepts/dreaming"
                     ]
                   },
@@ -22771,6 +22939,20 @@
                       "vi/concepts/memory-honcho",
                       "vi/concepts/memory-search",
                       "vi/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "vi/concepts/active-memory/enabling",
+                          "vi/concepts/active-memory/how-it-works",
+                          "vi/concepts/active-memory/session-controls",
+                          "vi/concepts/active-memory/tuning",
+                          "vi/concepts/active-memory/memory-tools",
+                          "vi/concepts/active-memory/advanced-options",
+                          "vi/concepts/active-memory/configuration",
+                          "vi/concepts/active-memory/recommended-setup",
+                          "vi/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "vi/concepts/dreaming"
                     ]
                   },
@@ -24525,6 +24707,20 @@
                       "nl/concepts/memory-honcho",
                       "nl/concepts/memory-search",
                       "nl/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "nl/concepts/active-memory/enabling",
+                          "nl/concepts/active-memory/how-it-works",
+                          "nl/concepts/active-memory/session-controls",
+                          "nl/concepts/active-memory/tuning",
+                          "nl/concepts/active-memory/memory-tools",
+                          "nl/concepts/active-memory/advanced-options",
+                          "nl/concepts/active-memory/configuration",
+                          "nl/concepts/active-memory/recommended-setup",
+                          "nl/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "nl/concepts/dreaming"
                     ]
                   },
@@ -26279,6 +26475,20 @@
                       "tr/concepts/memory-honcho",
                       "tr/concepts/memory-search",
                       "tr/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "tr/concepts/active-memory/enabling",
+                          "tr/concepts/active-memory/how-it-works",
+                          "tr/concepts/active-memory/session-controls",
+                          "tr/concepts/active-memory/tuning",
+                          "tr/concepts/active-memory/memory-tools",
+                          "tr/concepts/active-memory/advanced-options",
+                          "tr/concepts/active-memory/configuration",
+                          "tr/concepts/active-memory/recommended-setup",
+                          "tr/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "tr/concepts/dreaming"
                     ]
                   },
@@ -28033,6 +28243,20 @@
                       "uk/concepts/memory-honcho",
                       "uk/concepts/memory-search",
                       "uk/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "uk/concepts/active-memory/enabling",
+                          "uk/concepts/active-memory/how-it-works",
+                          "uk/concepts/active-memory/session-controls",
+                          "uk/concepts/active-memory/tuning",
+                          "uk/concepts/active-memory/memory-tools",
+                          "uk/concepts/active-memory/advanced-options",
+                          "uk/concepts/active-memory/configuration",
+                          "uk/concepts/active-memory/recommended-setup",
+                          "uk/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "uk/concepts/dreaming"
                     ]
                   },
@@ -29787,6 +30011,20 @@
                       "id/concepts/memory-honcho",
                       "id/concepts/memory-search",
                       "id/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "id/concepts/active-memory/enabling",
+                          "id/concepts/active-memory/how-it-works",
+                          "id/concepts/active-memory/session-controls",
+                          "id/concepts/active-memory/tuning",
+                          "id/concepts/active-memory/memory-tools",
+                          "id/concepts/active-memory/advanced-options",
+                          "id/concepts/active-memory/configuration",
+                          "id/concepts/active-memory/recommended-setup",
+                          "id/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "id/concepts/dreaming"
                     ]
                   },
@@ -31541,6 +31779,20 @@
                       "pl/concepts/memory-honcho",
                       "pl/concepts/memory-search",
                       "pl/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "pl/concepts/active-memory/enabling",
+                          "pl/concepts/active-memory/how-it-works",
+                          "pl/concepts/active-memory/session-controls",
+                          "pl/concepts/active-memory/tuning",
+                          "pl/concepts/active-memory/memory-tools",
+                          "pl/concepts/active-memory/advanced-options",
+                          "pl/concepts/active-memory/configuration",
+                          "pl/concepts/active-memory/recommended-setup",
+                          "pl/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "pl/concepts/dreaming"
                     ]
                   },
@@ -33295,6 +33547,20 @@
                       "ru/concepts/memory-honcho",
                       "ru/concepts/memory-search",
                       "ru/concepts/active-memory",
+                      {
+                        "group": "Active memory",
+                        "pages": [
+                          "ru/concepts/active-memory/enabling",
+                          "ru/concepts/active-memory/how-it-works",
+                          "ru/concepts/active-memory/session-controls",
+                          "ru/concepts/active-memory/tuning",
+                          "ru/concepts/active-memory/memory-tools",
+                          "ru/concepts/active-memory/advanced-options",
+                          "ru/concepts/active-memory/configuration",
+                          "ru/concepts/active-memory/recommended-setup",
+                          "ru/concepts/active-memory/troubleshooting"
+                        ]
+                      },
                       "ru/concepts/dreaming"
                     ]
                   },

@@ -2994,30 +2994,76 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/active-memory
 - Headings:
+  - H2: Where each section moved
+  - H2: Related pages
+
+## concepts/active-memory/advanced-options.md
+
+- Route: /concepts/active-memory/advanced-options
+- Headings:
+  - H2: Advanced escape hatches
+  - H2: Transcript persistence
+
+## concepts/active-memory/configuration.md
+
+- Route: /concepts/active-memory/configuration
+- Headings:
+  - H2: Configuration
+
+## concepts/active-memory/enabling.md
+
+- Route: /concepts/active-memory/enabling
+- Headings:
   - H2: Remember across conversations
   - H2: Advanced Active Memory quick start
+
+## concepts/active-memory/how-it-works.md
+
+- Route: /concepts/active-memory/how-it-works
+- Headings:
   - H2: How it works
   - H2: When it runs
   - H3: Session types
+
+## concepts/active-memory/memory-tools.md
+
+- Route: /concepts/active-memory/memory-tools
+- Headings:
+  - H2: Memory tools
+  - H3: Built-in memory
+  - H3: LanceDB memory
+  - H3: Lossless Claw
+
+## concepts/active-memory/recommended-setup.md
+
+- Route: /concepts/active-memory/recommended-setup
+- Headings:
+  - H2: Recommended setup
+  - H3: Cold-start grace
+
+## concepts/active-memory/session-controls.md
+
+- Route: /concepts/active-memory/session-controls
+- Headings:
   - H2: Session toggle
   - H2: How to see it
+
+## concepts/active-memory/troubleshooting.md
+
+- Route: /concepts/active-memory/troubleshooting
+- Headings:
+  - H2: Debugging
+  - H2: Common issues
+
+## concepts/active-memory/tuning.md
+
+- Route: /concepts/active-memory/tuning
+- Headings:
   - H2: Query modes
   - H2: Prompt styles
   - H2: Model fallback policy
   - H3: Speed recommendations
   - H4: Cerebras setup
-  - H2: Memory tools
-  - H3: Built-in memory
-  - H3: LanceDB memory
-  - H3: Lossless Claw
-  - H2: Advanced escape hatches
-  - H2: Transcript persistence
-  - H2: Configuration
-  - H2: Recommended setup
-  - H3: Cold-start grace
-  - H2: Debugging
-  - H2: Common issues
-  - H2: Related pages
 
 ## concepts/agent-bindings.md
 
