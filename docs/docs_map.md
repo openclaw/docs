@@ -9940,6 +9940,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
   - H3: Private testing barrel
+  - H3: Credential prompt builder
   - H2: Migration reference
 
 ## plugins/sdk-migration/talk.md
