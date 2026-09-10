@@ -2839,7 +2839,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Exec provider safety
   - H2: Apply a saved plan
   - H3: Why no rollback backups
-  - H2: Example
   - H2: Related
 
 ## cli/security.md
@@ -2849,6 +2848,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw security
   - H2: Audit modes
   - H2: What it checks
+  - H3: DM/trust model
+  - H3: Webhook/hooks
+  - H3: Sandbox/tools
+  - H3: Sandbox browser
+  - H3: Network/discovery
+  - H3: Plugins/channels
+  - H3: Dangerous flags
   - H2: SecretRef behavior
   - H2: Suppressions
   - H2: JSON output
@@ -4252,6 +4258,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Recommended setup: API key (any provider)
   - H2: Anthropic: Claude CLI reuse
+  - H3: Anthropic setup-token
   - H2: Manual token entry
   - H3: SecretRef-backed credentials
   - H2: Checking model auth status
