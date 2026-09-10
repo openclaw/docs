@@ -8478,6 +8478,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest/config-and-secrets
 - Headings:
   - H2: configContracts reference
+  - H3: dangerousFlags entries
+  - H3: secretInputs paths
   - H2: secretProviderIntegrations reference
 
 ## plugins/manifest/models.md
@@ -10218,6 +10220,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-overview/capabilities
 - Headings:
   - H2: Capability registration
+  - H3: Worker providers
 
 ## plugins/sdk-overview/cli-and-discovery.md
 
@@ -13765,6 +13768,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Actions
   - H2: Answering a request
   - H2: Using a stored credential
+  - H2: Related
 
 ## tools/self-learning.md
 
