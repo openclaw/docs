@@ -1650,6 +1650,7 @@
                 "pages": [
                   "channels/pairing",
                   "channels/access-groups",
+                  "channels/bot-loop-protection",
                   "channels/group-messages",
                   "channels/groups",
                   "channels/ambient-room-events",
@@ -1797,6 +1798,7 @@
                       "plugins/codex-supervision"
                     ]
                   },
+                  "plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -2203,6 +2205,7 @@
                       "providers/alibaba",
                       "providers/anthropic",
                       "providers/arcee",
+                      "providers/baseten",
                       "providers/bedrock",
                       "providers/bedrock-mantle",
                       "providers/cerebras",
@@ -2641,6 +2644,7 @@
                 "pages": [
                   "security/network-proxy",
                   "security/formal-verification",
+                  "security/incident-response",
                   "security/THREAT-MODEL-ATLAS",
                   "security/THREAT-MODEL-ATLAS/reconnaissance",
                   "security/THREAT-MODEL-ATLAS/initial-access",
@@ -2811,6 +2815,7 @@
                       "cli/promos",
                       "cli/sessions",
                       "cli/tasks",
+                      "cli/transcripts",
                       "cli/wiki"
                     ]
                   },
@@ -3692,6 +3697,7 @@
                 "pages": [
                   "zh-CN/channels/pairing",
                   "zh-CN/channels/access-groups",
+                  "zh-CN/channels/bot-loop-protection",
                   "zh-CN/channels/group-messages",
                   "zh-CN/channels/groups",
                   "zh-CN/channels/ambient-room-events",
@@ -3839,6 +3845,7 @@
                       "zh-CN/plugins/codex-supervision"
                     ]
                   },
+                  "zh-CN/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -4211,6 +4218,7 @@
                       "zh-CN/providers/alibaba",
                       "zh-CN/providers/anthropic",
                       "zh-CN/providers/arcee",
+                      "zh-CN/providers/baseten",
                       "zh-CN/providers/bedrock",
                       "zh-CN/providers/bedrock-mantle",
                       "zh-CN/providers/cerebras",
@@ -4649,6 +4657,7 @@
                 "pages": [
                   "zh-CN/security/network-proxy",
                   "zh-CN/security/formal-verification",
+                  "zh-CN/security/incident-response",
                   "zh-CN/security/THREAT-MODEL-ATLAS",
                   "zh-CN/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "zh-CN/security/THREAT-MODEL-ATLAS/initial-access",
@@ -4819,6 +4828,7 @@
                       "zh-CN/cli/promos",
                       "zh-CN/cli/sessions",
                       "zh-CN/cli/tasks",
+                      "zh-CN/cli/transcripts",
                       "zh-CN/cli/wiki"
                     ]
                   },
@@ -5700,6 +5710,7 @@
                 "pages": [
                   "zh-TW/channels/pairing",
                   "zh-TW/channels/access-groups",
+                  "zh-TW/channels/bot-loop-protection",
                   "zh-TW/channels/group-messages",
                   "zh-TW/channels/groups",
                   "zh-TW/channels/ambient-room-events",
@@ -5847,6 +5858,7 @@
                       "zh-TW/plugins/codex-supervision"
                     ]
                   },
+                  "zh-TW/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -6219,6 +6231,7 @@
                       "zh-TW/providers/alibaba",
                       "zh-TW/providers/anthropic",
                       "zh-TW/providers/arcee",
+                      "zh-TW/providers/baseten",
                       "zh-TW/providers/bedrock",
                       "zh-TW/providers/bedrock-mantle",
                       "zh-TW/providers/cerebras",
@@ -6657,6 +6670,7 @@
                 "pages": [
                   "zh-TW/security/network-proxy",
                   "zh-TW/security/formal-verification",
+                  "zh-TW/security/incident-response",
                   "zh-TW/security/THREAT-MODEL-ATLAS",
                   "zh-TW/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "zh-TW/security/THREAT-MODEL-ATLAS/initial-access",
@@ -6827,6 +6841,7 @@
                       "zh-TW/cli/promos",
                       "zh-TW/cli/sessions",
                       "zh-TW/cli/tasks",
+                      "zh-TW/cli/transcripts",
                       "zh-TW/cli/wiki"
                     ]
                   },
@@ -7708,6 +7723,7 @@
                 "pages": [
                   "ja-JP/channels/pairing",
                   "ja-JP/channels/access-groups",
+                  "ja-JP/channels/bot-loop-protection",
                   "ja-JP/channels/group-messages",
                   "ja-JP/channels/groups",
                   "ja-JP/channels/ambient-room-events",
@@ -7855,6 +7871,7 @@
                       "ja-JP/plugins/codex-supervision"
                     ]
                   },
+                  "ja-JP/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -8227,6 +8244,7 @@
                       "ja-JP/providers/alibaba",
                       "ja-JP/providers/anthropic",
                       "ja-JP/providers/arcee",
+                      "ja-JP/providers/baseten",
                       "ja-JP/providers/bedrock",
                       "ja-JP/providers/bedrock-mantle",
                       "ja-JP/providers/cerebras",
@@ -8665,6 +8683,7 @@
                 "pages": [
                   "ja-JP/security/network-proxy",
                   "ja-JP/security/formal-verification",
+                  "ja-JP/security/incident-response",
                   "ja-JP/security/THREAT-MODEL-ATLAS",
                   "ja-JP/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "ja-JP/security/THREAT-MODEL-ATLAS/initial-access",
@@ -8835,6 +8854,7 @@
                       "ja-JP/cli/promos",
                       "ja-JP/cli/sessions",
                       "ja-JP/cli/tasks",
+                      "ja-JP/cli/transcripts",
                       "ja-JP/cli/wiki"
                     ]
                   },
@@ -9716,6 +9736,7 @@
                 "pages": [
                   "es/channels/pairing",
                   "es/channels/access-groups",
+                  "es/channels/bot-loop-protection",
                   "es/channels/group-messages",
                   "es/channels/groups",
                   "es/channels/ambient-room-events",
@@ -9863,6 +9884,7 @@
                       "es/plugins/codex-supervision"
                     ]
                   },
+                  "es/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -10235,6 +10257,7 @@
                       "es/providers/alibaba",
                       "es/providers/anthropic",
                       "es/providers/arcee",
+                      "es/providers/baseten",
                       "es/providers/bedrock",
                       "es/providers/bedrock-mantle",
                       "es/providers/cerebras",
@@ -10673,6 +10696,7 @@
                 "pages": [
                   "es/security/network-proxy",
                   "es/security/formal-verification",
+                  "es/security/incident-response",
                   "es/security/THREAT-MODEL-ATLAS",
                   "es/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "es/security/THREAT-MODEL-ATLAS/initial-access",
@@ -10843,6 +10867,7 @@
                       "es/cli/promos",
                       "es/cli/sessions",
                       "es/cli/tasks",
+                      "es/cli/transcripts",
                       "es/cli/wiki"
                     ]
                   },
@@ -11724,6 +11749,7 @@
                 "pages": [
                   "pt-BR/channels/pairing",
                   "pt-BR/channels/access-groups",
+                  "pt-BR/channels/bot-loop-protection",
                   "pt-BR/channels/group-messages",
                   "pt-BR/channels/groups",
                   "pt-BR/channels/ambient-room-events",
@@ -11871,6 +11897,7 @@
                       "pt-BR/plugins/codex-supervision"
                     ]
                   },
+                  "pt-BR/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -12243,6 +12270,7 @@
                       "pt-BR/providers/alibaba",
                       "pt-BR/providers/anthropic",
                       "pt-BR/providers/arcee",
+                      "pt-BR/providers/baseten",
                       "pt-BR/providers/bedrock",
                       "pt-BR/providers/bedrock-mantle",
                       "pt-BR/providers/cerebras",
@@ -12681,6 +12709,7 @@
                 "pages": [
                   "pt-BR/security/network-proxy",
                   "pt-BR/security/formal-verification",
+                  "pt-BR/security/incident-response",
                   "pt-BR/security/THREAT-MODEL-ATLAS",
                   "pt-BR/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "pt-BR/security/THREAT-MODEL-ATLAS/initial-access",
@@ -12851,6 +12880,7 @@
                       "pt-BR/cli/promos",
                       "pt-BR/cli/sessions",
                       "pt-BR/cli/tasks",
+                      "pt-BR/cli/transcripts",
                       "pt-BR/cli/wiki"
                     ]
                   },
@@ -13732,6 +13762,7 @@
                 "pages": [
                   "ko/channels/pairing",
                   "ko/channels/access-groups",
+                  "ko/channels/bot-loop-protection",
                   "ko/channels/group-messages",
                   "ko/channels/groups",
                   "ko/channels/ambient-room-events",
@@ -13879,6 +13910,7 @@
                       "ko/plugins/codex-supervision"
                     ]
                   },
+                  "ko/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -14251,6 +14283,7 @@
                       "ko/providers/alibaba",
                       "ko/providers/anthropic",
                       "ko/providers/arcee",
+                      "ko/providers/baseten",
                       "ko/providers/bedrock",
                       "ko/providers/bedrock-mantle",
                       "ko/providers/cerebras",
@@ -14689,6 +14722,7 @@
                 "pages": [
                   "ko/security/network-proxy",
                   "ko/security/formal-verification",
+                  "ko/security/incident-response",
                   "ko/security/THREAT-MODEL-ATLAS",
                   "ko/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "ko/security/THREAT-MODEL-ATLAS/initial-access",
@@ -14859,6 +14893,7 @@
                       "ko/cli/promos",
                       "ko/cli/sessions",
                       "ko/cli/tasks",
+                      "ko/cli/transcripts",
                       "ko/cli/wiki"
                     ]
                   },
@@ -15740,6 +15775,7 @@
                 "pages": [
                   "de/channels/pairing",
                   "de/channels/access-groups",
+                  "de/channels/bot-loop-protection",
                   "de/channels/group-messages",
                   "de/channels/groups",
                   "de/channels/ambient-room-events",
@@ -15887,6 +15923,7 @@
                       "de/plugins/codex-supervision"
                     ]
                   },
+                  "de/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -16259,6 +16296,7 @@
                       "de/providers/alibaba",
                       "de/providers/anthropic",
                       "de/providers/arcee",
+                      "de/providers/baseten",
                       "de/providers/bedrock",
                       "de/providers/bedrock-mantle",
                       "de/providers/cerebras",
@@ -16697,6 +16735,7 @@
                 "pages": [
                   "de/security/network-proxy",
                   "de/security/formal-verification",
+                  "de/security/incident-response",
                   "de/security/THREAT-MODEL-ATLAS",
                   "de/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "de/security/THREAT-MODEL-ATLAS/initial-access",
@@ -16867,6 +16906,7 @@
                       "de/cli/promos",
                       "de/cli/sessions",
                       "de/cli/tasks",
+                      "de/cli/transcripts",
                       "de/cli/wiki"
                     ]
                   },
@@ -17748,6 +17788,7 @@
                 "pages": [
                   "fr/channels/pairing",
                   "fr/channels/access-groups",
+                  "fr/channels/bot-loop-protection",
                   "fr/channels/group-messages",
                   "fr/channels/groups",
                   "fr/channels/ambient-room-events",
@@ -17895,6 +17936,7 @@
                       "fr/plugins/codex-supervision"
                     ]
                   },
+                  "fr/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -18267,6 +18309,7 @@
                       "fr/providers/alibaba",
                       "fr/providers/anthropic",
                       "fr/providers/arcee",
+                      "fr/providers/baseten",
                       "fr/providers/bedrock",
                       "fr/providers/bedrock-mantle",
                       "fr/providers/cerebras",
@@ -18705,6 +18748,7 @@
                 "pages": [
                   "fr/security/network-proxy",
                   "fr/security/formal-verification",
+                  "fr/security/incident-response",
                   "fr/security/THREAT-MODEL-ATLAS",
                   "fr/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "fr/security/THREAT-MODEL-ATLAS/initial-access",
@@ -18875,6 +18919,7 @@
                       "fr/cli/promos",
                       "fr/cli/sessions",
                       "fr/cli/tasks",
+                      "fr/cli/transcripts",
                       "fr/cli/wiki"
                     ]
                   },
@@ -19756,6 +19801,7 @@
                 "pages": [
                   "hi/channels/pairing",
                   "hi/channels/access-groups",
+                  "hi/channels/bot-loop-protection",
                   "hi/channels/group-messages",
                   "hi/channels/groups",
                   "hi/channels/ambient-room-events",
@@ -19903,6 +19949,7 @@
                       "hi/plugins/codex-supervision"
                     ]
                   },
+                  "hi/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -20275,6 +20322,7 @@
                       "hi/providers/alibaba",
                       "hi/providers/anthropic",
                       "hi/providers/arcee",
+                      "hi/providers/baseten",
                       "hi/providers/bedrock",
                       "hi/providers/bedrock-mantle",
                       "hi/providers/cerebras",
@@ -20713,6 +20761,7 @@
                 "pages": [
                   "hi/security/network-proxy",
                   "hi/security/formal-verification",
+                  "hi/security/incident-response",
                   "hi/security/THREAT-MODEL-ATLAS",
                   "hi/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "hi/security/THREAT-MODEL-ATLAS/initial-access",
@@ -20883,6 +20932,7 @@
                       "hi/cli/promos",
                       "hi/cli/sessions",
                       "hi/cli/tasks",
+                      "hi/cli/transcripts",
                       "hi/cli/wiki"
                     ]
                   },
@@ -21764,6 +21814,7 @@
                 "pages": [
                   "ar/channels/pairing",
                   "ar/channels/access-groups",
+                  "ar/channels/bot-loop-protection",
                   "ar/channels/group-messages",
                   "ar/channels/groups",
                   "ar/channels/ambient-room-events",
@@ -21911,6 +21962,7 @@
                       "ar/plugins/codex-supervision"
                     ]
                   },
+                  "ar/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -22283,6 +22335,7 @@
                       "ar/providers/alibaba",
                       "ar/providers/anthropic",
                       "ar/providers/arcee",
+                      "ar/providers/baseten",
                       "ar/providers/bedrock",
                       "ar/providers/bedrock-mantle",
                       "ar/providers/cerebras",
@@ -22721,6 +22774,7 @@
                 "pages": [
                   "ar/security/network-proxy",
                   "ar/security/formal-verification",
+                  "ar/security/incident-response",
                   "ar/security/THREAT-MODEL-ATLAS",
                   "ar/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "ar/security/THREAT-MODEL-ATLAS/initial-access",
@@ -22891,6 +22945,7 @@
                       "ar/cli/promos",
                       "ar/cli/sessions",
                       "ar/cli/tasks",
+                      "ar/cli/transcripts",
                       "ar/cli/wiki"
                     ]
                   },
@@ -23772,6 +23827,7 @@
                 "pages": [
                   "it/channels/pairing",
                   "it/channels/access-groups",
+                  "it/channels/bot-loop-protection",
                   "it/channels/group-messages",
                   "it/channels/groups",
                   "it/channels/ambient-room-events",
@@ -23919,6 +23975,7 @@
                       "it/plugins/codex-supervision"
                     ]
                   },
+                  "it/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -24291,6 +24348,7 @@
                       "it/providers/alibaba",
                       "it/providers/anthropic",
                       "it/providers/arcee",
+                      "it/providers/baseten",
                       "it/providers/bedrock",
                       "it/providers/bedrock-mantle",
                       "it/providers/cerebras",
@@ -24729,6 +24787,7 @@
                 "pages": [
                   "it/security/network-proxy",
                   "it/security/formal-verification",
+                  "it/security/incident-response",
                   "it/security/THREAT-MODEL-ATLAS",
                   "it/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "it/security/THREAT-MODEL-ATLAS/initial-access",
@@ -24899,6 +24958,7 @@
                       "it/cli/promos",
                       "it/cli/sessions",
                       "it/cli/tasks",
+                      "it/cli/transcripts",
                       "it/cli/wiki"
                     ]
                   },
@@ -25780,6 +25840,7 @@
                 "pages": [
                   "vi/channels/pairing",
                   "vi/channels/access-groups",
+                  "vi/channels/bot-loop-protection",
                   "vi/channels/group-messages",
                   "vi/channels/groups",
                   "vi/channels/ambient-room-events",
@@ -25927,6 +25988,7 @@
                       "vi/plugins/codex-supervision"
                     ]
                   },
+                  "vi/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -26299,6 +26361,7 @@
                       "vi/providers/alibaba",
                       "vi/providers/anthropic",
                       "vi/providers/arcee",
+                      "vi/providers/baseten",
                       "vi/providers/bedrock",
                       "vi/providers/bedrock-mantle",
                       "vi/providers/cerebras",
@@ -26737,6 +26800,7 @@
                 "pages": [
                   "vi/security/network-proxy",
                   "vi/security/formal-verification",
+                  "vi/security/incident-response",
                   "vi/security/THREAT-MODEL-ATLAS",
                   "vi/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "vi/security/THREAT-MODEL-ATLAS/initial-access",
@@ -26907,6 +26971,7 @@
                       "vi/cli/promos",
                       "vi/cli/sessions",
                       "vi/cli/tasks",
+                      "vi/cli/transcripts",
                       "vi/cli/wiki"
                     ]
                   },
@@ -27788,6 +27853,7 @@
                 "pages": [
                   "nl/channels/pairing",
                   "nl/channels/access-groups",
+                  "nl/channels/bot-loop-protection",
                   "nl/channels/group-messages",
                   "nl/channels/groups",
                   "nl/channels/ambient-room-events",
@@ -27935,6 +28001,7 @@
                       "nl/plugins/codex-supervision"
                     ]
                   },
+                  "nl/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -28307,6 +28374,7 @@
                       "nl/providers/alibaba",
                       "nl/providers/anthropic",
                       "nl/providers/arcee",
+                      "nl/providers/baseten",
                       "nl/providers/bedrock",
                       "nl/providers/bedrock-mantle",
                       "nl/providers/cerebras",
@@ -28745,6 +28813,7 @@
                 "pages": [
                   "nl/security/network-proxy",
                   "nl/security/formal-verification",
+                  "nl/security/incident-response",
                   "nl/security/THREAT-MODEL-ATLAS",
                   "nl/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "nl/security/THREAT-MODEL-ATLAS/initial-access",
@@ -28915,6 +28984,7 @@
                       "nl/cli/promos",
                       "nl/cli/sessions",
                       "nl/cli/tasks",
+                      "nl/cli/transcripts",
                       "nl/cli/wiki"
                     ]
                   },
@@ -29796,6 +29866,7 @@
                 "pages": [
                   "tr/channels/pairing",
                   "tr/channels/access-groups",
+                  "tr/channels/bot-loop-protection",
                   "tr/channels/group-messages",
                   "tr/channels/groups",
                   "tr/channels/ambient-room-events",
@@ -29943,6 +30014,7 @@
                       "tr/plugins/codex-supervision"
                     ]
                   },
+                  "tr/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -30315,6 +30387,7 @@
                       "tr/providers/alibaba",
                       "tr/providers/anthropic",
                       "tr/providers/arcee",
+                      "tr/providers/baseten",
                       "tr/providers/bedrock",
                       "tr/providers/bedrock-mantle",
                       "tr/providers/cerebras",
@@ -30753,6 +30826,7 @@
                 "pages": [
                   "tr/security/network-proxy",
                   "tr/security/formal-verification",
+                  "tr/security/incident-response",
                   "tr/security/THREAT-MODEL-ATLAS",
                   "tr/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "tr/security/THREAT-MODEL-ATLAS/initial-access",
@@ -30923,6 +30997,7 @@
                       "tr/cli/promos",
                       "tr/cli/sessions",
                       "tr/cli/tasks",
+                      "tr/cli/transcripts",
                       "tr/cli/wiki"
                     ]
                   },
@@ -31804,6 +31879,7 @@
                 "pages": [
                   "uk/channels/pairing",
                   "uk/channels/access-groups",
+                  "uk/channels/bot-loop-protection",
                   "uk/channels/group-messages",
                   "uk/channels/groups",
                   "uk/channels/ambient-room-events",
@@ -31951,6 +32027,7 @@
                       "uk/plugins/codex-supervision"
                     ]
                   },
+                  "uk/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -32323,6 +32400,7 @@
                       "uk/providers/alibaba",
                       "uk/providers/anthropic",
                       "uk/providers/arcee",
+                      "uk/providers/baseten",
                       "uk/providers/bedrock",
                       "uk/providers/bedrock-mantle",
                       "uk/providers/cerebras",
@@ -32761,6 +32839,7 @@
                 "pages": [
                   "uk/security/network-proxy",
                   "uk/security/formal-verification",
+                  "uk/security/incident-response",
                   "uk/security/THREAT-MODEL-ATLAS",
                   "uk/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "uk/security/THREAT-MODEL-ATLAS/initial-access",
@@ -32931,6 +33010,7 @@
                       "uk/cli/promos",
                       "uk/cli/sessions",
                       "uk/cli/tasks",
+                      "uk/cli/transcripts",
                       "uk/cli/wiki"
                     ]
                   },
@@ -33812,6 +33892,7 @@
                 "pages": [
                   "id/channels/pairing",
                   "id/channels/access-groups",
+                  "id/channels/bot-loop-protection",
                   "id/channels/group-messages",
                   "id/channels/groups",
                   "id/channels/ambient-room-events",
@@ -33959,6 +34040,7 @@
                       "id/plugins/codex-supervision"
                     ]
                   },
+                  "id/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -34331,6 +34413,7 @@
                       "id/providers/alibaba",
                       "id/providers/anthropic",
                       "id/providers/arcee",
+                      "id/providers/baseten",
                       "id/providers/bedrock",
                       "id/providers/bedrock-mantle",
                       "id/providers/cerebras",
@@ -34769,6 +34852,7 @@
                 "pages": [
                   "id/security/network-proxy",
                   "id/security/formal-verification",
+                  "id/security/incident-response",
                   "id/security/THREAT-MODEL-ATLAS",
                   "id/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "id/security/THREAT-MODEL-ATLAS/initial-access",
@@ -34939,6 +35023,7 @@
                       "id/cli/promos",
                       "id/cli/sessions",
                       "id/cli/tasks",
+                      "id/cli/transcripts",
                       "id/cli/wiki"
                     ]
                   },
@@ -35820,6 +35905,7 @@
                 "pages": [
                   "pl/channels/pairing",
                   "pl/channels/access-groups",
+                  "pl/channels/bot-loop-protection",
                   "pl/channels/group-messages",
                   "pl/channels/groups",
                   "pl/channels/ambient-room-events",
@@ -35967,6 +36053,7 @@
                       "pl/plugins/codex-supervision"
                     ]
                   },
+                  "pl/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -36339,6 +36426,7 @@
                       "pl/providers/alibaba",
                       "pl/providers/anthropic",
                       "pl/providers/arcee",
+                      "pl/providers/baseten",
                       "pl/providers/bedrock",
                       "pl/providers/bedrock-mantle",
                       "pl/providers/cerebras",
@@ -36777,6 +36865,7 @@
                 "pages": [
                   "pl/security/network-proxy",
                   "pl/security/formal-verification",
+                  "pl/security/incident-response",
                   "pl/security/THREAT-MODEL-ATLAS",
                   "pl/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "pl/security/THREAT-MODEL-ATLAS/initial-access",
@@ -36947,6 +37036,7 @@
                       "pl/cli/promos",
                       "pl/cli/sessions",
                       "pl/cli/tasks",
+                      "pl/cli/transcripts",
                       "pl/cli/wiki"
                     ]
                   },
@@ -37828,6 +37918,7 @@
                 "pages": [
                   "ru/channels/pairing",
                   "ru/channels/access-groups",
+                  "ru/channels/bot-loop-protection",
                   "ru/channels/group-messages",
                   "ru/channels/groups",
                   "ru/channels/ambient-room-events",
@@ -37975,6 +38066,7 @@
                       "ru/plugins/codex-supervision"
                     ]
                   },
+                  "ru/plugins/copilot",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -38347,6 +38439,7 @@
                       "ru/providers/alibaba",
                       "ru/providers/anthropic",
                       "ru/providers/arcee",
+                      "ru/providers/baseten",
                       "ru/providers/bedrock",
                       "ru/providers/bedrock-mantle",
                       "ru/providers/cerebras",
@@ -38785,6 +38878,7 @@
                 "pages": [
                   "ru/security/network-proxy",
                   "ru/security/formal-verification",
+                  "ru/security/incident-response",
                   "ru/security/THREAT-MODEL-ATLAS",
                   "ru/security/THREAT-MODEL-ATLAS/reconnaissance",
                   "ru/security/THREAT-MODEL-ATLAS/initial-access",
@@ -38955,6 +39049,7 @@
                       "ru/cli/promos",
                       "ru/cli/sessions",
                       "ru/cli/tasks",
+                      "ru/cli/transcripts",
                       "ru/cli/wiki"
                     ]
                   },
