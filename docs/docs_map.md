@@ -4392,6 +4392,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/cloud-workers/setup-and-bundle-installation
 - Headings:
   - H2: The setup command
+  - H3: Native Windows prerequisites
   - H2: Bundle installation
   - H2: Build a complete custom node package
 
