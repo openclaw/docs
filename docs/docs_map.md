@@ -9938,6 +9938,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/sessions-and-results
 - Headings:
   - H2: Native sessions and transcript mirror
+  - H2: Subagent task history
   - H2: Tool and media results
   - H2: Terminal tool outcomes
   - H2: Settled tool finalization
@@ -14271,6 +14272,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Mermaid diagrams
   - H2: Hosted embeds
   - H2: Chat transcript layout
+  - H2: Subagent transcripts
   - H2: Chat message width
 
 ## web/control-ui/connect-and-pair.md
