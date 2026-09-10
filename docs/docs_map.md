@@ -4416,6 +4416,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Warm images
   - H3: Ready workers
+  - H3: Inspect snapshots in the Control UI
   - H3: Recover a paused capture
   - H3: Upgrade warm-image state
 
