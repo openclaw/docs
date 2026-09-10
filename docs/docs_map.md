@@ -10776,6 +10776,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Configuration options
+  - H3: Flux models
   - H2: Voice Call streaming STT
   - H2: Notes
   - H2: Related
