@@ -3323,7 +3323,6 @@
                       "help/testing-live/media-providers"
                     ]
                   },
-                  "channels/qa-channel",
                   "concepts/mantis",
                   "concepts/mantis-slack-desktop-runbook"
                 ]
@@ -5209,7 +5208,7 @@
             ]
           },
           {
-            "tab": "发布与 CI",
+            "tab": "发布",
             "groups": [
               {
                 "group": "发布说明",
@@ -5248,17 +5247,17 @@
             ]
           },
           {
-            "tab": "Contributing",
+            "tab": "贡献",
             "groups": [
               {
-                "group": "Maturity",
+                "group": "成熟度",
                 "pages": [
                   "zh-CN/maturity/scorecard",
                   "zh-CN/maturity/taxonomy"
                 ]
               },
               {
-                "group": "Testing and CI",
+                "group": "测试与 CI",
                 "pages": [
                   "zh-CN/reference/test",
                   {
@@ -5347,7 +5346,6 @@
                       "zh-CN/help/testing-live/media-providers"
                     ]
                   },
-                  "zh-CN/channels/qa-channel",
                   "zh-CN/concepts/mantis",
                   "zh-CN/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -7371,7 +7369,6 @@
                       "zh-TW/help/testing-live/media-providers"
                     ]
                   },
-                  "zh-TW/channels/qa-channel",
                   "zh-TW/concepts/mantis",
                   "zh-TW/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -9395,7 +9392,6 @@
                       "ja-JP/help/testing-live/media-providers"
                     ]
                   },
-                  "ja-JP/channels/qa-channel",
                   "ja-JP/concepts/mantis",
                   "ja-JP/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -11419,7 +11415,6 @@
                       "es/help/testing-live/media-providers"
                     ]
                   },
-                  "es/channels/qa-channel",
                   "es/concepts/mantis",
                   "es/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -13443,7 +13438,6 @@
                       "pt-BR/help/testing-live/media-providers"
                     ]
                   },
-                  "pt-BR/channels/qa-channel",
                   "pt-BR/concepts/mantis",
                   "pt-BR/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -15467,7 +15461,6 @@
                       "ko/help/testing-live/media-providers"
                     ]
                   },
-                  "ko/channels/qa-channel",
                   "ko/concepts/mantis",
                   "ko/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -17491,7 +17484,6 @@
                       "de/help/testing-live/media-providers"
                     ]
                   },
-                  "de/channels/qa-channel",
                   "de/concepts/mantis",
                   "de/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -19515,7 +19507,6 @@
                       "fr/help/testing-live/media-providers"
                     ]
                   },
-                  "fr/channels/qa-channel",
                   "fr/concepts/mantis",
                   "fr/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -21539,7 +21530,6 @@
                       "hi/help/testing-live/media-providers"
                     ]
                   },
-                  "hi/channels/qa-channel",
                   "hi/concepts/mantis",
                   "hi/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -23563,7 +23553,6 @@
                       "ar/help/testing-live/media-providers"
                     ]
                   },
-                  "ar/channels/qa-channel",
                   "ar/concepts/mantis",
                   "ar/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -25587,7 +25576,6 @@
                       "it/help/testing-live/media-providers"
                     ]
                   },
-                  "it/channels/qa-channel",
                   "it/concepts/mantis",
                   "it/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -27611,7 +27599,6 @@
                       "vi/help/testing-live/media-providers"
                     ]
                   },
-                  "vi/channels/qa-channel",
                   "vi/concepts/mantis",
                   "vi/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -29635,7 +29622,6 @@
                       "nl/help/testing-live/media-providers"
                     ]
                   },
-                  "nl/channels/qa-channel",
                   "nl/concepts/mantis",
                   "nl/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -31659,7 +31645,6 @@
                       "tr/help/testing-live/media-providers"
                     ]
                   },
-                  "tr/channels/qa-channel",
                   "tr/concepts/mantis",
                   "tr/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -33683,7 +33668,6 @@
                       "uk/help/testing-live/media-providers"
                     ]
                   },
-                  "uk/channels/qa-channel",
                   "uk/concepts/mantis",
                   "uk/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -35707,7 +35691,6 @@
                       "id/help/testing-live/media-providers"
                     ]
                   },
-                  "id/channels/qa-channel",
                   "id/concepts/mantis",
                   "id/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -37731,7 +37714,6 @@
                       "pl/help/testing-live/media-providers"
                     ]
                   },
-                  "pl/channels/qa-channel",
                   "pl/concepts/mantis",
                   "pl/concepts/mantis-slack-desktop-runbook"
                 ]
@@ -39755,7 +39737,6 @@
                       "ru/help/testing-live/media-providers"
                     ]
                   },
-                  "ru/channels/qa-channel",
                   "ru/concepts/mantis",
                   "ru/concepts/mantis-slack-desktop-runbook"
                 ]
