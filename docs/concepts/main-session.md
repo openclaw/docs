@@ -58,8 +58,8 @@ world converges:
   group and room sessions stay isolated while the main session automatically watches them.
   Activity queues up as compact notices — coalesced per conversation, never
   one wake-up per message — and the agent sees them the next time it runs: on
-  your next message or on a scheduled heartbeat. Under the default `all`
-  visibility, the main session can use session tools across the Gateway,
+  your next message or on a scheduled heartbeat. Under `tools.sessions.visibility: "all"`
+  (the default), the main session can use [session tools](/concepts/session-tool) across the Gateway,
   with cross-agent access governed by `tools.agentToAgent` and on by default;
   its system prompt names watched groups so it knows where recent activity happened.
 - **Background work.** Sub-agents and spawned sessions announce their results

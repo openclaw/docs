@@ -14,6 +14,7 @@ When `agents.defaults.typingMode` is **unset**:
 - **Direct chats**: typing starts immediately once the model loop begins.
 - **Group chats with a mention**: typing starts immediately.
 - **Group chats without a mention**: typing starts when the admitted run has user-visible activity, such as harness execution activity or message text.
+- **Message-tool-only replies**: typing starts immediately, even in a group chat without a mention, so members can see the agent working when no automatic final reply is posted. This takes precedence over the group rules above; an explicit `typingMode` still wins over it.
 - **Heartbeat runs**: typing starts when the heartbeat run begins, if the resolved heartbeat target is a typing-capable chat and typing is not disabled.
 
 ## Modes

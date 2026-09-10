@@ -53,8 +53,9 @@ To set a provider explicitly:
 
 Without an embedding provider, only keyword search is available.
 
-To force local GGUF embeddings, install and configure the official llama.cpp
-provider, then point `local.modelPath` at a GGUF file:
+To force local GGUF embeddings, install and configure the official
+[llama.cpp provider](/plugins/llama-cpp), then point `local.modelPath` at a
+GGUF file:
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
@@ -231,8 +232,9 @@ with automatic user modeling.
 **Memory search disabled?** Check `openclaw memory status`. If no provider is
 detected, set one explicitly or add an API key.
 
-**Local provider not detected?** Run interactive llama.cpp setup once, confirm
-the local path exists, and run:
+**Local provider not detected?** Run the interactive
+[llama.cpp](/plugins/llama-cpp) setup once with `openclaw onboard`, confirm the
+local path exists, and run:
 
 ```bash
 openclaw memory status --deep --agent main
