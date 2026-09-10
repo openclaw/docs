@@ -3447,6 +3447,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/mantis-slack-desktop-runbook
 - Headings:
+  - H2: Terms
   - H2: Storage model
   - H2: GitHub dispatch
   - H2: Local CLI

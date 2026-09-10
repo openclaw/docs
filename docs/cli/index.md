@@ -7,7 +7,7 @@ title: "CLI reference"
 ---
 
 `openclaw` is the main CLI entry point. Each core command has a dedicated
-reference page or is documented with the command it aliases; this index lists
+reference page or is documented with the command it aliases. This index lists
 the commands, global flags, and output styling rules that apply across the CLI.
 
 Setup commands by intent:
@@ -15,7 +15,7 @@ Setup commands by intent:
 - `openclaw setup` and `openclaw onboard` verify inference first, then start OpenClaw for Gateway, workspace, channels, skills, and health setup.
 - `openclaw setup --baseline` creates the baseline config and workspace without walking the guided onboarding flow.
 - `openclaw configure` changes targeted parts of an existing setup: model auth, gateway, channels, plugins, or skills.
-- `openclaw channels add` configures channel accounts after the baseline exists; a channel selection alone uses guided setup, while account, credential, or channel-config flags use the direct path for scripts.
+- `openclaw channels add` configures channel accounts after the baseline exists. A channel selection alone uses guided setup. Account, credential, or channel-config flags use the direct path for scripts.
 
 <a id="status" />
 
@@ -64,15 +64,15 @@ Use `--` to stop option parsing. Command words still dispatch after it: for exam
 ## Output modes
 
 - ANSI colors and progress indicators render only in TTY sessions.
-- OSC-8 hyperlinks render as clickable links where supported; otherwise the
-  CLI falls back to plain URLs.
-- On bounded reporting commands, `--json` reserves stdout for one JSON document;
-  styling and progress output are suppressed, and warnings and diagnostics stay on
+- OSC-8 hyperlinks render as clickable links where supported. Otherwise the
+  CLI prints plain URLs.
+- On bounded reporting commands, `--json` reserves stdout for one JSON document.
+  The CLI suppresses styling and progress output. Warnings and diagnostics stay on
   stderr.
 - Interactive UIs and wizards, long-running servers and streams, shell integration,
   and pure side-effect commands may omit `--json` when they have no meaningful
   report to return.
-- Long-running commands show a progress indicator (OSC 9;4 when supported).
+- Long-running commands show a progress indicator (`OSC 9;4` when supported).
 
 ### JSON failures
 
@@ -120,7 +120,7 @@ Palette source of truth: `packages/terminal-core/src/palette.ts`.
 
 This map covers core commands and their primary subcommands. Plugin-added
 subcommands (for example under `skills`, `plugins`, and `wiki`) evolve
-independently; run `<command> --help` for the authoritative, current list.
+independently. Run `<command> --help` for the authoritative, current list.
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -510,7 +510,7 @@ Highlights:
 - `/status` - quick diagnostics.
 - `/trace` - session-scoped plugin trace/debug lines.
 - `/config` - persisted config changes.
-- `/debug` - runtime-only config overrides (memory, not disk; requires `commands.debug: true`).
+- `/debug` - runtime-only config overrides in memory, not on disk. Requires `commands.debug: true`.
 
 ## Usage tracking
 
