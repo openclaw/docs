@@ -8420,6 +8420,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Minimal example
   - H2: Rich example
   - H2: Top-level field reference
+  - H2: Catalog categories
   - H2: JSON Schema requirements
   - H2: Validation behavior
   - H3: Capability catalogs
@@ -14223,6 +14224,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session links in messages
   - H2: Composer capability menu
   - H2: Chat behavior
+  - H3: ClawHub recommendation cards
   - H3: Source previews and copying code
   - H3: Markdown tables
   - H3: Mermaid diagrams
