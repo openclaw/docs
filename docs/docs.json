@@ -2611,6 +2611,14 @@
                   "security/network-proxy",
                   "security/formal-verification",
                   "security/THREAT-MODEL-ATLAS",
+                  "security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "security/THREAT-MODEL-ATLAS/initial-access",
+                  "security/THREAT-MODEL-ATLAS/execution",
+                  "security/THREAT-MODEL-ATLAS/persistence",
+                  "security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "security/THREAT-MODEL-ATLAS/discovery",
+                  "security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "security/THREAT-MODEL-ATLAS/impact",
                   "security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -4581,6 +4589,14 @@
                   "zh-CN/security/network-proxy",
                   "zh-CN/security/formal-verification",
                   "zh-CN/security/THREAT-MODEL-ATLAS",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/initial-access",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/execution",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/persistence",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/discovery",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "zh-CN/security/THREAT-MODEL-ATLAS/impact",
                   "zh-CN/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -6551,6 +6567,14 @@
                   "zh-TW/security/network-proxy",
                   "zh-TW/security/formal-verification",
                   "zh-TW/security/THREAT-MODEL-ATLAS",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/initial-access",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/execution",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/persistence",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/discovery",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "zh-TW/security/THREAT-MODEL-ATLAS/impact",
                   "zh-TW/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -8521,6 +8545,14 @@
                   "ja-JP/security/network-proxy",
                   "ja-JP/security/formal-verification",
                   "ja-JP/security/THREAT-MODEL-ATLAS",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/initial-access",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/execution",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/persistence",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/discovery",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "ja-JP/security/THREAT-MODEL-ATLAS/impact",
                   "ja-JP/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -10491,6 +10523,14 @@
                   "es/security/network-proxy",
                   "es/security/formal-verification",
                   "es/security/THREAT-MODEL-ATLAS",
+                  "es/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "es/security/THREAT-MODEL-ATLAS/initial-access",
+                  "es/security/THREAT-MODEL-ATLAS/execution",
+                  "es/security/THREAT-MODEL-ATLAS/persistence",
+                  "es/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "es/security/THREAT-MODEL-ATLAS/discovery",
+                  "es/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "es/security/THREAT-MODEL-ATLAS/impact",
                   "es/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -12461,6 +12501,14 @@
                   "pt-BR/security/network-proxy",
                   "pt-BR/security/formal-verification",
                   "pt-BR/security/THREAT-MODEL-ATLAS",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/initial-access",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/execution",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/persistence",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/discovery",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "pt-BR/security/THREAT-MODEL-ATLAS/impact",
                   "pt-BR/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -14431,6 +14479,14 @@
                   "ko/security/network-proxy",
                   "ko/security/formal-verification",
                   "ko/security/THREAT-MODEL-ATLAS",
+                  "ko/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "ko/security/THREAT-MODEL-ATLAS/initial-access",
+                  "ko/security/THREAT-MODEL-ATLAS/execution",
+                  "ko/security/THREAT-MODEL-ATLAS/persistence",
+                  "ko/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "ko/security/THREAT-MODEL-ATLAS/discovery",
+                  "ko/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "ko/security/THREAT-MODEL-ATLAS/impact",
                   "ko/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -16401,6 +16457,14 @@
                   "de/security/network-proxy",
                   "de/security/formal-verification",
                   "de/security/THREAT-MODEL-ATLAS",
+                  "de/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "de/security/THREAT-MODEL-ATLAS/initial-access",
+                  "de/security/THREAT-MODEL-ATLAS/execution",
+                  "de/security/THREAT-MODEL-ATLAS/persistence",
+                  "de/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "de/security/THREAT-MODEL-ATLAS/discovery",
+                  "de/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "de/security/THREAT-MODEL-ATLAS/impact",
                   "de/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -18371,6 +18435,14 @@
                   "fr/security/network-proxy",
                   "fr/security/formal-verification",
                   "fr/security/THREAT-MODEL-ATLAS",
+                  "fr/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "fr/security/THREAT-MODEL-ATLAS/initial-access",
+                  "fr/security/THREAT-MODEL-ATLAS/execution",
+                  "fr/security/THREAT-MODEL-ATLAS/persistence",
+                  "fr/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "fr/security/THREAT-MODEL-ATLAS/discovery",
+                  "fr/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "fr/security/THREAT-MODEL-ATLAS/impact",
                   "fr/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -20341,6 +20413,14 @@
                   "hi/security/network-proxy",
                   "hi/security/formal-verification",
                   "hi/security/THREAT-MODEL-ATLAS",
+                  "hi/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "hi/security/THREAT-MODEL-ATLAS/initial-access",
+                  "hi/security/THREAT-MODEL-ATLAS/execution",
+                  "hi/security/THREAT-MODEL-ATLAS/persistence",
+                  "hi/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "hi/security/THREAT-MODEL-ATLAS/discovery",
+                  "hi/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "hi/security/THREAT-MODEL-ATLAS/impact",
                   "hi/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -22311,6 +22391,14 @@
                   "ar/security/network-proxy",
                   "ar/security/formal-verification",
                   "ar/security/THREAT-MODEL-ATLAS",
+                  "ar/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "ar/security/THREAT-MODEL-ATLAS/initial-access",
+                  "ar/security/THREAT-MODEL-ATLAS/execution",
+                  "ar/security/THREAT-MODEL-ATLAS/persistence",
+                  "ar/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "ar/security/THREAT-MODEL-ATLAS/discovery",
+                  "ar/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "ar/security/THREAT-MODEL-ATLAS/impact",
                   "ar/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -24281,6 +24369,14 @@
                   "it/security/network-proxy",
                   "it/security/formal-verification",
                   "it/security/THREAT-MODEL-ATLAS",
+                  "it/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "it/security/THREAT-MODEL-ATLAS/initial-access",
+                  "it/security/THREAT-MODEL-ATLAS/execution",
+                  "it/security/THREAT-MODEL-ATLAS/persistence",
+                  "it/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "it/security/THREAT-MODEL-ATLAS/discovery",
+                  "it/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "it/security/THREAT-MODEL-ATLAS/impact",
                   "it/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -26251,6 +26347,14 @@
                   "vi/security/network-proxy",
                   "vi/security/formal-verification",
                   "vi/security/THREAT-MODEL-ATLAS",
+                  "vi/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "vi/security/THREAT-MODEL-ATLAS/initial-access",
+                  "vi/security/THREAT-MODEL-ATLAS/execution",
+                  "vi/security/THREAT-MODEL-ATLAS/persistence",
+                  "vi/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "vi/security/THREAT-MODEL-ATLAS/discovery",
+                  "vi/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "vi/security/THREAT-MODEL-ATLAS/impact",
                   "vi/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -28221,6 +28325,14 @@
                   "nl/security/network-proxy",
                   "nl/security/formal-verification",
                   "nl/security/THREAT-MODEL-ATLAS",
+                  "nl/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "nl/security/THREAT-MODEL-ATLAS/initial-access",
+                  "nl/security/THREAT-MODEL-ATLAS/execution",
+                  "nl/security/THREAT-MODEL-ATLAS/persistence",
+                  "nl/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "nl/security/THREAT-MODEL-ATLAS/discovery",
+                  "nl/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "nl/security/THREAT-MODEL-ATLAS/impact",
                   "nl/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -30191,6 +30303,14 @@
                   "tr/security/network-proxy",
                   "tr/security/formal-verification",
                   "tr/security/THREAT-MODEL-ATLAS",
+                  "tr/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "tr/security/THREAT-MODEL-ATLAS/initial-access",
+                  "tr/security/THREAT-MODEL-ATLAS/execution",
+                  "tr/security/THREAT-MODEL-ATLAS/persistence",
+                  "tr/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "tr/security/THREAT-MODEL-ATLAS/discovery",
+                  "tr/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "tr/security/THREAT-MODEL-ATLAS/impact",
                   "tr/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -32161,6 +32281,14 @@
                   "uk/security/network-proxy",
                   "uk/security/formal-verification",
                   "uk/security/THREAT-MODEL-ATLAS",
+                  "uk/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "uk/security/THREAT-MODEL-ATLAS/initial-access",
+                  "uk/security/THREAT-MODEL-ATLAS/execution",
+                  "uk/security/THREAT-MODEL-ATLAS/persistence",
+                  "uk/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "uk/security/THREAT-MODEL-ATLAS/discovery",
+                  "uk/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "uk/security/THREAT-MODEL-ATLAS/impact",
                   "uk/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -34131,6 +34259,14 @@
                   "id/security/network-proxy",
                   "id/security/formal-verification",
                   "id/security/THREAT-MODEL-ATLAS",
+                  "id/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "id/security/THREAT-MODEL-ATLAS/initial-access",
+                  "id/security/THREAT-MODEL-ATLAS/execution",
+                  "id/security/THREAT-MODEL-ATLAS/persistence",
+                  "id/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "id/security/THREAT-MODEL-ATLAS/discovery",
+                  "id/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "id/security/THREAT-MODEL-ATLAS/impact",
                   "id/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -36101,6 +36237,14 @@
                   "pl/security/network-proxy",
                   "pl/security/formal-verification",
                   "pl/security/THREAT-MODEL-ATLAS",
+                  "pl/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "pl/security/THREAT-MODEL-ATLAS/initial-access",
+                  "pl/security/THREAT-MODEL-ATLAS/execution",
+                  "pl/security/THREAT-MODEL-ATLAS/persistence",
+                  "pl/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "pl/security/THREAT-MODEL-ATLAS/discovery",
+                  "pl/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "pl/security/THREAT-MODEL-ATLAS/impact",
                   "pl/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },
@@ -38071,6 +38215,14 @@
                   "ru/security/network-proxy",
                   "ru/security/formal-verification",
                   "ru/security/THREAT-MODEL-ATLAS",
+                  "ru/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "ru/security/THREAT-MODEL-ATLAS/initial-access",
+                  "ru/security/THREAT-MODEL-ATLAS/execution",
+                  "ru/security/THREAT-MODEL-ATLAS/persistence",
+                  "ru/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "ru/security/THREAT-MODEL-ATLAS/discovery",
+                  "ru/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "ru/security/THREAT-MODEL-ATLAS/impact",
                   "ru/security/CONTRIBUTING-THREAT-MODEL"
                 ]
               },

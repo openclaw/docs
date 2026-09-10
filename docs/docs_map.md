@@ -12307,36 +12307,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 2.1 Trust boundaries
   - H3: 2.2 Data flows
   - H2: 3. Threat analysis by ATLAS tactic
-  - H3: 3.1 Reconnaissance (AML.TA0002)
-  - H4: T-RECON-001: Agent endpoint discovery
-  - H4: T-RECON-002: Channel integration probing
-  - H3: 3.2 Initial access (AML.TA0004)
-  - H4: T-ACCESS-001: Pairing code interception
-  - H4: T-ACCESS-002: AllowFrom spoofing
-  - H4: T-ACCESS-003: Token theft
-  - H3: 3.3 Execution (AML.TA0005)
-  - H4: T-EXEC-001: Direct prompt injection
-  - H4: T-EXEC-002: Indirect prompt injection
-  - H4: T-EXEC-003: Tool argument injection
-  - H4: T-EXEC-004: Exec approval bypass
-  - H3: 3.4 Persistence (AML.TA0006)
-  - H4: T-PERSIST-001: Malicious skill installation
-  - H4: T-PERSIST-002: Skill update poisoning
-  - H4: T-PERSIST-003: Agent configuration tampering
-  - H3: 3.5 Defense evasion (AML.TA0007)
-  - H4: T-EVADE-001: Moderation pattern bypass
-  - H4: T-EVADE-002: Content wrapper escape
-  - H3: 3.6 Discovery (AML.TA0008)
-  - H4: T-DISC-001: Tool enumeration
-  - H4: T-DISC-002: Session data extraction
-  - H3: 3.7 Collection and exfiltration (AML.TA0009, AML.TA0010)
-  - H4: T-EXFIL-001: Data theft via webfetch
-  - H4: T-EXFIL-002: Unauthorized message sending
-  - H4: T-EXFIL-003: Credential harvesting
-  - H3: 3.8 Impact (AML.TA0011)
-  - H4: T-IMPACT-001: Unauthorized command execution
-  - H4: T-IMPACT-002: Resource exhaustion (DoS)
-  - H4: T-IMPACT-003: Reputation damage
   - H2: 4. ClawHub supply chain analysis
   - H3: 4.1 Current security controls
   - H3: 4.2 Moderation limitations
@@ -12352,7 +12322,70 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 7.1 ATLAS technique mapping
   - H3: 7.2 Key security files
   - H3: 7.3 Glossary
+  - H2: Where each section moved
   - H2: Related
+
+## security/THREAT-MODEL-ATLAS/collection-and-exfiltration.md
+
+- Route: /security/THREAT-MODEL-ATLAS/collection-and-exfiltration
+- Headings:
+  - H2: T-EXFIL-001: Data theft via webfetch
+  - H2: T-EXFIL-002: Unauthorized message sending
+  - H2: T-EXFIL-003: Credential harvesting
+
+## security/THREAT-MODEL-ATLAS/defense-evasion.md
+
+- Route: /security/THREAT-MODEL-ATLAS/defense-evasion
+- Headings:
+  - H2: T-EVADE-001: Moderation pattern bypass
+  - H2: T-EVADE-002: Content wrapper escape
+
+## security/THREAT-MODEL-ATLAS/discovery.md
+
+- Route: /security/THREAT-MODEL-ATLAS/discovery
+- Headings:
+  - H2: T-DISC-001: Tool enumeration
+  - H2: T-DISC-002: Session data extraction
+
+## security/THREAT-MODEL-ATLAS/execution.md
+
+- Route: /security/THREAT-MODEL-ATLAS/execution
+- Headings:
+  - H2: T-EXEC-001: Direct prompt injection
+  - H2: T-EXEC-002: Indirect prompt injection
+  - H2: T-EXEC-003: Tool argument injection
+  - H2: T-EXEC-004: Exec approval bypass
+
+## security/THREAT-MODEL-ATLAS/impact.md
+
+- Route: /security/THREAT-MODEL-ATLAS/impact
+- Headings:
+  - H2: T-IMPACT-001: Unauthorized command execution
+  - H2: T-IMPACT-002: Resource exhaustion (DoS)
+  - H2: T-IMPACT-003: Reputation damage
+
+## security/THREAT-MODEL-ATLAS/initial-access.md
+
+- Route: /security/THREAT-MODEL-ATLAS/initial-access
+- Headings:
+  - H2: T-ACCESS-001: Pairing code interception
+  - H2: T-ACCESS-002: AllowFrom spoofing
+  - H2: T-ACCESS-003: Token theft
+
+## security/THREAT-MODEL-ATLAS/persistence.md
+
+- Route: /security/THREAT-MODEL-ATLAS/persistence
+- Headings:
+  - H2: T-PERSIST-001: Malicious skill installation
+  - H2: T-PERSIST-002: Skill update poisoning
+  - H2: T-PERSIST-003: Agent configuration tampering
+
+## security/THREAT-MODEL-ATLAS/reconnaissance.md
+
+- Route: /security/THREAT-MODEL-ATLAS/reconnaissance
+- Headings:
+  - H2: T-RECON-001: Agent endpoint discovery
+  - H2: T-RECON-002: Channel integration probing
 
 ## security/formal-verification.md
 
