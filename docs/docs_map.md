@@ -7287,7 +7287,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Running Agent Runtime Tests
   - H2: Manual testing
   - H2: Clean slate reset
-  - H2: References
   - H2: Related
 
 ## platforms/android.md
@@ -11656,6 +11655,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas
 - Headings:
+  - H2: Related
   - H2: Where each section moved
 
 ## reference/database-schemas/agent-schema-history.md
@@ -12609,6 +12609,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Validating the proxy
   - H2: Recommended blocked destinations
   - H2: Limits
+  - H2: Related
 
 ## specs/codex-supervision.md
 
