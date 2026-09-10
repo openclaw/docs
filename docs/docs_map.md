@@ -5321,30 +5321,57 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Node background alive event
   - H2: Broadcast event scoping
 
+## gateway/protocol/rpc-bootstrap-and-events.md
+
+- Route: /gateway/protocol/rpc-bootstrap-and-events
+- Headings:
+  - H2: Session list bootstrap
+  - H2: Common event families
+  - H2: Node helper methods
+  - H2: Node exec lifecycle events
+
+## gateway/protocol/rpc-devices-nodes-and-approvals.md
+
+- Route: /gateway/protocol/rpc-devices-nodes-and-approvals
+- Headings:
+  - H2: Device pairing and device tokens
+  - H2: Node pairing, invoke, and pending work
+  - H2: Approval families
+  - H2: Control UI commands
+  - H2: Automation, skills, and tools
+
 ## gateway/protocol/rpc-methods.md
 
 - Route: /gateway/protocol/rpc-methods
 - Headings:
   - H2: RPC method families
-  - H3: System and identity
-  - H3: Models and usage
-  - H3: Channels and login helpers
-  - H3: Plugin management
-  - H3: Messaging and logs
-  - H3: Operator terminal
-  - H3: Talk and TTS
-  - H3: Secrets, config, update, and wizard
-  - H3: Agent and workspace helpers
-  - H3: Session control
-  - H3: Device pairing and device tokens
-  - H3: Node pairing, invoke, and pending work
-  - H3: Approval families
-  - H3: Control UI commands
-  - H3: Automation, skills, and tools
-  - H2: Session list bootstrap
-  - H2: Common event families
-  - H2: Node helper methods
-  - H2: Node exec lifecycle events
+  - H2: What each page covers
+  - H2: Where each section moved
+
+## gateway/protocol/rpc-session-control.md
+
+- Route: /gateway/protocol/rpc-session-control
+- Headings:
+  - H2: Session control
+
+## gateway/protocol/rpc-system-and-channels.md
+
+- Route: /gateway/protocol/rpc-system-and-channels
+- Headings:
+  - H2: System and identity
+  - H2: Models and usage
+  - H2: Channels and login helpers
+  - H2: Plugin management
+  - H2: Messaging and logs
+  - H2: Operator terminal
+
+## gateway/protocol/rpc-talk-config-and-agents.md
+
+- Route: /gateway/protocol/rpc-talk-config-and-agents
+- Headings:
+  - H2: Talk and TTS
+  - H2: Secrets, config, update, and wizard
+  - H2: Agent and workspace helpers
 
 ## gateway/protocol/transport.md
 
