@@ -66,7 +66,11 @@ Use Tailscale Serve for the private dashboard and Funnel for the public webhook 
 1. Check what address your gateway is bound to:
 
    ```bash
+   # Linux (iproute2):
    ss -tlnp | grep 18789
+
+   # macOS (no ss):
+   lsof -iTCP:18789 -sTCP:LISTEN
    ```
 
    Note the IP (e.g., `127.0.0.1`, `0.0.0.0`, or a Tailscale `100.x.x.x` address).

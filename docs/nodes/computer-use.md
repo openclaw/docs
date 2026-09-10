@@ -73,7 +73,7 @@ CUA creates the Unix socket with mode `0600`, and OpenClaw places it in a random
 
 Loopback is also reachability, not identity: any process on the machine can connect to `127.0.0.1`. A Gateway client therefore does not receive `operator.write` merely because it arrived over loopback. It must authenticate and pass the Gateway's [device pairing and scope approval](/gateway/pairing); without a separately trusted local or shared credential, another already-authorized device must approve the requested operator scope. The driver and its socket never make that decision.
 
-The CUA descriptor advertises window, element, and browser targets; background and foreground delivery; image, accessibility, and browser observations; and recording. Peekaboo remains the default in this release and does not advertise recording.
+The CUA descriptor advertises window, element, and browser targets; background and foreground delivery; image, accessibility, and browser observations; and recording. Peekaboo remains the default provider and does not advertise recording.
 
 #### Browser profiles
 
@@ -121,6 +121,12 @@ sudo apt-get update
 sudo apt-get install -y at-spi2-core dbus-x11 gir1.2-gtk-3.0 jq openbox python3-gi x11-utils xdotool xvfb
 
 dbus-run-session -- bash
+```
+
+`dbus-run-session -- bash` opens a nested shell, so the block above stops there.
+Run everything below inside that new shell:
+
+```bash
 export DISPLAY=:99 XDG_SESSION_TYPE=x11 NO_AT_BRIDGE=0
 Xvfb "$DISPLAY" -screen 0 1280x800x24 -nolisten tcp &
 openbox >/tmp/openclaw-cu-openbox.log 2>&1 &

@@ -126,9 +126,9 @@ does not make a different provider equivalent.
 The direct `.github/workflows/windows-blacksmith-testbox.yml` workflow runs
 native Windows. The wrapper's Blacksmith adapter supports Linux only; explicit
 `--provider blacksmith-testbox` prevents automatic Azure routing but does not
-enable Windows support. Blacksmith CLI 0.4.57 targets `runner` and has no native
-username override, so supported CLI sync/run on this Windows image remains
-blocked. Native SSH inspection with the per-Testbox key is not CLI end-to-end
+enable Windows support. As checked on 2026-09-01, Blacksmith CLI 0.4.57 targets `runner`
+and has no native username override, so supported CLI sync/run on this Windows
+image remains blocked. Recheck against a newer CLI before relying on this. Native SSH inspection with the per-Testbox key is not CLI end-to-end
 proof.
 
 The wrapper checks an executable sibling `../crabbox/bin/crabbox`, then `PATH`,

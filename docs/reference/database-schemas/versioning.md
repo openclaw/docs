@@ -23,8 +23,9 @@ Matching numeric versions are necessary but not sufficient. A release can add a 
 
 Agent schema 19 records collected input consumption in the nullable
 `session_pending_inputs.consumed_event_id TEXT` column. Doctor and the feature's
-first-use ensure add it when needed; the schema version stays 19. The supported
-beta upgrade runs Doctor from the upcoming release. Intermediate builds that
+first-use ensure add it when needed; the schema version stays 19. The column
+shipped in 2026.8.2 ([#133457](https://github.com/openclaw/openclaw/pull/133457)),
+so the supported beta upgrade runs Doctor from 2026.8.2 or newer. Intermediate builds that
 already validate the optional pending-input table may reject the added column
 despite sharing version 19. Consumed source receipts remain until their session
 window is deleted, so rewriting a transcript cannot make an old input runnable again.

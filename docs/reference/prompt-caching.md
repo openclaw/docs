@@ -324,7 +324,7 @@ pnpm test:docker:live-cli-backend:claude:cache
 
 - Expect `cacheRead` only; `cacheWrite` stays `0` on Chat Completions.
 - Treat repeated-turn cache reuse as a provider-specific plateau, not Anthropic-style moving full-history reuse.
-- Floors are watch-only (a miss is logged as a warning, not a test failure), derived from observed live behavior on `gpt-5.4-mini`:
+- Floors are watch-only (a miss is logged as a warning, not a test failure), derived from live behavior observed on `gpt-5.4-mini` and unchanged since 2026.4.5:
 
 | Scenario             | `cacheRead` floor | Hit-rate floor |
 | -------------------- | ----------------: | -------------: |
@@ -333,7 +333,7 @@ pnpm test:docker:live-cli-backend:claude:cache
 | Image transcript     |             3,840 |           0.82 |
 | MCP-style transcript |             4,096 |           0.85 |
 
-The most recently observed baseline numbers (from `live-cache-regression-baseline.ts`) landed at: stable prefix `cacheRead=4864`, hit rate `0.966`; tool transcript `cacheRead=4608`, hit rate `0.896`; image transcript `cacheRead=4864`, hit rate `0.954`; MCP-style transcript `cacheRead=4608`, hit rate `0.891`.
+The most recently observed baseline numbers (from `live-cache-regression-baseline.ts`, recorded 2026-04-04) landed at: stable prefix `cacheRead=4864`, hit rate `0.966`; tool transcript `cacheRead=4608`, hit rate `0.896`; image transcript `cacheRead=4864`, hit rate `0.954`; MCP-style transcript `cacheRead=4608`, hit rate `0.891`.
 
 Why the assertions differ: Anthropic exposes explicit cache breakpoints and moving conversation-history reuse, while OpenAI's effective reusable prefix in live traffic can plateau earlier than the full prompt. Comparing the two providers against a single cross-provider percentage threshold produces false regressions.
 

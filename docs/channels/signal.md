@@ -49,7 +49,7 @@ openclaw plugins install @openclaw/signal
   </Step>
   <Step title="Verify and pair">
     ```bash
-    openclaw gateway call channels.status --params '{"probe":true}'
+    openclaw channels status --probe
     ```
     Send a first DM and approve pairing: `openclaw pairing approve signal <CODE>`.
   </Step>
@@ -120,12 +120,13 @@ If you use the JVM build (`signal-cli-${VERSION}.tar.gz`), install a JRE first. 
 signal-cli -a +<BOT_PHONE_NUMBER> register
 ```
 
-If captcha is required (browser access is needed to complete this step):
+Still inside step 3, if captcha is required (browser access is needed to complete
+this step):
 
-1. Open `https://signalcaptchas.org/registration/generate.html`.
-2. Complete the captcha, copy the `signalcaptcha://...` link target from "Open Signal".
-3. Run from the same external IP as the browser session when possible (captcha tokens expire quickly).
-4. Register and verify immediately:
+- Open `https://signalcaptchas.org/registration/generate.html`.
+- Complete the captcha, copy the `signalcaptcha://...` link target from "Open Signal".
+- Run from the same external IP as the browser session when possible (captcha tokens expire quickly).
+- Register and verify immediately:
 
 ```bash
 signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
