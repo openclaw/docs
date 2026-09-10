@@ -10,6 +10,8 @@ What `sessions.dispatch` does, how completed turns are reconciled back to the Ga
 
 Gateway updates retain an attached cloud machine and install the new worker bundle in place. The Gateway stops the old worker and revokes its credential before admitting the new build. The machine's workspace, installed packages, and desktop remain available. Failed installation retains the lease for recovery rather than allocating a replacement. The node must support the current bundle installer and reconnect before recovery can finish.
 
+If a submitted turn encounters the old build before execution starts, OpenClaw releases that unstarted claim, refreshes the runtime, and retries admission once with fresh authority. The session and original submission stay intact. Work already handed to a worker is never replayed through this admission retry.
+
 For node-backed sessions interrupted by a restart, recovery settles pending workspace results and retires the interrupted turn while retaining the machine. The resumed turn receives fresh authority; it does not replay the interrupted tool call automatically. Explicit Stop, Move, and failed-provider cleanup retain their normal teardown behavior.
 
 Workspace manifest downloads use gzip when the node supports it and remain compatible with uncompressed transfers. Both the compressed response and its decoded manifest stay within the 64 MiB safety limit; the node verifies the decoded manifest before changing the workspace.
