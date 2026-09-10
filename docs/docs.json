@@ -2562,6 +2562,22 @@
                       "gateway/security/dependency-locking",
                       "gateway/operator-scopes",
                       "gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "gateway/sandboxing/what-gets-sandboxed",
+                          "gateway/sandboxing/modes-scope-and-backend",
+                          "gateway/sandboxing/supported-capability-matrix",
+                          "gateway/sandboxing/docker-backend",
+                          "gateway/sandboxing/podman-backend",
+                          "gateway/sandboxing/ssh-backend",
+                          "gateway/sandboxing/openshell-backend",
+                          "gateway/sandboxing/workspace-access",
+                          "gateway/sandboxing/multiple-folders-for-one-agent",
+                          "gateway/sandboxing/images-and-setup",
+                          "gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "gateway/openshell",
                       "gateway/sandbox-vs-tool-policy-vs-elevated",
                       "gateway/permission-modes"
@@ -4555,6 +4571,22 @@
                       "zh-CN/gateway/security/dependency-locking",
                       "zh-CN/gateway/operator-scopes",
                       "zh-CN/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "zh-CN/gateway/sandboxing/what-gets-sandboxed",
+                          "zh-CN/gateway/sandboxing/modes-scope-and-backend",
+                          "zh-CN/gateway/sandboxing/supported-capability-matrix",
+                          "zh-CN/gateway/sandboxing/docker-backend",
+                          "zh-CN/gateway/sandboxing/podman-backend",
+                          "zh-CN/gateway/sandboxing/ssh-backend",
+                          "zh-CN/gateway/sandboxing/openshell-backend",
+                          "zh-CN/gateway/sandboxing/workspace-access",
+                          "zh-CN/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "zh-CN/gateway/sandboxing/images-and-setup",
+                          "zh-CN/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "zh-CN/gateway/openshell",
                       "zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "zh-CN/gateway/permission-modes"
@@ -6548,6 +6580,22 @@
                       "zh-TW/gateway/security/dependency-locking",
                       "zh-TW/gateway/operator-scopes",
                       "zh-TW/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "zh-TW/gateway/sandboxing/what-gets-sandboxed",
+                          "zh-TW/gateway/sandboxing/modes-scope-and-backend",
+                          "zh-TW/gateway/sandboxing/supported-capability-matrix",
+                          "zh-TW/gateway/sandboxing/docker-backend",
+                          "zh-TW/gateway/sandboxing/podman-backend",
+                          "zh-TW/gateway/sandboxing/ssh-backend",
+                          "zh-TW/gateway/sandboxing/openshell-backend",
+                          "zh-TW/gateway/sandboxing/workspace-access",
+                          "zh-TW/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "zh-TW/gateway/sandboxing/images-and-setup",
+                          "zh-TW/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "zh-TW/gateway/openshell",
                       "zh-TW/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "zh-TW/gateway/permission-modes"
@@ -8541,6 +8589,22 @@
                       "ja-JP/gateway/security/dependency-locking",
                       "ja-JP/gateway/operator-scopes",
                       "ja-JP/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "ja-JP/gateway/sandboxing/what-gets-sandboxed",
+                          "ja-JP/gateway/sandboxing/modes-scope-and-backend",
+                          "ja-JP/gateway/sandboxing/supported-capability-matrix",
+                          "ja-JP/gateway/sandboxing/docker-backend",
+                          "ja-JP/gateway/sandboxing/podman-backend",
+                          "ja-JP/gateway/sandboxing/ssh-backend",
+                          "ja-JP/gateway/sandboxing/openshell-backend",
+                          "ja-JP/gateway/sandboxing/workspace-access",
+                          "ja-JP/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "ja-JP/gateway/sandboxing/images-and-setup",
+                          "ja-JP/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "ja-JP/gateway/openshell",
                       "ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "ja-JP/gateway/permission-modes"
@@ -10534,6 +10598,22 @@
                       "es/gateway/security/dependency-locking",
                       "es/gateway/operator-scopes",
                       "es/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "es/gateway/sandboxing/what-gets-sandboxed",
+                          "es/gateway/sandboxing/modes-scope-and-backend",
+                          "es/gateway/sandboxing/supported-capability-matrix",
+                          "es/gateway/sandboxing/docker-backend",
+                          "es/gateway/sandboxing/podman-backend",
+                          "es/gateway/sandboxing/ssh-backend",
+                          "es/gateway/sandboxing/openshell-backend",
+                          "es/gateway/sandboxing/workspace-access",
+                          "es/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "es/gateway/sandboxing/images-and-setup",
+                          "es/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "es/gateway/openshell",
                       "es/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "es/gateway/permission-modes"
@@ -12527,6 +12607,22 @@
                       "pt-BR/gateway/security/dependency-locking",
                       "pt-BR/gateway/operator-scopes",
                       "pt-BR/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "pt-BR/gateway/sandboxing/what-gets-sandboxed",
+                          "pt-BR/gateway/sandboxing/modes-scope-and-backend",
+                          "pt-BR/gateway/sandboxing/supported-capability-matrix",
+                          "pt-BR/gateway/sandboxing/docker-backend",
+                          "pt-BR/gateway/sandboxing/podman-backend",
+                          "pt-BR/gateway/sandboxing/ssh-backend",
+                          "pt-BR/gateway/sandboxing/openshell-backend",
+                          "pt-BR/gateway/sandboxing/workspace-access",
+                          "pt-BR/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "pt-BR/gateway/sandboxing/images-and-setup",
+                          "pt-BR/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "pt-BR/gateway/openshell",
                       "pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "pt-BR/gateway/permission-modes"
@@ -14520,6 +14616,22 @@
                       "ko/gateway/security/dependency-locking",
                       "ko/gateway/operator-scopes",
                       "ko/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "ko/gateway/sandboxing/what-gets-sandboxed",
+                          "ko/gateway/sandboxing/modes-scope-and-backend",
+                          "ko/gateway/sandboxing/supported-capability-matrix",
+                          "ko/gateway/sandboxing/docker-backend",
+                          "ko/gateway/sandboxing/podman-backend",
+                          "ko/gateway/sandboxing/ssh-backend",
+                          "ko/gateway/sandboxing/openshell-backend",
+                          "ko/gateway/sandboxing/workspace-access",
+                          "ko/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "ko/gateway/sandboxing/images-and-setup",
+                          "ko/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "ko/gateway/openshell",
                       "ko/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "ko/gateway/permission-modes"
@@ -16513,6 +16625,22 @@
                       "de/gateway/security/dependency-locking",
                       "de/gateway/operator-scopes",
                       "de/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "de/gateway/sandboxing/what-gets-sandboxed",
+                          "de/gateway/sandboxing/modes-scope-and-backend",
+                          "de/gateway/sandboxing/supported-capability-matrix",
+                          "de/gateway/sandboxing/docker-backend",
+                          "de/gateway/sandboxing/podman-backend",
+                          "de/gateway/sandboxing/ssh-backend",
+                          "de/gateway/sandboxing/openshell-backend",
+                          "de/gateway/sandboxing/workspace-access",
+                          "de/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "de/gateway/sandboxing/images-and-setup",
+                          "de/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "de/gateway/openshell",
                       "de/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "de/gateway/permission-modes"
@@ -18506,6 +18634,22 @@
                       "fr/gateway/security/dependency-locking",
                       "fr/gateway/operator-scopes",
                       "fr/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "fr/gateway/sandboxing/what-gets-sandboxed",
+                          "fr/gateway/sandboxing/modes-scope-and-backend",
+                          "fr/gateway/sandboxing/supported-capability-matrix",
+                          "fr/gateway/sandboxing/docker-backend",
+                          "fr/gateway/sandboxing/podman-backend",
+                          "fr/gateway/sandboxing/ssh-backend",
+                          "fr/gateway/sandboxing/openshell-backend",
+                          "fr/gateway/sandboxing/workspace-access",
+                          "fr/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "fr/gateway/sandboxing/images-and-setup",
+                          "fr/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "fr/gateway/openshell",
                       "fr/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "fr/gateway/permission-modes"
@@ -20499,6 +20643,22 @@
                       "hi/gateway/security/dependency-locking",
                       "hi/gateway/operator-scopes",
                       "hi/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "hi/gateway/sandboxing/what-gets-sandboxed",
+                          "hi/gateway/sandboxing/modes-scope-and-backend",
+                          "hi/gateway/sandboxing/supported-capability-matrix",
+                          "hi/gateway/sandboxing/docker-backend",
+                          "hi/gateway/sandboxing/podman-backend",
+                          "hi/gateway/sandboxing/ssh-backend",
+                          "hi/gateway/sandboxing/openshell-backend",
+                          "hi/gateway/sandboxing/workspace-access",
+                          "hi/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "hi/gateway/sandboxing/images-and-setup",
+                          "hi/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "hi/gateway/openshell",
                       "hi/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "hi/gateway/permission-modes"
@@ -22492,6 +22652,22 @@
                       "ar/gateway/security/dependency-locking",
                       "ar/gateway/operator-scopes",
                       "ar/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "ar/gateway/sandboxing/what-gets-sandboxed",
+                          "ar/gateway/sandboxing/modes-scope-and-backend",
+                          "ar/gateway/sandboxing/supported-capability-matrix",
+                          "ar/gateway/sandboxing/docker-backend",
+                          "ar/gateway/sandboxing/podman-backend",
+                          "ar/gateway/sandboxing/ssh-backend",
+                          "ar/gateway/sandboxing/openshell-backend",
+                          "ar/gateway/sandboxing/workspace-access",
+                          "ar/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "ar/gateway/sandboxing/images-and-setup",
+                          "ar/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "ar/gateway/openshell",
                       "ar/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "ar/gateway/permission-modes"
@@ -24485,6 +24661,22 @@
                       "it/gateway/security/dependency-locking",
                       "it/gateway/operator-scopes",
                       "it/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "it/gateway/sandboxing/what-gets-sandboxed",
+                          "it/gateway/sandboxing/modes-scope-and-backend",
+                          "it/gateway/sandboxing/supported-capability-matrix",
+                          "it/gateway/sandboxing/docker-backend",
+                          "it/gateway/sandboxing/podman-backend",
+                          "it/gateway/sandboxing/ssh-backend",
+                          "it/gateway/sandboxing/openshell-backend",
+                          "it/gateway/sandboxing/workspace-access",
+                          "it/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "it/gateway/sandboxing/images-and-setup",
+                          "it/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "it/gateway/openshell",
                       "it/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "it/gateway/permission-modes"
@@ -26478,6 +26670,22 @@
                       "vi/gateway/security/dependency-locking",
                       "vi/gateway/operator-scopes",
                       "vi/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "vi/gateway/sandboxing/what-gets-sandboxed",
+                          "vi/gateway/sandboxing/modes-scope-and-backend",
+                          "vi/gateway/sandboxing/supported-capability-matrix",
+                          "vi/gateway/sandboxing/docker-backend",
+                          "vi/gateway/sandboxing/podman-backend",
+                          "vi/gateway/sandboxing/ssh-backend",
+                          "vi/gateway/sandboxing/openshell-backend",
+                          "vi/gateway/sandboxing/workspace-access",
+                          "vi/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "vi/gateway/sandboxing/images-and-setup",
+                          "vi/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "vi/gateway/openshell",
                       "vi/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "vi/gateway/permission-modes"
@@ -28471,6 +28679,22 @@
                       "nl/gateway/security/dependency-locking",
                       "nl/gateway/operator-scopes",
                       "nl/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "nl/gateway/sandboxing/what-gets-sandboxed",
+                          "nl/gateway/sandboxing/modes-scope-and-backend",
+                          "nl/gateway/sandboxing/supported-capability-matrix",
+                          "nl/gateway/sandboxing/docker-backend",
+                          "nl/gateway/sandboxing/podman-backend",
+                          "nl/gateway/sandboxing/ssh-backend",
+                          "nl/gateway/sandboxing/openshell-backend",
+                          "nl/gateway/sandboxing/workspace-access",
+                          "nl/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "nl/gateway/sandboxing/images-and-setup",
+                          "nl/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "nl/gateway/openshell",
                       "nl/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "nl/gateway/permission-modes"
@@ -30464,6 +30688,22 @@
                       "tr/gateway/security/dependency-locking",
                       "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "tr/gateway/sandboxing/what-gets-sandboxed",
+                          "tr/gateway/sandboxing/modes-scope-and-backend",
+                          "tr/gateway/sandboxing/supported-capability-matrix",
+                          "tr/gateway/sandboxing/docker-backend",
+                          "tr/gateway/sandboxing/podman-backend",
+                          "tr/gateway/sandboxing/ssh-backend",
+                          "tr/gateway/sandboxing/openshell-backend",
+                          "tr/gateway/sandboxing/workspace-access",
+                          "tr/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "tr/gateway/sandboxing/images-and-setup",
+                          "tr/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "tr/gateway/openshell",
                       "tr/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "tr/gateway/permission-modes"
@@ -32457,6 +32697,22 @@
                       "uk/gateway/security/dependency-locking",
                       "uk/gateway/operator-scopes",
                       "uk/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "uk/gateway/sandboxing/what-gets-sandboxed",
+                          "uk/gateway/sandboxing/modes-scope-and-backend",
+                          "uk/gateway/sandboxing/supported-capability-matrix",
+                          "uk/gateway/sandboxing/docker-backend",
+                          "uk/gateway/sandboxing/podman-backend",
+                          "uk/gateway/sandboxing/ssh-backend",
+                          "uk/gateway/sandboxing/openshell-backend",
+                          "uk/gateway/sandboxing/workspace-access",
+                          "uk/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "uk/gateway/sandboxing/images-and-setup",
+                          "uk/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "uk/gateway/openshell",
                       "uk/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "uk/gateway/permission-modes"
@@ -34450,6 +34706,22 @@
                       "id/gateway/security/dependency-locking",
                       "id/gateway/operator-scopes",
                       "id/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "id/gateway/sandboxing/what-gets-sandboxed",
+                          "id/gateway/sandboxing/modes-scope-and-backend",
+                          "id/gateway/sandboxing/supported-capability-matrix",
+                          "id/gateway/sandboxing/docker-backend",
+                          "id/gateway/sandboxing/podman-backend",
+                          "id/gateway/sandboxing/ssh-backend",
+                          "id/gateway/sandboxing/openshell-backend",
+                          "id/gateway/sandboxing/workspace-access",
+                          "id/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "id/gateway/sandboxing/images-and-setup",
+                          "id/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "id/gateway/openshell",
                       "id/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "id/gateway/permission-modes"
@@ -36443,6 +36715,22 @@
                       "pl/gateway/security/dependency-locking",
                       "pl/gateway/operator-scopes",
                       "pl/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "pl/gateway/sandboxing/what-gets-sandboxed",
+                          "pl/gateway/sandboxing/modes-scope-and-backend",
+                          "pl/gateway/sandboxing/supported-capability-matrix",
+                          "pl/gateway/sandboxing/docker-backend",
+                          "pl/gateway/sandboxing/podman-backend",
+                          "pl/gateway/sandboxing/ssh-backend",
+                          "pl/gateway/sandboxing/openshell-backend",
+                          "pl/gateway/sandboxing/workspace-access",
+                          "pl/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "pl/gateway/sandboxing/images-and-setup",
+                          "pl/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "pl/gateway/openshell",
                       "pl/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "pl/gateway/permission-modes"
@@ -38436,6 +38724,22 @@
                       "ru/gateway/security/dependency-locking",
                       "ru/gateway/operator-scopes",
                       "ru/gateway/sandboxing",
+                      {
+                        "group": "Sandboxing",
+                        "pages": [
+                          "ru/gateway/sandboxing/what-gets-sandboxed",
+                          "ru/gateway/sandboxing/modes-scope-and-backend",
+                          "ru/gateway/sandboxing/supported-capability-matrix",
+                          "ru/gateway/sandboxing/docker-backend",
+                          "ru/gateway/sandboxing/podman-backend",
+                          "ru/gateway/sandboxing/ssh-backend",
+                          "ru/gateway/sandboxing/openshell-backend",
+                          "ru/gateway/sandboxing/workspace-access",
+                          "ru/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "ru/gateway/sandboxing/images-and-setup",
+                          "ru/gateway/sandboxing/setup-command"
+                        ]
+                      },
                       "ru/gateway/openshell",
                       "ru/gateway/sandbox-vs-tool-policy-vs-elevated",
                       "ru/gateway/permission-modes"

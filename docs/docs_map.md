@@ -5447,23 +5447,80 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/sandboxing
 - Headings:
-  - H2: What gets sandboxed
-  - H2: Modes, scope, and backend
-  - H2: Supported capability matrix
-  - H2: Docker backend
-  - H3: Sandboxed browser
-  - H2: Podman backend
-  - H2: SSH backend
-  - H2: OpenShell backend
-  - H2: Workspace access
-  - H2: Multiple folders for one agent
-  - H3: Other bind behavior
-  - H2: Images and setup
-  - H2: setupCommand (one-time container setup)
+  - H2: Sandboxing pages
+  - H2: Where each section moved
   - H2: Tool policy and escape hatches
   - H2: Multi-agent overrides
   - H2: Minimal enable example
   - H2: Related
+
+## gateway/sandboxing/docker-backend.md
+
+- Route: /gateway/sandboxing/docker-backend
+- Headings:
+  - H2: Docker backend
+  - H3: Sandboxed browser
+
+## gateway/sandboxing/images-and-setup.md
+
+- Route: /gateway/sandboxing/images-and-setup
+- Headings:
+  - H2: Images and setup
+
+## gateway/sandboxing/modes-scope-and-backend.md
+
+- Route: /gateway/sandboxing/modes-scope-and-backend
+- Headings:
+  - H2: Modes, scope, and backend
+
+## gateway/sandboxing/multiple-folders-for-one-agent.md
+
+- Route: /gateway/sandboxing/multiple-folders-for-one-agent
+- Headings:
+  - H2: Multiple folders for one agent
+  - H3: Other bind behavior
+
+## gateway/sandboxing/openshell-backend.md
+
+- Route: /gateway/sandboxing/openshell-backend
+- Headings:
+  - H2: OpenShell backend
+
+## gateway/sandboxing/podman-backend.md
+
+- Route: /gateway/sandboxing/podman-backend
+- Headings:
+  - H2: Podman backend
+
+## gateway/sandboxing/setup-command.md
+
+- Route: /gateway/sandboxing/setup-command
+- Headings:
+  - H2: setupCommand (one-time container setup)
+
+## gateway/sandboxing/ssh-backend.md
+
+- Route: /gateway/sandboxing/ssh-backend
+- Headings:
+  - H2: SSH backend
+
+## gateway/sandboxing/supported-capability-matrix.md
+
+- Route: /gateway/sandboxing/supported-capability-matrix
+- Headings:
+  - H2: Supported capability matrix
+
+## gateway/sandboxing/what-gets-sandboxed.md
+
+- Route: /gateway/sandboxing/what-gets-sandboxed
+- Headings:
+  - H2: What gets sandboxed
+
+## gateway/sandboxing/workspace-access.md
+
+- Route: /gateway/sandboxing/workspace-access
+- Headings:
+  - H2: Workspace access
 
 ## gateway/secrets-plan-contract.md
 
