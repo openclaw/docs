@@ -3435,7 +3435,7 @@
                 ]
               },
               {
-                "group": "Runtimes",
+                "group": "运行时",
                 "pages": [
                   "zh-CN/install/node",
                   "zh-CN/install/node-compatibility",
@@ -3811,7 +3811,7 @@
                 ]
               },
               {
-                "group": "Plugins",
+                "group": "插件",
                 "pages": [
                   "zh-CN/tools/plugin",
                   "zh-CN/plugins/manage-plugins",
@@ -3907,7 +3907,7 @@
                 ]
               },
               {
-                "group": "Building plugins",
+                "group": "构建插件",
                 "pages": [
                   "zh-CN/plugins/building-plugins",
                   "zh-CN/plugins/feature-plugins",
@@ -4983,7 +4983,7 @@
                 ]
               },
               {
-                "group": "Plugin reference",
+                "group": "插件参考",
                 "pages": [
                   "zh-CN/plugins/plugin-inventory",
                   "zh-CN/plugins/reference",
@@ -5314,7 +5314,7 @@
                 ]
               },
               {
-                "group": "FAQ",
+                "group": "常见问题",
                 "pages": [
                   "zh-CN/help/faq",
                   {
@@ -5347,7 +5347,7 @@
                 ]
               },
               {
-                "group": "Testing",
+                "group": "测试",
                 "pages": [
                   "zh-CN/help/testing",
                   {
