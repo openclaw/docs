@@ -409,6 +409,25 @@ SQL statement, measure CPU time or lock contention, or establish that a nearby
 RPC caused the delay. Older records may lack `operation`; do not infer it from
 adjacent log messages.
 
+For `session.lifecycle.artifacts-prepare`, the same warning includes a bounded
+`artifactPreparation` object. `admissionMode` distinguishes an existing cached
+handle from asynchronous acquisition; `admissionMs` stops when the planner
+receives that handle. Asynchronous acquisition may include shared admission and
+integrity-check waits, so it is not a CPU measurement.
+
+The remaining millisecond fields separate node inventory and selection
+(`nodeInventoryMs`), references and entry deletion plans (`referencePlanningMs`),
+orphan selection and plans (`orphanPlanningMs`), and transcript marker iteration
+(`markerScanMs`). Orphan planning excludes marker time. Counts report existing
+node/window rows before agent or prefix filtering, referenced IDs, selected entries, entered marker queries,
+consumed marker rows, and deletion plans. They are observed result counts, not
+SQLite internal row visits. No identifiers, marker text, transcript contents, or
+byte counts are added. `completed: false` marks partial observations when
+preparation failed; absent fields were not completed. These fields do not change
+the warning threshold or prove that a nearby request caused the work. Rounding
+and work outside the measured subphases can leave a difference from
+`writerExecutionMs`; do not assign that remainder to a specific phase.
+
 ### Slow reply preparation
 
 When a reply spends a long time preparing, inspect the normal Gateway logs:
