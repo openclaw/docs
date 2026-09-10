@@ -3509,6 +3509,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Run outcomes
   - H2: Adding a scenario
   - H2: Open questions
+  - H2: Related
 
 ## concepts/markdown-formatting.md
 
@@ -10023,6 +10024,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Receive acknowledgment policy
   - H2: Delivery settlement contract
   - H2: Migration
+  - H2: Related
 
 ## plugins/sdk-channel-ingress.md
 
@@ -10038,6 +10040,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Routes and activation
   - H2: Redaction
   - H2: Verification
+  - H2: Related
 
 ## plugins/sdk-channel-outbound.md
 
@@ -10054,6 +10057,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Deferred delivery admission
   - H2: Compatibility dispatch
   - H3: Migrating from channel-message
+  - H2: Related
 
 ## plugins/sdk-channel-plugins.md
 
