@@ -1354,7 +1354,9 @@
                   "start/why-openclaw/versioned-state-guarded-upgrades",
                   "start/why-openclaw/provenance",
                   "start/why-openclaw/openclaw-and-hermes-agent",
-                  "concepts/features"
+                  "concepts/features",
+                  "start/hubs",
+                  "start/docs-directory"
                 ]
               },
               {
@@ -3165,6 +3167,7 @@
                   },
                   "reference/rich-output-protocol",
                   "reference/secretref-credential-surface",
+                  "reference/secret-placeholder-conventions",
                   "date-time",
                   "concepts/timezone"
                 ]
@@ -3384,9 +3387,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "start/lore",
-                  "start/hubs",
-                  "start/docs-directory"
+                  "start/lore"
                 ]
               }
             ]
@@ -3412,7 +3413,9 @@
                   "zh-CN/start/why-openclaw/versioned-state-guarded-upgrades",
                   "zh-CN/start/why-openclaw/provenance",
                   "zh-CN/start/why-openclaw/openclaw-and-hermes-agent",
-                  "zh-CN/concepts/features"
+                  "zh-CN/concepts/features",
+                  "zh-CN/start/hubs",
+                  "zh-CN/start/docs-directory"
                 ]
               },
               {
@@ -5189,6 +5192,7 @@
                   },
                   "zh-CN/reference/rich-output-protocol",
                   "zh-CN/reference/secretref-credential-surface",
+                  "zh-CN/reference/secret-placeholder-conventions",
                   "zh-CN/date-time",
                   "zh-CN/concepts/timezone"
                 ]
@@ -5408,9 +5412,7 @@
               {
                 "group": "社区",
                 "pages": [
-                  "zh-CN/start/lore",
-                  "zh-CN/start/hubs",
-                  "zh-CN/start/docs-directory"
+                  "zh-CN/start/lore"
                 ]
               }
             ]
@@ -5436,7 +5438,9 @@
                   "zh-TW/start/why-openclaw/versioned-state-guarded-upgrades",
                   "zh-TW/start/why-openclaw/provenance",
                   "zh-TW/start/why-openclaw/openclaw-and-hermes-agent",
-                  "zh-TW/concepts/features"
+                  "zh-TW/concepts/features",
+                  "zh-TW/start/hubs",
+                  "zh-TW/start/docs-directory"
                 ]
               },
               {
@@ -7213,6 +7217,7 @@
                   },
                   "zh-TW/reference/rich-output-protocol",
                   "zh-TW/reference/secretref-credential-surface",
+                  "zh-TW/reference/secret-placeholder-conventions",
                   "zh-TW/date-time",
                   "zh-TW/concepts/timezone"
                 ]
@@ -7432,9 +7437,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "zh-TW/start/lore",
-                  "zh-TW/start/hubs",
-                  "zh-TW/start/docs-directory"
+                  "zh-TW/start/lore"
                 ]
               }
             ]
@@ -7460,7 +7463,9 @@
                   "ja-JP/start/why-openclaw/versioned-state-guarded-upgrades",
                   "ja-JP/start/why-openclaw/provenance",
                   "ja-JP/start/why-openclaw/openclaw-and-hermes-agent",
-                  "ja-JP/concepts/features"
+                  "ja-JP/concepts/features",
+                  "ja-JP/start/hubs",
+                  "ja-JP/start/docs-directory"
                 ]
               },
               {
@@ -9237,6 +9242,7 @@
                   },
                   "ja-JP/reference/rich-output-protocol",
                   "ja-JP/reference/secretref-credential-surface",
+                  "ja-JP/reference/secret-placeholder-conventions",
                   "ja-JP/date-time",
                   "ja-JP/concepts/timezone"
                 ]
@@ -9456,9 +9462,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "ja-JP/start/lore",
-                  "ja-JP/start/hubs",
-                  "ja-JP/start/docs-directory"
+                  "ja-JP/start/lore"
                 ]
               }
             ]
@@ -9484,7 +9488,9 @@
                   "es/start/why-openclaw/versioned-state-guarded-upgrades",
                   "es/start/why-openclaw/provenance",
                   "es/start/why-openclaw/openclaw-and-hermes-agent",
-                  "es/concepts/features"
+                  "es/concepts/features",
+                  "es/start/hubs",
+                  "es/start/docs-directory"
                 ]
               },
               {
@@ -11261,6 +11267,7 @@
                   },
                   "es/reference/rich-output-protocol",
                   "es/reference/secretref-credential-surface",
+                  "es/reference/secret-placeholder-conventions",
                   "es/date-time",
                   "es/concepts/timezone"
                 ]
@@ -11480,9 +11487,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "es/start/lore",
-                  "es/start/hubs",
-                  "es/start/docs-directory"
+                  "es/start/lore"
                 ]
               }
             ]
@@ -11508,7 +11513,9 @@
                   "pt-BR/start/why-openclaw/versioned-state-guarded-upgrades",
                   "pt-BR/start/why-openclaw/provenance",
                   "pt-BR/start/why-openclaw/openclaw-and-hermes-agent",
-                  "pt-BR/concepts/features"
+                  "pt-BR/concepts/features",
+                  "pt-BR/start/hubs",
+                  "pt-BR/start/docs-directory"
                 ]
               },
               {
@@ -13285,6 +13292,7 @@
                   },
                   "pt-BR/reference/rich-output-protocol",
                   "pt-BR/reference/secretref-credential-surface",
+                  "pt-BR/reference/secret-placeholder-conventions",
                   "pt-BR/date-time",
                   "pt-BR/concepts/timezone"
                 ]
@@ -13504,9 +13512,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "pt-BR/start/lore",
-                  "pt-BR/start/hubs",
-                  "pt-BR/start/docs-directory"
+                  "pt-BR/start/lore"
                 ]
               }
             ]
@@ -13532,7 +13538,9 @@
                   "ko/start/why-openclaw/versioned-state-guarded-upgrades",
                   "ko/start/why-openclaw/provenance",
                   "ko/start/why-openclaw/openclaw-and-hermes-agent",
-                  "ko/concepts/features"
+                  "ko/concepts/features",
+                  "ko/start/hubs",
+                  "ko/start/docs-directory"
                 ]
               },
               {
@@ -15309,6 +15317,7 @@
                   },
                   "ko/reference/rich-output-protocol",
                   "ko/reference/secretref-credential-surface",
+                  "ko/reference/secret-placeholder-conventions",
                   "ko/date-time",
                   "ko/concepts/timezone"
                 ]
@@ -15528,9 +15537,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "ko/start/lore",
-                  "ko/start/hubs",
-                  "ko/start/docs-directory"
+                  "ko/start/lore"
                 ]
               }
             ]
@@ -15556,7 +15563,9 @@
                   "de/start/why-openclaw/versioned-state-guarded-upgrades",
                   "de/start/why-openclaw/provenance",
                   "de/start/why-openclaw/openclaw-and-hermes-agent",
-                  "de/concepts/features"
+                  "de/concepts/features",
+                  "de/start/hubs",
+                  "de/start/docs-directory"
                 ]
               },
               {
@@ -17333,6 +17342,7 @@
                   },
                   "de/reference/rich-output-protocol",
                   "de/reference/secretref-credential-surface",
+                  "de/reference/secret-placeholder-conventions",
                   "de/date-time",
                   "de/concepts/timezone"
                 ]
@@ -17552,9 +17562,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "de/start/lore",
-                  "de/start/hubs",
-                  "de/start/docs-directory"
+                  "de/start/lore"
                 ]
               }
             ]
@@ -17580,7 +17588,9 @@
                   "fr/start/why-openclaw/versioned-state-guarded-upgrades",
                   "fr/start/why-openclaw/provenance",
                   "fr/start/why-openclaw/openclaw-and-hermes-agent",
-                  "fr/concepts/features"
+                  "fr/concepts/features",
+                  "fr/start/hubs",
+                  "fr/start/docs-directory"
                 ]
               },
               {
@@ -19357,6 +19367,7 @@
                   },
                   "fr/reference/rich-output-protocol",
                   "fr/reference/secretref-credential-surface",
+                  "fr/reference/secret-placeholder-conventions",
                   "fr/date-time",
                   "fr/concepts/timezone"
                 ]
@@ -19576,9 +19587,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "fr/start/lore",
-                  "fr/start/hubs",
-                  "fr/start/docs-directory"
+                  "fr/start/lore"
                 ]
               }
             ]
@@ -19604,7 +19613,9 @@
                   "hi/start/why-openclaw/versioned-state-guarded-upgrades",
                   "hi/start/why-openclaw/provenance",
                   "hi/start/why-openclaw/openclaw-and-hermes-agent",
-                  "hi/concepts/features"
+                  "hi/concepts/features",
+                  "hi/start/hubs",
+                  "hi/start/docs-directory"
                 ]
               },
               {
@@ -21381,6 +21392,7 @@
                   },
                   "hi/reference/rich-output-protocol",
                   "hi/reference/secretref-credential-surface",
+                  "hi/reference/secret-placeholder-conventions",
                   "hi/date-time",
                   "hi/concepts/timezone"
                 ]
@@ -21600,9 +21612,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "hi/start/lore",
-                  "hi/start/hubs",
-                  "hi/start/docs-directory"
+                  "hi/start/lore"
                 ]
               }
             ]
@@ -21628,7 +21638,9 @@
                   "ar/start/why-openclaw/versioned-state-guarded-upgrades",
                   "ar/start/why-openclaw/provenance",
                   "ar/start/why-openclaw/openclaw-and-hermes-agent",
-                  "ar/concepts/features"
+                  "ar/concepts/features",
+                  "ar/start/hubs",
+                  "ar/start/docs-directory"
                 ]
               },
               {
@@ -23405,6 +23417,7 @@
                   },
                   "ar/reference/rich-output-protocol",
                   "ar/reference/secretref-credential-surface",
+                  "ar/reference/secret-placeholder-conventions",
                   "ar/date-time",
                   "ar/concepts/timezone"
                 ]
@@ -23624,9 +23637,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "ar/start/lore",
-                  "ar/start/hubs",
-                  "ar/start/docs-directory"
+                  "ar/start/lore"
                 ]
               }
             ]
@@ -23652,7 +23663,9 @@
                   "it/start/why-openclaw/versioned-state-guarded-upgrades",
                   "it/start/why-openclaw/provenance",
                   "it/start/why-openclaw/openclaw-and-hermes-agent",
-                  "it/concepts/features"
+                  "it/concepts/features",
+                  "it/start/hubs",
+                  "it/start/docs-directory"
                 ]
               },
               {
@@ -25429,6 +25442,7 @@
                   },
                   "it/reference/rich-output-protocol",
                   "it/reference/secretref-credential-surface",
+                  "it/reference/secret-placeholder-conventions",
                   "it/date-time",
                   "it/concepts/timezone"
                 ]
@@ -25648,9 +25662,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "it/start/lore",
-                  "it/start/hubs",
-                  "it/start/docs-directory"
+                  "it/start/lore"
                 ]
               }
             ]
@@ -25676,7 +25688,9 @@
                   "vi/start/why-openclaw/versioned-state-guarded-upgrades",
                   "vi/start/why-openclaw/provenance",
                   "vi/start/why-openclaw/openclaw-and-hermes-agent",
-                  "vi/concepts/features"
+                  "vi/concepts/features",
+                  "vi/start/hubs",
+                  "vi/start/docs-directory"
                 ]
               },
               {
@@ -27453,6 +27467,7 @@
                   },
                   "vi/reference/rich-output-protocol",
                   "vi/reference/secretref-credential-surface",
+                  "vi/reference/secret-placeholder-conventions",
                   "vi/date-time",
                   "vi/concepts/timezone"
                 ]
@@ -27672,9 +27687,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "vi/start/lore",
-                  "vi/start/hubs",
-                  "vi/start/docs-directory"
+                  "vi/start/lore"
                 ]
               }
             ]
@@ -27700,7 +27713,9 @@
                   "nl/start/why-openclaw/versioned-state-guarded-upgrades",
                   "nl/start/why-openclaw/provenance",
                   "nl/start/why-openclaw/openclaw-and-hermes-agent",
-                  "nl/concepts/features"
+                  "nl/concepts/features",
+                  "nl/start/hubs",
+                  "nl/start/docs-directory"
                 ]
               },
               {
@@ -29477,6 +29492,7 @@
                   },
                   "nl/reference/rich-output-protocol",
                   "nl/reference/secretref-credential-surface",
+                  "nl/reference/secret-placeholder-conventions",
                   "nl/date-time",
                   "nl/concepts/timezone"
                 ]
@@ -29696,9 +29712,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "nl/start/lore",
-                  "nl/start/hubs",
-                  "nl/start/docs-directory"
+                  "nl/start/lore"
                 ]
               }
             ]
@@ -29724,7 +29738,9 @@
                   "tr/start/why-openclaw/versioned-state-guarded-upgrades",
                   "tr/start/why-openclaw/provenance",
                   "tr/start/why-openclaw/openclaw-and-hermes-agent",
-                  "tr/concepts/features"
+                  "tr/concepts/features",
+                  "tr/start/hubs",
+                  "tr/start/docs-directory"
                 ]
               },
               {
@@ -31501,6 +31517,7 @@
                   },
                   "tr/reference/rich-output-protocol",
                   "tr/reference/secretref-credential-surface",
+                  "tr/reference/secret-placeholder-conventions",
                   "tr/date-time",
                   "tr/concepts/timezone"
                 ]
@@ -31720,9 +31737,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "tr/start/lore",
-                  "tr/start/hubs",
-                  "tr/start/docs-directory"
+                  "tr/start/lore"
                 ]
               }
             ]
@@ -31748,7 +31763,9 @@
                   "uk/start/why-openclaw/versioned-state-guarded-upgrades",
                   "uk/start/why-openclaw/provenance",
                   "uk/start/why-openclaw/openclaw-and-hermes-agent",
-                  "uk/concepts/features"
+                  "uk/concepts/features",
+                  "uk/start/hubs",
+                  "uk/start/docs-directory"
                 ]
               },
               {
@@ -33525,6 +33542,7 @@
                   },
                   "uk/reference/rich-output-protocol",
                   "uk/reference/secretref-credential-surface",
+                  "uk/reference/secret-placeholder-conventions",
                   "uk/date-time",
                   "uk/concepts/timezone"
                 ]
@@ -33744,9 +33762,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "uk/start/lore",
-                  "uk/start/hubs",
-                  "uk/start/docs-directory"
+                  "uk/start/lore"
                 ]
               }
             ]
@@ -33772,7 +33788,9 @@
                   "id/start/why-openclaw/versioned-state-guarded-upgrades",
                   "id/start/why-openclaw/provenance",
                   "id/start/why-openclaw/openclaw-and-hermes-agent",
-                  "id/concepts/features"
+                  "id/concepts/features",
+                  "id/start/hubs",
+                  "id/start/docs-directory"
                 ]
               },
               {
@@ -35549,6 +35567,7 @@
                   },
                   "id/reference/rich-output-protocol",
                   "id/reference/secretref-credential-surface",
+                  "id/reference/secret-placeholder-conventions",
                   "id/date-time",
                   "id/concepts/timezone"
                 ]
@@ -35768,9 +35787,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "id/start/lore",
-                  "id/start/hubs",
-                  "id/start/docs-directory"
+                  "id/start/lore"
                 ]
               }
             ]
@@ -35796,7 +35813,9 @@
                   "pl/start/why-openclaw/versioned-state-guarded-upgrades",
                   "pl/start/why-openclaw/provenance",
                   "pl/start/why-openclaw/openclaw-and-hermes-agent",
-                  "pl/concepts/features"
+                  "pl/concepts/features",
+                  "pl/start/hubs",
+                  "pl/start/docs-directory"
                 ]
               },
               {
@@ -37573,6 +37592,7 @@
                   },
                   "pl/reference/rich-output-protocol",
                   "pl/reference/secretref-credential-surface",
+                  "pl/reference/secret-placeholder-conventions",
                   "pl/date-time",
                   "pl/concepts/timezone"
                 ]
@@ -37792,9 +37812,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "pl/start/lore",
-                  "pl/start/hubs",
-                  "pl/start/docs-directory"
+                  "pl/start/lore"
                 ]
               }
             ]
@@ -37820,7 +37838,9 @@
                   "ru/start/why-openclaw/versioned-state-guarded-upgrades",
                   "ru/start/why-openclaw/provenance",
                   "ru/start/why-openclaw/openclaw-and-hermes-agent",
-                  "ru/concepts/features"
+                  "ru/concepts/features",
+                  "ru/start/hubs",
+                  "ru/start/docs-directory"
                 ]
               },
               {
@@ -39597,6 +39617,7 @@
                   },
                   "ru/reference/rich-output-protocol",
                   "ru/reference/secretref-credential-surface",
+                  "ru/reference/secret-placeholder-conventions",
                   "ru/date-time",
                   "ru/concepts/timezone"
                 ]
@@ -39816,9 +39837,7 @@
               {
                 "group": "Community and meta",
                 "pages": [
-                  "ru/start/lore",
-                  "ru/start/hubs",
-                  "ru/start/docs-directory"
+                  "ru/start/lore"
                 ]
               }
             ]

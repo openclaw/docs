@@ -213,6 +213,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Sender authentication
   - H3: Sender-bound tokens and freshness
   - H2: Verify the security boundary
+  - H2: Watcher runtime behavior
   - H2: Troubleshooting
   - H2: Related
 
