@@ -2450,6 +2450,16 @@
                       "gateway/authentication",
                       "auth-credential-semantics",
                       "gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "gateway/secrets/runtime-model",
+                          "gateway/secrets/secretref-contract",
+                          "gateway/secrets/secret-store-and-egress",
+                          "gateway/secrets/integration-examples",
+                          "gateway/secrets/operations"
+                        ]
+                      },
                       "gateway/1password",
                       "gateway/secrets-plan-contract",
                       "gateway/trusted-proxy-auth"
@@ -4433,6 +4443,16 @@
                       "zh-CN/gateway/authentication",
                       "zh-CN/auth-credential-semantics",
                       "zh-CN/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "zh-CN/gateway/secrets/runtime-model",
+                          "zh-CN/gateway/secrets/secretref-contract",
+                          "zh-CN/gateway/secrets/secret-store-and-egress",
+                          "zh-CN/gateway/secrets/integration-examples",
+                          "zh-CN/gateway/secrets/operations"
+                        ]
+                      },
                       "zh-CN/gateway/1password",
                       "zh-CN/gateway/secrets-plan-contract",
                       "zh-CN/gateway/trusted-proxy-auth"
@@ -6416,6 +6436,16 @@
                       "zh-TW/gateway/authentication",
                       "zh-TW/auth-credential-semantics",
                       "zh-TW/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "zh-TW/gateway/secrets/runtime-model",
+                          "zh-TW/gateway/secrets/secretref-contract",
+                          "zh-TW/gateway/secrets/secret-store-and-egress",
+                          "zh-TW/gateway/secrets/integration-examples",
+                          "zh-TW/gateway/secrets/operations"
+                        ]
+                      },
                       "zh-TW/gateway/1password",
                       "zh-TW/gateway/secrets-plan-contract",
                       "zh-TW/gateway/trusted-proxy-auth"
@@ -8399,6 +8429,16 @@
                       "ja-JP/gateway/authentication",
                       "ja-JP/auth-credential-semantics",
                       "ja-JP/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "ja-JP/gateway/secrets/runtime-model",
+                          "ja-JP/gateway/secrets/secretref-contract",
+                          "ja-JP/gateway/secrets/secret-store-and-egress",
+                          "ja-JP/gateway/secrets/integration-examples",
+                          "ja-JP/gateway/secrets/operations"
+                        ]
+                      },
                       "ja-JP/gateway/1password",
                       "ja-JP/gateway/secrets-plan-contract",
                       "ja-JP/gateway/trusted-proxy-auth"
@@ -10382,6 +10422,16 @@
                       "es/gateway/authentication",
                       "es/auth-credential-semantics",
                       "es/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "es/gateway/secrets/runtime-model",
+                          "es/gateway/secrets/secretref-contract",
+                          "es/gateway/secrets/secret-store-and-egress",
+                          "es/gateway/secrets/integration-examples",
+                          "es/gateway/secrets/operations"
+                        ]
+                      },
                       "es/gateway/1password",
                       "es/gateway/secrets-plan-contract",
                       "es/gateway/trusted-proxy-auth"
@@ -12365,6 +12415,16 @@
                       "pt-BR/gateway/authentication",
                       "pt-BR/auth-credential-semantics",
                       "pt-BR/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "pt-BR/gateway/secrets/runtime-model",
+                          "pt-BR/gateway/secrets/secretref-contract",
+                          "pt-BR/gateway/secrets/secret-store-and-egress",
+                          "pt-BR/gateway/secrets/integration-examples",
+                          "pt-BR/gateway/secrets/operations"
+                        ]
+                      },
                       "pt-BR/gateway/1password",
                       "pt-BR/gateway/secrets-plan-contract",
                       "pt-BR/gateway/trusted-proxy-auth"
@@ -14348,6 +14408,16 @@
                       "ko/gateway/authentication",
                       "ko/auth-credential-semantics",
                       "ko/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "ko/gateway/secrets/runtime-model",
+                          "ko/gateway/secrets/secretref-contract",
+                          "ko/gateway/secrets/secret-store-and-egress",
+                          "ko/gateway/secrets/integration-examples",
+                          "ko/gateway/secrets/operations"
+                        ]
+                      },
                       "ko/gateway/1password",
                       "ko/gateway/secrets-plan-contract",
                       "ko/gateway/trusted-proxy-auth"
@@ -16331,6 +16401,16 @@
                       "de/gateway/authentication",
                       "de/auth-credential-semantics",
                       "de/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "de/gateway/secrets/runtime-model",
+                          "de/gateway/secrets/secretref-contract",
+                          "de/gateway/secrets/secret-store-and-egress",
+                          "de/gateway/secrets/integration-examples",
+                          "de/gateway/secrets/operations"
+                        ]
+                      },
                       "de/gateway/1password",
                       "de/gateway/secrets-plan-contract",
                       "de/gateway/trusted-proxy-auth"
@@ -18314,6 +18394,16 @@
                       "fr/gateway/authentication",
                       "fr/auth-credential-semantics",
                       "fr/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "fr/gateway/secrets/runtime-model",
+                          "fr/gateway/secrets/secretref-contract",
+                          "fr/gateway/secrets/secret-store-and-egress",
+                          "fr/gateway/secrets/integration-examples",
+                          "fr/gateway/secrets/operations"
+                        ]
+                      },
                       "fr/gateway/1password",
                       "fr/gateway/secrets-plan-contract",
                       "fr/gateway/trusted-proxy-auth"
@@ -20297,6 +20387,16 @@
                       "hi/gateway/authentication",
                       "hi/auth-credential-semantics",
                       "hi/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "hi/gateway/secrets/runtime-model",
+                          "hi/gateway/secrets/secretref-contract",
+                          "hi/gateway/secrets/secret-store-and-egress",
+                          "hi/gateway/secrets/integration-examples",
+                          "hi/gateway/secrets/operations"
+                        ]
+                      },
                       "hi/gateway/1password",
                       "hi/gateway/secrets-plan-contract",
                       "hi/gateway/trusted-proxy-auth"
@@ -22280,6 +22380,16 @@
                       "ar/gateway/authentication",
                       "ar/auth-credential-semantics",
                       "ar/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "ar/gateway/secrets/runtime-model",
+                          "ar/gateway/secrets/secretref-contract",
+                          "ar/gateway/secrets/secret-store-and-egress",
+                          "ar/gateway/secrets/integration-examples",
+                          "ar/gateway/secrets/operations"
+                        ]
+                      },
                       "ar/gateway/1password",
                       "ar/gateway/secrets-plan-contract",
                       "ar/gateway/trusted-proxy-auth"
@@ -24263,6 +24373,16 @@
                       "it/gateway/authentication",
                       "it/auth-credential-semantics",
                       "it/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "it/gateway/secrets/runtime-model",
+                          "it/gateway/secrets/secretref-contract",
+                          "it/gateway/secrets/secret-store-and-egress",
+                          "it/gateway/secrets/integration-examples",
+                          "it/gateway/secrets/operations"
+                        ]
+                      },
                       "it/gateway/1password",
                       "it/gateway/secrets-plan-contract",
                       "it/gateway/trusted-proxy-auth"
@@ -26246,6 +26366,16 @@
                       "vi/gateway/authentication",
                       "vi/auth-credential-semantics",
                       "vi/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "vi/gateway/secrets/runtime-model",
+                          "vi/gateway/secrets/secretref-contract",
+                          "vi/gateway/secrets/secret-store-and-egress",
+                          "vi/gateway/secrets/integration-examples",
+                          "vi/gateway/secrets/operations"
+                        ]
+                      },
                       "vi/gateway/1password",
                       "vi/gateway/secrets-plan-contract",
                       "vi/gateway/trusted-proxy-auth"
@@ -28229,6 +28359,16 @@
                       "nl/gateway/authentication",
                       "nl/auth-credential-semantics",
                       "nl/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "nl/gateway/secrets/runtime-model",
+                          "nl/gateway/secrets/secretref-contract",
+                          "nl/gateway/secrets/secret-store-and-egress",
+                          "nl/gateway/secrets/integration-examples",
+                          "nl/gateway/secrets/operations"
+                        ]
+                      },
                       "nl/gateway/1password",
                       "nl/gateway/secrets-plan-contract",
                       "nl/gateway/trusted-proxy-auth"
@@ -30212,6 +30352,16 @@
                       "tr/gateway/authentication",
                       "tr/auth-credential-semantics",
                       "tr/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "tr/gateway/secrets/runtime-model",
+                          "tr/gateway/secrets/secretref-contract",
+                          "tr/gateway/secrets/secret-store-and-egress",
+                          "tr/gateway/secrets/integration-examples",
+                          "tr/gateway/secrets/operations"
+                        ]
+                      },
                       "tr/gateway/1password",
                       "tr/gateway/secrets-plan-contract",
                       "tr/gateway/trusted-proxy-auth"
@@ -32195,6 +32345,16 @@
                       "uk/gateway/authentication",
                       "uk/auth-credential-semantics",
                       "uk/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "uk/gateway/secrets/runtime-model",
+                          "uk/gateway/secrets/secretref-contract",
+                          "uk/gateway/secrets/secret-store-and-egress",
+                          "uk/gateway/secrets/integration-examples",
+                          "uk/gateway/secrets/operations"
+                        ]
+                      },
                       "uk/gateway/1password",
                       "uk/gateway/secrets-plan-contract",
                       "uk/gateway/trusted-proxy-auth"
@@ -34178,6 +34338,16 @@
                       "id/gateway/authentication",
                       "id/auth-credential-semantics",
                       "id/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "id/gateway/secrets/runtime-model",
+                          "id/gateway/secrets/secretref-contract",
+                          "id/gateway/secrets/secret-store-and-egress",
+                          "id/gateway/secrets/integration-examples",
+                          "id/gateway/secrets/operations"
+                        ]
+                      },
                       "id/gateway/1password",
                       "id/gateway/secrets-plan-contract",
                       "id/gateway/trusted-proxy-auth"
@@ -36161,6 +36331,16 @@
                       "pl/gateway/authentication",
                       "pl/auth-credential-semantics",
                       "pl/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "pl/gateway/secrets/runtime-model",
+                          "pl/gateway/secrets/secretref-contract",
+                          "pl/gateway/secrets/secret-store-and-egress",
+                          "pl/gateway/secrets/integration-examples",
+                          "pl/gateway/secrets/operations"
+                        ]
+                      },
                       "pl/gateway/1password",
                       "pl/gateway/secrets-plan-contract",
                       "pl/gateway/trusted-proxy-auth"
@@ -38144,6 +38324,16 @@
                       "ru/gateway/authentication",
                       "ru/auth-credential-semantics",
                       "ru/gateway/secrets",
+                      {
+                        "group": "Secrets management",
+                        "pages": [
+                          "ru/gateway/secrets/runtime-model",
+                          "ru/gateway/secrets/secretref-contract",
+                          "ru/gateway/secrets/secret-store-and-egress",
+                          "ru/gateway/secrets/integration-examples",
+                          "ru/gateway/secrets/operations"
+                        ]
+                      },
                       "ru/gateway/1password",
                       "ru/gateway/secrets-plan-contract",
                       "ru/gateway/trusted-proxy-auth"

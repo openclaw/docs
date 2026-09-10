@@ -5485,21 +5485,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/secrets
 - Headings:
-  - H2: Runtime model
-  - H2: Egress-time injection (sentinels)
-  - H2: Agent-access boundary
-  - H2: Active-surface filtering
-  - H2: Gateway auth surface diagnostics
-  - H2: Onboarding reference preflight
-  - H2: SecretRef contract
-  - H2: Provider config
-  - H2: Shared secret store
-  - H2: Secret egress proxy
-  - H3: Traffic allowlist
-  - H2: File-backed API keys
+  - H2: Secrets pages
+  - H2: Where each section moved
+  - H2: Related
+
+## gateway/secrets/integration-examples.md
+
+- Route: /gateway/secrets/integration-examples
+- Headings:
   - H2: Exec integration examples
   - H2: MCP server environment variables
   - H2: Sandbox SSH auth material
+
+## gateway/secrets/operations.md
+
+- Route: /gateway/secrets/operations
+- Headings:
   - H2: Supported credential surface
   - H2: Required behavior and precedence
   - H2: Activation triggers
@@ -5509,7 +5510,33 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: One-way safety policy
   - H2: Legacy auth compatibility notes
   - H2: Control UI
-  - H2: Related
+
+## gateway/secrets/runtime-model.md
+
+- Route: /gateway/secrets/runtime-model
+- Headings:
+  - H2: Runtime model
+  - H2: Egress-time injection (sentinels)
+  - H2: Agent-access boundary
+  - H2: Active-surface filtering
+  - H2: Gateway auth surface diagnostics
+  - H2: Onboarding reference preflight
+
+## gateway/secrets/secret-store-and-egress.md
+
+- Route: /gateway/secrets/secret-store-and-egress
+- Headings:
+  - H2: Shared secret store
+  - H2: Secret egress proxy
+  - H3: Traffic allowlist
+  - H2: File-backed API keys
+
+## gateway/secrets/secretref-contract.md
+
+- Route: /gateway/secrets/secretref-contract
+- Headings:
+  - H2: SecretRef contract
+  - H2: Provider config
 
 ## gateway/security/access-control.md
 
