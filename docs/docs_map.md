@@ -13016,7 +13016,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Solution 2: use snap Chromium in attach-only mode
   - H3: Verify the browser works
   - H3: Config reference
-  - H3: Problem: No Chrome tabs found for profile="user"
+  - H2: Problem: No Chrome tabs found for profile="user"
   - H2: Related
 
 ## tools/browser-login.md
@@ -13447,7 +13447,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/goal
 - Headings:
-  - H1: Goal
   - H2: Quick start
   - H2: What goals are for
   - H2: Command reference
