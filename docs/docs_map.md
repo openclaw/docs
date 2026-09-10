@@ -211,6 +211,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Configure a restricted reader
   - H2: Sender authentication
+  - H3: Sender-bound tokens and freshness
   - H2: Verify the security boundary
   - H2: Troubleshooting
   - H2: Related
@@ -280,6 +281,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Delivery and notifications
   - H3: Notification policies
   - H2: CLI reference
+  - H3: tasks list
+  - H3: tasks show
+  - H3: tasks cancel
+  - H3: tasks retry and dismiss
+  - H3: tasks notify
+  - H3: tasks audit
+  - H3: tasks maintenance
+  - H3: tasks flow list, show, and cancel
   - H2: Chat task board (/tasks)
   - H3: Control UI
   - H2: Status integration (task pressure)
@@ -287,6 +296,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Where tasks live
   - H3: Automatic maintenance
   - H2: How tasks relate to other systems
+  - H3: Tasks and Task Flow
+  - H3: Tasks and automations
+  - H3: Tasks and heartbeat
+  - H3: Tasks and sessions
+  - H3: Tasks and agent runs
   - H2: Related
 
 ## channels/a2a.md
@@ -2143,16 +2157,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/doctor/checks
 - Headings:
-  - H2: Notes
-  - H3: Modes and prompting
-  - H3: Config writes and backups
-  - H3: Gateway and service repairs
-  - H3: Session state and cron
-  - H3: Tool and channel policy
-  - H3: Models and auth
-  - H3: Plugins and skills
-  - H3: Sandbox
-  - H3: Secrets and channel credentials
+  - H2: Modes and prompting
+  - H2: Config writes and backups
+  - H2: Gateway and service repairs
+  - H2: Session state and cron
+  - H2: Tool and channel policy
+  - H2: Models and auth
+  - H2: Plugins and skills
+  - H2: Sandbox
+  - H2: Secrets and channel credentials
 
 ## cli/doctor/health-contract.md
 
@@ -7055,12 +7068,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: macOS
   - H4: Linux X11 through Crabbox
   - H3: Windows and Linux (experimental, direct SDK)
-  - H3: Troubleshooting
   - H2: The computer.act node command
   - H2: Authorization
   - H2: Safety
-  - H2: Desktop stream troubleshooting
-  - H2: macOS permission troubleshooting
+  - H2: Troubleshooting
+  - H3: CUA Driver error codes
+  - H3: Desktop stream
+  - H3: macOS permissions
   - H2: Relationship to other desktop-control paths
 
 ## nodes/device-commands.md
@@ -10235,6 +10249,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: API stability
   - H2: What each page covers
   - H2: Registration API
+  - H3: Session discussion provider
   - H3: API object fields
   - H2: Where each section moved
   - H2: Related
@@ -12145,7 +12160,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/test/remote-proof
 - Headings:
-  - H2: Agent default
+  - H2: Remote proof policy for agents
   - H2: Crabbox repository setup
 
 ## reference/test/runner-internals.md
