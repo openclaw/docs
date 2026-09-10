@@ -33,6 +33,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 
 ## Workflow
 
+- For a local page preview, run `npm run docs:build:preview -- --page <route>` (repeat `--page` for more pages). It builds at most 30 pages in English, including the requested pages. Use this for screenshots; do not run translation or full publishing builds just for a preview. See `scripts/docs-site/AGENTS.md` for fixture and validation options.
 - Source sync starts in `openclaw/openclaw/.github/workflows/docs-sync-publish.yml`.
 - Sync mirrors `openclaw/openclaw/docs/**` into this repo and updates `.openclaw-sync/source.json`.
 - `translate-incremental.yml` runs normal debounced docs changes.

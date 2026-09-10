@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
+import { parseArgs } from "node:util";
 
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
@@ -22,8 +23,6 @@ const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const shellPublicAssetsDir = path.join(siteAssetsDir, "assets");
 const outDir = path.join(root, "dist", "docs-site");
 const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
-// Preview builds skip redirects, so never let an earlier full build's records survive.
-fs.rmSync(redirectMetadataPath, { force: true });
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
@@ -53,15 +52,19 @@ const ogAssetVersion = createHash("sha256")
   .update(fs.readFileSync(new URL("./og-card.svg", import.meta.url)))
   .digest("hex")
   .slice(0, 12);
-const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
-const shellOnly = artifactMode === "shell";
+const { values: { page: requestedPages } } = parseArgs({
+  options: { page: { type: "string", multiple: true, default: [] } },
+});
 const previewPagesPerGroup = parseOptionalPositiveInt(
   process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
   "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
 );
-const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
-const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
-const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const configuredMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
+const previewMode = Boolean(requestedPages.length || previewPagesPerGroup || configuredMaxPages || process.env.DOCS_SITE_PREVIEW_LOCALE);
+const previewMaxPages = Math.min(configuredMaxPages || 30, 30);
+const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE || "en";
+const artifactMode = previewMode ? "shell" : process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
+const shellOnly = artifactMode === "shell";
 const renderCache = !previewMode && process.env.DOCS_SITE_RENDER_CACHE !== "0"
   ? createRenderCache(path.join(root, ".cache", "docs-render"), renderArticle)
   : null;
@@ -69,11 +72,11 @@ const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INC
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
-fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
-fs.mkdirSync(outDir, { recursive: true });
-
 const locales = buildLocales(config);
 const localeCodes = new Set(locales.map((locale) => locale.code));
+if (previewMode && !localeCodes.has(previewLocale)) {
+  throw new Error(`Preview locale not found: ${previewLocale}`);
+}
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 let pages = allPages;
@@ -85,7 +88,7 @@ if (previewMode) {
     maxPages: previewMaxPages,
     pagesPerGroup: previewPagesPerGroup || 1,
   });
-  pages = allPages.filter((page) => page.hidden || previewKeys.has(pageKey(page.locale, page.slug)));
+  pages = allPages.filter((page) => previewKeys.has(pageKey(page.locale, page.slug)));
   pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
   navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 }
@@ -93,6 +96,10 @@ const localePickerLabels = {
   "pt-BR": "Português (BR)"
 };
 
+// Preview builds skip redirects, so never let an earlier full build's records survive.
+fs.rmSync(redirectMetadataPath, { force: true });
+fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+fs.mkdirSync(outDir, { recursive: true });
 copyPublicFiles();
 if (!previewMode) await renderPageOgCards();
 for (const page of pages) writePage(page);
@@ -141,11 +148,10 @@ function collectPages(localeList) {
   const result = [];
   const localeRoots = new Set(localeList.filter((locale) => !locale.root).map((locale) => locale.code));
   for (const locale of localeList) {
+    if (previewMode && !locale.root && locale.code !== previewLocale) continue;
     const base = locale.root ? docsDir : path.join(docsDir, locale.code);
-    for (const file of walkDocs(base)) {
+    for (const file of walkDocs(base, locale.root ? localeRoots : new Set())) {
       const rel = path.relative(base, file).replaceAll(path.sep, "/");
-      // Only the English owner excludes foreign roots; walkDocs remains an all-source traversal.
-      if (locale.root && localeRoots.has(rel.split("/")[0])) continue;
       if (ignoredDocFiles.has(rel)) continue;
       const raw = fs.readFileSync(file, "utf8");
       const parsed = parseFrontmatter(raw);
@@ -202,12 +208,12 @@ function elementsFixturePage() {
   };
 }
 
-function walkDocs(dir) {
+function walkDocs(dir, excludedRoots = new Set()) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (entry.name.startsWith(".")) return [];
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return ignoredDocDirs.has(entry.name) ? [] : walkDocs(full);
+    if (entry.isDirectory()) return ignoredDocDirs.has(entry.name) || excludedRoots.has(entry.name) ? [] : walkDocs(full);
     return /\.(md|mdx)$/.test(entry.name) ? [full] : [];
   });
 }
@@ -228,13 +234,21 @@ function navGroup(locale, group) {
 
 function collectPreviewPageKeys(navByLocale, { locale, maxPages, pagesPerGroup }) {
   const keys = new Set();
+  for (const route of requestedPages) {
+    const slug = navEntrySlug(locale, route.replace(/^\/+|\/+$/g, ""));
+    const key = pageKey(locale, slug);
+    if (!allPageByKey.has(key)) throw new Error(`Preview page not found (${locale}): ${route}`);
+    keys.add(key);
+  }
+  if (includeElementsFixture) keys.add(pageKey("en", "__elements"));
+  if (keys.size > maxPages) throw new Error(`Requested pages exceed the preview limit of ${maxPages}`);
   for (const [navLocale, nav] of navByLocale) {
     if (locale && navLocale !== locale) continue;
     for (const tab of nav) {
       for (const group of tab.groups) {
         for (const page of flattenNavEntries(group.pages).slice(0, pagesPerGroup)) {
+          if (keys.size >= maxPages) return keys;
           keys.add(pageKey(page.locale, page.slug));
-          if (maxPages && keys.size >= maxPages) return keys;
         }
       }
     }
@@ -925,7 +939,11 @@ function walkPublicFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (entry.name.startsWith(".")) return [];
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walkPublicFiles(full);
+    if (entry.isDirectory()) {
+      if (previewMode && dir === docsDir && entry.name !== "en"
+        && localeCodes.has(entry.name) && entry.name !== previewLocale) return [];
+      return walkPublicFiles(full);
+    }
     const rel = path.relative(docsDir, full).replaceAll(path.sep, "/");
     if (ignoredDocFiles.has(rel) || /\.(md|mdx|json|jsonl)$/.test(entry.name)) return [];
     return [full];

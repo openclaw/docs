@@ -19,6 +19,7 @@ export function run(root, script, env = {}, imports = [], options = {}) {
     "--import", pathToFileURL(path.join(root, "no-network.mjs")).href,
     ...imports.flatMap((file) => ["--import", pathToFileURL(file).href]),
     path.join(repo, "scripts/docs-site", script),
+    ...(options.args ?? []),
   ], {
     cwd: root,
     env: { PATH: process.env.PATH, ...env },
