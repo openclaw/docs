@@ -582,6 +582,9 @@ async function checkMobileToc(page) {
 }
 
 async function checkMobile() {
+  const docsConfig = JSON.parse(fs.readFileSync(path.join(root, "docs", "docs.json"), "utf8"));
+  const expectedTabs = docsConfig.navigation.languages.find((locale) => locale.language === "en")
+    .tabs.map((tab) => tab.tab);
   const page = await browser.newPage({ viewport: { width: 390, height: 980 }, isMobile: true });
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
   await page.screenshot({ path: path.join(artifacts, "elements-mobile-dark.png"), fullPage: true });
@@ -634,21 +637,6 @@ async function checkMobile() {
   if (!mobileCardColumns.length || mobileCardColumns.some((columns) => columns !== 1)) {
     throw new Error(`mobile card grids should collapse to one column: ${JSON.stringify(mobileCardColumns)}`);
   }
-  await page.evaluate(() => {
-    for (const selector of [".tabs", ".mobile-tabs"]) {
-      const container = document.querySelector(selector);
-      const links = [...container?.querySelectorAll("a") ?? []];
-      if (links.some((link) => link.textContent?.trim() === "Release & CI")) continue;
-      const help = links.find((link) => link.textContent?.trim() === "Help");
-      const release = help?.cloneNode();
-      if (!help || !(release instanceof HTMLAnchorElement)) throw new Error(`missing ${selector} Help fixture`);
-      release.href = "/releases";
-      release.textContent = "Release & CI";
-      release.removeAttribute("aria-current");
-      release.classList.remove("active");
-      help.before(release);
-    }
-  });
   await page.click("[data-nav-toggle]");
   await page.locator(".sidebar.open").waitFor({ state: "visible" });
   await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar")?.getBoundingClientRect().left ?? -999) < 1);
@@ -696,48 +684,47 @@ async function checkMobile() {
   await page.locator(".mobile-tabs").waitFor({ state: "visible" });
   await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
   const sections = await page.evaluate(() => {
-    const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
     const links = [...document.querySelectorAll(".mobile-tab-link")];
     const rects = links.map((link) => link.getBoundingClientRect());
     return {
       open: document.querySelector(".mobile-section-switcher")?.hasAttribute("open"),
-      mobileTabCount: links.length,
-      desktopTabCount: document.querySelectorAll(".tab-link").length,
+      desktopLabels: [...document.querySelectorAll(".tab-link")].map((link) => link.textContent?.trim()),
       labels: links.map((link) => link.textContent?.trim()),
       activeCount: document.querySelectorAll('.mobile-tab-link[aria-current="location"]').length,
       linksVisible: rects.every((rect) => rect.width > 0 && rect.height > 0),
       linksInViewport: rects.every((rect) => rect.left >= 0 && rect.right <= innerWidth),
-      lastLinkVisible: Boolean(container && rects.at(-1)?.bottom <= container.bottom + 1),
     };
   });
   if (!sections.open
-    || sections.mobileTabCount !== 12
-    || sections.mobileTabCount !== sections.desktopTabCount
-    || sections.labels.slice(-4).join("|") !== "Gateway & Ops|Reference|Release & CI|Help"
+    || !expectedTabs.length
+    || JSON.stringify(sections.labels) !== JSON.stringify(expectedTabs)
+    || JSON.stringify(sections.desktopLabels) !== JSON.stringify(expectedTabs)
     || sections.activeCount !== 1
     || !sections.linksVisible
-    || !sections.linksInViewport
-    || !sections.lastLinkVisible) {
-    throw new Error(`mobile docs section switcher failed: ${JSON.stringify(sections)}`);
+    || !sections.linksInViewport) {
+    throw new Error(`mobile docs section switcher failed: ${JSON.stringify({ expectedTabs, ...sections })}`);
   }
-  await page.setViewportSize({ width: 390, height: 700 });
-  const shortViewport = await page.evaluate(() => {
-    const container = document.querySelector(".mobile-tabs");
-    return {
-      clientHeight: container?.clientHeight ?? 0,
-      scrollHeight: container?.scrollHeight ?? 0,
-    };
-  });
-  if (shortViewport.scrollHeight <= shortViewport.clientHeight) {
-    throw new Error(`short mobile section switcher should remain scrollable: ${JSON.stringify(shortViewport)}`);
+  for (const height of [980, 700]) {
+    await page.setViewportSize({ width: 390, height });
+    const scrollArea = await page.evaluate(() => {
+      const container = document.querySelector(".mobile-tabs");
+      return {
+        clientHeight: container?.clientHeight ?? 0,
+        scrollHeight: container?.scrollHeight ?? 0,
+      };
+    });
+    if (height === 700 && scrollArea.scrollHeight <= scrollArea.clientHeight) {
+      throw new Error(`short mobile section switcher should remain scrollable: ${JSON.stringify(scrollArea)}`);
+    }
+    await page.locator(".mobile-tab-link").last().scrollIntoViewIfNeeded();
+    const lastLinkReachable = await page.evaluate(() => {
+      const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
+      const lastLink = [...document.querySelectorAll(".mobile-tab-link")].at(-1)?.getBoundingClientRect();
+      return Boolean(container && lastLink && lastLink.top >= container.top - 1 && lastLink.bottom <= container.bottom + 1);
+    });
+    if (!lastLinkReachable) throw new Error(`mobile section switcher did not expose its final link at height ${height}`);
+    await page.screenshot({ path: path.join(artifacts, `elements-mobile-menu-${height}-scrolled.png`), fullPage: false });
   }
-  await page.locator(".mobile-tab-link").last().scrollIntoViewIfNeeded();
-  const lastLinkReachable = await page.evaluate(() => {
-    const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
-    const lastLink = [...document.querySelectorAll(".mobile-tab-link")].at(-1)?.getBoundingClientRect();
-    return Boolean(container && lastLink && lastLink.top >= container.top - 1 && lastLink.bottom <= container.bottom + 1);
-  });
-  if (!lastLinkReachable) throw new Error("short mobile section switcher did not expose its final link");
   await page.setViewportSize({ width: 390, height: 980 });
   await page.keyboard.press("Escape");
   const closed = await page.evaluate(() => ({
