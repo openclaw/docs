@@ -633,6 +633,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: Inbound durability
+  - H2: Webhook delivery window
 
 ## channels/feishu/troubleshooting.md
 
@@ -641,6 +642,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H3: Bot does not respond in group chats
   - H3: Bot does not receive messages
+  - H3: Webhook callbacks rejected with 401 Invalid signature
   - H3: QR setup does not react in the Feishu mobile app
   - H3: App Secret leaked
 
