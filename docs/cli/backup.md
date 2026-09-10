@@ -99,9 +99,21 @@ recognized by the exact sibling layout: `<owner>/` beside
 aliases receive the same protection. Unrelated similarly named workspace
 directories remain included; a suffix alone does not establish ownership.
 
-Keep captures at their managed location alongside their owner. Moved, renamed,
-or orphaned captures from another state cannot be identified by this rule.
-This exclusion does not create captures or change ordinary backup sanitization.
+Marked private directories remain excluded after their owner is removed or
+renamed, or the marked directory is moved or copied. Keep the marker with the
+whole directory. Files copied out without it are not recognized by this rule.
+The fixed `.openclaw-private-update-capture` file contains exactly
+`openclaw-private-update-capture-v1` followed by a newline. Export checks inspect
+only selected paths and their ancestors, including canonical aliases. They do
+not parse workspace manifests or scan for other state roots. A malformed or
+unreadable marker refuses export of that selection; a support bundle reports
+the refusal without including that input.
+
+The marker is an exclusion instruction, not proof of artifact ownership or
+permission to reopen, adopt, or delete it. Producers must durably write it before
+raw data, including in each independently movable staging or capture directory.
+Cleanup must preserve it until private contents are gone. This exclusion does
+not create captures, change retention, or change ordinary backup sanitization.
 
 ## SQLite snapshots
 
