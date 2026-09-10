@@ -680,6 +680,8 @@ async function checkMobile() {
     || !menu.closeFocused) {
     throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
   }
+  await page.locator("[data-community-invite-dismiss]").click();
+  await page.locator(".community-invite").waitFor({ state: "hidden" });
   await page.click(".mobile-section-switcher > summary");
   await page.locator(".mobile-tabs").waitFor({ state: "visible" });
   await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
@@ -717,6 +719,7 @@ async function checkMobile() {
       throw new Error(`short mobile section switcher should remain scrollable: ${JSON.stringify(scrollArea)}`);
     }
     await page.locator(".mobile-tab-link").last().scrollIntoViewIfNeeded();
+    await page.locator(".mobile-tab-link").last().click({ trial: true });
     const lastLinkReachable = await page.evaluate(() => {
       const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
       const lastLink = [...document.querySelectorAll(".mobile-tab-link")].at(-1)?.getBoundingClientRect();
@@ -735,7 +738,7 @@ async function checkMobile() {
   if (closed.bodyOpen || closed.sidebarOpen || closed.ariaExpanded !== "false") {
     throw new Error(`mobile menu did not close on Escape: ${JSON.stringify(closed)}`);
   }
-  await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/channels/discord/voice-channels`, { waitUntil: "networkidle" });
   await page.screenshot({ path: path.join(artifacts, "discord-mobile-dark.png"), fullPage: false });
   const discordOverflow = await page.evaluate(() => {
     const viewport = innerWidth;
