@@ -586,6 +586,11 @@ if (!fs.existsSync(elementsIndexPath)) {
   throw new Error("__elements: hidden component fixture page is missing");
 }
 const elementsIndex = fs.readFileSync(elementsIndexPath, "utf8");
+if (!elementsIndex.includes('data-code-label="json5"')
+  || !elementsIndex.includes('data-code-label="openclaw.json5"')
+  || /data-code-label="[^"]*validate=false/.test(elementsIndex)) {
+  throw new Error("__elements: validation metadata leaked into code labels");
+}
 for (const marker of [
   'class="oc-callout oc-callout-tip"',
   'class="oc-callout oc-callout-info"',
