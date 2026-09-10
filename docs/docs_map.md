@@ -1856,7 +1856,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/approvals
 - Headings:
   - H1: openclaw approvals
-  - H2: openclaw exec-policy
   - H2: Common commands
   - H2: Pending approvals
   - H2: Standing grants
@@ -1864,6 +1863,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: "Never prompt" / YOLO example
   - H2: Allowlist helpers
   - H2: Common options
+  - H2: openclaw exec-policy
   - H2: Notes
   - H2: Related
 
@@ -2138,6 +2138,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/doctor/checks
 - Headings:
   - H2: Notes
+  - H3: Modes and prompting
+  - H3: Config writes and backups
+  - H3: Gateway and service repairs
+  - H3: Session state and cron
+  - H3: Tool and channel policy
+  - H3: Models and auth
+  - H3: Plugins and skills
+  - H3: Sandbox
+  - H3: Secrets and channel credentials
 
 ## cli/doctor/health-contract.md
 
@@ -2178,7 +2187,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Shared state SQLite compaction
   - H2: Session SQLite migration
   - H3: Hard-linked legacy artifacts
-  - H3: Downgrading After Session SQLite Migration
+  - H3: Downgrading after session SQLite migration
 
 ## cli/doctor/state-migrations.md
 
@@ -2316,7 +2325,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/infer
 - Headings:
-  - H2: Turn infer into a skill
   - H2: Command tree
   - H2: Common tasks
   - H2: Behavior
@@ -2329,6 +2337,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Embedding
   - H2: JSON output
   - H2: Common pitfalls
+  - H2: Turn infer into a skill
   - H2: Related
 
 ## cli/logs.md
@@ -2374,8 +2383,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/mcp/registry
 - Headings:
   - H2: OpenClaw as an MCP client registry
-  - H3: Codex tool approvals
   - H3: Saved MCP server definitions
+  - H3: Codex tool approvals
   - H3: Common server recipes
 
 ## cli/mcp/serve.md
@@ -2526,6 +2535,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw onboard
   - H2: Examples
+  - H2: Flags
   - H2: Guided flow
   - H2: Reset
   - H2: Locale
@@ -2536,7 +2546,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Local gateway health
   - H3: Interactive ref mode
   - H3: Z.AI endpoint choices
-  - H2: Additional non-interactive flags
+  - H3: Additional non-interactive flags
   - H2: Provider prefiltering
   - H2: Web-search follow-ups
   - H2: Other behaviors
@@ -2606,6 +2616,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/plugins
 - Headings:
+  - H1: openclaw plugins
   - H2: Commands
   - H2: Plugins pages
   - H2: Where each section moved
@@ -2632,7 +2643,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/plugins/install
 - Headings:
   - H2: Install
+  - H3: Sources and locators
+  - H3: Config includes and invalid-config repair
+  - H3: --force confirmation and reinstall vs update
+  - H3: --pin scope
+  - H3: --acknowledge-install-policy-warning
+  - H3: ClawHub security audit
+  - H3: Hook packs and npm specs
+  - H3: Git repositories
+  - H3: Archives
   - H3: Marketplace shorthand
+  - H3: Local paths and bundle formats
 
 ## cli/plugins/list.md
 
@@ -2967,11 +2988,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Recovery limits
   - H3: Compatibility-checked package rollback
   - H3: Restart handoff
+  - H4: Candidate validation and service definitions
+  - H4: Shell installers
+  - H4: Linux without a service manager
+  - H4: Node runtime for package-manager updates
+  - H4: macOS LaunchAgent verification
+  - H4: When restart is skipped or fails
   - H3: Control-plane response shape
   - H2: Git checkout flow
   - H3: Channel selection
   - H3: Update steps
-  - H3: Plugin sync details
+  - H2: Plugin sync details
+  - H2: Package-manager installs
 
 ## cli/update/repair-and-recovery.md
 

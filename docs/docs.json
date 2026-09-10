@@ -2056,13 +2056,13 @@
                         "pages": [
                           "tools/browser/setup",
                           "tools/browser/profiles",
+                          "tools/browser/existing-session",
                           "tools/browser/configuration",
                           "tools/browser/remote",
                           "tools/browser/security",
-                          "tools/browser/existing-session",
                           "tools/browser/isolation",
-                          "tools/browser/troubleshooting",
-                          "tools/browser/agent-tools"
+                          "tools/browser/agent-tools",
+                          "tools/browser/troubleshooting"
                         ]
                       },
                       "tools/browser-control",
@@ -2675,8 +2675,7 @@
                       "nodes/media-playback",
                       "nodes/images",
                       "nodes/audio",
-                      "nodes/camera",
-                      "tools/tts"
+                      "nodes/camera"
                     ]
                   },
                   {
@@ -2740,7 +2739,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "cli/openclaw",
                       "cli/daemon",
                       "cli/fleet",
                       "cli/gateway",
@@ -2765,6 +2763,7 @@
                       "cli/backup",
                       "cli/migrate",
                       "cli/onboard",
+                      "cli/openclaw",
                       "cli/reset",
                       "cli/setup",
                       "cli/uninstall",
@@ -2811,7 +2810,8 @@
                       "cli/models",
                       "cli/promos",
                       "cli/sessions",
-                      "cli/tasks"
+                      "cli/tasks",
+                      "cli/wiki"
                     ]
                   },
                   {
@@ -2916,8 +2916,7 @@
                           "cli/mcp/apps"
                         ]
                       },
-                      "cli/proxy",
-                      "cli/wiki"
+                      "cli/proxy"
                     ]
                   }
                 ]
@@ -4099,13 +4098,13 @@
                         "pages": [
                           "zh-CN/tools/browser/setup",
                           "zh-CN/tools/browser/profiles",
+                          "zh-CN/tools/browser/existing-session",
                           "zh-CN/tools/browser/configuration",
                           "zh-CN/tools/browser/remote",
                           "zh-CN/tools/browser/security",
-                          "zh-CN/tools/browser/existing-session",
                           "zh-CN/tools/browser/isolation",
-                          "zh-CN/tools/browser/troubleshooting",
-                          "zh-CN/tools/browser/agent-tools"
+                          "zh-CN/tools/browser/agent-tools",
+                          "zh-CN/tools/browser/troubleshooting"
                         ]
                       },
                       "zh-CN/tools/browser-control",
@@ -4684,8 +4683,7 @@
                       "zh-CN/nodes/media-playback",
                       "zh-CN/nodes/images",
                       "zh-CN/nodes/audio",
-                      "zh-CN/nodes/camera",
-                      "zh-CN/tools/tts"
+                      "zh-CN/nodes/camera"
                     ]
                   },
                   {
@@ -4749,7 +4747,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "zh-CN/cli/openclaw",
                       "zh-CN/cli/daemon",
                       "zh-CN/cli/fleet",
                       "zh-CN/cli/gateway",
@@ -4774,6 +4771,7 @@
                       "zh-CN/cli/backup",
                       "zh-CN/cli/migrate",
                       "zh-CN/cli/onboard",
+                      "zh-CN/cli/openclaw",
                       "zh-CN/cli/reset",
                       "zh-CN/cli/setup",
                       "zh-CN/cli/uninstall",
@@ -4820,7 +4818,8 @@
                       "zh-CN/cli/models",
                       "zh-CN/cli/promos",
                       "zh-CN/cli/sessions",
-                      "zh-CN/cli/tasks"
+                      "zh-CN/cli/tasks",
+                      "zh-CN/cli/wiki"
                     ]
                   },
                   {
@@ -4925,8 +4924,7 @@
                           "zh-CN/cli/mcp/apps"
                         ]
                       },
-                      "zh-CN/cli/proxy",
-                      "zh-CN/cli/wiki"
+                      "zh-CN/cli/proxy"
                     ]
                   }
                 ]
@@ -6108,13 +6106,13 @@
                         "pages": [
                           "zh-TW/tools/browser/setup",
                           "zh-TW/tools/browser/profiles",
+                          "zh-TW/tools/browser/existing-session",
                           "zh-TW/tools/browser/configuration",
                           "zh-TW/tools/browser/remote",
                           "zh-TW/tools/browser/security",
-                          "zh-TW/tools/browser/existing-session",
                           "zh-TW/tools/browser/isolation",
-                          "zh-TW/tools/browser/troubleshooting",
-                          "zh-TW/tools/browser/agent-tools"
+                          "zh-TW/tools/browser/agent-tools",
+                          "zh-TW/tools/browser/troubleshooting"
                         ]
                       },
                       "zh-TW/tools/browser-control",
@@ -6693,8 +6691,7 @@
                       "zh-TW/nodes/media-playback",
                       "zh-TW/nodes/images",
                       "zh-TW/nodes/audio",
-                      "zh-TW/nodes/camera",
-                      "zh-TW/tools/tts"
+                      "zh-TW/nodes/camera"
                     ]
                   },
                   {
@@ -6758,7 +6755,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "zh-TW/cli/openclaw",
                       "zh-TW/cli/daemon",
                       "zh-TW/cli/fleet",
                       "zh-TW/cli/gateway",
@@ -6783,6 +6779,7 @@
                       "zh-TW/cli/backup",
                       "zh-TW/cli/migrate",
                       "zh-TW/cli/onboard",
+                      "zh-TW/cli/openclaw",
                       "zh-TW/cli/reset",
                       "zh-TW/cli/setup",
                       "zh-TW/cli/uninstall",
@@ -6829,7 +6826,8 @@
                       "zh-TW/cli/models",
                       "zh-TW/cli/promos",
                       "zh-TW/cli/sessions",
-                      "zh-TW/cli/tasks"
+                      "zh-TW/cli/tasks",
+                      "zh-TW/cli/wiki"
                     ]
                   },
                   {
@@ -6934,8 +6932,7 @@
                           "zh-TW/cli/mcp/apps"
                         ]
                       },
-                      "zh-TW/cli/proxy",
-                      "zh-TW/cli/wiki"
+                      "zh-TW/cli/proxy"
                     ]
                   }
                 ]
@@ -8117,13 +8114,13 @@
                         "pages": [
                           "ja-JP/tools/browser/setup",
                           "ja-JP/tools/browser/profiles",
+                          "ja-JP/tools/browser/existing-session",
                           "ja-JP/tools/browser/configuration",
                           "ja-JP/tools/browser/remote",
                           "ja-JP/tools/browser/security",
-                          "ja-JP/tools/browser/existing-session",
                           "ja-JP/tools/browser/isolation",
-                          "ja-JP/tools/browser/troubleshooting",
-                          "ja-JP/tools/browser/agent-tools"
+                          "ja-JP/tools/browser/agent-tools",
+                          "ja-JP/tools/browser/troubleshooting"
                         ]
                       },
                       "ja-JP/tools/browser-control",
@@ -8702,8 +8699,7 @@
                       "ja-JP/nodes/media-playback",
                       "ja-JP/nodes/images",
                       "ja-JP/nodes/audio",
-                      "ja-JP/nodes/camera",
-                      "ja-JP/tools/tts"
+                      "ja-JP/nodes/camera"
                     ]
                   },
                   {
@@ -8767,7 +8763,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "ja-JP/cli/openclaw",
                       "ja-JP/cli/daemon",
                       "ja-JP/cli/fleet",
                       "ja-JP/cli/gateway",
@@ -8792,6 +8787,7 @@
                       "ja-JP/cli/backup",
                       "ja-JP/cli/migrate",
                       "ja-JP/cli/onboard",
+                      "ja-JP/cli/openclaw",
                       "ja-JP/cli/reset",
                       "ja-JP/cli/setup",
                       "ja-JP/cli/uninstall",
@@ -8838,7 +8834,8 @@
                       "ja-JP/cli/models",
                       "ja-JP/cli/promos",
                       "ja-JP/cli/sessions",
-                      "ja-JP/cli/tasks"
+                      "ja-JP/cli/tasks",
+                      "ja-JP/cli/wiki"
                     ]
                   },
                   {
@@ -8943,8 +8940,7 @@
                           "ja-JP/cli/mcp/apps"
                         ]
                       },
-                      "ja-JP/cli/proxy",
-                      "ja-JP/cli/wiki"
+                      "ja-JP/cli/proxy"
                     ]
                   }
                 ]
@@ -10126,13 +10122,13 @@
                         "pages": [
                           "es/tools/browser/setup",
                           "es/tools/browser/profiles",
+                          "es/tools/browser/existing-session",
                           "es/tools/browser/configuration",
                           "es/tools/browser/remote",
                           "es/tools/browser/security",
-                          "es/tools/browser/existing-session",
                           "es/tools/browser/isolation",
-                          "es/tools/browser/troubleshooting",
-                          "es/tools/browser/agent-tools"
+                          "es/tools/browser/agent-tools",
+                          "es/tools/browser/troubleshooting"
                         ]
                       },
                       "es/tools/browser-control",
@@ -10711,8 +10707,7 @@
                       "es/nodes/media-playback",
                       "es/nodes/images",
                       "es/nodes/audio",
-                      "es/nodes/camera",
-                      "es/tools/tts"
+                      "es/nodes/camera"
                     ]
                   },
                   {
@@ -10776,7 +10771,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "es/cli/openclaw",
                       "es/cli/daemon",
                       "es/cli/fleet",
                       "es/cli/gateway",
@@ -10801,6 +10795,7 @@
                       "es/cli/backup",
                       "es/cli/migrate",
                       "es/cli/onboard",
+                      "es/cli/openclaw",
                       "es/cli/reset",
                       "es/cli/setup",
                       "es/cli/uninstall",
@@ -10847,7 +10842,8 @@
                       "es/cli/models",
                       "es/cli/promos",
                       "es/cli/sessions",
-                      "es/cli/tasks"
+                      "es/cli/tasks",
+                      "es/cli/wiki"
                     ]
                   },
                   {
@@ -10952,8 +10948,7 @@
                           "es/cli/mcp/apps"
                         ]
                       },
-                      "es/cli/proxy",
-                      "es/cli/wiki"
+                      "es/cli/proxy"
                     ]
                   }
                 ]
@@ -12135,13 +12130,13 @@
                         "pages": [
                           "pt-BR/tools/browser/setup",
                           "pt-BR/tools/browser/profiles",
+                          "pt-BR/tools/browser/existing-session",
                           "pt-BR/tools/browser/configuration",
                           "pt-BR/tools/browser/remote",
                           "pt-BR/tools/browser/security",
-                          "pt-BR/tools/browser/existing-session",
                           "pt-BR/tools/browser/isolation",
-                          "pt-BR/tools/browser/troubleshooting",
-                          "pt-BR/tools/browser/agent-tools"
+                          "pt-BR/tools/browser/agent-tools",
+                          "pt-BR/tools/browser/troubleshooting"
                         ]
                       },
                       "pt-BR/tools/browser-control",
@@ -12720,8 +12715,7 @@
                       "pt-BR/nodes/media-playback",
                       "pt-BR/nodes/images",
                       "pt-BR/nodes/audio",
-                      "pt-BR/nodes/camera",
-                      "pt-BR/tools/tts"
+                      "pt-BR/nodes/camera"
                     ]
                   },
                   {
@@ -12785,7 +12779,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "pt-BR/cli/openclaw",
                       "pt-BR/cli/daemon",
                       "pt-BR/cli/fleet",
                       "pt-BR/cli/gateway",
@@ -12810,6 +12803,7 @@
                       "pt-BR/cli/backup",
                       "pt-BR/cli/migrate",
                       "pt-BR/cli/onboard",
+                      "pt-BR/cli/openclaw",
                       "pt-BR/cli/reset",
                       "pt-BR/cli/setup",
                       "pt-BR/cli/uninstall",
@@ -12856,7 +12850,8 @@
                       "pt-BR/cli/models",
                       "pt-BR/cli/promos",
                       "pt-BR/cli/sessions",
-                      "pt-BR/cli/tasks"
+                      "pt-BR/cli/tasks",
+                      "pt-BR/cli/wiki"
                     ]
                   },
                   {
@@ -12961,8 +12956,7 @@
                           "pt-BR/cli/mcp/apps"
                         ]
                       },
-                      "pt-BR/cli/proxy",
-                      "pt-BR/cli/wiki"
+                      "pt-BR/cli/proxy"
                     ]
                   }
                 ]
@@ -14144,13 +14138,13 @@
                         "pages": [
                           "ko/tools/browser/setup",
                           "ko/tools/browser/profiles",
+                          "ko/tools/browser/existing-session",
                           "ko/tools/browser/configuration",
                           "ko/tools/browser/remote",
                           "ko/tools/browser/security",
-                          "ko/tools/browser/existing-session",
                           "ko/tools/browser/isolation",
-                          "ko/tools/browser/troubleshooting",
-                          "ko/tools/browser/agent-tools"
+                          "ko/tools/browser/agent-tools",
+                          "ko/tools/browser/troubleshooting"
                         ]
                       },
                       "ko/tools/browser-control",
@@ -14729,8 +14723,7 @@
                       "ko/nodes/media-playback",
                       "ko/nodes/images",
                       "ko/nodes/audio",
-                      "ko/nodes/camera",
-                      "ko/tools/tts"
+                      "ko/nodes/camera"
                     ]
                   },
                   {
@@ -14794,7 +14787,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "ko/cli/openclaw",
                       "ko/cli/daemon",
                       "ko/cli/fleet",
                       "ko/cli/gateway",
@@ -14819,6 +14811,7 @@
                       "ko/cli/backup",
                       "ko/cli/migrate",
                       "ko/cli/onboard",
+                      "ko/cli/openclaw",
                       "ko/cli/reset",
                       "ko/cli/setup",
                       "ko/cli/uninstall",
@@ -14865,7 +14858,8 @@
                       "ko/cli/models",
                       "ko/cli/promos",
                       "ko/cli/sessions",
-                      "ko/cli/tasks"
+                      "ko/cli/tasks",
+                      "ko/cli/wiki"
                     ]
                   },
                   {
@@ -14970,8 +14964,7 @@
                           "ko/cli/mcp/apps"
                         ]
                       },
-                      "ko/cli/proxy",
-                      "ko/cli/wiki"
+                      "ko/cli/proxy"
                     ]
                   }
                 ]
@@ -16153,13 +16146,13 @@
                         "pages": [
                           "de/tools/browser/setup",
                           "de/tools/browser/profiles",
+                          "de/tools/browser/existing-session",
                           "de/tools/browser/configuration",
                           "de/tools/browser/remote",
                           "de/tools/browser/security",
-                          "de/tools/browser/existing-session",
                           "de/tools/browser/isolation",
-                          "de/tools/browser/troubleshooting",
-                          "de/tools/browser/agent-tools"
+                          "de/tools/browser/agent-tools",
+                          "de/tools/browser/troubleshooting"
                         ]
                       },
                       "de/tools/browser-control",
@@ -16738,8 +16731,7 @@
                       "de/nodes/media-playback",
                       "de/nodes/images",
                       "de/nodes/audio",
-                      "de/nodes/camera",
-                      "de/tools/tts"
+                      "de/nodes/camera"
                     ]
                   },
                   {
@@ -16803,7 +16795,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "de/cli/openclaw",
                       "de/cli/daemon",
                       "de/cli/fleet",
                       "de/cli/gateway",
@@ -16828,6 +16819,7 @@
                       "de/cli/backup",
                       "de/cli/migrate",
                       "de/cli/onboard",
+                      "de/cli/openclaw",
                       "de/cli/reset",
                       "de/cli/setup",
                       "de/cli/uninstall",
@@ -16874,7 +16866,8 @@
                       "de/cli/models",
                       "de/cli/promos",
                       "de/cli/sessions",
-                      "de/cli/tasks"
+                      "de/cli/tasks",
+                      "de/cli/wiki"
                     ]
                   },
                   {
@@ -16979,8 +16972,7 @@
                           "de/cli/mcp/apps"
                         ]
                       },
-                      "de/cli/proxy",
-                      "de/cli/wiki"
+                      "de/cli/proxy"
                     ]
                   }
                 ]
@@ -18162,13 +18154,13 @@
                         "pages": [
                           "fr/tools/browser/setup",
                           "fr/tools/browser/profiles",
+                          "fr/tools/browser/existing-session",
                           "fr/tools/browser/configuration",
                           "fr/tools/browser/remote",
                           "fr/tools/browser/security",
-                          "fr/tools/browser/existing-session",
                           "fr/tools/browser/isolation",
-                          "fr/tools/browser/troubleshooting",
-                          "fr/tools/browser/agent-tools"
+                          "fr/tools/browser/agent-tools",
+                          "fr/tools/browser/troubleshooting"
                         ]
                       },
                       "fr/tools/browser-control",
@@ -18747,8 +18739,7 @@
                       "fr/nodes/media-playback",
                       "fr/nodes/images",
                       "fr/nodes/audio",
-                      "fr/nodes/camera",
-                      "fr/tools/tts"
+                      "fr/nodes/camera"
                     ]
                   },
                   {
@@ -18812,7 +18803,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "fr/cli/openclaw",
                       "fr/cli/daemon",
                       "fr/cli/fleet",
                       "fr/cli/gateway",
@@ -18837,6 +18827,7 @@
                       "fr/cli/backup",
                       "fr/cli/migrate",
                       "fr/cli/onboard",
+                      "fr/cli/openclaw",
                       "fr/cli/reset",
                       "fr/cli/setup",
                       "fr/cli/uninstall",
@@ -18883,7 +18874,8 @@
                       "fr/cli/models",
                       "fr/cli/promos",
                       "fr/cli/sessions",
-                      "fr/cli/tasks"
+                      "fr/cli/tasks",
+                      "fr/cli/wiki"
                     ]
                   },
                   {
@@ -18988,8 +18980,7 @@
                           "fr/cli/mcp/apps"
                         ]
                       },
-                      "fr/cli/proxy",
-                      "fr/cli/wiki"
+                      "fr/cli/proxy"
                     ]
                   }
                 ]
@@ -20171,13 +20162,13 @@
                         "pages": [
                           "hi/tools/browser/setup",
                           "hi/tools/browser/profiles",
+                          "hi/tools/browser/existing-session",
                           "hi/tools/browser/configuration",
                           "hi/tools/browser/remote",
                           "hi/tools/browser/security",
-                          "hi/tools/browser/existing-session",
                           "hi/tools/browser/isolation",
-                          "hi/tools/browser/troubleshooting",
-                          "hi/tools/browser/agent-tools"
+                          "hi/tools/browser/agent-tools",
+                          "hi/tools/browser/troubleshooting"
                         ]
                       },
                       "hi/tools/browser-control",
@@ -20756,8 +20747,7 @@
                       "hi/nodes/media-playback",
                       "hi/nodes/images",
                       "hi/nodes/audio",
-                      "hi/nodes/camera",
-                      "hi/tools/tts"
+                      "hi/nodes/camera"
                     ]
                   },
                   {
@@ -20821,7 +20811,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "hi/cli/openclaw",
                       "hi/cli/daemon",
                       "hi/cli/fleet",
                       "hi/cli/gateway",
@@ -20846,6 +20835,7 @@
                       "hi/cli/backup",
                       "hi/cli/migrate",
                       "hi/cli/onboard",
+                      "hi/cli/openclaw",
                       "hi/cli/reset",
                       "hi/cli/setup",
                       "hi/cli/uninstall",
@@ -20892,7 +20882,8 @@
                       "hi/cli/models",
                       "hi/cli/promos",
                       "hi/cli/sessions",
-                      "hi/cli/tasks"
+                      "hi/cli/tasks",
+                      "hi/cli/wiki"
                     ]
                   },
                   {
@@ -20997,8 +20988,7 @@
                           "hi/cli/mcp/apps"
                         ]
                       },
-                      "hi/cli/proxy",
-                      "hi/cli/wiki"
+                      "hi/cli/proxy"
                     ]
                   }
                 ]
@@ -22180,13 +22170,13 @@
                         "pages": [
                           "ar/tools/browser/setup",
                           "ar/tools/browser/profiles",
+                          "ar/tools/browser/existing-session",
                           "ar/tools/browser/configuration",
                           "ar/tools/browser/remote",
                           "ar/tools/browser/security",
-                          "ar/tools/browser/existing-session",
                           "ar/tools/browser/isolation",
-                          "ar/tools/browser/troubleshooting",
-                          "ar/tools/browser/agent-tools"
+                          "ar/tools/browser/agent-tools",
+                          "ar/tools/browser/troubleshooting"
                         ]
                       },
                       "ar/tools/browser-control",
@@ -22765,8 +22755,7 @@
                       "ar/nodes/media-playback",
                       "ar/nodes/images",
                       "ar/nodes/audio",
-                      "ar/nodes/camera",
-                      "ar/tools/tts"
+                      "ar/nodes/camera"
                     ]
                   },
                   {
@@ -22830,7 +22819,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "ar/cli/openclaw",
                       "ar/cli/daemon",
                       "ar/cli/fleet",
                       "ar/cli/gateway",
@@ -22855,6 +22843,7 @@
                       "ar/cli/backup",
                       "ar/cli/migrate",
                       "ar/cli/onboard",
+                      "ar/cli/openclaw",
                       "ar/cli/reset",
                       "ar/cli/setup",
                       "ar/cli/uninstall",
@@ -22901,7 +22890,8 @@
                       "ar/cli/models",
                       "ar/cli/promos",
                       "ar/cli/sessions",
-                      "ar/cli/tasks"
+                      "ar/cli/tasks",
+                      "ar/cli/wiki"
                     ]
                   },
                   {
@@ -23006,8 +22996,7 @@
                           "ar/cli/mcp/apps"
                         ]
                       },
-                      "ar/cli/proxy",
-                      "ar/cli/wiki"
+                      "ar/cli/proxy"
                     ]
                   }
                 ]
@@ -24189,13 +24178,13 @@
                         "pages": [
                           "it/tools/browser/setup",
                           "it/tools/browser/profiles",
+                          "it/tools/browser/existing-session",
                           "it/tools/browser/configuration",
                           "it/tools/browser/remote",
                           "it/tools/browser/security",
-                          "it/tools/browser/existing-session",
                           "it/tools/browser/isolation",
-                          "it/tools/browser/troubleshooting",
-                          "it/tools/browser/agent-tools"
+                          "it/tools/browser/agent-tools",
+                          "it/tools/browser/troubleshooting"
                         ]
                       },
                       "it/tools/browser-control",
@@ -24774,8 +24763,7 @@
                       "it/nodes/media-playback",
                       "it/nodes/images",
                       "it/nodes/audio",
-                      "it/nodes/camera",
-                      "it/tools/tts"
+                      "it/nodes/camera"
                     ]
                   },
                   {
@@ -24839,7 +24827,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "it/cli/openclaw",
                       "it/cli/daemon",
                       "it/cli/fleet",
                       "it/cli/gateway",
@@ -24864,6 +24851,7 @@
                       "it/cli/backup",
                       "it/cli/migrate",
                       "it/cli/onboard",
+                      "it/cli/openclaw",
                       "it/cli/reset",
                       "it/cli/setup",
                       "it/cli/uninstall",
@@ -24910,7 +24898,8 @@
                       "it/cli/models",
                       "it/cli/promos",
                       "it/cli/sessions",
-                      "it/cli/tasks"
+                      "it/cli/tasks",
+                      "it/cli/wiki"
                     ]
                   },
                   {
@@ -25015,8 +25004,7 @@
                           "it/cli/mcp/apps"
                         ]
                       },
-                      "it/cli/proxy",
-                      "it/cli/wiki"
+                      "it/cli/proxy"
                     ]
                   }
                 ]
@@ -26198,13 +26186,13 @@
                         "pages": [
                           "vi/tools/browser/setup",
                           "vi/tools/browser/profiles",
+                          "vi/tools/browser/existing-session",
                           "vi/tools/browser/configuration",
                           "vi/tools/browser/remote",
                           "vi/tools/browser/security",
-                          "vi/tools/browser/existing-session",
                           "vi/tools/browser/isolation",
-                          "vi/tools/browser/troubleshooting",
-                          "vi/tools/browser/agent-tools"
+                          "vi/tools/browser/agent-tools",
+                          "vi/tools/browser/troubleshooting"
                         ]
                       },
                       "vi/tools/browser-control",
@@ -26783,8 +26771,7 @@
                       "vi/nodes/media-playback",
                       "vi/nodes/images",
                       "vi/nodes/audio",
-                      "vi/nodes/camera",
-                      "vi/tools/tts"
+                      "vi/nodes/camera"
                     ]
                   },
                   {
@@ -26848,7 +26835,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "vi/cli/openclaw",
                       "vi/cli/daemon",
                       "vi/cli/fleet",
                       "vi/cli/gateway",
@@ -26873,6 +26859,7 @@
                       "vi/cli/backup",
                       "vi/cli/migrate",
                       "vi/cli/onboard",
+                      "vi/cli/openclaw",
                       "vi/cli/reset",
                       "vi/cli/setup",
                       "vi/cli/uninstall",
@@ -26919,7 +26906,8 @@
                       "vi/cli/models",
                       "vi/cli/promos",
                       "vi/cli/sessions",
-                      "vi/cli/tasks"
+                      "vi/cli/tasks",
+                      "vi/cli/wiki"
                     ]
                   },
                   {
@@ -27024,8 +27012,7 @@
                           "vi/cli/mcp/apps"
                         ]
                       },
-                      "vi/cli/proxy",
-                      "vi/cli/wiki"
+                      "vi/cli/proxy"
                     ]
                   }
                 ]
@@ -28207,13 +28194,13 @@
                         "pages": [
                           "nl/tools/browser/setup",
                           "nl/tools/browser/profiles",
+                          "nl/tools/browser/existing-session",
                           "nl/tools/browser/configuration",
                           "nl/tools/browser/remote",
                           "nl/tools/browser/security",
-                          "nl/tools/browser/existing-session",
                           "nl/tools/browser/isolation",
-                          "nl/tools/browser/troubleshooting",
-                          "nl/tools/browser/agent-tools"
+                          "nl/tools/browser/agent-tools",
+                          "nl/tools/browser/troubleshooting"
                         ]
                       },
                       "nl/tools/browser-control",
@@ -28792,8 +28779,7 @@
                       "nl/nodes/media-playback",
                       "nl/nodes/images",
                       "nl/nodes/audio",
-                      "nl/nodes/camera",
-                      "nl/tools/tts"
+                      "nl/nodes/camera"
                     ]
                   },
                   {
@@ -28857,7 +28843,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "nl/cli/openclaw",
                       "nl/cli/daemon",
                       "nl/cli/fleet",
                       "nl/cli/gateway",
@@ -28882,6 +28867,7 @@
                       "nl/cli/backup",
                       "nl/cli/migrate",
                       "nl/cli/onboard",
+                      "nl/cli/openclaw",
                       "nl/cli/reset",
                       "nl/cli/setup",
                       "nl/cli/uninstall",
@@ -28928,7 +28914,8 @@
                       "nl/cli/models",
                       "nl/cli/promos",
                       "nl/cli/sessions",
-                      "nl/cli/tasks"
+                      "nl/cli/tasks",
+                      "nl/cli/wiki"
                     ]
                   },
                   {
@@ -29033,8 +29020,7 @@
                           "nl/cli/mcp/apps"
                         ]
                       },
-                      "nl/cli/proxy",
-                      "nl/cli/wiki"
+                      "nl/cli/proxy"
                     ]
                   }
                 ]
@@ -30216,13 +30202,13 @@
                         "pages": [
                           "tr/tools/browser/setup",
                           "tr/tools/browser/profiles",
+                          "tr/tools/browser/existing-session",
                           "tr/tools/browser/configuration",
                           "tr/tools/browser/remote",
                           "tr/tools/browser/security",
-                          "tr/tools/browser/existing-session",
                           "tr/tools/browser/isolation",
-                          "tr/tools/browser/troubleshooting",
-                          "tr/tools/browser/agent-tools"
+                          "tr/tools/browser/agent-tools",
+                          "tr/tools/browser/troubleshooting"
                         ]
                       },
                       "tr/tools/browser-control",
@@ -30801,8 +30787,7 @@
                       "tr/nodes/media-playback",
                       "tr/nodes/images",
                       "tr/nodes/audio",
-                      "tr/nodes/camera",
-                      "tr/tools/tts"
+                      "tr/nodes/camera"
                     ]
                   },
                   {
@@ -30866,7 +30851,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "tr/cli/openclaw",
                       "tr/cli/daemon",
                       "tr/cli/fleet",
                       "tr/cli/gateway",
@@ -30891,6 +30875,7 @@
                       "tr/cli/backup",
                       "tr/cli/migrate",
                       "tr/cli/onboard",
+                      "tr/cli/openclaw",
                       "tr/cli/reset",
                       "tr/cli/setup",
                       "tr/cli/uninstall",
@@ -30937,7 +30922,8 @@
                       "tr/cli/models",
                       "tr/cli/promos",
                       "tr/cli/sessions",
-                      "tr/cli/tasks"
+                      "tr/cli/tasks",
+                      "tr/cli/wiki"
                     ]
                   },
                   {
@@ -31042,8 +31028,7 @@
                           "tr/cli/mcp/apps"
                         ]
                       },
-                      "tr/cli/proxy",
-                      "tr/cli/wiki"
+                      "tr/cli/proxy"
                     ]
                   }
                 ]
@@ -32225,13 +32210,13 @@
                         "pages": [
                           "uk/tools/browser/setup",
                           "uk/tools/browser/profiles",
+                          "uk/tools/browser/existing-session",
                           "uk/tools/browser/configuration",
                           "uk/tools/browser/remote",
                           "uk/tools/browser/security",
-                          "uk/tools/browser/existing-session",
                           "uk/tools/browser/isolation",
-                          "uk/tools/browser/troubleshooting",
-                          "uk/tools/browser/agent-tools"
+                          "uk/tools/browser/agent-tools",
+                          "uk/tools/browser/troubleshooting"
                         ]
                       },
                       "uk/tools/browser-control",
@@ -32810,8 +32795,7 @@
                       "uk/nodes/media-playback",
                       "uk/nodes/images",
                       "uk/nodes/audio",
-                      "uk/nodes/camera",
-                      "uk/tools/tts"
+                      "uk/nodes/camera"
                     ]
                   },
                   {
@@ -32875,7 +32859,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "uk/cli/openclaw",
                       "uk/cli/daemon",
                       "uk/cli/fleet",
                       "uk/cli/gateway",
@@ -32900,6 +32883,7 @@
                       "uk/cli/backup",
                       "uk/cli/migrate",
                       "uk/cli/onboard",
+                      "uk/cli/openclaw",
                       "uk/cli/reset",
                       "uk/cli/setup",
                       "uk/cli/uninstall",
@@ -32946,7 +32930,8 @@
                       "uk/cli/models",
                       "uk/cli/promos",
                       "uk/cli/sessions",
-                      "uk/cli/tasks"
+                      "uk/cli/tasks",
+                      "uk/cli/wiki"
                     ]
                   },
                   {
@@ -33051,8 +33036,7 @@
                           "uk/cli/mcp/apps"
                         ]
                       },
-                      "uk/cli/proxy",
-                      "uk/cli/wiki"
+                      "uk/cli/proxy"
                     ]
                   }
                 ]
@@ -34234,13 +34218,13 @@
                         "pages": [
                           "id/tools/browser/setup",
                           "id/tools/browser/profiles",
+                          "id/tools/browser/existing-session",
                           "id/tools/browser/configuration",
                           "id/tools/browser/remote",
                           "id/tools/browser/security",
-                          "id/tools/browser/existing-session",
                           "id/tools/browser/isolation",
-                          "id/tools/browser/troubleshooting",
-                          "id/tools/browser/agent-tools"
+                          "id/tools/browser/agent-tools",
+                          "id/tools/browser/troubleshooting"
                         ]
                       },
                       "id/tools/browser-control",
@@ -34819,8 +34803,7 @@
                       "id/nodes/media-playback",
                       "id/nodes/images",
                       "id/nodes/audio",
-                      "id/nodes/camera",
-                      "id/tools/tts"
+                      "id/nodes/camera"
                     ]
                   },
                   {
@@ -34884,7 +34867,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "id/cli/openclaw",
                       "id/cli/daemon",
                       "id/cli/fleet",
                       "id/cli/gateway",
@@ -34909,6 +34891,7 @@
                       "id/cli/backup",
                       "id/cli/migrate",
                       "id/cli/onboard",
+                      "id/cli/openclaw",
                       "id/cli/reset",
                       "id/cli/setup",
                       "id/cli/uninstall",
@@ -34955,7 +34938,8 @@
                       "id/cli/models",
                       "id/cli/promos",
                       "id/cli/sessions",
-                      "id/cli/tasks"
+                      "id/cli/tasks",
+                      "id/cli/wiki"
                     ]
                   },
                   {
@@ -35060,8 +35044,7 @@
                           "id/cli/mcp/apps"
                         ]
                       },
-                      "id/cli/proxy",
-                      "id/cli/wiki"
+                      "id/cli/proxy"
                     ]
                   }
                 ]
@@ -36243,13 +36226,13 @@
                         "pages": [
                           "pl/tools/browser/setup",
                           "pl/tools/browser/profiles",
+                          "pl/tools/browser/existing-session",
                           "pl/tools/browser/configuration",
                           "pl/tools/browser/remote",
                           "pl/tools/browser/security",
-                          "pl/tools/browser/existing-session",
                           "pl/tools/browser/isolation",
-                          "pl/tools/browser/troubleshooting",
-                          "pl/tools/browser/agent-tools"
+                          "pl/tools/browser/agent-tools",
+                          "pl/tools/browser/troubleshooting"
                         ]
                       },
                       "pl/tools/browser-control",
@@ -36828,8 +36811,7 @@
                       "pl/nodes/media-playback",
                       "pl/nodes/images",
                       "pl/nodes/audio",
-                      "pl/nodes/camera",
-                      "pl/tools/tts"
+                      "pl/nodes/camera"
                     ]
                   },
                   {
@@ -36893,7 +36875,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "pl/cli/openclaw",
                       "pl/cli/daemon",
                       "pl/cli/fleet",
                       "pl/cli/gateway",
@@ -36918,6 +36899,7 @@
                       "pl/cli/backup",
                       "pl/cli/migrate",
                       "pl/cli/onboard",
+                      "pl/cli/openclaw",
                       "pl/cli/reset",
                       "pl/cli/setup",
                       "pl/cli/uninstall",
@@ -36964,7 +36946,8 @@
                       "pl/cli/models",
                       "pl/cli/promos",
                       "pl/cli/sessions",
-                      "pl/cli/tasks"
+                      "pl/cli/tasks",
+                      "pl/cli/wiki"
                     ]
                   },
                   {
@@ -37069,8 +37052,7 @@
                           "pl/cli/mcp/apps"
                         ]
                       },
-                      "pl/cli/proxy",
-                      "pl/cli/wiki"
+                      "pl/cli/proxy"
                     ]
                   }
                 ]
@@ -38252,13 +38234,13 @@
                         "pages": [
                           "ru/tools/browser/setup",
                           "ru/tools/browser/profiles",
+                          "ru/tools/browser/existing-session",
                           "ru/tools/browser/configuration",
                           "ru/tools/browser/remote",
                           "ru/tools/browser/security",
-                          "ru/tools/browser/existing-session",
                           "ru/tools/browser/isolation",
-                          "ru/tools/browser/troubleshooting",
-                          "ru/tools/browser/agent-tools"
+                          "ru/tools/browser/agent-tools",
+                          "ru/tools/browser/troubleshooting"
                         ]
                       },
                       "ru/tools/browser-control",
@@ -38837,8 +38819,7 @@
                       "ru/nodes/media-playback",
                       "ru/nodes/images",
                       "ru/nodes/audio",
-                      "ru/nodes/camera",
-                      "ru/tools/tts"
+                      "ru/nodes/camera"
                     ]
                   },
                   {
@@ -38902,7 +38883,6 @@
                   {
                     "group": "Running the service",
                     "pages": [
-                      "ru/cli/openclaw",
                       "ru/cli/daemon",
                       "ru/cli/fleet",
                       "ru/cli/gateway",
@@ -38927,6 +38907,7 @@
                       "ru/cli/backup",
                       "ru/cli/migrate",
                       "ru/cli/onboard",
+                      "ru/cli/openclaw",
                       "ru/cli/reset",
                       "ru/cli/setup",
                       "ru/cli/uninstall",
@@ -38973,7 +38954,8 @@
                       "ru/cli/models",
                       "ru/cli/promos",
                       "ru/cli/sessions",
-                      "ru/cli/tasks"
+                      "ru/cli/tasks",
+                      "ru/cli/wiki"
                     ]
                   },
                   {
@@ -39078,8 +39060,7 @@
                           "ru/cli/mcp/apps"
                         ]
                       },
-                      "ru/cli/proxy",
-                      "ru/cli/wiki"
+                      "ru/cli/proxy"
                     ]
                   }
                 ]
