@@ -2974,6 +2974,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw update
   - H2: Usage
+  - H2: Automation and SSH
   - H2: Options
   - H2: update wizard
   - H2: Detailed topics
