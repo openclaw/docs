@@ -5630,6 +5630,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Published package behavior
   - H2: Validate npm dependency graphs
   - H2: Inspect a plugin tarball
+  - H2: Related
 
 ## gateway/security/exposure-runbook.md
 
@@ -6170,6 +6171,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Legacy compatibility
   - H2: Adding coverage
   - H2: Failure triage
+  - H2: Related
 
 ## help/testing.md
 
@@ -14403,6 +14405,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The Lobsterdex
   - H2: Field notes
   - H2: Privacy
+  - H2: Related
 
 ## web/notifications.md
 
