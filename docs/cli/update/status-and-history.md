@@ -86,6 +86,18 @@ Doctor also shows warnings from the latest run as historical observations: a lat
 repair may already have resolved them. The existing report and history size limits
 still apply.
 
+A foreground updater publishes its final result after required finalization work
+and its local executor have settled. A late ownership or release failure returns
+an error instead of publishing an earlier success. Existing terminal history is
+not overwritten.
+
+Successful installation verification does not imply that obsolete package backups
+were deleted. If the package owner confirms that only obsolete-backup cleanup is
+pending, JSON, history, and human reports include a warning with the retained path
+and follow-up guidance. Unverified recovery, unreadable backup state, and unknown
+completion failures remain errors. Inspect retained paths before manually removing
+obsolete backups; unresolved recovery material is not eligible for this cleanup.
+
 Gateway clients with `operator.admin` can inspect history:
 
 ```bash
