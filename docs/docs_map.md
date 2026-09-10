@@ -14344,6 +14344,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/development
 - Headings:
   - H2: Build and develop the UI
+  - H2: Talk live smoke test
   - H2: Debugging/testing: dev server + remote Gateway
 
 ## web/control-ui/feature-reference.md
