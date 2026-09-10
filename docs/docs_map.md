@@ -6450,7 +6450,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/docker
 - Headings:
   - H2: Prerequisites
-  - H2: Containerized gateway
+  - H2: Containerized Gateway
   - H3: Headless bootstrap
   - H3: Manual flow
   - H3: Upgrading container images
@@ -7284,7 +7284,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/android
 - Headings:
   - H2: Support snapshot
-  - H2: Simultaneous gateway sessions
+  - H2: Simultaneous Gateway sessions
   - H2: Wear OS companion
   - H2: Install outside Google Play
   - H2: Mirror and control Android from a remote Mac
@@ -7299,7 +7299,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 2. Verify discovery (optional)
   - H4: Cross-network discovery via unicast DNS-SD
   - H3: 3. Connect from Android
-  - H3: Manage paired gateways
+  - H3: Manage paired Gateways
   - H3: Presence alive beacons
   - H3: 4. Approve pairing (CLI)
   - H3: 5. Verify the node is connected
@@ -7390,7 +7390,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Bonjour (LAN)
   - H3: Tailnet (cross-network)
   - H3: Manual host/port
-  - H2: Multiple gateways
+  - H2: Multiple Gateways
   - H2: Computer Use relationship
   - H2: Voice wake + talk mode
   - H3: Start live voice with Siri or Shortcuts
@@ -7549,7 +7549,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Secrets, profiles, and app launch
   - H3: Offline preconfiguration
   - H3: Configure in the app
-  - H2: Web Chat
+  - H2: WebChat
   - H2: Permissions
   - H2: Security notes
   - H2: WhatsApp login flow (remote)
