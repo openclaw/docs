@@ -422,9 +422,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick setup
   - H3: Alternative: manual token
   - H3: Alternative: env-based token
+  - H2: Configuration
   - H3: JSON5 reference
   - H3: Account config keys
   - H3: Keep an auth-gated public hostname
+  - H3: Plugin allowlist behavior
   - H2: Multiple bots
   - H2: Session discussions
   - H2: Reply modes
@@ -439,6 +441,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Targets
   - H2: Permissions
   - H2: Troubleshooting
+  - H2: Related
 
 ## channels/discord-activities.md
 
@@ -676,8 +679,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Activation (owner-only)
   - H2: Context fields
   - H2: iMessage specifics
-  - H2: WhatsApp system prompts
-  - H2: WhatsApp specifics
   - H2: Related
 
 ## channels/imessage-from-bluebubbles.md
@@ -1533,24 +1534,28 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/whatsapp
 - Headings:
-  - H2: Install
-  - H2: Quick setup
-  - H2: Deployment patterns
+  - H2: Setup
+  - H3: Install
+  - H3: Quick setup
+  - H3: Deployment patterns
   - H2: Runtime model
   - H2: Call the current requester with MeowCaller (experimental)
   - H2: Approval prompts
   - H2: Question reactions
   - H2: Plugin hooks and privacy
-  - H2: Access control and activation
-  - H2: Configured ACP bindings
-  - H2: Personal-number and self-chat behavior
-  - H2: Message normalization and context
-  - H2: Delivery, chunking, and media
-  - H2: Reply quoting
-  - H2: Reaction level
-  - H2: Acknowledgment reactions
-  - H2: Lifecycle status reactions
-  - H2: Active-turn typing
+  - H2: Access control
+  - H3: Access control and activation
+  - H3: Configured ACP bindings
+  - H3: Personal-number and self-chat behavior
+  - H2: Messaging and delivery
+  - H3: Message normalization and context
+  - H3: Delivery, chunking, and media
+  - H3: Reply quoting
+  - H2: Reactions and typing
+  - H3: Reaction level
+  - H3: Acknowledgment reactions
+  - H3: Lifecycle status reactions
+  - H3: Active-turn typing
   - H2: Multi-account and credentials
   - H2: Tools, actions, and config writes
   - H2: Troubleshooting
@@ -7852,10 +7857,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Supported now
   - H4: Skill content
   - H4: Hook packs
-  - H4: MCP for embedded OpenClaw
   - H4: Embedded OpenClaw settings
   - H4: Embedded OpenClaw LSP
   - H3: Detected but not executed
+  - H2: MCP for embedded OpenClaw
+  - H3: Transports
+  - H3: Tool naming
   - H2: Bundle formats
   - H2: Detection precedence
   - H2: Runtime dependencies and cleanup
@@ -8227,6 +8234,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Responsibility split
   - H2: Install roots
+  - H3: npm-pack tarball installs
+  - H3: Missing runtime imports
+  - H3: Hoisted transitive dependencies
+  - H3: Lockfile policy
+  - H3: Verify a package tarball
+  - H3: Bundled runtime dependencies
+  - H3: Host peer dependency
+  - H3: git installs
   - H2: Local plugins
   - H2: Startup and reload
   - H2: Bundled plugins
@@ -8264,8 +8279,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H3: Create a meeting
   - H3: Observe-only join
+  - H2: Audio bridge architecture
   - H3: Realtime session health
-  - H2: Notes
   - H2: Where each section moved
   - H3: Google Meet transports and hosts
   - H3: Google Meet OAuth and artifacts
@@ -8519,8 +8534,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Native conversation discovery
   - H2: providerAuthChoices reference
   - H2: setup reference
-  - H3: setup.providers reference
   - H3: setup fields
+  - H3: setup.providers reference
   - H2: uiHints reference
 
 ## plugins/manifest/surfaces.md
@@ -10402,7 +10417,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: openclaw.install
   - H3: Setup-time gateway methods
   - H2: Plugin manifest
-  - H2: ClawHub publishing
   - H2: Setup entry
   - H3: Narrow setup helper imports
   - H3: Channel-owned setup input fields
@@ -10411,6 +10425,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Building channel config schemas
   - H2: Setup wizards
   - H2: Publishing and installing
+  - H3: ClawHub publishing
   - H2: Related
 
 ## plugins/sdk-subpaths.md
