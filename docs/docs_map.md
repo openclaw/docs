@@ -2214,6 +2214,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Legacy state migration
 
+## cli/file-transfer.md
+
+- Route: /cli/file-transfer
+- Headings:
+  - H1: openclaw file-transfer
+  - H2: file-transfer approvals migrate
+  - H3: Where it runs
+  - H3: What the interactive run asks
+  - H3: Scripted and non-interactive use
+  - H2: Related
+
 ## cli/fleet.md
 
 - Route: /cli/fleet
@@ -11955,6 +11966,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Supported credentials
   - H3: openclaw.json targets (secrets configure + secrets apply + secrets audit)
+  - H4: agents
+  - H4: channels
+  - H4: cron
+  - H4: gateway
+  - H4: memory
+  - H4: models
+  - H4: plugins
+  - H4: skills
+  - H4: talk
+  - H4: tts
   - H3: SQLite auth-profile targets (secrets configure + secrets apply + secrets audit)
   - H3: Node-host connection targets
   - H2: Unsupported credentials

@@ -2883,6 +2883,7 @@
                           "cli/plugins/marketplace"
                         ]
                       },
+                      "cli/file-transfer",
                       "cli/path",
                       "cli/policy",
                       {
@@ -4906,6 +4907,7 @@
                           "zh-CN/cli/plugins/marketplace"
                         ]
                       },
+                      "zh-CN/cli/file-transfer",
                       "zh-CN/cli/path",
                       "zh-CN/cli/policy",
                       {
@@ -6929,6 +6931,7 @@
                           "zh-TW/cli/plugins/marketplace"
                         ]
                       },
+                      "zh-TW/cli/file-transfer",
                       "zh-TW/cli/path",
                       "zh-TW/cli/policy",
                       {
@@ -8952,6 +8955,7 @@
                           "ja-JP/cli/plugins/marketplace"
                         ]
                       },
+                      "ja-JP/cli/file-transfer",
                       "ja-JP/cli/path",
                       "ja-JP/cli/policy",
                       {
@@ -10975,6 +10979,7 @@
                           "es/cli/plugins/marketplace"
                         ]
                       },
+                      "es/cli/file-transfer",
                       "es/cli/path",
                       "es/cli/policy",
                       {
@@ -12998,6 +13003,7 @@
                           "pt-BR/cli/plugins/marketplace"
                         ]
                       },
+                      "pt-BR/cli/file-transfer",
                       "pt-BR/cli/path",
                       "pt-BR/cli/policy",
                       {
@@ -15021,6 +15027,7 @@
                           "ko/cli/plugins/marketplace"
                         ]
                       },
+                      "ko/cli/file-transfer",
                       "ko/cli/path",
                       "ko/cli/policy",
                       {
@@ -17044,6 +17051,7 @@
                           "de/cli/plugins/marketplace"
                         ]
                       },
+                      "de/cli/file-transfer",
                       "de/cli/path",
                       "de/cli/policy",
                       {
@@ -19067,6 +19075,7 @@
                           "fr/cli/plugins/marketplace"
                         ]
                       },
+                      "fr/cli/file-transfer",
                       "fr/cli/path",
                       "fr/cli/policy",
                       {
@@ -21090,6 +21099,7 @@
                           "hi/cli/plugins/marketplace"
                         ]
                       },
+                      "hi/cli/file-transfer",
                       "hi/cli/path",
                       "hi/cli/policy",
                       {
@@ -23113,6 +23123,7 @@
                           "ar/cli/plugins/marketplace"
                         ]
                       },
+                      "ar/cli/file-transfer",
                       "ar/cli/path",
                       "ar/cli/policy",
                       {
@@ -25136,6 +25147,7 @@
                           "it/cli/plugins/marketplace"
                         ]
                       },
+                      "it/cli/file-transfer",
                       "it/cli/path",
                       "it/cli/policy",
                       {
@@ -27159,6 +27171,7 @@
                           "vi/cli/plugins/marketplace"
                         ]
                       },
+                      "vi/cli/file-transfer",
                       "vi/cli/path",
                       "vi/cli/policy",
                       {
@@ -29182,6 +29195,7 @@
                           "nl/cli/plugins/marketplace"
                         ]
                       },
+                      "nl/cli/file-transfer",
                       "nl/cli/path",
                       "nl/cli/policy",
                       {
@@ -31205,6 +31219,7 @@
                           "tr/cli/plugins/marketplace"
                         ]
                       },
+                      "tr/cli/file-transfer",
                       "tr/cli/path",
                       "tr/cli/policy",
                       {
@@ -33228,6 +33243,7 @@
                           "uk/cli/plugins/marketplace"
                         ]
                       },
+                      "uk/cli/file-transfer",
                       "uk/cli/path",
                       "uk/cli/policy",
                       {
@@ -35251,6 +35267,7 @@
                           "id/cli/plugins/marketplace"
                         ]
                       },
+                      "id/cli/file-transfer",
                       "id/cli/path",
                       "id/cli/policy",
                       {
@@ -37274,6 +37291,7 @@
                           "pl/cli/plugins/marketplace"
                         ]
                       },
+                      "pl/cli/file-transfer",
                       "pl/cli/path",
                       "pl/cli/policy",
                       {
@@ -39297,6 +39315,7 @@
                           "ru/cli/plugins/marketplace"
                         ]
                       },
+                      "ru/cli/file-transfer",
                       "ru/cli/path",
                       "ru/cli/policy",
                       {
