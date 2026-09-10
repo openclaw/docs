@@ -71,6 +71,10 @@ Use updates for recent behavior changes that matter to returning readers.
 
 ## Code
 
+\`\`\`json5 validate=false
+{ partial: true }
+\`\`\`
+
 \`\`\`ts scripts/docs-site/example.ts lines {4,10} focus=3-11
 type GatewayMode = "local" | "remote";
 
@@ -130,7 +134,7 @@ curl -fsSL https://docs.openclaw.ai/llms.txt \\
   | sed -n '1,16p'
 \`\`\`
 
-\`\`\`json5 openclaw.json5
+\`\`\`json5 openclaw.json5 validate=false
 {
   // Keep the docs fixture close to real Gateway config.
   "channels": {

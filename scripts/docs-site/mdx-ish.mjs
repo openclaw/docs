@@ -123,6 +123,8 @@ function parseCodeInfo(rawInfo = "") {
   base.lang = normalizeLang(parts.shift() ?? "");
   const labelParts = [];
   for (const rawPart of parts) {
+    // Validation belongs to source checks; quoted text remains an authored label.
+    if (/^validate=false$/i.test(rawPart)) continue;
     const part = rawPart.replace(/^["']|["']$/g, "");
     if (["lines", "lineNumbers", "numbers"].includes(part)) {
       base.lines = true;
