@@ -5890,9 +5890,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Inspect what is sent
   - H2: Daily update check
+  - H2: Approximate location
   - H2: Optional anonymous feature statistics
-  - H3: What is never collected
-  - H2: Turn feature statistics on or off
+  - H3: What is not sent or stored
+  - H2: Turn anonymous feature statistics on or off
   - H2: Automated environments
   - H2: Disable every automatic update request
 
