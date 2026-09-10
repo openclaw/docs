@@ -45,6 +45,20 @@ still does not invoke a discovery-only engine factory. `dispose()` must not dele
 durable state or disable another registration. Existing raw loader and Gateway
 lifetimes do not gain automatic disposal: keep their `cleanup(ctx)` behavior.
 
+Prepared model runtimes for agent runs also own fresh model-selected registrations.
+They use the same discovery registration mode and plugin selection, but fresh
+registrations bypass the global registry cache. Warm callers share their prepared
+generation. Registration resources remain held through admitted work and cleanup;
+`dispose()` runs after the final claim releases, including any bounded idle
+retention between runs.
+
+Creating a configured or standalone publication does not enable this ownership.
+Existing root registries and raw SDK host registrations keep their original owner;
+borrowing an already managed generation preserves that source's ownership.
+The shared database behind `api.runtime.state` keyed and blob stores remains
+process-owned. A registration's disposer must not close that database or delete
+its durable rows.
+
 Image and music generation also own fresh registrations acquired by
 `api.runtime.imageGeneration.generate(...)` and
 `api.runtime.musicGeneration.generate(...)`. They wait for the provider's complete
