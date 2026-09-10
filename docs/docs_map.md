@@ -4382,6 +4382,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/cloud-workers/warm-images
 - Headings:
   - H2: Warm images
+  - H3: Ready workers
   - H3: Recover a paused capture
   - H3: Upgrade warm-image state
 
