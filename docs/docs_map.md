@@ -1890,6 +1890,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw backup
   - H2: Notes
   - H2: Restore a full archive
+  - H2: Private update captures
   - H2: SQLite snapshots
   - H3: Verify and restore
   - H2: Versioned Git backups
