@@ -12861,7 +12861,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Governance
   - H2: What we do not claim
   - H2: The hardened setup
-  - H2: Where each section moved
 
 ## start/why-openclaw/identity-and-roles.md
 
