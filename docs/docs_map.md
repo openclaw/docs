@@ -2964,6 +2964,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H3: Validation and activation
+  - H3: Recovery limits
+  - H3: Compatibility-checked package rollback
   - H3: Restart handoff
   - H3: Control-plane response shape
   - H2: Git checkout flow
@@ -6845,6 +6847,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/updating/rollback-and-recovery
 - Headings:
   - H2: Downgrade
+  - H3: Full-state recovery requires a backup
   - H3: Automatic schema-neutral rollback
   - H3: Before updating: create a verified backup
   - H2: If you are stuck
@@ -11660,6 +11663,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Keep engine-specific capabilities owned
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
+  - H3: Preflight an explicit agent copy
 
 ## reference/database-schemas/versioning.md
 
