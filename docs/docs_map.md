@@ -3296,14 +3296,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H2: Auto-compaction
   - H2: Manual compaction
-  - H3: Provider checkpoints
   - H2: Configuration
   - H3: Using a different model
   - H3: Identifier preservation
   - H3: Active transcript byte guard
-  - H3: Successor transcripts
   - H3: Compaction notices
   - H3: Memory flush
+  - H2: Provider and engine behavior
+  - H3: Provider checkpoints
+  - H3: Successor transcripts
   - H2: Pluggable compaction providers
   - H2: Compaction vs pruning
   - H2: Troubleshooting
@@ -3517,11 +3518,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/memory-builtin
 - Headings:
   - H2: What it provides
+  - H2: When to use
   - H2: Getting started
   - H2: Supported embedding providers
   - H2: How indexing works
   - H2: Migrating from QMD
-  - H2: When to use
   - H2: Troubleshooting
   - H3: Safe index recovery
   - H3: Reclaim disk space
@@ -3615,20 +3616,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Runtime flow
   - H2: Selection source policy
-  - H2: Auth failure skip cache
-  - H2: User-visible fallback notices
   - H2: Auth storage (keys + OAuth)
   - H2: Profile IDs
   - H2: Rotation order
   - H3: Session stickiness (cache-friendly)
   - H3: OpenAI Codex subscription plus API-key backup
   - H2: Cooldowns
+  - H2: Auth failure skip cache
   - H2: Billing disables
   - H2: Model fallback
   - H3: Candidate chain rules
   - H3: Which errors advance fallback
   - H3: Cooldown skip vs probe behavior
   - H2: Session overrides and live model switching
+  - H2: User-visible fallback notices
   - H2: Observability and failure summaries
   - H2: Related config
 
@@ -3736,6 +3737,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The three ownership layers
   - H2: Assigning an owner
   - H2: Per-person model accounts
+  - H3: Account concepts
+  - H3: Adding an account
+  - H3: Choosing an account for a chat
+  - H3: CLI and Custodian
+  - H3: Where credentials are stored
+  - H3: Pin and default rules
   - H2: Finding sessions by owner
   - H2: Reading the avatars
   - H2: People cards
@@ -3923,7 +3930,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Precedence
   - H2: Per-session overrides
   - H2: Queued-turn cancellation
-  - H2: Scope and guarantees
+  - H2: Input durability
+  - H2: Lanes and scope
   - H2: Background work
   - H2: Troubleshooting
   - H2: Related
@@ -4006,7 +4014,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session state changes
   - H2: Spawning sub-agents
   - H2: Visibility
-  - H2: Further reading
   - H2: Related
 
 ## concepts/session.md
@@ -4024,7 +4031,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where state lives
   - H2: Session maintenance
   - H2: Inspecting sessions
-  - H2: Further reading
   - H2: Related
 
 ## concepts/soul.md
@@ -5064,7 +5070,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/logging
 - Headings:
-  - H1: Logging
   - H2: File-based logger
   - H3: Verbose vs. log levels
   - H3: SQLite session writes
@@ -5082,7 +5087,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/multi-tenant-hosting
 - Headings:
-  - H1: Multi-tenant hosting
   - H2: Why each tenant needs a cell
   - H2: Architecture
   - H2: Trust boundary
@@ -5962,18 +5966,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help/debugging
 - Headings:
-  - H2: Runtime debug overrides
-  - H2: Session trace output
-  - H2: Plugin lifecycle trace
-  - H2: CLI startup and command profiling
-  - H2: Node and tsx startup errors
   - H2: Gateway watch mode
   - H2: Dev profile + dev gateway (--dev)
   - H2: Raw stream logging
-  - H2: Safety notes
+  - H3: Safety notes
+  - H2: CLI startup and command profiling
+  - H2: Plugin lifecycle trace
+  - H2: Node and tsx startup errors
   - H2: Debugging in VSCode
   - H3: Setup
   - H3: Notes
+  - H2: Runtime debug overrides
+  - H2: Session trace output
   - H2: Related
 
 ## help/environment.md
@@ -5983,6 +5987,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Precedence (highest to lowest)
   - H2: Supported operator-facing variables
   - H3: Paths and instances
+  - H4: `OPENCLAW_HOME`
   - H3: Gateway and authentication
   - H3: Provider credentials
   - H3: Logging and diagnostics
@@ -5998,7 +6003,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Path-related env vars
   - H2: Agent helper tool downloads
   - H2: Logging
-  - H3: `OPENCLAW_HOME`
   - H2: nvm users: webfetch TLS failures
   - H2: Legacy environment variables
   - H2: Related
@@ -6202,6 +6206,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help/testing-updates-plugins
 - Headings:
+  - H2: On this page
   - H2: What we protect
   - H2: Local proof during development
   - H2: Docker lanes
@@ -6339,7 +6344,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/backups
 - Headings:
-  - H1: Backups
   - H2: Choose a path
   - H2: Full archives
   - H2: Per-database snapshots
@@ -6917,6 +6921,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Start the Gateway
   - H2: Auto-restart
   - H2: Troubleshooting
+  - H2: Next steps
   - H2: Related
 
 ## logging.md

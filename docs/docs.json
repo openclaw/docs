@@ -1393,7 +1393,8 @@
                   "install/node",
                   "install/node-compatibility",
                   "install/bun",
-                  "install/bun-compatibility"
+                  "install/bun-compatibility",
+                  "install/nix"
                 ]
               },
               {
@@ -1425,7 +1426,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "install/ansible",
                   "install/docker",
                   {
                     "group": "Docker",
@@ -1436,7 +1436,6 @@
                       "install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "install/nix",
                   "install/podman"
                 ]
               },
@@ -1471,6 +1470,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "install/ansible",
                       "install/docker-vm-runtime",
                       "install/kubernetes",
                       "install/macos-vm",
@@ -1746,6 +1746,7 @@
                 "pages": [
                   "concepts/messages",
                   "concepts/streaming",
+                  "concepts/typing-indicators",
                   "concepts/progress-drafts",
                   "concepts/retry",
                   "concepts/queue",
@@ -1935,6 +1936,7 @@
                 "group": "Automation",
                 "pages": [
                   "automation/index",
+                  "gateway/heartbeat",
                   "automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -2472,7 +2474,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "gateway/health",
-                      "gateway/heartbeat",
                       "gateway/doctor",
                       {
                         "group": "Doctor",
@@ -2562,7 +2563,6 @@
                       "gateway/security/rate-limiting",
                       "gateway/security/operator-incident-response",
                       "gateway/security/secure-file-operations",
-                      "gateway/security/dependency-locking",
                       "gateway/operator-scopes",
                       "gateway/sandboxing",
                       {
@@ -2589,6 +2589,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "gateway/clients",
+                      "gateway/external-apps",
                       "gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -2608,11 +2610,15 @@
                           "gateway/protocol/auth"
                         ]
                       },
-                      "gateway/clients",
                       "gateway/embedding",
                       "gateway/openai-http-api",
                       "gateway/openresponses-http-api",
-                      "gateway/tools-invoke-http-api",
+                      "gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "gateway/cli-backends",
                       "gateway/local-models",
                       "gateway/local-model-services"
@@ -2624,7 +2630,6 @@
                       "network",
                       "gateway/pairing",
                       "gateway/discovery",
-                      "gateway/portals",
                       "gateway/bonjour"
                     ]
                   }
@@ -2721,6 +2726,7 @@
                       "web/control-ui/development"
                     ]
                   },
+                  "gateway/portals",
                   "web/notifications",
                   "web/urls",
                   "web/dashboard",
@@ -2930,7 +2936,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "reference/rpc",
-                  "gateway/external-apps",
                   "reference/device-models"
                 ]
               },
@@ -3123,6 +3128,7 @@
                   "reference/openclaw-ai",
                   "reference/prompt-caching",
                   "reference/api-usage-costs",
+                  "concepts/usage-tracking",
                   "reference/transcript-hygiene",
                   "reference/database-schemas",
                   {
@@ -3150,17 +3156,15 @@
                       "reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "date-time"
+                  "date-time",
+                  "concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "concepts/typebox",
-                  "concepts/markdown-formatting",
-                  "concepts/typing-indicators",
-                  "concepts/usage-tracking",
-                  "concepts/timezone"
+                  "concepts/markdown-formatting"
                 ]
               },
               {
@@ -3217,7 +3221,8 @@
                       "reference/full-release-validation/evidence"
                     ]
                   },
-                  "reference/release-performance-sweep"
+                  "reference/release-performance-sweep",
+                  "gateway/security/dependency-locking"
                 ]
               },
               {
@@ -3435,12 +3440,13 @@
                 ]
               },
               {
-                "group": "运行时",
+                "group": "安装方式",
                 "pages": [
                   "zh-CN/install/node",
                   "zh-CN/install/node-compatibility",
                   "zh-CN/install/bun",
-                  "zh-CN/install/bun-compatibility"
+                  "zh-CN/install/bun-compatibility",
+                  "zh-CN/install/nix"
                 ]
               },
               {
@@ -3470,9 +3476,8 @@
                 ]
               },
               {
-                "group": "安装方式",
+                "group": "Containers",
                 "pages": [
-                  "zh-CN/install/ansible",
                   "zh-CN/install/docker",
                   {
                     "group": "Docker",
@@ -3483,7 +3488,6 @@
                       "zh-CN/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "zh-CN/install/nix",
                   "zh-CN/install/podman"
                 ]
               },
@@ -3518,6 +3522,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "zh-CN/install/ansible",
                       "zh-CN/install/docker-vm-runtime",
                       "zh-CN/install/kubernetes",
                       "zh-CN/install/macos-vm",
@@ -3793,6 +3798,7 @@
                 "pages": [
                   "zh-CN/concepts/messages",
                   "zh-CN/concepts/streaming",
+                  "zh-CN/concepts/typing-indicators",
                   "zh-CN/concepts/progress-drafts",
                   "zh-CN/concepts/retry",
                   "zh-CN/concepts/queue",
@@ -3982,6 +3988,7 @@
                 "group": "自动化与任务",
                 "pages": [
                   "zh-CN/automation/index",
+                  "zh-CN/gateway/heartbeat",
                   "zh-CN/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -4485,7 +4492,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "zh-CN/gateway/health",
-                      "zh-CN/gateway/heartbeat",
                       "zh-CN/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -4575,7 +4581,6 @@
                       "zh-CN/gateway/security/rate-limiting",
                       "zh-CN/gateway/security/operator-incident-response",
                       "zh-CN/gateway/security/secure-file-operations",
-                      "zh-CN/gateway/security/dependency-locking",
                       "zh-CN/gateway/operator-scopes",
                       "zh-CN/gateway/sandboxing",
                       {
@@ -4602,6 +4607,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "zh-CN/gateway/clients",
+                      "zh-CN/gateway/external-apps",
                       "zh-CN/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -4621,11 +4628,15 @@
                           "zh-CN/gateway/protocol/auth"
                         ]
                       },
-                      "zh-CN/gateway/clients",
                       "zh-CN/gateway/embedding",
                       "zh-CN/gateway/openai-http-api",
                       "zh-CN/gateway/openresponses-http-api",
-                      "zh-CN/gateway/tools-invoke-http-api",
+                      "zh-CN/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "zh-CN/gateway/cli-backends",
                       "zh-CN/gateway/local-models",
                       "zh-CN/gateway/local-model-services"
@@ -4637,7 +4648,6 @@
                       "zh-CN/network",
                       "zh-CN/gateway/pairing",
                       "zh-CN/gateway/discovery",
-                      "zh-CN/gateway/portals",
                       "zh-CN/gateway/bonjour"
                     ]
                   }
@@ -4734,6 +4744,7 @@
                       "zh-CN/web/control-ui/development"
                     ]
                   },
+                  "zh-CN/gateway/portals",
                   "zh-CN/web/notifications",
                   "zh-CN/web/urls",
                   "zh-CN/web/dashboard",
@@ -4943,7 +4954,6 @@
                 "group": "RPC 与 API",
                 "pages": [
                   "zh-CN/reference/rpc",
-                  "zh-CN/gateway/external-apps",
                   "zh-CN/reference/device-models"
                 ]
               },
@@ -5136,6 +5146,7 @@
                   "zh-CN/reference/openclaw-ai",
                   "zh-CN/reference/prompt-caching",
                   "zh-CN/reference/api-usage-costs",
+                  "zh-CN/concepts/usage-tracking",
                   "zh-CN/reference/transcript-hygiene",
                   "zh-CN/reference/database-schemas",
                   {
@@ -5163,17 +5174,15 @@
                       "zh-CN/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "zh-CN/date-time"
+                  "zh-CN/date-time",
+                  "zh-CN/concepts/timezone"
                 ]
               },
               {
                 "group": "概念内部机制",
                 "pages": [
                   "zh-CN/concepts/typebox",
-                  "zh-CN/concepts/markdown-formatting",
-                  "zh-CN/concepts/typing-indicators",
-                  "zh-CN/concepts/usage-tracking",
-                  "zh-CN/concepts/timezone"
+                  "zh-CN/concepts/markdown-formatting"
                 ]
               },
               {
@@ -5230,7 +5239,8 @@
                       "zh-CN/reference/full-release-validation/evidence"
                     ]
                   },
-                  "zh-CN/reference/release-performance-sweep"
+                  "zh-CN/reference/release-performance-sweep",
+                  "zh-CN/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -5453,7 +5463,8 @@
                   "zh-TW/install/node",
                   "zh-TW/install/node-compatibility",
                   "zh-TW/install/bun",
-                  "zh-TW/install/bun-compatibility"
+                  "zh-TW/install/bun-compatibility",
+                  "zh-TW/install/nix"
                 ]
               },
               {
@@ -5485,7 +5496,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "zh-TW/install/ansible",
                   "zh-TW/install/docker",
                   {
                     "group": "Docker",
@@ -5496,7 +5506,6 @@
                       "zh-TW/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "zh-TW/install/nix",
                   "zh-TW/install/podman"
                 ]
               },
@@ -5531,6 +5540,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "zh-TW/install/ansible",
                       "zh-TW/install/docker-vm-runtime",
                       "zh-TW/install/kubernetes",
                       "zh-TW/install/macos-vm",
@@ -5806,6 +5816,7 @@
                 "pages": [
                   "zh-TW/concepts/messages",
                   "zh-TW/concepts/streaming",
+                  "zh-TW/concepts/typing-indicators",
                   "zh-TW/concepts/progress-drafts",
                   "zh-TW/concepts/retry",
                   "zh-TW/concepts/queue",
@@ -5995,6 +6006,7 @@
                 "group": "Automation",
                 "pages": [
                   "zh-TW/automation/index",
+                  "zh-TW/gateway/heartbeat",
                   "zh-TW/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -6498,7 +6510,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "zh-TW/gateway/health",
-                      "zh-TW/gateway/heartbeat",
                       "zh-TW/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -6588,7 +6599,6 @@
                       "zh-TW/gateway/security/rate-limiting",
                       "zh-TW/gateway/security/operator-incident-response",
                       "zh-TW/gateway/security/secure-file-operations",
-                      "zh-TW/gateway/security/dependency-locking",
                       "zh-TW/gateway/operator-scopes",
                       "zh-TW/gateway/sandboxing",
                       {
@@ -6615,6 +6625,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "zh-TW/gateway/clients",
+                      "zh-TW/gateway/external-apps",
                       "zh-TW/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -6634,11 +6646,15 @@
                           "zh-TW/gateway/protocol/auth"
                         ]
                       },
-                      "zh-TW/gateway/clients",
                       "zh-TW/gateway/embedding",
                       "zh-TW/gateway/openai-http-api",
                       "zh-TW/gateway/openresponses-http-api",
-                      "zh-TW/gateway/tools-invoke-http-api",
+                      "zh-TW/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "zh-TW/gateway/cli-backends",
                       "zh-TW/gateway/local-models",
                       "zh-TW/gateway/local-model-services"
@@ -6650,7 +6666,6 @@
                       "zh-TW/network",
                       "zh-TW/gateway/pairing",
                       "zh-TW/gateway/discovery",
-                      "zh-TW/gateway/portals",
                       "zh-TW/gateway/bonjour"
                     ]
                   }
@@ -6747,6 +6762,7 @@
                       "zh-TW/web/control-ui/development"
                     ]
                   },
+                  "zh-TW/gateway/portals",
                   "zh-TW/web/notifications",
                   "zh-TW/web/urls",
                   "zh-TW/web/dashboard",
@@ -6956,7 +6972,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "zh-TW/reference/rpc",
-                  "zh-TW/gateway/external-apps",
                   "zh-TW/reference/device-models"
                 ]
               },
@@ -7149,6 +7164,7 @@
                   "zh-TW/reference/openclaw-ai",
                   "zh-TW/reference/prompt-caching",
                   "zh-TW/reference/api-usage-costs",
+                  "zh-TW/concepts/usage-tracking",
                   "zh-TW/reference/transcript-hygiene",
                   "zh-TW/reference/database-schemas",
                   {
@@ -7176,17 +7192,15 @@
                       "zh-TW/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "zh-TW/date-time"
+                  "zh-TW/date-time",
+                  "zh-TW/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "zh-TW/concepts/typebox",
-                  "zh-TW/concepts/markdown-formatting",
-                  "zh-TW/concepts/typing-indicators",
-                  "zh-TW/concepts/usage-tracking",
-                  "zh-TW/concepts/timezone"
+                  "zh-TW/concepts/markdown-formatting"
                 ]
               },
               {
@@ -7243,7 +7257,8 @@
                       "zh-TW/reference/full-release-validation/evidence"
                     ]
                   },
-                  "zh-TW/reference/release-performance-sweep"
+                  "zh-TW/reference/release-performance-sweep",
+                  "zh-TW/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -7466,7 +7481,8 @@
                   "ja-JP/install/node",
                   "ja-JP/install/node-compatibility",
                   "ja-JP/install/bun",
-                  "ja-JP/install/bun-compatibility"
+                  "ja-JP/install/bun-compatibility",
+                  "ja-JP/install/nix"
                 ]
               },
               {
@@ -7498,7 +7514,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "ja-JP/install/ansible",
                   "ja-JP/install/docker",
                   {
                     "group": "Docker",
@@ -7509,7 +7524,6 @@
                       "ja-JP/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "ja-JP/install/nix",
                   "ja-JP/install/podman"
                 ]
               },
@@ -7544,6 +7558,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "ja-JP/install/ansible",
                       "ja-JP/install/docker-vm-runtime",
                       "ja-JP/install/kubernetes",
                       "ja-JP/install/macos-vm",
@@ -7819,6 +7834,7 @@
                 "pages": [
                   "ja-JP/concepts/messages",
                   "ja-JP/concepts/streaming",
+                  "ja-JP/concepts/typing-indicators",
                   "ja-JP/concepts/progress-drafts",
                   "ja-JP/concepts/retry",
                   "ja-JP/concepts/queue",
@@ -8008,6 +8024,7 @@
                 "group": "Automation",
                 "pages": [
                   "ja-JP/automation/index",
+                  "ja-JP/gateway/heartbeat",
                   "ja-JP/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -8511,7 +8528,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ja-JP/gateway/health",
-                      "ja-JP/gateway/heartbeat",
                       "ja-JP/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -8601,7 +8617,6 @@
                       "ja-JP/gateway/security/rate-limiting",
                       "ja-JP/gateway/security/operator-incident-response",
                       "ja-JP/gateway/security/secure-file-operations",
-                      "ja-JP/gateway/security/dependency-locking",
                       "ja-JP/gateway/operator-scopes",
                       "ja-JP/gateway/sandboxing",
                       {
@@ -8628,6 +8643,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "ja-JP/gateway/clients",
+                      "ja-JP/gateway/external-apps",
                       "ja-JP/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -8647,11 +8664,15 @@
                           "ja-JP/gateway/protocol/auth"
                         ]
                       },
-                      "ja-JP/gateway/clients",
                       "ja-JP/gateway/embedding",
                       "ja-JP/gateway/openai-http-api",
                       "ja-JP/gateway/openresponses-http-api",
-                      "ja-JP/gateway/tools-invoke-http-api",
+                      "ja-JP/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "ja-JP/gateway/cli-backends",
                       "ja-JP/gateway/local-models",
                       "ja-JP/gateway/local-model-services"
@@ -8663,7 +8684,6 @@
                       "ja-JP/network",
                       "ja-JP/gateway/pairing",
                       "ja-JP/gateway/discovery",
-                      "ja-JP/gateway/portals",
                       "ja-JP/gateway/bonjour"
                     ]
                   }
@@ -8760,6 +8780,7 @@
                       "ja-JP/web/control-ui/development"
                     ]
                   },
+                  "ja-JP/gateway/portals",
                   "ja-JP/web/notifications",
                   "ja-JP/web/urls",
                   "ja-JP/web/dashboard",
@@ -8969,7 +8990,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "ja-JP/reference/rpc",
-                  "ja-JP/gateway/external-apps",
                   "ja-JP/reference/device-models"
                 ]
               },
@@ -9162,6 +9182,7 @@
                   "ja-JP/reference/openclaw-ai",
                   "ja-JP/reference/prompt-caching",
                   "ja-JP/reference/api-usage-costs",
+                  "ja-JP/concepts/usage-tracking",
                   "ja-JP/reference/transcript-hygiene",
                   "ja-JP/reference/database-schemas",
                   {
@@ -9189,17 +9210,15 @@
                       "ja-JP/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "ja-JP/date-time"
+                  "ja-JP/date-time",
+                  "ja-JP/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "ja-JP/concepts/typebox",
-                  "ja-JP/concepts/markdown-formatting",
-                  "ja-JP/concepts/typing-indicators",
-                  "ja-JP/concepts/usage-tracking",
-                  "ja-JP/concepts/timezone"
+                  "ja-JP/concepts/markdown-formatting"
                 ]
               },
               {
@@ -9256,7 +9275,8 @@
                       "ja-JP/reference/full-release-validation/evidence"
                     ]
                   },
-                  "ja-JP/reference/release-performance-sweep"
+                  "ja-JP/reference/release-performance-sweep",
+                  "ja-JP/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -9479,7 +9499,8 @@
                   "es/install/node",
                   "es/install/node-compatibility",
                   "es/install/bun",
-                  "es/install/bun-compatibility"
+                  "es/install/bun-compatibility",
+                  "es/install/nix"
                 ]
               },
               {
@@ -9511,7 +9532,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "es/install/ansible",
                   "es/install/docker",
                   {
                     "group": "Docker",
@@ -9522,7 +9542,6 @@
                       "es/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "es/install/nix",
                   "es/install/podman"
                 ]
               },
@@ -9557,6 +9576,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "es/install/ansible",
                       "es/install/docker-vm-runtime",
                       "es/install/kubernetes",
                       "es/install/macos-vm",
@@ -9832,6 +9852,7 @@
                 "pages": [
                   "es/concepts/messages",
                   "es/concepts/streaming",
+                  "es/concepts/typing-indicators",
                   "es/concepts/progress-drafts",
                   "es/concepts/retry",
                   "es/concepts/queue",
@@ -10021,6 +10042,7 @@
                 "group": "Automation",
                 "pages": [
                   "es/automation/index",
+                  "es/gateway/heartbeat",
                   "es/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -10524,7 +10546,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "es/gateway/health",
-                      "es/gateway/heartbeat",
                       "es/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -10614,7 +10635,6 @@
                       "es/gateway/security/rate-limiting",
                       "es/gateway/security/operator-incident-response",
                       "es/gateway/security/secure-file-operations",
-                      "es/gateway/security/dependency-locking",
                       "es/gateway/operator-scopes",
                       "es/gateway/sandboxing",
                       {
@@ -10641,6 +10661,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "es/gateway/clients",
+                      "es/gateway/external-apps",
                       "es/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -10660,11 +10682,15 @@
                           "es/gateway/protocol/auth"
                         ]
                       },
-                      "es/gateway/clients",
                       "es/gateway/embedding",
                       "es/gateway/openai-http-api",
                       "es/gateway/openresponses-http-api",
-                      "es/gateway/tools-invoke-http-api",
+                      "es/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "es/gateway/cli-backends",
                       "es/gateway/local-models",
                       "es/gateway/local-model-services"
@@ -10676,7 +10702,6 @@
                       "es/network",
                       "es/gateway/pairing",
                       "es/gateway/discovery",
-                      "es/gateway/portals",
                       "es/gateway/bonjour"
                     ]
                   }
@@ -10773,6 +10798,7 @@
                       "es/web/control-ui/development"
                     ]
                   },
+                  "es/gateway/portals",
                   "es/web/notifications",
                   "es/web/urls",
                   "es/web/dashboard",
@@ -10982,7 +11008,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "es/reference/rpc",
-                  "es/gateway/external-apps",
                   "es/reference/device-models"
                 ]
               },
@@ -11175,6 +11200,7 @@
                   "es/reference/openclaw-ai",
                   "es/reference/prompt-caching",
                   "es/reference/api-usage-costs",
+                  "es/concepts/usage-tracking",
                   "es/reference/transcript-hygiene",
                   "es/reference/database-schemas",
                   {
@@ -11202,17 +11228,15 @@
                       "es/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "es/date-time"
+                  "es/date-time",
+                  "es/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "es/concepts/typebox",
-                  "es/concepts/markdown-formatting",
-                  "es/concepts/typing-indicators",
-                  "es/concepts/usage-tracking",
-                  "es/concepts/timezone"
+                  "es/concepts/markdown-formatting"
                 ]
               },
               {
@@ -11269,7 +11293,8 @@
                       "es/reference/full-release-validation/evidence"
                     ]
                   },
-                  "es/reference/release-performance-sweep"
+                  "es/reference/release-performance-sweep",
+                  "es/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -11492,7 +11517,8 @@
                   "pt-BR/install/node",
                   "pt-BR/install/node-compatibility",
                   "pt-BR/install/bun",
-                  "pt-BR/install/bun-compatibility"
+                  "pt-BR/install/bun-compatibility",
+                  "pt-BR/install/nix"
                 ]
               },
               {
@@ -11524,7 +11550,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "pt-BR/install/ansible",
                   "pt-BR/install/docker",
                   {
                     "group": "Docker",
@@ -11535,7 +11560,6 @@
                       "pt-BR/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "pt-BR/install/nix",
                   "pt-BR/install/podman"
                 ]
               },
@@ -11570,6 +11594,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "pt-BR/install/ansible",
                       "pt-BR/install/docker-vm-runtime",
                       "pt-BR/install/kubernetes",
                       "pt-BR/install/macos-vm",
@@ -11845,6 +11870,7 @@
                 "pages": [
                   "pt-BR/concepts/messages",
                   "pt-BR/concepts/streaming",
+                  "pt-BR/concepts/typing-indicators",
                   "pt-BR/concepts/progress-drafts",
                   "pt-BR/concepts/retry",
                   "pt-BR/concepts/queue",
@@ -12034,6 +12060,7 @@
                 "group": "Automation",
                 "pages": [
                   "pt-BR/automation/index",
+                  "pt-BR/gateway/heartbeat",
                   "pt-BR/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -12537,7 +12564,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pt-BR/gateway/health",
-                      "pt-BR/gateway/heartbeat",
                       "pt-BR/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -12627,7 +12653,6 @@
                       "pt-BR/gateway/security/rate-limiting",
                       "pt-BR/gateway/security/operator-incident-response",
                       "pt-BR/gateway/security/secure-file-operations",
-                      "pt-BR/gateway/security/dependency-locking",
                       "pt-BR/gateway/operator-scopes",
                       "pt-BR/gateway/sandboxing",
                       {
@@ -12654,6 +12679,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "pt-BR/gateway/clients",
+                      "pt-BR/gateway/external-apps",
                       "pt-BR/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -12673,11 +12700,15 @@
                           "pt-BR/gateway/protocol/auth"
                         ]
                       },
-                      "pt-BR/gateway/clients",
                       "pt-BR/gateway/embedding",
                       "pt-BR/gateway/openai-http-api",
                       "pt-BR/gateway/openresponses-http-api",
-                      "pt-BR/gateway/tools-invoke-http-api",
+                      "pt-BR/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "pt-BR/gateway/cli-backends",
                       "pt-BR/gateway/local-models",
                       "pt-BR/gateway/local-model-services"
@@ -12689,7 +12720,6 @@
                       "pt-BR/network",
                       "pt-BR/gateway/pairing",
                       "pt-BR/gateway/discovery",
-                      "pt-BR/gateway/portals",
                       "pt-BR/gateway/bonjour"
                     ]
                   }
@@ -12786,6 +12816,7 @@
                       "pt-BR/web/control-ui/development"
                     ]
                   },
+                  "pt-BR/gateway/portals",
                   "pt-BR/web/notifications",
                   "pt-BR/web/urls",
                   "pt-BR/web/dashboard",
@@ -12995,7 +13026,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "pt-BR/reference/rpc",
-                  "pt-BR/gateway/external-apps",
                   "pt-BR/reference/device-models"
                 ]
               },
@@ -13188,6 +13218,7 @@
                   "pt-BR/reference/openclaw-ai",
                   "pt-BR/reference/prompt-caching",
                   "pt-BR/reference/api-usage-costs",
+                  "pt-BR/concepts/usage-tracking",
                   "pt-BR/reference/transcript-hygiene",
                   "pt-BR/reference/database-schemas",
                   {
@@ -13215,17 +13246,15 @@
                       "pt-BR/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "pt-BR/date-time"
+                  "pt-BR/date-time",
+                  "pt-BR/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "pt-BR/concepts/typebox",
-                  "pt-BR/concepts/markdown-formatting",
-                  "pt-BR/concepts/typing-indicators",
-                  "pt-BR/concepts/usage-tracking",
-                  "pt-BR/concepts/timezone"
+                  "pt-BR/concepts/markdown-formatting"
                 ]
               },
               {
@@ -13282,7 +13311,8 @@
                       "pt-BR/reference/full-release-validation/evidence"
                     ]
                   },
-                  "pt-BR/reference/release-performance-sweep"
+                  "pt-BR/reference/release-performance-sweep",
+                  "pt-BR/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -13505,7 +13535,8 @@
                   "ko/install/node",
                   "ko/install/node-compatibility",
                   "ko/install/bun",
-                  "ko/install/bun-compatibility"
+                  "ko/install/bun-compatibility",
+                  "ko/install/nix"
                 ]
               },
               {
@@ -13537,7 +13568,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "ko/install/ansible",
                   "ko/install/docker",
                   {
                     "group": "Docker",
@@ -13548,7 +13578,6 @@
                       "ko/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "ko/install/nix",
                   "ko/install/podman"
                 ]
               },
@@ -13583,6 +13612,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "ko/install/ansible",
                       "ko/install/docker-vm-runtime",
                       "ko/install/kubernetes",
                       "ko/install/macos-vm",
@@ -13858,6 +13888,7 @@
                 "pages": [
                   "ko/concepts/messages",
                   "ko/concepts/streaming",
+                  "ko/concepts/typing-indicators",
                   "ko/concepts/progress-drafts",
                   "ko/concepts/retry",
                   "ko/concepts/queue",
@@ -14047,6 +14078,7 @@
                 "group": "Automation",
                 "pages": [
                   "ko/automation/index",
+                  "ko/gateway/heartbeat",
                   "ko/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -14550,7 +14582,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ko/gateway/health",
-                      "ko/gateway/heartbeat",
                       "ko/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -14640,7 +14671,6 @@
                       "ko/gateway/security/rate-limiting",
                       "ko/gateway/security/operator-incident-response",
                       "ko/gateway/security/secure-file-operations",
-                      "ko/gateway/security/dependency-locking",
                       "ko/gateway/operator-scopes",
                       "ko/gateway/sandboxing",
                       {
@@ -14667,6 +14697,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "ko/gateway/clients",
+                      "ko/gateway/external-apps",
                       "ko/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -14686,11 +14718,15 @@
                           "ko/gateway/protocol/auth"
                         ]
                       },
-                      "ko/gateway/clients",
                       "ko/gateway/embedding",
                       "ko/gateway/openai-http-api",
                       "ko/gateway/openresponses-http-api",
-                      "ko/gateway/tools-invoke-http-api",
+                      "ko/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "ko/gateway/cli-backends",
                       "ko/gateway/local-models",
                       "ko/gateway/local-model-services"
@@ -14702,7 +14738,6 @@
                       "ko/network",
                       "ko/gateway/pairing",
                       "ko/gateway/discovery",
-                      "ko/gateway/portals",
                       "ko/gateway/bonjour"
                     ]
                   }
@@ -14799,6 +14834,7 @@
                       "ko/web/control-ui/development"
                     ]
                   },
+                  "ko/gateway/portals",
                   "ko/web/notifications",
                   "ko/web/urls",
                   "ko/web/dashboard",
@@ -15008,7 +15044,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "ko/reference/rpc",
-                  "ko/gateway/external-apps",
                   "ko/reference/device-models"
                 ]
               },
@@ -15201,6 +15236,7 @@
                   "ko/reference/openclaw-ai",
                   "ko/reference/prompt-caching",
                   "ko/reference/api-usage-costs",
+                  "ko/concepts/usage-tracking",
                   "ko/reference/transcript-hygiene",
                   "ko/reference/database-schemas",
                   {
@@ -15228,17 +15264,15 @@
                       "ko/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "ko/date-time"
+                  "ko/date-time",
+                  "ko/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "ko/concepts/typebox",
-                  "ko/concepts/markdown-formatting",
-                  "ko/concepts/typing-indicators",
-                  "ko/concepts/usage-tracking",
-                  "ko/concepts/timezone"
+                  "ko/concepts/markdown-formatting"
                 ]
               },
               {
@@ -15295,7 +15329,8 @@
                       "ko/reference/full-release-validation/evidence"
                     ]
                   },
-                  "ko/reference/release-performance-sweep"
+                  "ko/reference/release-performance-sweep",
+                  "ko/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -15518,7 +15553,8 @@
                   "de/install/node",
                   "de/install/node-compatibility",
                   "de/install/bun",
-                  "de/install/bun-compatibility"
+                  "de/install/bun-compatibility",
+                  "de/install/nix"
                 ]
               },
               {
@@ -15550,7 +15586,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "de/install/ansible",
                   "de/install/docker",
                   {
                     "group": "Docker",
@@ -15561,7 +15596,6 @@
                       "de/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "de/install/nix",
                   "de/install/podman"
                 ]
               },
@@ -15596,6 +15630,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "de/install/ansible",
                       "de/install/docker-vm-runtime",
                       "de/install/kubernetes",
                       "de/install/macos-vm",
@@ -15871,6 +15906,7 @@
                 "pages": [
                   "de/concepts/messages",
                   "de/concepts/streaming",
+                  "de/concepts/typing-indicators",
                   "de/concepts/progress-drafts",
                   "de/concepts/retry",
                   "de/concepts/queue",
@@ -16060,6 +16096,7 @@
                 "group": "Automation",
                 "pages": [
                   "de/automation/index",
+                  "de/gateway/heartbeat",
                   "de/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -16563,7 +16600,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "de/gateway/health",
-                      "de/gateway/heartbeat",
                       "de/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -16653,7 +16689,6 @@
                       "de/gateway/security/rate-limiting",
                       "de/gateway/security/operator-incident-response",
                       "de/gateway/security/secure-file-operations",
-                      "de/gateway/security/dependency-locking",
                       "de/gateway/operator-scopes",
                       "de/gateway/sandboxing",
                       {
@@ -16680,6 +16715,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "de/gateway/clients",
+                      "de/gateway/external-apps",
                       "de/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -16699,11 +16736,15 @@
                           "de/gateway/protocol/auth"
                         ]
                       },
-                      "de/gateway/clients",
                       "de/gateway/embedding",
                       "de/gateway/openai-http-api",
                       "de/gateway/openresponses-http-api",
-                      "de/gateway/tools-invoke-http-api",
+                      "de/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "de/gateway/cli-backends",
                       "de/gateway/local-models",
                       "de/gateway/local-model-services"
@@ -16715,7 +16756,6 @@
                       "de/network",
                       "de/gateway/pairing",
                       "de/gateway/discovery",
-                      "de/gateway/portals",
                       "de/gateway/bonjour"
                     ]
                   }
@@ -16812,6 +16852,7 @@
                       "de/web/control-ui/development"
                     ]
                   },
+                  "de/gateway/portals",
                   "de/web/notifications",
                   "de/web/urls",
                   "de/web/dashboard",
@@ -17021,7 +17062,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "de/reference/rpc",
-                  "de/gateway/external-apps",
                   "de/reference/device-models"
                 ]
               },
@@ -17214,6 +17254,7 @@
                   "de/reference/openclaw-ai",
                   "de/reference/prompt-caching",
                   "de/reference/api-usage-costs",
+                  "de/concepts/usage-tracking",
                   "de/reference/transcript-hygiene",
                   "de/reference/database-schemas",
                   {
@@ -17241,17 +17282,15 @@
                       "de/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "de/date-time"
+                  "de/date-time",
+                  "de/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "de/concepts/typebox",
-                  "de/concepts/markdown-formatting",
-                  "de/concepts/typing-indicators",
-                  "de/concepts/usage-tracking",
-                  "de/concepts/timezone"
+                  "de/concepts/markdown-formatting"
                 ]
               },
               {
@@ -17308,7 +17347,8 @@
                       "de/reference/full-release-validation/evidence"
                     ]
                   },
-                  "de/reference/release-performance-sweep"
+                  "de/reference/release-performance-sweep",
+                  "de/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -17531,7 +17571,8 @@
                   "fr/install/node",
                   "fr/install/node-compatibility",
                   "fr/install/bun",
-                  "fr/install/bun-compatibility"
+                  "fr/install/bun-compatibility",
+                  "fr/install/nix"
                 ]
               },
               {
@@ -17563,7 +17604,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "fr/install/ansible",
                   "fr/install/docker",
                   {
                     "group": "Docker",
@@ -17574,7 +17614,6 @@
                       "fr/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "fr/install/nix",
                   "fr/install/podman"
                 ]
               },
@@ -17609,6 +17648,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "fr/install/ansible",
                       "fr/install/docker-vm-runtime",
                       "fr/install/kubernetes",
                       "fr/install/macos-vm",
@@ -17884,6 +17924,7 @@
                 "pages": [
                   "fr/concepts/messages",
                   "fr/concepts/streaming",
+                  "fr/concepts/typing-indicators",
                   "fr/concepts/progress-drafts",
                   "fr/concepts/retry",
                   "fr/concepts/queue",
@@ -18073,6 +18114,7 @@
                 "group": "Automation",
                 "pages": [
                   "fr/automation/index",
+                  "fr/gateway/heartbeat",
                   "fr/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -18576,7 +18618,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "fr/gateway/health",
-                      "fr/gateway/heartbeat",
                       "fr/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -18666,7 +18707,6 @@
                       "fr/gateway/security/rate-limiting",
                       "fr/gateway/security/operator-incident-response",
                       "fr/gateway/security/secure-file-operations",
-                      "fr/gateway/security/dependency-locking",
                       "fr/gateway/operator-scopes",
                       "fr/gateway/sandboxing",
                       {
@@ -18693,6 +18733,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "fr/gateway/clients",
+                      "fr/gateway/external-apps",
                       "fr/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -18712,11 +18754,15 @@
                           "fr/gateway/protocol/auth"
                         ]
                       },
-                      "fr/gateway/clients",
                       "fr/gateway/embedding",
                       "fr/gateway/openai-http-api",
                       "fr/gateway/openresponses-http-api",
-                      "fr/gateway/tools-invoke-http-api",
+                      "fr/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "fr/gateway/cli-backends",
                       "fr/gateway/local-models",
                       "fr/gateway/local-model-services"
@@ -18728,7 +18774,6 @@
                       "fr/network",
                       "fr/gateway/pairing",
                       "fr/gateway/discovery",
-                      "fr/gateway/portals",
                       "fr/gateway/bonjour"
                     ]
                   }
@@ -18825,6 +18870,7 @@
                       "fr/web/control-ui/development"
                     ]
                   },
+                  "fr/gateway/portals",
                   "fr/web/notifications",
                   "fr/web/urls",
                   "fr/web/dashboard",
@@ -19034,7 +19080,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "fr/reference/rpc",
-                  "fr/gateway/external-apps",
                   "fr/reference/device-models"
                 ]
               },
@@ -19227,6 +19272,7 @@
                   "fr/reference/openclaw-ai",
                   "fr/reference/prompt-caching",
                   "fr/reference/api-usage-costs",
+                  "fr/concepts/usage-tracking",
                   "fr/reference/transcript-hygiene",
                   "fr/reference/database-schemas",
                   {
@@ -19254,17 +19300,15 @@
                       "fr/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "fr/date-time"
+                  "fr/date-time",
+                  "fr/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "fr/concepts/typebox",
-                  "fr/concepts/markdown-formatting",
-                  "fr/concepts/typing-indicators",
-                  "fr/concepts/usage-tracking",
-                  "fr/concepts/timezone"
+                  "fr/concepts/markdown-formatting"
                 ]
               },
               {
@@ -19321,7 +19365,8 @@
                       "fr/reference/full-release-validation/evidence"
                     ]
                   },
-                  "fr/reference/release-performance-sweep"
+                  "fr/reference/release-performance-sweep",
+                  "fr/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -19544,7 +19589,8 @@
                   "hi/install/node",
                   "hi/install/node-compatibility",
                   "hi/install/bun",
-                  "hi/install/bun-compatibility"
+                  "hi/install/bun-compatibility",
+                  "hi/install/nix"
                 ]
               },
               {
@@ -19576,7 +19622,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "hi/install/ansible",
                   "hi/install/docker",
                   {
                     "group": "Docker",
@@ -19587,7 +19632,6 @@
                       "hi/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "hi/install/nix",
                   "hi/install/podman"
                 ]
               },
@@ -19622,6 +19666,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "hi/install/ansible",
                       "hi/install/docker-vm-runtime",
                       "hi/install/kubernetes",
                       "hi/install/macos-vm",
@@ -19897,6 +19942,7 @@
                 "pages": [
                   "hi/concepts/messages",
                   "hi/concepts/streaming",
+                  "hi/concepts/typing-indicators",
                   "hi/concepts/progress-drafts",
                   "hi/concepts/retry",
                   "hi/concepts/queue",
@@ -20086,6 +20132,7 @@
                 "group": "Automation",
                 "pages": [
                   "hi/automation/index",
+                  "hi/gateway/heartbeat",
                   "hi/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -20589,7 +20636,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "hi/gateway/health",
-                      "hi/gateway/heartbeat",
                       "hi/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -20679,7 +20725,6 @@
                       "hi/gateway/security/rate-limiting",
                       "hi/gateway/security/operator-incident-response",
                       "hi/gateway/security/secure-file-operations",
-                      "hi/gateway/security/dependency-locking",
                       "hi/gateway/operator-scopes",
                       "hi/gateway/sandboxing",
                       {
@@ -20706,6 +20751,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "hi/gateway/clients",
+                      "hi/gateway/external-apps",
                       "hi/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -20725,11 +20772,15 @@
                           "hi/gateway/protocol/auth"
                         ]
                       },
-                      "hi/gateway/clients",
                       "hi/gateway/embedding",
                       "hi/gateway/openai-http-api",
                       "hi/gateway/openresponses-http-api",
-                      "hi/gateway/tools-invoke-http-api",
+                      "hi/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "hi/gateway/cli-backends",
                       "hi/gateway/local-models",
                       "hi/gateway/local-model-services"
@@ -20741,7 +20792,6 @@
                       "hi/network",
                       "hi/gateway/pairing",
                       "hi/gateway/discovery",
-                      "hi/gateway/portals",
                       "hi/gateway/bonjour"
                     ]
                   }
@@ -20838,6 +20888,7 @@
                       "hi/web/control-ui/development"
                     ]
                   },
+                  "hi/gateway/portals",
                   "hi/web/notifications",
                   "hi/web/urls",
                   "hi/web/dashboard",
@@ -21047,7 +21098,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "hi/reference/rpc",
-                  "hi/gateway/external-apps",
                   "hi/reference/device-models"
                 ]
               },
@@ -21240,6 +21290,7 @@
                   "hi/reference/openclaw-ai",
                   "hi/reference/prompt-caching",
                   "hi/reference/api-usage-costs",
+                  "hi/concepts/usage-tracking",
                   "hi/reference/transcript-hygiene",
                   "hi/reference/database-schemas",
                   {
@@ -21267,17 +21318,15 @@
                       "hi/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "hi/date-time"
+                  "hi/date-time",
+                  "hi/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "hi/concepts/typebox",
-                  "hi/concepts/markdown-formatting",
-                  "hi/concepts/typing-indicators",
-                  "hi/concepts/usage-tracking",
-                  "hi/concepts/timezone"
+                  "hi/concepts/markdown-formatting"
                 ]
               },
               {
@@ -21334,7 +21383,8 @@
                       "hi/reference/full-release-validation/evidence"
                     ]
                   },
-                  "hi/reference/release-performance-sweep"
+                  "hi/reference/release-performance-sweep",
+                  "hi/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -21557,7 +21607,8 @@
                   "ar/install/node",
                   "ar/install/node-compatibility",
                   "ar/install/bun",
-                  "ar/install/bun-compatibility"
+                  "ar/install/bun-compatibility",
+                  "ar/install/nix"
                 ]
               },
               {
@@ -21589,7 +21640,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "ar/install/ansible",
                   "ar/install/docker",
                   {
                     "group": "Docker",
@@ -21600,7 +21650,6 @@
                       "ar/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "ar/install/nix",
                   "ar/install/podman"
                 ]
               },
@@ -21635,6 +21684,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "ar/install/ansible",
                       "ar/install/docker-vm-runtime",
                       "ar/install/kubernetes",
                       "ar/install/macos-vm",
@@ -21910,6 +21960,7 @@
                 "pages": [
                   "ar/concepts/messages",
                   "ar/concepts/streaming",
+                  "ar/concepts/typing-indicators",
                   "ar/concepts/progress-drafts",
                   "ar/concepts/retry",
                   "ar/concepts/queue",
@@ -22099,6 +22150,7 @@
                 "group": "Automation",
                 "pages": [
                   "ar/automation/index",
+                  "ar/gateway/heartbeat",
                   "ar/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -22602,7 +22654,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ar/gateway/health",
-                      "ar/gateway/heartbeat",
                       "ar/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -22692,7 +22743,6 @@
                       "ar/gateway/security/rate-limiting",
                       "ar/gateway/security/operator-incident-response",
                       "ar/gateway/security/secure-file-operations",
-                      "ar/gateway/security/dependency-locking",
                       "ar/gateway/operator-scopes",
                       "ar/gateway/sandboxing",
                       {
@@ -22719,6 +22769,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "ar/gateway/clients",
+                      "ar/gateway/external-apps",
                       "ar/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -22738,11 +22790,15 @@
                           "ar/gateway/protocol/auth"
                         ]
                       },
-                      "ar/gateway/clients",
                       "ar/gateway/embedding",
                       "ar/gateway/openai-http-api",
                       "ar/gateway/openresponses-http-api",
-                      "ar/gateway/tools-invoke-http-api",
+                      "ar/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "ar/gateway/cli-backends",
                       "ar/gateway/local-models",
                       "ar/gateway/local-model-services"
@@ -22754,7 +22810,6 @@
                       "ar/network",
                       "ar/gateway/pairing",
                       "ar/gateway/discovery",
-                      "ar/gateway/portals",
                       "ar/gateway/bonjour"
                     ]
                   }
@@ -22851,6 +22906,7 @@
                       "ar/web/control-ui/development"
                     ]
                   },
+                  "ar/gateway/portals",
                   "ar/web/notifications",
                   "ar/web/urls",
                   "ar/web/dashboard",
@@ -23060,7 +23116,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "ar/reference/rpc",
-                  "ar/gateway/external-apps",
                   "ar/reference/device-models"
                 ]
               },
@@ -23253,6 +23308,7 @@
                   "ar/reference/openclaw-ai",
                   "ar/reference/prompt-caching",
                   "ar/reference/api-usage-costs",
+                  "ar/concepts/usage-tracking",
                   "ar/reference/transcript-hygiene",
                   "ar/reference/database-schemas",
                   {
@@ -23280,17 +23336,15 @@
                       "ar/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "ar/date-time"
+                  "ar/date-time",
+                  "ar/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "ar/concepts/typebox",
-                  "ar/concepts/markdown-formatting",
-                  "ar/concepts/typing-indicators",
-                  "ar/concepts/usage-tracking",
-                  "ar/concepts/timezone"
+                  "ar/concepts/markdown-formatting"
                 ]
               },
               {
@@ -23347,7 +23401,8 @@
                       "ar/reference/full-release-validation/evidence"
                     ]
                   },
-                  "ar/reference/release-performance-sweep"
+                  "ar/reference/release-performance-sweep",
+                  "ar/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -23570,7 +23625,8 @@
                   "it/install/node",
                   "it/install/node-compatibility",
                   "it/install/bun",
-                  "it/install/bun-compatibility"
+                  "it/install/bun-compatibility",
+                  "it/install/nix"
                 ]
               },
               {
@@ -23602,7 +23658,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "it/install/ansible",
                   "it/install/docker",
                   {
                     "group": "Docker",
@@ -23613,7 +23668,6 @@
                       "it/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "it/install/nix",
                   "it/install/podman"
                 ]
               },
@@ -23648,6 +23702,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "it/install/ansible",
                       "it/install/docker-vm-runtime",
                       "it/install/kubernetes",
                       "it/install/macos-vm",
@@ -23923,6 +23978,7 @@
                 "pages": [
                   "it/concepts/messages",
                   "it/concepts/streaming",
+                  "it/concepts/typing-indicators",
                   "it/concepts/progress-drafts",
                   "it/concepts/retry",
                   "it/concepts/queue",
@@ -24112,6 +24168,7 @@
                 "group": "Automation",
                 "pages": [
                   "it/automation/index",
+                  "it/gateway/heartbeat",
                   "it/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -24615,7 +24672,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "it/gateway/health",
-                      "it/gateway/heartbeat",
                       "it/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -24705,7 +24761,6 @@
                       "it/gateway/security/rate-limiting",
                       "it/gateway/security/operator-incident-response",
                       "it/gateway/security/secure-file-operations",
-                      "it/gateway/security/dependency-locking",
                       "it/gateway/operator-scopes",
                       "it/gateway/sandboxing",
                       {
@@ -24732,6 +24787,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "it/gateway/clients",
+                      "it/gateway/external-apps",
                       "it/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -24751,11 +24808,15 @@
                           "it/gateway/protocol/auth"
                         ]
                       },
-                      "it/gateway/clients",
                       "it/gateway/embedding",
                       "it/gateway/openai-http-api",
                       "it/gateway/openresponses-http-api",
-                      "it/gateway/tools-invoke-http-api",
+                      "it/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "it/gateway/cli-backends",
                       "it/gateway/local-models",
                       "it/gateway/local-model-services"
@@ -24767,7 +24828,6 @@
                       "it/network",
                       "it/gateway/pairing",
                       "it/gateway/discovery",
-                      "it/gateway/portals",
                       "it/gateway/bonjour"
                     ]
                   }
@@ -24864,6 +24924,7 @@
                       "it/web/control-ui/development"
                     ]
                   },
+                  "it/gateway/portals",
                   "it/web/notifications",
                   "it/web/urls",
                   "it/web/dashboard",
@@ -25073,7 +25134,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "it/reference/rpc",
-                  "it/gateway/external-apps",
                   "it/reference/device-models"
                 ]
               },
@@ -25266,6 +25326,7 @@
                   "it/reference/openclaw-ai",
                   "it/reference/prompt-caching",
                   "it/reference/api-usage-costs",
+                  "it/concepts/usage-tracking",
                   "it/reference/transcript-hygiene",
                   "it/reference/database-schemas",
                   {
@@ -25293,17 +25354,15 @@
                       "it/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "it/date-time"
+                  "it/date-time",
+                  "it/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "it/concepts/typebox",
-                  "it/concepts/markdown-formatting",
-                  "it/concepts/typing-indicators",
-                  "it/concepts/usage-tracking",
-                  "it/concepts/timezone"
+                  "it/concepts/markdown-formatting"
                 ]
               },
               {
@@ -25360,7 +25419,8 @@
                       "it/reference/full-release-validation/evidence"
                     ]
                   },
-                  "it/reference/release-performance-sweep"
+                  "it/reference/release-performance-sweep",
+                  "it/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -25583,7 +25643,8 @@
                   "vi/install/node",
                   "vi/install/node-compatibility",
                   "vi/install/bun",
-                  "vi/install/bun-compatibility"
+                  "vi/install/bun-compatibility",
+                  "vi/install/nix"
                 ]
               },
               {
@@ -25615,7 +25676,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "vi/install/ansible",
                   "vi/install/docker",
                   {
                     "group": "Docker",
@@ -25626,7 +25686,6 @@
                       "vi/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "vi/install/nix",
                   "vi/install/podman"
                 ]
               },
@@ -25661,6 +25720,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "vi/install/ansible",
                       "vi/install/docker-vm-runtime",
                       "vi/install/kubernetes",
                       "vi/install/macos-vm",
@@ -25936,6 +25996,7 @@
                 "pages": [
                   "vi/concepts/messages",
                   "vi/concepts/streaming",
+                  "vi/concepts/typing-indicators",
                   "vi/concepts/progress-drafts",
                   "vi/concepts/retry",
                   "vi/concepts/queue",
@@ -26125,6 +26186,7 @@
                 "group": "Automation",
                 "pages": [
                   "vi/automation/index",
+                  "vi/gateway/heartbeat",
                   "vi/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -26628,7 +26690,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "vi/gateway/health",
-                      "vi/gateway/heartbeat",
                       "vi/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -26718,7 +26779,6 @@
                       "vi/gateway/security/rate-limiting",
                       "vi/gateway/security/operator-incident-response",
                       "vi/gateway/security/secure-file-operations",
-                      "vi/gateway/security/dependency-locking",
                       "vi/gateway/operator-scopes",
                       "vi/gateway/sandboxing",
                       {
@@ -26745,6 +26805,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "vi/gateway/clients",
+                      "vi/gateway/external-apps",
                       "vi/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -26764,11 +26826,15 @@
                           "vi/gateway/protocol/auth"
                         ]
                       },
-                      "vi/gateway/clients",
                       "vi/gateway/embedding",
                       "vi/gateway/openai-http-api",
                       "vi/gateway/openresponses-http-api",
-                      "vi/gateway/tools-invoke-http-api",
+                      "vi/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "vi/gateway/cli-backends",
                       "vi/gateway/local-models",
                       "vi/gateway/local-model-services"
@@ -26780,7 +26846,6 @@
                       "vi/network",
                       "vi/gateway/pairing",
                       "vi/gateway/discovery",
-                      "vi/gateway/portals",
                       "vi/gateway/bonjour"
                     ]
                   }
@@ -26877,6 +26942,7 @@
                       "vi/web/control-ui/development"
                     ]
                   },
+                  "vi/gateway/portals",
                   "vi/web/notifications",
                   "vi/web/urls",
                   "vi/web/dashboard",
@@ -27086,7 +27152,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "vi/reference/rpc",
-                  "vi/gateway/external-apps",
                   "vi/reference/device-models"
                 ]
               },
@@ -27279,6 +27344,7 @@
                   "vi/reference/openclaw-ai",
                   "vi/reference/prompt-caching",
                   "vi/reference/api-usage-costs",
+                  "vi/concepts/usage-tracking",
                   "vi/reference/transcript-hygiene",
                   "vi/reference/database-schemas",
                   {
@@ -27306,17 +27372,15 @@
                       "vi/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "vi/date-time"
+                  "vi/date-time",
+                  "vi/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "vi/concepts/typebox",
-                  "vi/concepts/markdown-formatting",
-                  "vi/concepts/typing-indicators",
-                  "vi/concepts/usage-tracking",
-                  "vi/concepts/timezone"
+                  "vi/concepts/markdown-formatting"
                 ]
               },
               {
@@ -27373,7 +27437,8 @@
                       "vi/reference/full-release-validation/evidence"
                     ]
                   },
-                  "vi/reference/release-performance-sweep"
+                  "vi/reference/release-performance-sweep",
+                  "vi/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -27596,7 +27661,8 @@
                   "nl/install/node",
                   "nl/install/node-compatibility",
                   "nl/install/bun",
-                  "nl/install/bun-compatibility"
+                  "nl/install/bun-compatibility",
+                  "nl/install/nix"
                 ]
               },
               {
@@ -27628,7 +27694,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "nl/install/ansible",
                   "nl/install/docker",
                   {
                     "group": "Docker",
@@ -27639,7 +27704,6 @@
                       "nl/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "nl/install/nix",
                   "nl/install/podman"
                 ]
               },
@@ -27674,6 +27738,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "nl/install/ansible",
                       "nl/install/docker-vm-runtime",
                       "nl/install/kubernetes",
                       "nl/install/macos-vm",
@@ -27949,6 +28014,7 @@
                 "pages": [
                   "nl/concepts/messages",
                   "nl/concepts/streaming",
+                  "nl/concepts/typing-indicators",
                   "nl/concepts/progress-drafts",
                   "nl/concepts/retry",
                   "nl/concepts/queue",
@@ -28138,6 +28204,7 @@
                 "group": "Automation",
                 "pages": [
                   "nl/automation/index",
+                  "nl/gateway/heartbeat",
                   "nl/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -28641,7 +28708,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "nl/gateway/health",
-                      "nl/gateway/heartbeat",
                       "nl/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -28731,7 +28797,6 @@
                       "nl/gateway/security/rate-limiting",
                       "nl/gateway/security/operator-incident-response",
                       "nl/gateway/security/secure-file-operations",
-                      "nl/gateway/security/dependency-locking",
                       "nl/gateway/operator-scopes",
                       "nl/gateway/sandboxing",
                       {
@@ -28758,6 +28823,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "nl/gateway/clients",
+                      "nl/gateway/external-apps",
                       "nl/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -28777,11 +28844,15 @@
                           "nl/gateway/protocol/auth"
                         ]
                       },
-                      "nl/gateway/clients",
                       "nl/gateway/embedding",
                       "nl/gateway/openai-http-api",
                       "nl/gateway/openresponses-http-api",
-                      "nl/gateway/tools-invoke-http-api",
+                      "nl/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "nl/gateway/cli-backends",
                       "nl/gateway/local-models",
                       "nl/gateway/local-model-services"
@@ -28793,7 +28864,6 @@
                       "nl/network",
                       "nl/gateway/pairing",
                       "nl/gateway/discovery",
-                      "nl/gateway/portals",
                       "nl/gateway/bonjour"
                     ]
                   }
@@ -28890,6 +28960,7 @@
                       "nl/web/control-ui/development"
                     ]
                   },
+                  "nl/gateway/portals",
                   "nl/web/notifications",
                   "nl/web/urls",
                   "nl/web/dashboard",
@@ -29099,7 +29170,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "nl/reference/rpc",
-                  "nl/gateway/external-apps",
                   "nl/reference/device-models"
                 ]
               },
@@ -29292,6 +29362,7 @@
                   "nl/reference/openclaw-ai",
                   "nl/reference/prompt-caching",
                   "nl/reference/api-usage-costs",
+                  "nl/concepts/usage-tracking",
                   "nl/reference/transcript-hygiene",
                   "nl/reference/database-schemas",
                   {
@@ -29319,17 +29390,15 @@
                       "nl/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "nl/date-time"
+                  "nl/date-time",
+                  "nl/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "nl/concepts/typebox",
-                  "nl/concepts/markdown-formatting",
-                  "nl/concepts/typing-indicators",
-                  "nl/concepts/usage-tracking",
-                  "nl/concepts/timezone"
+                  "nl/concepts/markdown-formatting"
                 ]
               },
               {
@@ -29386,7 +29455,8 @@
                       "nl/reference/full-release-validation/evidence"
                     ]
                   },
-                  "nl/reference/release-performance-sweep"
+                  "nl/reference/release-performance-sweep",
+                  "nl/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -29609,7 +29679,8 @@
                   "tr/install/node",
                   "tr/install/node-compatibility",
                   "tr/install/bun",
-                  "tr/install/bun-compatibility"
+                  "tr/install/bun-compatibility",
+                  "tr/install/nix"
                 ]
               },
               {
@@ -29641,7 +29712,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "tr/install/ansible",
                   "tr/install/docker",
                   {
                     "group": "Docker",
@@ -29652,7 +29722,6 @@
                       "tr/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "tr/install/nix",
                   "tr/install/podman"
                 ]
               },
@@ -29687,6 +29756,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "tr/install/ansible",
                       "tr/install/docker-vm-runtime",
                       "tr/install/kubernetes",
                       "tr/install/macos-vm",
@@ -29962,6 +30032,7 @@
                 "pages": [
                   "tr/concepts/messages",
                   "tr/concepts/streaming",
+                  "tr/concepts/typing-indicators",
                   "tr/concepts/progress-drafts",
                   "tr/concepts/retry",
                   "tr/concepts/queue",
@@ -30151,6 +30222,7 @@
                 "group": "Automation",
                 "pages": [
                   "tr/automation/index",
+                  "tr/gateway/heartbeat",
                   "tr/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -30654,7 +30726,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "tr/gateway/health",
-                      "tr/gateway/heartbeat",
                       "tr/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -30744,7 +30815,6 @@
                       "tr/gateway/security/rate-limiting",
                       "tr/gateway/security/operator-incident-response",
                       "tr/gateway/security/secure-file-operations",
-                      "tr/gateway/security/dependency-locking",
                       "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
                       {
@@ -30771,6 +30841,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "tr/gateway/clients",
+                      "tr/gateway/external-apps",
                       "tr/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -30790,11 +30862,15 @@
                           "tr/gateway/protocol/auth"
                         ]
                       },
-                      "tr/gateway/clients",
                       "tr/gateway/embedding",
                       "tr/gateway/openai-http-api",
                       "tr/gateway/openresponses-http-api",
-                      "tr/gateway/tools-invoke-http-api",
+                      "tr/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "tr/gateway/cli-backends",
                       "tr/gateway/local-models",
                       "tr/gateway/local-model-services"
@@ -30806,7 +30882,6 @@
                       "tr/network",
                       "tr/gateway/pairing",
                       "tr/gateway/discovery",
-                      "tr/gateway/portals",
                       "tr/gateway/bonjour"
                     ]
                   }
@@ -30903,6 +30978,7 @@
                       "tr/web/control-ui/development"
                     ]
                   },
+                  "tr/gateway/portals",
                   "tr/web/notifications",
                   "tr/web/urls",
                   "tr/web/dashboard",
@@ -31112,7 +31188,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "tr/reference/rpc",
-                  "tr/gateway/external-apps",
                   "tr/reference/device-models"
                 ]
               },
@@ -31305,6 +31380,7 @@
                   "tr/reference/openclaw-ai",
                   "tr/reference/prompt-caching",
                   "tr/reference/api-usage-costs",
+                  "tr/concepts/usage-tracking",
                   "tr/reference/transcript-hygiene",
                   "tr/reference/database-schemas",
                   {
@@ -31332,17 +31408,15 @@
                       "tr/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "tr/date-time"
+                  "tr/date-time",
+                  "tr/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "tr/concepts/typebox",
-                  "tr/concepts/markdown-formatting",
-                  "tr/concepts/typing-indicators",
-                  "tr/concepts/usage-tracking",
-                  "tr/concepts/timezone"
+                  "tr/concepts/markdown-formatting"
                 ]
               },
               {
@@ -31399,7 +31473,8 @@
                       "tr/reference/full-release-validation/evidence"
                     ]
                   },
-                  "tr/reference/release-performance-sweep"
+                  "tr/reference/release-performance-sweep",
+                  "tr/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -31622,7 +31697,8 @@
                   "uk/install/node",
                   "uk/install/node-compatibility",
                   "uk/install/bun",
-                  "uk/install/bun-compatibility"
+                  "uk/install/bun-compatibility",
+                  "uk/install/nix"
                 ]
               },
               {
@@ -31654,7 +31730,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "uk/install/ansible",
                   "uk/install/docker",
                   {
                     "group": "Docker",
@@ -31665,7 +31740,6 @@
                       "uk/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "uk/install/nix",
                   "uk/install/podman"
                 ]
               },
@@ -31700,6 +31774,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "uk/install/ansible",
                       "uk/install/docker-vm-runtime",
                       "uk/install/kubernetes",
                       "uk/install/macos-vm",
@@ -31975,6 +32050,7 @@
                 "pages": [
                   "uk/concepts/messages",
                   "uk/concepts/streaming",
+                  "uk/concepts/typing-indicators",
                   "uk/concepts/progress-drafts",
                   "uk/concepts/retry",
                   "uk/concepts/queue",
@@ -32164,6 +32240,7 @@
                 "group": "Automation",
                 "pages": [
                   "uk/automation/index",
+                  "uk/gateway/heartbeat",
                   "uk/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -32667,7 +32744,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "uk/gateway/health",
-                      "uk/gateway/heartbeat",
                       "uk/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -32757,7 +32833,6 @@
                       "uk/gateway/security/rate-limiting",
                       "uk/gateway/security/operator-incident-response",
                       "uk/gateway/security/secure-file-operations",
-                      "uk/gateway/security/dependency-locking",
                       "uk/gateway/operator-scopes",
                       "uk/gateway/sandboxing",
                       {
@@ -32784,6 +32859,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "uk/gateway/clients",
+                      "uk/gateway/external-apps",
                       "uk/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -32803,11 +32880,15 @@
                           "uk/gateway/protocol/auth"
                         ]
                       },
-                      "uk/gateway/clients",
                       "uk/gateway/embedding",
                       "uk/gateway/openai-http-api",
                       "uk/gateway/openresponses-http-api",
-                      "uk/gateway/tools-invoke-http-api",
+                      "uk/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "uk/gateway/cli-backends",
                       "uk/gateway/local-models",
                       "uk/gateway/local-model-services"
@@ -32819,7 +32900,6 @@
                       "uk/network",
                       "uk/gateway/pairing",
                       "uk/gateway/discovery",
-                      "uk/gateway/portals",
                       "uk/gateway/bonjour"
                     ]
                   }
@@ -32916,6 +32996,7 @@
                       "uk/web/control-ui/development"
                     ]
                   },
+                  "uk/gateway/portals",
                   "uk/web/notifications",
                   "uk/web/urls",
                   "uk/web/dashboard",
@@ -33125,7 +33206,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "uk/reference/rpc",
-                  "uk/gateway/external-apps",
                   "uk/reference/device-models"
                 ]
               },
@@ -33318,6 +33398,7 @@
                   "uk/reference/openclaw-ai",
                   "uk/reference/prompt-caching",
                   "uk/reference/api-usage-costs",
+                  "uk/concepts/usage-tracking",
                   "uk/reference/transcript-hygiene",
                   "uk/reference/database-schemas",
                   {
@@ -33345,17 +33426,15 @@
                       "uk/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "uk/date-time"
+                  "uk/date-time",
+                  "uk/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "uk/concepts/typebox",
-                  "uk/concepts/markdown-formatting",
-                  "uk/concepts/typing-indicators",
-                  "uk/concepts/usage-tracking",
-                  "uk/concepts/timezone"
+                  "uk/concepts/markdown-formatting"
                 ]
               },
               {
@@ -33412,7 +33491,8 @@
                       "uk/reference/full-release-validation/evidence"
                     ]
                   },
-                  "uk/reference/release-performance-sweep"
+                  "uk/reference/release-performance-sweep",
+                  "uk/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -33635,7 +33715,8 @@
                   "id/install/node",
                   "id/install/node-compatibility",
                   "id/install/bun",
-                  "id/install/bun-compatibility"
+                  "id/install/bun-compatibility",
+                  "id/install/nix"
                 ]
               },
               {
@@ -33667,7 +33748,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "id/install/ansible",
                   "id/install/docker",
                   {
                     "group": "Docker",
@@ -33678,7 +33758,6 @@
                       "id/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "id/install/nix",
                   "id/install/podman"
                 ]
               },
@@ -33713,6 +33792,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "id/install/ansible",
                       "id/install/docker-vm-runtime",
                       "id/install/kubernetes",
                       "id/install/macos-vm",
@@ -33988,6 +34068,7 @@
                 "pages": [
                   "id/concepts/messages",
                   "id/concepts/streaming",
+                  "id/concepts/typing-indicators",
                   "id/concepts/progress-drafts",
                   "id/concepts/retry",
                   "id/concepts/queue",
@@ -34177,6 +34258,7 @@
                 "group": "Automation",
                 "pages": [
                   "id/automation/index",
+                  "id/gateway/heartbeat",
                   "id/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -34680,7 +34762,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "id/gateway/health",
-                      "id/gateway/heartbeat",
                       "id/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -34770,7 +34851,6 @@
                       "id/gateway/security/rate-limiting",
                       "id/gateway/security/operator-incident-response",
                       "id/gateway/security/secure-file-operations",
-                      "id/gateway/security/dependency-locking",
                       "id/gateway/operator-scopes",
                       "id/gateway/sandboxing",
                       {
@@ -34797,6 +34877,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "id/gateway/clients",
+                      "id/gateway/external-apps",
                       "id/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -34816,11 +34898,15 @@
                           "id/gateway/protocol/auth"
                         ]
                       },
-                      "id/gateway/clients",
                       "id/gateway/embedding",
                       "id/gateway/openai-http-api",
                       "id/gateway/openresponses-http-api",
-                      "id/gateway/tools-invoke-http-api",
+                      "id/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "id/gateway/cli-backends",
                       "id/gateway/local-models",
                       "id/gateway/local-model-services"
@@ -34832,7 +34918,6 @@
                       "id/network",
                       "id/gateway/pairing",
                       "id/gateway/discovery",
-                      "id/gateway/portals",
                       "id/gateway/bonjour"
                     ]
                   }
@@ -34929,6 +35014,7 @@
                       "id/web/control-ui/development"
                     ]
                   },
+                  "id/gateway/portals",
                   "id/web/notifications",
                   "id/web/urls",
                   "id/web/dashboard",
@@ -35138,7 +35224,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "id/reference/rpc",
-                  "id/gateway/external-apps",
                   "id/reference/device-models"
                 ]
               },
@@ -35331,6 +35416,7 @@
                   "id/reference/openclaw-ai",
                   "id/reference/prompt-caching",
                   "id/reference/api-usage-costs",
+                  "id/concepts/usage-tracking",
                   "id/reference/transcript-hygiene",
                   "id/reference/database-schemas",
                   {
@@ -35358,17 +35444,15 @@
                       "id/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "id/date-time"
+                  "id/date-time",
+                  "id/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "id/concepts/typebox",
-                  "id/concepts/markdown-formatting",
-                  "id/concepts/typing-indicators",
-                  "id/concepts/usage-tracking",
-                  "id/concepts/timezone"
+                  "id/concepts/markdown-formatting"
                 ]
               },
               {
@@ -35425,7 +35509,8 @@
                       "id/reference/full-release-validation/evidence"
                     ]
                   },
-                  "id/reference/release-performance-sweep"
+                  "id/reference/release-performance-sweep",
+                  "id/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -35648,7 +35733,8 @@
                   "pl/install/node",
                   "pl/install/node-compatibility",
                   "pl/install/bun",
-                  "pl/install/bun-compatibility"
+                  "pl/install/bun-compatibility",
+                  "pl/install/nix"
                 ]
               },
               {
@@ -35680,7 +35766,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "pl/install/ansible",
                   "pl/install/docker",
                   {
                     "group": "Docker",
@@ -35691,7 +35776,6 @@
                       "pl/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "pl/install/nix",
                   "pl/install/podman"
                 ]
               },
@@ -35726,6 +35810,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "pl/install/ansible",
                       "pl/install/docker-vm-runtime",
                       "pl/install/kubernetes",
                       "pl/install/macos-vm",
@@ -36001,6 +36086,7 @@
                 "pages": [
                   "pl/concepts/messages",
                   "pl/concepts/streaming",
+                  "pl/concepts/typing-indicators",
                   "pl/concepts/progress-drafts",
                   "pl/concepts/retry",
                   "pl/concepts/queue",
@@ -36190,6 +36276,7 @@
                 "group": "Automation",
                 "pages": [
                   "pl/automation/index",
+                  "pl/gateway/heartbeat",
                   "pl/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -36693,7 +36780,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pl/gateway/health",
-                      "pl/gateway/heartbeat",
                       "pl/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -36783,7 +36869,6 @@
                       "pl/gateway/security/rate-limiting",
                       "pl/gateway/security/operator-incident-response",
                       "pl/gateway/security/secure-file-operations",
-                      "pl/gateway/security/dependency-locking",
                       "pl/gateway/operator-scopes",
                       "pl/gateway/sandboxing",
                       {
@@ -36810,6 +36895,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "pl/gateway/clients",
+                      "pl/gateway/external-apps",
                       "pl/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -36829,11 +36916,15 @@
                           "pl/gateway/protocol/auth"
                         ]
                       },
-                      "pl/gateway/clients",
                       "pl/gateway/embedding",
                       "pl/gateway/openai-http-api",
                       "pl/gateway/openresponses-http-api",
-                      "pl/gateway/tools-invoke-http-api",
+                      "pl/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "pl/gateway/cli-backends",
                       "pl/gateway/local-models",
                       "pl/gateway/local-model-services"
@@ -36845,7 +36936,6 @@
                       "pl/network",
                       "pl/gateway/pairing",
                       "pl/gateway/discovery",
-                      "pl/gateway/portals",
                       "pl/gateway/bonjour"
                     ]
                   }
@@ -36942,6 +37032,7 @@
                       "pl/web/control-ui/development"
                     ]
                   },
+                  "pl/gateway/portals",
                   "pl/web/notifications",
                   "pl/web/urls",
                   "pl/web/dashboard",
@@ -37151,7 +37242,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "pl/reference/rpc",
-                  "pl/gateway/external-apps",
                   "pl/reference/device-models"
                 ]
               },
@@ -37344,6 +37434,7 @@
                   "pl/reference/openclaw-ai",
                   "pl/reference/prompt-caching",
                   "pl/reference/api-usage-costs",
+                  "pl/concepts/usage-tracking",
                   "pl/reference/transcript-hygiene",
                   "pl/reference/database-schemas",
                   {
@@ -37371,17 +37462,15 @@
                       "pl/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "pl/date-time"
+                  "pl/date-time",
+                  "pl/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "pl/concepts/typebox",
-                  "pl/concepts/markdown-formatting",
-                  "pl/concepts/typing-indicators",
-                  "pl/concepts/usage-tracking",
-                  "pl/concepts/timezone"
+                  "pl/concepts/markdown-formatting"
                 ]
               },
               {
@@ -37438,7 +37527,8 @@
                       "pl/reference/full-release-validation/evidence"
                     ]
                   },
-                  "pl/reference/release-performance-sweep"
+                  "pl/reference/release-performance-sweep",
+                  "pl/gateway/security/dependency-locking"
                 ]
               },
               {
@@ -37661,7 +37751,8 @@
                   "ru/install/node",
                   "ru/install/node-compatibility",
                   "ru/install/bun",
-                  "ru/install/bun-compatibility"
+                  "ru/install/bun-compatibility",
+                  "ru/install/nix"
                 ]
               },
               {
@@ -37693,7 +37784,6 @@
               {
                 "group": "Containers",
                 "pages": [
-                  "ru/install/ansible",
                   "ru/install/docker",
                   {
                     "group": "Docker",
@@ -37704,7 +37794,6 @@
                       "ru/install/docker/sandbox-and-troubleshooting"
                     ]
                   },
-                  "ru/install/nix",
                   "ru/install/podman"
                 ]
               },
@@ -37739,6 +37828,7 @@
                   {
                     "group": "Self-hosted and local",
                     "pages": [
+                      "ru/install/ansible",
                       "ru/install/docker-vm-runtime",
                       "ru/install/kubernetes",
                       "ru/install/macos-vm",
@@ -38014,6 +38104,7 @@
                 "pages": [
                   "ru/concepts/messages",
                   "ru/concepts/streaming",
+                  "ru/concepts/typing-indicators",
                   "ru/concepts/progress-drafts",
                   "ru/concepts/retry",
                   "ru/concepts/queue",
@@ -38203,6 +38294,7 @@
                 "group": "Automation",
                 "pages": [
                   "ru/automation/index",
+                  "ru/gateway/heartbeat",
                   "ru/automation/cron-jobs",
                   {
                     "group": "Automations",
@@ -38706,7 +38798,6 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ru/gateway/health",
-                      "ru/gateway/heartbeat",
                       "ru/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -38796,7 +38887,6 @@
                       "ru/gateway/security/rate-limiting",
                       "ru/gateway/security/operator-incident-response",
                       "ru/gateway/security/secure-file-operations",
-                      "ru/gateway/security/dependency-locking",
                       "ru/gateway/operator-scopes",
                       "ru/gateway/sandboxing",
                       {
@@ -38823,6 +38913,8 @@
                   {
                     "group": "Protocols and APIs",
                     "pages": [
+                      "ru/gateway/clients",
+                      "ru/gateway/external-apps",
                       "ru/gateway/protocol",
                       {
                         "group": "Gateway protocol",
@@ -38842,11 +38934,15 @@
                           "ru/gateway/protocol/auth"
                         ]
                       },
-                      "ru/gateway/clients",
                       "ru/gateway/embedding",
                       "ru/gateway/openai-http-api",
                       "ru/gateway/openresponses-http-api",
-                      "ru/gateway/tools-invoke-http-api",
+                      "ru/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Models and local providers",
+                    "pages": [
                       "ru/gateway/cli-backends",
                       "ru/gateway/local-models",
                       "ru/gateway/local-model-services"
@@ -38858,7 +38954,6 @@
                       "ru/network",
                       "ru/gateway/pairing",
                       "ru/gateway/discovery",
-                      "ru/gateway/portals",
                       "ru/gateway/bonjour"
                     ]
                   }
@@ -38955,6 +39050,7 @@
                       "ru/web/control-ui/development"
                     ]
                   },
+                  "ru/gateway/portals",
                   "ru/web/notifications",
                   "ru/web/urls",
                   "ru/web/dashboard",
@@ -39164,7 +39260,6 @@
                 "group": "RPC and API",
                 "pages": [
                   "ru/reference/rpc",
-                  "ru/gateway/external-apps",
                   "ru/reference/device-models"
                 ]
               },
@@ -39357,6 +39452,7 @@
                   "ru/reference/openclaw-ai",
                   "ru/reference/prompt-caching",
                   "ru/reference/api-usage-costs",
+                  "ru/concepts/usage-tracking",
                   "ru/reference/transcript-hygiene",
                   "ru/reference/database-schemas",
                   {
@@ -39384,17 +39480,15 @@
                       "ru/reference/session-management-compaction/housekeeping"
                     ]
                   },
-                  "ru/date-time"
+                  "ru/date-time",
+                  "ru/concepts/timezone"
                 ]
               },
               {
                 "group": "Concept internals",
                 "pages": [
                   "ru/concepts/typebox",
-                  "ru/concepts/markdown-formatting",
-                  "ru/concepts/typing-indicators",
-                  "ru/concepts/usage-tracking",
-                  "ru/concepts/timezone"
+                  "ru/concepts/markdown-formatting"
                 ]
               },
               {
@@ -39451,7 +39545,8 @@
                       "ru/reference/full-release-validation/evidence"
                     ]
                   },
-                  "ru/reference/release-performance-sweep"
+                  "ru/reference/release-performance-sweep",
+                  "ru/gateway/security/dependency-locking"
                 ]
               },
               {
