@@ -6669,6 +6669,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick commands
   - H2: install.sh
   - H3: Flow (install.sh)
+  - H3: Existing nvm installations
   - H3: Source checkout detection
   - H3: Examples (install.sh)
   - H2: install-cli.sh
