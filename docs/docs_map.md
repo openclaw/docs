@@ -38,6 +38,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Token credentials
   - H3: Eligibility rules
   - H3: Resolution rules
+  - H2: Setup replacements
   - H2: Agent copy portability
   - H2: Plugin SDK OAuth validation
   - H2: Personal model accounts
