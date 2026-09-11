@@ -11767,6 +11767,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: `meeting_transcript_utterances`
   - H4: `meeting_transcript_summaries`
   - H3: Update run ledger
+  - H3: Update installation control
   - H3: Cloud repository workspaces
 
 ## reference/database-schemas/personal-data.md
