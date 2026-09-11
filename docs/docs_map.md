@@ -7861,6 +7861,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Compatibility signals
   - H2: Architecture overview
   - H3: Plugin metadata snapshot and lookup table
+  - H3: Runtime instance and source lifetime
   - H3: Activation planning
   - H3: Channel plugins and the shared message tool
   - H2: Capability ownership model
@@ -10421,6 +10422,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What each page covers
   - H2: Runtime namespaces
   - H2: Storing runtime references
+  - H2: Plugin lifecycle and cleanup
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
@@ -10470,6 +10472,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime/models
 - Headings:
+  - H2: Prepared simple completions
   - H2: Model namespaces
   - H2: Prepared completion SDK compatibility
 
