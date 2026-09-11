@@ -237,7 +237,7 @@ After router deploy, verify repeated HTML requests remain `X-OpenClaw-Docs-Cache
    source ~/.profile
    CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
    CLOUDFLARE_API_TOKEN="$OPENCLAW_CLOUDFLARE_API_TOKEN" \
-   npx wrangler@4.129.0 r2 bucket list
+   npx wrangler@4.130.0 r2 bucket list
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
@@ -308,7 +308,7 @@ If R2 cutover misbehaves:
 
    ```sh
    source ~/.profile
-   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" npx wrangler@4.129.0 deploy --config wrangler.toml
+   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" npx wrangler@4.130.0 deploy --config wrangler.toml
    ```
 
 3. Purge Cloudflare cache.

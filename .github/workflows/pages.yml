@@ -53,7 +53,7 @@ jobs:
         run: npm ci
 
       - name: Validate Worker bundle
-        run: npx wrangler@4.129.0 deploy --dry-run --config wrangler.toml
+        run: npx wrangler@4.130.0 deploy --dry-run --config wrangler.toml
 
       - name: Deploy to Cloudflare
         if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
@@ -61,7 +61,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx wrangler@4.129.0 deploy --config wrangler.toml \
+          npx wrangler@4.130.0 deploy --config wrangler.toml \
             --tag "${GITHUB_SHA::12}" \
             --message "openclaw/docs ${GITHUB_SHA}"
 
