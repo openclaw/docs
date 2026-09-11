@@ -10335,6 +10335,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Infrastructure
   - H3: File-watch capacity errors
   - H3: SQLite write admission
+  - H3: SQLite worker stores
   - H3: Webhook body rejection
   - H3: Post-ack webhook work
   - H3: Requester-scoped MCP connections
