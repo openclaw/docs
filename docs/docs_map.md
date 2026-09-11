@@ -1207,6 +1207,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Agent-driven setup
   - H2: Configuration
+  - H3: OpenAI OAuth
+  - H3: API key
   - H2: Adding a friend
   - H2: Sending and receiving
   - H2: Guards and owner review
