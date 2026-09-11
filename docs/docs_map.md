@@ -14620,6 +14620,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Behind a login proxy
   - H2: Public session transcripts
   - H2: Person activity URLs
+  - H2: Terminal URLs
   - H2: Focus presentation routes
   - H2: Beam share URLs
   - H2: Route table
