@@ -370,7 +370,10 @@ The recorder scans emitted lazy imports in the updater, service, and CLI cleanup
 regions and records required export origins. The wizard entry is excluded
 because it starts before replacement. `runtime-postbuild` generates hashed
 compatibility files by re-exporting the candidate's corresponding symbols;
-missing or ambiguous mappings fail the build. Stable entrypoints are checked
+multiple exports of one declaration resolve to its own chunk, with sorted paths
+and export names breaking alias ties. Missing mappings or distinct declaration
+bindings for the same source origin fail the build. The isolated `config-doctor`
+graph cannot supply updater bridges. Stable entrypoints are checked
 without replacement. The package carries the inventory in
 `dist/update-compat-inventory.json`, so negative and future fixtures remove that
 candidate's bridges. Existing older compatibility aliases remain separately
