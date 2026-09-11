@@ -8583,6 +8583,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Native conversation discovery
   - H2: providerAuthChoices reference
+  - H3: Login choices
   - H2: setup reference
   - H3: setup fields
   - H3: setup.providers reference
