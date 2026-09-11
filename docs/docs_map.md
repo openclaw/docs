@@ -8108,6 +8108,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/codex-harness
 - Headings:
+  - H2: Saved-account usage
   - H2: Requirements
   - H2: Quickstart
   - H2: Verify Codex runtime
