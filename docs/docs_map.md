@@ -7609,6 +7609,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Open the Mac app from a website
   - H2: Modes
   - H2: Remote transports
+  - H2: Run a local Gateway alongside a remote primary
   - H2: Prereqs on the remote host
   - H2: macOS app setup
   - H3: Add and manage saved Gateways
