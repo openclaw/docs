@@ -823,6 +823,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Directory
   - H2: Group join introductions
   - H2: Message behavior
+  - H2: Reply quoting
   - H2: Block streaming
   - H2: Structured rich messages
   - H2: ACP support

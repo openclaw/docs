@@ -287,6 +287,62 @@ as untrusted.
   alternatives reach the agent as `[emoji]`. Meaningful alternatives such as
   `(hello)` and parentheses typed by the sender are preserved.
 
+## Reply quoting
+
+`channels.line.replyToMode` controls native quote replies (an outbound reply
+visibly quotes the message it answers, which is how a group tells who the bot is
+talking to):
+
+| Value             | Behavior                             |
+| ----------------- | ------------------------------------ |
+| `"off"` (default) | Do not quote automatically           |
+| `"first"`         | Quote only the first reply of a turn |
+| `"all"`           | Quote every reply of a turn          |
+
+`"batched"`, which other channels accept, is rejected here: it distinguishes a
+reply to a coalesced turn from a reply to an immediate one, and nothing on the
+LINE path marks a turn as coalesced, so that distinction never arises.
+
+Per-account override: `channels.line.accounts.<id>.replyToMode`. There is no
+per-chat-type override: `replyToModeByChatType`, which Slack, Signal, and
+Mattermost accept, is rejected here, so one account quotes the same way in
+direct chats and groups.
+
+```json5
+{ channels: { line: { replyToMode: "all" } } }
+```
+
+As on Telegram, `"off"` turns off automatic quoting only: an explicit reply tag
+the agent writes is still honoured. Replies quote inline and stay visible in the
+conversation, so nothing is hidden by threading them.
+
+LINE quotes by a token it issues with each inbound message rather than by message
+id, and OpenClaw can only quote a message it kept that token for. Quoting
+therefore has limits the setting cannot lift:
+
+- LINE issues a quote token only for text, image, video, and sticker messages.
+  A reply that answers any other kind is sent unquoted.
+- LINE rejects a quote on a Flex card, on media, and on a location pin, so one
+  reply quotes once, on the first message that can carry it. A reply made only of
+  those is sent unquoted.
+- A reply can only quote a message OpenClaw received. LINE also returns a quote
+  token for each message the bot itself sends, but those are not kept, so a reply
+  that answers one of the bot's own earlier messages is sent unquoted.
+- Only a message OpenClaw handed to the agent as its own turn is remembered. In
+  a group with `requireMention` on, a skipped message still reaches the agent as
+  a line of group history, but that line carries no id the reply can name, so it
+  cannot be quoted.
+- A turn a person started by tapping a button carries no message of its own,
+  so its reply is sent unquoted.
+- Tokens live in the running Gateway, the most recent 500 per account across all
+  of its chats. A reply that answers a message from before the last restart, one
+  a busier chat on the same account has since pushed out, or one sent by a
+  separate process such as `openclaw message send`, is sent unquoted.
+- If LINE rejects a request carrying a quote token with HTTP 400, OpenClaw
+  retries the same reply without the quote. Deleting or unsending the quoted
+  message does not itself invalidate its token; LINE may instead show the quoted
+  content as unavailable. See [LINE quote messages](https://developers.line.biz/en/docs/messaging-api/sending-messages/#send-quote-messages).
+
 ## Block streaming
 
 Block streaming sends each completed assistant block as its own LINE message
