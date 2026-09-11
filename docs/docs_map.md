@@ -3045,6 +3045,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Update steps
   - H2: Plugin sync details
   - H2: Package-manager installs
+  - H3: Local packaged overrides
 
 ## cli/update/repair-and-recovery.md
 
