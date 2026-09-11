@@ -5544,6 +5544,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Minimal enable example
   - H2: Related
 
+## gateway/sandboxing/crabbox-backend.md
+
+- Route: /gateway/sandboxing/crabbox-backend
+- Headings:
+  - H2: Crabbox backend
+
 ## gateway/sandboxing/docker-backend.md
 
 - Route: /gateway/sandboxing/docker-backend
@@ -10331,6 +10337,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-overview/host-hooks
 - Headings:
   - H2: Host hooks for workflow plugins
+  - H2: Sandbox backends
 
 ## plugins/sdk-overview/imports.md
 
@@ -11771,6 +11778,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Update run ledger
   - H3: Update installation control
   - H3: Cloud repository workspaces
+  - H2: Sandbox runtime reservations
 
 ## reference/database-schemas/personal-data.md
 
