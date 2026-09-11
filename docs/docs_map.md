@@ -8195,6 +8195,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Dynamic tools and web search
   - H2: Image loader ownership
   - H2: Turn liveness and timeouts
+  - H2: Cyber safety notices
+  - H2: Automatic Daybreak escalation
   - H2: Parallel chats and thread ownership
   - H2: Runtime boundaries
 
