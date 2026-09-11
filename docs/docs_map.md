@@ -7105,6 +7105,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H3: CUA Driver error codes
   - H3: Desktop stream
+  - H3: macOS desktop availability
   - H3: macOS permissions
   - H2: Relationship to other desktop-control paths
 
@@ -7592,6 +7593,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Screen Recording still appears missing after granting access
   - H2: Accessibility grants for Node and CLI runtimes
   - H2: Separate Computer Control grants
+  - H2: Desktop availability and keeping awake
   - H2: Recovery checklist when prompts disappear
   - H2: Files and folders permissions (Desktop/Documents/Downloads)
   - H2: Related
