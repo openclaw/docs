@@ -8066,6 +8066,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-runtime/permissions
 - Headings:
   - H2: Native permissions and MCP elicitations
+  - H2: Async questions
 
 ## plugins/codex-harness-runtime/queue-and-feedback.md
 
