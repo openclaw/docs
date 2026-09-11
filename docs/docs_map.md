@@ -2890,6 +2890,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tail trajectory progress
   - H2: Export a trajectory bundle
   - H2: Cleanup maintenance
+  - H3: Test cleanup on a copy
   - H2: Compact a session
   - H3: sessions.compact RPC
   - H2: Related
