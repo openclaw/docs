@@ -6984,6 +6984,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Targeted model transport diagnostics
   - H3: Trace correlation
   - H3: Lifecycle queue waits
+  - H3: Slow worktree cleanup
   - H3: Slow agent database opens
   - H3: SQLite transaction timing
   - H3: SQLite session writes
