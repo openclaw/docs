@@ -6502,6 +6502,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Prerequisites
   - H2: Containerized Gateway
+  - H3: Using the Control UI browser
   - H3: Headless bootstrap
   - H3: Manual flow
   - H3: Upgrading container images
