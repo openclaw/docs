@@ -8259,6 +8259,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Compatibility registry
   - H2: Deprecation policy
   - H2: Current compatibility areas
+  - H3: Synchronous plugin state
   - H3: Session agent resolution aliases
   - H3: Auth profile cooldown classifications
   - H3: Channel prompt-context identifier aliases
@@ -10476,6 +10477,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/state-and-system
 - Headings:
   - H2: State, config, and system namespaces
+  - H2: Synchronous keyed store migration
 
 ## plugins/sdk-setup.md
 
