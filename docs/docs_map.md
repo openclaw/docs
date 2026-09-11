@@ -5468,6 +5468,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: npm packages
   - H2: Transport and framing
+  - H2: Connection keepalives
   - H2: Gateway-controlled WebRTC Talk
 
 ## gateway/protocol/versioning.md
