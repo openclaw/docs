@@ -4559,6 +4559,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-agents/sessions
 - Headings:
   - H2: Session
+  - H2: Cold storage
 
 ## gateway/config-agents/workspace-and-bootstrap.md
 
@@ -6398,6 +6399,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Choose a path
   - H2: Full archives
   - H2: Per-database snapshots
+  - H3: Cold transcript backups
   - H2: Schedule backups
   - H2: Copy backups offsite
   - H2: Versioned backups to a Git repository
@@ -11749,6 +11751,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Cold transcript storage
   - H3: Creator namespace migration
   - H3: Participant identity migration
 
@@ -11769,6 +11772,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/layout
 - Headings:
   - H2: Database layout
+  - H3: Cold transcript archives
   - H3: Plugin state listing index
   - H3: Mentions Inbox
   - H3: ACP replay accounting
@@ -12063,6 +12067,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/session-management-compaction/maintenance
 - Headings:
   - H2: Store maintenance and disk controls
+  - H3: Cold transcript storage
   - H3: Downgrading After The SQLite Flip
   - H2: Cron sessions and run logs
 
