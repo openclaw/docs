@@ -3020,6 +3020,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw update
   - H2: Usage
   - H2: Automation and SSH
+  - H2: Native service commands during updates
   - H2: Options
   - H2: update wizard
   - H2: Detailed topics
