@@ -130,7 +130,6 @@ Install the meeting plugins you need. Each is enabled by default after installat
 openclaw plugins install @openclaw/google-meet
 openclaw plugins install @openclaw/teams-meetings
 openclaw plugins install @openclaw/zoom-meetings
-openclaw gateway restart
 ```
 
 Disable any meeting plugin you do not use:
@@ -141,7 +140,7 @@ openclaw plugins disable teams-meetings
 openclaw plugins disable zoom-meetings
 ```
 
-Restart the Gateway if your plugin-management path does not restart it automatically. Then run the platform setup check before joining.
+These changes apply to a running Gateway automatically. If it is offline, start it before joining. Check the application result, then run the platform setup check below; see [Apply changes and inspect](/plugins/manage-plugins#apply-changes-and-inspect).
 
 ## Verify and join
 

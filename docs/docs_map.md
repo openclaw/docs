@@ -1648,9 +1648,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Install with onboard (recommended)
   - H2: Manual installation
   - H3: 1. Install the plugin
-  - H3: 2. Enable the plugin in config
+  - H3: 2. Enable the plugin
   - H3: 3. Generate a QR code and log in
-  - H3: 4. Restart the gateway
+  - H3: 4. Verify the channel
   - H2: How it works
   - H2: Under the hood
   - H2: Troubleshooting

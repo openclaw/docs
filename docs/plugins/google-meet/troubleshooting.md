@@ -54,7 +54,7 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 Expected Twilio state:
 
 - `googlemeet setup` includes green `twilio-voice-call-plugin`, `twilio-voice-call-credentials`, and `twilio-voice-call-webhook` checks.
-- `voicecall` is available in the CLI after Gateway reload.
+- `voicecall` is available in the CLI after the Voice Call plugin is installed and enabled.
 - The returned session has `transport: "twilio"` and a `twilio.voiceCallId`.
 - `openclaw logs --follow` shows DTMF TwiML served before realtime TwiML, then a realtime bridge with the initial greeting queued.
 - `googlemeet leave <sessionId>` hangs up the delegated voice call.
@@ -63,7 +63,7 @@ Expected Twilio state:
 
 ### Agent cannot see the Google Meet tool
 
-Confirm the plugin is enabled and reload the Gateway; the running agent only sees plugin tools registered by the current Gateway process:
+Confirm the plugin is enabled and its runtime application succeeded; see [Apply changes and inspect](/plugins/manage-plugins#apply-changes-and-inspect). Then check setup:
 
 ```bash
 openclaw plugins list | grep google-meet
@@ -165,7 +165,7 @@ The equivalent tool action is `recover_current_tab`: it focuses and inspects an 
 
 ### Twilio setup checks fail
 
-`twilio-voice-call-plugin` fails when `voice-call` is not allowed or not enabled: add it to `plugins.allow`, enable `plugins.entries.voice-call`, reload the Gateway.
+`twilio-voice-call-plugin` fails when `voice-call` is not allowed or not enabled: add it to `plugins.allow`, enable `plugins.entries.voice-call`, and rerun setup after the change applies.
 
 `twilio-voice-call-credentials` fails when the Twilio backend is missing account SID, auth token, or caller number:
 
@@ -212,7 +212,7 @@ For local development, use a tunnel or Tailscale exposure instead of a private h
 }
 ```
 
-Restart or reload the Gateway, then:
+Plugin config changes apply automatically with the default hybrid reload mode (see [Hot reload](/gateway/configuration/hot-reload)). If you changed environment-based credentials, restart the Gateway with the updated environment. Then verify:
 
 ```bash
 openclaw googlemeet setup --transport twilio

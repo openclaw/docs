@@ -38,7 +38,7 @@ Enable the plugin on the source and choose the exact session group names to publ
 
 In the source Control UI, move the sessions you want to share into the **Team** group. Group names match the session category exactly. An omitted or empty `share.groups` publishes nothing. Incognito sessions, drafts, and adopted rows from other session catalogs are never published, even when they belong to a selected group.
 
-Restart the source Gateway after enabling the plugin. Start or restart the source node host after changing plugin configuration. Moving a session out of a shared group revokes new transcript reads immediately; a receiver that already read text may retain that text.
+With the default hybrid reload mode, the source Gateway applies plugin configuration automatically. Start or restart the source node host after changing plugin configuration. Moving a session out of a shared group revokes new transcript reads immediately; a receiver that already read text may retain that text.
 
 ## Enable the receiver and pair the source
 
@@ -126,7 +126,7 @@ Enable `session-share` on the source, set a non-empty `share.groups`, restart th
 
 **The node connects but no OpenClaw sessions host appears**
 
-Enable the plugin on the receiver and restart its Gateway. Check `openclaw nodes list`: the source must declare both session commands and be approved for them.
+Enable the plugin on the receiver and confirm that it applied. In `openclaw nodes list`, the source must declare both session commands and be approved for them.
 
 **The host appears but a session is missing**
 

@@ -165,11 +165,13 @@ enabling, disabling, or removing a plugin and changing MCP servers require
 `operator.admin`; those actions stay disabled for read-only operators.
 
 ClawHub installs run through the Gateway and keep the same trust, integrity,
-and plugin-install policy checks as other Gateway-mediated installs. Installing
-or removing plugin code requires a Gateway restart. Enabling or disabling an
-installed plugin can apply without a restart when the plugin and current
-Gateway runtime support it; otherwise the UI reports that a restart is
-required. OAuth-backed MCP connectors need a one-time
+and plugin-install policy checks as other Gateway-mediated installs. Install,
+enable, disable, remove, and Reload actions wait for runtime application without
+restarting the Gateway. Ordinary plugin config edits also apply automatically
+in the default hybrid reload mode. See
+[Apply changes and inspect](/plugins/manage-plugins#apply-changes-and-inspect)
+for application failures, cleanup warnings, and source-edit reloads.
+OAuth-backed MCP connectors need a one-time
 `openclaw mcp login <name>` from the CLI after they are added.
 
 The page intentionally focuses on inventory, discovery, install, enablement,

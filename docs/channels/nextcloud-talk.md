@@ -21,7 +21,7 @@ From a local checkout (dev workflows):
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-Restart the gateway after installing. Details: [Plugins](/tools/plugin)
+Check the [application result](/plugins/manage-plugins#apply-changes-and-inspect) after installing.
 
 ## Quick setup (beginner)
 
@@ -63,7 +63,7 @@ Restart the gateway after installing. Details: [Plugins](/tools/plugin)
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Restart the gateway (or finish setup).
+5. Check `openclaw channels status --probe`; start the Gateway if it is offline. Config changes follow [hot reload](/gateway/configuration/hot-reload). If you changed the service environment, restart the Gateway to load it.
 
 Minimal config:
 

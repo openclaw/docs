@@ -204,7 +204,7 @@ export GEMINI_API_KEY=...
 
 Use `realtime.provider: "openai"` with `OPENAI_API_KEY` instead if OpenAI is the realtime voice provider.
 
-Restart or reload the Gateway after enabling `voice-call`; plugin config changes do not take effect until reload. Verify:
+Plugin enablement and config changes apply automatically with the default hybrid reload mode (see [Hot reload](/gateway/configuration/hot-reload)). If you changed the Gateway's process environment, restart it with those variables available. Verify:
 
 ```bash
 openclaw config validate
