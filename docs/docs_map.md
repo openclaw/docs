@@ -11708,12 +11708,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Version naming
   - H2: Release cadence
+  - H2: Release changelog artifacts
+  - H3: Changelog-only evidence reuse
   - H2: Monthly Gateway extended-stable publication
   - H3: Prepare and stabilize the candidate
   - H3: Publish the npm packages
   - H3: Verify and recover
   - H2: Regular release operator checklist
   - H2: Stable main closeout
+  - H2: Post-release documentation publication
   - H2: Release preflight
   - H3: Previous updater compatibility
   - H3: Design proposal: immutable runtime generations
