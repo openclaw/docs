@@ -10445,6 +10445,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-provider-plugins/model-catalogs
 - Headings:
   - H2: Live model discovery
+  - H2: Selecting catalog augmentation hooks
 
 ## plugins/sdk-provider-plugins/runtime-hooks.md
 
