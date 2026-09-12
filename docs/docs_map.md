@@ -10415,6 +10415,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Exclusive slots
   - H2: Memory embedding adapters
+  - H2: Bundled Memory Core workers
 
 ## plugins/sdk-overview/tools-and-commands.md
 
