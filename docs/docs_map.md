@@ -14441,6 +14441,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui
 - Headings:
   - H2: Quick open (local)
+  - H2: Agents home
   - H2: What each page covers
   - H2: Where each section moved
   - H2: Related
