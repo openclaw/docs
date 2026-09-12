@@ -7641,6 +7641,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Offline preconfiguration
   - H3: Configure in the app
   - H2: WebChat
+  - H2: Debug connection actions
   - H2: Permissions
   - H2: Security notes
   - H2: WhatsApp login flow (remote)
