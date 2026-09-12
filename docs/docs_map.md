@@ -9631,6 +9631,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/radius.md
+
+- Route: /plugins/reference/radius
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/raft.md
 
 - Route: /plugins/reference/raft
@@ -11496,6 +11504,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Multimodal add-ons
   - H2: Advanced configuration
   - H2: Related
+
+## providers/radius.md
+
+- Route: /providers/radius
+- Headings:
+  - H2: Sign in
+  - H3: Organization API key
+  - H2: Choose a model
+  - H2: Scope and troubleshooting
 
 ## providers/runway.md
 
