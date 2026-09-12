@@ -10401,6 +10401,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: SQLite write admission
   - H3: Worker task admission
   - H3: SQLite worker stores
+  - H3: Computation worker entrypoints
   - H3: Webhook body rejection
   - H3: Post-ack webhook work
   - H3: Requester-scoped MCP connections
