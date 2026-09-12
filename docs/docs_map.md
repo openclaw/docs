@@ -547,6 +547,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Voice
   - H2: Voice channels
+  - H3: GPT-Live in Discord
   - H2: Voice messages
 
 ## channels/discord/voice-follow.md
