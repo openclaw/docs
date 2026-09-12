@@ -4407,6 +4407,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/cloud-workers/desktop
 - Headings:
   - H2: Desktop (interactive)
+  - H2: Desktop size
 
 ## gateway/cloud-workers/dispatching-a-session.md
 
