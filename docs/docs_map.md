@@ -12251,7 +12251,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/templates/roles/coordinator/CLAW
 - Headings:
-  - H1: Coordinator soul
+  - H1: Chief of staff soul
 
 ## reference/templates/roles/researcher/CLAW.md
 
