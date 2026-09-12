@@ -7733,6 +7733,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: macOS detail pages
   - H2: Related
 
+## platforms/omarchy.md
+
+- Route: /platforms/omarchy
+- Headings:
+  - H1: OpenClaw on Omarchy
+  - H2: Requirements
+  - H2: Install the bar plugin
+  - H2: Use agents, sessions, and quick prompts
+  - H2: One icon with the desktop app
+  - H2: Updates
+  - H2: Troubleshooting and support
+
 ## platforms/windows.md
 
 - Route: /platforms/windows
