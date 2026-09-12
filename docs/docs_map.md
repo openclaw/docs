@@ -8555,6 +8555,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Capability consent
   - H2: Install plugins
   - H2: Apply changes and inspect
+  - H2: Manage plugins from an agent conversation
   - H2: Update plugins
   - H2: Uninstall plugins
   - H2: Choose a source
