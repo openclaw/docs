@@ -3963,6 +3963,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Modes
   - H2: Burst example
   - H2: Scope
+  - H2: Canceling a pending steer
   - H2: Debounce
   - H2: Related
 
