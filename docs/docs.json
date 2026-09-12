@@ -1856,6 +1856,7 @@
                       "plugins/geolocation",
                       "plugins/logbook",
                       "plugins/oc-path",
+                      "plugins/session-share",
                       "plugins/webhooks",
                       "plugins/workboard",
                       "plugins/zalouser"
@@ -3919,6 +3920,7 @@
                       "zh-CN/plugins/geolocation",
                       "zh-CN/plugins/logbook",
                       "zh-CN/plugins/oc-path",
+                      "zh-CN/plugins/session-share",
                       "zh-CN/plugins/webhooks",
                       "zh-CN/plugins/workboard",
                       "zh-CN/plugins/zalouser"
@@ -5948,6 +5950,7 @@
                       "zh-TW/plugins/geolocation",
                       "zh-TW/plugins/logbook",
                       "zh-TW/plugins/oc-path",
+                      "zh-TW/plugins/session-share",
                       "zh-TW/plugins/webhooks",
                       "zh-TW/plugins/workboard",
                       "zh-TW/plugins/zalouser"
@@ -7977,6 +7980,7 @@
                       "ja-JP/plugins/geolocation",
                       "ja-JP/plugins/logbook",
                       "ja-JP/plugins/oc-path",
+                      "ja-JP/plugins/session-share",
                       "ja-JP/plugins/webhooks",
                       "ja-JP/plugins/workboard",
                       "ja-JP/plugins/zalouser"
@@ -10006,6 +10010,7 @@
                       "es/plugins/geolocation",
                       "es/plugins/logbook",
                       "es/plugins/oc-path",
+                      "es/plugins/session-share",
                       "es/plugins/webhooks",
                       "es/plugins/workboard",
                       "es/plugins/zalouser"
@@ -12035,6 +12040,7 @@
                       "pt-BR/plugins/geolocation",
                       "pt-BR/plugins/logbook",
                       "pt-BR/plugins/oc-path",
+                      "pt-BR/plugins/session-share",
                       "pt-BR/plugins/webhooks",
                       "pt-BR/plugins/workboard",
                       "pt-BR/plugins/zalouser"
@@ -14064,6 +14070,7 @@
                       "ko/plugins/geolocation",
                       "ko/plugins/logbook",
                       "ko/plugins/oc-path",
+                      "ko/plugins/session-share",
                       "ko/plugins/webhooks",
                       "ko/plugins/workboard",
                       "ko/plugins/zalouser"
@@ -16093,6 +16100,7 @@
                       "de/plugins/geolocation",
                       "de/plugins/logbook",
                       "de/plugins/oc-path",
+                      "de/plugins/session-share",
                       "de/plugins/webhooks",
                       "de/plugins/workboard",
                       "de/plugins/zalouser"
@@ -18122,6 +18130,7 @@
                       "fr/plugins/geolocation",
                       "fr/plugins/logbook",
                       "fr/plugins/oc-path",
+                      "fr/plugins/session-share",
                       "fr/plugins/webhooks",
                       "fr/plugins/workboard",
                       "fr/plugins/zalouser"
@@ -20151,6 +20160,7 @@
                       "hi/plugins/geolocation",
                       "hi/plugins/logbook",
                       "hi/plugins/oc-path",
+                      "hi/plugins/session-share",
                       "hi/plugins/webhooks",
                       "hi/plugins/workboard",
                       "hi/plugins/zalouser"
@@ -22180,6 +22190,7 @@
                       "ar/plugins/geolocation",
                       "ar/plugins/logbook",
                       "ar/plugins/oc-path",
+                      "ar/plugins/session-share",
                       "ar/plugins/webhooks",
                       "ar/plugins/workboard",
                       "ar/plugins/zalouser"
@@ -24209,6 +24220,7 @@
                       "it/plugins/geolocation",
                       "it/plugins/logbook",
                       "it/plugins/oc-path",
+                      "it/plugins/session-share",
                       "it/plugins/webhooks",
                       "it/plugins/workboard",
                       "it/plugins/zalouser"
@@ -26238,6 +26250,7 @@
                       "vi/plugins/geolocation",
                       "vi/plugins/logbook",
                       "vi/plugins/oc-path",
+                      "vi/plugins/session-share",
                       "vi/plugins/webhooks",
                       "vi/plugins/workboard",
                       "vi/plugins/zalouser"
@@ -28267,6 +28280,7 @@
                       "nl/plugins/geolocation",
                       "nl/plugins/logbook",
                       "nl/plugins/oc-path",
+                      "nl/plugins/session-share",
                       "nl/plugins/webhooks",
                       "nl/plugins/workboard",
                       "nl/plugins/zalouser"
@@ -30296,6 +30310,7 @@
                       "tr/plugins/geolocation",
                       "tr/plugins/logbook",
                       "tr/plugins/oc-path",
+                      "tr/plugins/session-share",
                       "tr/plugins/webhooks",
                       "tr/plugins/workboard",
                       "tr/plugins/zalouser"
@@ -32325,6 +32340,7 @@
                       "uk/plugins/geolocation",
                       "uk/plugins/logbook",
                       "uk/plugins/oc-path",
+                      "uk/plugins/session-share",
                       "uk/plugins/webhooks",
                       "uk/plugins/workboard",
                       "uk/plugins/zalouser"
@@ -34354,6 +34370,7 @@
                       "id/plugins/geolocation",
                       "id/plugins/logbook",
                       "id/plugins/oc-path",
+                      "id/plugins/session-share",
                       "id/plugins/webhooks",
                       "id/plugins/workboard",
                       "id/plugins/zalouser"
@@ -36383,6 +36400,7 @@
                       "pl/plugins/geolocation",
                       "pl/plugins/logbook",
                       "pl/plugins/oc-path",
+                      "pl/plugins/session-share",
                       "pl/plugins/webhooks",
                       "pl/plugins/workboard",
                       "pl/plugins/zalouser"
@@ -38412,6 +38430,7 @@
                       "ru/plugins/geolocation",
                       "ru/plugins/logbook",
                       "ru/plugins/oc-path",
+                      "ru/plugins/session-share",
                       "ru/plugins/webhooks",
                       "ru/plugins/workboard",
                       "ru/plugins/zalouser"

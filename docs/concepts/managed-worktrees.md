@@ -32,7 +32,7 @@ See [Configuration reference](/gateway/config-runtime#worktreeroot) for the opti
 
 ## Filesystem acceleration
 
-OpenClaw automatically uses filesystem acceleration for new managed worktrees when supported. Linux uses Btrfs snapshots and requires the `btrfs` command. macOS uses native APFS file clones, preserving independent file contents, executable modes, and symbolic links. OpenClaw keeps the template on the same writable filesystem as the new checkout; the source repository can be on another filesystem. Git configurations with checkout filters, sparse checkout, per-worktree configuration, or external attributes use normal Git checkout.
+OpenClaw automatically uses filesystem acceleration for new managed worktrees when supported. Linux uses Btrfs snapshots and requires the `btrfs` command. macOS uses a native APFS directory clone, preserving independent file contents, executable modes, and symbolic links. OpenClaw keeps the template on the same writable filesystem as the new checkout; the source repository can be on another filesystem. Git configurations with checkout filters, sparse checkout, per-worktree configuration, or external attributes use normal Git checkout.
 
 To opt out, set:
 
@@ -50,7 +50,9 @@ If template cleanup cannot acquire its allocation lease or read its cache, OpenC
 
 Templates contain checked-out source only. `.worktreeinclude` provisioning and `.openclaw/worktree-setup.sh` still run separately for each new worktree, under their existing permissions. Dependencies and setup output are not shared through the template. Copy-on-write snapshots share source storage until files change; their actual savings depend on the repository and subsequent writes.
 
-APFS cloning can take longer than native Git checkout for repositories with many small files because each file needs independent metadata and Git refreshes its index. Use `worktreeAcceleration: false` if checkout latency matters more than source storage savings.
+The first accelerated worktree includes the cost of preparing a template through Git. Later APFS worktrees clone the whole directory in one native operation. OpenClaw verifies shared data-stream identities before updating Git's cached file metadata, avoiding a content reread for proven unchanged files. Git still validates the resulting index and detects subsequent edits; unsupported index formats and unverified files receive ordinary Git validation.
+
+Apple discourages general directory cloning through `clonefile`. OpenClaw uses it for its source-only templates, with Git fallback on failure. Cancellation waits for an already-started native clone to finish before recovery can touch its destination.
 
 ## Layout and names
 

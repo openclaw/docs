@@ -1264,6 +1264,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/slack/access-control
 - Headings:
   - H2: Actions and gates
+  - H2: Live policy changes
   - H2: Access control and routing
   - H3: Group DMs (MPDMs) and bots
 
@@ -7259,6 +7260,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway deployments that cannot host nodes
   - H3: Start a node host (foreground)
   - H3: Remote gateway via SSH tunnel (loopback bind)
+  - H3: Restrict the node command surface
   - H3: Start a node host (service)
   - H3: Pair + name
   - H3: Headless identity state
@@ -7292,6 +7294,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Codex sessions and transcripts
   - H2: Claude sessions and transcripts
   - H2: OpenCode and Pi sessions
+  - H2: OpenClaw sessions and transcripts
 
 ## nodes/session-hosting.md
 
@@ -9712,6 +9715,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/session-share.md
+
+- Route: /plugins/reference/session-share
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/sglang.md
 
 - Route: /plugins/reference/sglang
@@ -10598,6 +10609,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Running scoped tests
   - H2: Lint enforcement (in-repo plugins)
   - H2: Test configuration
+  - H2: Related
+
+## plugins/session-share.md
+
+- Route: /plugins/session-share
+- Headings:
+  - H2: Before you begin
+  - H2: Choose sessions on the source
+  - H2: Enable the receiver and pair the source
+  - H2: Read shared sessions
+  - H2: Attribute the source node
+  - H2: Security boundary
+  - H2: Troubleshooting
   - H2: Related
 
 ## plugins/team-reports.md
@@ -14617,6 +14641,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Interaction tiers
   - H2: Widget model and hosting
   - H3: Widgets host content; MCP apps are one content kind
+  - H3: Website widgets
   - H3: Native data reports
   - H3: Plugin capability declarations
   - H3: Authenticated GitHub reads
@@ -14650,6 +14675,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Arrange your task
   - H2: Build a dashboard by asking
   - H2: The board
+  - H2: Show a website fullscreen
   - H2: What widgets are allowed to do
   - H2: MCP apps on the board
   - H2: A2UI widgets
