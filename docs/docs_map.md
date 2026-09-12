@@ -6995,6 +6995,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway WebSocket logs
   - H2: Configuring logging
   - H3: Log levels
+  - H3: Provider request failures
   - H3: Targeted model transport diagnostics
   - H3: Trace correlation
   - H3: Lifecycle queue waits
