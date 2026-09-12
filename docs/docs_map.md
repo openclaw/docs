@@ -18,6 +18,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Manifests
   - H2: Runtime Selection
   - H2: Model Runtime Generations
+  - H2: Compute workers
   - H2: Related
 
 ## announcements/bluebubbles-imessage.md
@@ -10398,6 +10399,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Infrastructure
   - H3: File-watch capacity errors
   - H3: SQLite write admission
+  - H3: Worker task admission
   - H3: SQLite worker stores
   - H3: Webhook body rejection
   - H3: Post-ack webhook work
