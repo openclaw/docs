@@ -1872,6 +1872,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Command surface
   - H3: agents list
   - H3: `agents add [name]`
+  - H4: Role templates
+  - H3: agents team create
   - H3: agents bindings
   - H3: agents bind
   - H3: agents unbind
@@ -1984,6 +1986,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/claws
 - Headings:
   - H1: openclaw claws
+  - H2: Bundled role Claws
   - H2: Create a Claw package
   - H2: Author locally
   - H2: Inspect and preview
@@ -3761,6 +3764,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Single-agent mode (default)
   - H2: Agent helper
   - H3: Agent provenance
+  - H2: Team preset
   - H2: Quick start
   - H2: Multiple agents, multiple personas
   - H2: Per-agent Memory Wiki vaults
@@ -12243,6 +12247,30 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Directives
   - H2: Related
 
+## reference/templates/roles/coordinator/CLAW.md
+
+- Route: /reference/templates/roles/coordinator/CLAW
+- Headings:
+  - H1: Coordinator soul
+
+## reference/templates/roles/researcher/CLAW.md
+
+- Route: /reference/templates/roles/researcher/CLAW
+- Headings:
+  - H1: Researcher soul
+
+## reference/templates/roles/reviewer/CLAW.md
+
+- Route: /reference/templates/roles/reviewer/CLAW
+- Headings:
+  - H1: Reviewer soul
+
+## reference/templates/roles/writer/CLAW.md
+
+- Route: /reference/templates/roles/writer/CLAW
+- Headings:
+  - H1: Writer soul
+
 ## reference/test.md
 
 - Route: /reference/test
@@ -13045,6 +13073,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Locale
   - H2: Guided default
+  - H2: Choose one agent or a team
   - H2: Classic wizard setup modes
   - H2: What classic onboarding configures
   - H2: Add another agent
