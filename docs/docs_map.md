@@ -10559,6 +10559,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Capability catalog entry
   - H3: Compatibility and private-local helpers
   - H3: Bundled plugin helper subpaths
+  - H3: Sensitive text redaction
   - H2: Related
 
 ## plugins/sdk-testing.md
