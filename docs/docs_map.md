@@ -8656,6 +8656,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: cliCommands reference
   - H2: commandAliases reference
   - H2: qaRunners reference
+  - H2: channelAccountKeyPolicies reference
   - H2: channelConfigs reference
   - H3: Replacing another channel plugin
 
@@ -10202,6 +10203,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Setup subpaths
   - H2: Account schemas and inheritance
+  - H3: Stored account-key selection
   - H2: Other narrow channel subpaths
 
 ## plugins/sdk-channel-plugins/status-and-media.md
