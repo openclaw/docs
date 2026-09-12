@@ -2933,6 +2933,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/status
 - Headings:
+  - H2: Status timing
   - H2: Skills diagnosis
   - H2: Session and model resolution
   - H2: Usage and quota
