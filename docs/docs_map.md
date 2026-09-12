@@ -3443,10 +3443,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Currently documented flags
   - H2: Control UI Labs
   - H2: Local model lean mode
-  - H3: Why these tools
-  - H3: When to turn it on
-  - H3: When to leave it off
-  - H3: Enable
   - H2: Experimental does not mean hidden
   - H2: Related
 
@@ -5110,6 +5106,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other OpenAI-compatible local proxies
   - H2: Smaller or stricter backends
   - H2: Troubleshooting
+  - H3: Local model lean mode
+  - H4: Why these tools
+  - H4: When to turn it on
+  - H4: When to leave it off
+  - H4: Enable
   - H2: Related
 
 ## gateway/logging.md
