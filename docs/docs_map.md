@@ -3482,6 +3482,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/managed-worktrees
 - Headings:
   - H2: Choose where worktrees are stored
+  - H2: Filesystem acceleration
   - H2: Layout and names
   - H2: Capacity and disk space
   - H2: Provision ignored files
@@ -4729,6 +4730,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-runtime
 - Headings:
   - H2: worktreeRoot
+  - H2: worktreeAcceleration
   - H2: Models
   - H2: Discovery
   - H3: mDNS (Bonjour)
@@ -11843,6 +11845,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: `meeting_transcript_summaries`
   - H3: Update run ledger
   - H3: Update installation control
+  - H3: Managed worktree acceleration templates
   - H3: Cloud repository workspaces
   - H2: Sandbox runtime reservations
 
