@@ -357,6 +357,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configure shared defaults
   - H2: Override per channel, account, or room
   - H2: Channel support
+  - H2: Internal agent group rounds
 
 ## channels/broadcast-groups.md
 
@@ -364,6 +365,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Overview
   - H2: Configuration
+  - H3: Agent group threads
+  - H3: Mention selection
+  - H3: Bounded follow-up rounds
+  - H3: Participant labels
   - H3: Basic setup
   - H3: Processing strategy
   - H3: Complete example
@@ -10077,6 +10082,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-inbound
 - Headings:
   - H2: Core helpers
+  - H2: Agent group dispatch
   - H2: Internal turn sources
   - H2: Receive acknowledgment policy
   - H2: Delivery settlement contract
