@@ -3055,6 +3055,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Recover a failed update
   - H2: update repair
+  - H3: Skipped legacy audit recovery
   - H2: update cleanup
 
 ## cli/update/status-and-history.md
