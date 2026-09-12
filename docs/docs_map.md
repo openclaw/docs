@@ -2713,6 +2713,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Uninstall
   - H2: Update
+  - H2: Reload
 
 ## cli/policy.md
 
@@ -8542,7 +8543,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable and disable plugins
   - H2: Capability consent
   - H2: Install plugins
-  - H2: Restart and inspect
+  - H2: Apply changes and inspect
   - H2: Update plugins
   - H2: Uninstall plugins
   - H2: Choose a source
@@ -10459,6 +10460,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Runtime namespaces
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
+  - H3: Memory runtime replacement
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
