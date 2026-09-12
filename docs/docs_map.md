@@ -10450,6 +10450,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-provider-plugins/runtime-hooks
 - Headings:
+  - H2: Model route policy
   - H2: Hook examples
 
 ## plugins/sdk-provider-plugins/voice-and-audio.md
