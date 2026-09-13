@@ -42,6 +42,14 @@ runs are finalized without a resume. Orphaned runs settle their background task
 before cleanup, so retained child sessions do not leave phantom running activity.
 If the task update fails, completion remains available for retry.
 
+When a detached cleanup attempt logs `subagent cleanup finalize failed`, its
+retries use bounded backoff in the current Gateway process. If those retries are
+exhausted, the run remains recorded with incomplete cleanup; inspect the warning
+to identify the failing operation. Unrelated
+sub-agent completions do not restart failed cleanup or reset its retry budget.
+Descendant completion still wakes the current requester ancestors waiting on that
+work. These cleanup retries are separate from [completion delivery](/tools/subagents/announce).
+
 An accepted recovery keeps the original task, Task Flow, requester, and child
 session identities. The task returns to `running` as the replacement execution
 continues, and the aborted marker is cleared after acceptance. You do not need
