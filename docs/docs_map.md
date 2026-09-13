@@ -8404,6 +8404,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Config
   - H3: Defaults
+  - H3: GPT-Live with Cove
   - H3: Optional overrides
 
 ## plugins/google-meet/oauth-and-artifacts.md
@@ -8447,6 +8448,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Browser opens but agent cannot join
   - H3: Meeting creation fails
   - H3: Agent joins but does not talk
+  - H3: Live cannot hear interruptions or browser capture fails
   - H3: Twilio setup checks fail
   - H3: Twilio call starts but never enters the meeting
 
@@ -10716,6 +10718,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/voice-call/realtime-and-streaming
 - Headings:
   - H2: Realtime voice conversations
+  - H3: GPT-Live
   - H3: Hangup detection
   - H3: Tool policy
   - H3: Agent voice context
