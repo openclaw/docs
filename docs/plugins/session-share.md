@@ -36,7 +36,7 @@ Enable the plugin on the source and choose the exact session group names to publ
 }
 ```
 
-In the source Control UI, move the sessions you want to share into the **Team** group. Group names match the session category exactly. An omitted or empty `share.groups` publishes nothing. Incognito sessions, drafts, and adopted rows from other session catalogs are never published, even when they belong to a selected group.
+In the source Control UI, move the sessions you want to share into the **Team** group. Group names match the session category exactly. An omitted or empty `share.groups` publishes nothing. Subagents, incognito sessions, drafts, and adopted rows from other session catalogs are never published, even when they belong to a selected group. This also excludes named or resumed sessions with recorded spawn lineage; a user-created fork remains eligible.
 
 With the default hybrid reload mode, the source Gateway applies plugin configuration automatically. Start or restart the source node host after changing plugin configuration. Moving a session out of a shared group revokes new transcript reads immediately; a receiver that already read text may retain that text.
 
@@ -70,7 +70,7 @@ Check that the pairing request and connected node declare only `openclaw.session
 
 ## Read shared sessions
 
-Open the receiver Control UI. Shared rows appear under the source node's heading in **OpenClaw sessions**. Selecting a row opens its transcript view-only. The receiver can read user messages, assistant text, reasoning, tool summaries, and bounded tool results, but cannot continue, archive, or open a terminal for that session.
+Open the receiver Control UI. Shared rows appear under the source node's heading in **OpenClaw sessions**. Selecting a row opens its transcript view-only. Only user and assistant conversation text is shared. Thinking, tool calls, and tool results are omitted. The receiver cannot continue, archive, or open a terminal for that session.
 
 Publication is shared with the receiver's permitted viewers, not just the named owner. Viewers need `operator.read`; on role-restricted Gateways, their profile's role must also permit viewing others' sessions (`sessions.others: "view"`, `"suggest"`, or `"write"`). Owner-only and unprofiled restricted viewers cannot see published rows. See [Operator scopes](/gateway/operator-scopes).
 
@@ -114,7 +114,7 @@ The source chooses what to publish; the receiver trusts the paired device for th
 
 With the two-command allowlist, the node exposes no shell execution, filesystem browsing, terminal uploads, plugin tools, MCP servers, skills, worker hosting, or computer use. Both commands are read-only, and every transcript read rechecks whether the session is still shared. The receiver does not need access to the source Gateway's HTTP endpoint or authentication credentials.
 
-Sharing a session exposes its visible text and catalog metadata, which may include workspace paths or branch names. Redaction masks known credential patterns; it does not make arbitrary conversation content safe to publish. Choose groups deliberately and treat received transcripts as untrusted text.
+Sharing a session exposes its user and assistant conversation text and catalog metadata, which may include workspace paths or branch names. Redaction masks known credential patterns; it does not make arbitrary conversation content safe to publish. Choose groups deliberately and treat received transcripts as untrusted text.
 
 ## Troubleshooting
 
@@ -130,7 +130,7 @@ Enable the plugin on the receiver and confirm that it applied. In `openclaw node
 
 **The host appears but a session is missing**
 
-Check its group on the source, the exact `share.groups` spelling, and whether it is incognito, a draft, or adopted from another catalog. Verify that the source node uses the same user and state directory as the source Gateway. On a role-restricted receiver, check the viewer's profile and permission to view others' sessions.
+Check its group on the source, the exact `share.groups` spelling, and whether it is a subagent, incognito, a draft, or adopted from another catalog. Subagent keys and recorded spawn lineage stay excluded even if the session was previously visible. Verify that the source node uses the same user and state directory as the source Gateway. On a role-restricted receiver, check the viewer's profile and permission to view others' sessions.
 
 **A transcript read fails after a row was visible**
 
