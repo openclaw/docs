@@ -14,6 +14,7 @@
 - Abort stalled signed R2 requests so uploads can retry instead of hanging indefinitely; configure the per-request budget with `R2_UPLOAD_FETCH_TIMEOUT_MS`; thanks @SebTardif.
 - Bound live docs smoke requests and jobs while preserving the dispatch retry window; thanks @SebTardif.
 - Bound maintenance and translation workflow jobs, including reusable workflow callees and the incremental debounce; thanks @SebTardif.
+- Preserve literal version numbers in translation freshness summaries and document the current R2 publication flow.
 - Abort stalled Cloudflare hostname cutover requests, with a configurable `CLOUDFLARE_API_TIMEOUT_MS` budget; thanks @SebTardif.
 - Reject malformed and overflowing request timeout settings before network operations begin.
 - Refresh syntax highlighting, icons, Markdown and HTML parsing, and diagrams with highlight.js 11.12.0, Lucide 1.44.0, markdown-it 15.0.1, htmlparser2 12.0.0, and Mermaid 11.17.2.
