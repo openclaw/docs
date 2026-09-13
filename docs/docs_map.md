@@ -12213,8 +12213,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: BOOTSTRAP.md - Birth Sequence
   - H2: 1. Ask What to Call You
   - H2: 2. Choose Your Vibe
-  - H2: 3. Finish With Recommendations
-  - H2: 4. One Safety Note
+  - H2: 3. Choose Your Avatar
+  - H3: Save Your Identity
+  - H2: 4. Finish With Recommendations
+  - H2: 5. One Safety Note
   - H2: Related
 
 ## reference/templates/HEARTBEAT.md
