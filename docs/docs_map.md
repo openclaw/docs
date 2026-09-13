@@ -1070,6 +1070,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Reply style: threads vs posts
   - H3: Resolution precedence
   - H3: Thread context preservation
+  - H2: Outbound mentions
   - H2: Attachments and images
   - H2: Sending files in group chats
   - H3: Why group chats need SharePoint
