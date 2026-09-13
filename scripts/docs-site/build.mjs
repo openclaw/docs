@@ -5,7 +5,8 @@ import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
 
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
-import { siteCss, siteJs } from "./assets.mjs";
+import { siteCss } from "./site-css.mjs";
+import { siteJs } from "./site-js.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
 import { createRenderCache } from "./render-cache.mjs";

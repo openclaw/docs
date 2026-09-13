@@ -105,7 +105,7 @@ test("relative links follow the browser's final page URL for root and directory 
 });
 
 test("fragment navigation opens nested details on load, clicks, PJAX and history", async () => {
-  const { siteJs } = await import("./assets.mjs");
+  const { siteJs } = await import("./site-js.mjs");
   const page = await browser.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
