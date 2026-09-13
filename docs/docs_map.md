@@ -11856,6 +11856,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Integrity checks
   - H2: Troubleshooting
+  - H3: The shared-state WAL keeps growing
   - H3: Doctor reports orphan task delivery rows
   - H3: Why you cannot go back after updating to 2026.7.2
   - H3: The Gateway refuses to start with a newer schema version error
