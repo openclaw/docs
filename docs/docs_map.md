@@ -10841,6 +10841,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Enable it
   - H2: Configuration
+  - H2: Board appearance
   - H2: Card fields
   - H2: Starting work from a card
   - H2: Agent tools
