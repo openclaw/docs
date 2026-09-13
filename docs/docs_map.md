@@ -8004,6 +8004,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Choose the plugin shape
   - H2: Quickstart
+  - H2: Add plugin artwork
   - H2: Registering tools
   - H2: Import conventions
   - H2: Pre-submission checklist
@@ -8717,6 +8718,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest/surfaces
 - Headings:
   - H2: Plugin icon
+  - H2: Inline activity icons
   - H2: Transcript sources reference
   - H2: backupResources reference
   - H2: MCP server reference
