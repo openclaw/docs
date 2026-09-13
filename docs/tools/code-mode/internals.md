@@ -134,6 +134,18 @@ preserve existing entries; deletion frees their capacity. Loads return detached
 copies and carry forward network-content provenance into the receiving cell's
 normal untrusted output wrapper.
 
+Interactive cells also retain final structured JSON automatically when byte or
+model-result fitting would otherwise truncate it. The worker serializes the
+final value once and retains at most the larger of the display allowance and
+the existing memory/snapshot data allowance; only eligible interactive cells
+request this capture. Catalog admission checks remaining bytes and entries
+before parsing another full JSON copy for bounded preview construction. The
+normalized string moves into the same store. Final projection reserves a usable
+reference before allocating the remaining display space to sampled descriptions
+and output; an undisplayable reference is released. Failed admission remains a
+successful partial result with a precise non-retention reason. Headless and
+restart-safe execution do not allocate automatic references.
+
 Catalog teardown, replacement, restriction, and the admitted run's abort clear
 saved data. Appended client tools preserve the same catalog lifetime. Each cell
 captures its catalog identity and entries before execution, so stale cells
