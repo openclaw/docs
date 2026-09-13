@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
 import { parseArgs } from "node:util";
 
+import { stripMdxForLlms, firstHeading, titleize, textFromHtml, fileSlug, normalizeSlug } from "./document-text.mjs";
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
@@ -295,7 +296,7 @@ function writePage(page) {
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
-  const lang = htmlLang(page.locale);
+  const lang = page.locale;
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = page.slug === "index" ? `${config.name} Docs` : `${page.title} - ${config.name}`;
   const description = page.summary || config.description || "";
@@ -323,7 +324,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
-<meta property="og:locale" content="${escapeAttr(htmlLang(page.locale).replace("-", "_"))}">
+<meta property="og:locale" content="${escapeAttr(page.locale.replace("-", "_"))}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeAttr(ogTitle)}">
 <meta name="twitter:description" content="${escapeAttr(description)}">
@@ -466,10 +467,6 @@ function localeFlag(code) {
 
 function localeDisplayName(code) {
   return localePickerLabels[code] ?? localeLabels[code] ?? code;
-}
-
-function topLink(label, href, iconName) {
-  return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
 }
 
 function topIconLink(label, href, iconName) {
@@ -804,21 +801,6 @@ function redirectHtml(dest) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=${escapeAttr(dest)}"><link rel="canonical" href="${escapeAttr(dest)}"><title>Redirecting - ${escapeHtml(config.name)}</title><script>location.replace(${JSON.stringify(dest)})</script></head><body><a href="${escapeAttr(dest)}">Redirecting</a></body></html>`;
 }
 
-function stripMdxForLlms(input) {
-  return input
-    .replace(/^import\s+.+?;?\s*$/gm, "")
-    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)\/>/g, (_, name, attrs) => componentLabel(name, attrs))
-    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => componentLabel(name, attrs))
-    .replace(/<\/[A-Z][A-Za-z0-9_.-]*>/g, "")
-    .replace(/\n{3,}/g, "\n\n");
-}
-
-function componentLabel(name, attrs) {
-  const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
-  const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
-  return label ? `\n${label}\n` : `\n${name}\n`;
-}
-
 async function renderPageOgCards() {
   const enNav = navByLocale.get("en") ?? [];
   const navSlugs = collectNavSlugs(enNav);
@@ -1012,7 +994,7 @@ function hreflangLinks(page) {
   // Nothing to cross-link if the page exists in only one locale.
   if (variants.length < 2) return "";
   const links = variants.map(
-    (variant) => `<link rel="alternate" hreflang="${escapeAttr(htmlLang(variant.locale))}" href="${escapeAttr(`${canonicalOrigin}${pageRoute(variant)}`)}">`,
+    (variant) => `<link rel="alternate" hreflang="${escapeAttr(variant.locale)}" href="${escapeAttr(`${canonicalOrigin}${pageRoute(variant)}`)}">`,
   );
   // x-default points at the English variant when available, otherwise the current page.
   const defaultPage = variants.find((variant) => variant.locale === "en") ?? page;
@@ -1052,14 +1034,6 @@ function pageKey(locale, slug) {
   return `${locale}:${slug}`;
 }
 
-function fileSlug(rel) {
-  return normalizeSlug(rel.replace(/\.(md|mdx)$/, ""));
-}
-
-function normalizeSlug(value) {
-  return value.replace(/\/index$/, "") || "index";
-}
-
 function publicPath(value) {
   if (!basePath) return value;
   if (value === "/") return `${basePath}/`;
@@ -1076,38 +1050,8 @@ function normalizeRepository(value) {
   return /^[^/\s]+\/[^/\s]+$/.test(repo) ? repo : "openclaw/openclaw";
 }
 
-function htmlLang(locale) {
-  return locale === "zh-CN" ? "zh-CN" : locale === "zh-TW" ? "zh-TW" : locale;
-}
-
-function firstHeading(markdown) {
-  const heading = markdown.match(/^#\s+(.+)$/m)?.[1];
-  return heading === undefined ? undefined : textFromHtml(heading).trim();
-}
-
-function titleize(value) {
-  return value.replaceAll("-", " ").replace(/\b\w/g, (m) => m.toUpperCase());
-}
-
 function stripTags(value) {
   return textFromHtml(value).replace(/\s+/g, " ").trim();
-}
-
-function textFromHtml(value) {
-  let text = "";
-  let inTag = false;
-  for (const char of String(value)) {
-    if (char === "<") {
-      inTag = true;
-      continue;
-    }
-    if (char === ">") {
-      inTag = false;
-      continue;
-    }
-    if (!inTag) text += char;
-  }
-  return text;
 }
 
 function decodeHtmlEntities(value) {
