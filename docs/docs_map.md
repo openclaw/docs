@@ -1466,6 +1466,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/telegram/transports
 - Headings:
   - H2: Long polling and webhooks
+  - H2: Ingress acknowledgment boundary
+  - H3: Replay limits
+  - H3: Plugin hooks
 
 ## channels/telegram/troubleshooting.md
 
