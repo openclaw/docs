@@ -90,6 +90,13 @@ admission. Publish live session changes and other dependent effects only after
 the durable write succeeds. A future network-backed owner must preserve that
 ordering while awaiting its driver.
 
+Correlated conversation replies retain their original store and state environment
+while waiting for write admission. Capture rechecks the live reply claim and
+session lifecycle before recording a replayable reply. Cancellation or a changed
+session leaves the message for ordinary inbound dispatch. The durable reply is
+recorded before its optional side audit artifact and before completing the waiter;
+an audit failure does not discard an already recorded reply.
+
 Board operations, board inventory reads, and widget document reads expose asynchronous
 contracts. Gateway callers await persistence before publishing board changes or replies.
 Writes carry the caller's current-authority assertion into the synchronous SQLite
