@@ -7043,8 +7043,59 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: At a glance
   - H2: Score bands
   - H2: Surface explorer
+  - H2: Decision context
+  - H3: CLI
+  - H3: Gateway runtime
+  - H3: Linux Gateway host
+  - H3: macOS Gateway host
+  - H3: Discord
+  - H3: Android app
+  - H3: iOS app
+  - H3: Agent Runtime
+  - H3: Session, memory, and context engine
+  - H3: Channel framework
+  - H3: Browser automation, exec, and sandbox tools
+  - H3: Observability
+  - H3: OpenAI and Codex provider path
+  - H3: Control UI
+  - H3: Web search tools
+  - H3: Plugins
+  - H3: Security, auth, pairing, and secrets
+  - H3: Automation and durable work
+  - H3: Docker and Podman hosting
+  - H3: Windows via WSL2
+  - H3: ChromeOS, Raspberry Pi, and small Linux devices
+  - H3: Anthropic provider path
+  - H3: Telegram
+  - H3: Slack
+  - H3: Google provider path
+  - H3: iMessage
+  - H3: macOS companion app
+  - H3: OpenRouter provider path
+  - H3: WhatsApp
+  - H3: Linux companion app
+  - H3: Windows App / Node
+  - H3: Media understanding and media generation
+  - H3: Image, video, and music generation tools
+  - H3: Local model providers: Ollama, vLLM, SGLang, LM Studio
+  - H3: Long-tail hosted providers
+  - H3: Voice and realtime talk
+  - H3: Matrix
+  - H3: Google Chat
+  - H3: Microsoft Teams
+  - H3: Signal
+  - H3: TUI
+  - H3: Native Windows
+  - H3: ClawHub
+  - H3: Kubernetes hosting
+  - H3: Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, regional channels
+  - H3: Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat
+  - H3: OpenClaw App SDK
+  - H3: Nix install path
+  - H3: Voice Call channel
+  - H3: watchOS companion surfaces
   - H2: QA evidence summary
-  - H3: Readiness by area
+  - H3: Historical category evidence
 
 ## maturity/taxonomy.md
 
