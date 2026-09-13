@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
 
 import { stripMdxForLlms, firstHeading, titleize, textFromHtml, fileSlug, normalizeSlug } from "./document-text.mjs";
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
+import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
@@ -159,7 +160,7 @@ function collectPages(localeList) {
       const raw = fs.readFileSync(file, "utf8");
       const parsed = parseFrontmatter(raw);
       const slug = fileSlug(rel);
-      const title = parsed.data.title || firstHeading(parsed.content) || titleize(path.basename(slug));
+      const title = String(parsed.data.title ?? "") || firstHeading(parsed.content) || titleize(path.basename(slug));
       result.push({
         locale: locale.code,
         dir: locale.root ? "" : locale.code,
@@ -169,7 +170,7 @@ function collectPages(localeList) {
         sourcePath: frontmatterSourcePath(parsed.data),
         raw,
         title,
-        summary: parsed.data.summary ?? "",
+        summary: String(parsed.data.summary ?? ""),
         readWhen: parsed.data.read_when ?? [],
         body: parsed.content,
         meta: {
@@ -195,8 +196,8 @@ function elementsFixturePage() {
     file: path.join(siteAssetsDir, "elements-fixture.mjs"),
     rel: "__elements.md",
     raw: elementsFixture,
-    title: parsed.data.title || "Docs elements",
-    summary: parsed.data.summary ?? "",
+    title: String(parsed.data.title ?? "") || "Docs elements",
+    summary: String(parsed.data.summary ?? ""),
     readWhen: [],
     body: parsed.content,
     meta: {
@@ -209,16 +210,6 @@ function elementsFixturePage() {
     },
     hidden: true
   };
-}
-
-function walkDocs(dir, excludedRoots = new Set()) {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    if (entry.name.startsWith(".")) return [];
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return ignoredDocDirs.has(entry.name) || excludedRoots.has(entry.name) ? [] : walkDocs(full);
-    return /\.(md|mdx)$/.test(entry.name) ? [full] : [];
-  });
 }
 
 function buildNav(locale) {

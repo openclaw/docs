@@ -8,6 +8,8 @@
 - Preserve published heading IDs, emit unambiguous Mintlify link aliases and component targets, and open nested accordions for fragment navigation using the source-owned shared parsing and redirect contract.
 - Recover parser-diagnosed translation markup damage before validation, preserving translated prose and the existing failed-shard publication checks; thanks @hxy91819.
 - Fix redundant locale rendering by excluding locale-owned roots from English page collection, including accidental localized `AGENTS.md` pages and duplicate locale-root Markdown exports.
+- Keep YAML titles and summaries consistent across pages, search and the LLM corpus, and retain nested English paths whose directory names match locales.
+- Generate page-specific social preview images for deeply nested navigation groups.
 - Reject malformed remote R2 manifests before scoped uploads can replace the catalog and lose unrelated pages; thanks @SebTardif.
 - Reject source-index write and file-close failures before publishing completion metadata or logging success; thanks @SebTardif.
 - Skip locale publication when the source metadata is missing, unreadable, or empty, while preserving publication for matching source snapshots; thanks @SebTardif.
