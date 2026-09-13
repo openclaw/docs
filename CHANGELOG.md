@@ -4,6 +4,7 @@
 
 **Highlights:** Stable section links and reliable source indexing and translated docs, with bounded publishing requests and workflow jobs.
 
+- Keep YAML metadata out of translation MDX validation while preserving protected body attributes and repair offsets.
 - Refresh docs dependencies with Lucide 1.45.0, markdown-it 15.0.2, Wrangler 4.131.1, Node 26, and Go 1.27.
 - Compatibility: reject MCP JSON-RPC batches larger than 32 items before any search work; clients sending larger batches must split them. Thanks @SebTardif.
 - Render nested navigation groups recursively so protocol pages remain reachable and mirror-sync builds no longer generate `/undefined/undefined` links.

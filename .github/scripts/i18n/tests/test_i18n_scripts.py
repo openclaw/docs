@@ -1842,6 +1842,63 @@ class I18NScriptTests(unittest.TestCase):
             json.loads(result.stdout),
         )
 
+    def test_mdx_frontmatter_is_excluded_without_hiding_body_errors(self) -> None:
+        checker = REPO_ROOT / ".github/scripts/i18n/check_mdx_protected_attributes.mjs"
+        program = f"""
+          import assert from "node:assert/strict";
+          import {{ createProcessor }} from "@mdx-js/mdx";
+          import {{ maskFrontmatter, parseMdx, protectedAttributeSignatures }} from {json.dumps(checker.as_uri())};
+          const processor = createProcessor({{ format: "mdx" }});
+          const markdownProcessor = createProcessor({{ format: "md" }});
+          const signatures = value => protectedAttributeSignatures(parseMdx(processor, markdownProcessor, value));
+          const metadata = [
+            '---\\nsummary: "Every tts.providers.<id>.* field"\\ntitle: "{{not jsx}}"\\n---\\n',
+            '\\uFEFF--- \\r\\nsummary: "😀 <id> {{campo}}"\\r\\n---\\t\\r\\n',
+            '---\\n---\\n',
+          ];
+          for (const prefix of metadata) {{
+            const value = prefix + '<ParamField path="provider" type="string" />\\n';
+            const masked = maskFrontmatter(value);
+            assert.equal(masked.length, value.length);
+            assert.deepEqual([...masked.matchAll(/\\r?\\n/g)].map(match => match.index),
+              [...value.matchAll(/\\r?\\n/g)].map(match => match.index));
+            assert.equal(signatures(value).length, 1);
+            assert.deepEqual(signatures(value), signatures('<ParamField path="provider" type="string" />\\n'));
+            assert.deepEqual(signatures(value + '\\n---\\nBody\\n'), signatures(value));
+            assert.notDeepEqual(signatures(value), signatures(prefix + '<ParamField path="translated" type="string" />\\n'));
+            assert.throws(() => signatures(prefix + '<id>'));
+            assert.throws(() => signatures(prefix + '<id>\\n\\n---\\nBody\\n'));
+          }}
+          for (const value of ['<id>', '---\\nsummary: "<id>"\\n', 'Text\\n---\\nsummary: "<id>"\\n---\\n']) {{
+            assert.equal(maskFrontmatter(value), value);
+            assert.throws(() => signatures(value));
+          }}
+        """
+        subprocess.run(["node", "--input-type=module", "-e", program], check=True, cwd=REPO_ROOT)
+
+    def test_mdx_frontmatter_repairs_preserve_translated_metadata(self) -> None:
+        repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_protected_attributes.mjs"
+        syntax = REPO_ROOT / ".github/scripts/i18n/repair_mdx_syntax.mjs"
+        program = f"""
+          import assert from "node:assert/strict";
+          import {{ createProcessor }} from "@mdx-js/mdx";
+          import {{ repairProtectedAttributes }} from {json.dumps(repair.as_uri())};
+          import {{ repairMdxSyntax }} from {json.dumps(syntax.as_uri())};
+          const processor = createProcessor({{ format: "mdx" }});
+          const markdownProcessor = createProcessor({{ format: "md" }});
+          const source = '\\uFEFF---\\r\\nsummary: "😀 Every tts.providers.<id>.* {{field}}"\\r\\n---\\r\\n<ParamField path="tts.providers" type="object">Source</ParamField>\\r\\n';
+          const metadata = '\\uFEFF---\\r\\nsummary: "😄 Configuración <id> {{campo}}"\\r\\n---\\r\\n';
+          const translated = metadata + '<ParamField path="roto" type="object">Texto</ParamField>\\r\\n';
+          const result = repairProtectedAttributes(processor, markdownProcessor, source, translated);
+          assert.equal(result.changed, true);
+          assert.equal(result.value, metadata + '<ParamField path="tts.providers" type="object">Texto</ParamField>\\r\\n');
+          const syntaxResult = repairMdxSyntax(processor, markdownProcessor,
+            metadata + '<img src="guide" />\\r\\n', metadata + '<img src=guide />\\r\\n');
+          assert.equal(syntaxResult.changed, true);
+          assert.equal(syntaxResult.value, metadata + '<img src="guide" />\\r\\n');
+        """
+        subprocess.run(["node", "--input-type=module", "-e", program], check=True, cwd=REPO_ROOT)
+
     def test_mdx_syntax_repair_rescues_common_translation_damage(self) -> None:
         repair = REPO_ROOT / ".github/scripts/i18n/repair_mdx_syntax.mjs"
         cases = [

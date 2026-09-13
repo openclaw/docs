@@ -107,8 +107,18 @@ function literalMarkdownRanges(tree, source) {
   return ranges;
 }
 
+export function maskFrontmatter(value) {
+  const opening = /^(?:\uFEFF)?---[ \t]*\r?\n/.exec(value);
+  if (!opening) return value;
+  const closing = /^---[ \t]*(?:\r?\n|$)/m.exec(value.slice(opening[0].length));
+  if (!closing) return value;
+  const frontmatterEnd = opening[0].length + closing.index + closing[0].length;
+  // YAML metadata is not MDX; preserve UTF-16 offsets and line endings for repairs.
+  return value.slice(0, frontmatterEnd).replace(/[^\r\n]/g, " ") + value.slice(frontmatterEnd);
+}
+
 export function parseMdx(processor, markdownProcessor, value) {
-  let prepared = value;
+  let prepared = maskFrontmatter(value);
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     try {
       return processor.parse(prepared);
