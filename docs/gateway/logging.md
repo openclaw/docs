@@ -147,7 +147,10 @@ Tune console verbosity independently:
 
 OpenClaw masks sensitive tokens before log or transcript output leaves the process. This redaction policy applies at console, file-log, OTLP log-record, and session transcript text sinks. Matching secret values are masked before JSONL lines or messages are written to disk.
 
-Model-visible tool-result text preserves ambiguous source assignments such as
+The OpenClaw harness masks finalized tool-result text after middleware, before
+it enters live model context, including exec output and tool errors. Media bytes
+and the original execution arguments stay intact; later replay reuses the masked
+result. Model-visible tool-result text preserves ambiguous source assignments such as
 `token = timeObserverToken`. Registered secrets and explicit credential forms,
 including structured fields, authorization headers, URL credentials, and known
 token formats, remain masked. Direct reads of `.env`
