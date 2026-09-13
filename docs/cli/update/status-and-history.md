@@ -111,6 +111,16 @@ and its local executor have settled. A late ownership or release failure returns
 an error instead of publishing an earlier success. Existing terminal history is
 not overwritten.
 
+Activation has an enclosing deadline derived from the update's existing phase
+budget. If it expires, the updater cancels owned work and waits within that budget
+for its child processes to settle, then records `update-activation-timeout` as a
+failed outcome. A child that has not stopped retains its ownership and recovery
+state. Inspect `openclaw update status` and `openclaw doctor`, and wait for the
+owning updater and its children to stop before running `openclaw update repair`.
+The timeout does not authorize rollback or removal of retained update state.
+If migration or pending recovery prevents a safe history write, the updater
+reports the timeout and preserves that state for its owning runtime to reconcile.
+
 Successful installation verification does not imply that obsolete package backups
 were deleted. If the package owner confirms that only obsolete-backup cleanup is
 pending, JSON, history, and human reports include a warning with the retained path
