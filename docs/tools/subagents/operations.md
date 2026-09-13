@@ -22,11 +22,15 @@ does not prune results to make room.
 ## Liveness and recovery
 
 OpenClaw does not treat `endedAt` absence as permanent proof that a
-sub-agent is still alive. Unended runs older than the stale-run window
+sub-agent is still alive. When the reading process can verify a current
+execution owner or an exact queued collector reservation, an unended run keeps
+counting regardless of age. Persisted metadata alone does not establish that
+ownership in another process. Other unended runs stop counting as active/pending
+after the stale-run window
 (2 hours, or the configured run timeout plus a short grace period,
-whichever is longer) stop counting as active/pending in `/subagents list`,
-status summaries, descendant completion gating, and per-session
-concurrency checks.
+whichever is longer). These retained counts govern `/subagents list`,
+status summaries, descendant completion gating, and per-session concurrency
+checks; they are not proof that an executor is live.
 
 After a Gateway restart, fresh interrupted sub-agents resume automatically
 from their existing child transcript. Recovery handles both sessions marked
