@@ -78,6 +78,8 @@ The integrity child and both asynchronous and synchronous read-only snapshot wor
 
 The synchronous byte-neutral snapshot strategy is for small or quiescent databases. Inspections of a live agent database, including memory-core readiness, use the asynchronous online-backup worker.
 
+Full startup readiness runs the agent integrity and foreign-key scan against its private snapshot in the existing integrity child. It waits for native close before checking schema compatibility and releasing the snapshot. The source database and WAL remain unchanged. Admission before the migration lease and the fresh check before migration writes remain separate.
+
 Integrity-child timeout and incomplete-exit errors include `lastObservedPhase`:
 
 | Value             | Last observation                                                                          |
