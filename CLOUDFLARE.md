@@ -196,6 +196,14 @@ The Worker reads alias metadata directly on every Markdown object miss, even whe
 
 Rollout requires **both the rebuilt R2 artifact and the matching Worker**: publish a full artifact with canonical Markdown objects and redirect metadata, then deploy the Worker. The R2 workflow uploads before its Worker deployment; the manual Pages workflow can deploy the Worker separately. Deploying the Worker alone cannot repair aliases without metadata. Source retirement also requires removal of the old real Markdown object; its normal cache lifetime still applies. Missing metadata preserves the earlier explicit miss or negotiated HTML fallback during rollout. After deployment, verify explicit and negotiated GET/HEAD without following redirects: require `200`, Markdown MIME, `Vary: Accept`, no `Location`, exact canonical GET bytes and an empty HEAD body. Verify HTML queries and anchors independently, and check a metadata target change after prior HTML and Markdown requests. Building and testing locally does not publish or deploy either part.
 
+## MCP Search
+
+`POST /mcp` serves the legacy JSON-RPC documentation search tool. A request can
+contain one object or a batch of at most 32 items. Larger batches return HTTP 200
+with JSON-RPC error `-32600` (`Batch too large`) before any item is handled or the
+search index is read. Split larger requests into batches of at most 32. The
+single-object request format and existing notification behavior are unchanged.
+
 ## Cache Policy
 
 `r2-prepare.mjs` assigns per-object `Cache-Control`:

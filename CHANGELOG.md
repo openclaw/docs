@@ -4,6 +4,7 @@
 
 **Highlights:** Stable section links and reliable source indexing and translated docs, with bounded publishing requests and workflow jobs.
 
+- Compatibility: reject MCP JSON-RPC batches larger than 32 items before any search work; clients sending larger batches must split them. Thanks @SebTardif.
 - Render nested navigation groups recursively so protocol pages remain reachable and mirror-sync builds no longer generate `/undefined/undefined` links.
 - Preserve published heading IDs, emit unambiguous Mintlify link aliases and component targets, and open nested accordions for fragment navigation using the source-owned shared parsing and redirect contract.
 - Recover parser-diagnosed translation markup damage before validation, preserving translated prose and the existing failed-shard publication checks; thanks @hxy91819.
