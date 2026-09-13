@@ -203,10 +203,12 @@ off-thread reclamation, leaving the Gateway thread available to authorize a
 reclamation commit.
 
 Asynchronous AgentSession message, model, compaction, and tree operations use
-this admission for their transcript writes. Model-selection hooks run after
-write admission releases. Synchronous SessionManager and extension APIs,
-including `setThinkingLevel`, retain their existing synchronous contracts and
-still need an appropriate caller-owned write boundary.
+this admission for their transcript writes. Embedded prompt preparation, replay
+repair, and tool-result cleanup await their writes before publishing dependent
+results or disposing their resources. Model-selection hooks run after write
+admission releases. Synchronous SessionManager and extension APIs, including
+`setThinkingLevel`, retain their existing synchronous contracts and still need
+an appropriate caller-owned write boundary.
 
 The signature is `withOpenClawAgentDatabaseWrite(options, operation, expectedDatabase?)`.
 `options` uses the existing agent database options, including the required
