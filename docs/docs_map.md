@@ -14331,6 +14331,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H2: Resolution order
+  - H2: Setting a model default
   - H2: Setting a session default
   - H2: Application by agent
   - H2: Fast mode (/fast)
