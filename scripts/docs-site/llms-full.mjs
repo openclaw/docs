@@ -4,7 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { stripMdxForLlms, firstHeading, titleize, fileSlug } from "./document-text.mjs";
-import { ignoredDocDirs, ignoredDocFiles, localeLabels } from "./config.mjs";
+import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
+import { walkDocs } from "./document-files.mjs";
+import { ignoredDocFiles, localeLabels } from "./config.mjs";
 
 const root = process.cwd();
 const sourceRoot = process.env.DOCS_SOURCE_REPO_DIR
@@ -38,7 +40,7 @@ console.log(`llms-full ok: ${pages.length} pages, ${content.length} chars, ${pat
 
 function collectEnglishPages() {
   const result = [];
-  for (const file of walkDocs(docsDir)) {
+  for (const file of walkDocs(docsDir, new Set(Object.keys(localeLabels)))) {
     const rel = path.relative(docsDir, file).replaceAll(path.sep, "/");
     if (ignoredDocFiles.has(rel) || rel.endsWith("/AGENTS.md")) continue;
     const raw = fs.readFileSync(file, "utf8");
@@ -48,43 +50,11 @@ function collectEnglishPages() {
       slug,
       file,
       rel,
-      title: parsed.data.title || firstHeading(parsed.content) || titleize(path.basename(slug)),
+      title: String(parsed.data.title ?? "") || firstHeading(parsed.content) || titleize(path.basename(slug)),
       body: parsed.content,
     });
   }
   return result;
-}
-
-function parseFrontmatter(raw) {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?/);
-  if (!match) return { data: {}, content: raw };
-  const data = {};
-  const frontmatter = match[1].split("\n");
-  for (const line of frontmatter) {
-    const property = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!property) continue;
-    data[property[1]] = unquoteYamlScalar(property[2]);
-  }
-  return { data, content: raw.slice(match[0].length).replace(/^\n+/, "") };
-}
-
-function unquoteYamlScalar(value) {
-  const trimmed = value.trim();
-  if ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-function walkDocs(dir) {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    if (entry.name.startsWith(".")) return [];
-    if (entry.isDirectory() && (ignoredDocDirs.has(entry.name) || localeLabels[entry.name])) return [];
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walkDocs(full);
-    return /\.(md|mdx)$/.test(entry.name) ? [full] : [];
-  });
 }
 
 function renderLlmsFull(pages) {

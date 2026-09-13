@@ -2,6 +2,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import { mintlifyLocaleToDir } from "./config.mjs";
 
 const root = process.cwd();
@@ -28,9 +29,9 @@ for (const file of walk(site)) {
   }
 
   const raw = fs.readFileSync(file, "utf8");
-  const { frontmatter, body } = parseFrontmatter(raw);
-  const title = frontmatter.title || headingTitle(body) || titleFromPath(rel);
-  const summary = frontmatter.summary || firstParagraph(body);
+  const { data: frontmatter, content: body } = parseFrontmatter(raw);
+  const title = String(frontmatter.title ?? "") || headingTitle(body) || titleFromPath(rel);
+  const summary = String(frontmatter.summary ?? "") || firstParagraph(body);
   const route = routeForMarkdown(rel);
   const searchable = normalizeSearchText([title, summary, body].filter(Boolean).join("\n\n"));
   if (!searchable) continue;
@@ -66,20 +67,6 @@ function* walk(dir) {
       yield fullPath;
     }
   }
-}
-
-function parseFrontmatter(raw) {
-  const match = /^---\n([\s\S]*?)\n---\n?/.exec(raw);
-  if (!match) {
-    return { frontmatter: {}, body: raw };
-  }
-  const frontmatter = {};
-  for (const line of match[1].split("\n")) {
-    const field = /^(title|summary):\s*(.*)$/u.exec(line.trim());
-    if (!field) continue;
-    frontmatter[field[1]] = field[2].replace(/^["']|["']$/g, "").trim();
-  }
-  return { frontmatter, body: raw.slice(match[0].length) };
 }
 
 function headingTitle(body) {

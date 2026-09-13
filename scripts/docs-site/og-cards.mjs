@@ -3,11 +3,11 @@ import path from "node:path";
 import { Worker } from "node:worker_threads";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 import { createOgCache } from "./og-cache.mjs";
-import { activeTabTitle, groupForPage } from "./navigation.mjs";
+import { activeTabTitle, groupForPage, flattenNav } from "./navigation.mjs";
 
 export async function renderPageOgCards({ pages, enNav, outDir, cacheDir, siteName }) {
   const renderedPageOgCards = new Set();
-  const navSlugs = collectNavSlugs(enNav);
+  const navSlugs = new Set(flattenNav(enNav).map((page) => page.slug));
   const ogDir = path.join(outDir, "og");
   const targets = pages.filter((page) =>
     page.locale === "en" && page.slug !== "index" && navSlugs.has(page.slug)
@@ -73,17 +73,4 @@ function renderOgPng(svg) {
       reject(new Error(`og render worker exit ${code}`));
     });
   });
-}
-
-function collectNavSlugs(nav) {
-  const slugs = new Set();
-  for (const tab of nav) {
-    for (const group of tab.groups ?? []) {
-      for (const entry of group.pages ?? []) {
-        if (entry.group) for (const sub of entry.pages ?? []) slugs.add(sub.slug);
-        else if (entry.slug) slugs.add(entry.slug);
-      }
-    }
-  }
-  return slugs;
 }
