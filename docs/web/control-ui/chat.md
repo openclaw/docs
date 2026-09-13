@@ -65,6 +65,8 @@ immediately. Catalog and account changes invalidate these copies; reconnecting
 loads current choices again. Reopening a picker after a reported cooldown expires
 checks readiness again. A catalog refresh keeps existing controls visible,
 and the Gateway still validates the model and account when starting a run.
+Repeated changes while a model lookup is pending are collected into one
+follow-up lookup for the latest choices.
 
 Catalog refreshes update the open conversation's model and context facts without
 reloading unrelated session lists. Session and configuration changes still refresh
@@ -77,7 +79,9 @@ Older results cannot replace the current command list.
 
 If a New Session model lookup does not finish within 30 seconds, the controls
 show **Models unavailable**. Open the model picker to retry; your draft stays
-in place.
+in place. A retry waits for the earlier lookup to finish before starting more
+work, and its 30-second deadline includes that wait. Reconnecting clears pending
+lookups from the previous connection.
 
 When you open an existing session, the conversation appears before supporting
 panels and pull-request details load. You can start typing as soon as its identity
