@@ -244,7 +244,8 @@ panel. Plain-text attachments, including pasted `.txt` files, CSV, and JSON,
 preserve line breaks and indentation. Markdown attachments render as documents
 with interactive code blocks. When an open attachment refreshes with unchanged
 text, its code blocks keep your expansion and wrapping choices after loading.
-A different attachment or changed text starts with fresh controls. HTML files
+A different attachment or changed text starts with fresh controls. Long previews
+scroll inside their file tab; switching tabs preserves your reading position. HTML files
 (`.html`, `.htm`, or `text/html`, including MIME parameters) render as a sandboxed
 page by default. **Source** and **Preview** share the same filename tab and slim
 toolbar. Same-origin attachment previews require UTF-8 content no larger than
