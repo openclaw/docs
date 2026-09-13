@@ -14619,6 +14619,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Gateway host status
   - H2: Language support
   - H2: Appearance themes
+  - H2: Session sources
   - H2: Manage plugins
   - H2: Updates
   - H2: Apps and extensions

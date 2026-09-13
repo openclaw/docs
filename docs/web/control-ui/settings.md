@@ -120,6 +120,30 @@ Appearance also carries the **Lobster visits** and **Lobster sounds** toggles an
 
 When your connection is bound to an authenticated Gateway profile, theme, theme mode, and accent color are saved to that profile instead of the gateway config. They follow you across devices without changing anyone else's appearance, override gateway-wide `ui.prefs` values, and update your connected clients live. Connections without an authenticated profile continue syncing these preferences through the gateway config exactly as before. Language and chat display preferences remain gateway-config preferences for every connection. Each browser keeps a local mirror for instant boot, and text size remains browser-local. An explicitly read-only connection applies preference changes only in that browser. Changes made while offline remain queued until a later connection can write their applicable preferences; on a read-only reconnect, they continue to behave as browser-local preferences. See [Configuration reference](/gateway/configuration-reference#ui).
 
+## Session sources
+
+Open the sidebar's **Filter & sort** menu and choose **Session sources…** to
+control automatic discovery of **Claude Code**, **Codex**, **OpenCode**, and **Pi** conversations.
+The same controls live in **Settings → Appearance → Session sources**; searching
+Settings for the coding app's name and **sessions** opens them directly.
+
+Only sources whose owning plugin is installed appear: **Anthropic** for Claude Code,
+**Codex**, **OpenCode**, and **ACPX** for Pi. Installed but disabled plugins still expose
+their discovery preference; the plugin must be enabled for discovery to run.
+
+The **Show … sessions** switches control discovery on the Gateway and eligible paired
+computers. They use each plugin's existing discovery
+preference and apply to everyone on that Gateway. Changes save automatically and
+require a Gateway restart. **Manage plugins** opens installation and enablement controls.
+Pi uses ACPX's `piSessionCatalog.enabled` preference; the other sources use their plugin's
+`sessionCatalog.enabled` preference. Disabling discovery leaves the provider
+and harness settings unchanged.
+
+Fresh installations start Claude Code and Codex discovery off. OpenCode and Pi currently
+default to on. Existing installations retain their previous settings, including older
+implicit-on defaults. **Hide from sidebar**
+in a catalog's menu remains a separate browser-only presentation preference.
+
 ## Manage plugins
 
 Open **Plugins** in the sidebar, or use `/settings/plugins` relative to the

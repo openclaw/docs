@@ -193,8 +193,9 @@ when sessions become available. A populated group remains visible when another
 host fails.
 
 The sidebar warning includes the catalog error code and the safe underlying
-Gateway error. Open **Settings > Automation > Plugins > Codex > Native Session
-Discovery** to disable discovery without disabling Codex. For
+Gateway error. Open the sidebar's **Filter & sort > Session sources…** menu,
+or **Settings > Appearance > Session sources**, and turn off **Show Codex sessions**
+to disable discovery without disabling Codex. For
 `NODE_LIST_FAILED`, compare `openclaw nodes list` and **Settings > Devices**.
 The detailed cause identifies the pairing-store, node-registry, permission, or
 Gateway lifecycle failure that needs repair.
