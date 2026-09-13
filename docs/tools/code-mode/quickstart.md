@@ -201,6 +201,14 @@ try {
 }
 ```
 
+For `output_contract`, the tool returned a response that failed its declared
+output schema. The error includes up to five validation details, each bounded to
+256 UTF-8 bytes plus a truncation marker, with field paths and expected
+constraints. The response body is omitted. For example, `receipt.count: must be
+number` identifies a malformed count without printing the returned value. Check
+current state before retrying: result validation does not undo earlier effects,
+and `effectStatus` remains `"unknown"`.
+
 Await every tool call or handle its rejection explicitly. OpenClaw drains
 dispatched calls before completing a cell; an unhandled rejection, including
 one from an unawaited call or timer callback, fails the cell instead of silently
