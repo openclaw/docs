@@ -230,6 +230,18 @@ drain in order. Use separate connections for concurrent requests. Keep the relea
 `beginWebhookRequestPipelineOrReject` in `finally`; it retains any selected
 rejection cleanup before releasing the in-flight slot.
 
+Channel webhook listeners that own their `createServer` admission serialize each
+connection with `runHttpConnectionRequest(req, run, res?)` from
+`openclaw/plugin-sdk/webhook-request-guards`. Pass the `ServerResponse` as the
+third argument: the shared owner waits for response completion (`finish` or
+`close`) before admitting the connection's next request, so a close-aware
+rejection — whose cleanup may destroy the socket within one second — can never
+overtake an earlier queued acknowledgement. Omitting the response argument
+releases the next request before the current response finishes and loses that
+guarantee; omit it only for dispatch that writes no response on the shared
+connection. Already admitted work always finishes; queued work is never
+dispatched after closure, and a closing connection cannot admit later requests.
+
 ### Post-ack webhook work
 
 Webhook routes that acknowledge a request before processing finishes must move
