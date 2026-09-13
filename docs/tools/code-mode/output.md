@@ -297,6 +297,13 @@ projection. Non-serializable values are converted to plain strings or errors;
 binary values are not supported. Images and files travel through ordinary
 OpenClaw tools, not through the code-mode bridge.
 
+When later cells need the full data, return `await results.save(value)` instead
+of emitting the value. The bounded reference preview is separate from the
+complete saved JSON; `results.load(id)` lets later code select a smaller
+projection without refetching. See
+[Reuse data across cells](/tools/code-mode/quickstart#reuse-data-across-cells)
+for limits and the agent-run lifetime.
+
 Marker prefixes and omitted-byte counts describe the original compact JSON after
 normalization, including array brackets, separators, and JSON escaping. Ordinary
 output is delivered incrementally. An unchanged cumulative summary is not repeated;

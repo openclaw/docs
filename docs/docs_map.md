@@ -13497,6 +13497,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable code mode
   - H2: Override one model
   - H2: What the model does
+  - H2: Reuse data across cells
   - H2: Recover from tool errors
   - H2: Verify the active surface
   - H2: Use Swarm for agent fan-out

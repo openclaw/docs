@@ -125,6 +125,22 @@ size, including QuickJS metadata, before handing pending work to the Gateway.
 These limits and `memoryLimitBytes` bound guest state, not total Gateway memory;
 warm worker threads and TypeScript compilers also retain memory.
 
+Explicit `results.save(value)` references keep normalized JSON in the existing
+admitted catalog lifetime, independently of each cell's VM and output budget.
+The store admits at most 64 entries and `min(memoryLimitBytes, maxSnapshotBytes)`
+encoded JSON bytes (10 MiB by default), in addition to the cell's program-data
+inbox. This is a logical data allowance, not a process RSS limit. Capacity errors
+preserve existing entries; deletion frees their capacity. Loads return detached
+copies and carry forward network-content provenance into the receiving cell's
+normal untrusted output wrapper.
+
+Catalog teardown, replacement, restriction, and the admitted run's abort clear
+saved data. Appended client tools preserve the same catalog lifetime. Each cell
+captures its catalog identity and entries before execution, so stale cells
+cannot use a replacement catalog or retain references after a permission change.
+Saved references are data snapshots and never execution authority. They do not
+survive Gateway restart and cannot be used by another run or session.
+
 ## QuickJS-WASI runtime
 
 OpenClaw loads `quickjs-wasi` as a direct dependency in the owning package; it
