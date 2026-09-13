@@ -249,6 +249,15 @@ or hold admission across a provider call or an entire asynchronous hook. Recheck
 applicable manager/run ownership and cancellation inside the callback, immediately
 before mutation. Agent identity and handle equality are not authorization.
 
+For preparation that can repeat after SQLite lock contention,
+`runSqliteImmediateTransaction(db, prepare, options, admit)` accepts the same
+owner's admission callback. `prepare` runs before admission and returns a
+synchronous transaction callback. Pass `(write) =>
+withOpenClawAgentDatabaseWrite(databaseOptions, write, borrowedDb)` as `admit`;
+do not place asynchronous preparation inside the admitted callback. The helper
+rechecks transaction state after waiting and never repeats a callback that
+already entered its transaction.
+
 `withOpenClawAgentDatabaseWrite` does not start a transaction, grant an authority
 lease, or coordinate unrelated processes. Raw SQLite calls outside admission bypass it, and existing
 synchronous APIs do not become asynchronous automatically. A rejected stale-owner

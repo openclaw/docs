@@ -208,6 +208,13 @@ original environment when the caller's directory or environment changes. Doctor 
 pruning operations before continuing to the next agent. Read-only cache snapshots
 retain their existing synchronous owner and do not create missing databases.
 
+Memory managers admit writes on their exact borrowed agent connection. Provider
+calls and source preparation run before admission; generated-cache and source
+writes recheck their generation, revision, and source predicates after waiting.
+Full reindex publication attaches, replaces, and detaches the completed shadow
+inside one synchronous admitted operation. Manager close drains accepted syncs
+through provider preparation and final writes before releasing the borrow.
+
 ### Preserve the data and concurrency contracts
 
 An adapter must make these contracts explicit and verify them against a real
