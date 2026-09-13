@@ -40,6 +40,14 @@ provider or plugin runtime ownership. Kernels and their transaction callbacks
 remain synchronous. The asynchronous task and flow read facade runs these read
 kernels in the shared-state worker.
 
+Gateway user-preference RPCs and Talk appearance reads resolve merged profile IDs
+and access preferences in the shared-state worker. Preference writes keep profile
+resolution, quota validation, and mutation in one synchronous write transaction;
+Gateway replies and changed events follow completion. Profile merge and consent
+updates retain their connection-bound kernels. Push preference and notification
+callers still use the synchronous facade until their preparation and publication
+owners migrate together.
+
 The host captures the database path, state environment, and current admission
 before awaited work. The shared worker owns its canonical connection and schema
 opening, with Gateway schema authority delegated by its live coordinator owner.
