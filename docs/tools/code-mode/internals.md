@@ -152,7 +152,10 @@ same effective tool declarations as `API.read` plus guest globals and the pinned
 TypeScript standard library. Unknown outputs stay unknown. Compiler input is
 bounded by the existing memory allowance and preparation shares the call deadline.
 No guest module resolution, filesystem access, or `import`/`require` is enabled.
-Diagnostics return `failed`/`invalid_input` with original `user.ts` coordinates;
+Preflight reports up to five errors together, with original `user.ts` coordinates.
+Each message retains at most 1024 UTF-8 bytes plus a truncation marker, and the
+response counts additional errors omitted from the batch. Diagnostics return
+`failed`/`invalid_input`;
 no guest or tool work has run when preflight rejects. This opt-in does not change
 JavaScript defaults or replace runtime JSON Schema validation.
 

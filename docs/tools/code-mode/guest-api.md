@@ -172,7 +172,9 @@ const status = await node.invoke("device.status");
 ```
 
 `nodes.list()` returns paired node ids, names, platforms, connection state, and
-advertised commands. `nodes.get(idOrName)` resolves an exact id before a display
+advertised commands. TypeScript preflight knows these fields and the node handle
+methods. Command parameters and results remain `unknown` because each node
+command defines its own payload; check the result before composing it. `nodes.get(idOrName)` resolves an exact id before a display
 name and returns a handle with `id`, `name`, and `invoke(command, params?)`.
 Invocation uses the normal `nodes` tool path, so pairing, command policy, scopes,
 approvals, timeouts, hooks, and telemetry are unchanged. A handle includes
