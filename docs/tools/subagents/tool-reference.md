@@ -236,6 +236,16 @@ An operator can also resume the existing child with the `sessions.send` Gateway
 method and its paused session key. This preserves the original task, requester,
 and parent completion batch, so the parent continues when the child finishes.
 
+Collector runs are the exception, because their result is collected explicitly
+rather than announced. Where collector context reaches the tool factory, such as
+the embedded runner, the turn is not offered `sessions_yield`, and if an override
+ever reaches the tool, it returns an error explaining that collector results are
+collected explicitly. Other paths do not pass that context yet: a CLI-backed
+collector turn through the Gateway tool resolver can still be offered the tool
+and receive a successful `yielded` result. In every case a collector that yields
+is settled at its own terminal instead of pausing, so its waiter resolves rather
+than blocking for good.
+
 The registry also continues a yielded sub-agent when its announced children
 settle, including an orchestrator spawned by cron. That internal settlement
 wake preserves the original requester and delivers the orchestrator's completion
