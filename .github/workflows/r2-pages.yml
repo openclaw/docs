@@ -82,7 +82,7 @@ jobs:
       url: https://docs.openclaw.ai
     steps:
       - name: Check out
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Classify artifact scope
         id: artifact-scope
@@ -193,7 +193,7 @@ jobs:
 
       - name: Check out OpenClaw source
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
           ref: ${{ steps.source-meta.outputs.sha }}
@@ -202,7 +202,7 @@ jobs:
 
       - name: Set up Node
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
@@ -211,9 +211,25 @@ jobs:
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
         run: npm ci
 
-      - name: Install librsvg2-bin
+      - name: Restore rendered articles
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+        id: article-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-render
+          key: docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-
+
+      - name: Restore preview images
+        if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
+        id: og-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-og
+          key: docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-
 
       - name: Build R2 artifact
         if: steps.current-main.outputs.stale == 'false' && steps.artifact-scope.outputs.scope != 'none'
@@ -362,7 +378,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx wrangler@4.129.0 deploy --config wrangler.toml \
+          npx wrangler@4.131.0 deploy --config wrangler.toml \
             --tag "${GITHUB_SHA::12}" \
             --message "openclaw/docs ${GITHUB_SHA}"
 
@@ -393,3 +409,18 @@ jobs:
           BEFORE_SHA: ${{ github.event.before || '' }}
           SMOKE_COMMIT_RANGE: ${{ inputs.smoke_commit_range || '' }}
         run: node scripts/docs-site/head-drift.mjs catch-up
+
+      # Cache storage must not hold up this run's publication or live smoke.
+      - name: Save rendered articles
+        if: ${{ !cancelled() && steps.upload-r2.outcome == 'success' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-render
+          key: ${{ steps.article-cache.outputs.cache-primary-key }}
+
+      - name: Save preview images
+        if: ${{ !cancelled() && steps.upload-r2.outcome == 'success' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-og
+          key: ${{ steps.og-cache.outputs.cache-primary-key }}

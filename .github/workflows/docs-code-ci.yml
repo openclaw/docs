@@ -5,6 +5,9 @@ on:
     paths:
       - ".github/actionlint.yaml"
       - ".github/workflows/docs-code-ci.yml"
+      - ".github/workflows/docs-live-smoke.yml"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/r2-pages.yml"
       - ".openclaw-sync/check-docs-mdx.mjs"
       - ".openclaw-sync/lib/**"
       - "Makefile"
@@ -31,19 +34,16 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
 
       - name: Install
         run: npm ci
-
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
@@ -57,7 +57,23 @@ jobs:
         run: npm test
 
       - name: Validate Worker bundle
-        run: npx wrangler@4.129.0 deploy --dry-run --config wrangler.toml
+        run: npx wrangler@4.131.0 deploy --dry-run --config wrangler.toml
+
+      - name: Restore rendered articles
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-render
+          key: docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-articles-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/render-cache.mjs', 'scripts/docs-site/mdx-ish.mjs', '.openclaw-sync/lib/docs-markdown.mjs', 'package-lock.json') }}-
+
+      - name: Restore preview images
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/docs-og
+          key: docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-
 
       - name: Build shell artifact
         run: npm run docs:build:r2:shell

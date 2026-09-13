@@ -85,7 +85,7 @@ jobs:
       # Keep workflow control-plane scripts pinned to the workflow ref. The docs
       # content checkout below may intentionally point at latest main.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -103,7 +103,7 @@ jobs:
           echo "GO_VERSION=${GO_VERSION}" >> "$GITHUB_ENV"
 
       - name: Checkout publish repo
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.publish_ref }}
           fetch-depth: 0
@@ -123,7 +123,7 @@ jobs:
 
       - name: Checkout source repo
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ steps.meta.outputs.repository }}
           ref: ${{ steps.meta.outputs.sha }}
@@ -132,13 +132,13 @@ jobs:
 
       - name: Setup Node
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
       - name: Setup Go
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "${{ env.GO_VERSION }}"
 
@@ -304,7 +304,7 @@ jobs:
         id: mdx_repair
         if: steps.repair_model.outcome == 'success'
         continue-on-error: true
-        uses: openai/codex-action@v1
+        uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e # v1
         env:
           LOCALE: ${{ inputs.locale }}
         with:
@@ -365,7 +365,7 @@ jobs:
 
       - name: Upload locale artifact
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
           path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
@@ -397,7 +397,7 @@ jobs:
       # Finalizers apply artifacts to latest main, but deploy/commit control
       # logic must come from this workflow ref so branch canaries test the fix.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -413,12 +413,12 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Check out latest main
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Download locale artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
           path: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
@@ -441,7 +441,7 @@ jobs:
 
       - name: Set up Node for locale validation
         if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm

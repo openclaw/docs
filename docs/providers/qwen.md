@@ -26,12 +26,14 @@ The older Coding Plan does not include these models. `qwen3.7-max` and
 
 ## Install plugin
 
-`qwen` ships as an official external plugin, not bundled with core. Install it and restart Gateway:
+`qwen` ships as an official external plugin, not bundled with core. Install it:
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
-openclaw gateway restart
 ```
+
+Installation applies to a running Gateway automatically; otherwise it takes effect
+on the next startup. See [Apply changes and inspect](/plugins/manage-plugins#apply-changes-and-inspect).
 
 ## Getting started
 
@@ -386,16 +388,15 @@ See [Video generation](/tools/video-generation) for shared tool parameters, prov
   </Accordion>
 
   <Accordion title="Capability plan">
-    The `qwen` plugin is being positioned as the vendor home for the full Qwen
-    Cloud surface, not just coding/text models.
+    Which parts of the Qwen Cloud surface the `qwen` plugin covers today:
 
     - **Text/chat models:** available through the plugin
     - **Tool calling, structured output, thinking:** inherited from the OpenAI-compatible transport
-    - **Image generation:** planned at the provider-plugin layer
     - **Image/video understanding:** available through the plugin on the Standard endpoint
-    - **Speech/audio:** planned at the provider-plugin layer
-    - **Memory embeddings/reranking:** planned through the embedding adapter surface
     - **Video generation:** available through the plugin through the shared video-generation capability
+    - **Image generation:** not exposed by the plugin
+    - **Speech/audio:** not exposed by the plugin
+    - **Memory embeddings/reranking:** not exposed by the plugin
 
   </Accordion>
 

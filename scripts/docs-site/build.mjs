@@ -2,16 +2,20 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { Worker } from "node:worker_threads";
+import { parseArgs } from "node:util";
 
+import { stripMdxForLlms, firstHeading, titleize, textFromHtml, fileSlug, normalizeSlug } from "./document-text.mjs";
 import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
-import { siteCss, siteJs } from "./assets.mjs";
+import { siteCss } from "./site-css.mjs";
+import { siteJs } from "./site-js.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { createRenderCache } from "./render-cache.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
-import { renderPageOgSvg } from "./og-card-template.mjs";
+import { renderPageOgCards } from "./og-cards.mjs";
+import { activeTabTitle, groupForPage, flattenNavEntries, flattenNav } from "./navigation.mjs";
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
@@ -20,11 +24,10 @@ const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const shellPublicAssetsDir = path.join(siteAssetsDir, "assets");
 const outDir = path.join(root, "dist", "docs-site");
 const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
-// Preview builds skip redirects, so never let an earlier full build's records survive.
-fs.rmSync(redirectMetadataPath, { force: true });
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
+const renderArticle = (markdown, options) => renderMdxish(markdown, md, options);
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
@@ -33,7 +36,6 @@ const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
 const feedbackIssueRepository = normalizeRepository(process.env.DOCS_FEEDBACK_ISSUE_REPO ?? "openclaw/openclaw");
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
-const renderedPageOgCards = new Set();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
 const shellCss = siteCss();
 const shellJs = siteJs();
@@ -50,24 +52,31 @@ const ogAssetVersion = createHash("sha256")
   .update(fs.readFileSync(new URL("./og-card.svg", import.meta.url)))
   .digest("hex")
   .slice(0, 12);
-const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
-const shellOnly = artifactMode === "shell";
+const { values: { page: requestedPages } } = parseArgs({
+  options: { page: { type: "string", multiple: true, default: [] } },
+});
 const previewPagesPerGroup = parseOptionalPositiveInt(
   process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
   "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
 );
-const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
-const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
-const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const configuredMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
+const previewMode = Boolean(requestedPages.length || previewPagesPerGroup || configuredMaxPages || process.env.DOCS_SITE_PREVIEW_LOCALE);
+const previewMaxPages = Math.min(configuredMaxPages || 30, 30);
+const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE || "en";
+const artifactMode = previewMode ? "shell" : process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
+const shellOnly = artifactMode === "shell";
+const renderCache = !previewMode && process.env.DOCS_SITE_RENDER_CACHE !== "0"
+  ? createRenderCache(path.join(root, ".cache", "docs-render"), renderArticle)
+  : null;
 const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INCLUDE_FIXTURE === "1";
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
-fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
-fs.mkdirSync(outDir, { recursive: true });
-
 const locales = buildLocales(config);
 const localeCodes = new Set(locales.map((locale) => locale.code));
+if (previewMode && !localeCodes.has(previewLocale)) {
+  throw new Error(`Preview locale not found: ${previewLocale}`);
+}
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 let pages = allPages;
@@ -79,7 +88,7 @@ if (previewMode) {
     maxPages: previewMaxPages,
     pagesPerGroup: previewPagesPerGroup || 1,
   });
-  pages = allPages.filter((page) => page.hidden || previewKeys.has(pageKey(page.locale, page.slug)));
+  pages = allPages.filter((page) => previewKeys.has(pageKey(page.locale, page.slug)));
   pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
   navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 }
@@ -87,9 +96,21 @@ const localePickerLabels = {
   "pt-BR": "Português (BR)"
 };
 
+// Preview builds skip redirects, so never let an earlier full build's records survive.
+fs.rmSync(redirectMetadataPath, { force: true });
+fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+fs.mkdirSync(outDir, { recursive: true });
 copyPublicFiles();
-if (!previewMode) await renderPageOgCards();
+const renderedPageOgCards = previewMode ? new Set() : await renderPageOgCards({
+  pages, enNav: navByLocale.get("en") ?? [], outDir,
+  cacheDir: path.join(root, ".cache", "docs-og"), siteName: config.name,
+});
 for (const page of pages) writePage(page);
+if (renderCache) {
+  renderCache.prune();
+  const { hits, misses, bypassed } = renderCache.stats;
+  console.log(`article cache: ${hits} reused, ${misses} rendered, ${bypassed} snippet owners rendered`);
+}
 if (!shellOnly) {
   writeLlmsIndex();
   writeRobotsTxt();
@@ -130,11 +151,10 @@ function collectPages(localeList) {
   const result = [];
   const localeRoots = new Set(localeList.filter((locale) => !locale.root).map((locale) => locale.code));
   for (const locale of localeList) {
+    if (previewMode && !locale.root && locale.code !== previewLocale) continue;
     const base = locale.root ? docsDir : path.join(docsDir, locale.code);
-    for (const file of walkDocs(base)) {
+    for (const file of walkDocs(base, locale.root ? localeRoots : new Set())) {
       const rel = path.relative(base, file).replaceAll(path.sep, "/");
-      // Only the English owner excludes foreign roots; walkDocs remains an all-source traversal.
-      if (locale.root && localeRoots.has(rel.split("/")[0])) continue;
       if (ignoredDocFiles.has(rel)) continue;
       const raw = fs.readFileSync(file, "utf8");
       const parsed = parseFrontmatter(raw);
@@ -191,12 +211,12 @@ function elementsFixturePage() {
   };
 }
 
-function walkDocs(dir) {
+function walkDocs(dir, excludedRoots = new Set()) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (entry.name.startsWith(".")) return [];
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return ignoredDocDirs.has(entry.name) ? [] : walkDocs(full);
+    if (entry.isDirectory()) return ignoredDocDirs.has(entry.name) || excludedRoots.has(entry.name) ? [] : walkDocs(full);
     return /\.(md|mdx)$/.test(entry.name) ? [full] : [];
   });
 }
@@ -217,13 +237,21 @@ function navGroup(locale, group) {
 
 function collectPreviewPageKeys(navByLocale, { locale, maxPages, pagesPerGroup }) {
   const keys = new Set();
+  for (const route of requestedPages) {
+    const slug = navEntrySlug(locale, route.replace(/^\/+|\/+$/g, ""));
+    const key = pageKey(locale, slug);
+    if (!allPageByKey.has(key)) throw new Error(`Preview page not found (${locale}): ${route}`);
+    keys.add(key);
+  }
+  if (includeElementsFixture) keys.add(pageKey("en", "__elements"));
+  if (keys.size > maxPages) throw new Error(`Requested pages exceed the preview limit of ${maxPages}`);
   for (const [navLocale, nav] of navByLocale) {
     if (locale && navLocale !== locale) continue;
     for (const tab of nav) {
       for (const group of tab.groups) {
         for (const page of flattenNavEntries(group.pages).slice(0, pagesPerGroup)) {
+          if (keys.size >= maxPages) return keys;
           keys.add(pageKey(page.locale, page.slug));
-          if (maxPages && keys.size >= maxPages) return keys;
         }
       }
     }
@@ -257,7 +285,9 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(page.raw, md, { sourceFile: page.file, root, pageRoute: pageRoute(page) }), page.locale);
+  const options = { sourceFile: page.file, root, pageRoute: pageRoute(page) };
+  const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
+  const html = rewriteInternalUrls(article, page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -268,7 +298,7 @@ function writePage(page) {
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
-  const lang = htmlLang(page.locale);
+  const lang = page.locale;
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = page.slug === "index" ? `${config.name} Docs` : `${page.title} - ${config.name}`;
   const description = page.summary || config.description || "";
@@ -296,7 +326,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
-<meta property="og:locale" content="${escapeAttr(htmlLang(page.locale).replace("-", "_"))}">
+<meta property="og:locale" content="${escapeAttr(page.locale.replace("-", "_"))}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeAttr(ogTitle)}">
 <meta name="twitter:description" content="${escapeAttr(description)}">
@@ -439,10 +469,6 @@ function localeFlag(code) {
 
 function localeDisplayName(code) {
   return localePickerLabels[code] ?? localeLabels[code] ?? code;
-}
-
-function topLink(label, href, iconName) {
-  return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
 }
 
 function topIconLink(label, href, iconName) {
@@ -777,94 +803,6 @@ function redirectHtml(dest) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=${escapeAttr(dest)}"><link rel="canonical" href="${escapeAttr(dest)}"><title>Redirecting - ${escapeHtml(config.name)}</title><script>location.replace(${JSON.stringify(dest)})</script></head><body><a href="${escapeAttr(dest)}">Redirecting</a></body></html>`;
 }
 
-function stripMdxForLlms(input) {
-  return input
-    .replace(/^import\s+.+?;?\s*$/gm, "")
-    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)\/>/g, (_, name, attrs) => componentLabel(name, attrs))
-    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => componentLabel(name, attrs))
-    .replace(/<\/[A-Z][A-Za-z0-9_.-]*>/g, "")
-    .replace(/\n{3,}/g, "\n\n");
-}
-
-function componentLabel(name, attrs) {
-  const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
-  const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
-  return label ? `\n${label}\n` : `\n${name}\n`;
-}
-
-async function renderPageOgCards() {
-  const enNav = navByLocale.get("en") ?? [];
-  const navSlugs = collectNavSlugs(enNav);
-  const ogDir = path.join(outDir, "og");
-  const targets = pages.filter((page) =>
-    page.locale === "en" && page.slug !== "index" && navSlugs.has(page.slug)
-  );
-  const start = Date.now();
-  const concurrency = Math.max(2, Math.min(8, Number(process.env.DOCS_SITE_OG_CONCURRENCY) || 6));
-  let cursor = 0;
-  let count = 0;
-  const failures = [];
-  await Promise.all(Array.from({ length: concurrency }, async () => {
-    while (cursor < targets.length) {
-      const page = targets[cursor++];
-      const kicker = groupForPage(enNav, page.slug) ?? activeTabTitle(enNav, page.slug) ?? config.name;
-      const svg = renderPageOgSvg({ title: page.title, kicker, summary: page.summary });
-      const outFile = path.join(ogDir, `${page.slug}.png`);
-      fs.mkdirSync(path.dirname(outFile), { recursive: true });
-      try {
-        fs.writeFileSync(outFile, await renderOgPng(svg));
-        renderedPageOgCards.add(page.slug);
-        count++;
-      } catch (err) {
-        failures.push(`${page.slug}: ${err.message}`);
-      }
-    }
-  }));
-  if (failures.length) {
-    const details = failures.slice(0, 5).join("; ");
-    throw new Error(`failed to render ${failures.length}/${targets.length} per-page og cards: ${details}`);
-  }
-  console.log(`rendered ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
-}
-
-function renderOgPng(svg) {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("./og-render-worker.mjs", import.meta.url), {
-      workerData: { svg },
-    });
-    let settled = false;
-    worker.on("message", (message) => {
-      if (settled) return;
-      settled = true;
-      if (message?.error) reject(new Error(message.error));
-      else resolve(Buffer.from(message.png));
-    });
-    worker.on("error", (err) => {
-      if (settled) return;
-      settled = true;
-      reject(err);
-    });
-    worker.on("exit", (code) => {
-      if (settled || code === 0) return;
-      settled = true;
-      reject(new Error(`og render worker exit ${code}`));
-    });
-  });
-}
-
-function collectNavSlugs(nav) {
-  const slugs = new Set();
-  for (const tab of nav) {
-    for (const group of tab.groups ?? []) {
-      for (const entry of group.pages ?? []) {
-        if (entry.group) for (const sub of entry.pages ?? []) slugs.add(sub.slug);
-        else if (entry.slug) slugs.add(entry.slug);
-      }
-    }
-  }
-  return slugs;
-}
-
 function writeStaticAssets() {
   const assetsDir = path.join(outDir, "assets");
   fs.mkdirSync(assetsDir, { recursive: true });
@@ -903,7 +841,11 @@ function walkPublicFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (entry.name.startsWith(".")) return [];
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walkPublicFiles(full);
+    if (entry.isDirectory()) {
+      if (previewMode && dir === docsDir && entry.name !== "en"
+        && localeCodes.has(entry.name) && entry.name !== previewLocale) return [];
+      return walkPublicFiles(full);
+    }
     const rel = path.relative(docsDir, full).replaceAll(path.sep, "/");
     if (ignoredDocFiles.has(rel) || /\.(md|mdx|json|jsonl)$/.test(entry.name)) return [];
     return [full];
@@ -913,28 +855,6 @@ function walkPublicFiles(dir) {
 function copyDir(source, dest, options = {}) {
   if (!fs.existsSync(source)) return;
   fs.cpSync(source, dest, { recursive: true, filter: options.filter });
-}
-
-function activeTabTitle(nav, slug) {
-  return nav.find((tab) => flattenNav([tab]).some((page) => page.slug === slug))?.title ?? nav[0]?.title ?? "";
-}
-
-function groupForPage(nav, slug) {
-  for (const tab of nav) {
-    for (const group of tab.groups) {
-      if (flattenNavEntries(group.pages).some((page) => page.slug === slug)) {
-        return group.title;
-      }
-    }
-  }
-}
-
-function flattenNavEntries(entries) {
-  return entries.flatMap((entry) => entry.group ? flattenNavEntries(entry.pages) : [entry]);
-}
-
-function flattenNav(nav) {
-  return nav.flatMap((tab) => tab.groups.flatMap((group) => flattenNavEntries(group.pages)));
 }
 
 function firstPage(tab) {
@@ -972,7 +892,7 @@ function hreflangLinks(page) {
   // Nothing to cross-link if the page exists in only one locale.
   if (variants.length < 2) return "";
   const links = variants.map(
-    (variant) => `<link rel="alternate" hreflang="${escapeAttr(htmlLang(variant.locale))}" href="${escapeAttr(`${canonicalOrigin}${pageRoute(variant)}`)}">`,
+    (variant) => `<link rel="alternate" hreflang="${escapeAttr(variant.locale)}" href="${escapeAttr(`${canonicalOrigin}${pageRoute(variant)}`)}">`,
   );
   // x-default points at the English variant when available, otherwise the current page.
   const defaultPage = variants.find((variant) => variant.locale === "en") ?? page;
@@ -1012,14 +932,6 @@ function pageKey(locale, slug) {
   return `${locale}:${slug}`;
 }
 
-function fileSlug(rel) {
-  return normalizeSlug(rel.replace(/\.(md|mdx)$/, ""));
-}
-
-function normalizeSlug(value) {
-  return value.replace(/\/index$/, "") || "index";
-}
-
 function publicPath(value) {
   if (!basePath) return value;
   if (value === "/") return `${basePath}/`;
@@ -1036,38 +948,8 @@ function normalizeRepository(value) {
   return /^[^/\s]+\/[^/\s]+$/.test(repo) ? repo : "openclaw/openclaw";
 }
 
-function htmlLang(locale) {
-  return locale === "zh-CN" ? "zh-CN" : locale === "zh-TW" ? "zh-TW" : locale;
-}
-
-function firstHeading(markdown) {
-  const heading = markdown.match(/^#\s+(.+)$/m)?.[1];
-  return heading === undefined ? undefined : textFromHtml(heading).trim();
-}
-
-function titleize(value) {
-  return value.replaceAll("-", " ").replace(/\b\w/g, (m) => m.toUpperCase());
-}
-
 function stripTags(value) {
   return textFromHtml(value).replace(/\s+/g, " ").trim();
-}
-
-function textFromHtml(value) {
-  let text = "";
-  let inTag = false;
-  for (const char of String(value)) {
-    if (char === "<") {
-      inTag = true;
-      continue;
-    }
-    if (char === ">") {
-      inTag = false;
-      continue;
-    }
-    if (!inTag) text += char;
-  }
-  return text;
 }
 
 function decodeHtmlEntities(value) {

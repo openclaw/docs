@@ -164,8 +164,8 @@ to keep out of public issues.
   installation still uses one plugin for each runtime id.
 - Include `openclaw.plugin.json`. Code plugins also need `package.json` with
   `openclaw.compat.pluginApi` and `openclaw.build.openclawVersion`.
-- To show a custom plugin catalog icon on the homepage and plugin list pages,
-  add `icon` to `openclaw.plugin.json` with any HTTPS image URL.
+- To show a custom plugin catalog icon, include `assets/icon.png` at the package
+  root in the published archive. Use a valid PNG no larger than 512 KiB.
 - Include source repository and exact commit metadata, or use the CLI from a
   GitHub-backed checkout so it can detect them.
 - Run `clawhub package validate <source>` before publishing. For package,
@@ -181,6 +181,62 @@ inspection findings; it does not erase the primary error. These failures are
 distinct from plugin policy findings. Report the stage and Convex request id
 when asking maintainers to investigate; do not include credentials or package
 contents in diagnostic reports.
+
+### Plugin Icons
+
+ClawHub uses the bundled `assets/icon.png` for plugin catalog artwork. Manifest
+`icon` URLs and paths are ignored. If your npm package uses a `files` allowlist,
+include the asset there and check `npm pack --dry-run` to confirm it will ship.
+Missing or invalid artwork falls back to the plugin category glyph.
+
+Existing releases with only a manifest icon URL also use the category glyph.
+Publish a new release containing `assets/icon.png` to restore custom artwork.
+ClawHub validates and hosts the bundled PNG; an external image URL is not a
+supported substitute.
+
+Maintainers can repair existing latest releases with
+`maintenance:repairPluginIconsInternal` after deploying bundled icon support.
+The repair uses an asset already in the release, or, for official `@openclaw`
+packages owned by the active OpenClaw publisher, the asset at the release's
+recorded OpenClaw source commit. Run the default dry run for each of
+`family: "code-plugin"` and `family: "bundle-plugin"`, following each returned
+`cursor` until `isDone`. Apply from the initial cursor with `dryRun: false`, then
+repeat the dry run to verify no remaining matches. URL-only releases without a
+bundled asset cannot be restored by this repair.
+
+### Plugin Catalog Metadata
+
+Choose the single main reason someone installs the plugin. Code plugins and
+bundle plugins can declare one category in their root `openclaw.plugin.json`:
+
+```json
+{
+  "id": "example-agent-runtime",
+  "categories": ["agent-runtimes"]
+}
+```
+
+Merge the `categories` field into your existing manifest. Use a current plugin
+category slug, such as `context`, `memory`, or `developer-tools`; explicit
+declarations take priority over automatic classification. Each new release must
+declare exactly one category or omit the field.
+
+When `categories` is omitted, ClawHub generates one category from bounded package
+metadata and documentation using its configured model (default: GPT-5.6 Luna).
+It falls back to `other` when classification is unavailable. A previous release's
+category is not an author declaration and is not preserved merely by omission.
+
+The package CLI's `--categories` flag and reusable workflow's `categories` and
+`clear_categories` inputs are deprecated for plugins. They remain accepted but
+are ignored, with a warning on stderr. Move a chosen category into the manifest;
+remove the field to return to automatic classification. This also applies to
+`--categories ""`, which no longer clears plugin categories. Experimental Claw
+publishes and skill publishing retain their existing category behavior.
+
+Topics remain separate: use `--topics` or the workflow's `topics` input to set
+them, omit the input to preserve existing topics, or use `--topics ""` /
+`clear_topics: true` to clear them. See the [package CLI reference](/clawhub/cli#package-publish-source)
+and [topic rules](#skill-catalog-metadata).
 
 ### Trusted Publishing for Packages
 

@@ -5,7 +5,6 @@ import path from "node:path";
 
 const root = process.cwd();
 const sourceDir = path.join(root, "dist", "docs-site");
-const outputDir = path.join(root, "dist", "docs-r2");
 const manifestPath = path.join(root, "dist", "docs-r2-manifest.json");
 const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
 const markdownRedirects = fs.existsSync(redirectMetadataPath)
@@ -13,23 +12,23 @@ const markdownRedirects = fs.existsSync(redirectMetadataPath)
 
 if (!fs.existsSync(sourceDir)) throw new Error("dist/docs-site does not exist; run docs:build first");
 
-fs.rmSync(outputDir, { recursive: true, force: true });
-copyTree(sourceDir, outputDir);
-
+// The uploader reads entry.file directly. Keep the checked build in place
+// through upload instead of copying it into another full artifact tree.
 const entries = [];
-for (const file of walk(outputDir)) {
-  const key = toKey(path.relative(outputDir, file));
+const aliases = [];
+let physicalFiles = 0;
+for (const file of walk(sourceDir)) {
+  physicalFiles++;
+  const key = toKey(path.relative(sourceDir, file));
   if (key === "_headers") continue;
-  entries.push(entryFor(key, file, key));
+  const entry = entryFor(key, file, key);
+  entries.push(entry);
+  if (key.endsWith("/index.html")) {
+    // Aliases publish the same bytes and metadata under a second object key.
+    aliases.push({ ...entry, key: key.slice(0, -"/index.html".length) });
+  }
 }
-
-for (const file of walk(outputDir)) {
-  const rel = toKey(path.relative(outputDir, file));
-  if (rel === "_headers") continue;
-  if (!rel.endsWith("/index.html") || rel === "index.html") continue;
-  const slashlessKey = rel.slice(0, -"/index.html".length);
-  entries.push(entryFor(slashlessKey, file, rel));
-}
+entries.push(...aliases);
 
 entries.sort((a, b) => a.key.localeCompare(b.key));
 
@@ -45,28 +44,14 @@ const manifest = {
   version: 1,
   generatedAt: new Date().toISOString(),
   sourceDir: "dist/docs-site",
-  outputDir: "dist/docs-r2",
+  outputDir: "dist/docs-site",
   objectCount: entries.length,
   entries,
 };
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
-const physicalFiles = countFiles(outputDir);
 const virtualFiles = entries.length - physicalFiles;
 console.log(`r2 prepare ok: ${physicalFiles} files, ${virtualFiles} slashless html aliases, ${entries.length} objects`);
-
-function copyTree(from, to) {
-  fs.mkdirSync(to, { recursive: true });
-  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
-    const source = path.join(from, entry.name);
-    const target = path.join(to, entry.name);
-    if (entry.isDirectory()) {
-      copyTree(source, target);
-    } else if (entry.isFile()) {
-      fs.copyFileSync(source, target);
-    }
-  }
-}
 
 function entryFor(key, file, sourceKey) {
   const data = fs.readFileSync(file);
@@ -124,12 +109,6 @@ function cacheControlFor(key) {
     return "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400";
   }
   return "public, max-age=31536000, immutable";
-}
-
-function countFiles(dir) {
-  let count = 0;
-  for (const _file of walk(dir)) count += 1;
-  return count;
 }
 
 function* walk(dir) {

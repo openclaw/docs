@@ -97,7 +97,7 @@ Start agent work in the background: hook-dispatched turns for external content, 
       toolsAlsoAllow: ["my_plugin_progress"],
       promptMode: "minimal", // optional bounded subagent prompt
       provider: "openai", // optional override
-      model: "gpt-5.6-sol", // optional override
+      model: "gpt-6-astra", // optional override
       deliver: false,
       completionDelivery: "current-requester", // optional, before_dispatch hooks only
     });
@@ -143,6 +143,56 @@ Start agent work in the background: hook-dispatched turns for external content, 
 
   </Accordion>
   <Accordion title="api.runtime.tasks">
+    Prefer `api.runtime.tasks.async` for reads and managed-flow state changes. It has `runs`, `flows`, and
+    `managedFlows` namespaces with the same synchronous `bindSession(...)` and
+    `fromToolContext(...)` factories. Await `get`, `list`, `findLatest`, and
+    `resolve`; both flow namespaces also provide awaited `getTaskSummary`.
+
+    ```typescript
+    const flows = api.runtime.tasks.async.managedFlows.fromToolContext(ctx);
+    const current = await flows.get(flowId);
+    ```
+
+    The async `managedFlows` binding also provides `createManaged`,
+    `tryCreateManaged`, `setWaiting`, `resume`, `finish`, `fail`, and
+    `requestCancel`. Await creation before starting work and await each mutation
+    before reporting its result. Updates check the owner, managed mode, and
+    expected revision together inside the worker's SQLite transaction.
+
+    Results preserve the corresponding synchronous payloads and owner scope.
+    Reads query persisted SQLite records in the shared database worker, without
+    overwriting the process registry. Cold registry restoration still uses its
+    existing main-thread storage owner. Access
+    checks for bare owner keys without a persisted requester agent can also
+    require existing runtime-configuration preparation on the main thread.
+    Warmed task and flow SQL queries and these managed-flow writes run in the
+    worker. Committed writes reconcile the process flow registry before
+    publication; a failed reconciliation leaves that projection dirty without
+    changing the durable write result. A result describes its operation snapshot
+    and may be superseded by a later mutation.
+
+    The shared worker uses the canonical database opener and preserves classified
+    schema and ownership errors. Closing the shared database waits for in-flight
+    worker results and native cleanup before releasing its connection ownership.
+
+    Lists sort newest first. Equal task timestamps sort by task ID descending;
+    equal flow timestamps sort by flow ID ascending. Run-ID lookup retains its
+    runtime preference and oldest-first selection, then uses task ID ascending
+    for ties. Legacy synchronous methods
+    keep their existing insertion-order tie behavior.
+
+    The synchronous read methods and corresponding managed-flow state mutations
+    remain supported but are deprecated in
+    favor of this opt-in surface. Their removal requires a supported external
+    plugin migration and an explicitly approved Plugin SDK major release.
+    Native cancellation and child-task linkage continue through the existing
+    namespaces. An awaited read does not authorize a later write: retain revision checks and the
+    synchronous final backing-task read/link sequence described below.
+    A worker error with code `outcome-unknown` can follow a committed write.
+    The code may appear directly, in a cause, or in `AggregateError.errors` when
+    cleanup also fails. Both creation methods propagate these errors; reread
+    current state before deciding whether to retry that operation.
+
     Bind Task Flow and Task Run state to a trusted, existing OpenClaw owner session.
 
     - `managedFlows` creates and mutates managed flow records. Bind with `fromToolContext(ctx)` or `bindSession({ sessionKey, requesterOrigin })` using host-resolved context, never raw user input.
@@ -181,8 +231,9 @@ Start agent work in the background: hook-dispatched turns for external content, 
 
     **State without a child**
 
-    For inline work, use `createManaged`, then checked `setWaiting`, `resume`,
-    `finish` or `fail` transitions as appropriate; no `runTask` is needed.
+    For inline work, await `createManaged` on the async managed-flow binding,
+    then await and check `setWaiting`, `resume`, `finish` or `fail` transitions
+    as appropriate; no `runTask` is needed.
     Keep `stateJson` and `waitJson` bounded. Waiting metadata records the reason
     and correlation, but the controller must register the real event listener.
 

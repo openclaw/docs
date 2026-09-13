@@ -34,9 +34,11 @@ stale-data warning. Choose **Retry** to load the list again.
 
 The dashboard and its server-side thread preference follow you when you connect
 to the same Gateway from another device. The active dashboard tab and task
-layout remain per-device UI state. Ordinary task revisits restore the browser's
-saved arrangement for that task; opening a gallery card explicitly focuses the
-dashboard.
+layout remain per-device UI state. The browser retains layout and tab preferences
+for up to 500 sessions, keeping the most recently changed entries when it reaches
+that limit. Ordinary task revisits restore the browser's saved arrangement for
+that task; opening a gallery card explicitly focuses the dashboard. Increasing
+the limit does not recover preferences already evicted by an older version.
 
 The browser keeps the three most recently visited tasks in each pane loaded,
 including their dashboard widgets, while you switch tasks or visit Settings.
@@ -56,6 +58,16 @@ Terminal, Files, and Review use the same layout controls:
 - **Layout** in the task toolbar moves the side panel left, right, or below the
   main area. Drag the divider to resize it. Narrow panes use a bottom panel
   until there is room for a side-by-side layout again.
+- Click the **Dashboard** side-panel tab to expand the dashboard to the full
+  task area in one step, even when another tab is selected. Click it again to
+  restore the split. Arrow-key tab navigation only selects the tab; Enter or
+  Space expands or restores Dashboard. Other tabs keep their normal selection
+  behavior.
+- **Expand** beside the side panel’s close **×** expands its active tab. The
+  same control becomes **Restore split** and stays beside **×** while expanded.
+  Restoring returns the original main view, panel placement, and size without
+  swapping chat and dashboard. Closing the expanded panel returns to the main
+  view instead.
 - **Focus** in the task toolbar gives the main view the full task area.
   **Restore split** brings back the side panel with its previous placement and
   size.
@@ -124,7 +136,9 @@ never needs the agent.
 - **Dashboard view.** The board can occupy the main area or a resizable side
   panel. With Dashboard active in the side panel, choose **Swap** in the task
   toolbar, then **Focus** for a dashboard-only view. **Restore split** brings
-  the side panel back.
+  the side panel back. A tab with one full-width widget fills the focused
+  dashboard edge to edge, without a card border or surrounding padding.
+  Restoring the split or adding another widget brings back the normal spacing.
 - **Agent parity.** The agent's `dashboard` tool creates or updates trusted
   plugin widgets, moves, resizes, and removes widgets, manages tabs, switches
   the visible tab, and requests a split or expanded dashboard with
@@ -145,10 +159,54 @@ never needs the agent.
   the dashboard main and focuses it; `"split"` reveals it using the current
   arrangement, bringing chat alongside when Dashboard is main.
 
+## Show a website fullscreen
+
+Ask your agent:
+
+> Put <https://status.example.com> on this dashboard, expand it to fill the task,
+> and pin this session in the sidebar as Status.
+
+The built-in **Website** widget loads the live site directly in your browser.
+It needs no plugin, relay server, or copied website code. A single full-width
+website fills the expanded dashboard; adding other widgets restores the normal
+grid. The website controls its own refreshes and navigation.
+
+The agent creates it with the existing `dashboard` tool:
+
+```json
+{
+  "action": "widget_put",
+  "name": "status",
+  "title": "Status",
+  "pluginKind": "session:website",
+  "props": { "url": "https://status.example.com" },
+  "size": "full"
+}
+```
+
+It then calls `dashboard` with `action: "set_presentation"` and
+`presentation: "expanded"`. Session naming and pinning use the existing
+`sessions` tool. Reuse the widget name to change its URL. The URL and layout
+persist with the board; expanded presentation follows the existing per-device
+task layout preference. Website widgets do not load in gallery thumbnails.
+
+URLs must use HTTPS, contain no username or password, and fit within 2048
+characters. The renderer refuses the Control UI and connected Gateway hostnames,
+including URLs using another port on those hosts.
+The frame supports the website's scripts, forms, storage, and links, but receives
+no injected Gateway tokens, widget tool bridge, or permission to navigate the parent
+app. It follows the website's own authentication and your browser's cookie policy.
+
+Some websites refuse embedding, and some sign-in flows require a separate tab.
+Use **Open website** if the frame stays blank or cannot sign in. OpenClaw does
+not proxy the site or remove its embedding restrictions. This widget is separate
+from custom HTML widgets and does not loosen their sandbox or network grants.
+
 ## What widgets are allowed to do
 
-A widget that only renders needs no approval — it appears instantly, exactly
-like inline chat widgets, and its network access is fully disabled.
+Custom HTML and registered-source widgets that only render need no approval —
+they appear instantly, exactly like inline chat widgets, and their network access
+is fully disabled.
 
 Widgets that want **reach** must declare it. An explicit [session permission mode](/gateway/permission-modes)
 decides what happens: **Full access** grants immediately; **Workspace** uses an

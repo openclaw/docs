@@ -24,6 +24,8 @@ The workflow installs OCM from a pinned release and Kova from `openclaw/Kova` at
 - `mock-deep-profile`: CPU/heap/trace profiling for startup, gateway, and agent-turn hotspots. Runs on schedule, or on dispatch with `deep_profile=true`.
 - `live-openai-candidate`: a real OpenAI `openai/gpt-5.6-luna` agent turn. Selected on schedule, or on dispatch with `live_openai_candidate=true`. Candidates ineligible for live credentials are skipped. For a selected, eligible lane, missing `OPENAI_API_KEY` fails the lane rather than skipping it.
 
+Before tolerating a partial Kova verdict, the report gate requires aggregate RSS and CPU samples to match the individual records, including repeated measurements. A missing or substituted sample keeps the gate nonzero even when the sample count matches.
+
 OpenClaw-native source probes run in the separate `source_performance` job, in parallel with the Kova lanes after `resolve_target`: gateway boot timing and memory across default, skipped-channel, internal-hook, and fifty-plugin startup cases; bundled plugin import RSS, repeated mock-OpenAI `channel-chat-baseline` hello loops, CLI startup commands against the booted gateway, and the SQLite state smoke performance probe. When the previous published mock-provider source report is available for the tested ref, the source summary compares current RSS and heap values against that baseline and marks large RSS increases as `watch`. The publisher includes these source artifacts in the `mock-provider` report bundle, with the Markdown summary at `source/index.md` and raw JSON beside it.
 
 Every lane uploads its complete GitHub artifact, including CPU, heap, trace, and compressed diagnostic bundles. A separate publisher job downloads and validates those artifacts, then mints a short-lived ClawSweeper GitHub App token scoped only to `openclaw/clawgrit-reports` contents and passes it only to the Git push step. It commits `report.json`, `report.md`, `index.md`, source-probe artifacts, and bundle metadata/checksums under `openclaw-performance/<tested-ref>/<run-id>-<attempt>/<lane>/`; the full diagnostic archive stays in the linked Actions artifact. The publisher rejects any report file over 50 MB before attempting a push. The current tested-ref pointer is `openclaw-performance/<tested-ref>/latest-<lane>.json`. Scheduled runs and `profile=release` dispatches fail if app-token creation or report publication fails. Manual non-release dispatches keep publication advisory and retain the GitHub artifacts when authentication or publishing fails. The previous source baseline is fetched anonymously from the public reports repository, so a successful baseline fetch does not prove publisher authentication.
@@ -121,7 +123,7 @@ QA Lab has dedicated CI lanes outside the main smart-scoped workflow. Agentic pa
 - The `QA-Lab - All Lanes` workflow runs nightly on `main` and on manual dispatch; it fans out mock parity plus live Matrix, Telegram, Discord, WhatsApp, and Slack jobs. Live jobs use the `qa-live-shared` environment; Telegram, Discord, WhatsApp, and Slack use Convex leases, while Matrix provisions disposable local credentials.
 - Manual and scheduled aggregate runs retain the default `all` concurrency scope. Trusted release calls use separate `matrix` and `buzz` scopes so those lanes can run together for one target SHA; Matrix calls for the same SHA still serialize, while Buzz calls serialize across SHAs because they share pooled credentials.
 - Release Matrix catalog validation runs on a 16-vCPU Blacksmith runner with a 90-minute job budget. Changes to that timeout, runner size, or concurrency require a matching workflow guard and exact-candidate release proof.
-- `QA Profile Evidence` balances taxonomy category groups across eight isolated jobs, keeps non-isolating live channels on one shard, then asks QA Lab to merge their validated evidence into one attested `qa-evidence.json`. A timed-out or missing shard always fails aggregation; `allow_failures` applies only when every shard completed and produced valid evidence. Direct `Maturity scorecard` dispatches default `allow_failures` on so routine docs refreshes can publish accurate incomplete coverage, while reusable release calls remain strict by default.
+- `QA Profile Evidence` balances taxonomy category groups across eight isolated jobs, keeps non-isolating live channels on one shard, then asks QA Lab to merge their validated evidence into one attested `qa-evidence.json`. A timed-out or missing shard always fails aggregation; `allow_failures` applies only when every shard completed and produced valid evidence. Direct `Maturity scorecard` dispatches default `allow_failures` on so incomplete evidence can still render a diagnostic docs artifact. A terminal result gate runs after optional generated-PR publication and fails the run when any scenario failed or remained blocked; reusable release calls remain strict by default.
 
 Scheduled, manual, and release Matrix checks use the deterministic mock provider so the live transport contract is isolated from model latency and normal provider-plugin startup. Telegram release checks use the same deterministic model boundary. The live transport gateway disables memory search because QA parity covers memory behavior separately; provider connectivity is covered by the separate live model, native provider, and Docker provider suites.
 
@@ -149,7 +151,7 @@ The pull request guard stays light: it only starts for changes under `.github/ac
 ### Platform-specific security shards
 
 - `CodeQL Android Critical Security` — scheduled Android security shard. Builds the Android app manually for CodeQL on the smallest Blacksmith Linux runner accepted by workflow sanity. Uploads under `/codeql-critical-security/android`.
-- `CodeQL macOS Critical Security` — weekly/manual macOS security shard. Builds the macOS app manually for CodeQL on Blacksmith macOS, filters dependency build results out of uploaded SARIF, and uploads under `/codeql-critical-security/macos`. Kept outside daily defaults because macOS build dominates runtime even when clean.
+- `CodeQL macOS Critical Security` — weekly/manual macOS security shard. Prepares the generated Mermaid resources on GitHub-hosted Linux, then builds the ARM64 macOS app manually for CodeQL on a GitHub-hosted Intel runner without unused index-store or debug-info artifacts; filters dependency build results out of uploaded SARIF; and uploads under `/codeql-critical-security/macos`. Its macOS job has a 90-minute ceiling because the complete traced build and analysis exceed the previous 45-minute budget. Kept outside daily defaults because macOS build dominates runtime even when clean.
 
 ### Critical Quality categories
 
@@ -207,8 +209,13 @@ Both ordinary CI and this strict audit publish the outcome, package count,
 duration, timestamp, and bounded failure reason in the job summary. A completed
 npm check covers npm bulk advisories only, not every upstream advisory source.
 
-The triage owner is **@steipete**. Investigate failed scheduled runs and rerun
-the strict workflow to confirm recovery:
+The triage owner is **@steipete**, set on 2026-09-03 in
+[#137960](https://github.com/openclaw/openclaw/pull/137960). No `.github/CODEOWNERS`
+rule covers `.github/workflows/dependency-audit.yml`, so this line is the only
+record of that ownership. Review routing for a fix follows the lockfile owner
+`@openclaw/openclaw-secops`, which owns `/pnpm-lock.yaml` and `/package-lock.json`.
+Investigate failed scheduled runs and rerun the strict workflow to confirm
+recovery:
 
 ```bash
 gh workflow run dependency-audit.yml --repo openclaw/openclaw --ref main
@@ -224,6 +231,25 @@ For local reproduction, run
 selects a shorter 30-second diagnostic budget but preserves exit codes: 0 means
 no matching findings, 1 means findings or an error, and 2 means incomplete coverage.
 Ordinary CI, scheduled audits, and local hooks propagate every non-zero exit.
+
+### Docs Sync Publish Repo
+
+`Docs Sync Publish Repo` assembles English, ClawHub, and preserved translated
+pages in `openclaw/docs`. After each final rebase and before pushing, it installs
+the publisher's existing npm lock with `npm ci` and checks the resulting docs
+tree. Push retries reuse that install unless the publisher manifest or lock
+changes. The checker runs natively on Node 24; no separate checker dependency
+graph or TypeScript loader is installed.
+
+The disposable Actions validation cache records successful page checks by
+repository-relative path and complete raw content hash. Checker and helper
+changes, Node/runtime changes, or requested/installed npm lock changes invalidate
+reuse. Missing or corrupt cache data triggers full checking; deleted pages are
+pruned from the next successful cache. `docs.json` is checked every time, including
+on warm runs. Only successful main-branch workflows save the artifact, outside
+the publish repository. The checker preserves its Markdown/MDX format detection,
+poison-text checks, and component-indentation checks; it does not replace the
+site renderer or cross-page link validation.
 
 ### Docs Agent
 
@@ -257,6 +283,8 @@ for the weekly burst separately from PR and main admission.
 ## ClawSweeper activity forwarding
 
 `.github/workflows/clawsweeper-dispatch.yml` is the target-side bridge from OpenClaw repository activity into ClawSweeper. It does not check out or execute untrusted pull request code. The workflow creates a GitHub App token from `CLAWSWEEPER_APP_PRIVATE_KEY`, then dispatches compact `repository_dispatch` payloads to `openclaw/clawsweeper`.
+
+Dispatch API calls retry rate-limit failures for up to five attempts with quadratic backoff. Other API errors stop immediately, and exhausted retries preserve the final API exit code. Dispatch callers warn and continue on failure rather than reporting a successful dispatch.
 
 The workflow has three lanes:
 

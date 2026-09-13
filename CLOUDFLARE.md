@@ -28,6 +28,11 @@ The repo-side pieces are in place:
 
 `r2-upload.mjs` downloads `.openclaw-docs-r2-manifest.json` from R2, compares hashes and metadata, uploads only changed objects through the R2 S3 API, and then writes the new manifest back. The first upload seeds everything; later uploads should be small.
 
+Manifest files refer directly to the checked `dist/docs-site` tree; preparation
+does not make a second `dist/docs-r2` copy. Keep that tree unchanged until upload
+finishes. Slashless aliases reuse their physical file's hashes and HTTP metadata;
+remote object comparison and deletion accounting are unchanged.
+
 ## Current Production State
 
 Production is cut over to R2-backed storage with a small Worker router in front:
@@ -98,7 +103,48 @@ The global `r2-pages` queue serializes admission, build, and publication. After 
 
 After successful R2 publication (or a Worker-only deployment), the same head/successor helper checks main again and dispatches a full successor for artifact-relevant drift with no verified run. This catches changes whose push did not trigger R2, including `GITHUB_TOKEN` and skip-ci pushes during the build. API lookup failure biases to dispatch; dispatch failure fails the job without undoing publication. Catch-up also runs if live-smoke scheduling failed after publication. It never changes the admission verdict or gates the completed upload. This ordering applies to the automatic R2 queue without relying on FIFO ordering; manual Pages router deployment remains operator-owned outside that queue.
 
-Production router deploy:
+### Incremental article rendering
+
+R2 upload already skips unchanged objects; the builder also reuses unchanged
+rendered articles from `.cache/docs-render`. The deployment restores this cache
+before building and saves it after publication and live-smoke scheduling. A cold
+or evicted cache still builds the complete site normally.
+
+Cache identity includes the raw page, its source-relative path and route, the
+renderer/parser source, locked dependencies, and Node version/platform. It does
+not include the source commit, so a one-page edit does not invalidate all locales.
+Pages containing `<Snippet` always render afresh, including nested or newly
+available snippet dependencies. Removed pages' entries are pruned.
+
+Only article HTML is cached by this cache. Navigation, locale-aware links, page chrome, edit
+links, redirects, Markdown exports, and search indexes are rebuilt from
+the current snapshot. Deletions and publication ordering are unchanged. Logs
+report article hits, misses, and snippet bypasses. For an uncached comparison,
+run `DOCS_SITE_RENDER_CACHE=0 npm run docs:build:r2`; preview builds bypass the
+cache automatically. This optimization does not remove the upstream source-sync
+queue or full MDX validation, and the first deployment must populate the cache.
+
+### Preview image reuse
+
+Per-page social-preview PNGs use the separate `.cache/docs-og` cache. A hit needs
+the same generated SVG (title, summary and navigation label), renderer/options,
+font bytes, locked dependencies and Node/platform identity. Missing or damaged
+entries render again; only images selected by the current page/navigation snapshot
+are written to the output, and unselected cache entries are pruned. Preview mode
+still skips per-page OG generation.
+
+The deployment restores images before building and saves them after publication.
+Logs distinguish reused images from actual renders. `DOCS_SITE_RENDER_CACHE=0`
+also bypasses this cache, without creating or pruning it. The renderer uses the
+locked `@resvg/resvg-js` package with embedded fonts, not `rsvg-convert`, so the
+workflow does not install `librsvg2-bin`.
+
+Pagefind still builds a complete current index. Its immutable-file reuse is not
+enabled here: retaining an old output directory without an exact current-file
+inventory would also retain obsolete search fragments. Publication order, search
+coverage and old-object deletion remain unchanged.
+
+### Router deployment
 
 1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
@@ -150,6 +196,14 @@ The Worker reads alias metadata directly on every Markdown object miss, even whe
 
 Rollout requires **both the rebuilt R2 artifact and the matching Worker**: publish a full artifact with canonical Markdown objects and redirect metadata, then deploy the Worker. The R2 workflow uploads before its Worker deployment; the manual Pages workflow can deploy the Worker separately. Deploying the Worker alone cannot repair aliases without metadata. Source retirement also requires removal of the old real Markdown object; its normal cache lifetime still applies. Missing metadata preserves the earlier explicit miss or negotiated HTML fallback during rollout. After deployment, verify explicit and negotiated GET/HEAD without following redirects: require `200`, Markdown MIME, `Vary: Accept`, no `Location`, exact canonical GET bytes and an empty HEAD body. Verify HTML queries and anchors independently, and check a metadata target change after prior HTML and Markdown requests. Building and testing locally does not publish or deploy either part.
 
+## MCP Search
+
+`POST /mcp` serves the legacy JSON-RPC documentation search tool. A request can
+contain one object or a batch of at most 32 items. Larger batches return HTTP 200
+with JSON-RPC error `-32600` (`Batch too large`) before any item is handled or the
+search index is read. Split larger requests into batches of at most 32. The
+single-object request format and existing notification behavior are unchanged.
+
 ## Cache Policy
 
 `r2-prepare.mjs` assigns per-object `Cache-Control`:
@@ -191,7 +245,7 @@ After router deploy, verify repeated HTML requests remain `X-OpenClaw-Docs-Cache
    source ~/.profile
    CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
    CLOUDFLARE_API_TOKEN="$OPENCLAW_CLOUDFLARE_API_TOKEN" \
-   npx wrangler@4.129.0 r2 bucket list
+   npx wrangler@4.130.0 r2 bucket list
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
@@ -262,7 +316,7 @@ If R2 cutover misbehaves:
 
    ```sh
    source ~/.profile
-   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" npx wrangler@4.129.0 deploy --config wrangler.toml
+   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" npx wrangler@4.130.0 deploy --config wrangler.toml
    ```
 
 3. Purge Cloudflare cache.

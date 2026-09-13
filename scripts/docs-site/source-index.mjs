@@ -2,6 +2,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { finished } from "node:stream/promises";
 
 const root = process.cwd();
 const outDir = path.join(root, "dist", "docs-site");
@@ -127,7 +128,9 @@ for (const rel of files) {
   recordCount += 1;
 }
 
-await new Promise((resolve) => output.end(resolve));
+const completion = finished(output, { cleanup: true });
+output.end();
+await completion;
 
 const meta = {
   repository: sourceMeta.repository ?? "openclaw/openclaw",
@@ -210,13 +213,6 @@ function rawUrlFor(repoUrl, sha, rel) {
   const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)$/);
   if (!match) return "";
   return `https://raw.githubusercontent.com/${match[1]}/${match[2]}/${sha}/${encodeURI(rel)}`;
-}
-
-function languageForPath(rel) {
-  const ext = path.extname(rel).replace(/^\./, "");
-  if (ext) return ext;
-  if (path.basename(rel) === "Dockerfile") return "dockerfile";
-  return "text";
 }
 
 function readJson(file) {

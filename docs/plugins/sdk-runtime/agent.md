@@ -40,6 +40,24 @@ compaction with session-store patches and harness calls. The result contains
 `compacted`, optional `reason`, and optional `tokensBefore` and `tokensAfter`
 snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
+## Auth-profile resolution
+
+The experimental `openclaw/plugin-sdk/agent-runtime` entrypoint exports
+`resolveApiKeyForProfile(...)`. Its optional synchronous
+`validateOAuthCredential` callback runs for every OAuth candidate before the
+credential is used, adopted, persisted, or returned, including a legacy
+`provider:default` fallback. Return normally to accept the credential; throw to
+reject it.
+
+Stored credentials are validated before refresh, and refreshed credentials are
+validated before persistence. If fallback is allowed and every permitted
+candidate is rejected, resolution preserves the original selected-profile
+refresh failure. Rejection during active refresh settlement can terminally
+fence that credential generation and require reauthentication. Omitting the
+callback preserves existing behavior. Set `allowProfileFallback: false` when
+the selected profile represents an account boundary that must not rotate to a
+different configured profile.
+
 ## Agent and session namespaces
 
 <AccordionGroup>
@@ -182,6 +200,8 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
     A harness that supports `sessions_yield` uses `appendSessionYieldContext(...)` after successful yield settlement to retain private resume context in the canonical session transcript. Pass the session target, `message`, and an `assertCurrent` callback that checks the current run and settlement authority. The writer checks that callback again before appending the hidden context entry. Failed or revoked settlement must not append context; public tool results and display projections must omit the private message.
 
+Read-only native session catalogs use `readSessionTranscriptCatalogPage({ agentId, sessionKey, storePath?, limit, cursor, sourceDomain, pluginId })` from the same subpath. It returns `{ items, nextCursor? }` in newest-first catalog order; the optional opaque cursor continues toward older items and malformed cursors are rejected. The reader resolves the configured session store when `storePath` is omitted and binds the cursor to the selected store and session. Text uses the local chat display projection, redacts credential patterns, and is bounded per item with `truncated` set when clipped. Raw page reads are bounded to 8 MiB; an oversized entry returns an explicit error. Cold history requires restoration by the source Gateway; the catalog reader never opens a writer to restore it. User sender attribution is portable: source-local profiles become remote identities in the caller's plugin/domain namespace, using a verified numeric GitHub account ID when available and a source profile ID otherwise. Existing remote and observed identities remain portable. The caller must authorize each session read separately; a cursor or identity claim never grants access. [Session Share](/plugins/session-share) uses this reader for its paired-node publication.
+
     A harness host may provide `hostCapabilities.prepareContextMedia({ message, maxChars })` to reconstruct retained document text and images from canonical user media. The host captures the current run's config, workspace, channel, account, and authority; preparation rechecks that authority across asynchronous work. `maxChars` must be finite and limits extraction for each file. Fit all returned text, attachment notes, and images into the native context budget, and deliver image bytes through the native input path. Preparation reuses ordinary local-root, URL, MIME, byte, page, and image limits without rewriting transcript rows or echoing channel media. An older host without this optional capability may still project ordinary text history, but attachment restoration must fail explicitly rather than silently omit the saved input.
 
     For an exact existing session, use `appendSessionTranscriptMessageByIdentityStrict(...)` for one message or `appendSessionTranscriptMessagesByIdentity(...)` for an atomic ordered batch. Both accept optional `storePath`: when omitted, the shared turn owner resolves it from the supplied `config` (or current runtime snapshot), session agent, and `env`; an explicit concrete path overrides `session.store`, while incognito keys retain their in-memory routing. Strict single append returns `kind: "result"`, `kind: "suppressed"` when message preparation declines the append, or `{ kind: "rejected", reason: "session-rebound" }` when the expected session no longer matches. A batch rejects if its session changed and inserts or idempotently replays the whole group, never a partial group.
@@ -201,7 +221,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     Default model and provider constants:
 
     ```typescript
-    const model = api.runtime.agent.defaults.model; // e.g. "gpt-5.6-sol"
+    const model = api.runtime.agent.defaults.model; // e.g. "gpt-6-astra"
     const provider = api.runtime.agent.defaults.provider; // e.g. "openai"
     ```
 

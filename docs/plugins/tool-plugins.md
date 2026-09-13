@@ -429,9 +429,10 @@ openclaw plugins install npm-pack:./openclaw-plugin-stock-quotes-0.1.0.tgz
 openclaw plugins inspect stock-quotes --runtime --json
 ```
 
-After installing, restart or reload the Gateway and ask the agent to use the
-tool. If the tool is not visible, inspect the plugin runtime and the effective
+Installation applies to a running local Gateway automatically; start the Gateway
+if it was stopped. Ask the agent to use the tool. If the tool is not visible, inspect the plugin runtime and the effective
 tool catalog before changing code (see [Troubleshooting](#troubleshooting)).
+After later source or manifest edits, use [plugin Reload](/cli/plugins#reload).
 
 ## Publish
 
@@ -450,9 +451,8 @@ Install with an explicit ClawHub locator:
 openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
-Bare npm package specs still install from npm during the launch cutover, but
-ClawHub is the preferred discovery and distribution surface for OpenClaw
-plugins. See [ClawHub publishing](/clawhub/publishing) for owner scope and
+Bare npm package specs install from npm, but ClawHub is the preferred
+discovery and distribution surface for OpenClaw plugins. See [ClawHub publishing](/clawhub/publishing) for owner scope and
 release review.
 
 ## Troubleshooting
@@ -499,11 +499,12 @@ Check these in order:
 2. `openclaw plugins validate --root <plugin-root> --entry ./dist/index.js`
 3. `openclaw.plugin.json` has `contracts.tools` with the expected tool names.
 4. `package.json` has `openclaw.extensions: ["./dist/index.js"]`.
-5. The Gateway was restarted or reloaded after installing the plugin.
+5. Installation reported successful runtime application; after source edits or a repaired activation failure, run `openclaw plugins reload <plugin-id>`.
 
 ## See also
 
 - [Building plugins](/plugins/building-plugins)
+- [Plugin SDK overview](/plugins/sdk-overview)
 - [Plugin entry points](/plugins/sdk-entrypoints)
 - [Plugin SDK subpaths](/plugins/sdk-subpaths)
 - [Plugin manifest](/plugins/manifest)
