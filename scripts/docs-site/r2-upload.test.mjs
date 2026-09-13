@@ -407,3 +407,45 @@ globalThis.fetch = async (input, init) => {
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /r2 remote manifest: missing from r2 \(0 entries\)/);
 });
+
+for (const failImage of [false, true]) {
+  test(`R2 publishes image prerequisites before HTML (image failure: ${failImage})`, (t) => {
+    const root = fetchUploadRoot(t);
+    const local = JSON.parse(fs.readFileSync(path.join(root, "dist/local.json"), "utf8")).entries;
+    const bytes = Buffer.from("synthetic image");
+    write(root, "files/image.png", bytes);
+    local.push({
+      key: "og/page.png", sourceKey: "og/page.png", file: "files/image.png", size: bytes.length,
+      contentType: "image/png", cacheControl: "public, max-age=31536000, immutable",
+      sha256: crypto.createHash("sha256").update(bytes).digest("hex"),
+      md5: crypto.createHash("md5").update(bytes).digest("hex"),
+    });
+    write(root, "dist/local.json", JSON.stringify(manifest(local)));
+    write(root, "dist/remote.json", JSON.stringify(manifest([])));
+    write(root, "image-order.mjs", `
+import assert from "node:assert/strict";
+import fs from "node:fs";
+let imageReady = false;
+const calls = [];
+globalThis.fetch = async (input, init) => {
+  const url = new URL(input);
+  assert.equal(url.origin, "https://synthetic-r2.invalid");
+  assert.equal(init.method, "PUT");
+  const key = decodeURIComponent(url.pathname.slice("/synthetic-bucket/".length));
+  calls.push(key);
+  fs.writeFileSync("image-order.json", JSON.stringify(calls));
+  if (key === "og/page.png") {
+    if (${failImage}) return new Response("synthetic failure", { status: 503 });
+    imageReady = true;
+  } else {
+    assert.ok(imageReady, "HTML and the catalog must wait for their image");
+  }
+  return new Response(null, { status: 200 });
+};
+`);
+    const result = run(root, "r2-upload.mjs", syntheticR2, [path.join(root, "image-order.mjs")]);
+    assert.equal(result.status, failImage ? 1 : 0, result.stderr);
+    const calls = JSON.parse(fs.readFileSync(path.join(root, "image-order.json"), "utf8"));
+    assert.deepEqual(calls, failImage ? ["og/page.png"] : ["og/page.png", "page", ".openclaw-docs-r2-manifest.json"]);
+  });
+}

@@ -450,17 +450,22 @@ async function listBucketKeys() {
 }
 
 async function uploadEntries(entries) {
-  let next = 0;
+  const isHtml = (entry) => String(entry.contentType ?? "").split(";")[0].trim().toLowerCase() === "text/html";
+  // Publish prerequisites before HTML exposes their new versioned URLs.
+  const phases = [entries.filter((entry) => !isHtml(entry)), entries.filter(isHtml)];
   let done = 0;
-  const workers = Array.from({ length: Math.min(concurrency, entries.length) }, async () => {
-    while (next < entries.length) {
-      const entry = entries[next++];
-      await putObject(entry);
-      done++;
-      if (done % 500 === 0 || done === entries.length) console.log(`r2 upload progress: ${done}/${entries.length}`);
-    }
-  });
-  await Promise.all(workers);
+  for (const phase of phases) {
+    let next = 0;
+    const workers = Array.from({ length: Math.min(concurrency, phase.length) }, async () => {
+      while (next < phase.length) {
+        const entry = phase[next++];
+        await putObject(entry);
+        done++;
+        if (done % 500 === 0 || done === entries.length) console.log(`r2 upload progress: ${done}/${entries.length}`);
+      }
+    });
+    await Promise.all(workers);
+  }
 }
 
 async function deleteEntries(entries) {

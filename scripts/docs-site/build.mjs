@@ -47,10 +47,8 @@ const defaultShellAssetVersion = createHash("sha256")
   .digest("hex")
   .slice(0, 12);
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
-const ogAssetVersion = createHash("sha256")
-  .update(fs.readFileSync(new URL("./og-card-template.mjs", import.meta.url)))
-  .update("\0")
-  .update(fs.readFileSync(new URL("./og-card.svg", import.meta.url)))
+const defaultOgVersion = createHash("sha256")
+  .update(fs.readFileSync(path.join(siteAssetsDir, "og-card.png")))
   .digest("hex")
   .slice(0, 12);
 const { values: { page: requestedPages } } = parseArgs({
@@ -102,7 +100,7 @@ fs.rmSync(redirectMetadataPath, { force: true });
 fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
 copyPublicFiles();
-const renderedPageOgCards = previewMode ? new Set() : await renderPageOgCards({
+const pageOgVersions = previewMode ? new Map() : await renderPageOgCards({
   pages, enNav: navByLocale.get("en") ?? [], outDir,
   cacheDir: path.join(root, ".cache", "docs-og"), siteName: config.name,
 });
@@ -295,10 +293,11 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const description = page.summary || config.description || "";
   const ogTitle = page.slug === "index" ? `${config.name} Docs` : `${page.title} · ${config.name}`;
   const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
-  const pageOgPath = page.locale === "en" && renderedPageOgCards.has(page.slug)
+  const pageOgVersion = page.locale === "en" ? pageOgVersions.get(page.slug) : undefined;
+  const pageOgPath = pageOgVersion
     ? `/og/${page.slug}.png`
     : ogImagePath;
-  const ogImageUrl = `${canonicalOrigin ? `${canonicalOrigin}${pageOgPath}` : publicPath(pageOgPath)}?v=${ogAssetVersion}`;
+  const ogImageUrl = `${canonicalOrigin ? `${canonicalOrigin}${pageOgPath}` : publicPath(pageOgPath)}?v=${pageOgVersion ?? defaultOgVersion}`;
   return `<!doctype html>
 <html lang="${lang}" dir="${dir}">
 <head>
