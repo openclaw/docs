@@ -202,6 +202,12 @@ shares the agent database's in-process write admission with session writers and
 off-thread reclamation, leaving the Gateway thread available to authorize a
 reclamation commit.
 
+Asynchronous AgentSession message, model, compaction, and tree operations use
+this admission for their transcript writes. Model-selection hooks run after
+write admission releases. Synchronous SessionManager and extension APIs,
+including `setThinkingLevel`, retain their existing synchronous contracts and
+still need an appropriate caller-owned write boundary.
+
 The signature is `withOpenClawAgentDatabaseWrite(options, operation, expectedDatabase?)`.
 `options` uses the existing agent database options, including the required
 `agentId` and optional concrete `path`. The synchronous `operation` receives the
