@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { docsNotFoundHtml } from "../../workers/not-found.ts";
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -12,7 +13,7 @@ import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
 const docsDir = path.join(root, "docs");
-const workerSource = fs.readFileSync(path.join(root, "workers", "docs-router.ts"), "utf8");
+const workerNotFoundHtml = docsNotFoundHtml("/missing-page");
 const sourceMetadata = readSourceMetadata(root);
 const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
@@ -52,12 +53,12 @@ if (!shellOnly) {
     "docs-search.json",
   );
 }
-if (!/--oc-bg-page: #101012/.test(workerSource)
-  || !/@media \(prefers-color-scheme: light\)/.test(workerSource)
-  || !/background: var\(--oc-bg-page\)/.test(workerSource)
-  || !/border-radius: var\(--oc-radius-surface\)/.test(workerSource)
-  || !/background var\(--oc-duration-fast\) var\(--oc-ease-out\)/.test(workerSource)
-  || /<link[^>]+stylesheet/.test(workerSource)) {
+if (!/--oc-bg-page: #101012/.test(workerNotFoundHtml)
+  || !/@media \(prefers-color-scheme: light\)/.test(workerNotFoundHtml)
+  || !/background: var\(--oc-bg-page\)/.test(workerNotFoundHtml)
+  || !/border-radius: var\(--oc-radius-surface\)/.test(workerNotFoundHtml)
+  || !/background var\(--oc-duration-fast\) var\(--oc-ease-out\)/.test(workerNotFoundHtml)
+  || /<link[^>]+stylesheet/.test(workerNotFoundHtml)) {
   throw new Error("worker 404: shared token foundation or self-contained rendering is missing");
 }
 const poison = [
