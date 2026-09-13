@@ -104,6 +104,13 @@ admission or loading the delivery runtime. A recovery root applies to an existin
 queue entry, while fresh sends use their selected default root. This context stays
 internal and is not added to durable payloads or plugin callback inputs.
 
+Conversation sends, turns, and queue completion retain their logical agent and
+physical store while waiting for agent write admission. Retry validation reads
+existing operations without recreating them; the queue owner records custody
+before transport I/O and reconciles accepted outcomes on that same store. New
+conversation bindings reread source policy from the original store after route
+preparation and retain the destination owner through the final authority check.
+
 Board operations, board inventory reads, and widget document reads expose asynchronous
 contracts. Gateway callers await persistence before publishing board changes or replies.
 Writes carry the caller's current-authority assertion into the synchronous SQLite
