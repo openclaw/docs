@@ -81,6 +81,8 @@ Each group contains the agent's pinned and recent sessions, with the usual sessi
 
 Groups share a window of at most 300 sessions across agents with [Agents home](/web/control-ui#agents-home), loading pinned sessions first and then the most recent sessions. Pinned sessions count toward that limit, so more than 300 pinned sessions cannot all appear in this view. The open conversation can remain visible outside this window. **Involving me** loads the same bounded window filtered by the Gateway; the other filters apply to the loaded sessions across groups.
 
+Activity refreshes pause while the browser tab is hidden and catch up when you return. Changes that arrive during a roster read share one follow-up refresh; switching filters never combines pages from different filters.
+
 The **Online** list opens a person's activity card with their reported device,
 platform, and connection type: **Web**, **App**, **Terminal** for the TUI, or
 **Command line**. Renaming a device does not change its connection type. Duplicate
