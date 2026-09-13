@@ -7178,6 +7178,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /nodes/computer-use
 - Headings:
   - H2: Requirements
+  - H2: Gateway desktop
+  - H3: Linux Gateway live proof
   - H2: The computer agent tool
   - H2: CUA Driver provider
   - H3: macOS app-owned daemon
@@ -7191,6 +7193,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Authorization
   - H2: Safety
   - H2: Troubleshooting
+  - H3: Gateway computer unavailable
   - H3: CUA Driver error codes
   - H3: Desktop stream
   - H3: macOS desktop availability
