@@ -383,6 +383,21 @@ For beta, stable, and full profiles, Linux (`ubuntu`) cross-OS lanes gate npm pu
 11. For stable, publish through `OpenClaw Release Publish` after Full Release Validation and candidate evidence pass, reusing the successful preflight artifact via `preflight_run_id`. Plugin npm publication gates core npm; ClawHub runs in parallel. The GitHub release finalizes after npm and Docker evidence passes. Run macOS through the validation, preflight, and publish workflows in `openclaw/releases`; its `.zip`, `.dmg`, `.dSYM.zip`, and signed `appcast.xml` retain their own verification requirements. Windows Hub and Android also attach their verified assets independently. Android dispatch starts after core npm succeeds and may finish after the GitHub release becomes public. Supply both optional Windows inputs to schedule promotion after GitHub publication, or use the [manual recovery command](#regular-release-publish-automation) later. App approval, build, signing, promotion, or failure never delays npm or the GitHub release.
 12. After publish, run the npm post-publish verifier, optional standalone published-npm Telegram E2E when you need post-publish channel proof, dist-tag promotion when needed, and verify the generated GitHub release page. Announce the published surfaces accurately, then complete [Stable main closeout](#stable-main-closeout), recording pending apps explicitly. App workflows can finish afterward; verify their assets and the macOS appcast before announcing those platforms complete.
 
+Regular stable GitHub activation automatically requests the Linux AppImage and
+Debian package through `Linux App Release Request` on `main`, for both the
+legacy publisher and `OpenClaw Release Button`. Request acceptance does not mean
+the assets have published; verify the independent `Linux App Release` run and
+its signed updater manifest. Before advancing GitHub latest, the publisher
+preserves the previous Linux update while the new build is pending. Complete
+same-tag Linux assets are reused on retries; partial assets require targeted
+recovery without replacing published bytes. Alpha and beta prereleases, and
+extended-stable publication, do not inherit this Linux request.
+
+After Linux assets publish, rebuild `openclaw.ai` through its website deployment
+owner: desktop download data is resolved at build time. Verify the deployed Apps
+card's version and both Linux download URLs before calling the website handoff
+complete.
+
 ## Stable main closeout
 
 Stable publication is not complete until `main` carries the actual shipped release state.
