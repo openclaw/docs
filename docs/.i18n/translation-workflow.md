@@ -104,7 +104,7 @@ The weekly run is the repair mechanism for LLM flakiness, partial failures, and 
 
 English deploys from source sync commits.
 
-Translations deploy after the aggregate i18n commit. The finalizer dispatches R2 Pages once because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. The R2 Pages workflow uploads the built site and dispatches live smoke after publication so the smoke test checks the deployed content instead of racing the upload.
+Translations deploy after the aggregate i18n commit. The finalizer dispatches GitHub Pages once because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. The Pages workflow dispatches live smoke after deployment so the smoke test checks the deployed site instead of racing the deploy.
 
 A hot docs day should produce many fast English deploys, but only a small number of locale deploys.
 
