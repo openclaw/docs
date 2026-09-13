@@ -215,13 +215,6 @@ function rawUrlFor(repoUrl, sha, rel) {
   return `https://raw.githubusercontent.com/${match[1]}/${match[2]}/${sha}/${encodeURI(rel)}`;
 }
 
-function languageForPath(rel) {
-  const ext = path.extname(rel).replace(/^\./, "");
-  if (ext) return ext;
-  if (path.basename(rel) === "Dockerfile") return "dockerfile";
-  return "text";
-}
-
 function readJson(file) {
   try {
     return JSON.parse(fs.readFileSync(file, "utf8"));
