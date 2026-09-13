@@ -31,6 +31,11 @@ Closed Terminal, Browser, Desktop, and Home/Ask OpenClaw panels initialize when 
 
 Hidden retained chats defer command and model metadata refreshes until you return to them. Repeated background changes share the current metadata read and refresh once more after it finishes, instead of issuing overlapping requests.
 
+Subagent activity rows lead with the child task's display title, using its configured
+`label` when present. Status and the latest activity appear separately, so parallel
+children remain easy to identify as they finish or fail. Tasks without a display
+title keep the generic **Subagent** label. Select a row to open its details.
+
 Choose **New agent** in the sidebar or Agents home to open the custodian chat.
 It recommends a chief of staff, researcher, writer, reviewer, or a small team
 with all four. Reply with a choice, or describe custom work and a name. Role
