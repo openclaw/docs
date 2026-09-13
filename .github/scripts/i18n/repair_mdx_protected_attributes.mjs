@@ -6,7 +6,7 @@ import process from "node:process";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { parseMdx, protectedAttributeSignatures } from "./check_mdx_protected_attributes.mjs";
+import { maskFrontmatter, parseMdx, protectedAttributeSignatures } from "./check_mdx_protected_attributes.mjs";
 
 const PROTECTED_ATTRIBUTES = new Set(["className", "id", "path", "type", "default", "aria-hidden", "target", "rel"]);
 const JSX_TAG_START_RE = /[A-Za-z_$\p{ID_Start}/!?>]/u;
@@ -69,7 +69,7 @@ function parseMdxForOffsets(processor, markdownProcessor, value) {
   // Exported for repair_mdx_syntax.mjs: diagnostics come back with maskOffsets
   // (prepared→original offset map) and maskedSource so callers can map error
   // positions back onto the untouched document.
-  let prepared = value;
+  let prepared = maskFrontmatter(value);
   let offsets = Array.from({ length: value.length + 1 }, (_, index) => index);
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     try {

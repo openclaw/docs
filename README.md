@@ -69,6 +69,9 @@ CI uses Node 26. Install the locked dependencies with `npm ci`, then run
 translation control plane. The lockfile includes the MDX checker and its `tsx`
 loader; translation tests need no separate dependency install.
 
+Translation checks exclude leading YAML frontmatter from MDX parsing while
+preserving body validation and the original offsets needed for markup repairs.
+
 Docs Code CI restores the production article and OG caches before its full shell
 build. Each entry still validates its renderer, dependency and content identity;
 a missing or stale cache renders normally. The complete build, smoke and visual
