@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 import { createOgCache } from "./og-cache.mjs";
 import { activeTabTitle, groupForPage, flattenNav } from "./navigation.mjs";
 
 export async function renderPageOgCards({ pages, enNav, outDir, cacheDir, siteName }) {
-  const renderedPageOgCards = new Set();
+  const pageOgVersions = new Map();
   const navSlugs = new Set(flattenNav(enNav).map((page) => page.slug));
   const ogDir = path.join(outDir, "og");
   const targets = pages.filter((page) =>
@@ -28,8 +29,9 @@ export async function renderPageOgCards({ pages, enNav, outDir, cacheDir, siteNa
       const outFile = path.join(ogDir, `${page.slug}.png`);
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
       try {
-        fs.writeFileSync(outFile, await (cache ? cache.render(page.slug, svg) : renderOgPng(svg)));
-        renderedPageOgCards.add(page.slug);
+        const png = await (cache ? cache.render(page.slug, svg) : renderOgPng(svg));
+        fs.writeFileSync(outFile, png);
+        pageOgVersions.set(page.slug, createHash("sha256").update(png).digest("hex").slice(0, 12));
         count++;
       } catch (err) {
         failures.push(`${page.slug}: ${err.message}`);
@@ -47,7 +49,7 @@ export async function renderPageOgCards({ pages, enNav, outDir, cacheDir, siteNa
     console.log(`og cache: disabled, ${count} rendered`);
   }
   console.log(`prepared ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
-  return renderedPageOgCards;
+  return pageOgVersions;
 }
 
 function renderOgPng(svg) {

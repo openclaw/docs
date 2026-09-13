@@ -139,6 +139,16 @@ also bypasses this cache, without creating or pruning it. The renderer uses the
 locked `@resvg/resvg-js` package with embedded fonts, not `rsvg-convert`, so the
 workflow does not install `librsvg2-bin`.
 
+Published image URLs include a version derived from the actual PNG bytes. Title,
+summary, or renderer changes that alter an image therefore refresh client caches;
+unchanged images retain their URL, including locale pages using the generic card.
+The public image path remains stable.
+
+Within the selected upload scope, R2 publication completes non-HTML objects
+before publishing HTML. This keeps a newly versioned image URL from becoming
+visible before its PNG is available. A prerequisite upload failure stops HTML
+publication; deletions and the final catalog update still follow successful uploads.
+
 Pagefind still builds a complete current index. Its immutable-file reuse is not
 enabled here: retaining an old output directory without an exact current-file
 inventory would also retain obsolete search fragments. Publication order, search
