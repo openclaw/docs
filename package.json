@@ -16,8 +16,9 @@
     "docs:smoke:shell": "DOCS_SITE_ARTIFACT_MODE=shell node scripts/docs-site/smoke.mjs",
     "docs:visual": "node scripts/docs-site/visual-smoke.mjs",
     "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs",
-    "skills:install": "npx --yes skills@1.5.22 add openclaw/carapace --skill openclaw-design openclaw-brand openclaw-carapace openclaw-design-system openclaw-marketing-pages openclaw-design-audit --agent codex --copy --yes",
-    "test": "node --test scripts/*.test.mjs scripts/docs-site/*.test.mjs workers/*.test.mjs"
+    "skills:install": "npx --yes skills@1.5.25 add openclaw/carapace --skill openclaw-design openclaw-brand openclaw-carapace openclaw-design-system openclaw-marketing-pages openclaw-design-audit --agent codex --copy --yes",
+    "test": "node --test scripts/*.test.mjs scripts/docs-site/*.test.mjs workers/*.test.mjs",
+    "test:i18n": "python3 .github/scripts/i18n/tests/test_i18n_scripts.py"
   },
   "devDependencies": {
     "@mdx-js/mdx": "3.1.1",
@@ -25,12 +26,13 @@
     "@sindresorhus/slugify": "2.2.1",
     "highlight.js": "11.12.0",
     "htmlparser2": "12.0.0",
-    "lucide": "1.43.0",
+    "lucide": "1.44.0",
     "markdown-it": "15.0.1",
     "markdown-it-anchor": "10.0.0",
     "mermaid": "11.17.2",
     "pagefind": "1.5.2",
     "playwright": "^1.63.0",
+    "tsx": "4.23.13",
     "yaml": "2.9.0"
   },
   "dependencies": {
