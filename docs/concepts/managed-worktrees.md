@@ -54,7 +54,9 @@ Templates contain checked-out source only. `.worktreeinclude` provisioning and `
 
 The first accelerated worktree includes the cost of preparing a template through Git. Later APFS worktrees clone the whole directory in one native operation. OpenClaw verifies shared data-stream identities before updating Git's cached file metadata, avoiding a content reread for proven unchanged files. Git still validates the resulting index and detects subsequent edits; unsupported index formats and unverified files receive ordinary Git validation.
 
-Apple discourages general directory cloning through `clonefile`. OpenClaw uses it for its source-only templates, with Git fallback on failure. Cancellation waits for an already-started native clone to finish before recovery can touch its destination.
+Apple discourages general directory cloning through `clonefile` without publishing its complete rationale. One verified limitation is that directory clones do not apply the destination's inherited ACL permissions to descendants. OpenClaw uses normal Git checkout when the destination parent has inheritable ACL entries, when the template root carries ACLs, or when ACL inspection fails. It checks again around cloning to catch policy changes during preparation. Non-inheritable ACLs on the destination parent alone do not disable acceleration. Git owns permission inheritance; OpenClaw does not rewrite ACLs after cloning.
+
+The fast path is limited to OpenClaw's private source-only templates; do not customize ACLs inside the template cache. Cancellation waits for an already-started native clone to finish before recovery can touch its destination.
 
 ReFS cloning can take longer than native Git checkout for repositories with many small files because each file needs independent metadata and Git refreshes its index. Use `worktreeAcceleration: false` if checkout latency matters more than source storage savings.
 
