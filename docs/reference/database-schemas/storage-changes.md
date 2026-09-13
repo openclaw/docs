@@ -97,6 +97,13 @@ session leaves the message for ordinary inbound dispatch. The durable reply is
 recorded before its optional side audit artifact and before completing the waiter;
 an audit failure does not discard an already recorded reply.
 
+Outbound queue work captures its state root and external-supervisor mode before
+asynchronous preparation. Enqueue, media custody, claims, completion and cleanup
+retain that context; SDK reconnect requests capture it before waiting for Gateway
+admission or loading the delivery runtime. A recovery root applies to an existing
+queue entry, while fresh sends use their selected default root. This context stays
+internal and is not added to durable payloads or plugin callback inputs.
+
 Board operations, board inventory reads, and widget document reads expose asynchronous
 contracts. Gateway callers await persistence before publishing board changes or replies.
 Writes carry the caller's current-authority assertion into the synchronous SQLite
