@@ -255,7 +255,8 @@ original **Download** action. Cross-origin HTML attachments are download-only.
 Self-contained HTML can use inline CSS and JavaScript under the default
 `scripts` sandbox setting. The page runs on the existing separate-origin sandbox
 host, not in the Control UI document. It receives no agent-prompt, tools, or
-dashboard APIs. The global `strict` setting disables JavaScript; `trusted` does
+dashboard APIs. The global `strict` setting disables document JavaScript while
+retaining the same sandbox resource policy and descendant-frame restrictions; `trusted` does
 not give ordinary HTML files access to the Control UI origin. Relative assets
 are not served from the file's directory, and external resources remain subject
 to the sandbox's default content security policy.
@@ -264,6 +265,8 @@ For workspace HTML, **Edit**, in-file search, and explicit `file:line` navigatio
 open **Source**. Switching back to **Preview** renders the latest unsaved editor
 text without saving it. Switching views preserves the editor, undo history, and
 draft; switching file tabs preserves each file's mode and unchanged page state.
+A reopened unsaved draft can be saved directly from **Preview**, including the
+same conflict detection and **Reload**/**Overwrite** actions as **Source**.
 A preview transport failure shows **Retry** without retrying in a loop, and
 **Source** remains available, including when the optional preview cannot load.
 
