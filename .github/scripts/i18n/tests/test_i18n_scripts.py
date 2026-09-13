@@ -188,6 +188,43 @@ class I18NScriptTests(unittest.TestCase):
         for trigger in (".openclaw-sync/**", "package.json", "package-lock.json"):
             self.assertIn(f'      - "{trigger}"', text)
 
+    def test_freshness_summary_keeps_version_numbers_literal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shells = root / "shells"
+            shells.mkdir()
+            scripts = workflow_shell_check.extract_run_blocks(
+                REPO_ROOT / ".github/workflows/translate-all.yml", shells
+            )
+            script = next(path for path in scripts if "### Toolchain freshness" in path.read_text())
+            config = root / ".github/scripts/i18n/toolchain.json"
+            config.parent.mkdir(parents=True)
+            config.write_text(json.dumps({"codex_cli": "0.153.4"}), encoding="utf-8")
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            programs = {
+                "npm": "#!/bin/sh\nprintf '0.154.0\\n'\n",
+                "jq": f"#!{sys.executable}\nimport json, sys\nprint(json.load(open(sys.argv[-1]))['codex_cli'])\n",
+                "0.153.4": '#!/bin/sh\nprintf executed >> "$VERSION_COMMAND_MARKER"\n',
+                "0.154.0": '#!/bin/sh\nprintf executed >> "$VERSION_COMMAND_MARKER"\n',
+            }
+            for name, content in programs.items():
+                executable = bin_dir / name
+                executable.write_text(content, encoding="utf-8")
+                executable.chmod(0o755)
+            summary = root / "summary.md"
+            executed = root / "executed"
+            result = subprocess.run(
+                ["bash", str(script)], cwd=root, text=True, capture_output=True, timeout=30,
+                env={**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+                     "GITHUB_STEP_SUMMARY": str(summary), "VERSION_COMMAND_MARKER": str(executed)},
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertFalse(executed.exists(), "version values must not run as shell commands")
+            text = summary.read_text(encoding="utf-8")
+            self.assertIn("- Pinned Codex CLI: `0.153.4`", text)
+            self.assertIn("- Registry latest: `0.154.0`", text)
+
     def test_budget_check_accepts_current_full_batches_and_rejects_worker_over_budget(self) -> None:
         budget = budget_check.validate_budget(REPO_ROOT / ".github/workflows/translate-all.yml")
         self.assertEqual(6, budget.batch_count)

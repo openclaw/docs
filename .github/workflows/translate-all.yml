@@ -102,8 +102,8 @@ jobs:
           echo "Registry latest: ${latest}"
           {
             echo "### Toolchain freshness"
-            echo "- Pinned Codex CLI: `${pinned}`"
-            echo "- Registry latest: `${latest}`"
+            printf -- "- Pinned Codex CLI: \`%s\`\n" "${pinned}"
+            printf -- "- Registry latest: \`%s\`\n" "${latest}"
           } >> "$GITHUB_STEP_SUMMARY"
           if [ "${pinned}" != "${latest}" ]; then
             echo "::warning::toolchain.json pins @openai/codex ${pinned} but npm ships ${latest}. Validate the new CLI against a translation shard, then bump toolchain.json."
