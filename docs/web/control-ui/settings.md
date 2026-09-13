@@ -93,6 +93,23 @@ that Gateway's saved session selection.
 
 Open **Settings → Gateway** to see the **Gateway Host** card with the Gateway machine, LAN address, operating system, runtime, uptime, CPU load, memory, and space for each mounted local disk. Linux EFI boot partitions mounted at `/boot/efi` or `/efi` are omitted. The card refreshes every 10 seconds while visible through the `system.info` Gateway RPC, which requires the `operator.read` scope. If mounted-disk discovery is unavailable, the card retains the state-directory disk reading when available. Connections without the required scope omit the card. Shimmer placeholders appear while the first stats are being fetched and remain still with reduced motion enabled; refreshes keep the previous readings and uptime visible. Disk paths appear in their labels without duplicate tooltips.
 
+The **Connection** card also shows average ping and p50, p95, and p99 round-trip
+times in milliseconds. It samples every five seconds while the page is visible
+and summarizes the last 100 successful samples from the current connection.
+The sample count makes small sets visible; p95 and p99 become more useful as
+samples accumulate. Reconnecting, switching Gateways, or leaving the page resets
+the readings. Failed requests are excluded and shown as a retry notice.
+
+The ping graph shows individual round trips. **Gateway activity** uses the same
+CPU, process memory, and event-loop delay graphs as the debug overlay, with up to
+100 snapshots sampled every five seconds while visible. CPU includes event-loop
+utilization, memory shows process RSS and used heap, and delay shows the Gateway's
+event-loop p99 and maximum delay. These are Gateway process measurements, separate
+from connection ping and the machine-wide **Gateway Host** readings below.
+
+Ping measures a lightweight `last-heartbeat` request over the existing WebSocket,
+including Gateway request handling. It is not ICMP ping or model response time.
+
 ## Language support
 
 The Control UI localizes itself on first load based on your browser locale. To override it later, open **Settings → Appearance → Language**.
