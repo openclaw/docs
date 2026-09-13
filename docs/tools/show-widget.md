@@ -266,6 +266,8 @@ Pinned HTML and registered-source widgets expose one ticket-bound host API. An e
 
 OpenClaw forwards user-clicked links to `http` or `https` destinations to the Control UI host. The host opens a new tab with `noopener` and `noreferrer`. Forwarding covers a primary click on a `target="_blank"` link and a middle-button click on any link, matching how links behave elsewhere in the Control UI. A widget's own `preventDefault` still cancels the click. The widget sandbox never grants popup permission, and script-initiated `window.open` does not work.
 
+Popup blocking comes from the iframe sandbox permissions. Widgets can define their own `open` function, such as a dialog helper, without colliding with an OpenClaw global. Host APIs remain under `window.openclaw`, with `sendPrompt` retained as a legacy helper.
+
 Network access is separate from host tools. Put exact HTTPS origins in `capabilities.netOrigins`. Once the session policy grants them, only those origins enter the widget's `connect-src`. Wildcards, credentials, paths, query strings, and undeclared origins remain blocked. A literal port is allowed only when it is part of the declared origin.
 
 The tool schema describes currently active plugin read bindings and action
