@@ -64,7 +64,7 @@ budget is raised.
 
 ## Local checks
 
-CI uses Node 24. Install the locked dependencies with `npm ci`, then run
+CI uses Node 26. Install the locked dependencies with `npm ci`, then run
 `npm test` for the renderer and Worker checks and `npm run test:i18n` for the
 translation control plane. The lockfile includes the MDX checker and its `tsx`
 loader; translation tests need no separate dependency install.

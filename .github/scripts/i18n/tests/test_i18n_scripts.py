@@ -177,7 +177,7 @@ class I18NScriptTests(unittest.TestCase):
         install = "run: npm ci"
         self.assertIn(install, text)
         self.assertLess(text.index(install), text.index("Run i18n control-plane regressions"))
-        self.assertLess(text.index("node-version: 24"), text.index(install))
+        self.assertLess(text.index("node-version: 26"), text.index(install))
         package = json.loads((REPO_ROOT / "package.json").read_text(encoding="utf-8"))
         lock = json.loads((REPO_ROOT / "package-lock.json").read_text(encoding="utf-8"))
         for dependency in ("@mdx-js/mdx", "tsx"):
