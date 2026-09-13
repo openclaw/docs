@@ -10559,6 +10559,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: State, config, and system namespaces
   - H2: Synchronous keyed store migration
+  - H2: Per-agent SQLite writes
 
 ## plugins/sdk-setup.md
 
