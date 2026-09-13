@@ -10325,6 +10325,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-entrypoints/define-tool-plugin
 - Headings:
   - H2: defineToolPlugin
+  - H2: Input-dependent output schemas
 
 ## plugins/sdk-entrypoints/native-providers.md
 
@@ -13546,6 +13547,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/code-mode/output
 - Headings:
   - H2: Declared output contracts
+  - H2: Input-dependent outputs
   - H2: Output API
 
 ## tools/code-mode/quickstart.md
