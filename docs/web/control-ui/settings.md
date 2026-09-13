@@ -66,6 +66,8 @@ Credentials reserved for Control UI link previews are excluded from both agent a
 
 Set an agent's display name, emoji, and avatar under **Agent settings → Overview → Identity**. The identity is stored with that agent and is shared by Control UI clients. Where the transcript shows avatars, saved and streaming assistant replies use the configured agent image or text avatar. Agents without a configured avatar omit the repeated fallback icon.
 
+Elsewhere, agents without a custom image or emoji use a generated face that fills the circular avatar. Its color, eyes, mouth, and solid or pastel background come from the agent ID, so the same agent keeps the same face across reloads and clients. Renaming the agent's display name does not change its face. Generated faces are decorative and do not indicate activity or model choice.
+
 ## Gateway host status
 
 The connection settings use one **Gateway secret** field for the configured
