@@ -14651,6 +14651,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Widget model and hosting
   - H3: Widgets host content; MCP apps are one content kind
   - H3: Website widgets
+  - H3: Browser dashboards
   - H3: Native data reports
   - H3: Plugin capability declarations
   - H3: Authenticated GitHub reads
@@ -14685,6 +14686,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Build a dashboard by asking
   - H2: The board
   - H2: Show a website fullscreen
+  - H2: Share a browser dashboard with your agent
   - H2: What widgets are allowed to do
   - H2: MCP apps on the board
   - H2: A2UI widgets
