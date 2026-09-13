@@ -14749,6 +14749,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Local shell commands
   - H2: OpenClaw setup and repair helper
   - H2: Tool output
+  - H2: Image previews
   - H2: Terminal colors
   - H2: History + streaming
   - H2: Connection details
