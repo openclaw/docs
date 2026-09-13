@@ -215,6 +215,11 @@ Shared hosting infrastructure:
 - **`net` = CSP.** Network reach uses the already-shipped per-widget CSP
   declaration (`connect-src` origins) — the self-updating weather widget
   fetches its API directly from the sandbox, no gateway involvement.
+- **Static assets.** The shared widget CDN allowlist permits public scripts,
+  stylesheets, and fonts in the document, proxy, and direct-response policies.
+  This is independent of `connect-src` and host-tool grants. Third-party code
+  runs with the widget's content and granted capabilities; asset URLs must not
+  contain private data. See [Libraries and fonts](/tools/show-widget#libraries-and-fonts).
 - **Grants.** HTML and registered widgets declaring nothing render immediately
   (sandboxed, `default-src 'none'`, prompt sends individually confirmed).
   Declared capabilities and interactive MCP Apps follow an explicit

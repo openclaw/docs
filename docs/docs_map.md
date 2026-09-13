@@ -14115,6 +14115,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How widgets work
   - H2: Design system
+  - H2: Libraries and fonts
   - H2: Use the tool
   - H2: Native dashboard reports
   - H2: Show on a device
