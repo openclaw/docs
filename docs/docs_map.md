@@ -13454,6 +13454,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/browser/troubleshooting
 - Headings:
+  - H2: Output directory errors
   - H2: CDP startup failure vs navigation SSRF block
 
 ## tools/btw.md
