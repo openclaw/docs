@@ -172,12 +172,21 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn('echo "__GITHUB_EXPR__"', scripts[0].read_text(encoding="utf-8"))
             workflow_shell_check.check_bash_syntax(scripts)
 
-    def test_shell_check_installs_mdx_dependency_before_regressions(self) -> None:
+    def test_shell_check_installs_locked_dependencies_before_regressions(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-shell-check-reusable.yml").read_text(encoding="utf-8")
-        install = "npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1 tsx@4.23.13"
+        install = "run: npm ci"
         self.assertIn(install, text)
         self.assertLess(text.index(install), text.index("Run i18n control-plane regressions"))
+        self.assertLess(text.index("node-version: 24"), text.index(install))
+        package = json.loads((REPO_ROOT / "package.json").read_text(encoding="utf-8"))
+        lock = json.loads((REPO_ROOT / "package-lock.json").read_text(encoding="utf-8"))
+        for dependency in ("@mdx-js/mdx", "tsx"):
+            version = package["devDependencies"][dependency]
+            self.assertRegex(version, r"^\d+\.\d+\.\d+$")
+            self.assertEqual(version, lock["packages"][f"node_modules/{dependency}"]["version"])
         self.assertRegex(text, r'pull_request:\n    paths:\n      - "\.github/scripts/i18n/\*\*"\n      - "\.github/workflows/translate-\*\.yml"')
+        for trigger in (".openclaw-sync/**", "package.json", "package-lock.json"):
+            self.assertIn(f'      - "{trigger}"', text)
 
     def test_budget_check_accepts_current_full_batches_and_rejects_worker_over_budget(self) -> None:
         budget = budget_check.validate_budget(REPO_ROOT / ".github/workflows/translate-all.yml")

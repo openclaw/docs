@@ -16,7 +16,9 @@
 - Bound maintenance and translation workflow jobs, including reusable workflow callees and the incremental debounce; thanks @SebTardif.
 - Abort stalled Cloudflare hostname cutover requests, with a configurable `CLOUDFLARE_API_TIMEOUT_MS` budget; thanks @SebTardif.
 - Reject malformed and overflowing request timeout settings before network operations begin.
-- Refresh syntax highlighting, icons, Markdown and HTML parsing, and diagrams with highlight.js 11.12.0, Lucide 1.43.0, markdown-it 15.0.1, htmlparser2 12.0.0, and Mermaid 11.17.2.
+- Refresh syntax highlighting, icons, Markdown and HTML parsing, and diagrams with highlight.js 11.12.0, Lucide 1.44.0, markdown-it 15.0.1, htmlparser2 12.0.0, and Mermaid 11.17.2.
 - Refresh Markdown heading rendering with markdown-it-anchor 10.0.0 while preserving published section IDs and document isolation.
-- Refresh browser verification and Cloudflare deployment tooling with Playwright 1.63.0 and Wrangler 4.130.0.
+- Refresh browser verification and Cloudflare deployment tooling with Playwright 1.63.0 and Wrangler 4.131.0.
 - Update CodeQL actions to 4.38.0 for the current analysis bundle.
+- Update translation tooling to Codex CLI 0.154.0 and skill installation to skills 1.5.25.
+- Lock translation-test dependencies, pin third-party Actions to commits, and let CI reuse validated article and OG caches while retaining full build and smoke checks.

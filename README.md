@@ -60,6 +60,18 @@ relevant budget. Use an integer from 1 to 2147483647 milliseconds (Node's maximu
 timer delay). The workflow job timeout remains an outer limit even when a request
 budget is raised.
 
+## Local checks
+
+CI uses Node 24. Install the locked dependencies with `npm ci`, then run
+`npm test` for the renderer and Worker checks and `npm run test:i18n` for the
+translation control plane. The lockfile includes the MDX checker and its `tsx`
+loader; translation tests need no separate dependency install.
+
+Docs Code CI restores the production article and OG caches before its full shell
+build. Each entry still validates its renderer, dependency and content identity;
+a missing or stale cache renders normally. The complete build, smoke and visual
+checks run in either case.
+
 ## Secrets
 
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
