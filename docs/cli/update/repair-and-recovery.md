@@ -128,8 +128,9 @@ JSON output identifies reconciled run IDs in
 `reconciledRuns`, with `status: "ok"`, `mode: "repair"`, and `restart: false`.
 
 Repair invoked within the owning update can continue when its inherited run ID
-and live process identity match that owner. The run records the continuation,
-and Doctor can use its normal maintenance lifecycle: stop the owned Gateway,
+and live process identity match that owner. Standalone repair records the same
+continuation for its new run and passes that run ID to its Doctor children.
+Doctor can then use its normal maintenance lifecycle: stop the owned Gateway,
 repair state, then restore and verify the same service. Doctor only restarts a
 service that it stopped; an already stopped service stays stopped. The owning
 run remains active while its driver is alive. If that driver exits during
@@ -140,7 +141,8 @@ restart the Gateway. Normal update finalization without this explicit repair
 continuation still leaves activation to its parent.
 
 An unrelated update whose driver is live or cannot be inspected still blocks
-repair, even after a long period without activity. The refusal identifies the
+repair, even after a long period without activity. Manual `doctor --fix` also
+refuses to stop a service while that update is active. The refusal identifies the
 owning run, phase, driver PID, host, start and last-activity times and ages, and observed liveness (`alive` or
 `not observed`). Wait for that update to finish, or stop the named driver on its
 host and rerun `openclaw update repair` after it exits. Elapsed inactivity alone
@@ -168,9 +170,9 @@ refreshes the plugin registry, and writes converged install-record metadata.
 Configured runtime plugins whose versions follow OpenClaw are checked against
 the newly installed core during post-update repair, even when the updater process
 started on the previous version.
-It does not install a new core package or request update activation. Standalone
-repair does not restart the Gateway; a verified owning-run continuation can
-restore the service after Doctor maintenance as described above.
+It does not install a new core package or request update activation. Doctor can
+restore a service stopped for maintenance by a verified repair invocation,
+including standalone repair, as described above.
 Human output ends with a finalization result that distinguishes completion,
 completion with warnings, and failure.
 
