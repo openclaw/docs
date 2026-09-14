@@ -371,6 +371,8 @@ Absolute external `http(s)` embed URLs stay blocked by default. To let `[embed u
 
 Widgets created by `show_widget` load through the authenticated Gateway connection in every sandbox mode, including while settings are loading. In `strict` mode, their content remains visible but scripted interactions are disabled.
 
+While a widget loads, a subtle shimmer reserves its space without displaying loading text. With reduced motion enabled, the placeholder stays still.
+
 The core [`show_widget`](/tools/show-widget) tool renders self-contained SVG or HTML directly from a tool call. The browser and supported native chat clients advertise the `inline-widgets` Gateway capability, and the resulting Canvas document remains available when chat history reloads. Channel plugins such as Discord Activities can register contextual presenters behind that same tool. Channel-originated runs without an eligible presenter or inline client do not receive it.
 
 ## Chat transcript layout
