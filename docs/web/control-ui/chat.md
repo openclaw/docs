@@ -276,7 +276,8 @@ same conflict detection and **Reload**/**Overwrite** actions as **Source**.
 A preview transport failure shows **Retry** without retrying in a loop, and
 **Source** remains available, including when the optional preview cannot load.
 
-**View Raw Text** keeps Markdown notation literal, including nested code fences.
+**View Raw Text** opens a **Source** view that keeps Markdown notation literal,
+including nested code fences. The raw-text action disappears while that view is open.
 Decoded text artifacts use the same literal preview. **Copy code** preserves the
 code's leading whitespace and final newline when present. Indented Markdown code
 blocks also work at the start of a message and remain literal while streaming,
