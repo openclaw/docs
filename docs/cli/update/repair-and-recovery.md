@@ -88,6 +88,14 @@ openclaw update repair --json
 openclaw update repair --accept-capabilities
 ```
 
+If an older updater publishes the new core but then reports
+`update-executor-settlement-failed` with `Parent executor is suspended for its candidate.`,
+wait for that updater to exit and run `openclaw update repair --yes --json` from
+the updated installation, preserving its profile and state/config overrides.
+This finishes Doctor and post-core convergence through a fresh owner. Check the
+repair result before restarting an already stopped Gateway through its service
+owner. Updating the candidate cannot change the older updater already in memory.
+
 | Flag                                             | Description                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `--channel <stable\|extended-stable\|beta\|dev>` | Persist the core update channel before repair. For extended-stable, eligible official npm and trusted official ClawHub plugins that follow bare/default or `latest` intent target the exact installed core version. Extended-stable repair is rejected on Git checkouts without changing config. |
