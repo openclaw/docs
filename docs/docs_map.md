@@ -12440,6 +12440,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test/performance
 - Headings:
   - H2: Test performance tooling
+  - H3: Zod schema compilation
   - H2: Benchmarks
 
 ## reference/test/remote-proof.md
