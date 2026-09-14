@@ -533,19 +533,26 @@ Write colocated tests in `src/channel.test.ts`:
 
 ## Delegated context reads
 
-Verified official installed plugins can delegate six context-retrieval actions to
-provider-owned access checks: `read`, `search`, `reactions`, `list-pins`,
-`thread-list`, and `channel-info`. The request still needs server-owned current
+Verified official installed plugins can delegate supported conversation and metadata
+reads to provider-owned access checks. The request still needs server-owned current
 provider, account, and conversation context. Provider destination policies remain
 in force; this does not grant unrestricted account access.
 
 An adapter lists each supported action in `actions.readAuthorityActions` and
-includes it in `actions.providerOwnedReadGates`. The host permits only the six
-actions above; a later host addition does not opt existing adapters into it.
-Only host-verified official registrations qualify. Discord implements all six;
-Slack implements `read`, `reactions`, and `list-pins`. Older external adapters and unverified
+includes it in `actions.providerOwnedReadGates`. The host also classifies the action
+as eligible; a later host addition does not opt existing adapters into it.
+Only host-verified official registrations qualify. Discord supports `read`, `search`,
+`reactions`, `list-pins`, `thread-list`, `channel-info`, `permissions`, `member-info`,
+`role-info`, `emoji-list`, `channel-list`, `voice-status`, and `event-list`.
+Slack supports `read`, `reactions`, and `list-pins`. Older external adapters and unverified
 plugins retain the exact-current-conversation restriction. Write actions and
 other read-capable actions are unchanged.
+
+Discord's `permissions` action inspects the bot's permissions for an allowed channel.
+Guild metadata reads require the requested guild to be allowed by the selected
+account's current configuration, with unrestricted or wildcard channel access.
+Only direct operators receive the filtered-results relaxation for `channel-list`;
+delegated agents still require guild-wide channel access.
 
 The transport contract is mandatory for opt-in adapters:
 
