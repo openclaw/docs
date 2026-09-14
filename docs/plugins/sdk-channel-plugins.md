@@ -538,9 +538,10 @@ reads to provider-owned access checks. The request still needs server-owned curr
 provider, account, and conversation context. Provider destination policies remain
 in force; this does not grant unrestricted account access.
 
-An adapter lists each supported action in `actions.readAuthorityActions` and
-includes it in `actions.providerOwnedReadGates`. The host also classifies the action
-as eligible; a later host addition does not opt existing adapters into it.
+An adapter lists actions that support the lifetime fence in `actions.readAuthorityActions`.
+Its `actions.providerOwnedReadGates` declaration separately identifies the actions
+whose admission the provider owns. The host also classifies the action as eligible;
+a later host addition does not opt existing adapters into it.
 Only host-verified official registrations qualify. Discord supports `read`, `search`,
 `reactions`, `list-pins`, `thread-list`, `channel-info`, `permissions`, `member-info`,
 `role-info`, `emoji-list`, `channel-list`, `voice-status`, and `event-list`.
@@ -558,6 +559,9 @@ other read-capable actions are unchanged.
 Delegated Slack member info is limited to the current requester on the same account,
 and emoji discovery uses the trusted workspace. Neither metadata action requires
 a channel target.
+
+Microsoft Teams supports `read`, `search`, `reactions`, `list-pins`, `member-info`,
+`channel-info`, and `channel-list` under the [Teams access rules](/channels/msteams/access-control).
 
 Discord's `permissions` action inspects the bot's permissions for an allowed channel.
 Guild metadata reads require the requested guild to be allowed by the selected
