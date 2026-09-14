@@ -73,6 +73,29 @@ The [native macOS app](/platforms/macos) and [Windows Hub](/platforms/windows)
 are separate applications, not this shell's opt-in macOS and Windows Tauri test
 bundles. See their platform pages for requirements and capabilities.
 
+### Gateway selection
+
+Open **Gateways → Manage Gateways…** from the native app or tray menu to save a
+direct URL or SSH connection. The dashboard's profile menu switches only its
+current window; Control-click opens an additional window. Choosing a Gateway
+from the native menu focuses its existing window without reloading it, while
+**Open … in New Window** creates an independent one.
+
+The Primary Gateway continues to own Quick Chat and the desktop connection.
+Changing it requires the separate **Set as Primary** confirmation on a saved
+token-authenticated connection. Other Gateway windows retain their own targets.
+The companion remembers successful explicit selections, returns to Primary when
+that saved connection is removed, and keeps credentials in the operating
+system's credential store. Linux requires an unlocked Secret Service, such as
+GNOME Keyring or KWallet's Secret Service support.
+
+When a saved Gateway fails to load, the same window returns to its local
+connection editor. Correcting the endpoint updates the remembered selection only
+after the new dashboard loads successfully.
+
+The macOS Tauri build is named **OpenClaw-Tauri** and keeps its saved connections
+separate from the native **OpenClaw** app.
+
 ### First-run setup
 
 Choose **Get started** on the welcome screen, then choose where your assistant
