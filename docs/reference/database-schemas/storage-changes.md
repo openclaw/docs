@@ -216,6 +216,10 @@ candidate transcript, compaction checkpoint, or trajectory files. Prompt-referen
 projection runs only when prompt blobs exist. Age, exclusion, and containment
 checks still govern every removal.
 
+Automatic session-entry maintenance reads its protection-key inventory once per
+plan, only when age or cap candidates exist, within the same write transaction.
+Retention rules and active-work, ancestor, and lifecycle protection remain unchanged.
+
 After archive preparation, session deletion rereads its target before admitting
 the final reclamation worker. A missing or changed target returns the existing
 entry-mismatch result without starting that worker, while preserving archives
