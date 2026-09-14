@@ -10204,6 +10204,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Durable ingress monitors
   - H3: One turn, several durable claims
   - H3: Start slots and deferral
+  - H3: Deferred claim heartbeats
   - H2: Adapter
   - H2: Outbound echo suppression
   - H2: Plain-text sanitization
