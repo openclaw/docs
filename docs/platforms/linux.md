@@ -89,6 +89,10 @@ that saved connection is removed, and keeps credentials in the operating
 system's credential store. Linux requires an unlocked Secret Service, such as
 GNOME Keyring or KWallet's Secret Service support.
 
+An unavailable credential store shows a dismissible notice without blocking the
+dashboard. Saved connections remain intact; use **Manage Gateways… → Try again**
+after resolving the reported credential-store problem.
+
 When a saved Gateway fails to load, the same window returns to its local
 connection editor. Correcting the endpoint updates the remembered selection only
 after the new dashboard loads successfully.
