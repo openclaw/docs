@@ -40,7 +40,7 @@ Troubleshooting: [Automations](/automation/cron-jobs#troubleshooting)
     Store a tiny checklist in the heartbeat monitor's scratch with `openclaw cron scratch <jobId> --set "..."`.
   </Step>
   <Step title="Decide where heartbeat messages should go">
-    Heartbeat alerts go to the operator's direct message by default. Set `commands.ownerAllowFrom` or a concrete channel `allowFrom`. Wildcard-only allowlists do not identify an owner.
+    Heartbeat alerts go to the operator's direct message by default. Set `commands.ownerAllowFrom` to an array such as `["telegram:123456789"]`, or use a concrete channel `allowFrom`. Wildcard-only allowlists do not identify an owner.
   </Step>
   <Step title="Optional tuning">
     - Use lightweight bootstrap context if heartbeat runs only need the monitor scratch.
@@ -71,6 +71,25 @@ Example config:
   },
 }
 ```
+
+For a configured Telegram bot, set the owner with a JSON array, even when there is
+only one entry. Replace `123456789` with your Telegram user ID and include any
+existing owners you want to keep:
+
+```bash
+openclaw config set commands.ownerAllowFrom '["telegram:123456789"]'
+```
+
+To select a recipient explicitly, set the channel and recipient separately:
+
+```bash
+openclaw config set agents.defaults.heartbeat.to '"123456789"'
+openclaw config set agents.defaults.heartbeat.target telegram
+```
+
+Keep the inner double quotes around the numeric chat ID so `to` is stored as a
+string. `heartbeat.target` accepts `owner`, `last`, `none`, or a channel ID such as
+`telegram`; `telegram:123456789` belongs in `commands.ownerAllowFrom`, not `target`.
 
 ## Defaults
 
@@ -273,6 +292,10 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 - `last`: explicitly follow the last used external conversation, including groups and channels.
 - explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.
 - `none`: run the heartbeat for internal state only. **Do not deliver** it externally.
+
+For an explicit Telegram recipient, use `target: "telegram"` and `to: "123456789"`.
+The `target` field does not accept a combined channel-and-recipient value such as
+`"telegram:123456789"`.
 
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
