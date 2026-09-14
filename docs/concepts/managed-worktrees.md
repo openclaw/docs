@@ -84,6 +84,8 @@ Before allocating a checkout, OpenClaw checks its destination, Git metadata, sou
 
 For partial clones, OpenClaw inventories missing objects before estimating checkout size and fetches them from the clone's promisor remote in one batch. The size inventory cannot trigger per-object lazy fetches. Partial clones are supported, but full clones are recommended for registry-owned projects to keep checkout and restore independent of missing remote objects. If objects are missing without a promisor remote, fetch or repair the clone before retrying. A Git timeout reports its budget and suggests checking remote reachability, repository locks, and partial-clone behavior.
 
+Transient fetch failures, including an incomplete object transfer, retry once after one second within the original fetch timeout. Cancellation and expired workspace authority stop recovery; a second failure surfaces the Git error. See [Retry policy](/concepts/retry#managed-git-operations).
+
 The Git worker reuses a bounded set of successful commit-size estimates while it remains active. Object availability and free disk space are checked on every allocation. Git replacement refs disable reuse of the affected size estimates, and worker shutdown discards them.
 
 Creation, restore, and snapshot removal share one allocation lease across repositories and processes using the same state directory. Costs on the same volume are added together. These checks are conservative estimates, not a disk quota: other OpenClaw state directories, shell commands, deployment tools, and arbitrary setup/build output can still consume space. Reusing an existing valid checkout does not allocate another checkout. Worktrees created directly through Git are outside the managed cleanup lifecycle.

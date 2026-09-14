@@ -4007,6 +4007,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Defaults
   - H2: Behavior
   - H3: Model providers
+  - H3: Managed Git operations
   - H3: Discord
   - H3: Telegram
   - H2: Configuration
