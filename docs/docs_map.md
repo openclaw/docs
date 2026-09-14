@@ -3761,6 +3761,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick model policy
   - H2: Onboarding
   - H2: "Model is not allowed" (and why replies stop)
+  - H3: Choose the same model with different runtimes
   - H2: Choose a model for a session
   - H2: /model in chat
   - H2: CLI
@@ -11851,6 +11852,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Version naming
   - H2: Release cadence
+  - H2: Linux companion publication
   - H2: Release changelog artifacts
   - H3: Changelog-only evidence reuse
   - H2: Monthly Gateway extended-stable publication
