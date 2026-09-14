@@ -121,6 +121,32 @@ Use JSON output or `--output` when comparing changes. Use `--cpu-prof-dir` only 
 
 </Accordion>
 
+<Accordion title="Workspace computation (scripts/bench-workspace-computation.ts)">
+
+Compare workspace inventory, manifest capture, and result preparation against a
+frozen source checkout with its own installed dependencies:
+
+```bash
+node --import ./scripts/tsx.mjs scripts/bench-workspace-computation.ts \
+  --baseline /path/to/baseline-checkout \
+  --scenarios inventory,manifest,delta,unchanged \
+  --sizes 1000,32000,100000 --concurrency 1,4 \
+  --runs 3 --warmup 1 --output .artifacts/workspace-computation.json
+```
+
+Use `--changed-files 2000 --scenarios delta --sizes 32000` to include a larger
+changed payload, and `--file-bytes` to vary the content hashed during capture.
+The default workload is smaller: 1,000 entries and one concurrent operation.
+
+The benchmark checks identical inventory bytes, manifest references, and changed
+payloads. Separate processes measure first invocation and warm throughput, CPU,
+event-loop delay, memory, and HTTP latency from an external probe. Worker task
+diagnostics distinguish queueing, input preparation, transfer, and execution.
+The HTTP probe measures responsiveness of the computation's owning process;
+paired-node wire tests provide the full Gateway dispatch and reconciliation proof.
+
+</Accordion>
+
 <Accordion title="Gateway concurrency (scripts/bench-gateway-concurrency.ts)">
 
 Runs synthetic streaming agent turns in parallel sessions on one isolated
