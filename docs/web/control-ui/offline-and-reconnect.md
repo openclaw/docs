@@ -70,6 +70,8 @@ keeps its last data and refreshes automatically once the Gateway accepts work ag
 failures remain visible inline with their message and are retried automatically when the Gateway
 becomes available again. These refresh callouts have no manual **Retry** button.
 
+Once the Gateway confirms that a message is in the transcript, reconnecting retires its temporary browser copy even when the original message is outside the latest history page. Loading older history shows the saved message in its original position without adding a second copy.
+
 Queued attachments use binary Blobs in the browser's IndexedDB; the outbox keeps only delivery
 metadata and payload references in session storage. Attachment bytes stay with the queued input;
 the captured queue metadata owns its destination, even when configured main-session defaults change. All attachments
