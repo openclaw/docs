@@ -164,6 +164,15 @@ admission or loading the delivery runtime. A recovery root applies to an existin
 queue entry, while fresh sends use their selected default root. This context stays
 internal and is not added to durable payloads or plugin callback inputs.
 
+Standalone session-delivery queue operations run in the shared-state worker.
+Producers, recovery, generated-media preparation, and the retry scheduler carry
+one captured database context through enqueue, retry bookkeeping, and settlement.
+The scheduler stops admission and joins its reads and active drains before the
+database closes. Queue payloads retain their JSON serialization boundary before
+worker transport. Compound task/subagent admission and settlement retain their
+existing synchronous transaction owner; the outbound queue and its media custody
+operations remain separate migration work.
+
 Conversation sends, turns, and queue completion retain their logical agent and
 physical store while waiting for agent write admission. Retry validation reads
 existing operations without recreating them; the queue owner records custody
