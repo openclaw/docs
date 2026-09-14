@@ -70,6 +70,9 @@ classification from one read-only SQLite snapshot, then prepare text and
 provenance off the Gateway thread. The caller carries its current exact-secret
 redaction snapshot and rejects results prepared against an obsolete registry.
 Reset-recall metadata crosses the worker boundary with the prepared content.
+If secret registration invalidates both preparation attempts, the export rejects
+for retry instead of reading SQLite on the Gateway thread. Failed index rebuilds
+preserve the published index and retained retry state.
 Incognito databases, archive materialization, and caller-owned transcript
 observers retain their existing local execution. Index publication and
 restoration remain with their existing database and lifecycle owners.
