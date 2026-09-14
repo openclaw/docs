@@ -82,6 +82,10 @@ checkout revision. Partial, filtered or unknown plans retain the explicit step;
 release-gate dispatches retain their separate merge-tree proof. Both state
 repair passes, all static baseline ratchets and required Node failure aggregation
 remain unchanged.
+The corpus uses the normal bundled-plugin resolver to select the prepared
+runtime from this checkout instead of forcing TypeScript plugin entrypoints.
+Plugins whose Doctor contracts require source loading retain that behavior;
+the complete config/state matrix and its assertions remain intact.
 
 Ordinary pull requests that change only independent Control UI unit-test entries
 keep all three UI unit rows, performance checks, and existing type/lint gates,
