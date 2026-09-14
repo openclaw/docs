@@ -71,6 +71,7 @@ jobs:
               "cache-control": "no-cache",
               pragma: "no-cache",
             },
+            signal: AbortSignal.timeout(30_000),
           });
           if (response.status === 410) {
             console.log("::notice::Live Worker still returns 410 for /llms-full.txt; skipping corpus generation until the router is redeployed.");
@@ -162,6 +163,7 @@ jobs:
                 "cache-control": "no-cache",
                 pragma: "no-cache",
               },
+              signal: AbortSignal.timeout(30_000),
             });
             if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
             const contentType = response.headers.get("content-type") ?? "";
