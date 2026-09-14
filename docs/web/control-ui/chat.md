@@ -384,6 +384,11 @@ The core [`show_widget`](/tools/show-widget) tool renders self-contained SVG or 
 
 ## Chat transcript layout
 
+Scrolling up to read earlier messages collapses the task progress card above the
+composer. Streaming output and layout adjustments keep that reading mode intact.
+Scroll back to the end or select **Latest** to resume following the conversation;
+an explicit choice to expand or collapse the card stays in effect for that task.
+
 In completed dashboard turns, commentary, reasoning-only messages, and tool activity
 share one **Worked for…** disclosure above the answers. Expanding it shows the
 activity in its original order; explicit answer segments and visual results stay
