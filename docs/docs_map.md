@@ -628,6 +628,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/feishu/messaging
 - Headings:
+  - H2: Reading messages and chat information
   - H2: Supported message types
   - H3: Receive
   - H3: Send
