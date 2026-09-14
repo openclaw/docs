@@ -261,9 +261,10 @@ after startup, session seeding, and probe warmup. Sampling ends after the load
 and its final memory probe, before profile serialization and teardown. It uses
 a 32 KiB sampling interval and includes objects collected by both minor and
 major GC, so `sampledAllocatedBytes` estimates gross allocations rather than
-retained heap. Native allocations and separate worker isolates are outside this
-profile. Each run records its `.heapprofile` path and the twenty largest
-allocation stacks; open the raw file in the Chrome DevTools Memory panel.
+retained heap. Each run records its `.heapprofile` path and the twenty largest
+allocation stacks with `scope: "main-isolate"`; open the raw file in the Chrome
+DevTools Memory panel. Worker isolates have separate profiles, described below.
+Native allocations are outside these V8 profiles.
 
 The summary includes sampled allocation bytes per run and per completed turn.
 The per-turn figure also includes concurrent probes and session mutations;
@@ -282,11 +283,38 @@ main V8 isolate at a 1 ms sampling interval after setup and through the final
 memory probe. The private benchmark IPC channel stops the profiler and writes
 the `.cpuprofile` before process teardown, without depending on signal-driven
 profile flushing. Each run's `loadCpuProfile` records its path, duration, and
-sample count; open the raw profile in Chrome DevTools. Worker isolates are not
-included. Profiled runs add overhead, so keep them separate from latency
+sample count with `scope: "main-isolate"`; open the raw profile in Chrome
+DevTools. Profiled runs add overhead, so keep them separate from latency
 comparisons. `--cpu-prof-dir` retains its startup-inclusive native profiling
 behavior. `--load-cpu-prof-dir` and `--heap-prof-dir` require separate runs so
 exporting one profile cannot contaminate the other capture.
+
+Both load-profile flags also capture observed Worker isolates over the existing
+private inspector connection. The main profile summary links
+`workersManifestPath`, a `.workers.json` manifest beside the main profile. Its
+rows distinguish native `threadId` from `inspectorWorkerId` and link each
+Worker's profile. `completed: true` means that profile was written; inspect
+row-level errors for missing identity, retired Workers, or other incomplete
+captures. A successful profiling command does not mean every Worker produced a
+usable profile. Workers are not paused at birth, so profiling can miss their
+earliest work. These files exclude separate child processes.
+
+The Worker manifest's samples use `performance.now` in the Gateway process, with
+timestamps taken before asynchronous Worker reads. The 100 ms cadence is
+nominal; overlapping reads are coalesced. CPU counters are cumulative
+microseconds: difference observations for the same thread identity instead of
+summing samples. Those deltas cover each Worker's observed interval and can
+miss work before its first or after its last successful sample. The sample's
+`memory.rss` covers the process; other `memory` fields describe the main isolate,
+while each Worker's `heap` contains its own V8 heap statistics.
+
+Capture windows differ: load CPU counters end before the final memory probe;
+the main V8 profile includes that probe; Worker profiles and samples also extend
+through main-profile serialization before their own stop. Use the raw CPU
+profiles' timestamps and manifest observations for attribution, and keep these
+windows separate from `cpuUsage`. Main-thread CPU plus observed Worker CPU does
+not account for every native thread or unobserved Worker interval. Profiling and
+periodic Worker inspection add overhead; compare equally instrumented runs.
 
 </Accordion>
 
