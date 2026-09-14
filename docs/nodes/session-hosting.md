@@ -82,6 +82,11 @@ node has one worker slot per available CPU core. Configure the slot count with
 for a durable slot; while all slots are occupied, the node remains available
 for status and cancellation but is not selected for a new session turn.
 
+Stopping an active hosted turn records the accepted cancellation even if the
+worker encounters an error while stopping. Worker diagnostics retain the shutdown
+failure separately. A worker slot becomes available only after its process tree
+or container has finished cleanup.
+
 The picker derives every device row from `environments.list`. Every selected
 runtime requires an available, connected paired session host. OpenClaw worker
 turns additionally require valid exact worker slots with at least one free
