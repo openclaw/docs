@@ -316,6 +316,33 @@ windows separate from `cpuUsage`. Main-thread CPU plus observed Worker CPU does
 not account for every native thread or unobserved Worker interval. Profiling and
 periodic Worker inspection add overhead; compare equally instrumented runs.
 
+Both load-phase profile modes also attach `diagnostics` and a `diagnosticsPath`
+to the run report. The private benchmark preload subscribes only during capture
+and aggregates the main isolate's redaction, session writer, session list, and
+worker-task completion records, including fast work below slow-log thresholds.
+It records counts, totals, and maxima in at most 256 groups; `droppedEvents`
+and `collectionErrors` report incomplete collection. No per-call record history,
+session or agent IDs, paths, message text, regex patterns, or exception text is
+retained in these aggregates. Worker artifact basenames identify task groups.
+
+Redaction reports synchronous thread CPU separately from elapsed time and input
+UTF-16 character counts. These are inclusive measurements: nested redaction
+operations overlap, so do not add their times. Session writer timing separates
+queue wait, writer-held elapsed time, and completion delay. List records
+distinguish `sessions.list` from the initial `sessions.subscribe` snapshot and
+separate projection owners, in-flight followers, and completed cache hits.
+Worker-task records separate queue, preparation, run, and transfer measurements.
+Elapsed intervals can overlap across concurrent work and do not measure CPU.
+
+The capture also aggregates main-isolate GC pause entries. Allocation profiles
+identify allocation sites, including collected objects; they do not establish
+which objects remain reachable or prove a leak. Raw profiles contain function
+names and source locations and need inspection before sharing.
+
+These diagnostics channels have no collector in an ordinary Gateway. The
+benchmark uses isolated synthetic state, private process IPC, and no inspector
+listener. It does not attach to or modify an existing operator Gateway.
+
 </Accordion>
 
 <Accordion title="Gateway restart (scripts/bench-gateway-restart.ts)">
