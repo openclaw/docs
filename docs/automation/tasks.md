@@ -243,7 +243,7 @@ openclaw tasks cancel <lookup>
 
 For ACP and subagent tasks, this kills the child session; ACP and automation cancellations route through the running Gateway (`tasks.cancel`). Ordinary Gateway-owned CLI tasks also require the owning Gateway to be running. Cancellation aborts only the selected live run and its pending approvals, and reports success only after that run settles as `cancelled`. Background `exec` tasks keep their process-control cancellation path. Delivery notifications are sent when applicable.
 
-Missing, already-terminal, ownerless, or unconfirmed runs do not report a new cancellation success. If a crash or restart removed the live owner, keep the Gateway running so its existing maintenance can reconcile the task as `lost`. Use `openclaw tasks audit` and `openclaw tasks maintenance` to inspect the record; offline maintenance cannot establish Gateway liveness. See [task maintenance](/cli/tasks#maintenance).
+Missing, already-terminal, ownerless, or unconfirmed runs do not report a new cancellation success. On restore, a running task with a recorded local execution process that has exited is marked `cancelled`, with the interruption reason retained. It no longer delays the next Gateway drain. Settling an older task preserves the result of a newer task linked to the same flow. A live matching process remains running. Tasks without a recorded process identity retain normal maintenance grace, including 30 minutes for childless native subagents. Use `openclaw tasks audit` and `openclaw tasks maintenance` to inspect the record; offline maintenance cannot infer Gateway liveness from an empty local run registry. See [task maintenance](/cli/tasks#maintenance).
 
 <a id="tasks-retry-dismiss" />
 

@@ -10581,6 +10581,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/background-work
 - Headings:
   - H2: Background work namespaces
+  - H2: Harness task execution ownership
 
 ## plugins/sdk-runtime/channel.md
 
