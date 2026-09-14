@@ -74,6 +74,12 @@ the job's uploaded artifacts.
 | `openclaw-performance`           | Separate workflow: daily/on-demand Kova runtime performance reports with mock-provider, deep-profile, and GPT 5.6 live lanes                                                                                                                                                                             | Scheduled and manual dispatch                          |
 | `docs-external-links`            | Separate workflow: Docs External Link Audit checks external documentation links with lychee and uploads a report; it reports findings without failing, so it never blocks a pull request                                                                                                                 | Scheduled and manual dispatch                          |
 
+Ordinary Markdown and MDX pages under `docs/`, plus root `README.md`, retain
+their separate `check-docs` coverage beside precise pull-request Node tests.
+Page deletions and renames preserve this targeting. Explicit Node owners for
+Markdown inputs remain selected; workspace templates under
+`docs/reference/templates/` and unowned source inputs retain the full fallback.
+
 Full canonical `main` pushes run the operator config and prior-release state
 startup corpora once through the Node `runtime-config` owner. Canonical pull
 requests also omit the duplicate **Check startup corpus** step when preflight
