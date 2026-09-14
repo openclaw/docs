@@ -7052,14 +7052,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface explorer
   - H2: Decision context
   - H3: CLI
-  - H3: Gateway runtime
   - H3: Linux Gateway host
+  - H3: Gateway runtime
   - H3: macOS Gateway host
   - H3: Discord
   - H3: Android app
   - H3: iOS app
   - H3: Agent Runtime
-  - H3: Session, memory, and context engine
   - H3: Channel framework
   - H3: Browser automation, exec, and sandbox tools
   - H3: Observability
@@ -7069,7 +7068,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Plugins
   - H3: Security, auth, pairing, and secrets
   - H3: Automation and durable work
-  - H3: Docker and Podman hosting
   - H3: Windows via WSL2
   - H3: ChromeOS, Raspberry Pi, and small Linux devices
   - H3: Anthropic provider path
@@ -7080,7 +7078,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: macOS companion app
   - H3: OpenRouter provider path
   - H3: WhatsApp
+  - H3: Session, memory, and state lifecycle
   - H3: Linux companion app
+  - H3: Fleet, containers, and cloud execution
   - H3: Windows App / Node
   - H3: Media understanding and media generation
   - H3: Image, video, and music generation tools
@@ -7097,7 +7097,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Kubernetes hosting
   - H3: Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, regional channels
   - H3: Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat
-  - H3: OpenClaw App SDK
+  - H3: External apps and interoperability
   - H3: Nix install path
   - H3: Voice Call channel
   - H3: watchOS companion surfaces
