@@ -96,8 +96,10 @@ original conversation. If history fails to load, the queued message stays
 available while you resolve the history error. Goals and other slash commands
 wait for history; `/stop` and `/approve` remain available.
 
-Background refreshes for saved sidebar filters and automation status wait until
-the conversation appears. A filter change you make refreshes immediately.
+Background refreshes for saved sidebar filters, groups, automation status, and the
+Inbox wait until the conversation appears. Task lists, task suggestions, and the
+progress card then refresh after the transcript paints. Opening a task panel,
+changing a filter, or opening a group-targeted New Session remains immediate.
 
 Panes share outbox recovery for the same conversation. Activity in another
 conversation does not restart that recovery; reconnecting checks every saved outbox.
