@@ -13932,6 +13932,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/media-overview
 - Headings:
   - H2: Capabilities
+  - H2: Local media files
   - H2: Provider capability matrix
   - H2: Async vs synchronous
   - H2: Speech-to-text and Voice Call
