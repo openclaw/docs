@@ -10,6 +10,8 @@ Run shell commands in the workspace. `exec` is a mutating shell surface: command
 
 Supports foreground and background execution via `process`. If `process` is disallowed, `exec` runs synchronously and ignores `yieldMs`/`background`. Background sessions are scoped per agent. `process` only sees sessions from the same agent.
 
+Completed calls return command output directly. Use `process` only when `exec` reports that a command is still running and provides a `sessionId`; an identifier printed by the command is ordinary output, not a process handle.
+
 ## Parameters
 
 <ParamField path="command" type="string" required>
