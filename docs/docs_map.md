@@ -7028,6 +7028,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider request failures
   - H3: Targeted model transport diagnostics
   - H3: Trace correlation
+  - H3: Session catalog provider waits
   - H3: Lifecycle queue waits
   - H3: Slow worktree cleanup
   - H3: Slow agent database opens
