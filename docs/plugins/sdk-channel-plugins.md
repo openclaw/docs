@@ -547,9 +547,14 @@ Only host-verified official registrations qualify. Discord supports `read`, `sea
 Matrix supports `read`, `reactions`, `list-pins`, `emoji-list`, `member-info`, and
 `channel-info`.
 Mattermost supports `read`.
-Slack supports `read`, `reactions`, and `list-pins`. Older external adapters and unverified
-plugins retain the exact-current-conversation restriction. Write actions and
+Slack supports `read`, `reactions`, `list-pins`, `member-info`, and `emoji-list`.
+Older external adapters and unverified plugins retain the exact-current-conversation
+restriction. Write actions and
 other read-capable actions are unchanged.
+
+Delegated Slack member info is limited to the current requester on the same account,
+and emoji discovery uses the trusted workspace. Neither metadata action requires
+a channel target.
 
 Discord's `permissions` action inspects the bot's permissions for an allowed channel.
 Guild metadata reads require the requested guild to be allowed by the selected
