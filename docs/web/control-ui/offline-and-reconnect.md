@@ -70,6 +70,9 @@ keeps its last data and refreshes automatically once the Gateway accepts work ag
 failures remain visible inline with their message and are retried automatically when the Gateway
 becomes available again. These refresh callouts have no manual **Retry** button.
 
+If chat history times out, its **Retry** action reloads the saved conversation and restores
+its live session subscription, including approval updates.
+
 Once the Gateway confirms that a message is in the transcript, reconnecting retires its temporary browser copy even when the original message is outside the latest history page. Loading older history shows the saved message in its original position without adding a second copy.
 
 Queued attachments use binary Blobs in the browser's IndexedDB; the outbox keeps only delivery
