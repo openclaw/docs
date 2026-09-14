@@ -1301,6 +1301,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Voice input
   - H2: Media, chunking, and delivery
   - H2: Attachment media reference
+  - H3: Downloading an attachment by file ID
   - H3: Supported media types
   - H3: Inbound pipeline
   - H3: Thread-root attachment inheritance
