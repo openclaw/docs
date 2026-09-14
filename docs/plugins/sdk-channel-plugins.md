@@ -544,6 +544,8 @@ as eligible; a later host addition does not opt existing adapters into it.
 Only host-verified official registrations qualify. Discord supports `read`, `search`,
 `reactions`, `list-pins`, `thread-list`, `channel-info`, `permissions`, `member-info`,
 `role-info`, `emoji-list`, `channel-list`, `voice-status`, and `event-list`.
+Matrix supports `read`, `reactions`, `list-pins`, `emoji-list`, `member-info`, and
+`channel-info`.
 Slack supports `read`, `reactions`, and `list-pins`. Older external adapters and unverified
 plugins retain the exact-current-conversation restriction. Write actions and
 other read-capable actions are unchanged.

@@ -905,6 +905,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Bot-to-bot rooms
   - H2: Context visibility
+  - H2: Tool context reads
   - H2: DM and room policy
   - H2: Slash commands
 
