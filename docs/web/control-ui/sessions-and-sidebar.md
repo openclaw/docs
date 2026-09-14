@@ -63,6 +63,28 @@ transcript entry. Acceptance does not imply that a transcript row already
 exists; the accepted input replaces its local pending copy and later becomes
 one canonical message, including its attachments.
 
+## Systems workspace
+
+Open **Systems** in the sidebar, or visit `/systems`, to inspect the Gateway,
+worker environments, and paired devices available to your connection. If your
+customized sidebar does not include Systems, add it from **Edit pinned items**.
+
+Systems replaces the lower conversation list with a machine list. The global
+navigation and footer stay in place, and returning to conversations restores
+their sidebar scroll position. Navigation changes this context; background
+machine or session activity does not switch your workspace.
+
+Select a desktop-capable system to open the existing Desktop viewer in the main
+workspace. It uses the same connection, control, sizing, and fullscreen behavior
+as the Desktop panel. Headless and offline entries remain inspectable instead
+of opening an empty desktop. Pairing, desktop enablement, and operator permissions
+still apply; opening Systems does not grant additional access.
+
+System details use reported facts. A connected device is not necessarily the
+machine running a session, and unavailable measurements are not shown as zero.
+See [Cloud Worker Desktop](/gateway/cloud-workers/desktop) for worker desktop
+enablement and sizing.
+
 ## Sidebar navigation
 
 Drag page destinations, including plugin-provided pages, to reorder them together.

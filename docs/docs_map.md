@@ -14693,6 +14693,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: New session names
   - H2: New-session preferences and recents
+  - H2: Systems workspace
   - H2: Sidebar navigation
   - H3: Session menu
   - H3: Share a session publicly
