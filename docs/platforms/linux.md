@@ -75,6 +75,9 @@ bundles. See their platform pages for requirements and capabilities.
 
 ### Gateway selection
 
+The Gateway manager follows your system's light or dark appearance, including
+changes made while it is open, without interrupting an unsaved connection form.
+
 Open **Gateways → Manage Gateways…** from the native app or tray menu to save a
 direct URL or SSH connection. Choose **Add Gateway** or **Edit** to open the
 connection form; **Back to Gateways** returns to the saved list and discards
