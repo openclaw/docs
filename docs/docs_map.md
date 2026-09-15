@@ -8149,6 +8149,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/timeouts
 - Headings:
   - H2: Timeouts
+  - H3: Session catalog reads
   - H3: Turn execution and settlement
 
 ## plugins/codex-harness-reference/workspace-bootstrap-files.md
