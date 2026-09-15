@@ -33,7 +33,7 @@
     "pagefind": "1.5.2",
     "playwright": "^1.63.0",
     "tsx": "4.23.13",
-    "yaml": "2.9.0"
+    "yaml": "2.9.1"
   },
   "dependencies": {
     "@openclaw/carapace": "git+https://github.com/openclaw/carapace.git#v0.6.2"
