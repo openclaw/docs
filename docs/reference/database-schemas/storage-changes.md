@@ -220,9 +220,10 @@ Backup outcome recording and freshness reads expose asynchronous operations from
 the shared-state owner. Archive, SQLite snapshot, and Git backup commands await
 recording before reporting completion; a recording failure remains a warning and
 does not change the backup result. Status and Doctor await freshness before
-formatting it. These operations still execute synchronous SQLite internally;
-they retain the existing insertion-and-pruning transaction, 200-row limit, and
-non-creating freshness reads.
+formatting it. Outcome recording executes its insertion-and-pruning transaction
+in the shared-state worker, preserving the 200-row limit and leaving absent
+databases absent. Freshness reads still execute synchronous SQLite internally
+and remain non-creating.
 
 Explicit session deletion, lifecycle-artifact cleanup, and history disk-budget
 eviction prepare their plans inside the session writer queue. When the parent database handle is cold, its
