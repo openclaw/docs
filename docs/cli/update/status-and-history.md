@@ -101,6 +101,9 @@ An unsuccessful identity check is reported as a version or build mismatch only
 when the saved observed and expected values disagree. Missing identity evidence
 is reported as unavailable, including old runs whose updater saved only
 `versionMatch: false`.
+The Control UI's version badge shows **Not verified** for unavailable identity
+evidence and **Failed** for an observed version or build mismatch. This does not
+change the recorded update outcome.
 
 For failed runs, human status, completion notices, and reviewed failure reports
 also try a read-only health request to the recorded Gateway port. A response
