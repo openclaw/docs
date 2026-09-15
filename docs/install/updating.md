@@ -56,6 +56,12 @@ It preserves non-secret Gateway auth settings such as `gateway.auth.rateLimit`
 for policy checks, while using a temporary token and disabling Tailscale identity
 authentication.
 The activated Gateway retains your normal listener settings.
+The canary verifies the copied plugin payloads without downloading replacements.
+It warns when plugin refresh is deferred; live update finalization owns that
+refresh, so a slow registry cannot consume the canary's startup budget.
+This candidate-side behavior also applies when the installed updater is 2026.9.3.
+That older updater still caps the entire validation sequence at five minutes;
+its `--timeout` option cannot increase this cap.
 
 Package updates also check npm availability for enabled configured plugins before
 stopping the serving Gateway or replacing the installed core. Registry targets
