@@ -383,6 +383,38 @@ emitted only after its observed operation settles and takes at least one second:
   `producerObserved=false` means the producer's diagnostic identity is
   unavailable, not that no producer exists.
 
+Rejected control calls can add `controlFailurePhase` and
+`controlFailureCategory` to the page-producer summary. The phase identifies the
+logical request boundary that reported the error:
+
+| `controlFailurePhase` | Boundary                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `load-control`        | Loading the control module.                                                                                      |
+| `prepare`             | Options, guards, imports, or argument/budget evaluation before acquisition or client API entry.                  |
+| `acquire-client`      | Shared-client selection, process-registration preparation, possible startup, authentication, and initialization. |
+| `client-request`      | The client API was invoked; readiness and shared native-request waiting can still occur inside it.               |
+| `release-client`      | Lease release or cleanup, including a later deadline decision after cleanup.                                     |
+
+Categories are `deadline-observed`, `scoped-rejection`,
+`rpc-method-unavailable` (typed RPC error code `-32601`), `rpc-error`, or `other`.
+They use existing owner decisions and typed errors, without copying exception
+messages, stacks, response data, or arbitrary error codes. Plain startup,
+transport, and other unclassified errors remain `other`; the category does not
+identify their cause. Public unavailable-host messages remain sanitized.
+
+Successful cleanup preserves an earlier error's phase unless the outer request
+owner observes its deadline. For `deadline-observed`, the phase is the active
+stage at that later decision, even if cleanup just completed. For example,
+`release-client/deadline-observed` can follow budget exhaustion before the client
+API was ever invoked; it does not prove cleanup caused the deadline. A cleanup
+error that replaces the request error reports `release-client`. Internally
+handled retries and successful requests do not publish failure fields, and late
+callbacks cannot overwrite a settled observation.
+
+These fields do not prove a native request was written, a native process failed,
+or a response reached the client. The containing list can resolve with an
+unavailable host after a control call rejects.
+
 `operationId` is local to `diagnosticEpoch`, PID and thread. It is not a session,
 native request or audit execution identity. One producer can serve several
 waiters, and a stale refresh can continue after a list returns. `outcome=resolved`
