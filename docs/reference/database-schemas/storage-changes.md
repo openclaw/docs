@@ -33,7 +33,18 @@ before loading; intervening writes leave it stale for the next load. An unavaila
 worker result or a failed load without a reported repair also invalidates the cached
 revision without replaying the operation. Error causes used by Doctor diagnostics
 cross the same closed-field error graph, without changing ordinary broker errors.
-Cron saves, their transaction hooks, synchronous diagnostic reads, and read-only
+Unguarded cron saves without transaction hooks also execute in that worker, using the same
+connection-bound kernels as native hook-bearing transactions. Full replacement,
+runtime-only updates, quarantine changes, and changed-row merges retain their
+existing transaction boundaries. Save results publish committed or uncertain
+invalidation before settlement. Internal service callers receive an operation-bound
+revision; intervening host writes leave the returned snapshot conservatively stale.
+Evicted revision entries fall back to the existing global publication sequence,
+and stale save receipts use a negative marker that cannot match a current revision.
+Public save signatures and return values are unchanged. Service mutations with
+commit guards, one-use authority capture, or caller preconditions retain their
+synchronous call-through to the native kernels; their worker admission remains
+separate work. Receipt-coupled transaction hooks, Doctor metadata callbacks, synchronous diagnostic reads, and read-only
 inspection retain their current owners and execution paths.
 
 iMessage outbound receipt recovery reads the external Messages SQLite database
