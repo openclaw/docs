@@ -69,8 +69,9 @@ Open **Systems** in the sidebar, or visit `/systems`, to inspect the Gateway,
 worker environments, and paired devices available to your connection. If your
 customized sidebar does not include Systems, add it from **Edit pinned items**.
 
-Systems replaces the lower conversation list with a machine list. The global
-navigation and footer stay in place, and returning to conversations restores
+Systems replaces the conversation list with a machine list below the global
+navigation. Navigation and the active list share one scroll area on every route;
+the sidebar header and footer stay fixed. Returning to conversations restores
 their sidebar scroll position. Navigation changes this context; background
 machine or session activity does not switch your workspace.
 
