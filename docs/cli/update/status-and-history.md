@@ -14,6 +14,12 @@ Availability checks and the durable record every update leaves behind. Part of t
 Show the active update channel, git tag/branch/SHA (source checkouts only),
 update availability, and the active or most recent update report.
 
+Status also shows current pending plugin migrations and their repair commands,
+including when an older updater did not record those warnings in its run history.
+JSON exposes them as `migrationWarnings`; they clear when the plugin migration
+completes. If migration state cannot be read, `migrationWarningsError` reports
+that failure while availability and run history remain visible.
+
 ```bash
 openclaw update status
 openclaw update status --json
