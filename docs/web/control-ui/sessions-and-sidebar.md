@@ -75,6 +75,12 @@ the sidebar header and footer stay fixed. Returning to conversations restores
 their sidebar scroll position. Navigation changes this context; background
 machine or session activity does not switch your workspace.
 
+The machine list excludes cloud workers whose teardown is complete, including
+retained records from archived sessions and failed starts with no allocated
+machine. Workers awaiting cleanup remain visible. Archiving stops running cloud
+workers through the normal workspace-reconciliation flow; failed placements keep
+their existing cleanup retries and recovery history.
+
 Select a desktop-capable system to open the existing Desktop viewer in the main
 workspace. It uses the same connection, control, sizing, and fullscreen behavior
 as the Desktop panel. Headless and offline entries remain inspectable instead
