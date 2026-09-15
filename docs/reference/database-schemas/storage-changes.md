@@ -43,6 +43,15 @@ joins worker cleanup before the send publishes its receipt. Numeric message IDs 
 rules, including the five-second polling deadline. This does not migrate
 iMessage's startup watermark or conversation-binding queries.
 
+Memory-host event appends and bounded journal reads execute on the shared state
+worker. The plugin-state owner allocates the sequence, rereads the cursor and
+retained tail, writes both rows, and applies retention in one synchronous write
+transaction on that worker. Caller event fields are serialized before admission;
+the owner adds the sequence while preserving the existing stored JSON and keys.
+Reads use the existing-only worker path and do not create a missing database.
+Public event helpers and exports await durable completion. Cursor eviction,
+namespace-wide append ordering, sibling row budgets, and rollback remain unchanged.
+
 Use Kysely for ordinary queries and mutations. The current
 `getNodeSqliteKysely` facade compiles queries; `executeSqliteQuerySync` runs them
 on the supplied `node:sqlite` connection. Calling Kysely's asynchronous
