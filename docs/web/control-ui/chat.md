@@ -401,6 +401,10 @@ The core [`show_widget`](/tools/show-widget) tool renders self-contained SVG or 
 
 ## Chat transcript layout
 
+Use the mouse wheel or trackpad over the composer or its surrounding space to
+scroll the conversation while the composer stays pinned. Long drafts, task
+progress cards, and menus keep their own scrolling when their content overflows.
+
 Scrolling up to read earlier messages collapses the task progress card above the
 composer. Streaming output and layout adjustments keep that reading mode intact.
 Scroll back to the end or select **Latest** to resume following the conversation;
