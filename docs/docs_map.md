@@ -2513,6 +2513,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: SecretRef resolution
   - H2: Actions
   - H3: Core
+  - H3: Member info
   - H3: Send
   - H3: Poll
   - H3: Threads
