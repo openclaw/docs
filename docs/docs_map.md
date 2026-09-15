@@ -4935,6 +4935,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Privacy model
   - H2: WebSocket disconnect logs
   - H2: Stability recorder
+  - H2: CPU profile
   - H2: Useful options
   - H2: Disable diagnostics
   - H2: Related
