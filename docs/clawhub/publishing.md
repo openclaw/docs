@@ -235,7 +235,7 @@ publishes and skill publishing retain their existing category behavior.
 
 Topics remain separate: use `--topics` or the workflow's `topics` input to set
 them, omit the input to preserve existing topics, or use `--topics ""` /
-`clear_topics: true` to clear them. See the [package CLI reference](/clawhub/cli#package-publish-source)
+`clear_topics: true` to clear them. See the [package CLI reference](/clawhub/cli#package-publish-%3Csource%3E)
 and [topic rules](#skill-catalog-metadata).
 
 ### Trusted Publishing for Packages
