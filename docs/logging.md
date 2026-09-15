@@ -350,6 +350,74 @@ the provider duration or returned-host counts. The log does not prove client
 receipt, identify which native operation was slow, or cover attempts that never
 settle. Missing records do not establish that there were no stalls.
 
+### Codex catalog phases
+
+The same `gateway/session-catalog` logger records three Codex summaries when
+process diagnostics and warning-level logging are enabled. Each summary is
+emitted only after its observed operation settles and takes at least one second:
+
+- `slow Codex catalog list phases` covers the plugin's list operation.
+  `managedSnapshotMs`, `controlWaitSumMs`, `exclusionMarkSumMs`, `adoptionSumMs`
+  and `mappingMs` identify reached work. Counts include `localHostCount`,
+  `controlPageCalls`, `exclusionMarkCalls` and `adoptionCalls`.
+  `managedSnapshotMs` is absent when the optional snapshot method or store is
+  unavailable. `nodeRegistryCalls` and `nodeRegistryMs` measure the existing node
+  registry invocation; `pairedNodeCalls`, `pairedNodeSettled` and `nodeWaitSumMs`
+  describe the paired-node promises reached by the list. Cache counters
+  `coldStarts`, `refreshStarts`, `freshHits`, `staleHits` and `pendingJoins`
+  distinguish new producers, background refreshes, immediate cached delivery
+  and callers awaiting an existing cold page.
+- `slow Codex catalog page producer` measures one control-page calculation.
+  `listOperationId` identifies its originating list when observed. `origin` is
+  `cold`, `refresh` or `uncached`. `controlRequestCalls` counts
+  entered control requests; `inclusiveControlRequestWaitMs` sums their elapsed
+  waits and `inclusiveControlRequestWaitMaxMs` reports the longest one.
+  `postResponseMs` covers subsequent provenance checks and page projection.
+  `provenanceChecks`, `provenanceCacheHits`, `provenanceReadCalls` and
+  `provenanceMs` describe the existing provenance path. `provenanceReadCalls`
+  counts calls to the metadata reader, not filesystem read syscalls or chunks.
+  `stopReason`, when reached, is `exhausted`, `limit` or `page-bound`.
+- `slow Codex catalog cache wait` measures a caller waiting for a pending cold
+  page. `producerOperationId` links it to an observed producer;
+  `listOperationId` links the surrounding list when available.
+  `producerObserved=false` means the producer's diagnostic identity is
+  unavailable, not that no producer exists.
+
+`operationId` is local to `diagnosticEpoch`, PID and thread. It is not a session,
+native request or audit execution identity. One producer can serve several
+waiters, and a stale refresh can continue after a list returns. `outcome=resolved`
+means that the observed operation returned; a resolved list can include
+disconnected or error-bearing hosts.
+
+All timings are elapsed time, including asynchronous waits. The inclusive
+control-request interval does not isolate physical request writes, wire latency,
+native processing or cleanup; it does not prove that a native process stopped.
+Provenance time is included in post-response time, and host work can overlap,
+so sums need not partition the list's elapsed time. `nodeWaitSumMs` sums existing
+paired-node promise waits; it is not a disjoint node phase or proof of native
+completion. If the list closes while a child promise is unsettled,
+`pairedNodeCalls` can exceed `pairedNodeSettled` and the sum is partial. Later
+host publications retain their separate lifetime. Unreached timings are omitted,
+while a reached stage may report zero milliseconds.
+
+The tracker admits at most 64 active diagnostic observations per JavaScript
+runtime isolate and shares a budget of 60 records per fixed 60-second window
+across these three summaries. These limits suppress observations, not catalog
+work. Each record's metadata is capped at 28 scalar fields and 2 KiB, excluding
+the logger envelope. `omittedObservations` reports accumulated capacity, rate
+or metadata-limit suppression on a later emitted record. Window-boundary bursts
+remain possible. Disabled diagnostics, logging levels, short operations,
+non-settlement or logging failures can also leave no record.
+
+The records contain fixed labels, counts, timings and diagnostic operation
+identity. They omit connection fingerprints, queries, cursors, homes, paths,
+session/thread identifiers, titles, credentials and raw errors. Existing trace
+context may accompany the log; no trace or audit identity is created. These are
+ordinary performance logs and do not change [audit collection](/gateway/audit),
+authorization, cache behavior or deadlines. Their sanitized attributes may flow
+through an already-enabled [OpenTelemetry log exporter](/gateway/opentelemetry/privacy-and-trace-context)
+even when content capture is off. Missing logs do not prove an absence of stalls.
+
 ### Lifecycle queue waits
 
 When process diagnostics are enabled, the `sessions/lifecycle` logger emits

@@ -7034,6 +7034,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Trace correlation
   - H3: Embedded attempt preparation
   - H3: Session catalog provider waits
+  - H3: Codex catalog phases
   - H3: Lifecycle queue waits
   - H3: Slow worktree cleanup
   - H3: Slow agent database opens
