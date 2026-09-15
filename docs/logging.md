@@ -323,18 +323,25 @@ logging. A missing summary does not prove preparation completed without delay.
 ### Session catalog provider waits
 
 With process diagnostics enabled, the `gateway/session-catalog` logger records
-`slow session catalog provider list` for attempts that settle after at least one second. It separates
-`admissionWaitMs`, `providerElapsedMs`, and `completionDelayMs`: waiting for
-catalog provider admission, elapsed time inside the provider call, and the
-continuation after settlement and queue release. These are elapsed intervals,
-not CPU measurements. The Gateway's earlier operator-start queue is separate.
+`slow session catalog provider list` for attempts that settle after at least one second.
+`admissionWaitMs` records initial provider admission waiting. `providerElapsedMs`
+spans the first provider invocation through final logical settlement, including
+waiting between steps of a stepped fill. `completionDelayMs` begins after final
+settlement and queue release. The Gateway's earlier operator-start queue is separate.
+
+`stepCount` counts admitted callbacks. `admittedStepMs` sums their elapsed time
+through actual settlement, including authority checks, factory work, and I/O
+waits. `continuationWaitMs` measures queue waiting after an incomplete step until
+resumption or cancellation; it excludes initial admission. These fields are not
+an exact disjoint partition and do not measure CPU time.
 
 `admitted` and `providerInvoked` distinguish an attempt that never entered the
 queue's active slot from one that called the provider. Unreached intervals are
 omitted. `outcome` reports the attempt's resolution or rejection;
 `signalAborted` reports the signal independently and does not identify an error's
-cause or prove that native work stopped. Provider slots remain owned until their
-returned promises settle, including after cancellation.
+cause or prove that native work stopped. An active provider call or `next()` step
+keeps its slot until its actual promise settles, including after cancellation.
+An inert continuation queues with other callers between steps.
 
 `providerIdHash` hashes provider IDs of at most 256 UTF-16 units; longer IDs omit
 the field. It supports correlation, not anonymization or authorization. Host
