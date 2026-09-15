@@ -10380,6 +10380,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-entrypoints/tool-policy-and-sandbox
 - Headings:
   - H2: Tool policy vocabulary
+  - H2: Runtime tool allowlists
   - H2: Sandbox bind parsing
 
 ## plugins/sdk-migration.md
