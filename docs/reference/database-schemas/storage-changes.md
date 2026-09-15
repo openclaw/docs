@@ -189,8 +189,16 @@ retains prepared statements and connection-local canonical-key validation, never
 an authorization result or an open read transaction. Canonical validation checks
 the committed main-key policy before reuse. The companion retires with its writer's
 native close, disposal, or replacement, including eviction and update cleanup.
-Cold and extension-capable readers remain one-shot; incognito reads retain their
-existing process-local owner. This changes no schema or migration requirement.
+Cold readers outside the history worker and extension-capable readers remain
+one-shot; incognito reads retain their existing process-local owner.
+
+The history worker retains one read-only connection across requests, rechecking
+schema, agent owner, and physical file identity before reuse. Every request keeps
+its own snapshot and current admission checks. Switching databases closes the
+previous connection. The parent retires the worker after 30 minutes without
+pending history reads; database cleanup revokes admission and joins native worker
+exit before closing the database. These lifetimes change no schema or migration
+requirement.
 
 Correlated conversation replies retain their original store and state environment
 while waiting for write admission. Capture rechecks the live reply claim and
