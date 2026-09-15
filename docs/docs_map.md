@@ -7545,6 +7545,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What it does
   - H2: Settings
   - H2: Session colors
+  - H2: Sources in chat
   - H2: Diagrams in chat
   - H2: Requirements
   - H2: Quick start (pair + connect)
@@ -7786,6 +7787,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /platforms/mac/webchat
 - Headings:
+  - H2: Sources
   - H2: Diagrams
   - H2: Session colors
   - H2: Multiple Gateway windows
