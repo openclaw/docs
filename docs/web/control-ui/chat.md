@@ -108,6 +108,10 @@ original conversation. If history fails to load, the queued message stays
 available while you resolve the history error. Goals and other slash commands
 wait for history; `/stop` and `/approve` remain available.
 
+When you open a short chat link, identity prepared during the current connection
+can make the composer ready sooner. The original link stays in place until the
+session lookup confirms the same conversation and its current title.
+
 Background refreshes for saved sidebar filters, groups, automation status, and the
 Inbox wait until the conversation appears. Task lists, task suggestions, and the
 progress card then refresh after the transcript paints. Opening a task panel,
