@@ -401,6 +401,19 @@ composer. Streaming output and layout adjustments keep that reading mode intact.
 Scroll back to the end or select **Latest** to resume following the conversation;
 an explicit choice to expand or collapse the card stays in effect for that task.
 
+Completed replies can show a compact **Sources** strip when their web links match
+recorded `web_search` or `web_fetch` results from the same run. Select a title and
+domain card to preview its **Search snippet** or **Page excerpt**, then use
+**Open source** to open the recorded page. Previews reuse retrieved content without
+fetching pages again. Site icons use the existing **Automatically Fetch Link Favicons**
+preference and Gateway icon loader, with a globe when disabled or unavailable.
+Session links and GitHub issue or pull-request links keep their dedicated previews
+instead of appearing again in the source strip. Citation-only results keep a link
+and show **No excerpt available**. Uncited results, failed tools, and results from
+other runs are not included. Source cards require run identity in the transcript
+and follow tool-activity visibility. They are hidden while a run is active or
+transcript search is filtering messages.
+
 In completed dashboard turns, commentary, reasoning-only messages, and tool activity
 share one **Worked for…** disclosure above the answers. Expanding it shows the
 activity in its original order; explicit answer segments and visual results stay
