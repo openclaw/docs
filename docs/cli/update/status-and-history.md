@@ -177,6 +177,15 @@ automatic rollback cannot complete. Phase timings, repair attempts, and
 verification facts are included only when observed. Chat reports are limited to 1,500 characters;
 `update.runs.get` preserves the bounded record for detailed inspection.
 
+Standalone finalization and repair record the installed target version before
+Doctor runs. Failed Doctor steps retain the observed child exit code alongside
+the bounded, redacted failure reason; a terminated child can have a `null` exit
+code. Status and failure reports use these same recorded facts. The installed
+version is not proof of the version currently serving requests. Optional Doctor
+diagnostic failures remain warnings, while refused config writes and incomplete
+required migrations remain errors. Historical runs cannot recover facts that
+their updater never recorded.
+
 Current updaters record their process identities and refresh the ledger
 every 30 seconds during long build, install, and finalization phases. The Gateway checks for
 abandoned runs at startup and while following active updates. After more than
