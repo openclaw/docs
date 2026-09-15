@@ -3951,6 +3951,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/qa-e2e-automation/qa-reporting
 - Headings:
   - H2: Reporting
+  - H3: Scheduled instances and retained observations
+  - H3: Explicit proof requirements
+  - H3: Evidence previews
+  - H3: Character and style evaluation
 
 ## concepts/qa-e2e-automation/scenario-coverage.md
 
