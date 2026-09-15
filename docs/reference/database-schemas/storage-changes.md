@@ -202,8 +202,12 @@ one captured database context through enqueue, retry bookkeeping, and settlement
 The scheduler stops admission and joins its reads and active drains before the
 database closes. Queue payloads retain their JSON serialization boundary before
 worker transport. Compound task/subagent admission and settlement retain their
-existing synchronous transaction owner; the outbound queue and its media custody
-operations remain separate migration work.
+existing synchronous transaction owner. Outbound dead-letter health counts use
+the existing grouped-count kernel in the shared-state worker. Health collection
+captures its original worker admission before awaiting configuration and other
+health work; cached health replies await the count while retaining cached ingress
+pressure. Other outbound queue operations and media custody remain separate
+migration work.
 
 Conversation sends, turns, and queue completion retain their logical agent and
 physical store while waiting for agent write admission. Retry validation reads
