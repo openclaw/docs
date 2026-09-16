@@ -473,6 +473,7 @@ to messages. Tab enters at the current message, or the first marker if no messag
 is current. ArrowUp and ArrowDown move focus; Home and End go to the first and last
 markers. Enter or Space jumps to the focused message. Tab or Shift+Tab leaves the
 rail in one step, and Escape closes the preview and returns focus to the transcript.
+In split view, Escape handles the focused pane before a hovered preview in another pane.
 Focusing a marker also shows its preview without jumping to the message.
 
 The chat transcript uses a centered readable frame aligned with the composer. Assistant and tool output stay left-aligned while your own messages stay right-aligned inside that frame. In multi-user sessions (for example a group chat relayed from a channel plugin), messages from other attributed participants render left-aligned with the author's avatar, name, and a stable per-identity color, so only the signed-in viewer's messages read as "mine". When two or more attributed participants are present, assistant replies carry a small "Replying to name" marker naming the participant whose message triggered the turn. System entries such as local slash-command output render as centered notice rows without an avatar.
