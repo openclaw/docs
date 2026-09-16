@@ -91,8 +91,16 @@ Discord presence cooldown reads, claims, and conditional rollback use the shared
 state worker. The listener rechecks current policy and Gateway generation after
 storage waits, queues greetings only after a durable claim, and joins admitted
 work and rollback during provider shutdown, including work detached by reconnect.
-The same namespace, eight-hour expiry, and capacity policy remain in use. Thread
-binding persistence retains its synchronous owner and public completion contract.
+The same namespace, eight-hour expiry, and capacity policy remain in use. Discord
+thread binding restoration at channel-manager creation, provider startup, and
+registered subagent hooks uses the shared state worker. Concurrent cold reads share
+one load; a synchronous compatibility caller that initializes or mutates the
+registry while that load is pending keeps its newer state. Provider startup stops
+acquired binding managers when startup is cancelled or reconciliation fails. Snapshot writes and
+public synchronous binding APIs retain their synchronous owner and completion
+contract. Moving those writes requires preserving immediate unbind persistence
+and preventing older writes from recreating removed bindings; row comparison
+tokens alone do not identify an absent binding incarnation.
 
 Memory-host event appends and bounded journal reads execute on the shared state
 worker. The plugin-state owner allocates the sequence, rereads the cursor and
