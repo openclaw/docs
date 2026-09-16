@@ -76,6 +76,18 @@ Reads use the existing-only worker path and do not create a missing database.
 Public event helpers and exports await durable completion. Cursor eviction,
 namespace-wide append ordering, sibling row budgets, and rollback remain unchanged.
 
+Reef registration binding reads, reservations, finalization, release, and setup-session
+persistence use the shared-state worker. Reservation mutations compare the current
+row before writing; a conflict rereads ownership before retrying. The CLI, setup
+wizard, and channel startup await these operations. Keys, migration gates, trust,
+audit, replay, review, delivery, and inbox-cursor state retain their existing native
+owners. Key creation still performs its synchronous guard checks and insert without
+an event-loop yield; those separate operations do not form a cross-process transaction.
+Stored registration JSON, reservation expiry, namespace limits, and Doctor imports
+are unchanged. Hosts predating the comparison API retain their existing atomic native
+registration callbacks until an approved minimum host version permits removal. A
+worker failure never switches an operation to that compatibility path.
+
 Use Kysely for ordinary queries and mutations. The current
 `getNodeSqliteKysely` facade compiles queries; `executeSqliteQuerySync` runs them
 on the supplied `node:sqlite` connection. Calling Kysely's asynchronous
