@@ -15,7 +15,7 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 
 1. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the OpenClaw docs tree into `openclaw/docs`, then replaces `docs/clawhub/` with the current `openclaw/clawhub/docs` input. The sync script also rewrites the publish `docs/docs.json`. The generated locale picker blocks exist there even though the source repo no longer commits them.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate Incremental` handles debounced source changes. `Translate Full` (`openclaw/docs/.github/workflows/translate-all.yml`) runs on a weekly schedule or manual dispatch.
+3. `Translate All` (`openclaw/docs/.github/workflows/translate-all.yml`) is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
 4. The coordinator waits a cooldown window before starting translation.
 5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
 6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
@@ -51,10 +51,10 @@ If a locale job fails, its artifact is marked failed and carries no payload. The
 
 ## Artifact contract
 
-Each locale shard uploads one artifact named with locale, shard, and source SHA:
+Each locale job uploads one artifact named with locale and source SHA:
 
 ```text
-i18n-zh-cn-s0of8-<source-sha>
+i18n-zh-cn-<source-sha>
 ```
 
 Artifact contents:
@@ -67,21 +67,9 @@ payload/docs/<locale>/**
 payload/docs/.i18n/<locale>.tm.jsonl
 ```
 
-`metadata.json` includes the locale, locale slug, source SHA, shard index/count, pending count, changed count, and any failure reason. It also records the actual docs checkout `publish_ref` and the Git blob ID `source_metadata_oid` of its `.openclaw-sync/source.json`. The workflow commit and docs snapshot can differ, including on manual branch dispatches.
+`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
 
-The finalizer checks requested artifact source identity, page hashes, locale completeness, and TM freshness against current main. It rechecks the complete source metadata before committing. Resuming an old snapshot does not permit stale pages or TM to overwrite newer source state.
-
-## Resume a full run
-
-After the original `Translate Full` run finishes, dispatch the current workflow with `resume_run_id` set to that run's numeric ID. Leave `target_locale=all` to reuse successful shards and retry failed, missing, or unusable shards. A specific locale limits that plan to matching receipts. Runs serialize without cancelling an active full run.
-
-Preparation pins the prior run's latest artifact IDs, rejects expired or missing receipts, and downloads them before selecting source. Recorded provenance must identify one full source SHA and one docs snapshot. Preparation then checks out that immutable docs/TM snapshot and sizes the shard plan from its docs. It does not debounce or select newer main for a resume. Empty, unmatched, inconsistent, or contradictory evidence fails before provider work.
-
-Older receipts lack `publish_ref` and `source_metadata_oid`. For these only, supply `resume_publish_ref` with the full original docs commit SHA verified from the original run's selected-source summary or locale checkout logs. The workflow run's `head_sha` alone is not sufficient: preparation may have selected a different main commit. The backfill must match the artifacts' source SHA and any recorded snapshot evidence. New receipts recover their snapshot automatically and reject this override.
-
-Preparation, locale workers, and finalization retain helpers from the current workflow revision outside the checkout directory. Restoring old docs or TM cannot restore old validator code. Both flat single-artifact downloads and per-artifact directories are supported; current rerun receipts replace prior ones by locale/shard/source identity. The finalizer uses the same pinned prior artifact IDs admitted by preparation and rejects an incomplete download before merging payloads.
-
-For a non-publishing page check, use `diagnostic_canary_only=true`, the desired `target_locale`, and `canary_source_path`. Publication still requires the existing finalizer checks; a successful historical-source canary is not proof that old output can be applied to today's main.
+The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
 ## Aggregate commit
 
@@ -99,7 +87,7 @@ The commit may contain a partial locale set. The job summary lists applied local
 
 The weekly run uses `full` mode. It forces a full reconciliation across every locale and every source page instead of relying only on changed source hashes.
 
-Glossary changes are picked up by the next weekly or manual full reconciliation because glossary guidance can affect pages whose source hashes did not change.
+Glossary changes also force full reconciliation because glossary guidance can affect pages whose source hashes did not change.
 
 Expected behavior:
 
