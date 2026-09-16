@@ -4490,6 +4490,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The setup command
   - H3: Native Windows prerequisites
   - H2: Bundle installation
+  - H3: Reuse a node runtime archive after Gateway restart
   - H2: Build a complete custom node package
 
 ## gateway/cloud-workers/troubleshooting.md
