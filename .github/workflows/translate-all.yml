@@ -42,6 +42,11 @@ on:
         required: false
         default: ""
         type: string
+      resume_publish_ref:
+        description: Verified original docs commit for legacy resume artifacts without recorded snapshot provenance.
+        required: false
+        default: ""
+        type: string
       canary_only:
         description: Run only the canary translation, publish, and live smoke.
         required: false
@@ -110,7 +115,7 @@ jobs:
           fi
 
   prepare:
-    name: Debounce and pick source
+    name: Pick source and plan full locale batches
     needs: validate-workflow-shell
     runs-on: ubuntu-latest
     outputs:
@@ -119,42 +124,8 @@ jobs:
       should_translate: ${{ steps.prepare.outputs.should_translate }}
       source_repository: ${{ steps.prepare.outputs.source_repository }}
       source_sha: ${{ steps.prepare.outputs.source_sha }}
-    steps:
-      - name: Check out
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Debounce main
-        id: prepare
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || '' }}
-          DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
-          DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
-        run: |
-          set -euo pipefail
-
-          python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
-
-      - name: Reject publishing a diagnostic canary source
-        if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'
-        run: |
-          echo "Only channels/line.md has matching live-smoke metadata for canary publication." >&2
-          exit 1
-
-      - name: Reject conflicting canary-only modes
-        if: inputs.canary_only == true && inputs.diagnostic_canary_only == true
-        run: |
-          echo "Choose either publishing canary_only or diagnostic_canary_only, not both." >&2
-          exit 1
-
-  plan:
-    name: Plan full locale batches
-    needs: prepare
-    if: needs.prepare.outputs.should_translate == 'true'
-    runs-on: ubuntu-latest
-    outputs:
+      resume_artifact_ids: ${{ steps.resume.outputs.resume_artifact_ids }}
+      resume_run_attempt: ${{ steps.resume.outputs.resume_run_attempt }}
       locale_count: ${{ steps.plan.outputs.locale_count }}
       canary_locale: ${{ steps.plan.outputs.canary_locale }}
       canary_locale_slug: ${{ steps.plan.outputs.canary_locale_slug }}
@@ -177,40 +148,94 @@ jobs:
       batch_6_count: ${{ steps.plan.outputs.batch_6_count }}
       batch_6: ${{ steps.plan.outputs.batch_6 }}
     steps:
-      - name: Check out
+      - name: Check out workflow scripts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
+      - name: Pin prior full-run artifacts
+        id: resume
+        if: inputs.resume_run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESUME_RUN_ID: ${{ inputs.resume_run_id }}
+        run: |
+          set -euo pipefail
+          python "${I18N_SCRIPT_DIR}/prepare.py" --mode full --title "Translate Full" --inspect-resume-run "${RESUME_RUN_ID}"
 
       - name: Download prior full-run artifacts
         if: inputs.resume_run_id != ''
-        continue-on-error: true
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.resume_run_id }}
-          pattern: i18n-*-${{ needs.prepare.outputs.source_sha }}
-          path: .openclaw-sync/resume-artifacts
+          artifact-ids: ${{ steps.resume.outputs.resume_artifact_ids }}
+          path: ${{ runner.temp }}/resume-artifacts
+
+      - name: Select translation snapshot
+        id: prepare
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || '' }}
+          DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
+          DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
+          RESUME_RUN_ID: ${{ inputs.resume_run_id || '' }}
+          RESUME_PUBLISH_REF: ${{ inputs.resume_publish_ref || '' }}
+          RESUME_ARTIFACT_IDS: ${{ steps.resume.outputs.resume_artifact_ids }}
+        run: |
+          set -euo pipefail
+          args=(--mode full --title "Translate Full" --resume-publish-ref "${RESUME_PUBLISH_REF}")
+          if [ -n "${RESUME_RUN_ID}" ]; then
+            args+=(--resume-artifacts-root "${RUNNER_TEMP}/resume-artifacts")
+          fi
+          python "${I18N_SCRIPT_DIR}/prepare.py" "${args[@]}"
+
+      # Plan from the frozen docs, while control code and receipts survive checkout.
+      - name: Check out selected translation snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.prepare.outputs.publish_ref }}
+
+      - name: Reject publishing a diagnostic canary source
+        if: inputs.canary_only == true && inputs.canary_source_path != 'channels/line.md'
+        run: |
+          echo "Only channels/line.md has matching live-smoke metadata for canary publication." >&2
+          exit 1
+
+      - name: Reject conflicting canary-only modes
+        if: inputs.canary_only == true && inputs.diagnostic_canary_only == true
+        run: |
+          echo "Choose either publishing canary_only or diagnostic_canary_only, not both." >&2
+          exit 1
 
       - name: Build full locale plan
         id: plan
         env:
           TARGET_LOCALE: ${{ inputs.target_locale || 'all' }}
-          SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+          SOURCE_SHA: ${{ steps.prepare.outputs.source_sha }}
           RESUME_RUN_ID: ${{ inputs.resume_run_id || '' }}
         run: |
           set -euo pipefail
-
           args=(--batch-size 4 --source-sha "${SOURCE_SHA}")
           if [ -n "${RESUME_RUN_ID}" ]; then
-            args+=(--resume-artifacts-root .openclaw-sync/resume-artifacts)
+            args+=(--resume-artifacts-root "${RUNNER_TEMP}/resume-artifacts")
           fi
-          python .github/scripts/i18n/plan_full.py "${args[@]}"
+          python "${I18N_SCRIPT_DIR}/plan_full.py" "${args[@]}"
 
   provider-preflight:
     name: Check translation provider
     needs:
       - prepare
-      - plan
-    if: needs.prepare.outputs.should_translate == 'true' && needs.plan.outputs.translation_required == 'true'
+    if: needs.prepare.outputs.should_translate == 'true' && needs.prepare.outputs.translation_required == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -228,16 +253,15 @@ jobs:
           python .github/scripts/i18n/provider_preflight.py
 
   translate-canary:
-    name: Canary ${{ needs.plan.outputs.canary_locale }}
+    name: Canary ${{ needs.prepare.outputs.canary_locale }}
     needs:
       - prepare
-      - plan
       - provider-preflight
-    if: needs.prepare.outputs.should_translate == 'true' && needs.plan.outputs.translation_required == 'true'
+    if: needs.prepare.outputs.should_translate == 'true' && needs.prepare.outputs.translation_required == 'true'
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
-      locale: ${{ needs.plan.outputs.canary_locale }}
-      locale_slug: ${{ needs.plan.outputs.canary_locale_slug }}
+      locale: ${{ needs.prepare.outputs.canary_locale }}
+      locale_slug: ${{ needs.prepare.outputs.canary_locale_slug }}
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
@@ -262,13 +286,12 @@ jobs:
     name: Full batch 1
     needs:
       - prepare
-      - plan
       - translate-canary
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_1_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_1_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_1) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_1) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -291,14 +314,13 @@ jobs:
     name: Full batch 2
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-1
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_2_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_2_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_2) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_2) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -320,14 +342,13 @@ jobs:
     name: Full batch 3
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-2
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_3_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_3_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_3) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_3) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -349,14 +370,13 @@ jobs:
     name: Full batch 4
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-3
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_4_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_4_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_4) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_4) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -378,14 +398,13 @@ jobs:
     name: Full batch 5
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-4
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_5_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_5_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_5) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_5) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -407,14 +426,13 @@ jobs:
     name: Full batch 6
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-5
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.plan.outputs.batch_6_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && needs.prepare.outputs.batch_6_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix: ${{ fromJSON(needs.plan.outputs.batch_6) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.batch_6) }}
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -436,7 +454,6 @@ jobs:
     name: Commit aggregate translation refresh
     needs:
       - prepare
-      - plan
       - translate-canary
       - translate-batch-1
       - translate-batch-2
@@ -444,21 +461,21 @@ jobs:
       - translate-batch-4
       - translate-batch-5
       - translate-batch-6
-    if: always() && needs.prepare.outputs.should_translate == 'true' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && (needs.plan.outputs.translation_required == 'false' || needs.translate-canary.result == 'success')
+    if: always() && needs.prepare.outputs.should_translate == 'true' && inputs.canary_only != true && inputs.diagnostic_canary_only != true && (needs.prepare.outputs.translation_required == 'false' || needs.translate-canary.result == 'success')
     uses: ./.github/workflows/translate-finalize-reusable.yml
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: ${{ needs.plan.outputs.shard_total }}
-      expected_locales: ${{ needs.plan.outputs.expected_locales }}
+      shard_total: ${{ needs.prepare.outputs.shard_total }}
+      expected_locales: ${{ needs.prepare.outputs.expected_locales }}
       resume_run_id: ${{ inputs.resume_run_id || '' }}
+      resume_artifact_ids: ${{ needs.prepare.outputs.resume_artifact_ids }}
     secrets: inherit
 
   full-status:
     name: Report full translation status
     needs:
       - prepare
-      - plan
       - provider-preflight
       - translate-canary
       - translate-batch-1
@@ -468,7 +485,7 @@ jobs:
       - translate-batch-5
       - translate-batch-6
       - finalize
-    if: always() && needs.prepare.outputs.should_translate == 'true'
+    if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.should_translate == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -476,12 +493,11 @@ jobs:
 
       - name: Download prior full-run artifacts
         if: inputs.resume_run_id != ''
-        continue-on-error: true
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.resume_run_id }}
-          pattern: i18n-*-${{ needs.prepare.outputs.source_sha }}
+          artifact-ids: ${{ needs.prepare.outputs.resume_artifact_ids }}
           path: .openclaw-sync/resume-artifacts
 
       - name: Download current full locale artifacts
@@ -499,16 +515,17 @@ jobs:
             --output-root .openclaw-sync/i18n-artifacts
           )
           if [ -n "${RESUME_RUN_ID}" ]; then
-            args+=(--previous-root .openclaw-sync/resume-artifacts)
+            args+=(--previous-root .openclaw-sync/resume-artifacts --previous-artifact-ids "${RESUME_ARTIFACT_IDS}")
           fi
           python .github/scripts/i18n/merge_artifact_roots.py "${args[@]}"
         env:
           RESUME_RUN_ID: ${{ inputs.resume_run_id || '' }}
+          RESUME_ARTIFACT_IDS: ${{ needs.prepare.outputs.resume_artifact_ids }}
 
       - name: Summarize full run
         env:
-          SELECTED_LOCALES: ${{ needs.plan.outputs.selected_locales }}
-          LOCALE_COUNT: ${{ needs.plan.outputs.locale_count }}
+          SELECTED_LOCALES: ${{ needs.prepare.outputs.selected_locales }}
+          LOCALE_COUNT: ${{ needs.prepare.outputs.locale_count }}
           CANARY_ONLY: ${{ inputs.canary_only || false }}
           RESUME_RUN_ID: ${{ inputs.resume_run_id || '' }}
           PROVIDER_RESULT: ${{ needs.provider-preflight.result }}
