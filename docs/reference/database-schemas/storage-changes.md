@@ -115,7 +115,7 @@ Reef registration binding reads, reservations, finalization, release, and setup-
 persistence use the shared-state worker. Reservation mutations compare the current
 row before writing; a conflict rereads ownership before retrying. The CLI, setup
 wizard, and channel startup await these operations. Keys, migration gates, trust,
-audit, replay, review, and delivery state retain their existing native
+audit, replay, review mutations, and delivery state retain their existing native
 owners. Key creation still performs its synchronous guard checks and insert without
 an event-loop yield; those separate operations do not form a cross-process transaction.
 Stored registration JSON, reservation expiry, namespace limits, and Doctor imports
@@ -132,6 +132,13 @@ supported hosts without comparison operations retain atomic native updates until
 approved minimum host version guarantees comparison support. Worker failures never
 switch to that path. Invalid-row diagnostics on current hosts report
 the Reef validation error directly; older hosts retain native store error wrapping.
+
+Reef review-decision lookups and pending-review lists use the shared-state worker.
+Both reads recheck the live channel authority after storage settles, before returning
+results. Older hosts retain their existing asynchronous read adapter. Review requests,
+decisions, and completed-review eviction keep their uninterrupted native authority
+check and mutation path; worker read failures never fall back to native reads.
+Review JSON, digest identity, ordering, capacity, and retention are unchanged.
 
 Use Kysely for ordinary queries and mutations. The current
 `getNodeSqliteKysely` facade compiles queries; `executeSqliteQuerySync` runs them
