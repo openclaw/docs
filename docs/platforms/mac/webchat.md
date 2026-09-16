@@ -54,6 +54,20 @@ Names stay free of status suffixes, and unnamed tasks appear as **Subagent**.
 Reduced Motion keeps the running claw still. Existing detail expansion and
 completed-task retention are unchanged.
 
+## Pending questions and approvals
+
+Thread rows, agent rows, and collapsed group headings show a question or approval
+button for their oldest pending request. Parent threads include pending requests
+from their descendants. Hover for the preview and the number of additional
+requests of the same kind, or activate the button to read the full preview without
+switching conversations. VoiceOver exposes the same details.
+
+Approval previews include command, plugin, and system-agent requests from the
+window's Gateway. They refresh after reconnecting and clear when resolved or
+expired. Multiple windows for the same Gateway share that queue; different
+Gateway connections keep their requests separate. Previewing a request does not
+approve it or expand the actions available in the existing approval surfaces.
+
 ## Sources
 
 Completed answers in native chat and Quick Chat show up to eight compact
