@@ -5877,7 +5877,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/security/secure-file-operations
 - Headings:
-  - H2: Default: JavaScript fallback
+  - H2: Platform defaults
   - H2: What stays protected without native acceleration
   - H2: What native acceleration adds
   - H2: Plugin and core guidance
