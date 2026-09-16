@@ -5162,6 +5162,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Slow agent database opens
   - H3: Slow cron list pages
   - H3: Slow cron list requests
+  - H3: Slow Codex catalog pages
   - H2: Console capture
   - H2: Redaction
   - H2: Gateway WebSocket logs
