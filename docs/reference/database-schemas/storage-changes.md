@@ -60,6 +60,22 @@ joins worker cleanup before the send publishes its receipt. Numeric message IDs 
 rules, including the five-second polling deadline. This does not migrate
 iMessage's startup watermark or conversation-binding queries.
 
+iMessage persisted echo reads, writes, and failed-send cleanup use the plugin-state
+worker. Sends await provisional echo persistence before transport and cleanup
+before reporting failure. Inbound echo matching awaits persisted facts before
+choosing whether to dispatch. Hosts with plugin-state comparison methods use the
+worker for recovery cursor writes; conditional writes preserve the greatest
+admitted row for each account and database. The declared OpenClaw 2026.9.4 peer
+and plugin API floor remains supported: hosts without those comparison methods
+run the same row decision in the retained synchronous store's transactional
+`update` callback. Failures from an available comparison method never fall back
+to synchronous writes. Remove this fallback only when the declared host floor
+excludes hosts without comparison support. Durable ingress joins each cursor
+update before admitting the next row and joins admitted work on shutdown.
+Existing namespaces, stored values, expiry, migration, and best-effort failure
+policies remain unchanged. Reply-cache hydration and the synchronous action-alias
+lookup retain their existing owner.
+
 Discord presence cooldown reads, claims, and conditional rollback use the shared
 state worker. The listener rechecks current policy and Gateway generation after
 storage waits, queues greetings only after a durable claim, and joins admitted
