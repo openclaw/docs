@@ -129,7 +129,8 @@ See [CLI login](/clawhub/auth#cli-login) for the approval steps and expiry guida
   - `--limit <n>` (1-200, default: 25)
   - `--sort newest|updated|rating|downloads|trending` (default: newest). Legacy install sort aliases still work for compatibility.
   - `--json` (machine-readable output)
-- Output: `<slug>  v<version>  <age>  <summary>` (summary truncated to 50 chars).
+- Output: `<ownerHandle>/<slug>  v<version>  <age>  <summary>` (summary truncated to 50 chars).
+- Older custom registries selected with `--registry` may omit owner or latest-version fields. The CLI preserves their slug-only output and displays `v?` for an omitted version; explicit `latestVersion: null` is also accepted.
 
 ### `inspect @owner/slug`
 
@@ -299,7 +300,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/a230dae1b726996af9520f60bec97812be55a75f/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/9bed2f09dd943bcb27cb90a05f7477cdb6df290a/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -822,7 +823,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/a230dae1b726996af9520f60bec97812be55a75f/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/9bed2f09dd943bcb27cb90a05f7477cdb6df290a/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
