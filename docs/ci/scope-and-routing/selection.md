@@ -9,6 +9,8 @@ sidebarTitle: "Selection"
 
 Changed-scope detection, native lane selection, and the per-area routing rules that decide which lanes a diff selects. Part of the [CI scope and routing](/ci/scope-and-routing) index.
 
+Runner placement is separate from coverage selection. On automatic canonical hybrid first attempts, preflight may offload security, the three Control UI unit rows, and only the browser-extension E2E row when the [complete hosted base has at most 40 rows](/ci/capacity#bounded-hybrid-hosted-offload), keeping optional additions within 45 total. Base counts above 40 keep those rows on Blacksmith with their original tests and workers; an eligible base above 45 also emits a warning while retaining the complete base manifest.
+
 ## Scope and routing
 
 Scope logic lives in `scripts/ci-changed-scope.mjs` and is covered by unit tests in `src/scripts/ci-changed-scope.test.ts`. Ordinary manual dispatch skips changed-scope detection and makes the preflight manifest act as if every scoped area changed. The exact-head `release_gate` exception evaluates the fetched pull request merge tree and retains its macOS, iOS-build, and generated-native-locale decisions while still verifying native sources.

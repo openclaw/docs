@@ -21,6 +21,8 @@ and [manual dispatches](/ci/scope-and-routing/manual-dispatches).
 | [Job budgets and platform lanes](/ci/scope-and-routing/job-budgets) | UI shards, concurrency and matrix budgets, lint memory policy, Android rows, and sticky disks. |
 | [Manual dispatches](/ci/scope-and-routing/manual-dispatches)        | Manual CI dispatch behavior, release-gate fallbacks, and the Windows Testbox Probe.            |
 
+Short hybrid jobs use a [bounded hosted offload](/ci/capacity#bounded-hybrid-hosted-offload): the complete selected base must fit 40 hosted rows before up to five more move from Blacksmith. Coverage selection remains unchanged.
+
 ## Where each section moved
 
 Every section heading from the previous single-page version keeps its anchor here, so an existing link such as `/ci/scope-and-routing#manual-dispatches` still resolves. Each entry points at the page that now holds the content.

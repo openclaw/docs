@@ -22,6 +22,8 @@ for the exact survivor contract and target compatibility limits.
 | [Install smoke and Docker E2E](/ci/release-validation/install-smoke-and-docker-e2e) | Install Smoke coverage, the local Docker E2E aggregate and tunables, and release-path chunks.                  |
 | [Plugin Prerelease](/ci/release-validation/plugin-prerelease)                       | The separate, more expensive plugin product/package suite and when it is dispatched.                           |
 
+The [bounded hybrid hosted offload](/ci/capacity#bounded-hybrid-hosted-offload) applies only to automatic CI first attempts. Full Release Validation, candidate/artifact workflows, and frozen-target workloads retain their existing coverage and runner routes.
+
 ## Where each section moved
 
 Every section heading from the previous single-page version keeps its anchor here, so an existing link such as `/ci/release-validation#suite-profiles` still resolves. Each entry points at the page that now holds the content.
