@@ -1471,10 +1471,12 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/.i18n").mkdir(parents=True)
             (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n", encoding="utf-8")
 
+            real_git_lines = package_artifact.git_lines
+
             def fake_git_lines(args: list[str]) -> list[str]:
                 if "--diff-filter=ACMRT" in args:
                     return ["docs/.i18n/fr.tm.jsonl", "docs/fr/index.md"]
-                return []
+                return real_git_lines(args)
 
             with (
                 chdir(repo),
@@ -1509,6 +1511,8 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(["docs/fr/index.md"], (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines())
             self.assertTrue((artifact / "payload/docs/fr/index.md").exists())
             self.assertFalse((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
+            self.assertEqual(run_git(repo, "rev-parse", "HEAD").strip(), metadata["publish_ref"])
+            self.assertEqual(run_git(repo, "rev-parse", "HEAD:.openclaw-sync/source.json").strip(), metadata["source_metadata_oid"])
 
     def test_package_artifact_fails_closed_on_i18n_protocol_marker_leak(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
