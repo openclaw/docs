@@ -132,8 +132,17 @@ current ownership and session tombstones after awaited preparation.
 Incognito databases, archive materialization, and caller-owned transcript
 observers retain their existing local execution. Index publication and
 restoration remain with their existing database and lifecycle owners.
-Worker admission and transport failures preserve the published index and its
-retry state. The existing chunking revision triggers a one-time rebuild to repair
+Cold memory exports restore through the host's existing transcript owner only
+after a read reports cold storage; hot exports add no host SQLite reads.
+Unreadable canonical transcripts, worker admission, and transport failures
+preserve the published index and retry state. Startup checks batch transcript
+statistics and use the transcript mutation watermark, so same-size rewrites are
+detected independently of session activity. The memory source hash carries this
+revision alongside its content hash; source modification times retain activity
+for temporal ranking. Legacy source hashes refresh once without rebuilding
+unchanged chunks. Transcript export hashes and provenance stay unchanged.
+The existing chunking revision
+triggers a one-time rebuild to repair
 previously indexed reset boundaries. Rebuilds reuse cached embeddings when
 available and retain the existing atomic publication path.
 
