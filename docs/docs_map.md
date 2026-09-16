@@ -11940,6 +11940,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Incremental canonical-session validation
   - H3: Cold transcript storage
   - H3: Creator namespace migration
   - H3: Participant identity migration
