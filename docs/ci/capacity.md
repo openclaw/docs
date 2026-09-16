@@ -93,6 +93,34 @@ The previous thirteen-serial-shard layout consumed 4,258 job-seconds in successf
 
 Canonical-repo CI keeps Blacksmith as the default runner path for pushes and first-attempt same-repo pull-request runs when the backend is unset or `blacksmith`. Hybrid keeps the heavy set plus the named critical-path plateau lanes on Blacksmith for attempt 1; other light lanes and every rerun Blacksmith lane use GitHub-hosted capacity. Pull-request retries of both UI E2E jobs use GitHub-hosted Ubuntu in every mode; push retries remain on their normal backend unless hybrid fallback applies. Manual `workflow_dispatch` and non-canonical repository runs use GitHub-hosted runners for the main test/build lanes. With an unset or `blacksmith` backend, ordinary canonical manual dispatches (`release_gate: false`) can still run the seven `check-shard` rows on their Blacksmith matrix runners; release-gate check rows remain hosted. Same-repo hybrid Full Release Validation sends only frozen-candidate lint to its matrix runner, both for exact main-ancestor SHAs without a release context and for canonical release-context candidates. These manual admissions are outside the main/PR arrival estimate above. The [`github` backend](/ci/runners#runner-backend-modes) provides a manual repository-wide fallback; canonical runs do not probe Blacksmith queue health or mutate the variable automatically.
 
+## Owner-path and release coverage
+
+Docker seed and QA Smoke use the same owner-path gates on canonical PRs and
+`main`. Unrelated main changes can omit one 32-class Docker job and four 16-class
+QA profile jobs on a normal hybrid first attempt. Control UI performance uses
+its own UI/build/dependency/import scope; in hybrid it already runs hosted, so
+narrowing its scope removes a hosted row and candidate/base UI builds.
+
+The 2026-09-16 burden analysis estimated about 1,526 Blacksmith vCPU-minutes per
+hour from Docker and QA gating, using the sampled workload and head-commit diff
+proxies. Its 20 Docker and 80 QA main jobs had no failures; that small sample
+does not establish that the lanes cannot catch integration regressions.
+These are projected savings, with no measured post-change timing improvement.
+Production routing uses the triggering push's changed-path manifest; it does not
+accumulate earlier pushes whose pending runs were coalesced away.
+
+| Lane                   | Automatic PR/main coverage                                                                   | Manual and full release coverage                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Docker seed            | Existing seed owners; unknown paths retain survivor                                          | Canonical CI retains `legacy-operator-state` with `auto-auth`; Package Acceptance retains expanded upgrade scenarios |
+| QA Smoke CI            | Existing QA, channel, packaging, and orchestration owners                                    | Complete smoke profile on supported targets                                                                          |
+| Control UI performance | UI, plugin browser, workspace-package, build, dependency, policy, and relative-import owners | Retained independently of changed paths, subject to existing target capabilities                                     |
+
+Per-main integration detection outside these owners moves to manual/release
+validation. Keep the conservative peak registration envelope above: a broad owner
+change can still select every lane. This scope change does not change runner
+backends, caps, budgets, or timeouts. Verify emitted rows and observed timing
+before claiming realized savings.
+
 ## Measured shard weights
 
 Complete hybrid main and pull-request plans retain their existing jobs and runner

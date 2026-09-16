@@ -13,7 +13,7 @@ job. Open the page that matches your task.
 
 For the published-upgrade regression gate, see [selection and routing](/ci/scope-and-routing#scope-and-routing), [runner budgets](/ci/capacity#runner-registration-budget), and [Package Acceptance baselines](/ci/release-validation#suite-profiles). Weekly validation is listed under [Update Migration](/ci/scheduled-workflows#update-migration).
 
-Docs-only `main` pushes skip CI. Every canonical `main` push admitted by the CI workflow selects the published-upgrade regression gate.
+Docs-only `main` pushes skip CI. Docker seed and QA Smoke use the same owner-path selection on pull requests and `main`; manual CI and Full Release Validation retain their coverage. Control UI performance uses its own UI/build/import scope. See [scope selection](/ci/scope-and-routing/selection) for the coverage trade-off.
 
 Android native resource preparation uses the Mermaid renderer's filtered dependency install, including optional build tooling. Pnpm retains root dependencies but omits unrelated plugin packages; Gradle still builds the assets and runs the selected native tests and lint. Historical targets keep their compatibility path.
 
