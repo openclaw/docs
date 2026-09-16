@@ -15,7 +15,9 @@ Collect sanitized diagnostics and open a coding agent on this machine to diagnos
 openclaw triage
 ```
 
-In an interactive terminal, triage starts the first directly launchable agent on `PATH` in this detection order: Codex (`codex`), Claude Code (`claude`), OpenCode (`opencode`), then Pi (`pi`). When both Codex and Claude Code are available, Codex takes priority unless you select an agent with `--agent`. An explicit `openclaw triage` invocation prints the selected agent and passes a bounded repair prompt directly, without a picker or launch confirmation. The agent uses its existing authentication, sandbox, and approval settings.
+In an interactive terminal, triage starts the first directly launchable agent on `PATH` in this detection order: Codex (`codex`), Claude Code (`claude`), Pi (`pi`), OpenCode (`opencode`), Muse Code (`muse`), Grok Build (`grok`), then Cursor (`cursor-agent`). When both Codex and Claude Code are available, Codex takes priority unless you select an agent with `--agent`. An explicit `openclaw triage` invocation prints the selected agent and passes a bounded repair prompt directly, without a picker or launch confirmation. The agent uses its existing authentication, sandbox, and approval settings.
+
+Cursor selection uses `--agent cursor` and requires the `cursor-agent` alias installed by Cursor's CLI installer. Triage does not use the `cursor` editor command or the generic `agent` alias, which Grok also installs.
 
 Claude Code starts with `--safe-mode`, which disables custom hooks, plugins, skills, MCP servers, and project instructions while retaining authentication and built-in tools. This prevents project startup hooks, such as dependency installation, from delaying the repair prompt. Direct launch requires Claude Code 2.1.169 or newer. When the installed CLI does not advertise safe-mode support, triage prints a manual handoff instead. Printed manual commands use Claude's normal customization settings, including plugins and MCP servers.
 
@@ -23,6 +25,9 @@ Choose a particular agent with `--agent`, or collect diagnostics without startin
 
 ```bash
 openclaw triage --agent codex
+openclaw triage --agent cursor
+openclaw triage --agent grok
+openclaw triage --agent muse
 openclaw triage --json
 openclaw triage --non-interactive
 ```
@@ -88,11 +93,14 @@ On Windows, recognized npm `.cmd` and `.bat` shims launch their Node.js or nativ
 
 ## Manual handoff
 
-Non-interactive sessions save diagnostics without starting an agent. Human output prints one next step for the explicitly selected or first detected coding agent. If no coding agent is detected, it explains how to install one and rerun triage. Windows wrappers that require a shell remain available as manual commands. JSON output retains all external handoff commands and the explicit embedded route. Saved external prompts are read from stdin, so quotes and multiline text do not depend on native command-line argument parsing. On macOS and Linux, the commands look like this:
+Non-interactive sessions save diagnostics without starting an agent. Human output prints one next step for the explicitly selected or first detected coding agent. If no coding agent is detected, it explains how to install one and rerun triage. Windows wrappers that require a shell remain available as manual commands. JSON output retains all external handoff commands and the explicit embedded route. Saved external prompts are read from stdin or, for Grok and Muse, with `--prompt-file`, so quotes and multiline text do not depend on native command-line argument parsing. On macOS and Linux, the commands look like this:
 
 ```bash
 env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' claude -p < '<prompt-path>'
 env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' codex exec --skip-git-repo-check - < '<prompt-path>'
+env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' cursor-agent --print < '<prompt-path>'
+env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' grok --prompt-file '<prompt-path>'
+env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' muse exec --prompt-file '<prompt-path>'
 env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' opencode run < '<prompt-path>'
 env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' pi --print < '<prompt-path>'
 env OPENCLAW_STATE_DIR='<state-dir>' OPENCLAW_CONFIG_PATH='<config-path>' OPENCLAW_WORKSPACE_DIR='<default-workspace-dir>' openclaw triage --run
@@ -159,14 +167,14 @@ Embedded repair exits with 0 when its validation proves resolution, 2 when a tim
 
 ## Options
 
-| Option                   | Effect                                                                                     |
-| ------------------------ | ------------------------------------------------------------------------------------------ |
-| `--json`                 | Emit prompt and archive paths, finding counts, detected agents, and commands.              |
-| `--no-export`            | Skip the diagnostics archive; still prepare the prompt and use the selected handoff route. |
-| `--agent <name>`         | Select `claude`, `codex`, `opencode`, or `pi` instead of automatic detection.              |
-| `--run`                  | Run one bounded embedded repair turn with installation or update-resolution validation.    |
-| `--non-interactive`      | Prepare diagnostics without prompting or starting an agent, including on a terminal.       |
-| `--update-result <path>` | Include the bounded update-failure JSON diagnostics artifact written by the updater.       |
+| Option                   | Effect                                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `--json`                 | Emit prompt and archive paths, finding counts, detected agents, and commands.                           |
+| `--no-export`            | Skip the diagnostics archive; still prepare the prompt and use the selected handoff route.              |
+| `--agent <name>`         | Select `claude`, `codex`, `cursor`, `grok`, `muse`, `opencode`, or `pi` instead of automatic detection. |
+| `--run`                  | Run one bounded embedded repair turn with installation or update-resolution validation.                 |
+| `--non-interactive`      | Prepare diagnostics without prompting or starting an agent, including on a terminal.                    |
+| `--update-result <path>` | Include the bounded update-failure JSON diagnostics artifact written by the updater.                    |
 
 `--run` cannot be combined with `--json`, `--non-interactive`, or `--agent`.
 
