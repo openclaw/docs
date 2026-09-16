@@ -96,6 +96,7 @@ Control UI capabilities grouped by area, each with the Gateway RPC methods behin
     - Provider cards call `usage.status` and show live plan names, quota windows, balances, spend, and budgets reported by configured provider plugins.
     - A provider usage failure does not block the session/cost dashboard; unavailable provider cards show their own error state.
     - Incomplete session/cost totals stay readable while the visible, focused page checks for updates. Automatic checks are bounded; if they pause, select **Refresh** to check again.
+    - Changing the date range, agent, session scope, or time zone hides the previous query's session/cost totals until the new query loads. A failed refresh of the same query keeps its last totals visible. Provider billing cards remain separate from these filters.
     - **Refresh** also reloads the selected session's timeline, conversation, and system-prompt breakdown.
     - If a selected session is deleted and recreated, its new details replace the old ones and clear the previous timeline interval without clearing your session selection. An unfinished drag on the old timeline cannot change the new interval. Refreshing the same instance retains its selected interval. Context details from a different session instance show an error and can be retried with **Refresh**.
     - The overview loads session summaries first. Full system-prompt breakdowns load when you select a session; the `has:context` filter still works before opening details.
