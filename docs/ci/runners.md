@@ -92,8 +92,10 @@ Testbox comparison at the same source, memory, starting caches and case inventor
 the full CLI command took 12m20s–14m15s with two available CPUs and 9m17s with four.
 All 307 files and 7,977 cases were retained. This supports the placement change;
 it does not meet the eight-minute goal or include CI setup, queueing or companion
-groups. The planner keeps the same bins, predictions, timing keys and registration
-count. Process-only CLI bins and hosted routing retain their existing placement.
+groups. A subsequent two-run main CI timing refit raises the CLI weight from
+136 to 595 seconds and places it alone in the hybrid plan, retaining the same
+runner and compact job count. Process-only CLI bins and hosted routing retain
+their existing placement.
 
 Backend routing still applies. Hybrid retries and untrusted pull requests retain
 their hosted routes. Ordinary manual CI dispatches remain hosted in hybrid mode;
