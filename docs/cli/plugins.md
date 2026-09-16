@@ -39,7 +39,7 @@ openclaw plugins install <path-or-spec> [--link] [--force] [--pin] [--accept-cap
 openclaw plugins inspect <id> [--runtime] [--json]
 openclaw plugins inspect --all [--runtime] [--json]
 openclaw plugins info <id>                    # alias for inspect
-openclaw plugins enable <id> [--accept-capabilities]
+openclaw plugins enable <ids...> [--accept-capabilities]
 openclaw plugins disable <id>
 openclaw plugins reload <id> [--accept-capabilities] [--json]
 openclaw plugins uninstall <id> [--dry-run] [--keep-files] [--force]

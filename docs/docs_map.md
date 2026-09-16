@@ -2716,6 +2716,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Archives
   - H3: Marketplace shorthand
   - H3: Local paths and bundle formats
+  - H2: Enable installed plugins
 
 ## cli/plugins/list.md
 
