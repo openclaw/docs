@@ -57,6 +57,9 @@ automatically when the Gateway returns. Live controls and slash commands remain 
 offline, except that **Stop** can queue an exact local run ID for replay. A session-only stop
 is not replayed because newer work may start in that session before the connection returns.
 
+Queued messages follow the order shown in the queue, including moves made while
+attachment bytes are loading after reconnect. A message already being sent keeps its place.
+
 Editing an unsent queued message remains safe if the connection drops mid-edit.
 Open queued-message edits stay available when you switch conversations, even after
 visiting enough chats to replace older cached views. Finish or cancel the edit to
