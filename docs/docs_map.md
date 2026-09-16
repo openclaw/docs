@@ -8750,6 +8750,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: setup reference
   - H3: setup fields
   - H3: setup.providers reference
+  - H2: configGroups reference
   - H2: uiHints reference
 
 ## plugins/manifest/surfaces.md
