@@ -3546,7 +3546,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Run outcomes
   - H2: Adding a scenario
   - H2: Open questions
-  - H2: Related
 
 ## concepts/markdown-formatting.md
 
