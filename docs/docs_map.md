@@ -6270,6 +6270,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Live: OpenAI long context
   - H3: Long-context hard oracles
+  - H3: Bounded compaction replay
   - H3: Recommended live recipes
   - H2: Live: model matrix (what we cover)
   - H3: Aggregators / alternate gateways
