@@ -58,6 +58,17 @@ callback preserves existing behavior. Set `allowProfileFallback: false` when
 the selected profile represents an account boundary that must not rotate to a
 different configured profile.
 
+## Bounded model context
+
+`SessionManager.openModelContext` and `openModelContextAsync` from
+`openclaw/plugin-sdk/agent-sessions` accept optional `limits: { maxBytes, maxEvents }`.
+The reader measures projected payload bytes in SQLite before loading them and
+selects a recent context with its latest compaction or reset boundary. It preserves
+tool-result ownership and rejects a limit that cannot retain the newest complete
+frame or required boundary. Stored transcripts stay unchanged. Omitting `limits`
+keeps the full selected context. Async reads retain admission, anchor, and
+cancellation checks.
+
 ## Agent and session namespaces
 
 <AccordionGroup>
