@@ -15,7 +15,7 @@ Automatic work journal: captures periodic screen snapshots from a paired node an
 ## Distribution
 
 - Package: `@openclaw/logbook`
-- Install route: included in OpenClaw, and also from ClawHub: `clawhub:@openclaw/logbook` or npm
+- Install route: included in OpenClaw
 
 ## Surface
 
