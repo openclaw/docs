@@ -301,6 +301,10 @@ at the first failure; earlier successful enables remain committed, and later IDs
 are not processed. With a local Gateway running, it applies each change through
 that Gateway. Otherwise, changes are saved for the next Gateway start.
 
+`openclaw plugins disable <ids...>` follows the same input order and stops at
+the first failure, keeping earlier changes. Both commands preserve repeated IDs;
+each operation sees the config committed by the previous one.
+
 `plugins enable` respects global disablement, the denylist, and restrictive
 allowlists whether the Gateway is running or stopped. Policy rejection happens
 before capability consent is recorded; `--accept-capabilities` does not add the
