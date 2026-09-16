@@ -24,6 +24,12 @@ and publishes the result. Avoid exposing a generic SQL callback to application
 code or adding an asynchronous wrapper around an existing asynchronous facade.
 The plugin KV API already has asynchronous methods over its SQLite owner.
 
+Plugin conversation standing approvals load and upsert in the shared-state worker.
+Core publishes an always-allow grant only after durable completion, serializes cache
+fills with grant publication, and joins admitted binding operations before lifecycle
+reset clears the cache. Requests recheck conversation ownership after storage waits.
+Approval scope, one-use decisions, channel binding APIs, and Doctor imports are unchanged.
+
 Copilot SDK session bindings use these worker-backed data operations. The harness
 serializes binding reads, writes, and in-memory publication per OpenClaw session;
 reset and shutdown join admitted binding work and deferred compaction cleanup.
