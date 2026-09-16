@@ -92,6 +92,11 @@ is no separate emoji picker in the composer.
 
 ## Chat behavior
 
+When you send a message, the model picker keeps your selected model visible with
+a small starting indicator until the Gateway confirms the model handling the turn.
+If a fallback takes over, the label updates to that model without changing your
+saved selection. A turn with no known selection still shows **Model pending**.
+
 New Session shows the agent's known default model while the model catalog loads.
 Model choices are cached in memory for the current connection, agent, session,
 and account, so reopening a picker or returning to a draft can show them
