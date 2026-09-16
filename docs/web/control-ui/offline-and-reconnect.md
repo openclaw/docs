@@ -74,7 +74,9 @@ save clears the previous error.
 
 Page and sidebar refreshes that fail because the Gateway is suspending, restarting, starting,
 or unreachable show no inline error: the footer connection indicator owns that state. Each panel
-keeps its last data and refreshes automatically once the Gateway accepts work again. Other refresh
+keeps its last data and refreshes automatically once the Gateway accepts work again.
+Established conversation names remain visible in the browser tab and chat headings,
+including split views, while reconnecting to the same Gateway and account. Other refresh
 failures remain visible inline with their message and are retried automatically when the Gateway
 becomes available again. These refresh callouts have no manual **Retry** button.
 
