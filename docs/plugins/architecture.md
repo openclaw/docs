@@ -183,9 +183,11 @@ Install, update, registry refresh, and doctor flows may read fresh package metad
 A managed runtime instance owns its module results, registered callables, and
 runtime-store slots. With Node's synchronous module hooks, it also owns a captured
 source artifact. Package plugins capture their package inputs when the instance
-is created. Standalone files and compiled setup artifacts
-capture their entry and statically known inputs without copying the surrounding
-workspace. Conditional package aliases retain their package metadata, and native
+is created. Standalone files capture their entry and statically known inputs
+without copying the surrounding workspace. Compiled bundled runtime and setup
+modules share the host's code identity; each inventory still owns its registered
+callbacks and cleanup. Replacing that compiled code requires a build and Gateway
+restart. Conditional package aliases retain their package metadata, and native
 Node conditions select the target from that captured metadata. Legacy packages
 without an exports map also prefetch their existing main or index entry as raw
 bytes; this can read a large native entry, but does not execute unselected code.
