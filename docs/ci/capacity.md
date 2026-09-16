@@ -256,6 +256,69 @@ child spans of 569.841 and 620.791 seconds replace the stale 136-second weight
 with a rounded median of 595 seconds. Plugin fallback costs have a separate
 estimator and are not inputs to this compact timing reducer.
 
+The September 16 compact refresh sampled all 168 successful compact jobs in six
+green main runs: `35117379165`, `35120372547`, `35123270863`, `35124135571`,
+`35125714752`, and `35126089717`. Their 132 complete selector generations contain
+no partial parent totals. The unchanged reducer supplies every replacement and
+removal, retaining its independent-run minimum, outlier filter and 15% threshold.
+The scoped output applies only its Blacksmith compact map; UI, Gateway E2E,
+runtime-placement observations and hosted measurements retain their prior values.
+
+| Compact family                |      Previous Blacksmith seconds | Six-run parent/span median | Refitted seconds |
+| ----------------------------- | -------------------------------: | -------------------------: | ---------------: |
+| Infrastructure storage/state  | 104 (unmeasured parent fallback) |                  1,403.158 |            1,403 |
+| Doctor config/state           |  67 (unmeasured parent fallback) |                    614.943 |              615 |
+| Runtime config                | 113 (unmeasured parent fallback) |                    847.352 |              847 |
+| Infrastructure system/runtime |                               86 |                    692.647 |              693 |
+| Gateway core-3                |                              167 |                    381.772 |              382 |
+| Commands Doctor               |                               61 |                    304.648 |              305 |
+
+Storage/state parts 2 and 3 measured 735.136 and 623.723 seconds; Doctor
+config/state part 2 measured 505.405 seconds. Existing selector splitting turns
+the hybrid storage/state family from three parts into ten, Doctor config/state
+from two into five, and runtime config from three into six. Their complete file
+inventories, process isolation, worker limits, naming scheme and timing-key
+generation remain owned by the existing planner. Repartitioned children receive
+new membership keys; the measured parent survives that change. Blacksmith also
+adds Gateway core-1 and core-2 to its existing split-owner list after their
+complete measurements reached 578 and 491 seconds. Hybrid and hosted already
+split those owners. Standalone agent support retains its existing whole-group
+contract.
+
+Blacksmith-profile PRs changing the compact planner or committed timing file run
+the complete compact core plan: focused planner tests alone cannot measure the
+resulting packing. Hosted profiles retain precise changed-test targeting. This
+uses the existing matrices and caps; plugin fallback keeps its separate owner.
+
+Three families retain their previous complete timing entries to avoid hosted expansion:
+`agentic-gateway-server-isolated`, `agentic-gateway-core-runtime`, and
+`agentic-agents-core-spawn-production-boundary`. Applying their Blacksmith refit
+would expand the hosted fallback beyond its 80-row compact cap. No two independent
+recent hosted samples were available to calibrate them. This scoped refresh
+therefore defers those families rather than introducing extra hosted rows or
+inventing hosted measurements. The unscoped refit and all observed overruns belong
+in the PR evidence for a later capacity-aware refresh. The `agentic-cli-process`
+family also retains its prior timings: distributing its new parent total by the
+existing file weights prices an indivisible child at 239 seconds, beyond its
+200-second contract. That family needs a separate file-cost refit; its assertions
+and budget remain unchanged.
+
+At the inspected inventory, hybrid compact descriptors change from 29 to 51 on
+push and 53 to 75 on broad PRs; the maximum prediction remains 518 seconds for the
+standalone CLI. Ordinary two-child bins remain within 360 seconds. Excluding dist,
+the Node matrix uses 50 push rows and 113 broad-PR rows including 40 plugin rows,
+within the unchanged 64/120 caps. Blacksmith compact descriptors change from
+34/52 to 59/77; the honest 804-second maximum belongs to standalone agent support.
+Hosted plans remain byte-identical at 51/79 descriptors. Hybrid adds 22/22
+registrations per push/PR, or 550 across the retained four-main/21-PR arrival
+envelope; these rows consume existing reserved capacity, so the enforced
+4,776-registration ceiling does not increase. Budgets and timeouts are unchanged.
+
+The samples predate the 17:33 UTC runner-capacity restoration. They retain the
+older allocation's contention, so these predictions are not a measured speedup.
+Verify the restored eight-CPU/two-child admission, longest compact jobs, total
+wall time and emitted registration counts on the PR and first main run.
+
 Fewer than two independent main compact contributors fails the invocation.
 It also fails if neither a compact key nor a runtime-placement observation meets the existing independent-run sampling rules.
 Retained baseline weights and release measurements cannot satisfy these checks.
