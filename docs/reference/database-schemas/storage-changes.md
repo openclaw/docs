@@ -161,8 +161,10 @@ Session listing loads complete persisted subagent metadata in the shared-state
 worker through a read-only connection. The existing cache coalesces pending fills
 and applies intervening named updates and deletions before publishing its first
 complete snapshot. Full replacement, registry ownership changes, and database
-retirement fence obsolete replies. Its 500 ms freshness policy and retention
-rules remain unchanged. Gateway, embedded, and TUI callers merge accepted rows
+retirement fence obsolete replies. Loaded snapshots stay current through registry
+publication instead of periodic reloads: named writes patch rows, while full
+replacement and restore replace snapshots. Retention rules remain unchanged.
+Gateway, embedded, and TUI callers merge accepted rows
 with current host memory and scheduler facts before building the full topology.
 Pure topology grouping yields through the shared session-list work budget.
 Synchronous readers reuse the same SQL and row decoder; runtime reads do not
