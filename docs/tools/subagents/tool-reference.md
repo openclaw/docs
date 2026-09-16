@@ -52,7 +52,10 @@ preserve the recorded run timeout, including `0` for no timeout.
 
 Accepted native sub-agent spawns report their actual initialized `context`
 (`fork` or `isolated`), including `isolated` when a requested fork exceeds the
-parent-context size cap. They also include resolved child model metadata:
+parent-context size cap. The size check includes context added since the latest
+model response, such as completed tool output, and respects compaction and reset
+boundaries. An oversized fork starts isolated with an explanatory note. Spawns
+also include resolved child model metadata:
 `resolvedModel` contains the applied model ref and `resolvedProvider` contains
 the provider prefix when the ref has one.
 
