@@ -80,6 +80,12 @@ including split views, while reconnecting to the same Gateway and account. Other
 failures remain visible inline with their message and are retried automatically when the Gateway
 becomes available again. These refresh callouts have no manual **Retry** button.
 
+After reconnect, an open conversation link is checked against the Gateway. If the
+Gateway confirms that the conversation no longer exists, such as an incognito
+conversation after a Gateway restart, the page shows **Session not found** with
+actions to open Main or browse sessions. A connection failure or a conversation
+missing from the current sidebar page does not count as deletion.
+
 Opening a view for the first time can fail if its interface files cannot be downloaded.
 Check the connection, then use **Reload**. The same error can occur after an update;
 it does not by itself mean a new version was installed. If unsaved work blocks the
