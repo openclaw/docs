@@ -395,8 +395,12 @@ An unresolved owner does not stop the scheduler: that job is skipped with an exp
 
 `automations show` also accepts an exact job name, matched without regard to case.
 Job IDs take precedence. When multiple jobs match the name, including disabled
-jobs, the command reports ambiguity. Use `openclaw automations list --all` and
-retry with the intended job ID.
+jobs, the command reports ambiguity and includes the matching jobs' full IDs,
+names, schedule summaries, enabled state, and status. Retry the same command
+with the intended job ID instead of the name.
+
+With `--json`, the failure envelope includes these summaries in `error.matches`.
+Event schedules appear as `on-exit` or `stream` without their command text.
 
 `automations list --json` and `automations show <job-id> --json` include a top-level `status` field on each job, computed from `enabled`, `state.runningAtMs`, and `state.lastRunStatus`. Values: `disabled`, `running`, `ok`, `error`, `skipped`, or `idle`. JSON status stays canonical and undecorated, so external tooling can read job state without re-deriving it. Human output may decorate repeated `error` statuses with a failure count.
 
