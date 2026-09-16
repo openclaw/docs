@@ -13323,6 +13323,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/acp-agents/troubleshooting
 - Headings:
   - H2: Troubleshooting
+  - H2: Oversized harness messages
 
 ## tools/agent-send.md
 
