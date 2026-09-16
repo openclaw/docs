@@ -6970,6 +6970,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recommended: openclaw update
   - H3: Updating from 2026.9.2 across a schema bump
   - H3: From chat
+  - H2: Inspect FreeBSD service discovery
   - H2: Stale update history
   - H2: Retire update recovery data
   - H2: After updating
