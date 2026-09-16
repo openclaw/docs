@@ -135,7 +135,7 @@ Toggle the sidebar with **⌘B** on Mac or **Ctrl+B** on Windows/Linux. Open the
 
 After token or device-token authentication, the sidebar can show its cached session roster on reload only when the browser will present the Gateway token that authenticated the previous connection, or the paired device token retained from that connection. The cached roster has no live run state and is replaced by the live list after connecting. Other authentication methods wait for the connection; see [Warm reload](/web/control-ui/offline-and-reconnect#warm-reload).
 
-Switching agents refreshes the session list even while other conversations are active. Confirmed permission, pin, and read changes remain visible if their follow-up list refresh fails. Older responses cannot undo confirmed pin or read state; newer activity or a later manual unread mark still takes effect.
+Switching agents refreshes the session list even while other conversations are active. A session action finishing for another agent keeps the selected agent’s filtered sidebar and pagination active. Confirmed permission, pin, and read changes remain visible if their follow-up list refresh fails. Older responses cannot undo confirmed pin or read state; newer activity or a later manual unread mark still takes effect.
 
 An older list response preserves newer session names and run status already loaded in another open session list.
 
