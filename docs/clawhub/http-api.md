@@ -1791,6 +1791,10 @@ publishes use separate upload- and publish-scoped credentials; the server
 accepts the ticket only when both credentials belong to the same authorization
 transaction.
 
+## Agent Skills discovery
+
+`GET` and `HEAD /{owner}/skills/{slug}/.well-known/agent-skills/index.json` proxy the skill's Agent Skills index. Each upstream request has a ten-second deadline covering both response headers and the complete GET body. An upstream timeout fails discovery instead of returning a partial index. Completed responses preserve the upstream status, content type, and cache policy; HEAD returns no body.
+
 ## Registry discovery (`/.well-known/clawhub.json`)
 
 The CLI can discover registry/auth settings from the site:
