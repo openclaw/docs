@@ -39,6 +39,8 @@ How the Gateway scheduler runs a job, what it keeps between runs, and how a repe
 
     If a completed run's history was saved but its job update failed, a later acknowledged schedule or pacing edit keeps its next check through recovery. Recovery retains the completed history and settles the old run without executing its payload again. Saving an unchanged schedule does not change how that completed run is recovered.
 
+    Interrupted runs appear as failed tasks and in run history whether recovered during startup or by a running Gateway. Recovering the same interruption again does not add another history entry.
+
   </Accordion>
 </AccordionGroup>
 
