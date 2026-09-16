@@ -30,6 +30,14 @@ reset and shutdown join admitted binding work and deferred compaction cleanup.
 Failed persistence retains the existing in-memory fallback. Binding formats,
 compatibility checks, namespace limits, and expiry remain unchanged.
 
+Hosted official plugin-catalog snapshots read and write in the shared-state worker.
+Missing-state reads do not create a database. The existing write transaction rereads
+the current snapshot before checking signed-feed sequence and payload consistency.
+The hosted loader receives the same monotonicity error type, so rejected writes
+retain the accepted snapshot. Marketplace refresh awaits persistence before clearing
+its catalog cache and applying the result to the Gateway. Feed verification, expired
+snapshot visibility, install authority, and the stored representation are unchanged.
+
 Asynchronous mutable cron-store loads run in the shared-state worker, including
 the existing retired-job deletion and runtime-authority repairs. The connection-bound
 load kernel preserves their separate transactions, partition keys, and fingerprints.
