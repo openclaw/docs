@@ -73,8 +73,19 @@ to synchronous writes. Remove this fallback only when the declared host floor
 excludes hosts without comparison support. Durable ingress joins each cursor
 update before admitting the next row and joins admitted work on shutdown.
 Existing namespaces, stored values, expiry, migration, and best-effort failure
-policies remain unchanged. Reply-cache hydration and the synchronous action-alias
-lookup retain their existing owner.
+policies remain unchanged.
+
+The iMessage reply cache also hydrates and persists through worker-backed keyed
+stores. Its owner allocates short IDs in memory without yielding and serializes
+counter, eviction, and entry writes; callers join persistence before completion.
+A successfully read counter remains available if later entry hydration fails.
+The shared action dispatcher awaits the async conversation-matching companion
+before entering the action, including the first action after a restart. The
+existing boolean callback retains synchronous cold hydration for published
+OpenClaw 2026.9.4 hosts and other hosts without that companion. It remains a
+literal boolean, never a promise. Remove this plugin fallback only when its
+declared host floor excludes hosts without async matching. Existing cache
+namespaces, record shapes, TTLs, limits, and best-effort failure policy are unchanged.
 
 Discord presence cooldown reads, claims, and conditional rollback use the shared
 state worker. The listener rechecks current policy and Gateway generation after
