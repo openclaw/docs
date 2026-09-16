@@ -388,9 +388,23 @@ candidate transcript, compaction checkpoint, or trajectory files. Prompt-referen
 projection runs only when prompt blobs exist. Age, exclusion, and containment
 checks still govern every removal.
 
-Automatic session-entry maintenance reads its protection-key inventory once per
-plan, only when age or cap candidates exist, within the same write transaction.
-Retention rules and active-work, ancestor, and lifecycle protection remain unchanged.
+Automatic session-entry maintenance first checks the unarchived count and
+store-scoped age facts. Writes below the existing cap high-water mark skip
+candidate and protection-key reads until pruning or dashboard archiving could
+change an entry. A plan refreshes the timestamp facts; tracked entry writes
+advance them conservatively, while rollback, untracked mutations, external
+commits, and connection replacement invalidate reuse. Key-inherent protection
+does not keep an old primary or external conversation permanently due. Already-aged
+entries with dynamic protection still require fresh planning on writes.
+
+The coalesced maintenance kick also wakes at the next age boundary, with a
+30-minute periodic recheck for released work protection and external changes.
+Its timer retires with the exact database connection. Planning still reads its
+protection-key inventory at most once when age or cap candidates exist, inside
+the write transaction; archives and final deletion retain their existing
+post-writer lifecycle checks. Retention rules, cap buffering, forced cleanup,
+and active-work, ancestor, and lifecycle protection remain unchanged. No schema
+or migration change is required.
 
 After archive preparation, session deletion rereads its target before admitting
 the final reclamation worker. A missing or changed target returns the existing
