@@ -465,6 +465,13 @@ settlement before the parent publishes committed removals and releases that
 operation's writer admission. Later requests reuse the connection only for the
 same physical database and shared-state owner; every request checks its live lease.
 
+During Doctor maintenance, session mutation and worker-close jobs borrow its
+existing state-lifecycle coordinator through a live delegate bound to the actor,
+shared database, and coordinator runtime. Delegation covers asynchronous work and
+cleanup until the original result settles or native exit is joined. Revocation
+still prevents later writes. Failed coordinator cleanup remains owned for drainage;
+a confirmed mutation stays successful if only subsequent cleanup fails.
+
 Switching databases, deletion, quarantine, maintenance, root retirement, and shutdown
 revoke reuse and join native worker exit before releasing the database owner. Pending
 commit requests are rejected before synchronous close can wait on their writer lock.
@@ -585,6 +592,31 @@ Do not automatically convert canonical JSON text to `jsonb`: PostgreSQL's
 `jsonb` representation changes whitespace, object-key order, and duplicate-key
 handling. A searchable `jsonb` projection would need an explicit design and
 migration decision. See [PostgreSQL JSON types](https://www.postgresql.org/docs/current/datatype-json.html).
+
+Cross-store session handoffs preserve every retained generation, its lineage,
+transcript bytes, physical sequence numbers, and recorded event identities,
+including effective idempotency ownership. Accepted inputs and completion receipts
+use their existing repair owners: queued input becomes interrupted, cancellation
+and consumed-event references survive, and final destination receipts retain
+precedence over retryable attempts. Boards, progress cards, heartbeat outcomes,
+suggestions, participant history, and retained ACP provenance use the logical-node
+repair owner and its existing revision and identity precedence. These copies
+transfer no live execution or membership authority. Source cleanup verifies the physical source and a complete
+destination receipt captured in the copy transaction before deleting each copied
+generation. Unchanged SQLite data versions reuse that verified receipt; any commit
+requires exact revalidation, including input and rewrite-watermark facts. Exact
+node-artifact fingerprints protect source and destination state through entry
+removal. Source deletion checks these node payloads only at entry boundaries;
+historical-generation cleanup keeps its generation-only checks. In-place
+key migrations preserve cold archives when the database and archive directory stay
+the same; archive manifests remain part of their guarded source snapshot. Older exact
+imports could retain a transcript without its identity rows. History readers
+recognize that unindexed prefix and recover display navigation from the stored
+events, including after later appends; they never reconstruct write authority or
+idempotency ownership from JSON. The first new append uses the verified projection
+cursor under the existing write authority, so continuation preserves the imported
+conversation. A full transcript replacement retires that read path by creating a
+new canonical generation.
 
 ### Keep engine-specific capabilities owned
 
