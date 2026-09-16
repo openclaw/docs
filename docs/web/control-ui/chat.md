@@ -127,7 +127,8 @@ chat confirms its current session and conversation branch before delivery
 continues automatically. Switching chats keeps queued messages tied to their
 original conversation. If history fails to load, the queued message stays
 available while you resolve the history error. Goals and other slash commands
-wait for history; `/stop` and `/approve` remain available.
+wait for history; `/stop` and `/approve` remain available. The initial task progress
+read reserves only its card slot; the transcript and composer stay available.
 
 When you open a short chat link, identity prepared during the current connection
 can make the composer ready sooner. The original link stays in place until the
@@ -426,10 +427,16 @@ Use the mouse wheel or trackpad over the composer or its surrounding space to
 scroll the conversation while the composer stays pinned. Long drafts, task
 progress cards, and menus keep their own scrolling when their content overflows.
 
-Scrolling up to read earlier messages collapses the task progress card above the
-composer. Streaming output and layout adjustments keep that reading mode intact.
-Scroll back to the end or select **Latest** to resume following the conversation;
-an explicit choice to expand or collapse the card stays in effect for that task.
+The task progress card above the composer collapses after deliberate upward
+scrolling settles. Returning to the end and progress updates leave it collapsed;
+completion can reopen it only while you are already at the end. Manual choices
+are remembered per session. Continued scrolling after a manual reopen uses a
+higher threshold, and a second reopen keeps it open for that visit and task.
+See [Task progress cards](/tools/progress-card#where-the-card-appears) for gesture thresholds,
+manual-choice scope, and reset behavior.
+
+Streaming output and layout adjustments keep reading mode intact. Scroll back to
+the end or select **Latest** to resume following the conversation.
 
 Completed replies can show a compact **Sources** strip when their web links match
 recorded `web_search` or `web_fetch` results from the same run. Select a title and
