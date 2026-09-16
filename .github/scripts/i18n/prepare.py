@@ -11,6 +11,9 @@ Definition:
 Parameters:
   --mode: Workflow lane: incremental, full, or retirements.
   --title: Summary heading to write to GITHUB_STEP_SUMMARY.
+  --inspect-resume-run: Validate a completed full run and pin its artifact IDs.
+  --resume-artifacts-root: Resolve source from downloaded full-run receipts.
+  --resume-publish-ref: Verified docs commit for legacy receipts only.
 
 Environment:
   EVENT_NAME, BEFORE_SHA, REQUESTED_COOLDOWN_SECONDS, DEFAULT_COOLDOWN_SECONDS,
@@ -36,6 +39,8 @@ import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
+
+from merge_artifact_roots import NATIVE_ARTIFACT_NAME, artifact_dirs, artifact_name, read_artifact_metadata, require_artifact_count
 
 
 LOCALES = {
@@ -67,6 +72,7 @@ class MainState:
     publish_ref: str
     source_repository: str
     source_sha: str
+    source_metadata_oid: str = ""
 
 
 def run_git(args: list[str], check: bool = True) -> str:
@@ -98,7 +104,102 @@ def read_source_state(ref: str) -> MainState:
     source_sha = data.get("sha") or ""
     if not source_repository or not source_sha:
         raise SystemExit(f"Invalid .openclaw-sync/source.json at {publish_ref}")
-    return MainState(publish_ref=publish_ref, source_repository=source_repository, source_sha=source_sha)
+    oid = run_git(["rev-parse", f"{publish_ref}:.openclaw-sync/source.json"]).strip()
+    return MainState(publish_ref, source_repository, source_sha, oid)
+
+
+def github_json(endpoint: str, *, paginate: bool = False) -> object:
+    args = ["gh", "api", endpoint]
+    if paginate:
+        args.extend(["--paginate", "--slurp"])
+    result = subprocess.run(args, check=True, text=True, stdout=subprocess.PIPE)
+    return json.loads(result.stdout)
+
+
+def inspect_resume_run(run_id: str, repository: str) -> dict[str, str]:
+    if not re.fullmatch(r"[1-9][0-9]*", run_id):
+        raise SystemExit("resume_run_id must be a numeric Translate Full run ID")
+    run = github_json(f"repos/{repository}/actions/runs/{run_id}")
+    # GitHub returns either a plain workflow path or path@ref for a run.
+    workflow_path = run.get("path", "").partition("@")[0]
+    if (
+        run.get("repository", {}).get("full_name") != repository
+        or run.get("head_repository", {}).get("full_name") != repository
+        or workflow_path != ".github/workflows/translate-all.yml"
+        or run.get("status") != "completed"
+    ):
+        raise SystemExit("resume_run_id must identify a completed Translate Full run in this repository")
+    pages = github_json(f"repos/{repository}/actions/runs/{run_id}/artifacts?per_page=100", paginate=True)
+    latest: dict[str, dict[str, object]] = {}
+    for page in pages:
+        for artifact in page["artifacts"]:
+            name = artifact["name"]
+            if name.startswith("i18n-") and not name.startswith("i18n-canary-"):
+                if not NATIVE_ARTIFACT_NAME.fullmatch(name):
+                    raise SystemExit(f"invalid resume artifact name: {name}")
+                if name not in latest or artifact["id"] > latest[name]["id"]:
+                    latest[name] = artifact
+    if not latest:
+        raise SystemExit("resume run has no locale artifacts; start a new full run instead")
+    if any(artifact.get("expired") for artifact in latest.values()):
+        raise SystemExit("resume run has expired locale artifacts; cannot reconstruct its receipts")
+    # Pin IDs before download. A later rerun must not silently replace the
+    # successful receipts between planning and aggregate finalization.
+    values = {
+        "resume_artifact_ids": ",".join(str(latest[name]["id"]) for name in sorted(latest)),
+        "resume_run_attempt": str(run["run_attempt"]),
+    }
+    print(f"Resume {repository}/actions/runs/{run_id}/attempts/{run['run_attempt']}: pinned {len(latest)} locale artifacts")
+    append_github_output(values)
+    return values
+
+
+def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids: str = "") -> MainState:
+    artifacts = artifact_dirs(artifacts_root)
+    require_artifact_count(artifacts, artifact_ids)
+    if not artifacts:
+        raise SystemExit("resume artifact download is empty or incomplete")
+    sources: set[str] = set()
+    snapshots: set[tuple[str, str]] = set()
+    identities: set[str] = set()
+    legacy = False
+    for artifact in artifacts:
+        metadata = read_artifact_metadata(artifact)
+        name = artifact_name(metadata)
+        if metadata.get("mode") != "full" or metadata.get("artifact_role", "locale") != "locale":
+            raise SystemExit(f"resume artifact {artifact.name} is not a full locale receipt")
+        locale = metadata.get("locale")
+        if locale not in LOCALES or metadata.get("locale_slug") != locale.lower():
+            raise SystemExit(f"resume artifact {artifact.name} has an unknown locale")
+        if name in identities:
+            raise SystemExit(f"duplicate resume artifact: {name}")
+        identities.add(name)
+        source = metadata.get("source_sha", "")
+        if not isinstance(source, str) or not re.fullmatch(r"[0-9a-f]{40}", source):
+            raise SystemExit(f"resume artifact {artifact.name} lacks a full source SHA")
+        sources.add(source)
+        snapshot = metadata.get("publish_ref"), metadata.get("source_metadata_oid")
+        if snapshot == (None, None):
+            legacy = True
+        elif not all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) for value in snapshot):
+            raise SystemExit(f"resume artifact {artifact.name} has incomplete snapshot provenance")
+        else:
+            snapshots.add(snapshot)
+    if len(sources) != 1 or len(snapshots) > 1:
+        raise SystemExit("resume artifacts contain contradictory source snapshots")
+    if legacy and not publish_ref:
+        raise SystemExit("legacy resume artifacts lack publish_ref; supply the verified original resume_publish_ref")
+    if publish_ref and not re.fullmatch(r"[0-9a-f]{40}", publish_ref):
+        raise SystemExit("resume_publish_ref must be the full original publish commit SHA")
+    if publish_ref and not legacy:
+        raise SystemExit("resume_publish_ref is only for legacy receipts without snapshot provenance")
+    recorded = next(iter(snapshots), None)
+    if recorded and publish_ref and recorded[0] != publish_ref:
+        raise SystemExit("resume_publish_ref contradicts recorded snapshot provenance")
+    state = read_source_state(publish_ref or recorded[0])
+    if state.source_sha != next(iter(sources)) or (recorded and state.source_metadata_oid != recorded[1]):
+        raise SystemExit("resume publish snapshot does not match artifact source metadata")
+    return state
 
 
 def is_translatable_doc_path(path: str) -> bool:
@@ -216,8 +317,14 @@ def prepare_translation_state(mode: str) -> tuple[MainState, int]:
     return state, cooldown
 
 
-def prepare(mode: str, title: str) -> dict[str, str]:
-    if mode == "retirements":
+def prepare(mode: str, title: str, resume_artifacts_root: Path | None = None, resume_publish_ref: str = "") -> dict[str, str]:
+    if resume_artifacts_root is not None:
+        if mode != "full":
+            raise SystemExit("only full translations support resume artifacts")
+        state, cooldown = read_resume_state(resume_artifacts_root, resume_publish_ref, os.environ.get("RESUME_ARTIFACT_IDS", "")), 0
+    elif resume_publish_ref:
+        raise SystemExit("resume_publish_ref requires resume_run_id")
+    elif mode == "retirements":
         state, cooldown = read_source_state("HEAD"), 0
     else:
         state, cooldown = prepare_translation_state(mode)
@@ -254,12 +361,18 @@ Examples:
     )
     parser.add_argument("--mode", choices=["incremental", "full", "retirements"], required=True)
     parser.add_argument("--title", required=True)
+    parser.add_argument("--inspect-resume-run", default="")
+    parser.add_argument("--resume-artifacts-root", type=Path)
+    parser.add_argument("--resume-publish-ref", default="")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    prepare(args.mode, args.title)
+    if args.inspect_resume_run:
+        inspect_resume_run(args.inspect_resume_run, os.environ["GITHUB_REPOSITORY"])
+    else:
+        prepare(args.mode, args.title, args.resume_artifacts_root, args.resume_publish_ref)
 
 
 if __name__ == "__main__":

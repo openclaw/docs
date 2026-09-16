@@ -284,7 +284,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("run-id: ${{ inputs.resume_run_id }}", text)
         self.assertIn("resume_run_id: ${{ inputs.resume_run_id || '' }}", text)
         self.assertIn("merge_artifact_roots.py", text)
-        self.assertIn("needs.plan.outputs.translation_required == 'false'", text)
+        self.assertIn("needs.prepare.outputs.translation_required == 'false'", text)
         self.assertNotIn("translate-locale-finalize-reusable.yml", text)
         self.assertRegex(
             text,
@@ -339,7 +339,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("steps.aggregate_commit.outputs.committed != 'true'", finalize_reusable)
         self.assertIn("steps.aggregate_commit.outputs.committed == 'true'", finalize_reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', finalize_reusable)
-        self.assertIn("expected_locales: ${{ needs.plan.outputs.expected_locales }}", text)
+        self.assertIn("expected_locales: ${{ needs.prepare.outputs.expected_locales }}", text)
         self.assertIn("FINALIZE_RESULT: ${{ needs.finalize.result }}", text)
         self.assertNotIn("finalize-batch-", text)
         self.assertIn("provider-preflight:", text)
@@ -529,12 +529,13 @@ class I18NScriptTests(unittest.TestCase):
     def test_prepare_reads_metadata_from_the_once_resolved_revision(self) -> None:
         for ref in ("HEAD", "refs/remotes/origin/main"):
             with self.subTest(ref=ref), patch.object(prepare, "run_git", side_effect=[
-                "resolved-sha\n", '{"repository":"openclaw/openclaw","sha":"source-a"}',
+                "resolved-sha\n", '{"repository":"openclaw/openclaw","sha":"source-a"}', "metadata-oid\n",
             ]) as git:
-                self.assertEqual(prepare.MainState("resolved-sha", "openclaw/openclaw", "source-a"), prepare.read_source_state(ref))
+                self.assertEqual(prepare.MainState("resolved-sha", "openclaw/openclaw", "source-a", "metadata-oid"), prepare.read_source_state(ref))
                 self.assertEqual([
                     (["rev-parse", ref],),
                     (["show", "resolved-sha:.openclaw-sync/source.json"],),
+                    (["rev-parse", "resolved-sha:.openclaw-sync/source.json"],),
                 ], [call.args for call in git.call_args_list])
 
     def test_prepare_translation_preserves_debounce_cap_and_push_filter(self) -> None:
@@ -562,6 +563,195 @@ class I18NScriptTests(unittest.TestCase):
                     changed.assert_called_once_with("before", states[-1].publish_ref)
                 else:
                     changed.assert_not_called()
+
+    def test_resume_admission_pins_latest_unexpired_receipts_from_completed_full_run(self) -> None:
+        run = {
+            "repository": {"full_name": "openclaw/docs"}, "head_repository": {"full_name": "openclaw/docs"},
+            "path": ".github/workflows/translate-all.yml", "status": "completed", "run_attempt": 2,
+        }
+        name = f"i18n-fr-s0of1-{'a' * 40}"
+        artifacts = [
+            {"id": 10, "name": name, "expired": True},
+            {"id": 12, "name": name, "expired": False},
+            {"id": 13, "name": f"i18n-canary-fr-s0of1-{'a' * 40}", "expired": False},
+        ]
+        for suffix in ("", "@main", "@refs/heads/workflow-repair"):
+            response = {**run, "path": run["path"] + suffix}
+            with self.subTest(suffix=suffix), patch.object(prepare, "github_json", side_effect=[response, [{"artifacts": artifacts[:1]}, {"artifacts": artifacts[1:]}]]):
+                self.assertEqual({"resume_artifact_ids": "12", "resume_run_attempt": "2"}, prepare.inspect_resume_run("123", "openclaw/docs"))
+        for change in ({"status": "in_progress"}, {"path": ".github/workflows/translate-incremental.yml"},
+                       {"path": ".github/workflows/translate-incremental.yml@main"},
+                       {"head_repository": {"full_name": "contributor/docs"}}):
+            with self.subTest(change=change), patch.object(prepare, "github_json", return_value={**run, **change}) as api:
+                with self.assertRaisesRegex(SystemExit, "completed Translate Full"):
+                    prepare.inspect_resume_run("123", "openclaw/docs")
+                self.assertEqual(1, api.call_count)
+        for receipts, message in (([], "no locale artifacts"), ([artifacts[0]], "expired locale artifacts")):
+            with self.subTest(message=message), patch.object(prepare, "github_json", side_effect=[run, [{"artifacts": receipts}]]):
+                with self.assertRaisesRegex(SystemExit, message):
+                    prepare.inspect_resume_run("123", "openclaw/docs")
+
+    def test_resume_provenance_rejects_empty_mixed_and_unverifiable_snapshots(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            self._repo_with_source(str(repo))
+            (repo / ".openclaw-sync/source.json").write_text(json.dumps({"repository": "openclaw/openclaw", "sha": "a" * 40}))
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "source snapshot")
+            ref = run_git(repo, "rev-parse", "HEAD").strip()
+            oid = run_git(repo, "rev-parse", "HEAD:.openclaw-sync/source.json").strip()
+            metadata = {"locale": "fr", "locale_slug": "fr", "mode": "full", "source_sha": "a" * 40,
+                        "shard_index": 0, "shard_total": 1, "publish_ref": ref, "source_metadata_oid": oid}
+            cases = [
+                ([], "", "empty or incomplete"),
+                ([{**metadata, "source_sha": "short"}], "", "full source SHA"),
+                ([metadata, {**metadata, "locale": "ru", "locale_slug": "ru", "source_sha": "b" * 40}], "", "contradictory"),
+                ([metadata, {**metadata, "locale": "ru", "locale_slug": "ru", "source_metadata_oid": "b" * 40}], "", "contradictory"),
+                ([{**metadata, "source_metadata_oid": "b" * 40}], "", "does not match"),
+                ([{**metadata, "source_sha": "b" * 40}], "", "does not match"),
+                ([{k: v for k, v in metadata.items() if k != "publish_ref"}], "", "incomplete snapshot"),
+                ([metadata], ref, "only for legacy"),
+            ]
+            legacy = {k: v for k, v in metadata.items() if k not in {"publish_ref", "source_metadata_oid"}}
+            cases.append(([legacy], "", "verified original resume_publish_ref"))
+            for index, (receipts, backfill, message) in enumerate(cases):
+                artifacts = root / str(index)
+                for number, receipt in enumerate(receipts):
+                    self._write_artifact(artifacts, str(number), metadata=receipt)
+                with self.subTest(message=message), chdir(repo), self.assertRaisesRegex(SystemExit, message):
+                    prepare.read_resume_state(artifacts, backfill)
+            artifact = self._write_artifact(root / "legacy", "single", metadata=legacy)
+            with chdir(repo):
+                self.assertEqual(ref, prepare.read_resume_state(artifact, ref).publish_ref)
+                with self.assertRaisesRegex(SystemExit, "empty or incomplete"):
+                    prepare.read_resume_state(artifact, ref, "12,13")
+
+    def test_resume_workflow_uses_frozen_docs_and_current_staged_control_code(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo, runner = root / "repo", root / "runner"
+            repo.mkdir()
+            runner.mkdir()
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            source = repo / ".openclaw-sync/source.json"
+            source.write_text(json.dumps({"repository": "openclaw/openclaw", "sha": "a" * 40}))
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text("old snapshot\n")
+            for index in range(126):
+                (repo / f"docs/page-{index}.md").write_text(f"# Page {index}\n")
+            scripts = repo / ".github/scripts/i18n"
+            scripts.mkdir(parents=True)
+            for name in ("prepare.py", "plan_full.py", "package_artifact.py"):
+                (scripts / name).write_text("raise SystemExit('old control code executed')\n")
+            (scripts / "check_mdx_protected_attributes.mjs").write_text("throw Error('old MDX validator');\n")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "original translation snapshot")
+            original = run_git(repo, "rev-parse", "HEAD").strip()
+            oid = run_git(repo, "rev-parse", "HEAD:.openclaw-sync/source.json").strip()
+            source.write_text(json.dumps({"repository": "openclaw/openclaw", "sha": "b" * 40}))
+            for index in range(126, 251):
+                (repo / f"docs/page-{index}.md").write_text(f"# New page {index}\n")
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text("new snapshot\n")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "newer main")
+            run_git(repo, "checkout", "-b", "workflow-repair")
+            for script in [*SCRIPT_DIR.glob("*.py"), *SCRIPT_DIR.glob("*.mjs")]:
+                shutil.copy2(script, scripts / script.name)
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "current workflow control code")
+            workflow_ref = run_git(repo, "rev-parse", "HEAD").strip()
+            for index in range(2):
+                self._write_artifact(runner / "resume-artifacts", f"i18n-fr-s{index}of2-{'a' * 40}", metadata={
+                    "locale": "fr", "locale_slug": "fr", "mode": "full", "source_sha": "a" * 40,
+                    "publish_ref": original, "source_metadata_oid": oid, "shard_index": index, "shard_total": 2,
+                    "failed_reason": "translation failed" if index else "", "changed_count": 0, "deleted_count": 0,
+                })
+            shell_root = root / "shells"
+            shell_root.mkdir()
+            blocks = workflow_shell_check.extract_run_blocks(REPO_ROOT / ".github/workflows/translate-all.yml", shell_root)
+            commands = [path.read_text() for path in blocks]
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            (bin_dir / "python").symlink_to(sys.executable)
+            test_env = {**os.environ, "RUNNER_TEMP": str(runner), "GITHUB_ENV": str(root / "env"),
+                        "GITHUB_OUTPUT": str(root / "outputs"), "GITHUB_STEP_SUMMARY": str(root / "summary"),
+                        "RESUME_RUN_ID": "123", "RESUME_ARTIFACT_IDS": "12,13", "RESUME_PUBLISH_REF": "",
+                        "TARGET_LOCALE": "fr", "SOURCE_SHA": "a" * 40, "EVENT_NAME": "workflow_dispatch",
+                        "GITHUB_SHA": workflow_ref, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+            def execute(marker: str) -> None:
+                command = next(command for command in commands if marker in command)
+                result = subprocess.run(["bash", "-eu", "-c", command], cwd=repo, env=test_env, text=True, capture_output=True)
+                self.assertEqual(0, result.returncode, result.stderr)
+            execute('cp -R .github/scripts/i18n/.')
+            test_env["I18N_SCRIPT_DIR"] = str(runner / "openclaw-i18n-scripts")
+            execute('args=(--mode full --title')
+            outputs = dict(line.split("=", 1) for line in (root / "outputs").read_text().splitlines())
+            self.assertEqual(original, outputs["publish_ref"])
+            self.assertEqual("a" * 40, outputs["source_sha"])
+            run_git(repo, "checkout", "--detach", original)
+            self.assertEqual((SCRIPT_DIR / "check_mdx_protected_attributes.mjs").read_bytes(),
+                             (runner / "openclaw-i18n-scripts/check_mdx_protected_attributes.mjs").read_bytes())
+            execute('args=(--batch-size 4')
+            outputs = dict(line.split("=", 1) for line in (root / "outputs").read_text().splitlines())
+            self.assertEqual("126", outputs["source_doc_count"])
+            self.assertEqual("2", outputs["shard_total"])
+            self.assertEqual([{"locale": "fr", "locale_slug": "fr", "shard_index": "1", "shard_total": "2"}], json.loads(outputs["batch_1"])["include"])
+            self.assertEqual("old snapshot\n", (repo / "docs/.i18n/fr.tm.jsonl").read_text())
+            result = subprocess.run([sys.executable, str(runner / "openclaw-i18n-scripts/package_artifact.py")], cwd=repo,
+                env={**test_env, "GITHUB_WORKSPACE": str(repo), "LOCALE": "fr", "LOCALE_SLUG": "fr", "MODE": "full",
+                     "SHARD_INDEX": "1", "SHARD_TOTAL": "2", "WORKER_PARALLEL": "3", "THINKING_EFFORT": "xhigh",
+                     "PENDING_COUNT": "1", "TOTAL_PENDING_COUNT": "126", "ALL_COUNT": "126", "TRANSLATE_OUTCOME": "failure"},
+                text=True, capture_output=True)
+            self.assertEqual(0, result.returncode, result.stderr)
+            metadata = json.loads(result.stdout)
+            self.assertEqual((original, oid), (metadata["publish_ref"], metadata["source_metadata_oid"]))
+
+    def test_resume_flat_artifacts_replace_by_identity_and_reject_duplicate_or_misnamed_receipts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = {"locale": "fr", "locale_slug": "fr", "mode": "full", "source_sha": "a" * 40,
+                        "shard_index": 0, "shard_total": 1, "changed_count": 0, "deleted_count": 0}
+            previous = self._write_artifact(root, "resume-artifacts", metadata={**metadata, "failed_reason": "translation failed"})
+            current = self._write_artifact(root, "i18n-artifacts", metadata={**metadata, "failed_reason": ""})
+            output = root / "merged"
+            self.assertEqual(1, merge_artifact_roots.merge_artifact_roots(previous, current, output, "12"))
+            self.assertEqual([], plan_full.build_resume_plan([translation_plan.Locale("fr", "fr")], 1, current, "a" * 40))
+            self.assertEqual([], plan_full.build_resume_plan([translation_plan.Locale("fr", "fr")], 1, output, "a" * 40))
+            self._write_artifact(current, "duplicate", metadata=metadata)
+            with self.assertRaisesRegex(SystemExit, "duplicate artifact identity"):
+                merge_artifact_roots.merge_artifact_roots(None, current, output)
+            misnamed = self._write_artifact(root, f"i18n-ru-s0of1-{'a' * 40}", metadata=metadata)
+            with self.assertRaisesRegex(SystemExit, "directory disagrees"):
+                merge_artifact_roots.read_artifact_metadata(misnamed)
+
+    def test_merge_artifact_roots_requires_all_pinned_receipts_before_output_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = {"locale": "fr", "locale_slug": "fr", "mode": "full", "source_sha": "a" * 40,
+                        "shard_index": 0, "shard_total": 2, "changed_count": 0, "deleted_count": 0}
+            previous = self._write_artifact(root, "previous", metadata=metadata)
+            output = root / "output"
+            output.mkdir()
+            (output / "existing.txt").write_text("preserve until all receipts arrive")
+            command = [sys.executable, str(SCRIPT_DIR / "merge_artifact_roots.py"), "--previous-root", str(previous),
+                       "--current-root", str(root / "current"), "--output-root", str(output), "--previous-artifact-ids", "12,13"]
+            result = subprocess.run(command, text=True, capture_output=True)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("empty or incomplete", result.stderr)
+            self.assertEqual(["existing.txt"], [path.name for path in output.iterdir()])
+            self.assertEqual("preserve until all receipts arrive", (output / "existing.txt").read_text())
+            # With both IDs present, download-artifact switches from a flat
+            # single receipt to one named directory per artifact.
+            previous.rename(root / "single")
+            previous.mkdir()
+            (root / "single").rename(previous / f"i18n-fr-s0of2-{'a' * 40}")
+            self._write_artifact(previous, f"i18n-fr-s1of2-{'a' * 40}", metadata={**metadata, "shard_index": 1})
+            result = subprocess.run(command, text=True, capture_output=True)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(2, len(merge_artifact_roots.artifact_dirs(output)))
 
     def test_incremental_workflow_schedules_all_expected_finalizer_locales(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
@@ -729,21 +919,10 @@ class I18NScriptTests(unittest.TestCase):
             )
             self.assertEqual(["fr", "ru"], [locale.locale for locale in locales])
 
-    def test_full_resume_without_artifacts_reruns_every_shard(self) -> None:
+    def test_full_resume_without_matching_artifacts_fails_before_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            locales = [translation_plan.Locale("fr", "fr")]
-
-            batches = plan_full.build_resume_plan(locales, 2, Path(tmp), "source-a")
-
-            self.assertEqual(
-                [
-                    [
-                        {"locale": "fr", "locale_slug": "fr", "shard_index": "0", "shard_total": "2"},
-                        {"locale": "fr", "locale_slug": "fr", "shard_index": "1", "shard_total": "2"},
-                    ]
-                ],
-                batches,
-            )
+            with self.assertRaisesRegex(SystemExit, "no matching locale artifacts"):
+                plan_full.build_resume_plan([translation_plan.Locale("fr", "fr")], 2, Path(tmp), "source-a")
 
     def test_full_resume_with_all_successful_shards_requires_only_finalization(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1235,6 +1414,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / ".openclaw-sync").mkdir()
             (repo / "docs").mkdir()
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -1280,6 +1461,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / ".openclaw-sync").mkdir()
             (repo / "docs").mkdir()
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -1334,6 +1517,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / ".openclaw-sync").mkdir()
             (repo / "docs/fr").mkdir(parents=True)
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -1380,6 +1565,8 @@ class I18NScriptTests(unittest.TestCase):
                 '<ParamField path="prompt" type="string" default="Analyze this PDF document." />\n',
                 encoding="utf-8",
             )
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -1438,6 +1625,8 @@ class I18NScriptTests(unittest.TestCase):
                 '<ParamField path="prompt" type="string" default="Analyze this PDF document." label="Prompt" />\n',
                 encoding="utf-8",
             )
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -1510,6 +1699,8 @@ class I18NScriptTests(unittest.TestCase):
             translated = repo / "docs/fr/tools/pdf.md"
             source.write_text('<X default="source" />\n', encoding="utf-8")
             translated.write_text('<X default="traduit" />\n', encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "existing bad translation")
             (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n", encoding="utf-8")
@@ -2094,6 +2285,8 @@ class I18NScriptTests(unittest.TestCase):
             source.write_text('<Note path="prompt">Take care</Note>\n')
             translated.write_text('<Note path="invite">Prendre soin</Wrong>\n')
             before = translated.read_bytes()
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
             self._prepare_mdx_checker(repo)
@@ -2286,6 +2479,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/guide").mkdir(parents=True)
             (repo / "docs/guide/setup.md").write_text("# Setup\n", encoding="utf-8")
             (repo / "docs/guide/usage.md").write_text("# Usage\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -2343,6 +2538,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / ".openclaw-sync").mkdir()
             (repo / "docs").mkdir()
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -2384,6 +2581,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
             (repo / "docs/fr/index.md").write_text("# Old Index FR\n", encoding="utf-8")
             (repo / "docs/fr/removed.md").write_text("# Removed FR\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
 
@@ -3032,6 +3231,8 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/fr").mkdir()
             stale = repo / "docs/fr/retired.md"
             stale.write_text("# Retired\n", encoding="utf-8")
+            (repo / ".openclaw-sync").mkdir(exist_ok=True)
+            (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
             run_git(repo, "add", ".")
             run_git(repo, "commit", "-m", "initial")
             stale.unlink()

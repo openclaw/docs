@@ -34,6 +34,7 @@ import json
 import os
 from pathlib import Path
 
+from merge_artifact_roots import artifact_dirs, read_artifact_metadata
 from translation_plan import (
     Locale,
     expand_shards,
@@ -89,12 +90,9 @@ def build_resume_plan(
         raise SystemExit("--source-sha is required with --resume-artifacts-root")
     artifacts: dict[tuple[str, int], list[tuple[Path, dict[str, object]]]] = {}
     selected_slugs = {locale.locale_slug for locale in selected}
-    for artifact in sorted(path for path in artifacts_root.rglob("*") if path.is_dir() and (path / "metadata.json").is_file()):
-        try:
-            metadata = json.loads((artifact / "metadata.json").read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        if not isinstance(metadata, dict) or metadata.get("artifact_role", "locale") == "canary":
+    for artifact in artifact_dirs(artifacts_root):
+        metadata = read_artifact_metadata(artifact)
+        if metadata.get("artifact_role", "locale") == "canary":
             continue
         slug = metadata.get("locale_slug")
         if slug not in selected_slugs:
@@ -108,12 +106,14 @@ def build_resume_plan(
             artifact_shard_total = int(metadata.get("shard_total"))
         except (TypeError, ValueError) as exc:
             raise SystemExit(f"resume artifact {artifact.name} has invalid shard metadata") from exc
-        if artifact_shard_total != shard_total:
+        if artifact_shard_total != shard_total or not 0 <= shard_index < shard_total:
             raise SystemExit(
                 f"resume artifact {artifact.name} uses {artifact_shard_total} shards, expected {shard_total}"
             )
         artifacts.setdefault((str(slug), shard_index), []).append((artifact, metadata))
 
+    if not artifacts:
+        raise SystemExit("resume run has no matching locale artifacts")
     failed_shards: list[dict[str, str]] = []
     for locale in selected:
         for shard_index in range(shard_total):

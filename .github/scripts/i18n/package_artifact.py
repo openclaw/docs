@@ -352,6 +352,9 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         "locale": locale,
         "locale_slug": locale_slug,
         "source_sha": os.environ["SOURCE_SHA"],
+        # Record the actual docs/TM snapshot, independently of the workflow ref.
+        "publish_ref": git_lines(["-C", str(workspace), "rev-parse", "HEAD"])[0],
+        "source_metadata_oid": git_lines(["-C", str(workspace), "rev-parse", "HEAD:.openclaw-sync/source.json"])[0],
         "mode": os.environ["MODE"],
         "artifact_role": os.environ.get("ARTIFACT_ROLE", "locale"),
         "shard_index": shard_index,
