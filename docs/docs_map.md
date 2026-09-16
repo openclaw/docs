@@ -3497,6 +3497,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Choose where worktrees are stored
   - H2: Filesystem acceleration
+  - H2: Repository source profiles
   - H2: Layout and names
   - H2: Capacity and disk space
   - H2: Provision ignored files
