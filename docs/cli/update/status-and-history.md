@@ -210,6 +210,16 @@ automatic rollback cannot complete. Phase timings, repair attempts, and
 verification facts are included only when observed. Chat reports are limited to 1,500 characters;
 `update.runs.get` preserves the bounded record for detailed inspection.
 
+If a stable Gateway is still starting when the readiness allowance ends, the run
+finishes `skipped` with reason `gateway-readiness-unverified`. This means the
+installation completed, readiness was not confirmed, and recovery backups were
+retained. `finishedAtMs` records when observation ended; `confirmedAtMs` remains
+`null`. The warning log preserves the elapsed allowance and last service/HTTP
+observation. No background readiness continuation is promised. Check current
+health with `openclaw gateway status --deep`; later health does not rewrite this
+historical outcome. A Gateway that becomes ready within the allowance records
+`succeeded` and `confirmedAtMs` when readiness is reached.
+
 Standalone finalization and repair record the installed target version before
 Doctor runs. Failed Doctor steps retain the observed child exit code alongside
 the bounded, redacted failure reason; a terminated child can have a `null` exit
