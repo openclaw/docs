@@ -110,8 +110,9 @@ Repeated changes while a model lookup is pending are collected into one
 follow-up lookup for the latest choices.
 
 Catalog refreshes update the open conversation's model and context facts without
-reloading unrelated session lists. Session and configuration changes still refresh
-the affected lists through the shared session store.
+reloading unrelated session lists. The shared session store applies lifecycle row snapshots to existing active
+members locally. Membership or configuration changes and events without a row
+snapshot refresh the affected lists through its paced event scheduler.
 
 Chat refreshes its available commands after skill selections or session settings
 change. Repeated changes share one pending refresh per conversation and connection;
