@@ -487,6 +487,8 @@ Admin-only canonical batch status route. It accepts `{ "jobIds": ["..."] }` and 
 Returns the Skill Card verification envelope used by `clawhub skill verify` and
 `openclaw skills verify`.
 
+If card regeneration fails, the previously attached card remains available. Existing bundle fingerprints continue to resolve after successful regeneration.
+
 Query params:
 
 - `ownerHandle` (optional): publisher handle for owner-qualified resolution. Use this when multiple publishers share the slug.
