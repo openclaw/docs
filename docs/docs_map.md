@@ -6965,6 +6965,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Recover in the Control UI
   - H2: Reason codes
+  - H2: Retained legacy session history
   - H2: CLI fallback
   - H2: Rollback boundary
   - H2: Support diagnostics
