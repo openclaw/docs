@@ -23,6 +23,10 @@ When you touch tests or want extra confidence:
 - Informational V8 coverage report: `pnpm test:coverage`
 - E2E suite: `pnpm test:e2e`
 
+Oxlint's `max-lines` rule warns when files exceed the per-scope limits in
+`.oxlintrc.json`; these warnings remain visible in lint logs and do not fail CI.
+The suppression baseline ratchet remains a required check.
+
 ## Test suites (what runs where)
 
 Think of the suites as "increasing realism" (and increasing flakiness/cost).
