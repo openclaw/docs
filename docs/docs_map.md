@@ -10603,6 +10603,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin command runtime helpers
   - H2: Auth-profile resolution
   - H2: Bounded model context
+  - H2: Scoped session visibility
   - H2: Agent and session namespaces
 
 ## plugins/sdk-runtime/background-work.md
