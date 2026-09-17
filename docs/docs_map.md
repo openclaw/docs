@@ -12517,6 +12517,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test/runner-internals
 - Headings:
   - H2: Shared test state and process helpers
+  - H2: Public test diagnostics
   - H2: JSON reports across native processes
 
 ## reference/token-use.md
