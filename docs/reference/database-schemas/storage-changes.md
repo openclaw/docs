@@ -260,6 +260,16 @@ caller identity in one synchronous boundary.
 Registry replacement and restoration replace its snapshot, while named writes
 patch it. Storage repair and retention remain with their existing owners.
 
+Gateway `session.members.list` and `session.members.listEvidence` read full
+membership rows through the existing session-transcript read worker. Both methods
+recheck the exact session instance and current management rights after the read
+settles. Member ordering, actor evidence, and missing-database behavior are
+unchanged. Incognito membership remains with its process-local native owner;
+the synchronous session-store facade retains its existing compatibility contract.
+Target resolution, profile and creator catalogs, public-share metadata, projection
+refreshes, and membership writes retain their existing execution paths. This cut
+moves the member-row query, not every database read performed by these RPCs.
+
 Gateway user-preference RPCs and Talk appearance reads resolve merged profile IDs
 and access preferences in the shared-state worker. Preference writes keep profile
 resolution, quota validation, and mutation in one synchronous write transaction;
