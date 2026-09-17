@@ -51,6 +51,32 @@ retain the accepted snapshot. Marketplace refresh awaits persistence before clea
 its catalog cache and applying the result to the Gateway. Feed verification, expired
 snapshot visibility, install authority, and the stored representation are unchanged.
 
+Web Push subscription reads, VAPID identity, approval-delivery receipts, recovery,
+and expired-target cleanup run in the shared-state worker. Normal paired browser
+mutations also run there with authority retained by the WebSocket request owner.
+The worker resolves current profile bindings on its transaction connection, while
+host admission checks retained client, scope, request, and shared-auth state.
+Selected-account mismatches keep the original error and execution-phase details.
+
+Opaque request callbacks retain the native mutation kernels required by the tagged
+SDK contract. Their full callback runs at the native write boundary. This family
+is selected before storage begins; worker failures never redirect to native SQL.
+Its remaining migration belongs to the actual in-process resolver, session, and
+run authority producers. Accepted ordinary RPCs keep their reconnect behavior.
+
+Gateway handlers and notification senders await storage results; receipt preparation
+returns the committed target IDs before final recipient and approval checks. A private
+FIFO scope orders subscription mutations with the final subscription read, synchronous
+policy checks, and send start. The scope ends before awaiting provider completion;
+slow network delivery does not block registration. The scope uses the existing worker
+request and byte limits for its separate bounded waiting interval and joins shared-state close.
+Expired-target cleanup still compares the sent registration, and concurrent VAPID
+initialization returns the first committed identity. Read-only identity lookup does
+not create missing state. Existing tables, additive schema preparation, Doctor
+imports, retention, and notification payloads are unchanged. Pairing, profile,
+user-preference, and visibility checks outside transaction admission retain their
+separate synchronous owners.
+
 Asynchronous mutable cron-store loads run in the shared-state worker, including
 the existing retired-job deletion and runtime-authority repairs. The connection-bound
 load kernel preserves their separate transactions, partition keys, and fingerprints.
