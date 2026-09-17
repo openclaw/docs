@@ -7915,6 +7915,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## plugins/apple-fm.md
+
+- Route: /plugins/apple-fm
+- Headings:
+  - H2: Requirements
+  - H2: Set up
+  - H2: Runtime behavior
+  - H2: Troubleshooting
+
 ## plugins/architecture-internals.md
 
 - Route: /plugins/architecture-internals
@@ -8971,6 +8980,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/anthropic.md
 
 - Route: /plugins/reference/anthropic
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/apple-fm.md
+
+- Route: /plugins/reference/apple-fm
 - Headings:
   - H2: Distribution
   - H2: Surface

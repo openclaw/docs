@@ -1836,6 +1836,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "plugins/apple-fm",
                       "plugins/llama-cpp",
                       "plugins/memory-lancedb",
                       "plugins/memory-wiki"
@@ -3900,6 +3901,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "zh-CN/plugins/apple-fm",
                       "zh-CN/plugins/llama-cpp",
                       "zh-CN/plugins/memory-lancedb",
                       "zh-CN/plugins/memory-wiki"
@@ -5930,6 +5932,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "zh-TW/plugins/apple-fm",
                       "zh-TW/plugins/llama-cpp",
                       "zh-TW/plugins/memory-lancedb",
                       "zh-TW/plugins/memory-wiki"
@@ -7960,6 +7963,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "ja-JP/plugins/apple-fm",
                       "ja-JP/plugins/llama-cpp",
                       "ja-JP/plugins/memory-lancedb",
                       "ja-JP/plugins/memory-wiki"
@@ -9990,6 +9994,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "es/plugins/apple-fm",
                       "es/plugins/llama-cpp",
                       "es/plugins/memory-lancedb",
                       "es/plugins/memory-wiki"
@@ -12020,6 +12025,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "pt-BR/plugins/apple-fm",
                       "pt-BR/plugins/llama-cpp",
                       "pt-BR/plugins/memory-lancedb",
                       "pt-BR/plugins/memory-wiki"
@@ -14050,6 +14056,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "ko/plugins/apple-fm",
                       "ko/plugins/llama-cpp",
                       "ko/plugins/memory-lancedb",
                       "ko/plugins/memory-wiki"
@@ -16080,6 +16087,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "de/plugins/apple-fm",
                       "de/plugins/llama-cpp",
                       "de/plugins/memory-lancedb",
                       "de/plugins/memory-wiki"
@@ -18110,6 +18118,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "fr/plugins/apple-fm",
                       "fr/plugins/llama-cpp",
                       "fr/plugins/memory-lancedb",
                       "fr/plugins/memory-wiki"
@@ -20140,6 +20149,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "hi/plugins/apple-fm",
                       "hi/plugins/llama-cpp",
                       "hi/plugins/memory-lancedb",
                       "hi/plugins/memory-wiki"
@@ -22170,6 +22180,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "ar/plugins/apple-fm",
                       "ar/plugins/llama-cpp",
                       "ar/plugins/memory-lancedb",
                       "ar/plugins/memory-wiki"
@@ -24200,6 +24211,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "it/plugins/apple-fm",
                       "it/plugins/llama-cpp",
                       "it/plugins/memory-lancedb",
                       "it/plugins/memory-wiki"
@@ -26230,6 +26242,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "vi/plugins/apple-fm",
                       "vi/plugins/llama-cpp",
                       "vi/plugins/memory-lancedb",
                       "vi/plugins/memory-wiki"
@@ -28260,6 +28273,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "nl/plugins/apple-fm",
                       "nl/plugins/llama-cpp",
                       "nl/plugins/memory-lancedb",
                       "nl/plugins/memory-wiki"
@@ -30290,6 +30304,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "tr/plugins/apple-fm",
                       "tr/plugins/llama-cpp",
                       "tr/plugins/memory-lancedb",
                       "tr/plugins/memory-wiki"
@@ -32320,6 +32335,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "uk/plugins/apple-fm",
                       "uk/plugins/llama-cpp",
                       "uk/plugins/memory-lancedb",
                       "uk/plugins/memory-wiki"
@@ -34350,6 +34366,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "id/plugins/apple-fm",
                       "id/plugins/llama-cpp",
                       "id/plugins/memory-lancedb",
                       "id/plugins/memory-wiki"
@@ -36380,6 +36397,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "pl/plugins/apple-fm",
                       "pl/plugins/llama-cpp",
                       "pl/plugins/memory-lancedb",
                       "pl/plugins/memory-wiki"
@@ -38410,6 +38428,7 @@
                   {
                     "group": "Models and memory",
                     "pages": [
+                      "ru/plugins/apple-fm",
                       "ru/plugins/llama-cpp",
                       "ru/plugins/memory-lancedb",
                       "ru/plugins/memory-wiki"
