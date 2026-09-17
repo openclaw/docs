@@ -437,15 +437,21 @@ checks still govern every removal.
 Automatic session-entry maintenance first checks the unarchived count and
 store-scoped age facts. Writes below the existing cap high-water mark skip
 candidate and protection-key reads until pruning or dashboard archiving could
-change an entry. A plan refreshes the timestamp facts; tracked entry writes
-advance them conservatively, while rollback, untracked mutations, external
-commits, and connection replacement invalidate reuse. Key-inherent protection
-does not keep an old primary or external conversation permanently due. Already-aged
-entries with dynamic protection still require fresh planning on writes.
+change an entry. A plan records the next age boundary and a 30-minute recheck
+deadline under the current age policy. Every maintenance entry point rejects
+expired facts, including inline replacement and lifecycle writes that have no
+maintenance timer. Ordinary entry writes only tighten the age boundary; entry-cache
+revision changes and unrelated external commits do not discard it. Backdated
+replacements, archive restores, imports, and Doctor rewrites invalidate it
+explicitly. Rollback and connection replacement also discard reuse. Key-inherent
+protection does not keep an old primary or external conversation permanently due.
+Already-aged entries with dynamic protection wait for the next age boundary or
+periodic recheck instead of requiring fresh planning on every write.
 
-The coalesced maintenance kick also wakes at the next age boundary, with a
-30-minute periodic recheck for released work protection and external changes.
-Its timer retires with the exact database connection. Planning still reads its
+The coalesced maintenance kick wakes at the earlier of the age boundary and the
+same periodic deadline for released work protection and external changes.
+Ordinary writes do not postpone that deadline. Its timer retires with
+the exact database connection. Planning still reads its
 protection-key inventory at most once when age or cap candidates exist, inside
 the write transaction; archives and final deletion retain their existing
 post-writer lifecycle checks. Retention rules, cap buffering, forced cleanup,
