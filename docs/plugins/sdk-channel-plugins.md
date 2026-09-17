@@ -648,9 +648,20 @@ own trust claim cannot supply registration authority. Discord declares
 Other action names do not gain scheduled access from this declaration.
 
 Scheduled `channel-edit`, including its existing channel and thread edit variants,
-requires trusted operator job authority. The declaration cannot promote an
+accepts trusted operator job authority or the account job's authenticated native
+requester. The declaration cannot promote an
 account-mode job to operator authority or replace authenticated requester identity
 and current sender permission checks.
+
+For native account edits, the host supplies its validated `requesterAccountId`
+and `requesterSenderId` with `senderIsOwner: false`. There is no current inbound
+conversation to put in `toolContext`. The adapter uses these host-provided facts
+for its normal current requester-permission checks; model arguments and the
+presence of a handoff callback cannot supply a requester identity. The host keeps
+the saved native requester separate from an earlier complete-tool-surface read
+origin. Discovery can use both facts to present configured actions, but the native
+requester does not establish read access. Jobs without usable native facts receive
+reauthorization guidance before the provider is called.
 
 Scheduled `edit`, `delete`, `pin`, and `unpin` support both trusted operator jobs and
 account jobs. An account job must use its recorded creator account and a known

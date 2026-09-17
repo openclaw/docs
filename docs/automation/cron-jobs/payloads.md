@@ -105,6 +105,28 @@ For these writes, the job needs `message` in its tool policy, an enabled account
 and action, and the bot's required Discord permissions. Use an updated Discord plugin with
 [scheduled write support](/plugins/sdk-channel-plugins#scheduled-channel-administration).
 
+Account-bound jobs can use Discord `channel-edit` when an authenticated Discord
+turn has authorized their current definition. OpenClaw privately retains that
+requester's Discord account and sender identity, and Discord's current channel
+or thread permissions must allow the edit. The original session creator and a
+configured OpenClaw owner are not substitutes for those native permissions.
+
+Executable edits from the job's owning conversation and account bind the job to
+the current authorized editor. This includes the prompt, model, name, schedule,
+delivery, and tool policy. An executable edit without a matching authenticated
+Discord requester clears this permission and stops further native actions from
+the old occurrence. Description and display-label changes preserve it.
+
+Older jobs, jobs edited by older writers, and jobs whose requester authorization
+was cleared need fresh authorization before `channel-edit` can run. From the
+original Discord conversation and account, ask the agent to edit the job with
+an explicit finite `toolsAllow` list including `message`, or recreate it there.
+If its execution authorization is also missing, recreate it from that conversation;
+management access alone does not restore the missing authorization.
+The editor must already have automation-management access. Other job behavior
+keeps its existing policy; a CLI edit cannot invent a Discord requester. These
+requester facts are omitted from public job results, and no new setting is needed.
+
 Channel-name lookup and subsequent write requests retain the current job and
 plugin authority. Configuration changes apply to the next message invocation;
 disabling or narrowing the job itself stops later requests and retries in the
