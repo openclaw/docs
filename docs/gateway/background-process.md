@@ -105,6 +105,13 @@ its proxy, not the development server: stop the server with `process kill`.
 
 ## Child process bridging
 
+After a host exec command finishes, OpenClaw releases its retained service-child
+group before reporting completion. Children left behind by shell backgrounding
+(`&`) are stopped with that group. To continue work across turns, start the
+long-running command with `background: true` and use `process` to collect its
+result. Its group stays owned until the command finishes; sandbox runtime
+lifetimes remain with the sandbox backend.
+
 When spawning long-running child processes outside the exec/process tools (CLI respawns, gateway helpers), attach the child-process bridge helper so termination signals forward and listeners detach on exit/close. This avoids orphaned processes on systemd and keeps shutdown consistent across platforms.
 
 On Linux with the default Node runtime, the Gateway starts a small spawn broker
@@ -134,6 +141,8 @@ confirm that the group has disappeared after graceful shutdown. A completed
 command or closed output pipe alone does not establish that its descendants have
 stopped. Forced termination without confirmed cleanup remains uncertain. Local
 TUI shell shutdown uses the same cleanup owner for its own commands.
+Permission-denied group probes still count as present; cleanup continues waiting
+within its original deadline for confirmed disappearance.
 If the host was busy, cleanup processes queued native completion events before
 reporting a timeout.
 
