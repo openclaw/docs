@@ -60,6 +60,26 @@ Behavior:
 | `tools.exec.notifyOnExit`             | true    | Enqueue a system event + request heartbeat when a backgrounded exec exits.      |
 | `tools.exec.notifyOnExitEmptySuccess` | false   | Also enqueue completion events for successful backgrounded runs with no output. |
 
+### Disable automatic completion turns
+
+Background exec completion notifications are enabled by default. They can run a
+model turn marked `[OpenClaw exec completion]` even when
+`agents.defaults.heartbeat.every` is `"0m"`: that setting disables recurring polls,
+not completion follow-ups.
+
+To keep background commands running without automatic completion turns, set:
+
+```bash
+openclaw config set tools.exec.notifyOnExit false
+```
+
+An agent's `agents.entries.<id>.tools.exec.notifyOnExit` overrides the global
+setting. Set that override to `false` too, or remove it to inherit the global
+value. Newly started commands use the updated setting; commands already running
+retain the setting they started with. Use `process poll` or `process log` to
+collect their results on demand. This disables the completion event and its
+automatic model call without disabling `background: true` or the `process` tool.
+
 ## Worker environments
 
 On a paired-node or node-backed cloud worker, background processes belong to the

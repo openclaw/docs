@@ -4342,6 +4342,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: exec tool
   - H3: Env overrides
   - H3: Config (preferred over env overrides)
+  - H3: Disable automatic completion turns
   - H2: Worker environments
   - H2: Child process bridging
   - H2: process tool
@@ -6989,6 +6990,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Run doctor
   - H3: Restart the gateway
   - H3: Verify
+  - H3: Background exec notifications after an update
   - H2: Detailed topics
   - H2: Related
 
