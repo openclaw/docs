@@ -89,6 +89,18 @@ for an `Int`) instead of arbitrary Swift interpolation. Constrained inflected
 count resources are supported on both platforms. Use explicit verbatim text for
 user, system, or already-localized data.
 
+For staged checks, `pnpm check:changed --staged` compares the index with `HEAD`.
+Use `pnpm check:changed --staged --base <commit>` to compare the index with an
+explicit commit, including during a pending merge. Path selection, package
+classification, and the staged ratchets use that same base. Without `--staged`,
+the default comparison base remains `origin/main`.
+
+Delegated staged checks carry the selected paths and comparison base to the
+remote checker. Crabbox synchronizes working-tree files, not the local Git
+index, so remote results describe those materialized files rather than an exact
+copy of the staged snapshot. Keep the intended proof files consistent before
+using that route.
+
 ## Surface ratchets
 
 Line caps are cumulative gates: independently green changes can exceed a cap
