@@ -522,6 +522,20 @@ for the entire wait or which work consumed CPU. These are ordinary performance
 logs. They do not use or change [audit identity](/gateway/audit), decisions,
 retention, principal attribution or admission authority.
 
+### Worker pool capacity
+
+Gateway `status` responses include `workerPools.transcriptReconciliation` and
+`workerPools.modelCatalog`. Each reports `maxWorkers`, `workers`, `workersCreated`,
+`activeTasks`, and `pendingTasks` from the pool owner. Both Gateway pools admit one
+worker at a time. Pending tasks include queued and executing work; creation counts
+belong to the current pool lifetime. The startup trace's `memory.ready` record also
+includes these pool counts.
+
+These figures describe worker and task counts. Process RSS includes every isolate
+and native allocation; Node's process heap flags can override a worker's requested
+heap limits. Use constructor or per-isolate measurements when attributing memory
+growth to a particular worker.
+
 ### Slow worktree cleanup
 
 With process diagnostics and info-level logging enabled, two subsystems log
