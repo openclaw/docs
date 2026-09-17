@@ -578,8 +578,7 @@ Mattermost supports `read`.
 Slack supports `read`, `reactions`, `list-pins`, `member-info`, `emoji-list`, and
 `download-file`.
 Older external adapters and unverified plugins retain the exact-current-conversation
-restriction. Write actions and
-other read-capable actions are unchanged.
+restriction. These declarations apply only to the listed read actions.
 
 Delegated Slack member info is limited to the current requester on the same account,
 and emoji discovery uses the trusted workspace. Neither metadata action requires
@@ -621,6 +620,59 @@ host completion. The existing media artifact is kept only when the read succeeds
 If completion is rejected, cleanup removes only files created by that operation;
 preexisting files, replacements, and shared files are preserved. The source abort
 signal also reaches the binary transfer where the caller supplies one.
+
+## Scheduled channel administration
+
+`ChannelMessageActionAdapter` exposes the optional
+`writeAuthorityActions?: readonly ChannelMessageActionName[]` declaration through
+`openclaw/plugin-sdk/channel-contract`. It identifies write actions whose transport
+preserves the host's live request authority. Advertising an action through
+`describeMessageTool` or declaring read support does not establish that contract.
+
+The host separately selects eligible actions and requires an active bundled or
+loader-verified official registration. A bundled artifact fallback or a plugin's
+own trust claim cannot supply registration authority. The currently enabled
+scheduled action is Discord `channel-edit`, including its existing channel and
+thread edit variants. Discord declares `writeAuthorityActions: ["channel-edit"]`;
+other action names do not gain scheduled access from this declaration.
+
+The scheduled path requires trusted operator job authority. The job's current
+execution policy and `toolsAllow`, account and target restrictions, enabled actions,
+and provider permissions still apply. The declaration cannot promote an account-mode
+job to operator authority or replace authenticated requester identity and current
+sender permission checks.
+
+The host evaluates current tool policy when each new scheduled message invocation
+is admitted, including global, agent, profile, and selected model-provider policy.
+Configuration changes govern the next invocation; they do not retroactively
+change the configuration of an admitted operation. Revoking or narrowing the job
+itself, canceling its run, or ending caller or plugin authority still blocks later
+provider requests and retries within that operation.
+
+The host admits channel-name resolution before directory requests and retains
+the selected registration through the edit. Its preparation read scope closes
+before the write starts, so a read completion check cannot discard an accepted
+mutation result.
+
+An opted-in adapter must honor the existing
+`ChannelMessageActionContext.assertDirectAdapterHandoff` callback:
+
+- Retain the exact host-provided callback through asynchronous preparation,
+  permission and target lookups, rate-limit queues, and retries.
+- Invoke it synchronously after awaited preparation and immediately before every
+  actual provider request, including lookup requests and each retry attempt.
+- If it throws, stop that request. Do not suppress the rejection, replace the
+  callback, or put the rejected operation into replayable recovery.
+- Let a submitted request settle and preserve its outcome, including a confirmed
+  mutation when authority expires while awaiting the response. Expired authority
+  blocks later requests; it must not cause an accepted mutation to be replayed.
+
+This optional field keeps older adapters source-compatible. An omitted or empty
+declaration leaves newly enabled scheduled administration denied. To support it,
+upgrade OpenClaw and the plugin, implement the request and retry checks above,
+declare only the covered actions, and load the updated registration. Existing
+direct-operator and interactive actions retain their admission rules. Upgrading
+the plugin does not grant additional authority to an existing job.
 
 ## Advanced topics
 

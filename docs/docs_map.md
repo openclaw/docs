@@ -10278,6 +10278,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Walkthrough
   - H2: File structure
   - H2: Delegated context reads
+  - H2: Scheduled channel administration
   - H2: Advanced topics
   - H2: Next steps
   - H2: Where each section moved
