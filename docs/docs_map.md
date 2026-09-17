@@ -7484,6 +7484,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Support snapshot
   - H2: Simultaneous Gateway sessions
+  - H2: Dictation and attachments
   - H2: Wear OS companion
   - H2: Install outside Google Play
   - H2: Mirror and control Android from a remote Mac
