@@ -352,6 +352,15 @@ health row are not one atomic transaction. Synchronous config readers and writer
 keep their existing APIs; config parsing, validation, and plugin preparation retain
 their own execution paths.
 
+The native Gateway host supplies snapshot preparation through its registered
+config owner. Those reads prepare deferred migration and plugin metadata with the
+existing shared-state actor. Each read captures one exact owner before awaiting
+preparation and rejects its result if that owner closes; failures never select a
+replacement or switch readers. Direct servers and standalone config readers keep
+their existing execution path unless their host explicitly supplies this operation.
+Missing-file defaults still load plugin metadata only when those defaults need it.
+The operation changes no schema, persisted representation, or publication authority.
+
 SQLite worker transport preserves complete result values. Results within the
 64 MiB inline reply budget keep their existing reply path; larger results are
 serialized once and transferred in 8 MiB frames. The original operation retains
