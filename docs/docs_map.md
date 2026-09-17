@@ -5072,6 +5072,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Health monitor config
   - H2: Inbound ingress health
   - H2: HTTP probes
+  - H3: Plugin replacement recovery
   - H3: CPU pressure and event-loop delay
   - H2: Uptime monitoring
   - H3: Monitoring service setup examples
