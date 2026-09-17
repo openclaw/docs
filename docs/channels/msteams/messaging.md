@@ -83,6 +83,19 @@ The thread root is taken from the stored `threadId` on the conversation referenc
 
 When `replyStyle: "top-level"` is in effect, channel-thread inbounds are intentionally answered as new top-level posts; no thread suffix is attached. This is correct for Threads-style channels; top-level posts where you expected threaded replies means `replyStyle` is set incorrectly for that channel.
 
+## Delivery cancellation and retries
+
+Task and queue deliveries of text, images, files, and presentation cards check
+their current delivery authority before each Teams request, including after
+token acquisition and rate-limit waits. Cancellation stops requests that have
+not yet begun. Messages and file cards already accepted by Teams retain their
+delivery receipts; a partially completed text-and-media send retains its
+accepted parts.
+
+Required SharePoint uploads, member lookups, sharing links, and redirects check
+the same authority before continuing. An uploaded SharePoint file is preparation
+for the Teams file card; the upload alone does not confirm delivery to the chat.
+
 ## Outbound mentions
 
 Use `@[Name](id)` in outgoing text, replacing `id` with a Teams user/bot ID or
