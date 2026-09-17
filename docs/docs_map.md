@@ -1240,6 +1240,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup path B: register dedicated bot number (SMS, Linux)
   - H2: External native daemon mode
   - H2: Container mode (bbernhard/signal-cli-rest-api)
+  - H2: Opt-in private UNIX socket
   - H2: Access control (DMs + groups)
   - H2: How it works (behavior)
   - H2: Media + limits
