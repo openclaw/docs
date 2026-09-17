@@ -1413,6 +1413,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What each page covers
   - H2: Where each section moved
   - H2: Configuration reference
+  - H2: Multi-agent account ownership
   - H2: Related
 
 ## channels/telegram/access-control.md
@@ -4990,6 +4991,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor/config-migrations
 - Headings:
+  - H2: Channel ownership during an update
   - H2: Missing plugins during migration
   - H2: Schema publication during a 2026.9.2 update
   - H2: Checks 0-2
