@@ -559,13 +559,20 @@ field and use only the synchronous callback. An async-only alias therefore canno
 prove equivalence on those hosts; exact canonical target matching still works.
 
 Verified official installed plugins can delegate supported conversation, metadata, and attachment
-reads to provider-owned access checks. Interactive delegated requests need server-owned
-current provider, account, and conversation context. Account-created scheduled reads
-instead use the live job's recorded creator account and origin. An external creator
-origin restricts reads to that provider; a missing or unknown origin cannot authorize
-a read. Omitting `accountId` selects the recorded creator account, including after the
-provider's default account changes. Provider destination and action policies remain
-in force. See [Scheduled tool policy](/automation/cron-jobs/payloads#agent-turn-options)
+reads to provider-owned access checks. Channel-origin requests need server-owned
+current provider, account, and conversation context. An authenticated dashboard user
+turn can also use those provider-owned checks without native channel context, including
+Incognito sessions and fresh messages after reconnect. Ordinary transport loss does not
+cancel an already admitted turn. This permission belongs only to that turn; background
+work and scheduled jobs keep their separate authorization.
+Normal chat, session participation, and tool permissions, along with provider account,
+destination, action, and requester policies, remain in force.
+
+Account-created scheduled reads use the live job's recorded creator account and origin.
+An external creator origin restricts reads to that provider; a missing or unknown origin
+cannot authorize a read. Omitting `accountId` selects the recorded creator account,
+including after the provider's default account changes. Provider destination and action
+policies remain in force. See [Scheduled tool policy](/automation/cron-jobs/payloads#agent-turn-options)
 for reauthorization and execution rules.
 
 An adapter lists actions that support the lifetime fence in `actions.readAuthorityActions`.
