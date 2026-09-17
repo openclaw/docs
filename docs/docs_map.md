@@ -3066,7 +3066,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Recovery limits
   - H3: Compatibility-checked package rollback
   - H3: Restart handoff
-  - H4: Candidate validation and service definitions
+  - H4: Update validation and service definitions
   - H4: Shell installers
   - H4: Linux without a service manager
   - H4: Node runtime for package-manager updates
