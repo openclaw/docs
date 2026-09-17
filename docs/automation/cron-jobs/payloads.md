@@ -78,6 +78,19 @@ placement. A conflicting current explicit host setting or required sandbox
 isolation blocks the command instead of moving it to another host. Current tool
 and approval policies still apply.
 
+Operator-created scheduled agent turns with `message` in their tool cap can read
+messages and channel information on supported channel plugins without an inbound
+chat. Each call uses the current operator read policy. Delivery settings do not
+grant read access.
+
+Current global, agent, profile, and provider tool policy is checked when each new
+scheduled message invocation starts. Configuration changes apply to later invocations;
+an invocation already admitted retains its configuration. Disabling or removing a job,
+withdrawing its `message` capability, or revoking its caller or plugin authority stops
+further affected reads from that occurrence, including pending reads before another
+provider request or result delivery. Re-enabling the job does not restore an
+occurrence's revoked access.
+
 `--model` sets the job's primary model; it does not replace a session `/model` override, so configured fallback chains still apply on top of it. An unresolved or disallowed model fails the run with an explicit validation error rather than silently falling back to the default. If a job has `--model` but no explicit or configured fallback list, OpenClaw passes an empty fallback override instead of silently appending the agent primary as a hidden retry target.
 
 Pick the model for the job's difficulty, not the agent's default. Routine
