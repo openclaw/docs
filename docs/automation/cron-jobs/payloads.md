@@ -78,10 +78,11 @@ placement. A conflicting current explicit host setting or required sandbox
 isolation blocks the command instead of moving it to another host. Current tool
 and approval policies still apply.
 
-Operator-created scheduled agent turns with `message` in their tool cap can read
-messages and channel information on supported channel plugins without an inbound
-chat. Each call uses the current operator read policy. Delivery settings do not
-grant read access.
+With `message` in the tool cap, scheduled agent turns can read messages and channel
+information on supported channel plugins without an inbound chat. Operator-created
+jobs use the current operator read policy. Agent-created jobs retain their recorded
+creator origin and account, and the channel's delegated read restrictions still
+apply. Delivery settings do not grant read access.
 
 Current global, agent, profile, and provider tool policy is checked when each new
 scheduled message invocation starts. Configuration changes apply to later invocations;
@@ -89,7 +90,9 @@ an invocation already admitted retains its configuration. Disabling or removing 
 withdrawing its `message` capability, or revoking its caller or plugin authority stops
 further affected reads from that occurrence, including pending reads before another
 provider request or result delivery. Re-enabling the job does not restore an
-occurrence's revoked access.
+occurrence's revoked access. Older agent-created jobs
+without recorded creator origin need to be recreated or explicitly reauthorized
+from a fresh authenticated creator turn.
 
 Trusted operator jobs can also use Discord `channel-edit` through `message`,
 including the existing channel and thread edit options. The job needs `message`
