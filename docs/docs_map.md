@@ -4994,6 +4994,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Channel ownership during an update
   - H2: Missing plugins during migration
   - H2: Schema publication during a 2026.9.2 update
+  - H2: Replay a July 2026 config upgrade
   - H2: Checks 0-2
 
 ## gateway/doctor/gateway-and-services.md
