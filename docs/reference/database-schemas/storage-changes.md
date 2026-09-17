@@ -123,6 +123,13 @@ contract. Moving those writes requires preserving immediate unbind persistence
 and preventing older writes from recreating removed bindings; row comparison
 tokens alone do not identify an absent binding incarnation.
 
+Agent creation provenance displayed by the agents CLI, Gateway roster, and local
+TUI is read by the shared-state worker. JSON CLI output reads only its configured
+agent IDs; tree and Gateway output retain full ordered enumeration and enum
+validation. Cold reads retain database creation and feature schema initialization.
+Synchronous incarnation checks, provenance writes, and connection-bound deletion
+remain with their lifecycle owners; collection and retention are unchanged.
+
 Memory-host event appends and bounded journal reads execute on the shared state
 worker. The plugin-state owner allocates the sequence, rereads the cursor and
 retained tail, writes both rows, and applies retention in one synchronous write
