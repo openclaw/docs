@@ -87,6 +87,22 @@ its proxy, not the development server: stop the server with `process kill`.
 
 When spawning long-running child processes outside the exec/process tools (CLI respawns, gateway helpers), attach the child-process bridge helper so termination signals forward and listeners detach on exit/close. This avoids orphaned processes on systemd and keeps shutdown consistent across platforms.
 
+On Linux with the default Node runtime, the Gateway starts a small spawn broker
+before loading its main runtime.
+If initial broker startup fails, the Gateway logs the failure reason and runtime
+entry path, then uses in-process spawning for the rest of that Gateway process.
+A new Gateway process tries the broker again.
+When the broker is ready, exec commands and command helpers spawn from it, so Linux does not copy
+the Gateway's page tables for each command. The existing process supervisors and
+service relays still own cancellation, output, and cleanup. After the broker first
+becomes ready, broker loss fails affected commands rather than rerunning them; later commands use the restarted
+broker. One-shot CLI commands, native file-descriptor inputs, and independently
+launched applications keep their local process transport, as do Bun, macOS, and Windows.
+The broker has its own process group, which the Gateway terminates on broker loss;
+service relays also retain their own parent-loss cleanup.
+A detached child can survive a broker crash before its PID is reported, matching
+the existing residual for directly spawned children when the Gateway crashes.
+
 A supervised command's timeout also covers startup, including blocked private-input
 delivery. The timeout result can return while cleanup continues. Scope retirement
 and Gateway shutdown wait for the cleanup owner separately; when that owner reports
