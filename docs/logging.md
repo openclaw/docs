@@ -168,6 +168,11 @@ Console logs are **TTY-aware** and formatted for readability:
 
 Console formatting is controlled by `logging.consoleStyle`.
 
+SQLite worker diagnostics use stderr. After the final backend closes normally,
+the worker gives pending console output up to five seconds to drain before
+acknowledging close. This is best effort; forced worker termination can still
+discard pending diagnostics.
+
 ### Gateway WebSocket logs
 
 `openclaw gateway` also has WebSocket protocol logging for RPC traffic:
