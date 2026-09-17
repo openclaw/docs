@@ -6975,6 +6975,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/update-troubleshooting
 - Headings:
   - H2: Recover in the Control UI
+  - H2: Node and global install permissions
   - H2: Plugin repair warnings
   - H2: Reason codes
   - H2: Retained legacy session history
