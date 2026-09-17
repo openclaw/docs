@@ -24,6 +24,13 @@ and publishes the result. Avoid exposing a generic SQL callback to application
 code or adding an asynchronous wrapper around an existing asynchronous facade.
 The plugin KV API already has asynchronous methods over its SQLite owner.
 
+Explicit promotion notice and claim annotations execute in the shared-state
+worker. The CLI awaits their best-effort completion before reporting results;
+storage failures still do not fail a promotion claim. Notice recording retains
+its read-only preflight and atomic sorted slug union, preserving the other feed
+fields. Empty notices leave absent databases absent, and already-recorded notices
+do not open a writer. Claim upserts, stored formats, and retention are unchanged.
+
 Plugin conversation standing approvals load and upsert in the shared-state worker.
 Core publishes an always-allow grant only after durable completion, serializes cache
 fills with grant publication, and joins admitted binding operations before lifecycle
