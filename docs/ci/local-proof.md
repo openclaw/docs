@@ -223,8 +223,10 @@ and its digest anchors when advancing the toolchain.
 
 Trusted Linux hydration uses the shared Node compatibility selector and can
 seed a job-private Corepack home from the same authenticated pnpm archives.
-These runtime archives do not replace the frozen-lockfile dependency install
-or change the dependency-store cache keys.
+The shared setup action also carries authenticated pnpm archives in its warmed
+store, so hosted and Blacksmith jobs can bootstrap before dependency installation
+without downloading pnpm again. These archives do not replace the frozen-lockfile
+dependency install.
 
 With `install-bun: "true"`, `setup-node-env` can also reuse the original pinned
 Bun 1.4.0 ZIPs from `/opt/crabbox/toolchain-archives` on Linux glibc x64.

@@ -38,6 +38,14 @@ Actions includes that path in cache compatibility. Pnpm's side-effects cache
 carries native postinstall outputs such as Matrix crypto's binary and version
 marker, so a compatible warm install skips the download. Cold caches and changed
 native build inputs still require the upstream asset.
+Setup restores the configured store root before activating pnpm. The same
+artifact contains the pinned pnpm wrapper and Linux native executable archives
+under `toolchain/`, keyed by the complete `packageManager` pin. Bootstrap checks
+their SHA-512 hashes in private staging before extraction; missing or invalid
+archives fall back to the runner image, then the registry. Exact dependency
+archives carry the same files, and dependency repair preserves them. Store v2
+and exact-dependency v4 entries reseed once to include these bootstrap archives.
+Cache publication still belongs to the existing warmer on each backend.
 Node discovery scans only the toolcache's executable levels, avoiding bundled
 npm dependency trees before selecting an already-installed runtime.
 
