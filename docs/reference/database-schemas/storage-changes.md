@@ -205,22 +205,19 @@ Only pending reads coalesce; completed results are not cached. Physical integrit
 verification remains with full registry restoration and Doctor, while known
 database failures and quarantine still refuse summary reads.
 
-`sessions.list` and `sessions.describe` load complete persisted subagent metadata
-in the shared-state worker through a read-only connection. The existing cache coalesces pending fills
-and applies intervening named updates and deletions before publishing its first
-complete snapshot. Full replacement, registry ownership changes, and database
-retirement fence obsolete replies. Loaded snapshots stay current through registry
-publication instead of periodic reloads: named writes patch rows, while full
-replacement and restore replace snapshots. Retention rules remain unchanged.
-Gateway, embedded, and TUI callers merge accepted rows
-with current host memory and scheduler facts before building the full topology.
-Session reads check the shared projection budget before accepting a snapshot,
-then capture persisted rows and live ownership in one synchronous continuation.
-Each resumed caller rechecks the shared budget before admission and cache
-acceptance. Pure topology grouping uses the same budget; a single snapshot
-capture cannot yield midway.
-Synchronous readers reuse the same SQL and row decoder; runtime reads do not
-repair storage.
+Gateway, embedded, and TUI session lists use resident materialized rows and the
+subagent registry's owner-maintained memory snapshot. Each durable session store
+is hydrated when first admitted, replaced, or reintroduced; departing stores lose
+their projected rows. Committed owner publications mark affected identities dirty,
+and bounded refresh batches yield through the shared session-list work budget.
+Clean list, describe, and event snapshot reads execute no SQLite statements.
+Refreshing a dirty row may use the existing exact-key readers for its cold facts;
+requests never rebuild the combined store or reload the subagent registry.
+External workers publish committed changes through their owning bridge. After
+projection readiness, selection, authorization, and presentation use the current
+caller identity in one synchronous boundary.
+Registry replacement and restoration replace its snapshot, while named writes
+patch it. Storage repair and retention remain with their existing owners.
 
 Gateway user-preference RPCs and Talk appearance reads resolve merged profile IDs
 and access preferences in the shared-state worker. Preference writes keep profile
@@ -356,32 +353,12 @@ entries and checking each entry's current visibility. The entry accessor closes
 that connection before transcript search, including on errors; inherited async
 callbacks fall back to ordinary fresh reads. This scope preserves the same
 per-read admission and committed-row checks without caching visibility decisions.
-Other cold readers outside the history and Node session-list workers, including
+Other cold readers outside the history worker, including
 extension-capable readers, remain one-shot; incognito reads retain their existing
 process-local owner.
 
-Node Gateway session listings prepare complete per-agent metadata in the existing
-SQLite worker broker. Independent durable inventories load at most four at a time.
-Serialized replies move owned byte buffers to the caller; shared or partial views
-are copied into an exact owned buffer before transfer.
-All started reads settle before target-order assembly, which rechecks logical and
-physical admission when consuming each result. Synchronous callers retain their
-one-target-at-a-time reads and assembly. The entry-cache owner still owns completed metadata and its
-connection-local invalidation. A request may consume its consistent snapshot when
-later metadata writes prevent cache adoption; a later caller cannot join a fill
-from an older generation. Canonical reader admission is separate from metadata
-freshness and remains bound to the physical database, schema, and main-key policy.
-Selected entries and membership are read again after row projection. Access changes
-during that read trigger a bounded refresh through already admitted observers,
-followed by current caller and configuration checks; they never trigger a synchronous
-inventory scan. Read resources retain at most 64 idle observers independently of
-writable handles, with at most eight idle worker backends. Active reads and
-prepared pages pin their original database claims through consumption, including
-borrowed writable handles. Page disposal releases those pins synchronously;
-native retirement drains the worker backend before closing its observer and keeps
-failed closes available for joined lifecycle recovery. Final reads reject an
-uncommitted transaction on the retained handle. Bun keeps its existing native
-read path until native statement retirement supports this observer lifetime.
+SQLite and Git worker replies transfer owned byte buffers to the caller; shared
+or partial views are copied into an exact owned buffer before transfer.
 
 The history worker retains up to 64 read-only connections across requests, rechecking
 schema, agent owner, and physical file identity before reuse. Every request keeps
