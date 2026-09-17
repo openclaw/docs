@@ -7124,8 +7124,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Native Windows
   - H3: ClawHub
   - H3: Kubernetes hosting
-  - H3: Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, regional channels
-  - H3: Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat
+  - H3: Regional channel cohort
+  - H3: Community channel cohort
   - H3: External apps and interoperability
   - H3: Nix install path
   - H3: Voice Call channel
