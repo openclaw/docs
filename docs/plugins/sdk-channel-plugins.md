@@ -643,16 +643,23 @@ preserves the host's live request authority. Advertising an action through
 
 The host separately selects eligible actions and requires an active bundled or
 loader-verified official registration. A bundled artifact fallback or a plugin's
-own trust claim cannot supply registration authority. The currently enabled
-scheduled action is Discord `channel-edit`, including its existing channel and
-thread edit variants. Discord declares `writeAuthorityActions: ["channel-edit"]`;
-other action names do not gain scheduled access from this declaration.
+own trust claim cannot supply registration authority. Discord declares
+`writeAuthorityActions: ["channel-edit", "delete", "edit", "pin", "unpin"]`.
+Other action names do not gain scheduled access from this declaration.
 
-The scheduled path requires trusted operator job authority. The job's current
-execution policy and `toolsAllow`, account and target restrictions, enabled actions,
-and provider permissions still apply. The declaration cannot promote an account-mode
-job to operator authority or replace authenticated requester identity and current
-sender permission checks.
+Scheduled `channel-edit`, including its existing channel and thread edit variants,
+requires trusted operator job authority. The declaration cannot promote an
+account-mode job to operator authority or replace authenticated requester identity
+and current sender permission checks.
+
+Scheduled `edit`, `delete`, `pin`, and `unpin` support both trusted operator jobs and
+account jobs. An account job must use its recorded creator account and a known
+creator origin; external origins also bind it to the recorded provider. Its delivery
+destination does not supply authority. These actions also require
+the adapter's existing `providerOwnedReadGates` declaration and retain its target
+checks. Account jobs use delegated target policy; trusted jobs use operator target
+policy. The job's current execution policy and `toolsAllow`, account restrictions,
+enabled actions, and provider permissions still apply.
 
 The host evaluates current tool policy when each new scheduled message invocation
 is admitted, including global, agent, profile, and selected model-provider policy.
@@ -662,7 +669,7 @@ itself, canceling its run, or ending caller or plugin authority still blocks lat
 provider requests and retries within that operation.
 
 The host admits channel-name resolution before directory requests and retains
-the selected registration through the edit. Its preparation read scope closes
+the selected registration through the write. Its preparation read scope closes
 before the write starts, so a read completion check cannot discard an accepted
 mutation result.
 
@@ -680,7 +687,9 @@ An opted-in adapter must honor the existing
   blocks later requests; it must not cause an accepted mutation to be replayed.
 
 This optional field keeps older adapters source-compatible. An omitted or empty
-declaration leaves newly enabled scheduled administration denied. To support it,
+declaration leaves newly enabled scheduled actions denied. Existing bundled
+provider-owned message-management paths keep their admission rules. To support
+the new installed-plugin path,
 upgrade OpenClaw and the plugin, implement the request and retry checks above,
 declare only the covered actions, and load the updated registration. Existing
 direct-operator and interactive actions retain their admission rules. Upgrading

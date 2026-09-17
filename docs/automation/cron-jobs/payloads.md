@@ -94,17 +94,21 @@ occurrence's revoked access. Older agent-created jobs
 without recorded creator origin need to be recreated or explicitly reauthorized
 from a fresh authenticated creator turn.
 
-Trusted operator jobs can also use Discord `channel-edit` through `message`,
-including the existing channel and thread edit options. The job needs `message`
-in its tool policy, an enabled account and action, and the bot's required Discord
-permissions. Use an updated Discord plugin with
-[scheduled write support](/plugins/sdk-channel-plugins#scheduled-channel-administration).
-Account-created jobs do not inherit operator administration from this support.
+Scheduled turns can also `edit`, `delete`, `pin`, and `unpin` Discord messages.
+Agent-created jobs use their recorded creator account and Discord's delegated
+target restrictions. Operator-created jobs use Discord's operator target policy.
+Trusted operator jobs can additionally use `channel-edit`, including the existing
+channel and thread edit options; account-created jobs do not inherit operator
+administration.
 
-Channel-name lookup and subsequent edit requests retain the current job and
+For these writes, the job needs `message` in its tool policy, an enabled account
+and action, and the bot's required Discord permissions. Use an updated Discord plugin with
+[scheduled write support](/plugins/sdk-channel-plugins#scheduled-channel-administration).
+
+Channel-name lookup and subsequent write requests retain the current job and
 plugin authority. Configuration changes apply to the next message invocation;
 disabling or narrowing the job itself stops later requests and retries in the
-current invocation. A confirmed edit still returns its result if authority ends
+current invocation. A confirmed write still returns its result if authority ends
 while the response is pending.
 
 `--model` sets the job's primary model; it does not replace a session `/model` override, so configured fallback chains still apply on top of it. An unresolved or disallowed model fails the run with an explicit validation error rather than silently falling back to the default. If a job has `--model` but no explicit or configured fallback list, OpenClaw passes an empty fallback override instead of silently appending the agent primary as a hidden retry target.
