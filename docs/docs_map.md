@@ -10368,6 +10368,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Typing indicators
   - H2: Media source params
   - H2: Native payload shaping
+  - H2: Post-delivery pins
 
 ## plugins/sdk-entrypoints.md
 
