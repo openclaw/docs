@@ -542,6 +542,8 @@ a capped reply's missing text.
 
 Drag the side-panel divider to resize a task's **Review** transcript. Messages
 and expanded tool input reflow within the panel, keeping tool-card borders visible.
+The side-panel divider follows the pointer and arrow-key direction in both
+left-to-right and right-to-left layouts.
 
 Wide-monitor users can override the transcript width under **Settings → Appearance → Chat →
 Message width**. The preference stays in that browser's local storage. Supported
