@@ -30,6 +30,7 @@ Saving leaves a small, filled comment marker beside the selected passage. Click
 that marker, or the pencil in the comment count's hover preview, to reopen the
 same editor beside it. **Save** or Enter saves changes; **Cancel** or Escape discards the edit; and the trash
 button deletes the comment. The composer's comment count is a passive indicator.
+Archiving another split pane leaves the current comment editor and keyboard focus in place.
 Saved comments and their source markers follow the composer's existing draft and
 queue recovery behavior. When you send, each comment is attached as a text file
 containing the selection, comment, and source message reference; its draft marker is removed.
