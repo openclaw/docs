@@ -29,6 +29,9 @@ lifecycle coordinator custody before worker dispatch. Native host writers can
 then borrow that same owner while servicing the worker's grants, avoiding a
 coordinator wait that blocks the grant handler. A foreign coordinator owner is
 waited out asynchronously before dispatch, within the existing SQLite lock budget.
+Grant services reuse the physical worker owner's admitted path aliases, so native
+handles opened through symlinked directories reach the same service without new
+filesystem lookups.
 The waiting job retains its FIFO position and capacity reservation; cancellation
 or worker exit wakes the wait without replaying a dispatched write. Source
 authority and persisted transaction checks remain unchanged. Coordinator acquisition
