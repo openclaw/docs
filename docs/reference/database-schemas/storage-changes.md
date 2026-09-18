@@ -241,6 +241,19 @@ an approved minimum host version guarantees both methods. Available worker failu
 never fall back. Modern domain validation errors surface
 directly, while older hosts retain their native callback error wrapping.
 
+ClickClack discussion generation reservations and pending-open recovery records
+use the shared-state worker. Generation mutations compare the current row and
+serialize through settlement; an old finalizer cannot clear a replacement
+generation. Channel creation awaits durable quarantine and rechecks the live
+account and active session after storage waits. Service stop closes admission
+and joins accepted operations, including work that has not yet reached the
+channel mutation queue; restart awaits that drain. Existing generation JSON,
+namespace limits, retention, and binding/tombstone finalization order are unchanged.
+The declared 2026.9.4 host floor retains uninterrupted native mutations only when
+comparison methods are absent, until the minimum host guarantees them. Worker
+failures never select that compatibility path. Binding storage, revocations,
+and synchronous visibility retain their separate owners.
+
 Use Kysely for ordinary queries and mutations. The current
 `getNodeSqliteKysely` facade compiles queries; `executeSqliteQuerySync` runs them
 on the supplied `node:sqlite` connection. Calling Kysely's asynchronous
