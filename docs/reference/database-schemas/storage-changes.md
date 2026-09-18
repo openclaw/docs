@@ -261,6 +261,18 @@ an approved minimum host version guarantees both methods. Available worker failu
 never fall back. Modern domain validation errors surface
 directly, while older hosts retain their native callback error wrapping.
 
+Gateway client device-token reads, writes, and clearing run in the shared-state
+worker, including origin-bound tokens. Callers capture the state environment,
+input, and admission before waiting. The token owner keeps its existing codecs,
+comparison fences, and transactions. Read-only clients retain artifact-preserving
+reads and never create missing state. Reconnect waits for accepted persistence,
+and client shutdown drains it before returning; supplied cancellation and owner
+guards are checked again at worker admission. Device identity creation and the
+compound pairing recovery transaction retain their existing owners. Host admission
+still uses the synchronous lifecycle coordinator; token-data SQL runs in the worker.
+One-shot calls initialize that actor during request preparation, before starting
+the RPC timeout, without reading or caching token facts.
+
 ClickClack discussion generation reservations and pending-open recovery records
 use the shared-state worker. Generation mutations compare the current row and
 serialize through settlement; an old finalizer cannot clear a replacement

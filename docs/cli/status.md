@@ -56,7 +56,9 @@ migration readiness checks retain their full validation.
 
 The CLI runs in a separate process and contacts the Gateway over WebSocket, even
 for a local loopback target. `--timeout` bounds probes, not the entire status
-command. Compare `openclaw gateway call status --json` with `openclaw status --json`
+command. Cold device-token worker initialization happens during request preparation,
+before the RPC timeout starts; connection token reads remain fresh. Compare
+`openclaw gateway call status --json` with `openclaw status --json`
 to separate the Gateway response from local report collection. Gateway
 [Prometheus RPC timings](/gateway/prometheus) exclude CLI startup and connection
 setup; a slow CLI can finish without a slow Gateway handler.
