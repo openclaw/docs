@@ -91,3 +91,25 @@ established summary. “Fresh” means new state, not a cold filesystem; dedicat
 runner results establish a new baseline and do not establish a speedup relative
 to a different desktop. Health RPC success is separate from recorded plugin
 availability and degraded diagnostics.
+
+For a matched comparison, pass `installed_startup_package` as
+`{"baseline": <package-binding>, "candidate": <package-binding>}`. Both bindings
+use the same fields above. The workflow resolves and normally installs both
+packages on one runner before measurement. Their complete npm lock records must
+match, except the independently verified OpenClaw tarball references and integrity.
+Any dependency drift stops the comparison before a Gateway starts; both raw locks
+remain evidence. The packages must have the same version and dependency graph.
+
+Each package has its own immutable install and synthetic state/cache directory.
+The cohort plans 18 slots: fresh baseline then fresh candidate, followed by eight
+restart pairs alternating baseline/candidate and candidate/baseline order. Both
+arms retain their own state across restarts. There are no discarded warmups or
+replacement samples. A failure stops the cohort, retains the remaining unrun
+slots, and invalidates the comparison summary. The per-sample deadlines stay the
+same; the outer lifecycle budget scales from 30 to 60 minutes for two arms.
+
+After all samples and descendants settle, the comparison reports each arm's
+established readiness and absolute first status/health completion, plus paired
+candidate-minus-baseline differences. Negative differences favor the candidate.
+Fresh samples remain separate. Alternating order reduces time-order bias; it
+does not make the filesystem cold or establish performance on other machines.
