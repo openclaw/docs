@@ -59,3 +59,35 @@ skipping proof. Selecting `windows-2025` does not establish native qualification
 the unchanged lifecycle assertions and cleanup must pass on the actual runner.
 Cleanup and diagnostic upload still run after failure, and retained evidence is
 removed only after cleanup and upload succeed.
+
+#### Installed Gateway startup measurements
+
+The same workflow can measure one immutable npm package on the selected Windows
+runner. Set `target_ref` to the full tooling commit, `run_windows_ci=false`,
+`keepalive_minutes=0`, and `startup_node_version` to an exact Node version
+(default `26.8.2`). Leave WSL and Defender inputs at their defaults. The optional
+`installed_startup_package` input is a JSON object with `runId`, `runAttempt`,
+`workflowSha`, `artifactId`, `artifactDigest`, `packageSha256`, and `sourceSha`.
+Use the immutable `package-under-test-<runId>-<runAttempt>` artifact from a
+successful Package Acceptance run. The workflow verifies its producer and
+artifact metadata, resolves it through the package-candidate owner, and installs
+and rebuilds with normal npm lifecycle scripts.
+
+After the benchmark's lifecycle fixtures pass on Windows, the installed
+`openclaw.mjs` runs once with new synthetic state, then eight more times with that
+same state. Each sample records HTTP readiness, first status and health RPC
+responses, and acknowledged graceful shutdown. An outer managed Windows Job
+contains the controller and all descendants; final success requires both clean
+Gateway shutdown and observed descendant settlement before forced Job cleanup.
+No synchronous process sampler or startup profiler runs during measurement.
+
+The `windows-installed-startup-<runId>-<runAttempt>` artifact retains all nine
+sample slots, errors, package/runtime/helper hashes, source and tooling commits,
+runner hardware, the raw installed npm lockfile, and cleanup evidence. A streamed
+`cohort.log` retains the active PID, phase, child output, and completed probe/RPC
+observations even if cancellation prevents the final sample checkpoint. Synthetic databases and compile caches
+stay in the runner's temporary directory. A failed or interrupted cohort has no
+established summary. “Fresh” means new state, not a cold filesystem; dedicated
+runner results establish a new baseline and do not establish a speedup relative
+to a different desktop. Health RPC success is separate from recorded plugin
+availability and degraded diagnostics.
