@@ -246,6 +246,14 @@ provider or plugin runtime ownership. Kernels and their transaction callbacks
 remain synchronous. The asynchronous task and flow read facade runs these read
 kernels in the shared-state worker.
 
+Synchronous task creation and managed-flow worker creation share one create/reuse
+operation. Each adapter keeps its selection order and transaction boundaries.
+Filling a missing delivery origin commits before optional metadata changes; that
+later stage rereads the selected task and revalidates its parent flow and backing.
+Run-scoped native transitions retain their initial ordered task selection, reread
+each exact identity, and finish its publication before processing the next sibling.
+Equivalent terminal updates still repair linked flows and publish observations.
+
 Routine status reads stream task audit metadata through the same shared worker
 and return fixed-size history aggregates plus candidates for live reconciliation.
 They do not decode retained task payloads or restore delivery-state maps. Reads
