@@ -53,7 +53,10 @@ when the session is known locally. Unknown or ambiguous session references remai
 navigable without a card; links to other origins keep normal browser behavior.
 Document-relative hrefs are never session links; file references such as
 `src/utils/foo.ts` and `qa-café/index.md` retain workspace file handling, including
-Unicode names and percent-encoded Markdown link destinations.
+Unicode names and percent-encoded Markdown link destinations. Explicit Markdown
+file links also support spaces, emoji, and punctuation in filenames; for example,
+`[Read notes](notes/caf%C3%A9%20note.md)` opens the workspace file. Plain-text and
+inline-code file detection stays conservative to avoid turning prose into links.
 
 While composing text with an input method in model search, Enter, Escape, and arrow keys stay with the input method. They do not select a model, clear the search, or move the highlighted model until composition finishes.
 
