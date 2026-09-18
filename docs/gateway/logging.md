@@ -251,11 +251,18 @@ The latter two distinguish selected rows refreshed during this request from
 selected rows already resident when it began. Dirty counts describe pending
 owner work at the start of the request.
 
-The `modelCatalog` phase includes waiting for projection readiness. In-flight
+The `materialize` phase measures the wait for session-row projection readiness. In-flight
 catalog renewals no longer block lists or descriptions once a catalog is loaded:
 reads use the current catalog while its replacement loads in the background, then
 rows refresh with the new catalog. Startup still waits for the first catalog.
 Renewals that retain identical catalog content do not dirty resident rows.
+
+Profile and run-registry publications refresh their derived display facts without
+rereading session entries. Worker environment and placement publications refresh
+only the selected rows' worker facts on their next presentation. Stored session
+writes publish exact keys; broad list notifications do not schedule an all-row
+drain. Config, store topology, and adopted model catalogs still refresh affected
+live rows before lists respond. Archived rows stay cold until selected.
 
 Transcript-only row refreshes use a one-second window per resident session: the
 first notification refreshes promptly, and further notifications collapse into a
