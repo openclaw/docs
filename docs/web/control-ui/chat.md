@@ -493,6 +493,14 @@ The chat transcript uses a centered readable frame aligned with the composer. As
 
 Images and video previews in your own messages appear above any accompanying text, without a surrounding bubble background. Videos use a still frame with a play icon; select the preview to open the video in the Files panel. If a preview cannot load, the attachment card remains available. Hovering media leaves that layout unchanged, and the text keeps its normal bubble color, including any per-identity tint. Assistant videos retain their inline player.
 
+Open an image tile to inspect it in the image viewer. When the message contains
+multiple images, use **Previous image** / **Next image**, the left and right arrow
+keys, or a horizontal swipe to move through that message's images. Navigation
+stops at either end and reverses direction in right-to-left layouts. Pinch or use
+the zoom controls to inspect details; dragging while zoomed pans the image.
+Press Escape, select **Close image preview**, or click outside the image to close
+and return focus to the tile you opened.
+
 Images attached to assistant progress messages appear inline while the task continues and remain visible after reloading the conversation. Remote attachment URLs do not need a filename extension: the Gateway detects the media type and serves the preview through the same authenticated media path used for final replies. Documents keep their file cards.
 
 Messages forwarded by `sessions_send` render as left-aligned speech bubbles with a **From** attribution row above the message. Known senders, including the current agent, retain their agent identity. Unknown or unlisted senders show no avatar beside the bubble or in the attribution row, and no empty inline avatar space remains. The message column stays aligned with neighboring messages. Select a linked source to open its session; hover it to see session progress. Each source session has a stable bubble tint. Forwarded messages without a known source session show the source agent when available, or a generic forwarded-message label. The receiving agent's own replies remain flat text.
