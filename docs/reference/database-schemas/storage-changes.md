@@ -320,6 +320,37 @@ updates retain their connection-bound kernels. Push preference and notification
 callers still use the synchronous facade until their preparation and publication
 owners migrate together.
 
+Fleet registry reads use a separate read-only worker and remain noncreating;
+listing cells does not join Gateway writable lifecycle admission. The existing
+read owner retains inherited snapshot and disposable-source scopes until the
+worker closes. Ordinary fixed reads observe independently committed database
+state, even when an unrelated cached native cursor still sees an older snapshot.
+The cached writer stays open and retained through read settlement; its captured
+physical identity is checked before and after the reader opens and on result
+acceptance. Its read pin exposes no database: ordinary fixed reads do not query,
+back up, join, or end that connection's transaction. Snapshot borrowing keeps its
+native-transaction refusal. Explicitly selected snapshots keep their original private source.
+Artifact-preserving, source-exclusion, and canonical-mutation reads keep their
+existing owner-provided preparation, including native snapshot token work.
+Generic native callbacks and prepared-location cleanup contracts are unchanged;
+this cut does not make those preparation paths free of main-thread SQLite work.
+A copied-state error is returned
+to that reader without becoming a confirmed failure of the live cache; native
+access and transaction owners retain their own version checks, failure latching,
+and corruption eviction. Registry mutations and operation-lease changes run in
+the existing shared-state writer, preserving atomic port reservation and the
+five-minute lease. Fleet callers await checkpoints and drain timer and archive
+probes before releasing their operation lease or reporting completion.
+Cell mutations inside an operation retain its original worker scope and check
+the matching lease owner and expiry in the same transaction as the mutation.
+That scope spans lease acquisition through final renewal and release. Failed
+read cleanup remains registered for canonical retry; source snapshots and pins
+stay owned until worker termination is acknowledged. Maintenance scopes join
+admitted reads before their resource, reference, and handle cleanup phases.
+A cached reader records shared maintenance ownership only after the worker enters
+its schema-validated query callback, including when that query later fails.
+Startup and schema refusals do not transfer ownership.
+
 The host captures the database path, state environment, and current admission
 before awaited work. The shared worker owns its canonical connection and schema
 opening, with Gateway schema authority delegated by its live coordinator owner.
