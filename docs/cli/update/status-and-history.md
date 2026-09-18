@@ -70,6 +70,11 @@ use candidate code before its own history admission completes.
 Triage preserves the original update report. Any update launched during repair
 gets a separate `runId`.
 
+Unexpected automatic-update campaign failures retain the error code, when present,
+and a redacted diagnostic in the run history as well as the Gateway log. Status
+and the bounded run report show the cause after the campaign clears. This requires
+the updated Gateway; older runs cannot recover a cause that was never recorded.
+
 An admitted `openclaw update --json` includes `runId` and the `run` record. `openclaw update status --json`
 includes `activeRun` when a run is active and `lastRun` when history exists.
 If history cannot be read or classified, status still shows update availability
