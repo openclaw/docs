@@ -672,6 +672,13 @@ context. The cold hook CLI retains its separate read-only locator worker.
 
 ### Preserve the data and concurrency contracts
 
+Doctor's local device-token inventory executes in the shared-state worker. The
+detector awaits its result and preserves role ordering, malformed-row omission,
+and best-effort diagnostic behavior. Lint keeps this read in its private active
+state view and joins worker cleanup before retiring that snapshot; source-path
+legacy-file checks retain their separate environment. Device identity, pairing
+reads, and client token operations retain their existing owners.
+
 An adapter must make these contracts explicit and verify them against a real
 database:
 
