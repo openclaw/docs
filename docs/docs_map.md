@@ -14449,6 +14449,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Context modes
   - H2: Tool: `sessions_spawn`
+  - H3: Cloud placement
   - H3: Delegation prompt mode
   - H3: Tool parameters
   - H3: Task names and targeting
