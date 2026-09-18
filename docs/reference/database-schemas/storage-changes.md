@@ -293,6 +293,34 @@ commits fence delayed snapshots, including changes that return to the same value
 Flow publication follows the same read-phase rule. A failed refresh leaves its scope
 dirty for the existing refresh owner without replaying the settled mutation.
 
+Default Gateway task persistence awaits initial creation in the shared-state worker
+before activating its run. Synchronous duplicate selection keeps process insertion
+order; worker selection uses persisted creation time and task ID. Automatic one-task
+flow creation, linking, and compensation remain separate best-effort stages after
+the task commit; compensation preserves a flow that changed or acquired another
+task reference.
+
+Modern creation captures its database target and selected plugin registry activation
+and registration before waiting. Transaction admission rechecks that owner and the
+original Gateway run. Confirmed task results survive later owner retirement. If
+activation fails, exact receipt cleanup uses the original database owner and refuses
+a task adopted by another run. Successful immediate flow publication precedes task
+observation. A failed projection read or known pre-dispatch cancellation overload
+retains required flow follow-up on the existing retry schedule and budget.
+An unadmitted worker-capacity refusal leaves cold registry preparation retryable;
+it does not become a permanent restore failure.
+Task observation waits for each acknowledged row's required flow effects.
+Acknowledged task mutations are never replayed.
+
+An externally registered legacy runtime preserves synchronous creation before
+Gateway setup and synchronous run-scoped terminal finalization, including command
+failure before execution starts. This operation retains the original live registration;
+retirement or replacement stops it with a warning. Its shipped run-scoped semantics
+do not become an exact-task cleanup guarantee. Worker failures never switch to a
+legacy creator. Coordinator SQL remains on the host. Other detached lifecycle
+callers retain their synchronous paths until their complete admission and settlement
+owners migrate.
+
 Routine status reads stream task audit metadata through the same shared worker
 and return fixed-size history aggregates plus candidates for live reconciliation.
 They do not decode retained task payloads or restore delivery-state maps. Reads
