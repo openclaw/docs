@@ -12252,6 +12252,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Media attachments
   - H2: Legacy MEDIA: lines
+  - H3: WebChat commentary compatibility
+  - H3: Structured payloads and block streaming
   - H2: `[embed ...]`
   - H2: Stored rendering shape
   - H2: Related
