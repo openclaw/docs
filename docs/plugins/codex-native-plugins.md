@@ -411,12 +411,20 @@ reusing its app inventory and plugin metadata caches.
 OpenClaw first reads and caches one `plugin/installed` snapshot scoped to the
 target Codex app-server and configured workspace. That snapshot covers plugins
 from the marketplaces visible in that scope, including disabled plugin
-identities; failed or incomplete snapshots are never cached. `plugin/read` is
+identities; failed or incomplete snapshots are never cached. Conversations in
+the same runtime and workspace share this metadata, and owner installation
+invalidates it for all of them. App readiness remains specific to each thread.
+`plugin/read` is
 limited to exact configured plugin details required to establish ownership.
 Explicit discovery queries `plugin/list` with the conversation workspace to
 find repository marketplaces. Routine setup retains its existing curated
 recovery behavior; additional marketplace installation requires the explicit
 owner or administrator command.
+
+Codex owns skill, hook, and MCP refresh after plugin installation. OpenClaw
+refreshes its plugin and app inventories without reloading unrelated threads.
+Use `/new` or `/reset` if an older custom Codex runtime does not make a newly
+installed plugin available in an existing conversation.
 
 OpenClaw reads installed app runtime state through `app/installed` and fetches
 canonical app metadata with `app/read` in batches of at most 100 app IDs. The
