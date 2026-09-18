@@ -24,6 +24,17 @@ and publishes the result. Avoid exposing a generic SQL callback to application
 code or adding an asynchronous wrapper around an existing asynchronous facade.
 The plugin KV API already has asynchronous methods over its SQLite owner.
 
+Shared-state operations that request host transaction or commit admission retain
+lifecycle coordinator custody before worker dispatch. Native host writers can
+then borrow that same owner while servicing the worker's grants, avoiding a
+coordinator wait that blocks the grant handler. A foreign coordinator owner is
+waited out asynchronously before dispatch, within the existing SQLite lock budget.
+The waiting job retains its FIFO position and capacity reservation; cancellation
+or worker exit wakes the wait without replaying a dispatched write. Source
+authority and persisted transaction checks remain unchanged. Coordinator acquisition
+and release still perform control SQL on the host; this does not complete the migration of native
+state writers. Database schemas, retention, and update behavior are unchanged.
+
 Managed outgoing image metadata lookups and cleanup inventories read through the
 shared-state worker, retaining their writable, creating database-open behavior.
 Typed columns, ordering, cleanup claims, and original-media references are unchanged.
