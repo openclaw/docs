@@ -57,6 +57,14 @@ While composing text with an input method in model search, Enter, Escape, and ar
 
 When authentication status is available, each provider heading in the chat model picker says how that provider is signed in: **API** for an API key (or an explicitly selected API-key account), the plan name for a provider with one subscription, and **Subscription** for a provider with several. With several subscriptions, the heading adds the email of an explicitly selected account when the Gateway supplies it, and the **Account** rows show each account's email; automatic selection shows no account identity. Hover a truncated heading to read the full text.
 
+## Suggested tasks
+
+Suggested task cards offer **Start in a new session** and **Start in a new
+worktree**. Both start the task in the background and keep your current
+conversation and draft open. The card disappears after the task starts; select
+the new session in the sidebar when you want to follow its progress.
+**Start in this session** runs the task in the current conversation.
+
 ## Composer capability menu
 
 Select **+** beside the chat composer to open attachments and session capabilities in one menu:

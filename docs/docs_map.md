@@ -14701,6 +14701,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Session rail and side chat
   - H2: Session links in messages
+  - H2: Suggested tasks
   - H2: Composer capability menu
   - H2: Emoji shortcodes
   - H2: Chat behavior
