@@ -265,6 +265,12 @@ Run-scoped native transitions retain their initial ordered task selection, rerea
 each exact identity, and finish its publication before processing the next sibling.
 Equivalent terminal updates still repair linked flows and publish observations.
 
+Managed-flow worker mutations publish only their acknowledged task records. Canonical
+reads and cache installation share one ordered owner; native writes and transaction
+commits fence delayed snapshots, including changes that return to the same value.
+Flow publication follows the same read-phase rule. A failed refresh leaves its scope
+dirty for the existing refresh owner without replaying the settled mutation.
+
 Routine status reads stream task audit metadata through the same shared worker
 and return fixed-size history aggregates plus candidates for live reconciliation.
 They do not decode retained task payloads or restore delivery-state maps. Reads
