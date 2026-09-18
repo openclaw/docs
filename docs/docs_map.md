@@ -10814,6 +10814,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quickstart
   - H2: Write a tool
   - H2: Optional and factory tools
+  - H3: Owner-authorized continuations
   - H2: Return values
   - H2: Output contracts
   - H2: Configuration
