@@ -2946,6 +2946,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw skills
   - H2: Commands
+  - H3: Workshop inventory and upgrades
   - H2: Release trust
   - H2: Remove a ClawHub skill
   - H2: Personal skill library
@@ -14287,6 +14288,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/skill-workshop/reference
 - Headings:
   - H2: Gateway methods
+  - H3: Workshop inventory and usage
+  - H3: Revision and history methods
   - H2: Storage
   - H2: Limits
 
