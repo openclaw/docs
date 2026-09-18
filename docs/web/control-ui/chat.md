@@ -309,9 +309,21 @@ an explanation in chat.
 
 ### Source previews and copying code
 
-Select **Open** on a text attachment to read it directly in the **Files** side
-panel. Plain-text attachments, including pasted `.txt` files, CSV, and JSON,
-preserve line breaks and indentation. Markdown attachments render as documents
+Long clipboard text appears as a compact chip in the composer and transcript.
+Its label shows the first 30 characters of a plain-text excerpt, with HTML and
+Markdown formatting removed. Empty or unavailable excerpts show **Pasted text**.
+In the transcript, chips sit above the text bubble alongside other attachments;
+multiple chips share a row and wrap when needed. Click a chip or press Enter to
+open the existing attachment side panel and copy the original text, preserving
+markup, line breaks, and indentation. The composer panel also offers **Show in
+text field** and removal. Messages containing only comment or pasted-text chips
+use a transparent shell.
+Newly uploaded text files remain file cards, even when their names resemble
+pasted-text attachments. Older history without origin metadata recognizes
+`text/plain` attachments named `pasted-text-<digits>.txt` as pasted text.
+
+Select **Open** on an uploaded text attachment to read it directly in the **Files** side
+panel. Plain-text attachments, CSV, and JSON preserve line breaks and indentation. Markdown attachments render as documents
 with interactive code blocks. When an open attachment refreshes with unchanged
 text, its code blocks keep your expansion and wrapping choices after loading.
 A different attachment or changed text starts with fresh controls. Long previews
