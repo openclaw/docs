@@ -25,6 +25,15 @@ action requires both `teamId` and `channelId`. Use the Microsoft Teams team ID,
 including when Slack is also configured; the shared `teamId` field accepts each
 provider's ID format. These actions retain the configured Teams access rules.
 
+## Graph actions
+
+After the Teams action handler starts, pinning, unpinning, adding or removing
+reactions, changing participants, and renaming conversations recheck their caller
+before each Graph request. Cancellation during the handler's token preparation,
+target authorization, or participant lookup stops its next request. Cancellation
+does not undo a mutation Microsoft has already accepted. Existing account, target,
+and owner/admin rules still apply; pinning and unpinning remain limited to chats.
+
 ## Reply style: threads vs posts
 
 Teams has two channel UI styles over the same underlying data model:

@@ -1071,6 +1071,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Routing and sessions
   - H2: Channel metadata
+  - H2: Graph actions
   - H2: Reply style: threads vs posts
   - H3: Resolution precedence
   - H3: Thread context preservation
