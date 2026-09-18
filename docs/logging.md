@@ -274,9 +274,11 @@ enabled.
 
 `[model-fetch]` start and response metadata (provider, API, model, status,
 latency, and request fields such as method, URL, timeout, proxy, and policy)
-is always emitted at `info` level regardless of
-`OPENCLAW_DEBUG_MODEL_TRANSPORT`, so basic model transport hygiene is visible
-without debug flags.
+uses `debug` by default. Responses with a non-2xx status or at least one second
+of elapsed time remain at `info`, and transport failures remain warnings.
+Elapsed time includes local-service preparation and waiting for response headers,
+but excludes streaming the response body. The targeted debug flags above promote
+start and fast successful response metadata to `info` when troubleshooting.
 
 `[anthropic] replayed thinking dropped: N block(s)` is a warning when Anthropic
 reports dropping invalidated thinking from replay. It includes the mismatch
