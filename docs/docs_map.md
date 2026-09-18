@@ -8343,6 +8343,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness/native-features
 - Headings:
   - H2: Share threads with Codex Desktop and CLI
+  - H2: Use an existing local config.toml
+  - H3: Credentials and account ownership
   - H2: Supervise Codex sessions
   - H2: Native Codex plugins
   - H2: Computer Use
