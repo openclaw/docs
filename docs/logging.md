@@ -237,6 +237,18 @@ Chat displays recognized request-limit facts, including the allowed and actual
 number of `cache_control` blocks, in both live failures and saved history. Raw
 proxy metadata stays in redacted diagnostics rather than the chat message.
 
+Saved failed replies also distinguish rate limits, authentication failures,
+provider HTTP errors, and network interruptions. Worker inference preserves
+bounded, redacted error details for classification, including when a large
+partial response cannot fit in the transcript. Unrecognized errors still use
+generic chat copy; inspect the Gateway logs and stored error for diagnosis.
+
+A worker message-size failure is separate from a model context-window limit.
+Retry with a smaller response or continue on the Gateway. If the worker cannot
+preserve the model's continuation data, stop or reclaim it before retrying on
+the Gateway. Earlier tool actions may already have completed, so check their
+results before repeating them.
+
 ### Targeted model transport diagnostics
 
 When debugging provider calls, use targeted environment flags instead of raising
