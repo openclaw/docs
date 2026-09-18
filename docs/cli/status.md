@@ -68,7 +68,10 @@ projection instead of scanning every agent's plugin metadata and database
 ownership locally. The Gateway supplies session counts, heartbeat and task
 state, runtime vitals, and agent roster facts. The request keeps `operator.read`
 scope, including its redaction of session paths, recent sessions, model defaults,
-and detailed admission refusals.
+and detailed admission refusals. After the Gateway hydrates a physical session
+store, clean repeated status reads reuse its resident materialized session rows;
+only topology changes and dirty or missing exact identities return to the
+existing read-only SQLite path.
 
 JSON `collection.notCollected` names fields that were not inspected and explains
 why. Online status leaves workspace and bootstrap checks unknown, including
