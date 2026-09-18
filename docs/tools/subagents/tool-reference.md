@@ -124,7 +124,7 @@ In either mode, internal QA, research, coding, review, and test lanes use ordina
   Optional stable handle for identifying a specific child in later status output. Must match `[a-z][a-z0-9_-]{0,63}` and cannot be a reserved target such as `last` or `all`.
 </ParamField>
 <ParamField path="label" type="string">
-  Optional short task title shown in UI lists (task ledger, session sidebar). Name the work being done, not the agent; it is set on the child session at run start.
+  Optional short task title shown in transcript activity and Tasks views, and in the session sidebar for visible sessions. Name the work being done, not the agent; it is set on the child session at run start.
 </ParamField>
 <ParamField path="agentId" type="string">
   Spawn under another configured agent id when allowed by `subagents.allowAgents`.
