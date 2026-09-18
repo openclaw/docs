@@ -2584,6 +2584,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Run (foreground)
   - H2: Gateway auth for node host
   - H2: Service (background)
+  - H2: Automatic updates
   - H2: Pairing
   - H3: Identity and pairing state
   - H2: Exec approvals
@@ -6326,6 +6327,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: On this page
   - H2: What we protect
   - H2: Local proof during development
+  - H2: Headless node auto-update proof
   - H2: Docker lanes
   - H2: Package Acceptance
   - H2: Release default
@@ -7009,6 +7011,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating/automatic-updates
 - Headings:
+  - H2: Headless node updates
   - H2: Auto-updater
   - H3: Update campaigns
 
@@ -7370,6 +7373,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Remote gateway via SSH tunnel (loopback bind)
   - H3: Restrict the node command surface
   - H3: Start a node host (service)
+  - H3: Automatic node updates
   - H3: Pair + name
   - H3: Headless identity state
   - H2: System commands (node host / mac node)
@@ -7456,6 +7460,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Node goes offline after SSH logout (Linux)
   - H2: Command ladder
+  - H2: Node runtime version differs from the CLI
   - H2: Foreground requirements
   - H2: Permissions matrix
   - H2: Pairing versus approvals
