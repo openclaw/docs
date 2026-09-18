@@ -80,6 +80,12 @@ Gateway can also report a plugin that did not load without turning the core upda
 into a failure. Individual plugin outcomes remain available in `--json` output.
 Failures to install core, repair required configuration or state, or start the
 updated Gateway remain update failures.
+Local copies selected through `plugins.load.paths` are operator-managed. Updates
+and `openclaw update repair` retain the selected copy and any npm install it
+shadows, and record a `plugin-operator-managed` warning in the outcome and update
+history. Verify that copy against the updated OpenClaw version, or remove its
+path from `plugins.load.paths` to use the managed installation again. This does
+not grant the local copy trusted plugin privileges.
 An explicit package artifact (for example, a tarball path or URL) is validated
 and installed even when its version matches; matching versions do not prove
 that two artifacts contain the same code.
