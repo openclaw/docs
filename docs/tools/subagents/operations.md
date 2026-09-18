@@ -17,7 +17,9 @@ Sub-agents use a dedicated in-process queue lane:
 Retained blocked completions also protect the gateway from unbounded fan-out.
 OpenClaw warns when the delivery backlog reaches 25 and blocks new subagent
 spawns at 50 until operators retry or dismiss enough retained deliveries. It
-does not prune results to make room.
+does not prune results to make room. Within a Gateway process, unchanged backlog
+counts do not repeat the warning every sweep. A count change at or above 25, or
+a return to that threshold after recovery, produces a new warning.
 
 ## Liveness and recovery
 
