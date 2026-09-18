@@ -150,8 +150,11 @@ never needs the agent.
   Restoring the split or adding another widget brings back the normal spacing.
 - **Shared default.** In the task menu’s **Layout** submenu, choose **Use current
   view as default** to save the current fullscreen or split view for this dashboard.
-  The action appears only while Dashboard is shown, you can edit the session, and
-  its current view differs from the shared default. Saving does not rearrange
+  While Dashboard is shown, **This is the default view** confirms that the current
+  fullscreen or split view matches the shared default, including for read-only
+  viewers. When the view differs, **Use current view as default** is available
+  if you can edit the session. Both explain that personal layout choices still
+  apply. Saving does not rearrange
   anyone already viewing the dashboard; the default applies on subsequent opens
   and revisits, including opens from the dashboard gallery.
   Your browser’s deliberate **Focus** / **Restore split** choice takes precedence
