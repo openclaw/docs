@@ -10194,6 +10194,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/core-ownership
 - Headings:
   - H2: What core still owns
+  - H3: Workspace files on the harness host
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
   - H3: Bound native session ownership
@@ -10390,6 +10391,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin shapes
   - H2: Related
   - H2: MCP subprocess runtime
+  - H2: Workspace access
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 
