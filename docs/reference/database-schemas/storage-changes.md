@@ -305,6 +305,13 @@ Target resolution, profile and creator catalogs, public-share metadata, projecti
 refreshes, and membership writes retain their existing execution paths. This cut
 moves the member-row query, not every database read performed by these RPCs.
 
+Watched upstream-session discovery runs its existing single-query snapshot and
+row decoding in the shared-state worker. The monitor awaits that snapshot and
+checks its stop signal before using it. Catalog grouping, duplicate-watcher
+suppression, ambiguous-agent filtering, and best-effort failures stay unchanged.
+Single-link reads and their immediately guarded writes retain their synchronous
+owner until their complete freshness and mutation boundary moves together.
+
 Gateway user-preference RPCs and Talk appearance reads resolve merged profile IDs
 and access preferences in the shared-state worker. Preference writes keep profile
 resolution, quota validation, and mutation in one synchronous write transaction;
