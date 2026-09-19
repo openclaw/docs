@@ -141,7 +141,7 @@ stateDiagram-v2
 | Status      | What it means                                                               |
 | ----------- | --------------------------------------------------------------------------- |
 | `queued`    | Created, waiting for the agent to start                                     |
-| `running`   | Agent turn is actively executing                                            |
+| `running`   | Started, with no terminal lifecycle outcome recorded                        |
 | `succeeded` | Completed successfully                                                      |
 | `failed`    | Completed with an error                                                     |
 | `timed_out` | Exceeded the configured timeout                                             |
@@ -149,6 +149,12 @@ stateDiagram-v2
 | `lost`      | The runtime lost authoritative backing state after a 5-minute grace period  |
 
 Transitions happen automatically - agent run lifecycle events (start, end, error) update the task status; you do not manage it manually.
+
+Stored task status and live execution observation are separate. A task can retain
+`running` status while its execution observation is `waiting` or `unknown`.
+`unknown` means current execution cannot be observed; it does not mean the task
+failed or stopped. A retained subagent registration alone does not prove that
+its execution is running.
 
 Execution and result delivery are separate. A subagent task can remain
 `succeeded` while its `deliveryStatus` is `session_queued` or `failed`. The
