@@ -230,6 +230,12 @@ Change the policy while a task is running:
 openclaw tasks notify <lookup> state_changes
 ```
 
+These policies control task notifications. A Telegram progress card that the
+requester already displayed can continue showing accepted `done_only` children
+after yield without creating another message. `silent` children remain excluded,
+and channel visibility settings still apply. See
+[Progress after yield](/concepts/subagent-yield-handoff#progress-after-yield).
+
 ## CLI reference
 
 ### tasks list
