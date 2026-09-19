@@ -433,6 +433,14 @@ A cached reader records shared maintenance ownership only after the worker enter
 its schema-validated query callback, including when that query later fails.
 Startup and schema refusals do not transfer ownership.
 
+Node-host configuration loads for connection, runner startup, and node-only status
+use the same independent read-only worker. Both readers preserve missing-store
+noncreation and existing JSON, metadata, and configuration validation. They capture
+the selected state environment before waiting and recheck retired-file refusal on
+that original root before accepting the worker reply. Managed nodes retain the
+canonical existing-schema scope without taking over schema repair. Configuration
+replacement retains its synchronous transaction owner.
+
 The host captures the database path, state environment, and current admission
 before awaited work. The shared worker owns its canonical connection and schema
 opening, with Gateway schema authority delegated by its live coordinator owner.
