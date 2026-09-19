@@ -181,8 +181,11 @@ iMessage outbound receipt recovery reads the external Messages SQLite database
 through the shared worker broker. Its plugin owns the read-only GUID queries;
 each recovery operation retains its read-only connection through polling and
 joins worker cleanup before the send publishes its receipt. Numeric message IDs and the latest matching sent message keep their existing recovery
-rules, including the five-second polling deadline. This does not migrate
-iMessage's startup watermark or conversation-binding queries.
+rules, including the five-second polling deadline. The same plugin-owned worker
+reads iMessage's local startup watermark and finishes cleanup before the transport
+probe and watch subscription. Empty databases retain the pre-first-row cursor;
+unavailable databases retain the existing fallback. Conversation-binding queries
+remain separate migration work.
 
 iMessage persisted echo reads, writes, and failed-send cleanup use the plugin-state
 worker. Sends await provisional echo persistence before transport and cleanup
