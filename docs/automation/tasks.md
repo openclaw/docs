@@ -195,6 +195,11 @@ When `gateway.publicOrigin` is configured and the Control UI is enabled,
 direct channel notifications include an `Inspect` link to the task's own
 session. Session-queued notifications do not include this link.
 
+Failure, lost-task, and blocked-task notifications show a sanitized diagnostic
+preview of at most 120 characters. Full diagnostics remain in the task record;
+use `openclaw tasks show <lookup>` to inspect them. Successful completion summaries
+are not shortened by this diagnostic preview limit.
+
 Durable subagent completion handoffs retry for up to 30 minutes with capped
 exponential backoff. A queued handoff is not reported as delivered until the
 queue settles. If delivery reaches its deadline or fails permanently, the task
