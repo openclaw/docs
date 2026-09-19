@@ -1094,16 +1094,16 @@ button and publisher outcomes. Do not discover or adopt a latest run/attempt, ed
 an uncertain record into a success receipt, or rerun the dispatch job. Even a
 missing record cannot prove that publication did not happen.
 
-| Failure                                                                   | Recovery                                                                                                                                                                                    |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Outer readiness seal/download fails after both child preparations succeed | On **OpenClaw Release Prepare**, rerun **Verify and seal prepared publication**. It reuses the child run IDs, resolves their current attempts once, and does not dispatch another build.    |
-| A linked non-publishing npm or ClawHub preparation fails                  | Choose **Re-run all jobs** on that child, including resolution and every pack/preflight job. After the complete attempt succeeds, rerun only the outer seal.                                |
-| Preparation dispatch stops partway through or loses a response            | Inspect Actions and recover with `preparation_request` as described above. A missing acknowledgement is not permission to repeat the dispatch.                                              |
-| Publisher download fails before writes                                    | Start an explicit new **OpenClaw Release Button** run with the same `prepared_artifact`. No version bump or repack is needed.                                                               |
-| The button's final ClawHub readback fails after an upload                 | Treat publication as possibly visible and verification as pending. Rerun the button's failed verification job; its successful dispatch job is not repeated.                                 |
-| A publisher itself partially fails                                        | Inspect the original publisher and its core child. Recover through a new button run, supplying `openclaw_npm_resume_run_id` when core npm is already published, as described below.         |
-| Artifact expired/deleted or integrity differs                             | Stop and reconcile any publication attempt before explicitly preparing a new receipt. Missing evidence never authorizes a replacement publisher; never silently use a newer successful run. |
-| Publication dispatch response is lost                                     | Preserve `dispatch.json` and any `dispatch.next.json`, inspect the initiating button and original publisher outcomes, and stop for manual reconciliation. Never automatically redispatch.   |
+| Failure                                                                   | Recovery                                                                                                                                                                                      |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Outer readiness seal/download fails after both child preparations succeed | On **OpenClaw Release Prepare**, rerun **Verify and seal prepared publication**. It reuses the child run IDs, resolves their current attempts once, and does not dispatch another build.      |
+| A linked non-publishing npm or ClawHub preparation fails                  | Choose **Re-run all jobs** on that child, including resolution and every pack/preflight job. After the complete attempt succeeds, rerun only the outer seal.                                  |
+| Preparation dispatch stops partway through or loses a response            | Inspect Actions and recover with `preparation_request` as described above. A missing acknowledgement is not permission to repeat the dispatch.                                                |
+| Publisher download fails before writes                                    | Start an explicit new **OpenClaw Release Button** run with the same `prepared_artifact`. No version bump or repack is needed.                                                                 |
+| The button's final ClawHub readback fails after an upload                 | Treat publication as possibly visible and verification as pending. Rerun the button's failed verification job; its successful dispatch job is not repeated.                                   |
+| A publisher itself partially fails                                        | Inspect the original publisher and its core child. Recover through a new button run; the publisher automatically resolves the original successful npm run when core npm is already published. |
+| Artifact expired/deleted or integrity differs                             | Stop and reconcile any publication attempt before explicitly preparing a new receipt. Missing evidence never authorizes a replacement publisher; never silently use a newer successful run.   |
+| Publication dispatch response is lost                                     | Preserve `dispatch.json` and any `dispatch.next.json`, inspect the initiating button and original publisher outcomes, and stop for manual reconciliation. Never automatically redispatch.     |
 
 Use **Re-run failed jobs**, not **Re-run all jobs**, after the button has
 dispatched publication. Its dispatch job refuses a second attempt; verification
@@ -1115,12 +1115,21 @@ A parent workflow attempt and its child receipts are one authorization unit.
 The button never substitutes a newer parent attempt for its recorded dispatch.
 For prepared publication recovery, start a **new button run** with the same
 `prepared_artifact` and protected tooling tag. If core npm is already published,
-set the optional `openclaw_npm_resume_run_id` to its **successful original
-OpenClaw NPM Release child**. If npm contains the core version but that child
+the publisher recovers its **successful original OpenClaw NPM Release child**
+from the npm provenance receipt for the exact version and preflight tarball bytes.
+It verifies the original protected tooling tag, workflow SHA, attempt, and
+successful publish job, even when the recovery parent uses newer tooling.
+The optional `openclaw_npm_resume_run_id` must match that recorded publisher;
+missing or ambiguous provenance fails closed. Final registry and Sigstore
+verification still run, and release evidence retains the original publisher.
+If npm contains the core version but that child
 failed, stop and preserve the original run and artifact evidence. The existing
 core owner rejects republishing an existing version and requires a successful
 child for resume; this case needs maintainer reconciliation/core-owner repair,
 not a button retry. All other frozen inputs and prepared artifacts remain unchanged.
+Direct publisher runs include a copy-pasteable resume command in the run summary,
+preserving every original input and the protected tooling ref. Prepared button
+recovery still uses a new button run so its receipts remain bound to that request.
 The new button records its new recovery parent, waits for that exact attempt to
 succeed, verifies canonical ClawHub downloads, and then activates the GitHub
 release. Do not adopt a replacement parent into the original button or bypass
