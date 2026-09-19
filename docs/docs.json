@@ -1839,7 +1839,8 @@
                       "plugins/apple-fm",
                       "plugins/llama-cpp",
                       "plugins/memory-lancedb",
-                      "plugins/memory-wiki"
+                      "plugins/memory-wiki",
+                      "plugins/typesafe"
                     ]
                   },
                   {
@@ -3906,7 +3907,8 @@
                       "zh-CN/plugins/apple-fm",
                       "zh-CN/plugins/llama-cpp",
                       "zh-CN/plugins/memory-lancedb",
-                      "zh-CN/plugins/memory-wiki"
+                      "zh-CN/plugins/memory-wiki",
+                      "zh-CN/plugins/typesafe"
                     ]
                   },
                   {
@@ -5939,7 +5941,8 @@
                       "zh-TW/plugins/apple-fm",
                       "zh-TW/plugins/llama-cpp",
                       "zh-TW/plugins/memory-lancedb",
-                      "zh-TW/plugins/memory-wiki"
+                      "zh-TW/plugins/memory-wiki",
+                      "zh-TW/plugins/typesafe"
                     ]
                   },
                   {
@@ -7972,7 +7975,8 @@
                       "ja-JP/plugins/apple-fm",
                       "ja-JP/plugins/llama-cpp",
                       "ja-JP/plugins/memory-lancedb",
-                      "ja-JP/plugins/memory-wiki"
+                      "ja-JP/plugins/memory-wiki",
+                      "ja-JP/plugins/typesafe"
                     ]
                   },
                   {
@@ -10005,7 +10009,8 @@
                       "es/plugins/apple-fm",
                       "es/plugins/llama-cpp",
                       "es/plugins/memory-lancedb",
-                      "es/plugins/memory-wiki"
+                      "es/plugins/memory-wiki",
+                      "es/plugins/typesafe"
                     ]
                   },
                   {
@@ -12038,7 +12043,8 @@
                       "pt-BR/plugins/apple-fm",
                       "pt-BR/plugins/llama-cpp",
                       "pt-BR/plugins/memory-lancedb",
-                      "pt-BR/plugins/memory-wiki"
+                      "pt-BR/plugins/memory-wiki",
+                      "pt-BR/plugins/typesafe"
                     ]
                   },
                   {
@@ -14071,7 +14077,8 @@
                       "ko/plugins/apple-fm",
                       "ko/plugins/llama-cpp",
                       "ko/plugins/memory-lancedb",
-                      "ko/plugins/memory-wiki"
+                      "ko/plugins/memory-wiki",
+                      "ko/plugins/typesafe"
                     ]
                   },
                   {
@@ -16104,7 +16111,8 @@
                       "de/plugins/apple-fm",
                       "de/plugins/llama-cpp",
                       "de/plugins/memory-lancedb",
-                      "de/plugins/memory-wiki"
+                      "de/plugins/memory-wiki",
+                      "de/plugins/typesafe"
                     ]
                   },
                   {
@@ -18137,7 +18145,8 @@
                       "fr/plugins/apple-fm",
                       "fr/plugins/llama-cpp",
                       "fr/plugins/memory-lancedb",
-                      "fr/plugins/memory-wiki"
+                      "fr/plugins/memory-wiki",
+                      "fr/plugins/typesafe"
                     ]
                   },
                   {
@@ -20170,7 +20179,8 @@
                       "hi/plugins/apple-fm",
                       "hi/plugins/llama-cpp",
                       "hi/plugins/memory-lancedb",
-                      "hi/plugins/memory-wiki"
+                      "hi/plugins/memory-wiki",
+                      "hi/plugins/typesafe"
                     ]
                   },
                   {
@@ -22203,7 +22213,8 @@
                       "ar/plugins/apple-fm",
                       "ar/plugins/llama-cpp",
                       "ar/plugins/memory-lancedb",
-                      "ar/plugins/memory-wiki"
+                      "ar/plugins/memory-wiki",
+                      "ar/plugins/typesafe"
                     ]
                   },
                   {
@@ -24236,7 +24247,8 @@
                       "it/plugins/apple-fm",
                       "it/plugins/llama-cpp",
                       "it/plugins/memory-lancedb",
-                      "it/plugins/memory-wiki"
+                      "it/plugins/memory-wiki",
+                      "it/plugins/typesafe"
                     ]
                   },
                   {
@@ -26269,7 +26281,8 @@
                       "vi/plugins/apple-fm",
                       "vi/plugins/llama-cpp",
                       "vi/plugins/memory-lancedb",
-                      "vi/plugins/memory-wiki"
+                      "vi/plugins/memory-wiki",
+                      "vi/plugins/typesafe"
                     ]
                   },
                   {
@@ -28302,7 +28315,8 @@
                       "nl/plugins/apple-fm",
                       "nl/plugins/llama-cpp",
                       "nl/plugins/memory-lancedb",
-                      "nl/plugins/memory-wiki"
+                      "nl/plugins/memory-wiki",
+                      "nl/plugins/typesafe"
                     ]
                   },
                   {
@@ -30335,7 +30349,8 @@
                       "tr/plugins/apple-fm",
                       "tr/plugins/llama-cpp",
                       "tr/plugins/memory-lancedb",
-                      "tr/plugins/memory-wiki"
+                      "tr/plugins/memory-wiki",
+                      "tr/plugins/typesafe"
                     ]
                   },
                   {
@@ -32368,7 +32383,8 @@
                       "uk/plugins/apple-fm",
                       "uk/plugins/llama-cpp",
                       "uk/plugins/memory-lancedb",
-                      "uk/plugins/memory-wiki"
+                      "uk/plugins/memory-wiki",
+                      "uk/plugins/typesafe"
                     ]
                   },
                   {
@@ -34401,7 +34417,8 @@
                       "id/plugins/apple-fm",
                       "id/plugins/llama-cpp",
                       "id/plugins/memory-lancedb",
-                      "id/plugins/memory-wiki"
+                      "id/plugins/memory-wiki",
+                      "id/plugins/typesafe"
                     ]
                   },
                   {
@@ -36434,7 +36451,8 @@
                       "pl/plugins/apple-fm",
                       "pl/plugins/llama-cpp",
                       "pl/plugins/memory-lancedb",
-                      "pl/plugins/memory-wiki"
+                      "pl/plugins/memory-wiki",
+                      "pl/plugins/typesafe"
                     ]
                   },
                   {
@@ -38467,7 +38485,8 @@
                       "ru/plugins/apple-fm",
                       "ru/plugins/llama-cpp",
                       "ru/plugins/memory-lancedb",
-                      "ru/plugins/memory-wiki"
+                      "ru/plugins/memory-wiki",
+                      "ru/plugins/typesafe"
                     ]
                   },
                   {

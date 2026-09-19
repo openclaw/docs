@@ -10049,6 +10049,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/typesafe.md
+
+- Route: /plugins/reference/typesafe
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/vault.md
 
 - Route: /plugins/reference/vault
@@ -10879,6 +10887,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Cannot find package 'typebox'
   - H3: Tool does not appear after install
   - H2: See also
+
+## plugins/typesafe.md
+
+- Route: /plugins/typesafe
+- Headings:
+  - H1: TypeSafe AI
+  - H2: Enable and configure
+  - H2: Decision contract
+  - H2: Optional evaluation tool
+  - H2: Existing external installation
 
 ## plugins/vault.md
 
