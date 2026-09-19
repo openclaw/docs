@@ -54,6 +54,13 @@ versioned AppImage, Debian package, signatures, and checksums independently;
 pending Linux work does not block npm, Docker, GitHub finalization, or stable
 main closeout.
 
+Resuming core publication reuses an in-progress or successful same-tag
+`Linux App Release Request` from `main`, including a manually dispatched request.
+The summary and retained `linux-dispatch.json` identify that request. A successful
+request remains reusable if its independent `Linux App Release` builder later
+fails: inspect and recover that Linux run explicitly instead of retrying core
+publication to start another build. Failed or canceled requests can be replaced.
+
 The Linux publisher writes immutable `OpenClaw-<version>-linux.json` evidence
 beside the bundles. It binds the source tag/SHA, original release ID, trusted
 tooling SHA, updater key, and exact asset identities. Complete public bundles
