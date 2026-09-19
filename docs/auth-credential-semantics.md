@@ -100,8 +100,11 @@ invalidating chat metadata or broadcasting a change to connected clients.
 
 Repeated model resolution reuses persisted auth rows while the owning database's
 write generation and file identity remain unchanged. Committed auth writes and
-runtime snapshot reloads invalidate those rows; database, WAL, and journal changes
-also invalidate reads from other processes. Scoped overlays, migration refusals,
+runtime snapshot reloads invalidate those rows immediately. Database, WAL, and
+journal identities are probed at most once per 100 ms on warm cache hits; the
+first read at or after that interval detects changes from other processes.
+Hits do not extend this freshness window. Cache misses still check identity
+before and after reading rows. Scoped overlays, migration refusals,
 and personal-account selection still run on each request. Isolated agent scopes
 and private database snapshots do not share this cache. Gateway cache misses reuse
 a read-only child whose lifetime ends at shutdown; each read reacquires its source
