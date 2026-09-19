@@ -64,6 +64,9 @@ One post-build publisher advances the fixed `linux-stable` control release's
 `latest.json` only forward, then mirrors those exact bytes onto the latest
 Gateway release. An authorized Linux publication creates the control release
 as prerelease/non-latest when absent; ordinary PR validation never creates it.
+Bootstrap uses the existing release-owner GitHub App with contents and workflows
+write access: GitHub requires workflows permission when the control tag targets
+release-branch workflow changes, and `GITHUB_TOKEN` cannot provide it.
 Conflicting state, or missing canonical metadata on an existing channel, fails
 closed; it never grants permission to overwrite arbitrary metadata.
 
