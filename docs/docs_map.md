@@ -12883,7 +12883,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: v2026.9.5
   - H2: Installation and Onboarding
-  - H2: The New Web UI
+  - H2: Web UI
   - H2: Updates and Maintenance
   - H2: Messaging
   - H2: Memory
