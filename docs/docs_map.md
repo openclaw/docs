@@ -3510,6 +3510,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/managed-worktrees
 - Headings:
+  - H2: Sandboxed sessions
   - H2: Choose where worktrees are stored
   - H2: Filesystem acceleration
   - H2: Repository source profiles
@@ -5690,6 +5691,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/sandboxing/workspace-access
 - Headings:
   - H2: Workspace access
+  - H2: Managed project workspaces
 
 ## gateway/secrets-plan-contract.md
 
@@ -10278,6 +10280,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: User input and tool surfaces
   - H2: Exec reviewer outcomes
+  - H2: Sandbox subprocess cleanup
   - H2: Paired-device execution
 
 ## plugins/sdk-channel-inbound.md
