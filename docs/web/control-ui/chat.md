@@ -70,6 +70,12 @@ conversation and draft open. The card disappears after the task starts; select
 the new session in the sidebar when you want to follow its progress.
 **Start in this session** runs the task in the current conversation.
 
+Before starting a worktree, OpenClaw checks that the suggested folder is a Git
+repository with a commit. If it is not, the card keeps the prompt and lets you
+select a registered project or enter the correct repository path. Select
+**Start in a new worktree** again to continue; no child session is started for
+an invalid source folder.
+
 ## Composer capability menu
 
 Select **+** beside the chat composer to open attachments and session capabilities in one menu:
