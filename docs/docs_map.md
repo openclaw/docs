@@ -4454,6 +4454,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers/desktop
 - Headings:
+  - H2: Ask the agent to open an app
   - H2: Desktop (interactive)
   - H2: Desktop size
 
@@ -10653,6 +10654,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Memory runtime replacement
+  - H2: Worker provider allocation authority
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
@@ -12041,6 +12043,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Update run ledger
   - H3: Update installation control
   - H3: Managed worktree acceleration templates
+  - H3: Conversation environments
   - H3: Cloud repository workspaces
   - H2: Sandbox runtime reservations
 
