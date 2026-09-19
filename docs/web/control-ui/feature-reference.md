@@ -88,6 +88,7 @@ Control UI capabilities grouped by area, each with the Gateway RPC methods behin
   </Accordion>
   <Accordion title="Usage">
     - Session-derived token and estimated-cost analysis stays separate from provider billing.
+    - Session rows and selected details show saved conversation names, including generated titles. Explicit renames take precedence; unnamed sessions show their keys.
     - The Sessions card counts the rows currently shown: up to 50 in **All**, or matching sessions selected on this Usage page in **Recently viewed**. The total is the loaded session count for the agent scope; the separate selected-session comparison does not increase the shown count.
     - Filter sessions with the provider, model, channel, or tool menus, or type case-insensitive `key:value` terms. Values within one category match as alternatives. Toggling a menu option preserves the other filters and their quoted text.
     - Selecting days narrows token and cost totals to those days within the active session filters. Daily charts and exports retain that session scope. Provider/model/tool queries select matching sessions, including all usage within each matched session; hour filters select sessions active in those hours.
