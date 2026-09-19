@@ -33,6 +33,15 @@ turns into the same environment while background processes remain. Each turn
 still receives a fresh bounded envelope, Gateway connection, and tool authority.
 The standalone command above remains a single-turn entry point.
 
+Stopping a node worker environment cancels pending admission and attempts cleanup
+of its workspace processes, managed workers, and durable launch owners. A failure
+in one cleanup owner does not skip the others. Stop reports cleanup errors after
+these attempts finish; launches whose cleanup remains unconfirmed keep their
+capacity reservations until recovery succeeds. The same environment cannot admit
+another turn while Stop is waiting for tracked worker cleanup to settle.
+If initialization fails, independent cleanup can still finish, but the node does
+not advertise free capacity until initialization succeeds.
+
 On current Linux and macOS node hosts, the launch journal identifies the worker's
 process owner; the application `worker.mjs` runs as its child. The owner survives
 an application crash and retains nested command cleanup before releasing capacity.
