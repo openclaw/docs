@@ -5527,6 +5527,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/rpc-talk-config-and-agents
 - Headings:
   - H2: Talk and TTS
+  - H3: Relay output cancellation
   - H2: Secrets, config, update, and wizard
   - H2: Agent and workspace helpers
 
