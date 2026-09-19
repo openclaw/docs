@@ -212,8 +212,10 @@ completed imports and unrelated files. Device backfill remains nonblocking at st
 monitor retirement cancels and joins it before releasing storage. Hosts without
 data-only comparison support retain the existing native metadata and import decisions
 under the declared plugin API floor. Worker failures never select that fallback.
-Synchronous credential readiness and package auth-presence probes retain their
-separate SDK contracts.
+Approval actor and reaction approver lists resolve from account configuration without
+reading credentials; native delivery eligibility still checks enabled and configured
+account readiness. Synchronous credential readiness and package auth-presence probes
+retain their separate SDK contracts.
 
 Reef registration binding reads, reservations, finalization, release, and setup-session
 persistence use the shared-state worker. Reservation mutations compare the current
