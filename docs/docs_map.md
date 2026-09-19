@@ -8525,6 +8525,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## plugins/github.md
+
+- Route: /plugins/github
+- Headings:
+  - H1: GitHub
+  - H2: Upgrading with an existing plugin allowlist
+  - H2: Read an item beside chat
+  - H2: Enable or disable the plugin
+  - H2: Limits and unavailable content
+  - H2: Plugin author integration
+
 ## plugins/google-meet.md
 
 - Route: /plugins/google-meet
@@ -9367,6 +9378,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/github-copilot.md
 
 - Route: /plugins/reference/github-copilot
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/github.md
+
+- Route: /plugins/reference/github
 - Headings:
   - H2: Distribution
   - H2: Surface
@@ -10533,6 +10552,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session discussion provider
   - H3: API object fields
   - H2: Where each section moved
+  - H2: Docked link readers
   - H2: Related
 
 ## plugins/sdk-overview/capabilities.md
@@ -10563,6 +10583,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Host hooks for workflow plugins
   - H2: Sandbox backends
+  - H2: Docked link readers
 
 ## plugins/sdk-overview/imports.md
 
@@ -14805,6 +14826,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Home dock
   - H2: Operator terminal
   - H2: Browser panel
+  - H2: GitHub side panel
 
 ## web/control-ui/security-model.md
 
