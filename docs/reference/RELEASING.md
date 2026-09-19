@@ -1119,6 +1119,9 @@ the publisher recovers its **successful original OpenClaw NPM Release child**
 from the npm provenance receipt for the exact version and preflight tarball bytes.
 It verifies the original protected tooling tag, workflow SHA, attempt, and
 successful publish job, even when the recovery parent uses newer tooling.
+Later reruns of that child do not replace the signed publisher attempt. Recovery
+and final verification read that exact historical attempt and retain it in the
+release evidence, whether a later rerun succeeds or fails.
 The optional `openclaw_npm_resume_run_id` must match that recorded publisher;
 missing or ambiguous provenance fails closed. Final registry and Sigstore
 verification still run, and release evidence retains the original publisher.
