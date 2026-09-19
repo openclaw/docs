@@ -253,6 +253,35 @@ With **Person** grouping, hover or focus a person’s header and choose **Show o
 
 Choose **Icon & color** from a session menu and select a color swatch to add a narrow color stripe to its sidebar row and a matching dot beside the chat title. Pick one of eight colors, or choose **Default** to clear only the color. **Reset to default** clears both the icon and color. The colors match Claude Code’s `/color` names, so imported Claude Code sessions keep the same color. Imported catalog rows show their color without offering color editing.
 
+## Command palette
+
+The command palette can start an independent task without leaving your current
+conversation or settings page. Search sessions, settings, and commands as usual,
+or write a prompt in the same field.
+
+- **Enter** opens or runs the selected result. With no result, Enter does not send.
+- **Shift+Enter** adds a line. The field grows downward to three lines, then scrolls
+  without moving the palette or its top-right controls.
+- **Command+Enter** on macOS or **Ctrl+Enter** on Windows/Linux starts a new session
+  in the background. You can also choose **New session** beside the input.
+
+Open **New session settings** beside the input to choose the agent, workspace and
+machine, or whether to use a new worktree. These controls reuse the permissions
+and device/cloud availability rules of the full New session page. Model,
+attachment, and visibility controls remain on that page.
+
+The palette starts with your usual defaults. Turn on **Remember settings** to
+reuse different choices for Cmd/Ctrl+K without changing those defaults. Clearing
+the checkbox restores your usual choices immediately and leaves the prompt
+intact. One-off choices are not remembered for the next palette session.
+
+Accepted creation closes the palette and offers **Open session** without changing
+the foreground view or its draft. A failed submission retains the prompt and
+choices with an error. These settings do not affect sessions opened from search,
+and the existing conversation composer keeps its own send and steer/queue
+shortcuts. Prompts longer than the transcript-search limit are not sent as search
+queries; they remain intact for session creation.
+
 ## New session page
 
 New session **+** controls are links: click to open the draft in the current browser tab, Command-click (macOS) or Ctrl-click (Windows/Linux) to open another tab, or right-click for the browser's **Open Link in New Tab/Window** menu. Middle-click works too. The smaller plus controls on group and catalog sections preserve their target in the new tab; your current conversation stays open.

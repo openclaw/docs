@@ -14870,6 +14870,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session placement
   - H3: Session icons
   - H2: Session colors
+  - H2: Command palette
   - H2: New session page
   - H3: Start a native coding CLI
   - H3: OpenClaw Chat workspace startup
