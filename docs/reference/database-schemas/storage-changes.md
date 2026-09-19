@@ -904,6 +904,14 @@ Full reindex publication attaches, replaces, and detaches the completed shadow
 inside one synchronous admitted operation. Manager close drains accepted syncs
 through provider preparation and final writes before releasing the borrow.
 
+Workspace lease claims retain a comparison bound to the original physical state
+database and a unique owner identity. After worker settlement, failed acquisition
+replies and failed cleanup retain bounded in-memory receipts for conditional
+release before another writer enters. Recovery never replays the task, deletes a
+replacement lease, or redirects cleanup to another database. Live and unknown
+owners retain the existing stale-lock checks. Receipt expiry only discards local
+recovery metadata; stored lock fields, retention, and schema versions are unchanged.
+
 Native hook relay bridge persistence runs in the shared-state worker. Publication
 and renewal request the live host's current-registration check inside their write
 transaction. The bridge retains accepted operations through native settlement;
