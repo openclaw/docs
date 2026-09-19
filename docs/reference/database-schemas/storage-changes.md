@@ -24,19 +24,38 @@ and publishes the result. Avoid exposing a generic SQL callback to application
 code or adding an asynchronous wrapper around an existing asynchronous facade.
 The plugin KV API already has asynchronous methods over its SQLite owner.
 
-Shared-state operations that request host transaction or commit admission retain
-lifecycle coordinator custody before worker dispatch. Native host writers can
-then borrow that same owner while servicing the worker's grants, avoiding a
-coordinator wait that blocks the grant handler. A foreign coordinator owner is
-waited out asynchronously before dispatch, within the existing SQLite lock budget.
-Grant services reuse the physical worker owner's admitted path aliases, so native
-handles opened through symlinked directories reach the same service without new
-filesystem lookups.
-The waiting job retains its FIFO position and capacity reservation; cancellation
-or worker exit wakes the wait without replaying a dispatched write. Source
-authority and persisted transaction checks remain unchanged. Coordinator acquisition
-and release still perform control SQL on the host; this does not complete the migration of native
-state writers. Database schemas, retention, and update behavior are unchanged.
+Shared-state operations that request host transaction or commit admission acquire
+fresh lifecycle coordinator custody on their executing SQLite worker. A live
+parent-owned maintenance or native lease still delegates its existing custody.
+The waiting job keeps its FIFO position and capacity reservation. Native attempts
+use zero busy timeout and asynchronous backoff within the original captured lock
+budget; only acquisition retries. The host rechecks current authority during
+preparation, before native execution, and at the existing transaction and commit
+grants. Cancellation before native execution joins coordinator cleanup without
+replaying the command.
+
+Legacy native host writers service the same job's preparation and authority ports
+between short coordinator-lock attempts, including path aliases. This lets the
+worker finish while the host is inside a synchronous native caller. Successful
+worker execution releases its physical coordinator after native settlement and
+before result framing; the broker retains operation admission and transport
+credits through the complete result. Unsettled native work retains custody until
+worker exit. If native coordinator cleanup fails after the command settles, the
+same per-job port services bounded result frames while a native host writer waits.
+The broker receives the complete outcome, joins worker exit, and reports cleanup
+separately without discarding that outcome or replaying the write. Incomplete
+result delivery retains its existing unknown-outcome handling. Final publication
+and follower dispatch run after synchronous native wait servicing returns.
+Preparation refusals retain that port through terminal cleanup replies too.
+The shared-state owner retires the exact unavailable actor after its accepted
+callbacks finish, so the next call opens a usable actor without retrying the prior write.
+Nested callbacks return their completed outcomes while further commands on the
+failed actor refuse without waiting for the enclosing callback to close itself.
+Retirement cleanup failures retain canonical retry custody and report separately
+from the completed outcome.
+Native host writers, Gateway lifecycle ownership, and source-handle
+preparation retain their existing owners. Schemas, retention, and update behavior
+are unchanged.
 
 Managed outgoing image metadata lookups and cleanup inventories read through the
 shared-state worker, retaining their writable, creating database-open behavior.
@@ -285,8 +304,8 @@ comparison fences, and transactions. Read-only clients retain artifact-preservin
 reads and never create missing state. Reconnect waits for accepted persistence,
 and client shutdown drains it before returning; supplied cancellation and owner
 guards are checked again at worker admission. Device identity creation and the
-compound pairing recovery transaction retain their existing owners. Host admission
-still uses the synchronous lifecycle coordinator; token-data SQL runs in the worker.
+compound pairing recovery transaction retain their existing owners. Fresh token
+mutations acquire and release lifecycle custody on the same worker as token-data SQL.
 One-shot calls initialize that actor during request preparation, before starting
 the RPC timeout, without reading or caching token facts.
 
