@@ -6385,6 +6385,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: E2E (repo aggregate)
   - H3: E2E (gateway smoke)
   - H3: E2E (Control UI mocked browser)
+  - H3: Network-isolated local E2E
   - H3: E2E: OpenShell backend smoke
   - H3: Live (real providers + real models)
   - H2: Which suite should I run?
