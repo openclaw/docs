@@ -911,8 +911,26 @@ its compare-and-set transaction remains synchronous on the admitted connection.
 Refresh completion and cleanup await persistence. Operations capture their resolved
 database path before admission, and refresh-lock release retains that path and its
 original environment when the caller's directory or environment changes. Doctor reports rejected
-pruning operations before continuing to the next agent. Read-only cache snapshots
-retain their existing synchronous owner and do not create missing databases.
+pruning operations before continuing to the next agent.
+
+Usage-cache decoding, report folding, transcript inventory, and refresh scanning
+run in the existing session-transcript worker. Foreground reports use a separate
+bounded worker lane; background refreshes use shared compute admission. Reports
+return compact results, and refreshes send prepared UTF-8 compare-and-set values
+to the existing host writer. Selected reports read only their requested cache
+keys, and refreshes decode only selected transcripts. Read-only operations do not
+create or register missing databases and retain the empty-cache fallback for
+transient SQLite failures. Refresh-lock status reads do not wait for the writer
+queue.
+
+The host retains refresh locks, current write authority, pricing context, and
+process-held incognito databases. Incognito transcript bytes stream to the worker
+through bounded frames; the worker never reopens the in-memory database sentinel.
+Cancellation and database closure join native worker work, accepted host effects,
+and refresh-lock cleanup before releasing custody. Atomic pruning retains all
+obsolete-row comparison bytes on the host until its transaction settles; bounded
+SQL batches do not impose an aggregate memory limit. Cache formats, schemas,
+retention, and update behavior are unchanged.
 
 Memory managers admit writes on their exact borrowed agent connection. Provider
 calls and source preparation run before admission; generated-cache and source
