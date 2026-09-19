@@ -1411,6 +1411,36 @@ at the exact release SHA. Each verifier still independently checks that manifest
 against the artifact's recorded source hash, together with the tarball hashes
 and producer identity.
 
+After a successful plugin npm publish, a full release child can report
+"published, visibility pending" when registry metadata or tarball reads remain
+unavailable, or the selector is missing or behind the published version.
+The parent's final registry verification remains required for
+release completion; do not republish the package. The parent enables the internal
+`defer_registry_verification` input only when `publish_openclaw_npm=true`.
+Standalone and plugin-only repairs keep strict readback. Conflicting package
+identity or bytes, malformed selectors, and selectors ahead of the published
+version always fail rather than becoming pending visibility.
+
+Each publisher uploads the exact qualification tuple it consumed, including any
+retained producer attempt. The full release parent binds those receipts to the
+successful publisher jobs, revalidates the original immutable artifacts against
+the frozen source and tooling, and downloads each published tarball to compare
+its exact bytes and selectors before recording release success. Missing required
+receipts fail closed. The standalone release health verifier retains metadata
+checks and does not claim qualified-artifact verification. The child also uploads its resolved publication plan, including
+the complete selected roster and already-published packages. The parent requires
+a successful publisher for every planned candidate. Already-published packages
+still require a successful tarball download with matching registry integrity,
+archive package identity, version, and selectors; a fresh parent cannot bypass
+pending visibility from an earlier publication. These checks do not invent an
+earlier qualification receipt. Failed-job retries can retain the original
+successful planning attempt.
+
+When a newer plan skips a package after an older publisher failed, the parent
+still verifies that publisher's original qualified bytes. Its receipt is usable
+only when the exact receipt-upload step completed successfully in that earlier
+attempt; a later job failure cannot turn a byte conflict into an accepted skip.
+
 ClawHub OIDC publication requires the executing release parent to authorize the exact child run, attempt, and package inventories. A direct `Plugin ClawHub Release` dry run can prepare packages without publication authority, but a standalone publish cannot replace the parent. Bot-dispatched children stay on the automated route and are terminal once their exact parent attempt completes without success.
 
 A direct human `Plugin ClawHub Release` dispatch with `release_publish_run_id` always takes ClawHub's explicit-recovery route. The `approve_plugins_clawhub_release` environment job uploads the version 2 `openclaw-clawhub-recovery-approval-<run-id>-<run-attempt>` receipt, which names the original child attempt (`authorizedChildRunId`/`authorizedChildRunAttempt`) whose parent receipt `openclaw-clawhub-parent-authorization-v2-<parent-run-id>-<parent-run-attempt>-<child-run-id>-<child-run-attempt>` the completed parent already uploaded; a completed parent cannot mint a new one. ClawHub resolves that parent receipt through the authorized child and requires the recovery child to run the same workflow ref and SHA, candidate SHA, tooling, parent attempt, and exact package inventory, so dispatch recovery from the parent's tooling ref with the parent's inputs. Pass `recovered_clawhub_run_id` and `recovered_clawhub_run_attempt` to name the original child explicitly; when omitted, the approval job discovers it from the parent run's single matching receipt and fails with the candidate list when zero or several exist. Version 1 recovery receipts are rejected. Do not retry publication with copied receipts or treat staging as completed publication.

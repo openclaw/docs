@@ -82,9 +82,12 @@ to `execPolicy.resolveExecModePolicy`, selecting the returned fields they need.
 
 Native command probes should use `runCommandWithTimeout` from
 `openclaw/plugin-sdk/process-runtime` with `timeoutMs`, the caller's `signal`, and
-`killProcessTree: true`. Await its result so timeout or cancellation cleanup finishes
-before returning. For commands whose output is always UTF-8, such as JSON status
-probes, use `runUtf8CommandWithTimeout` from the same subpath.
+`killProcessTree: true`. For commands whose output is always UTF-8, such as JSON status
+probes, use `runUtf8CommandWithTimeout` from the same subpath. A bounded command result
+can return before canceled remote startup delivers its PID. When a command owns a
+session reservation or temporary output, await `withCommandProcessScope` from the
+same subpath around execution before releasing those resources. The scope joins
+late startup and process cleanup; uncertain cleanup remains an error.
 
 `WorkerTaskPool` from `openclaw/plugin-sdk/process-runtime` retains workers and
 unconsumed inputs when termination fails. Retry `close()` on that same pool;
