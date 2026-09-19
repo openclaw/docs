@@ -2052,7 +2052,8 @@
                       "tools/progress-card",
                       "tools/reactions",
                       "tools/screen",
-                      "tools/show-widget"
+                      "tools/show-widget",
+                      "tools/theme"
                     ]
                   },
                   {
@@ -4118,7 +4119,8 @@
                       "zh-CN/tools/progress-card",
                       "zh-CN/tools/reactions",
                       "zh-CN/tools/screen",
-                      "zh-CN/tools/show-widget"
+                      "zh-CN/tools/show-widget",
+                      "zh-CN/tools/theme"
                     ]
                   },
                   {
@@ -6150,7 +6152,8 @@
                       "zh-TW/tools/progress-card",
                       "zh-TW/tools/reactions",
                       "zh-TW/tools/screen",
-                      "zh-TW/tools/show-widget"
+                      "zh-TW/tools/show-widget",
+                      "zh-TW/tools/theme"
                     ]
                   },
                   {
@@ -8182,7 +8185,8 @@
                       "ja-JP/tools/progress-card",
                       "ja-JP/tools/reactions",
                       "ja-JP/tools/screen",
-                      "ja-JP/tools/show-widget"
+                      "ja-JP/tools/show-widget",
+                      "ja-JP/tools/theme"
                     ]
                   },
                   {
@@ -10214,7 +10218,8 @@
                       "es/tools/progress-card",
                       "es/tools/reactions",
                       "es/tools/screen",
-                      "es/tools/show-widget"
+                      "es/tools/show-widget",
+                      "es/tools/theme"
                     ]
                   },
                   {
@@ -12246,7 +12251,8 @@
                       "pt-BR/tools/progress-card",
                       "pt-BR/tools/reactions",
                       "pt-BR/tools/screen",
-                      "pt-BR/tools/show-widget"
+                      "pt-BR/tools/show-widget",
+                      "pt-BR/tools/theme"
                     ]
                   },
                   {
@@ -14278,7 +14284,8 @@
                       "ko/tools/progress-card",
                       "ko/tools/reactions",
                       "ko/tools/screen",
-                      "ko/tools/show-widget"
+                      "ko/tools/show-widget",
+                      "ko/tools/theme"
                     ]
                   },
                   {
@@ -16310,7 +16317,8 @@
                       "de/tools/progress-card",
                       "de/tools/reactions",
                       "de/tools/screen",
-                      "de/tools/show-widget"
+                      "de/tools/show-widget",
+                      "de/tools/theme"
                     ]
                   },
                   {
@@ -18342,7 +18350,8 @@
                       "fr/tools/progress-card",
                       "fr/tools/reactions",
                       "fr/tools/screen",
-                      "fr/tools/show-widget"
+                      "fr/tools/show-widget",
+                      "fr/tools/theme"
                     ]
                   },
                   {
@@ -20374,7 +20383,8 @@
                       "hi/tools/progress-card",
                       "hi/tools/reactions",
                       "hi/tools/screen",
-                      "hi/tools/show-widget"
+                      "hi/tools/show-widget",
+                      "hi/tools/theme"
                     ]
                   },
                   {
@@ -22406,7 +22416,8 @@
                       "ar/tools/progress-card",
                       "ar/tools/reactions",
                       "ar/tools/screen",
-                      "ar/tools/show-widget"
+                      "ar/tools/show-widget",
+                      "ar/tools/theme"
                     ]
                   },
                   {
@@ -24438,7 +24449,8 @@
                       "it/tools/progress-card",
                       "it/tools/reactions",
                       "it/tools/screen",
-                      "it/tools/show-widget"
+                      "it/tools/show-widget",
+                      "it/tools/theme"
                     ]
                   },
                   {
@@ -26470,7 +26482,8 @@
                       "vi/tools/progress-card",
                       "vi/tools/reactions",
                       "vi/tools/screen",
-                      "vi/tools/show-widget"
+                      "vi/tools/show-widget",
+                      "vi/tools/theme"
                     ]
                   },
                   {
@@ -28502,7 +28515,8 @@
                       "nl/tools/progress-card",
                       "nl/tools/reactions",
                       "nl/tools/screen",
-                      "nl/tools/show-widget"
+                      "nl/tools/show-widget",
+                      "nl/tools/theme"
                     ]
                   },
                   {
@@ -30534,7 +30548,8 @@
                       "tr/tools/progress-card",
                       "tr/tools/reactions",
                       "tr/tools/screen",
-                      "tr/tools/show-widget"
+                      "tr/tools/show-widget",
+                      "tr/tools/theme"
                     ]
                   },
                   {
@@ -32566,7 +32581,8 @@
                       "uk/tools/progress-card",
                       "uk/tools/reactions",
                       "uk/tools/screen",
-                      "uk/tools/show-widget"
+                      "uk/tools/show-widget",
+                      "uk/tools/theme"
                     ]
                   },
                   {
@@ -34598,7 +34614,8 @@
                       "id/tools/progress-card",
                       "id/tools/reactions",
                       "id/tools/screen",
-                      "id/tools/show-widget"
+                      "id/tools/show-widget",
+                      "id/tools/theme"
                     ]
                   },
                   {
@@ -36630,7 +36647,8 @@
                       "pl/tools/progress-card",
                       "pl/tools/reactions",
                       "pl/tools/screen",
-                      "pl/tools/show-widget"
+                      "pl/tools/show-widget",
+                      "pl/tools/theme"
                     ]
                   },
                   {
@@ -38662,7 +38680,8 @@
                       "ru/tools/progress-card",
                       "ru/tools/reactions",
                       "ru/tools/screen",
-                      "ru/tools/show-widget"
+                      "ru/tools/show-widget",
+                      "ru/tools/theme"
                     ]
                   },
                   {

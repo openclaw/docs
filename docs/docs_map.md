@@ -8815,6 +8815,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Plugin icon
   - H2: Inline activity icons
+  - H2: Themes
   - H2: Transcript sources reference
   - H2: backupResources reference
   - H2: MCP server reference
@@ -14557,6 +14558,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: `tavily_extract`
   - H2: Choosing the right tool
   - H2: Advanced configuration
+  - H2: Related
+
+## tools/theme.md
+
+- Route: /tools/theme
+- Headings:
+  - H2: Select a theme
+  - H2: Actions
+  - H2: Create and apply a personal theme
+  - H2: Plugin themes and hot reload
   - H2: Related
 
 ## tools/thinking.md
