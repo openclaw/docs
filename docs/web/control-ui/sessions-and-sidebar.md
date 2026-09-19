@@ -260,7 +260,13 @@ Choose **Icon & color** from a session menu and select a color swatch to add a n
 
 The command palette can start an independent task without leaving your current
 conversation or settings page. Search sessions, settings, and commands as usual,
-or write a prompt in the same field.
+or write a prompt in the same field. Multiline text or a prompt of 60 or more
+characters pauses palette searches and gently hides the search tabs, results, and
+hints. The input stays anchored in place. Search returns when the text is
+single-line and shortened to 50 characters or fewer, or cleared. Between 51 and
+59 characters, the palette keeps its current mode to avoid flickering while you
+edit. Counts exclude leading and trailing whitespace. Session-creation errors and
+recovery actions remain visible in either mode.
 
 - **Enter** opens or runs the selected result. With no result, Enter does not send.
 - **Shift+Enter** adds a line. The field grows downward to three lines, then scrolls
@@ -282,8 +288,8 @@ Accepted creation closes the palette and offers **Open session** without changin
 the foreground view or its draft. A failed submission retains the prompt and
 choices with an error. These settings do not affect sessions opened from search,
 and the existing conversation composer keeps its own send and steer/queue
-shortcuts. Prompts longer than the transcript-search limit are not sent as search
-queries; they remain intact for session creation.
+shortcuts. Long prompts remain intact for session creation and are never sent as
+search queries.
 
 ## New session page
 
