@@ -101,6 +101,16 @@ navigation outside the app is outside its control. Production connection setting
 and `pnpm ui:dev` behavior are unchanged; use that command when you intentionally
 need a real Gateway or external integration.
 
+## Chat input ownership
+
+`ChatOutboxGatewayOwner` owns queued-input admission, updates, removal, and the
+matching pane projections. Single-row changes and reordering share one durable
+compare-and-set operation; queue callers do not publish separate storage and
+display updates. Command completion uses the composer recovery owner to retain
+or release draft attachments. Delivery waits for the full settings-update chain,
+then continues admission synchronously so another picker update cannot enter
+between settlement and transport.
+
 ## Chat render scheduling
 
 Streaming deltas and session-roster notifications must not trigger a render for
