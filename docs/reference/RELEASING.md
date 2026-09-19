@@ -1344,12 +1344,26 @@ gh workflow run plugin-clawhub-release.yml \
   -f recovered_clawhub_run_attempt=<original-child-run-attempt>
 ```
 
-Before dispatching a ClawHub publisher, the parent refuses dispatch if a run for
-the same tooling ref is waiting, pending, queued, or in progress. Follow the
-reported run URL: wait for active publication, or reject a stale run's pending
-deployment through GitHub's [pending-deployments API](https://docs.github.com/en/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
+Before dispatching either ClawHub publisher, the parent checks waiting children
+for the same release tag across tooling refs. It cancels a superseded child at
+its pending gates only after verifying its failed parent attempt and confirming no
+job is running, then waits for the child to finish before dispatching. Target
+concurrency stays unchanged, so publication remains serialized. Each dispatch
+is recorded immediately; a later parent failure or cancellation cleans up its
+own unfinished ClawHub children, including a partially dispatched batch.
+Successful detached children and active publishers are preserved. Identified
+validation runs and other release tags remain independent, even on the same
+tooling ref. The normal publisher also blocks unidentified legacy runs on the
+same tooling ref; bootstrap preserves its existing independent slots on `main`.
+For a blocking manual or older child without the parent identity in its run
+title, follow the reported run URL: wait for publication, or reject the stale pending deployment through
+GitHub's [pending-deployments API](https://docs.github.com/en/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
 with `state=rejected` before retrying.
-The parent does not automatically reject or cancel detached children.
+
+If a later Docker failure cancels unfinished ClawHub children, Docker-only
+recovery restores the container distribution only. Inspect both ClawHub child
+outcomes; resume the full parent or use the explicit ClawHub recovery flow for
+any canceled publication. A public GitHub release does not prove ClawHub completed.
 
 For pre-tag ClawHub bootstrap validation, dispatch `Plugin ClawHub New` from
 trusted `main` and pass the full target release SHA through `ref`. Tagged
