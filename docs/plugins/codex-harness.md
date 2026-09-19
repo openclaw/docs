@@ -28,7 +28,10 @@ the optional capability ignore it; the normal minimum-version check still applie
 The native session catalog keeps one resident index per Codex home, shared across
 agents, working-directory filters, searches, and pages. Lists normally filter and page
 bounded display rows in memory. They do not expire or restart native discovery
-on the normal sidebar polling interval. This memory-only boundary is the local
+on the normal sidebar polling interval. The sorted view retains only eligible
+display rows and is invalidated by resident row changes. Complete, unfiltered
+queries reuse it directly; live status and workspace settings still apply per page.
+This memory-only boundary is the local
 resident query. The Gateway also reads session entries from its resident session-row
 projection once ready; mutations can require exact-key refreshes before delivery.
 Native adoption bindings still use their storage owner, and paired-node enumeration
