@@ -10,7 +10,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 
 ## Editable Here
 
-- `AGENTS.md`, `CLAUDE.md`, `README.md`.
+- `AGENTS.md`, `README.md`.
 - `CLOUDFLARE.md` for repo-owned hosting and deployment guidance.
 - `.agents/skills/autoreview/**` for the repo-local canonical review skill mirror.
 - `.github/pull_request_template.md` for repo-owned contribution guidance.
