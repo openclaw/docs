@@ -4075,6 +4075,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: Session search
   - H2: Visibility and output
+  - H2: Control UI search
   - H2: Index lifecycle
   - H2: Session search vs. memory search
   - H2: Related
