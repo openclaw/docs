@@ -611,10 +611,13 @@ rows. See [incremental canonical validation](/reference/database-schemas/agent-s
 for migration and rollback behavior. The companion retires with its writer's
 native close, disposal, or replacement, including eviction and update cleanup.
 Cold session search retains one read-only connection while synchronously listing
-entries and checking each entry's current visibility. The entry accessor closes
-that connection before transcript search, including on errors; inherited async
-callbacks fall back to ordinary fresh reads. This scope preserves the same
-per-read admission and committed-row checks without caching visibility decisions.
+entries and checking their current visibility. Unscoped role-filtered searches
+group exact metadata reads per physical store, retaining failures in the original
+key order. Each group uses the exact reader's cold-admission snapshot; warm groups
+retain ordinary committed reads. Incognito checks remain individual lookups.
+The entry accessor closes the connection before transcript search, including on
+errors; inherited async callbacks fall back to ordinary fresh reads. Prepared
+metadata stays within the synchronous request and never caches visibility decisions.
 Other cold readers outside the history worker, including
 extension-capable readers, remain one-shot; incognito reads retain their existing
 process-local owner.
