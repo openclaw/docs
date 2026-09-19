@@ -3744,6 +3744,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Synthetic
   - H3: MiniMax
   - H3: llama.cpp
+  - H3: llmman
   - H3: LM Studio
   - H3: Ollama
   - H3: vLLM
@@ -11413,9 +11414,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/llmman
 - Headings:
+  - H2: Auth rules
   - H2: Getting started
   - H2: Full config example
-  - H2: On-demand startup
+  - H2: Model discovery
+  - H3: Smoke tests
+  - H2: Hybrid inference
+  - H3: Hosted-provider key
+  - H3: Hybrid config
+  - H3: Pinning a side
+  - H3: Hybrid versus OpenClaw fallbacks
+  - H3: Hosted models through llmman
+  - H2: Vision and image description
+  - H2: Configuration
+  - H2: Common recipes
+  - H3: Model selection
+  - H3: Quick verification
   - H2: Advanced configuration
   - H2: Troubleshooting
   - H2: Related
