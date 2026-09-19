@@ -451,7 +451,7 @@ For beta, stable, and full profiles, Linux (`ubuntu`) cross-OS lanes gate npm pu
 
    Include `--plugin-sdk-api-acknowledgement` only when the preflight reported Plugin SDK API changes. Stable candidates need no Windows tag. Optionally pass `--windows-node-tag vX.Y.Z` to record the approved installer digest map and include both Windows inputs in the printed publish command. Beta and alpha candidates defer Parallels install/update proof to the postpublish `pnpm release:beta-smoke` roster by default; pass `--run-parallels` only when the operator explicitly wants that proof before publish. Stable and full candidates run Parallels by default. The helper verifies release-note provenance, npm preflight bytes, and plugin publish plans, then prints the publish command. When admitted Full Release Validation evidence carries `coveragePolicy=npm-beta-v1`, it records Telegram package proof as `deferred-postpublish`; other evidence retains the existing Telegram check. After it completes green, create and push the final signed tag at that same Release SHA, then run the printed publish command.
 
-   `pnpm release:candidate` validates the current frozen branch tip by default (or the explicit `--target-sha`), and rejects a tag that already exists. It records evidence before the final signed tag is pushed.
+   `pnpm release:candidate` validates the current frozen branch tip by default (or the explicit `--target-sha`), and rejects a tag that already exists. After validating its evidence, it runs the [publish preflight](#check-publication-gates), reusing the downloaded manifests and exact run attempt. It records the gate table in the evidence bundle before the final signed tag is pushed. The planned tag is a warning until created; any failed gate leaves the checklist incomplete.
 
    The helper uses the qualified npm artifact bound by Full Release Validation. Supply `--npm-preflight-run` only to recover a separately prepared historical release. It never silently rebuilds a missing qualified artifact. Docker publication consumes the prepared OCI artifacts after checking the finalized tag and exact producer tuple; only registry writes and selector promotion hold the publication lock.
 
@@ -982,6 +982,89 @@ Common package profiles:
 For package-candidate Telegram proof, enable `telegram_mode=mock-openai` or `telegram_mode=live-frontier` on Package Acceptance. The workflow passes the resolved `package-under-test` tarball into the Telegram lane; the standalone Telegram workflow still accepts a published npm spec for post-publish checks.
 
 ## Regular release publish automation
+
+### Check publication gates
+
+Run the read-only publish preflight before regular beta or stable publication
+through the protected `OpenClaw Release Publish` route, including after a failed
+attempt. Alpha uses its matching Tideclaw workflow branch; extended-stable retains
+its separate owner workflows and is not admitted by this command. Use the same
+tag, validation run and attempt, channel, plugin selection, waiver, and frozen
+publication tooling ref as the intended dispatch:
+
+```bash
+pnpm release:publish-preflight \
+  --tag vYYYY.M.PATCH \
+  --full-release-validation-run-id <full-validation-run-id> \
+  --full-release-validation-run-attempt <successful-run-attempt> \
+  --preflight-run-id <qualified-preflight-or-full-validation-run-id> \
+  --npm-dist-tag latest \
+  --plugin-publish-scope all-publishable \
+  --workflow-ref release-publish/<tooling-sha12>-<epoch>
+```
+
+Pass `--stable-soak-waiver '<approved reason>'` only when the operator has
+approved that waiver. For a selected plugin repair, also pass
+`--publish-openclaw-npm false --plugin-publish-scope selected --plugins @openclaw/name`.
+The preflight downloads the selected validation manifest once, checks publication
+and stable closeout prerequisites, and prints a `PASS`/`FAIL`/`WARN` table with
+remediation and the exact dispatch command. `FAIL` exits nonzero. `WARN` identifies
+an unresolved prerequisite or a check that requires an owner action; it is not
+publication approval. Final publisher checks still run at each mutation boundary.
+
+The report includes per-package npm state, first-publication bootstrap
+eligibility, any matching draft or published GitHub release, and active plugin
+or ClawHub runs that can hold publication concurrency groups. Verify the exact
+parent and child identities before cancelling an orphan; the tool does not
+cancel runs. If core npm is already published, use the verified original
+`openclaw_npm_resume_run_id` reported by preflight instead of dispatching a new
+immutable-version publish. An ambiguous or missing original run needs manual
+evidence reconciliation.
+
+Already-published plugin versions still need the correct npm selectors. A
+reported dist-tag repair belongs to credential-isolated release tooling; the
+plugin publisher does not repair those selectors when reusing existing bytes.
+The report also checks frozen release-note rendering and any supplied Telegram
+evidence before publication begins.
+
+Main version/changelog reconciliation and final release-asset checks belong to
+postpublication closeout. Their `WARN` rows record pending work; they do not
+require moving closeout ahead of publication. Policy failures such as missing
+soak, an invalid performance waiver, or an expired rollback drill remain failures.
+
+#### Probe the bootstrap token
+
+For never-published npm packages, the local preflight cannot read the repository's
+`NPM_TOKEN` secret. A secret's presence or update time does not prove it works.
+Run this read-only step in an approved GitHub Actions job with access to that
+exact repository secret, before starting package bootstrap:
+
+```yaml
+- name: Check bootstrap npm token
+  shell: bash
+  env:
+    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  run: |
+    set +x
+    set -euo pipefail
+    test -n "${NPM_TOKEN// }"
+    umask 077
+    probe_dir="$(mktemp -d)"
+    trap 'rm -rf "$probe_dir"' EXIT
+    printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" > "$probe_dir/npmrc"
+    unset NPM_TOKEN NODE_AUTH_TOKEN NODE_OPTIONS
+    cd "$probe_dir"
+    env -i HOME="$probe_dir" PATH="$PATH" npm whoami \
+      --registry=https://registry.npmjs.org \
+      --userconfig="$probe_dir/npmrc" --globalconfig=/dev/null >/dev/null
+    echo 'PASS: repository bootstrap token authenticated'
+```
+
+Keep the probe run URL with release evidence. `npm whoami` checks authentication;
+it does not prove package scope permissions or authorize publication. A failure
+requires the credential owner to repair the secret and repeat this probe. Never
+substitute a local npm login for proof of the repository secret, and never print
+the token or upload its temporary npmrc.
 
 ### Prepare once, then use the release button
 
