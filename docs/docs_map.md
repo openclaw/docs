@@ -6883,6 +6883,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Check your version
   - H3: Update from the CLI
+  - H3: Node requirements during an update
   - H2: Install Node
   - H2: Troubleshooting
   - H3: openclaw: command not found
