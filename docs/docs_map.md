@@ -8314,6 +8314,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Quickstart
   - H2: Verify Codex runtime
+  - H2: Luna Reserve and credit usage
   - H2: Where each section moved
   - H3: Run Codex on another machine
   - H3: Codex routing and deployment
