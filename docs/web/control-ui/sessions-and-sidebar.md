@@ -88,6 +88,13 @@ the sidebar header and footer stay fixed. Returning to conversations restores
 their sidebar scroll position. Navigation changes this context; background
 machine or session activity does not switch your workspace.
 
+Use **Filter & sort machines** beside the search field to sort each group
+alphabetically, online first (the default), or offline first. Choose **All**,
+**Online**, or **Offline** to filter by reported status; search narrows that
+selection further. Starting, stopping, and error states remain visible under
+**All**. Filtering does not change the machine open in the workspace. These
+choices stay in place when you leave Systems and return on the same connection.
+
 The machine list excludes cloud workers whose teardown is complete, including
 retained records from archived sessions and failed starts with no allocated
 machine. Workers awaiting cleanup remain visible. Archiving stops running cloud
