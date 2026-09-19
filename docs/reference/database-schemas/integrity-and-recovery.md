@@ -269,11 +269,18 @@ frames than total frames still records a blocked checkpoint. An absent reader li
 means that the blocker is untracked or belongs to another process, not that no
 reader exists.
 
-Shared-state SQLite worker actors retire after 60 seconds without an active
-operation. Retirement closes their native database borrow before a later request
-opens a replacement actor, bounding how long an abandoned worker-local reader can
-pin a WAL snapshot. An actor that returns from an operation with a tracked reader
-still active fails settlement and retires immediately.
+Shared-state SQLite worker actors inspect their already-open WAL connection after
+60 seconds without an active operation. An admitted PASSIVE checkpoint that
+positively inspects a healthy connection keeps the actor until 30 minutes after
+its last real operation; the inspection does not extend that deadline. Another
+connection's reader can prevent a complete checkpoint without making this actor
+unhealthy. A local native reader that refuses the checkpoint, an unavailable
+inspection, or an actor without an inspectable WAL connection retains the
+60-second retirement behavior. Inspection never opens a database for an
+artifact-preserving reader. Retirement closes the native database borrow before
+a later request opens a replacement actor. An actor that returns from an
+operation with a tracked reader still active fails settlement and retires
+immediately.
 
 Observations belong to the open database handle in the Gateway process. They
 reset when that handle is replaced or the Gateway restarts. Status and Doctor
