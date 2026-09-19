@@ -461,6 +461,10 @@ Use the mouse wheel or trackpad over the composer or its surrounding space to
 scroll the conversation while the composer stays pinned. Long drafts, task
 progress cards, and menus keep their own scrolling when their content overflows.
 
+Scrolling down at the end keeps the final reply above the pull request bar and
+composer as images or other message content finish resizing. Scrolling upward
+keeps your reading position instead.
+
 The task progress card above the composer collapses after deliberate upward
 scrolling settles. Returning to the end and progress updates leave it collapsed;
 completion can reopen it only while you are already at the end. Manual choices
