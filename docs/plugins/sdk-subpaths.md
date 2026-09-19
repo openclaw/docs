@@ -439,7 +439,7 @@ Use `isLoopbackHost(host)` when a plugin must accept only the local machine. It 
     | `plugin-sdk/context-visibility-runtime` | Private-local after July 2026; Context visibility resolution and supplemental context filtering without broad config/security imports |
     | `plugin-sdk/string-coerce-runtime` | Browser-safe primitive coercion, string normalization, Date-valid timestamps, and UTF-16 truncation |
     | `plugin-sdk/html-entity-runtime` | Private-local after July 2026; Single-pass semicolon-terminated HTML5 entity decoding without broad text utilities |
-    | `plugin-sdk/text-utility-runtime` | Private-local after July 2026; Low-level text and path helpers, including UTF-8 prefix truncation and five-entity HTML escaping |
+    | `plugin-sdk/text-utility-runtime` | Private-local after July 2026; Low-level text and path helpers, including budget-aware grapheme chunk selection, UTF-8 prefix truncation, and five-entity HTML escaping |
     | `plugin-sdk/simple-completion-runtime` | Private-local after July 2026; Prepared simple-completion model helpers and assistant text extraction for lightweight agent tasks |
     | `plugin-sdk/widget-html` | Widget CDN origins, complete-document detection, size validation, and tool input errors |
     | `plugin-sdk/host-runtime` | Private-local after July 2026; Hostname and SCP host normalization helpers |
@@ -469,7 +469,7 @@ Use `isLoopbackHost(host)` when a plugin must accept only the local machine. It 
     | `plugin-sdk/media-understanding-runtime` | Channel audio preflight/echo helpers plus image, video, audio, and structured media-understanding runtime functions |
     | `plugin-sdk/computer-use` | Computer Use v2 action and snapshot schemas, JSON parsers, validation, capability descriptors, and provider registration |
     | `plugin-sdk/native-command-config-runtime` | Dependency-light native command and skill enablement config checks |
-    | `plugin-sdk/text-chunking` | Outbound text and offset-preserving range chunking, opt-in inline code source maps and renderer syntax through `findCodeRegions(text, { includeSource: true, syntax: "commonmark" })` (GFM by default), the UTF-16 boundary helper `avoidTrailingHighSurrogateBreak`, markdown chunking/render helpers, quote-aware HTML tag tokenization, markdown table conversion, directive-tag stripping, and safe-text utilities |
+    | `plugin-sdk/text-chunking` | Grapheme-aware outbound text and offset-preserving range chunking, opt-in inline code source maps and renderer syntax through `findCodeRegions(text, { includeSource: true, syntax: "commonmark" })` (GFM by default), the surrogate-safe `avoidTrailingHighSurrogateBreak` boundary helper, markdown chunking/render helpers, quote-aware HTML tag tokenization, markdown table conversion, directive-tag stripping, and safe-text utilities |
     | `plugin-sdk/speech` | Private-local after July 2026; Speech provider types plus provider-facing directive, registry, validation, OpenAI-compatible TTS builder, and speech helper exports |
     | `plugin-sdk/speech-core` | Private-local after July 2026; Shared speech provider types, registry, directive, normalization, and speech helper exports |
     | `plugin-sdk/speech-provider` | Private-local JavaScript-only host runtime for official plugins; speech provider types, configuration and directive helpers, and the OpenAI-compatible provider factory without host registry or synthesis imports. |
