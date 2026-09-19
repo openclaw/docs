@@ -204,7 +204,7 @@ Run-error banners offer **Refresh** to reload the conversation without resending
   <Accordion title="Send and history semantics">
     - `chat.send` is **non-blocking**: it acknowledges admission with `{ runId, status: "started" }` and the response streams via `chat` events. An optional `messageSeq` identifies an already committed transcript position; it is omitted when input remains only in accepted custody. Trusted Control UI clients may also receive optional ACK timing metadata for local diagnostics.
     - Chat uploads accept images plus non-video files. Images keep the native image path; other files are stored as managed media and shown in history as attachment links. Files appear in their final composer slots as soon as preparation starts, with a per-file progress fill and an in-place error icon if reading fails. Before sending, use **Remove attachment** at the corner of a staged attachment, including one still being prepared; the control supports touch and keyboard input in both Chat and New Session.
-    - Opening a Markdown attachment (`.md`, `.markdown`, or a Markdown MIME type) in the side panel shows formatted headings, lists, tables, and code blocks. HTML attachments open a sandboxed page with a **Source** switch; other text attachments stay literal. Previews keep the 256 KiB UTF-8 limit and the original download link; Markdown does not execute embedded HTML or automatically load remote images.
+    - Opening a Markdown attachment (`.md`, `.markdown`, or a Markdown MIME type) in the side panel shows formatted headings, lists, tables, and code blocks. HTML attachments open a sandboxed page with a **Source** switch; other text attachments stay literal. HTML attachment previews accept up to 2 MiB of UTF-8 content; other text previews keep the 256 KiB limit. All retain the original download link; Markdown does not execute embedded HTML or automatically load remote images.
     - Staged attachments scroll horizontally when they no longer fit. Faded edges show where more attachments remain, including after adding files or resizing the composer.
     - Re-sending with the same `idempotencyKey` returns `{ status: "in_flight" }` while running, and `{ status: "ok" }` after completion.
     - `chat.history` responses are size-bounded for UI safety. When transcript entries are too large, Gateway may truncate long text fields, omit heavy metadata blocks, and replace oversized messages with a placeholder (`[chat.history omitted: message too large]`).
@@ -350,9 +350,9 @@ A different attachment or changed text starts with fresh controls. Long previews
 scroll inside their file tab; switching tabs preserves your reading position. HTML files
 (`.html`, `.htm`, or `text/html`, including MIME parameters) render as a sandboxed
 page by default. **Source** and **Preview** share the same filename tab and slim
-toolbar. Same-origin attachment previews require UTF-8 content no larger than
-256 KiB; unsupported, external, oversized, or unavailable attachments keep their
-original **Download** action. Cross-origin HTML attachments are download-only.
+toolbar. Same-origin HTML attachment previews accept UTF-8 content up to 2 MiB;
+other text attachment previews remain limited to 256 KiB. Unsupported, external,
+oversized, or unavailable attachments keep their original **Download** action. Cross-origin HTML attachments are download-only.
 
 Self-contained HTML can use inline CSS and JavaScript under the default
 `scripts` sandbox setting. The page runs on the existing separate-origin sandbox
@@ -363,6 +363,7 @@ not give ordinary HTML files access to the Control UI origin. Relative assets
 are not served from the file's directory, and external resources remain subject
 to the sandbox's default content security policy.
 
+Workspace file reads and edits retain their existing 256 KiB limit.
 For workspace HTML, **Edit**, in-file search, and explicit `file:line` navigation
 open **Source**. Switching back to **Preview** renders the latest unsaved editor
 text without saving it. Switching views preserves the editor, undo history, and
