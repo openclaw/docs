@@ -445,10 +445,18 @@ physical identity is checked before and after the reader opens and on result
 acceptance. Its read pin exposes no database: ordinary fixed reads do not query,
 back up, join, or end that connection's transaction. Snapshot borrowing keeps its
 native-transaction refusal. Explicitly selected snapshots keep their original private source.
-Artifact-preserving, source-exclusion, and canonical-mutation reads keep their
-existing owner-provided preparation, including native snapshot token work.
-Generic native callbacks and prepared-location cleanup contracts are unchanged;
-this cut does not make those preparation paths free of main-thread SQLite work.
+Fixed worker reads that preserve artifacts from a closed source retain their
+private ownership tokens in one shared staging child, separate from copy and query
+workers. Each private query reader also holds a token read lease through its native
+close, so staging-child failure cannot remove bytes under an active query. Cleanup
+awaits token retirement before removing copied bytes; failed close and unacknowledged
+cleanup retain custody. Allocation uses the existing reclamation rules.
+After acknowledged staging-process exit, the same inspector and exclusive token
+locks reconcile retirement before a replacement session releases the retained bytes.
+Generic composite callbacks, source-exclusion and canonical-mutation preparation,
+and already-open native source backups retain their existing snapshot owner.
+These preparation paths can still execute main-thread SQLite. The published SDK
+preparation helpers also retain their synchronous `cleanup()` contract.
 A copied-state error is returned
 to that reader without becoming a confirmed failure of the live cache; native
 access and transaction owners retain their own version checks, failure latching,
