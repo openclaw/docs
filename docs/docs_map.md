@@ -8762,6 +8762,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest/capabilities
 - Headings:
   - H2: contracts reference
+  - H2: Decision models reference
   - H2: Tool metadata reference
   - H2: activation reference
 
@@ -10571,6 +10572,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Capability registration
   - H3: Worker providers
+  - H2: Decision models (contract version 1)
+  - H3: Calling from a third-party plugin
 
 ## plugins/sdk-overview/cli-and-discovery.md
 
@@ -10697,6 +10700,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
+  - H2: Decision model runtime
 
 ## plugins/sdk-runtime/agent.md
 
