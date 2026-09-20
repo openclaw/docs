@@ -485,6 +485,10 @@ The core [`show_widget`](/tools/show-widget) tool renders self-contained SVG or 
 
 ## Chat transcript layout
 
+Suggested-task cards show their short summaries in full. Unusually long summaries
+scroll within the card, and **Show instructions** expands the complete task prompt.
+In short windows, the card body scrolls while the header and Start controls stay visible.
+
 Use the mouse wheel or trackpad over the composer or its surrounding space to
 scroll the conversation while the footer stays pinned. Pull requests, persistent
 notices, task progress, and the composer reserve their own space below the
