@@ -81,8 +81,10 @@ own permissions on the Gateway host. OpenClaw does not claim to enforce its
 optional tool restrictions inside that agent. Other chats and global settings
 stay unchanged, and tools hosted by OpenClaw retain their existing policy.
 
-Declining changes nothing. After a refused send, confirmation saves the permissions
-and retries that message once, including a chat's first message.
+Declining leaves permissions unchanged and keeps the message unsent. A first send
+can create an empty chat so confirmation is bound to that chat, but no message is
+saved or run before you confirm. Confirmation saves the permissions and retries
+that message once, including a chat's first message, without pinning its default model.
 Selection-only confirmation does not send the draft. Consent is not inherited by
 another chat and is cleared when the session resets or the selected runtime changes.
 Older hosts that do not recognize consent retain their previous restriction checks.
