@@ -30,6 +30,9 @@ Within a live lifecycle, an admitted owner can still lend its revocable,
 file-bound runtime proof to another handle. This also requires a matching
 verification record and a live lease; deleted or mismatched records force a
 full check even when runtime proof remains in memory.
+Cleanup workers and native agent execution workers borrow that proof under their
+existing writer admission. Cleanup workers return new verification to the Gateway
+after they finish.
 
 Cached opens, including later opens after startup, queue checks in the existing
 Gateway verifier. Background success is logged; only the full-check lease owner
@@ -63,7 +66,9 @@ above, or override explicit process-local revocation. Older readers can
 ignore the nullable column; backup and rollback retain its existing row lifetime.
 
 Database replacement, quarantine, and failed admission discard applicable
-verification. Pending migrations still run full checks, and canonical index
+verification. Doctor maintenance discards remembered runtime verification after
+draining agent connections and before raw maintenance can run. Pending migrations
+still run full checks, and canonical index
 repairs verify their result before committing. Schema, ownership, and current
 write authority are never borrowed from the integrity result.
 
