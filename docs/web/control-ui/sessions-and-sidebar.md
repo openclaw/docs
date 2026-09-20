@@ -35,6 +35,12 @@ This is creation-only: later messages do not regenerate an existing session's
 name. Explicit worktree names are preserved, and typing never creates a worktree
 or runs setup.
 
+If automatic naming fails after submission, the session receives a two-word,
+crustacean-themed name. New worktree branches use the saved session title when
+available, with the same two-word fallback if naming has not finished. They never
+use the first-message text as a branch-name fallback. A title that arrives later
+updates the sidebar without renaming an existing branch.
+
 ## New-session preferences and recents
 
 For connections with a durable user profile, the Gateway stores each agent's latest folder, worktree, model, and thinking choices. The new-session picker also shows recent projects and folders derived only from sessions created by that profile. These conveniences follow the person across browsers; they do not grant access to a project or path.
