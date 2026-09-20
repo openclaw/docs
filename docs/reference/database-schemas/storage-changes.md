@@ -469,7 +469,7 @@ Inside an enclosing native transaction, consumption defers delivery until commit
 rechecks event ownership and the committed receipt. Rollback drops queued delivery;
 later row replacement, including ABA replacement, suppresses stale delivery.
 
-Registered Gateway task list, get, and history reads, plus subagent list and wait
+Registered Gateway task list, get, and history reads, artifact task-ID scope resolution, plus subagent list and wait
 preparation, asynchronously join the event batches accepted before their first
 wait. Later arrivals do not add batches to that fence. Preparation waits for
 persistence and required publication, refreshes the projection through its worker
@@ -481,6 +481,11 @@ worker's full-detail, unindexed query for duplicate detection. These reads prese
 the worker's FIFO order and may wait behind other work; the fence grants no queue
 priority or bounded RPC latency. Event ingestion does not invoke synchronous
 projection refresh.
+Artifact scope resolution preserves session-key and run-ID precedence and checks
+retained request authority, current runtime configuration, and session visibility
+after task preparation. Request-owned cancellation and revocation stop downstream
+work; ordinary reconnects retain their admitted request authority.
+Artifact session metadata and final download authority retain their existing owners.
 Queued task identities advance across timestamp normalization only from the same
 operation's confirmed commit receipt. The private admission channel distinguishes
 native settlement from committed facts, including when a synchronous caller joins
