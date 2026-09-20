@@ -1807,6 +1807,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "plugins/meeting-plugins",
+                      "plugins/facetime",
+                      "plugins/facetime-recovery",
                       "plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -3875,6 +3877,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "zh-CN/plugins/meeting-plugins",
+                      "zh-CN/plugins/facetime",
+                      "zh-CN/plugins/facetime-recovery",
                       "zh-CN/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -5909,6 +5913,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "zh-TW/plugins/meeting-plugins",
+                      "zh-TW/plugins/facetime",
+                      "zh-TW/plugins/facetime-recovery",
                       "zh-TW/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -7943,6 +7949,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "ja-JP/plugins/meeting-plugins",
+                      "ja-JP/plugins/facetime",
+                      "ja-JP/plugins/facetime-recovery",
                       "ja-JP/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -9977,6 +9985,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "es/plugins/meeting-plugins",
+                      "es/plugins/facetime",
+                      "es/plugins/facetime-recovery",
                       "es/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -12011,6 +12021,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "pt-BR/plugins/meeting-plugins",
+                      "pt-BR/plugins/facetime",
+                      "pt-BR/plugins/facetime-recovery",
                       "pt-BR/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -14045,6 +14057,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "ko/plugins/meeting-plugins",
+                      "ko/plugins/facetime",
+                      "ko/plugins/facetime-recovery",
                       "ko/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -16079,6 +16093,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "de/plugins/meeting-plugins",
+                      "de/plugins/facetime",
+                      "de/plugins/facetime-recovery",
                       "de/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -18113,6 +18129,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "fr/plugins/meeting-plugins",
+                      "fr/plugins/facetime",
+                      "fr/plugins/facetime-recovery",
                       "fr/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -20147,6 +20165,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "hi/plugins/meeting-plugins",
+                      "hi/plugins/facetime",
+                      "hi/plugins/facetime-recovery",
                       "hi/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -22181,6 +22201,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "ar/plugins/meeting-plugins",
+                      "ar/plugins/facetime",
+                      "ar/plugins/facetime-recovery",
                       "ar/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -24215,6 +24237,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "it/plugins/meeting-plugins",
+                      "it/plugins/facetime",
+                      "it/plugins/facetime-recovery",
                       "it/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -26249,6 +26273,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "vi/plugins/meeting-plugins",
+                      "vi/plugins/facetime",
+                      "vi/plugins/facetime-recovery",
                       "vi/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -28283,6 +28309,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "nl/plugins/meeting-plugins",
+                      "nl/plugins/facetime",
+                      "nl/plugins/facetime-recovery",
                       "nl/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -30317,6 +30345,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "tr/plugins/meeting-plugins",
+                      "tr/plugins/facetime",
+                      "tr/plugins/facetime-recovery",
                       "tr/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -32351,6 +32381,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "uk/plugins/meeting-plugins",
+                      "uk/plugins/facetime",
+                      "uk/plugins/facetime-recovery",
                       "uk/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -34385,6 +34417,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "id/plugins/meeting-plugins",
+                      "id/plugins/facetime",
+                      "id/plugins/facetime-recovery",
                       "id/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -36419,6 +36453,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "pl/plugins/meeting-plugins",
+                      "pl/plugins/facetime",
+                      "pl/plugins/facetime-recovery",
                       "pl/plugins/google-meet",
                       {
                         "group": "Google Meet",
@@ -38453,6 +38489,8 @@
                     "group": "Meetings and calls",
                     "pages": [
                       "ru/plugins/meeting-plugins",
+                      "ru/plugins/facetime",
+                      "ru/plugins/facetime-recovery",
                       "ru/plugins/google-meet",
                       {
                         "group": "Google Meet",

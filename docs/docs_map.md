@@ -8511,6 +8511,32 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Native imports from a standalone source build
   - H2: Legacy cleanup
 
+## plugins/facetime-recovery.md
+
+- Route: /plugins/facetime-recovery
+- Headings:
+  - H2: Remove driver and helper artifacts
+  - H2: Restore SIP debugging restrictions
+  - H2: Recover a failed driver update
+
+## plugins/facetime.md
+
+- Route: /plugins/facetime
+- Headings:
+  - H2: Requirements
+  - H2: Install the plugin and native companion
+  - H2: Configure owner identities
+  - H3: Configure voice credentials
+  - H3: Choose the agent and tool access
+  - H2: Prepare the Mac
+  - H2: Inspect and activate
+  - H2: Verify your first call
+  - H2: Place and end calls
+  - H2: Remove the integration
+  - H2: Limits
+  - H2: Troubleshooting
+  - H2: Related
+
 ## plugins/feature-plugins.md
 
 - Route: /plugins/feature-plugins
@@ -9317,6 +9343,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/exa.md
 
 - Route: /plugins/reference/exa
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/facetime.md
+
+- Route: /plugins/reference/facetime
 - Headings:
   - H2: Distribution
   - H2: Surface
