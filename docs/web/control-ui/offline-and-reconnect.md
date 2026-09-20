@@ -154,6 +154,11 @@ unconfirmed message is resolved or discarded, and the queue explains that blocka
 earlier message lets the next queued message proceed when the session is ready. Unconfirmed local
 commands keep their retry/discard queue controls.
 
+An ordinary message rejected by the Gateway stays in the conversation with a **Not sent**
+footer. Use **Retry** to try again or **Discard** to remove its pending browser copy.
+Discard stays effective after reloading the tab; it does not cancel Gateway work or
+remove messages already in the conversation history.
+
 If the Gateway reports that a `/steer` or `/redirect` message failed to start, the Control UI
 restores the submitted draft when the composer is still empty. It preserves newer text and
 attachments. If you switched conversations, recovery stays with the original conversation.
