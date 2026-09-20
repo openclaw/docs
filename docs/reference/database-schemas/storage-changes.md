@@ -102,6 +102,16 @@ for earlier cleanup generations. Each sweep keeps its captured state directory.
 Queue and staging formats, retention limits, writable database preparation, and
 update behavior are unchanged; send admission and settlement retain their owners.
 
+Personal repository publication options scan receipts in the shared-state worker.
+The reader validates every matching pending receipt in the existing timestamp and
+request-ID order, retaining only the latest status. Title and body content remain
+in the worker; older corrupt receipts still fail the read. Options recheck current
+caller and session authority after waiting, then consult the shared publication
+owner. Prepared personal account status rechecks its current generation and
+account without repeating network verification. Empty repository results retain
+the non-repository workspace owner's fallback. Database-open behavior, publication
+writes, schemas, and retention are unchanged.
+
 Project recents and observed checkouts prepare durable session listings through
 the existing session-transcript worker. Federation captures physical targets,
 options, and a transferable environment before waiting, preserving canonical
