@@ -7051,6 +7051,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Homebrew formula installs
   - H2: Alternative: manual npm, pnpm, or bun
   - H3: Package lifecycle and operator state
+  - H3: Stuck on 2026.9.3
   - H3: Advanced npm install topics
 
 ## install/upstash.md

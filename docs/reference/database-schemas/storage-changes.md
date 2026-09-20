@@ -93,6 +93,14 @@ verified descriptors and post-render thumbnail checks remain in place. Inserts, 
 promotion, cleanup claim/deletion transactions, Doctor imports, and native session
 metadata reads keep their existing owners and remain separate worker migrations.
 
+Delivery queue maintenance expires tombstones and reads media custody in the
+shared-state worker. Stage expiry retains its existing transaction and unfinished
+delivery inventory, including retained migration media. Gateway shutdown joins an
+accepted queue sweep through filesystem cleanup, and replacement maintenance waits
+for earlier cleanup generations. Each sweep keeps its captured state directory.
+Queue and staging formats, retention limits, writable database preparation, and
+update behavior are unchanged; send admission and settlement retain their owners.
+
 Project recents and observed checkouts prepare durable session listings through
 the existing session-transcript worker. Federation captures physical targets,
 options, and a transferable environment before waiting, preserving canonical
