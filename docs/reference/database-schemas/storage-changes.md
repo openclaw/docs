@@ -990,17 +990,25 @@ before transport I/O and reconciles accepted outcomes on that same store. New
 conversation bindings reread source policy from the original store after route
 preparation and retain the destination owner through the final authority check.
 
-Board operations, board inventory reads, and widget document reads expose asynchronous
-contracts. Gateway callers await persistence before publishing board changes or replies.
-Writes carry the caller's current-authority assertion into the synchronous SQLite
-transaction. HTML widget capability actions and protected publication run in the store's immediate
+Board mutations, snapshots, and widget document reads expose asynchronous
+contracts. Ordinary disk data mutations run their existing synchronous kernels on the
+canonical per-agent worker connection, shared with other admitted domains.
+Inputs are captured before queued work, and the caller's current authority is
+checked at transaction entry and commit. Committed session changes return to the
+existing host publisher before the result is exposed; rollback publishes nothing,
+and unknown outcomes conservatively invalidate the exact original session without
+replaying the write. Gateway callers await persistence before publishing board
+changes or replies. Existing-session preflight, source-handle acquisition,
+schema/bootstrap/migration, cold `hasBoard` projection, and board reads remain native. Incognito writes retain
+their process-held connection.
+HTML widget capability actions and protected publication run in the store's immediate
 continuation after its authoritative read and current ticket, session, and grant checks.
 Database ownership is released before awaiting external work; no Promise handoff separates
 the final authorization from its use. Board and progress-card writes capture their physical
 database and state environment before joining the canonical agent writer queue. Cold opens
 use its asynchronous integrity admission, and request authority is checked again before
 schema setup and mutation. A changed route, closed request, or revoked session cannot
-publish a queued write. SQLite kernels remain synchronous inside the store, with existing
+publish a queued write. SQLite kernels remain synchronous inside their native transactions, with existing
 revision, grant, session-existence, and transaction semantics.
 
 MCP App pinning retains its existing source-interaction checks. A delayed adapter must
