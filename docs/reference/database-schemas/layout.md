@@ -200,6 +200,12 @@ downtime. Each JSON column has a 16 KiB hard limit with deterministic truncation
 and redaction. The ledger stores bounded diagnostic summaries, not raw logs or
 credentials. There is no automatic history deletion.
 
+Asynchronous history lookup and listing run their queries and record decoding
+in the shared-state read worker. They preserve source artifacts and inherited
+snapshot or disposable-read scopes, and return empty history without creating
+a missing database or ledger table. Reconciliation and ledger writes retain
+their existing owners.
+
 New drivers store optional `origin.driver` fields `host` (the hostname), `pid`,
 and `startIdentity` (the operating system's process-start identity as a decimal
 string) in the existing `origin_json` column. Each adopter becomes the current
