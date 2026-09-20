@@ -84,6 +84,12 @@ time, and the caller's signal as its cause. Below the selected threshold, this d
 appears in JSON `warnings` and human output without failing lint. It means the inspection
 was not performed. Cancellation after acquisition and other inspection failures remain errors.
 
+During updates, optional inspections and policy advisories are warnings, including intentional open DM policies. Required configuration, state, and startup checks remain blocking. The saved report retains every finding with an individually bounded reason; update history keeps severity counts, deciding errors, and an explicit omission count when its diagnostic bound is reached.
+
+Security findings retain their specific check identifier and remediation in update reports. Secret migration commands appear before long field lists so bounded diagnostics keep the `openclaw secrets configure` and `openclaw secrets apply` next steps.
+
+`PLAINTEXT_FOUND`, `REF_SHADOWED`, and `LEGACY_RESIDUE` are findings from the separate `openclaw secrets audit` command. They describe hardening or retained recovery material, not database corruption. Standalone `secrets audit --check` can exit nonzero for these findings; that result alone does not identify a failing candidate Doctor check. Use the candidate's recorded lint findings, not a truncated stderr tail, to identify the update failure.
+
 A configured Codex plugin that is missing or whose advertised health API cannot be
 verified produces an availability warning under `core/doctor/codex-session-routes`,
 with the plugin name and repair command. Untrusted installations are not imported
