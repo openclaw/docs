@@ -415,11 +415,13 @@ other stores continue recovery. `openclaw status` and `openclaw doctor` show
 outstanding startup recovery failures from the running Gateway; the warning clears
 when the store scan succeeds.
 
-If an older Gateway left a session running with a dead writer and an unfinished
-recovery cycle, `sessions.recover` reconciles that writer and starts a continuation
-in the same session. It preserves the session key and transcript. A live run or
-cloud worker still prevents this repair. Tombstoned sessions retain their separate
-recovery path into a new session.
+If an older Gateway left a dead writer and an unfinished recovery cycle in a
+running, failed, or statusless session, `sessions.recover` reconciles that writer
+and starts a continuation in the same session. A new Control UI message also reconciles this
+state before admission, so a rejected send cannot trap the conversation in a
+"conversation changed" retry loop. Both paths preserve the session key and
+transcript. A live run or cloud worker still prevents this repair. Tombstoned
+sessions retain their separate recovery path into a new session.
 
 ## Automatic resume
 
