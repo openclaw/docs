@@ -7185,7 +7185,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Voice Call channel
   - H3: watchOS companion surfaces
   - H2: QA evidence summary
-  - H3: Historical category evidence
+  - H3: Readiness by area
 
 ## maturity/taxonomy.md
 
