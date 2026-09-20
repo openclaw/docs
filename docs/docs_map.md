@@ -1732,6 +1732,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/pipeline
 - Headings:
   - H2: Pipeline overview
+  - H3: macOS Swift phases
   - H2: Security review checks
   - H3: Enable enforcement after deployment
   - H2: Fail-fast order
