@@ -7286,6 +7286,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Terminal file uploads
   - H2: Agent file transfers
   - H3: Gateway workspace files
+  - H3: Binary transfers for services
   - H3: Transferred files
 
 ## nodes/images.md
