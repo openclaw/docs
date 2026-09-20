@@ -8529,10 +8529,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configure owner identities
   - H3: Configure voice credentials
   - H3: Choose the agent and tool access
+  - H3: Choose a voice
   - H2: Prepare the Mac
+  - H3: Enable developer-tools access
+  - H3: Allow debugger attachment
+  - H3: Grant permissions and allow incoming calls
+  - H3: Install the audio driver
+  - H3: Select the call audio devices
   - H2: Inspect and activate
   - H2: Verify your first call
   - H2: Place and end calls
+  - H2: Update the integration
   - H2: Remove the integration
   - H2: Limits
   - H2: Troubleshooting
