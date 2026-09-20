@@ -11161,6 +11161,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/anthropic
 - Headings:
+  - H2: Choose a model route
   - H2: Usage and cost tracking
   - H2: Getting started
   - H2: Use Claude Fable 5.1
