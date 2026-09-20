@@ -34,6 +34,17 @@ preparation, before native execution, and at the existing transaction and commit
 grants. Cancellation before native execution joins coordinator cleanup without
 replaying the command.
 
+The broker admits up to 128 outstanding requests. Count-only overflow waits in
+FIFO order for up to 10 seconds; queued input still shares the 64 MiB byte budget.
+Byte, message, and store limits continue to refuse immediately. Oversized streamed
+inputs still require immediately available admission instead of retaining the
+complete input in the waiting queue. Admission timeout
+or host drain rejects waiting requests before dispatch; caller cancellation
+releases a waiting request, while dispatched writes retain their native outcome.
+Maintenance scopes continue to drain accepted work. A rate-limited warning reports
+admission queue depth and wait time. Node uses two to eight worker threads based
+on available CPUs; Bun retains one worker per store actor.
+
 Legacy native host writers service the same job's preparation and authority ports
 between short coordinator-lock attempts, including path aliases. This lets the
 worker finish while the host is inside a synchronous native caller. Successful
