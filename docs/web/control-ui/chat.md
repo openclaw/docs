@@ -553,7 +553,11 @@ The chat transcript uses a centered readable frame aligned with the composer. As
 
 Images and video previews in your own messages appear above any accompanying text, without a surrounding bubble background. Videos use a still frame with a play icon; select the preview to open the video in the Files panel. If a preview cannot load, the attachment card remains available. Hovering media leaves that layout unchanged, and the text keeps its normal bubble color, including any per-identity tint. Assistant videos retain their inline player.
 
-Open an image tile to inspect it in the image viewer. When the message contains
+Managed image previews retain enough detail for high-density displays. Open an image tile
+to inspect it immediately in the image viewer; the cached preview stays visible
+while the original loads and is replaced as soon as the original is ready.
+Reopening an image reuses the cached original. If loading fails, the preview remains visible.
+When the message contains
 multiple images, use **Previous image** / **Next image**, the left and right arrow
 keys, or a horizontal swipe to move through that message's images. Navigation
 stops at either end and reverses direction in right-to-left layouts. Pinch or use
