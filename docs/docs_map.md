@@ -7655,6 +7655,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Desktop companion
   - H3: Desktop compatibility
   - H3: Gateway selection
+  - H3: Desktop sharing
   - H3: First-run setup
   - H3: Host sleep
   - H3: Media codecs
