@@ -275,6 +275,7 @@ Doctor (including `--fix`), and update finalization preserve them. Neither age
 nor a lock for one state directory establishes ownership of captures from other
 profiles or containers sharing that temporary directory. No legacy files are
 moved or adopted by the new runtime.
+Doctor lists legacy `openclaw-plugin-build-*` and `openclaw-model-catalog-*` roots under the state temporary directory, their count and total size, and a bounded removal command to run only after every Gateway, CLI process, and container using that state directory has stopped; it never executes the command.
 
 Configured Gateway agents share one model-catalog worker per plugin-inventory
 lifetime. Agent and authentication facts belong to each task; plugin registrations
@@ -291,10 +292,13 @@ Credential persistence publishes fresh shared-store ownership before credential
 discovery. Login and explicit auth refresh join the credential owner's publication
 instead of creating another catalog generation for the same change.
 
-Model-catalog workers keep their captured plugin files in a worker-owned directory.
+Model-catalog workers keep their captured plugin files in a worker-owned directory
+under the same managed capture instance, with custody retained by their producer.
 The parent removes any remaining captures after that worker exits,
 including cancellation and crashes. Files remain available while the worker is
 running, and retiring one worker does not remove another generation's captures.
+If the whole Gateway is killed, the existing hourly cleanup reclaims the abandoned
+instance only after acquiring its released SQLite coordinator.
 Cancellation releases compute capacity after the worker exits; terminal shutdown
 also waits for file cleanup. Failed file removal is reported as a cleanup warning.
 

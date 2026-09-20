@@ -106,6 +106,16 @@ It may return `void` or `Promise<void>`; observer throws and rejections do not
 replace the termination error or release custody, and closure does not wait for
 the observer.
 
+`prepareWorker()` can return `temporaryDirectory` for disposable scratch files
+and an optional asynchronous `releaseResources()` callback for producer-owned
+resources. Both remain retained until Worker exit is confirmed; cleanup also
+runs if construction fails before a Worker exists. When both are supplied,
+the pool attempts temporary-directory removal first, then calls
+`releaseResources()` even if that removal fails. Cleanup failures become warnings.
+Execution capacity becomes available after Worker exit, while `close()` joins
+the cleanup callback before it completes. A failed termination runs neither
+cleanup step; retry `close()` on the same pool to confirm exit and release them.
+
 When launching an isolated Gateway child that your plugin owns, remove
 `SUPERVISOR_HINT_ENV_VARS` from its environment after applying caller overrides.
 This list is exported from `openclaw/plugin-sdk/process-runtime`; inherited parent
