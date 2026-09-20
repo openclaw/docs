@@ -504,6 +504,16 @@ comparison methods are absent, until the minimum host guarantees them. Worker
 failures never select that compatibility path. Binding storage, revocations,
 and synchronous visibility retain their separate owners.
 
+Read-only workspace setup and attestation snapshots execute in the retained
+shared-state read worker. Alias resolution and the associated rows share one
+read transaction. Bootstrap preparation and Doctor readiness await that result;
+inspection does not create missing state or register aliases. Selected snapshots
+and artifact-preserving scopes keep their existing lifetime and cleanup owner.
+Generic composite preparation, borrowed-source backup and source-exclusion
+compatibility paths retain their native owners. Mutable workspace reads, writes,
+and Doctor alias repair keep their existing transaction owners. Schemas,
+retention, and update behavior are unchanged.
+
 Use Kysely for ordinary queries and mutations. The current
 `getNodeSqliteKysely` facade compiles queries; `executeSqliteQuerySync` runs them
 on the supplied `node:sqlite` connection. Calling Kysely's asynchronous
