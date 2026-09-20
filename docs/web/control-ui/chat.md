@@ -567,6 +567,12 @@ and return focus to the tile you opened.
 
 Images attached to assistant progress messages appear inline while the task continues and remain visible after reloading the conversation. Remote attachment URLs do not need a filename extension: the Gateway detects the media type and serves the preview through the same authenticated media path used for final replies. Documents keep their file cards.
 
+Computer screenshots retained in the session transcript also load as image previews,
+including after a reload. Opening a preview shows the saved screenshot in the image
+viewer. The Control UI retrieves the pixels through authenticated artifact access;
+computer observations are not automatically sent as outgoing attachments. Historical
+entries that contain only omission metadata keep the **Omitted from history** card.
+
 In automatic visible-reply mode, this includes standalone `MEDIA:` lines in model-authored commentary committed to the transcript, not just final replies. Only references captured before transcript hooks and retained in that commentary are eligible; hook-added references remain text, and normal media access and live run/session checks still apply. Message-tool-only delivery uses `message(action=send)` with structured attachment fields instead. Tool/plugin output and streamed block payloads must also use structured fields. See [WebChat commentary compatibility](/reference/rich-output-protocol#webchat-commentary-compatibility).
 
 Messages forwarded by `sessions_send` render as left-aligned speech bubbles with a **From** attribution row above the message. Known senders, including the current agent, retain their agent identity. Unknown or unlisted senders show no avatar beside the bubble or in the attribution row, and no empty inline avatar space remains. The message column stays aligned with neighboring messages. Select a linked source to open its session; hover it to see session progress. Each source session has a stable bubble tint. Forwarded messages without a known source session show the source agent when available, or a generic forwarded-message label. The receiving agent's own replies remain flat text.
