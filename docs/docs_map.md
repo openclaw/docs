@@ -14383,6 +14383,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Use the tool
   - H2: Native dashboard reports
   - H2: Show on a device
+  - H2: Audio and video
   - H2: Interactive widgets
   - H2: Dashboard capabilities
   - H3: Read GitHub Actions runs
