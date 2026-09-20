@@ -80,6 +80,12 @@ Page deletions and renames preserve this targeting. Explicit Node owners for
 Markdown inputs remain selected; workspace templates under
 `docs/reference/templates/` and unowned source inputs retain the full fallback.
 
+When `docker-seed-e2e` selects the published upgrade survivor, it uploads
+`docker-seed-upgrade-survivor-proof` even after a failure. The artifact contains
+scheduler summaries and sanitized survivor reports. Failed reports include
+bounded, redacted baseline and candidate agent-turn output; private scenario
+state and raw logs remain outside the upload.
+
 Full canonical `main` pushes run the operator config and prior-release state
 startup corpora once through the Node `runtime-config` owner. Canonical pull
 requests also omit the duplicate **Check startup corpus** step when preflight
