@@ -78,8 +78,9 @@ media cleanup and best-effort live sending. When execution may have occurred but
 result is available, recovery retains queue custody and staged media; best-effort
 sending does not fall back to an independent live send. Native settlement alone
 is not evidence that a rejected command did not commit. Random insertion without
-a media stage retains its single-statement boundary; a rejected statement without
-authoritative nonpublication evidence remains an unconfirmed outcome. Recovery
+a media stage keeps its single upsert inside the same tracked transaction, so an
+observed full rollback supplies authoritative nonpublication evidence. Other
+rejections without that evidence remain unconfirmed outcomes. Recovery
 owns terminal audit publication while custody is retained. Media preparation and
 callbacks stay on the host. Media stage creation, cancellation, pruning, stable
 preparation checkpoints, and other queue mutations retain their existing owners.
