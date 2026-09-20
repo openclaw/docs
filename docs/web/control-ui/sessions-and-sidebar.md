@@ -269,6 +269,35 @@ With **Person** grouping, hover or focus a person’s header and choose **Show o
 
 Choose **Icon & color** from a session menu and select a color swatch to add a narrow color stripe to its sidebar row and a matching dot beside the chat title. Pick one of eight colors, or choose **Default** to clear only the color. **Reset to default** clears both the icon and color. The colors match Claude Code’s `/color` names, so imported Claude Code sessions keep the same color. Imported catalog rows show their color without offering color editing.
 
+## Direct session shortcuts
+
+- **⌘⇧O** on Mac or **Ctrl+Shift+O** on Windows/Linux opens **New Session**
+  and focuses its composer. It opens a draft, without creating an empty session
+  or sending a message. **⌘N / Ctrl+N** remains **New Window**.
+- **⌘⇧A** on Mac or **Ctrl+Shift+A** on Windows/Linux requests **Archive**
+  for the current chat pane only, not other sessions selected in the sidebar.
+  It uses the same permissions, protected-session checks, archive lifecycle, and
+  **Undo** as the chat header menu. The archived conversation stays open; this
+  is not a separate stop or delete action.
+
+Both shortcuts work from the chat composer, ignore key repeat and text
+composition, and leave open modal dialogs in control. New Session preserves the
+existing conversation's draft through normal navigation. Archive does not clear
+that draft or navigate to another conversation.
+
+Browser shortcut handling can vary by browser version and configuration. If your
+browser handles a chord itself, use the corresponding New Session control or
+**Archive** in the current chat's header menu. The menu's **A** shortcut still
+works while that menu is open.
+
+In the macOS app, these additional shortcuts apply while the Dashboard web view
+has keyboard focus. A separate native reading pane does not forward Archive to
+the Dashboard or another window. The existing native **⌘N** New Gateway Window
+and **⌘⇧N** New Thread commands are unchanged.
+
+These direct shortcuts do not change the command palette's **⌘K / Ctrl+K**, then
+**⌘Enter / Ctrl+Enter** workflow for starting a task in the background.
+
 ## Command palette
 
 The command palette can start an independent task without leaving your current
