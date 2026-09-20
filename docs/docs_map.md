@@ -13498,6 +13498,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/acp-agents-setup
 - Headings:
   - H2: acpx harness support (current)
+  - H2: GitHub Copilot CLI in native chat
   - H2: Permissions for native chat runtimes
   - H2: Required config
   - H2: Repair existing bare-session histories
