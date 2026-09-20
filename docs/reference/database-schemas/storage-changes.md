@@ -145,6 +145,65 @@ the mutation or converting the original error into success. Failed reconciliatio
 or reader retirement remains owned by canonical close for retry. Profile schema,
 avatar bytes, fetch limits, and final identity and permission checks are unchanged.
 
+Required queued collector registration writes its named registry rows through the
+shared-state worker. The host captures those rows and deletions before waiting,
+retains the original database admission, and authorizes the transaction again
+before mutation and commit. Synchronous Stop, replacement, and completion writes
+supersede pending row authority; delayed worker acknowledgments cannot overwrite
+newer local projections or notification history. Database shutdown joins physical
+settlement and publication. Acknowledged changes reach the live registry before
+read-cache updates and reader wakes; pending terminal writes remain invisible to
+cleanup readers. Unknown write outcomes are never replayed.
+
+Provisional cancellation claims keep registration pending until their owner releases
+or confirms them. Existing persistence notifications wake the wait; work cancellation,
+Gateway drain, and database retirement dispose its subscriptions. A released claim
+permits a fresh guarded descriptor write after known refusal or supersession, without
+recreating the task. A confirmed Stop can retire an old failure callback; this does
+not treat the registration's own publication error as a completed takeover.
+Launch and failure handoffs use the same claim wait. Cleanup rechecks live
+authority at session dispatch and each attachment filesystem mutation. An
+already-started context rollback is joined once; cancellation does not replay it.
+Definitive dispatch removal remains with the cancellation owner and does not
+wait on its own claim.
+Scheduler removal closes its callback work scope to wake claim waits, joins
+admitted work, and then runs preparation disposal in a fresh cleanup scope.
+The callback retains its first start and admitted cleanup promises, so scheduler
+retries repeat only failure settlement, preserving the original dispatch error.
+
+Registration withholds its launch descriptor until persistence is acknowledged.
+When registration reports a descriptor persistence failure after task creation, it
+retains the durable intent, task, session, context preparation, and attachments for
+restart reconciliation. Existing restore handling fails a descriptorless queued
+task without launching it again. Cleanup
+rechecks the latest run generation and existing suppression state before touching
+its session or prepared resources, preserving a newer sibling's ownership.
+When a known created task loses registration ownership, its original task backend
+and exact task ID remain captured. Registration first acknowledges a descriptorless
+recovery intent, then requires a matching failed task result with a terminal timestamp
+before publishing the terminal registry row. The returned timestamp and error remain
+fixed across registry-only retries. A missing, incomplete, or different terminal
+result, or an exception, retains the recovery intent; no replacement backend or fresh
+task lookup is used. A known refused terminal write
+leaves the unchanged original record available for settlement retry; an unknown
+outcome remains an error and is never replayed.
+An unacknowledged descriptor write may already be durable. Local launch stays
+withheld and resources remain retained; restoration examines that durable row
+without repeating task creation.
+
+Required queued task creation and failed-registration settlement use the initial-task
+worker owner. Creation retains its selected backend and checks the original caller
+and Gateway at write admission. After a known task commit, the existing task/registry
+owner governs the descriptor handoff even if the parent has closed. Failure settlement
+uses the exact creation receipt, preserves the returned terminal timestamp and error,
+and suppresses delivery. This also covers launch failure after registration is acknowledged
+while the original collector is still queued; selecting another runtime cannot retarget
+its failure callback. Registered external synchronous task runtimes retain their captured
+compatibility methods. Accepted-run lifecycle changes, receiptless restored-launch cleanup,
+ordinary subagent registration, full registry replacement, and cross-owner atomic
+transactions retain their synchronous owners. The stored representation, recovery entry point, schema version,
+and retention are unchanged.
+
 Explicit promotion notice and claim annotations execute in the shared-state
 worker. The CLI awaits their best-effort completion before reporting results;
 storage failures still do not fail a promotion claim. Notice recording retains
