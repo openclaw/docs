@@ -23,9 +23,23 @@ interactively to review the findings and confirm supported cleanup. Cleanup
 reports what it removed or skipped; it does not guarantee a replacement service
 will be installed. Explicit repair maintenance skips this separate cleanup flow.
 
+If Doctor stopped a managed Gateway for repair, a failed or timed-out restoration
+probe produces a warning and Doctor still attempts to start that service and
+verify readiness. Live maintenance custody and update admission still apply;
+observed changes to the service command, account, or manager require operator review.
+An explicit ownership refusal is reported as a refusal, without attempting to
+start the rejected service. On systemd, Doctor retains the native manager and
+unit identity before stopping the service and revalidates it at activation. If
+that identity cannot be captured, Doctor leaves the service running and reports
+the inspection warning; live state writers still prevent unsafe offline repair.
+
 When service inspection blocks repair, Doctor and `gateway status --deep` name
 the failed native probe:
 
+- **Linux inspection deadline expired:** the manager probe or its custody/admission
+  guards exhausted the inspection budget. This does not mean the user session bus
+  is missing. Check the reported restoration result and run
+  `openclaw gateway status --deep` after recovery.
 - **Linux user session bus unavailable:** check `XDG_RUNTIME_DIR` and
   `DBUS_SESSION_BUS_ADDRESS` for the service account. A working `systemctl --user`
   command alone is insufficient: effective service inspection also uses
