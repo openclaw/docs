@@ -9,6 +9,13 @@ read_when:
 This page covers how to invoke `openclaw doctor`: the supported postures, ready-to-run
 examples, and every option the command accepts.
 
+If a plugin fails to load during Doctor, the report includes an error finding
+with the plugin ID, source path, and error. `ENOSPC` failures name the disk-space
+cause. Standalone `doctor --non-interactive` exits `1` for these failures and
+reports that Doctor finished with plugin load errors. When an updater invokes
+Doctor, the same failures remain recorded warnings so an otherwise safe update
+can continue; rerun Doctor after resolving the reported cause.
+
 ## Postures
 
 Doctor supports these postures:
