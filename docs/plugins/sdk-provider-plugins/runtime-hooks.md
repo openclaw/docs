@@ -131,9 +131,19 @@ additive fields on the existing contract; they add no hook or user setting.
     },
     fetchUsageSnapshot: async (ctx) => {
       // fetchAcmeUsage is your plugin's own vendor API call, not an SDK export.
-      return await fetchAcmeUsage(ctx.token, ctx.timeoutMs);
+      return await fetchAcmeUsage(ctx.token, ctx.timeoutMs, {
+        fetch: ctx.fetchFn,
+        signal: ctx.signal,
+      });
     },
     ```
+
+    Both usage hooks receive an optional `ctx.signal` for collection cancellation.
+    `ctx.fetchFn` already combines it with request cancellation; custom transports
+    must forward `ctx.signal` to their I/O. Check cancellation before starting
+    additional auth work after an await. An exhausted budget invokes neither hook
+    and produces a visible `Timeout` snapshot. Core retains completed siblings and
+    tracks unfinished work through cleanup, including auth-owned credential refresh.
 
     `resolveUsageAuth` has three outcomes. Return
     `{ token, accountId?, subscriptionType?, rateLimitTier? }` when the
