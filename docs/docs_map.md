@@ -8420,6 +8420,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness/runtime-behavior
 - Headings:
   - H2: Dynamic tools and web search
+  - H2: Inspecting tool output
   - H2: Background text completions
   - H2: Image loader ownership
   - H2: Turn liveness and timeouts
