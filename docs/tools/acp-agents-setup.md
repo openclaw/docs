@@ -66,6 +66,11 @@ normalized by OpenClaw before startup. Other harnesses need ACP `models` plus
 `session/set_model` support; if a harness exposes neither that ACP capability
 nor its own startup model flag, OpenClaw/acpx cannot force a model selection.
 
+Installed native agents keep their own sign-in. During discovery, `/models` can
+report **Checking native agent** without requiring an OpenClaw API key. If
+availability is unconfirmed, check the native app on the Gateway host and run
+`/models` again.
+
 <a id="tool-profiles-for-native-chat-runtimes" />
 
 ## Permissions for native chat runtimes
