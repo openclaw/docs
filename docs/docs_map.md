@@ -1349,6 +1349,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Threading, sessions, and reply tags
   - H3: Agent View DMs
+  - H2: Recent room history
 
 ## channels/slack/transports.md
 
@@ -10339,6 +10340,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-inbound
 - Headings:
   - H2: Core helpers
+  - H2: Platform-selected history windows
   - H2: Agent group dispatch
   - H2: Internal turn sources
   - H2: Receive acknowledgment policy
