@@ -6432,6 +6432,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Test Temp Directories
   - H2: Agent reliability evals (skills)
+  - H2: Cost budget
+  - H2: Flake triage
   - H2: Adding regressions (guidance)
 
 ## help/troubleshooting.md
