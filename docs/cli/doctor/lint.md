@@ -15,6 +15,11 @@ Bare `openclaw doctor --json` is read-only and non-interactive: no prompts, repa
 
 Explicit `openclaw doctor --lint` is the deployment-preflight posture. Add `--json` for machine-readable output without changing lint's threshold-based exit code. Policy findings reported here are documented in [`openclaw policy`](/cli/policy).
 
+Full reports reuse a private shared-state snapshot for ordinary reads within the
+report, preserving the live database and its WAL files. Each new report reads a
+fresh snapshot. Checks that need writable inspection state or independent database
+verification retain their own copies; `--only` checks prepare state on demand.
+
 ```bash
 openclaw doctor --json
 openclaw doctor --lint
