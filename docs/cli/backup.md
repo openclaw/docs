@@ -361,14 +361,15 @@ These rules do not filter workspace files outside the state directory. They also
 
 Chromium singleton entries coordinate one running browser on one host and are recreated when that profile starts; the rest of the profile's `user-data/` remains in the archive. Sandbox skills workspaces are generated copies of current skill sources and are materialized again when OpenClaw prepares the next sandbox context after restore; adjacent sandbox registry and other durable state remain included.
 
-Managed SQLite snapshots cover the shared OpenClaw database, per-agent databases
+Managed SQLite snapshots cover the shared OpenClaw database, the quarantine and
+integrity-verification store, per-agent databases
 recorded in the captured durable agent registry, and SQLite files under activated plugins'
 declared `backupResources` with `disposition: "include"`. A file's location under
 the state directory or an agent directory alone does not make it managed.
 
 Managed databases are captured with SQLite's online backup API and compacted
 offline with `VACUUM`. Committed write-ahead log (WAL) changes are included,
-deleted-page remnants are removed, and sidecars are omitted. Canonical OpenClaw
+deleted-page remnants are removed, and sidecars are omitted. Shared and agent
 databases also receive their existing transient-state sanitization and must match
 their expected role and agent owner. Unsafe aliasing or an owner mismatch fails
 closed. A declared plugin database that requires unavailable SQLite capabilities
