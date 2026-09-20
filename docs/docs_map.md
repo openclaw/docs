@@ -2256,6 +2256,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/doctor/state-migrations
 - Headings:
   - H2: Legacy state migration
+  - H2: Pending plugin migrations
 
 ## cli/file-transfer.md
 
