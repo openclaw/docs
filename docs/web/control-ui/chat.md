@@ -529,8 +529,14 @@ higher threshold, and a second reopen keeps it open for that visit and task.
 See [Task progress cards](/tools/progress-card#where-the-card-appears) for gesture thresholds,
 manual-choice scope, and reset behavior.
 
-Streaming output and layout adjustments keep reading mode intact. Scroll back to
-the end or select **Latest** to resume following the conversation.
+Streaming output and layout adjustments keep reading mode intact. A message from
+another participant pauses following and preserves your current position, even
+when you were at the end. Typing indicators do not move the transcript. Sending
+a message from this pane resumes following your response; a send from another
+browser, including one signed in as you, does not count as a local send. Scroll
+back to the end or select **Latest** to resume following explicitly. Assistant
+text stays visible as it streams and becomes saved history, without a reply
+entry fade or slide.
 
 Completed replies can show a compact **Sources** strip when their web links match
 recorded `web_search` or `web_fetch` results from the same run. Select a title and
