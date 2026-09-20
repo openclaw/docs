@@ -5660,6 +5660,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/sandboxing/modes-scope-and-backend
 - Headings:
   - H2: Modes, scope, and backend
+  - H3: Per-chat sandbox opt-out
+  - H3: Scope and backend
 
 ## gateway/sandboxing/multiple-folders-for-one-agent.md
 
@@ -10326,6 +10328,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What core still owns
   - H3: Workspace files on the harness host
   - H3: Input attachments for a remote workspace
+  - H3: Host-only execution
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
   - H3: Bound native session ownership
@@ -10527,6 +10530,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: MCP subprocess runtime
   - H2: Workspace access
   - H2: Tool failure diagnostics
+  - H2: ACP harness turns
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 
@@ -13489,6 +13493,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/acp-agents-setup
 - Headings:
   - H2: acpx harness support (current)
+  - H2: Permissions for native chat runtimes
   - H2: Required config
   - H2: Repair existing bare-session histories
   - H2: Plugin setup for acpx backend
