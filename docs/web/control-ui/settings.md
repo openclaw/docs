@@ -275,6 +275,12 @@ update policy, and active or most recent update. **Update now** opens a
 confirmation showing the target and restart impact. Choose **Update and restart**
 to start; canceling leaves the Gateway untouched.
 
+For `dev` git updates, the confirmation, sidebar, and available-update status
+show the installed → target short commit SHAs on a separate line below the commit
+count. **Compare on GitHub** opens a comparison when the tracked upstream is
+a GitHub repository; other installs show plain revisions. This distinguishes
+revisions that share a version number.
+
 After confirmation, one update view shows the ordered phases, current or last
 step details, and verification results for the service, version, plugins,
 channels, and inference. The details area follows new lines until you scroll up.
