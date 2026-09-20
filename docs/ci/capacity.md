@@ -267,6 +267,11 @@ selection retains the Gateway config owner and its admission metadata.
 Gateway admission is finalized before runtime placement, so inventory changes
 retain the admitted job ceiling instead of creating a different group policy.
 
+The large workspace inventory proof runs in its own `agentic-gateway-core-inventory`
+invocation, with exclusive plan admission in full CI plans. Its
+13,000-file staging, apply, serialized journal, and recovery checks retain their
+120-second deadline without competing with sibling Vitest files.
+
 Within its exclusive plan, the Gateway database-worker cohort runs files in
 parallel forks under the existing Vitest worker ceiling. Each fork retains the
 non-isolated runner's file-boundary cleanup for native database owners, admission,
