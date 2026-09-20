@@ -310,6 +310,11 @@ single-line and shortened to 50 characters or fewer, or cleared. Between 51 and
 edit. Counts exclude leading and trailing whitespace. Session-creation errors and
 recovery actions remain visible in either mode.
 
+Pasted images appear as small, removable thumbnails below the text. Pasting or
+removing them leaves the input, **New session** action, and settings control in
+place; the palette grows downward. Images can start a session on their own or
+accompany text. There is no attachment picker in the palette.
+
 - **Enter** opens or runs the selected result. With no result, Enter does not send.
 - **Shift+Enter** adds a line. The field grows downward to three lines, then scrolls
   without moving the palette or its top-right controls.
@@ -327,7 +332,7 @@ the checkbox restores your usual choices immediately and leaves the prompt
 intact. One-off choices are not remembered for the next palette session.
 
 Accepted creation closes the palette and offers **Open session** without changing
-the foreground view or its draft. A failed submission retains the prompt and
+the foreground view or its draft. A failed submission retains the prompt, images, and
 choices with an error. These settings do not affect sessions opened from search,
 and the existing conversation composer keeps its own send and steer/queue
 shortcuts. Long prompts remain intact for session creation and are never sent as
