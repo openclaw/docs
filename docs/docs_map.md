@@ -3433,6 +3433,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What /context actually reports
   - H2: Related
 
+## concepts/decision-models.md
+
+- Route: /concepts/decision-models
+- Headings:
+  - H1: Decision models
+  - H2: Choose a provider and model
+  - H2: Define a decision
+  - H2: Call from a plugin
+  - H2: Interpret scores and probabilities
+  - H2: Limits and unavailable results
+  - H2: Provide models from a plugin
+
 ## concepts/delegate-architecture.md
 
 - Route: /concepts/delegate-architecture
@@ -8980,6 +8992,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Error codes
   - H2: Related
 
+## plugins/onnx.md
+
+- Route: /plugins/onnx
+- Headings:
+  - H1: Local ONNX decision models
+  - H2: Setup
+  - H3: Current development checkout
+  - H3: Packaged installation
+  - H3: Configuration
+  - H2: Models
+  - H2: Question semantics
+  - H2: Lifecycle and runtime
+
 ## plugins/plugin-inventory.md
 
 - Route: /plugins/plugin-inventory
@@ -9794,6 +9819,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/onepassword.md
 
 - Route: /plugins/reference/onepassword
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/onnx.md
+
+- Route: /plugins/reference/onnx
 - Headings:
   - H2: Distribution
   - H2: Surface

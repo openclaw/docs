@@ -1842,6 +1842,7 @@
                       "plugins/llama-cpp",
                       "plugins/memory-lancedb",
                       "plugins/memory-wiki",
+                      "plugins/onnx",
                       "plugins/typesafe"
                     ]
                   },
@@ -2193,6 +2194,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "concepts/models",
+                  "concepts/decision-models",
                   "concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -3912,6 +3914,7 @@
                       "zh-CN/plugins/llama-cpp",
                       "zh-CN/plugins/memory-lancedb",
                       "zh-CN/plugins/memory-wiki",
+                      "zh-CN/plugins/onnx",
                       "zh-CN/plugins/typesafe"
                     ]
                   },
@@ -4229,6 +4232,7 @@
                 "group": "模型概念",
                 "pages": [
                   "zh-CN/concepts/models",
+                  "zh-CN/concepts/decision-models",
                   "zh-CN/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -5948,6 +5952,7 @@
                       "zh-TW/plugins/llama-cpp",
                       "zh-TW/plugins/memory-lancedb",
                       "zh-TW/plugins/memory-wiki",
+                      "zh-TW/plugins/onnx",
                       "zh-TW/plugins/typesafe"
                     ]
                   },
@@ -6265,6 +6270,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "zh-TW/concepts/models",
+                  "zh-TW/concepts/decision-models",
                   "zh-TW/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -7984,6 +7990,7 @@
                       "ja-JP/plugins/llama-cpp",
                       "ja-JP/plugins/memory-lancedb",
                       "ja-JP/plugins/memory-wiki",
+                      "ja-JP/plugins/onnx",
                       "ja-JP/plugins/typesafe"
                     ]
                   },
@@ -8301,6 +8308,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ja-JP/concepts/models",
+                  "ja-JP/concepts/decision-models",
                   "ja-JP/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -10020,6 +10028,7 @@
                       "es/plugins/llama-cpp",
                       "es/plugins/memory-lancedb",
                       "es/plugins/memory-wiki",
+                      "es/plugins/onnx",
                       "es/plugins/typesafe"
                     ]
                   },
@@ -10337,6 +10346,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "es/concepts/models",
+                  "es/concepts/decision-models",
                   "es/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -12056,6 +12066,7 @@
                       "pt-BR/plugins/llama-cpp",
                       "pt-BR/plugins/memory-lancedb",
                       "pt-BR/plugins/memory-wiki",
+                      "pt-BR/plugins/onnx",
                       "pt-BR/plugins/typesafe"
                     ]
                   },
@@ -12373,6 +12384,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "pt-BR/concepts/models",
+                  "pt-BR/concepts/decision-models",
                   "pt-BR/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -14092,6 +14104,7 @@
                       "ko/plugins/llama-cpp",
                       "ko/plugins/memory-lancedb",
                       "ko/plugins/memory-wiki",
+                      "ko/plugins/onnx",
                       "ko/plugins/typesafe"
                     ]
                   },
@@ -14409,6 +14422,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ko/concepts/models",
+                  "ko/concepts/decision-models",
                   "ko/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -16128,6 +16142,7 @@
                       "de/plugins/llama-cpp",
                       "de/plugins/memory-lancedb",
                       "de/plugins/memory-wiki",
+                      "de/plugins/onnx",
                       "de/plugins/typesafe"
                     ]
                   },
@@ -16445,6 +16460,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "de/concepts/models",
+                  "de/concepts/decision-models",
                   "de/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -18164,6 +18180,7 @@
                       "fr/plugins/llama-cpp",
                       "fr/plugins/memory-lancedb",
                       "fr/plugins/memory-wiki",
+                      "fr/plugins/onnx",
                       "fr/plugins/typesafe"
                     ]
                   },
@@ -18481,6 +18498,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "fr/concepts/models",
+                  "fr/concepts/decision-models",
                   "fr/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -20200,6 +20218,7 @@
                       "hi/plugins/llama-cpp",
                       "hi/plugins/memory-lancedb",
                       "hi/plugins/memory-wiki",
+                      "hi/plugins/onnx",
                       "hi/plugins/typesafe"
                     ]
                   },
@@ -20517,6 +20536,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "hi/concepts/models",
+                  "hi/concepts/decision-models",
                   "hi/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -22236,6 +22256,7 @@
                       "ar/plugins/llama-cpp",
                       "ar/plugins/memory-lancedb",
                       "ar/plugins/memory-wiki",
+                      "ar/plugins/onnx",
                       "ar/plugins/typesafe"
                     ]
                   },
@@ -22553,6 +22574,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ar/concepts/models",
+                  "ar/concepts/decision-models",
                   "ar/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -24272,6 +24294,7 @@
                       "it/plugins/llama-cpp",
                       "it/plugins/memory-lancedb",
                       "it/plugins/memory-wiki",
+                      "it/plugins/onnx",
                       "it/plugins/typesafe"
                     ]
                   },
@@ -24589,6 +24612,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "it/concepts/models",
+                  "it/concepts/decision-models",
                   "it/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -26308,6 +26332,7 @@
                       "vi/plugins/llama-cpp",
                       "vi/plugins/memory-lancedb",
                       "vi/plugins/memory-wiki",
+                      "vi/plugins/onnx",
                       "vi/plugins/typesafe"
                     ]
                   },
@@ -26625,6 +26650,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "vi/concepts/models",
+                  "vi/concepts/decision-models",
                   "vi/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -28344,6 +28370,7 @@
                       "nl/plugins/llama-cpp",
                       "nl/plugins/memory-lancedb",
                       "nl/plugins/memory-wiki",
+                      "nl/plugins/onnx",
                       "nl/plugins/typesafe"
                     ]
                   },
@@ -28661,6 +28688,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "nl/concepts/models",
+                  "nl/concepts/decision-models",
                   "nl/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -30380,6 +30408,7 @@
                       "tr/plugins/llama-cpp",
                       "tr/plugins/memory-lancedb",
                       "tr/plugins/memory-wiki",
+                      "tr/plugins/onnx",
                       "tr/plugins/typesafe"
                     ]
                   },
@@ -30697,6 +30726,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "tr/concepts/models",
+                  "tr/concepts/decision-models",
                   "tr/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -32416,6 +32446,7 @@
                       "uk/plugins/llama-cpp",
                       "uk/plugins/memory-lancedb",
                       "uk/plugins/memory-wiki",
+                      "uk/plugins/onnx",
                       "uk/plugins/typesafe"
                     ]
                   },
@@ -32733,6 +32764,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "uk/concepts/models",
+                  "uk/concepts/decision-models",
                   "uk/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -34452,6 +34484,7 @@
                       "id/plugins/llama-cpp",
                       "id/plugins/memory-lancedb",
                       "id/plugins/memory-wiki",
+                      "id/plugins/onnx",
                       "id/plugins/typesafe"
                     ]
                   },
@@ -34769,6 +34802,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "id/concepts/models",
+                  "id/concepts/decision-models",
                   "id/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -36488,6 +36522,7 @@
                       "pl/plugins/llama-cpp",
                       "pl/plugins/memory-lancedb",
                       "pl/plugins/memory-wiki",
+                      "pl/plugins/onnx",
                       "pl/plugins/typesafe"
                     ]
                   },
@@ -36805,6 +36840,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "pl/concepts/models",
+                  "pl/concepts/decision-models",
                   "pl/concepts/model-providers",
                   {
                     "group": "Model providers",
@@ -38524,6 +38560,7 @@
                       "ru/plugins/llama-cpp",
                       "ru/plugins/memory-lancedb",
                       "ru/plugins/memory-wiki",
+                      "ru/plugins/onnx",
                       "ru/plugins/typesafe"
                     ]
                   },
@@ -38841,6 +38878,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ru/concepts/models",
+                  "ru/concepts/decision-models",
                   "ru/concepts/model-providers",
                   {
                     "group": "Model providers",
