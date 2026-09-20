@@ -10244,6 +10244,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What core still owns
   - H3: Workspace files on the harness host
+  - H3: Input attachments for a remote workspace
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
   - H3: Bound native session ownership
