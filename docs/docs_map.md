@@ -4498,6 +4498,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Codex on a paired device
   - H2: Codex or OpenClaw on a cloud profile
+  - H2: Provider identity in the picker
   - H2: Choose an operating system and machine class per session
 
 ## gateway/cloud-workers/security-model.md
