@@ -58,7 +58,13 @@ Choose **New agent** in the sidebar or Agents home to open the custodian chat.
 It recommends a chief of staff, researcher, writer, reviewer, or a small team
 with all four. Reply with a choice, or describe custom work and a name. Role
 choices use the same [role templates](/cli/agents#role-templates) as the CLI;
-creation waits for operator approval. Created agents appear in Agents home and
+creation waits for operator approval. For custom work, the approved purpose is
+saved in the new workspace's `AGENTS.md`; the normal identity ceremony still runs.
+With `skipBootstrap` enabled, only these requested instructions are seeded, without
+the generic identity or bootstrap files.
+Existing workspace instructions are never overwritten. If `AGENTS.md` already
+contains different instructions, choose a new workspace for the custom agent.
+Created agents appear in Agents home and
 the agent switcher.
 If team creation stops partway through, the custodian reports the retained
 agents so you can inspect them before creating the missing members.
