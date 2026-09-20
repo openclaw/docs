@@ -212,6 +212,11 @@ in a healthy queue does not consume separate failed-start attempts.
 `sessions.abort` waits for the cancellation's session write before acknowledging
 success. Restarting immediately after that acknowledgment preserves the terminal
 outcome even if the run's finalizer has not finished.
+This also applies to a parent that yielded while waiting for spawned tasks:
+successfully stopping its children records the captured parent's cancellation
+before acknowledging, without overwriting a newer turn in that session.
+If another child cannot be stopped, the response still reports incomplete
+cancellation; the captured parent's cancellation is persisted before that error.
 
 ## Host sleep and process freezes
 
