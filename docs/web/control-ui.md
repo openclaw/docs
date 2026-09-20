@@ -43,6 +43,10 @@ Hover the row or focus it with the keyboard for a tooltip explaining the exact
 status. Reduced motion keeps the claw still. Tasks without a display title keep
 the generic **Subagent** label. Select a row to open its details.
 
+Select a session's title in the chat header to rename it. Enter saves the name;
+Escape cancels the edit. While an input method is composing text, Enter and
+Escape stay with composition. Finish composing before saving or canceling.
+
 Dragging a session between sidebar groups updates its placement immediately. A successful
 save keeps that placement even if the subsequent list refresh fails; the UI reports
 the refresh error separately. If a connection failure leaves the save unconfirmed,
