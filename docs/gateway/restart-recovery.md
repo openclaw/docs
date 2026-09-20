@@ -123,6 +123,15 @@ gateway stops accepting new work, then waits for active agent turns and
 background tasks to finish, up to a drain budget (5 minutes by default). Most
 restarts therefore interrupt nothing at all.
 
+On Linux and macOS, this also applies when startup recovers from an unsupported
+Node version and the service manager tracks a launcher parent. The launcher
+forwards the stop signal and waits for the serving Gateway to drain within the
+shared service budget. Managed restart intent targets the live serving owner,
+so unfinished work still follows restart recovery when its drain budget expires.
+The launchd stop budget remains 20 seconds; Linux units use the deadlines below.
+This requires a Gateway started with the updated launcher: replacing files cannot
+change a launcher that is already running.
+
 On Linux, the systemd unit must use `KillMode=mixed` so the initial stop signal
 reaches only the Gateway. Systemd still kills remaining child processes when the
 Gateway exits or its stop deadline expires. Older `KillMode=control-group` units
