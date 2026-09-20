@@ -14378,6 +14378,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Limits
   - H2: Clear a card
   - H2: Where the card appears
+  - H2: Refresh current work status
   - H2: Gateway requests
   - H2: Pin the card to the dashboard
   - H2: Related
