@@ -193,6 +193,23 @@ synchronous call-through to the native kernels; their worker admission remains
 separate work. Receipt-coupled transaction hooks, Doctor metadata callbacks, and synchronous diagnostic reads
 retain their current owners and execution paths.
 
+Cron recovery proposal acquisition runs in the shared-state worker. Its original
+transaction observes the active receipt and matching running-marker association
+together, including the existing receipt table's first-use initialization.
+Startup, timer recovery, and settlement waiters await these facts and recheck their
+service generation, stop state, and applicable cancellation before recovery.
+Timer recovery collects every proposal before its synchronous repair batch, so
+retirement during observation cannot strand an earlier committed interruption.
+Startup and timer recovery publish committed interruption facts under the same
+partition lock after the existing reload, before new scheduling work rechecks
+its lifecycle. Retired timer batches still join the existing reservation cleanup
+and release only the execution slots they acquired.
+Process liveness and local receipt ownership remain with the host. The final
+recovery transaction still rereads and compares the exact receipt and job markers
+before repairing them; proposal facts do not grant authority. Recovery writes,
+execution authority checks, and guarded saves remain native. Schemas, retention,
+and update behavior are unchanged.
+
 Read-only Cron inspection runs its native open, row decoding, and close in a
 bounded worker task. Ordinary cold reads and artifact-preserving cold reads keep
 all SQLite execution off the caller thread. Artifact preservation uses the
