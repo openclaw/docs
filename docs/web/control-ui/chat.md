@@ -121,6 +121,18 @@ shortcodes, and unknown names stay literal. Existing messages are not rewritten.
 You can still paste emoji or use your operating system’s emoji keyboard; there
 is no separate emoji picker in the composer.
 
+## JSON in chat
+
+Completed JSON objects and arrays in assistant messages and code fences share a
+**Tree** view with expandable nested values and a **Raw** view of the original
+source. **Copy** copies the source in either view, preserving duplicate keys,
+large numbers, and escape sequences. Raw keeps the usual long-code preview,
+reveal control, and word wrapping.
+
+Unfinished streaming fences, invalid JSON, and JSON beyond the tree rendering
+budget stay readable as source. User-message fences and passive previews remain
+plain code without interactive controls.
+
 ## Chat behavior
 
 When you send a message, the model picker keeps your selected model visible with

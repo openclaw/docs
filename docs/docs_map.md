@@ -14931,6 +14931,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Suggested tasks
   - H2: Composer capability menu
   - H2: Emoji shortcodes
+  - H2: JSON in chat
   - H2: Chat behavior
   - H3: ClawHub recommendation cards
   - H3: Source previews and copying code
