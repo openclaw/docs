@@ -311,9 +311,12 @@ Run-error banners offer **Refresh** to reload the conversation without resending
 
 ### ClawHub recommendation cards
 
-Ask about a capability, such as “Can you install WhatsApp?”, to let the agent find
-an official plugin or skill on ClawHub. When the `message` tool is available, it
-can present up to three matching cards in the conversation.
+Ask to find or install a plugin or skill, such as “Find the WhatsApp plugin”, to
+let the agent search ClawHub. The agent uses available tools and skills first;
+it suggests cards for explicit discovery or installation requests, or when a
+needed capability is missing. Routine tasks, tool errors, and permission fixes
+do not call for a catalog search. When the `message` tool is available, it can
+present up to three matching cards in the conversation.
 
 If you use the `coding` tool profile, include `"message"` in `tools.alsoAllow`
 (for example, `tools: { profile: "coding", alsoAllow: ["message"] }`). Existing
