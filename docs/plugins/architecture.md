@@ -213,6 +213,12 @@ dependencies link at the captured package root. Capture does not add `node_modul
 individual source files, so native-addon loaders can still locate their package
 root and its build assets.
 
+Each captured generation links the selected host `openclaw` package so Workers
+and child processes started from its modules can resolve the host SDK. This link
+does not depend on the main thread's module hooks and is recreated during recovery.
+Snapshot cleanup and update source inspection do not descend through these links
+into the host package.
+
 After the existing runtime, setup, or executable-discovery checks admit an entry,
 its instance captures imported shared files and dependency modules on demand.
 Relative, absolute, and file-URL imports use captured files; TypeScript dependency
