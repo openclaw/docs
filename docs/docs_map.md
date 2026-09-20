@@ -5403,6 +5403,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/portals
 - Headings:
   - H2: Quick start
+  - H2: Remote access
+  - H3: Managed private Tailscale Serve
+  - H3: Private wildcard reverse proxy
+  - H3: Direct and local listeners
   - H2: Declare development servers
   - H2: Application contract
   - H2: Availability and configuration
