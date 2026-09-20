@@ -10947,6 +10947,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Before you begin
   - H2: Install and enable Team Reports
   - H2: Read reports in the Control UI
+  - H3: Work sessions
   - H2: Configuration
   - H3: GitHub
   - H3: Discord
