@@ -10478,6 +10478,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Related
   - H2: MCP subprocess runtime
   - H2: Workspace access
+  - H2: Tool failure diagnostics
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 

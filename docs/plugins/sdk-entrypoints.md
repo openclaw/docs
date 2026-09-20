@@ -126,3 +126,12 @@ conflict handling; maintenance decisions, locks and SQLite state stay on Gateway
 A remote binding without maintenance support fails instead of using Gateway files.
 The file worker implements these operations and native change notifications.
 Paired-node adapter wiring is still required before a complete storage cutover.
+
+## Tool failure diagnostics
+
+Agent harnesses can import `readToolOperatorHint(error)` from
+`openclaw/plugin-sdk/agent-harness-runtime` to read optional operator advice
+attached to a tool failure. Include it only in the operator log. Keep it out of
+model responses, tool-result callbacks, and serialized transcripts, and preserve
+the original error message. An unannotated or immutable error needs no substitute
+hint; the reader returns `undefined` when no advice is available.
