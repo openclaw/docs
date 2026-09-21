@@ -35,6 +35,41 @@ plugin coverage lives in the separate
 [`Full Release Validation`](/ci/release-validation#full-release-validation) or an explicit manual
 dispatch.
 
+The full named Node plan retains the complete maintainer-tooling family through
+`RELEASE_ONLY_TOOLING_SHARDS` and the matching maintainer leaves in mixed fast
+configs. Product-only PRs omit this family in both precise and broad fallback
+plans. A PR touching a tooling test or owner runs the full family:
+`scripts/**`, `src/scripts/**`, `test/**`, `.github/**`, `config/**`, root
+package and pnpm inputs, tooling configs, and the other inputs classified as
+tooling by the shared changed-path owner in `scripts/test-projects.test-support.mts`.
+That owner also covers Docker, agent/Crabbox tooling, app scripts/Fastlane, and
+extension scripts/package inputs. The existing tooling Vitest configs and fast
+config inventories still determine execution. Maintainer leaves keep their
+original ordinary, isolated, or fake-timer config and process pins; filtering a
+mixed group retains its product tests and uses separate subset timing identities.
+The five `test/scripts/*.e2e.test.ts` product integration gates remain outside
+this maintainer tier.
+
+Every CI manual dispatch includes the full tooling family. Full Release
+Validation's `normal_ci` child dispatches CI on the frozen candidate, where
+`Run Node test shard` executes those unchanged tests before the regular release
+publication gate accepts the campaign. OpenClaw Release Checks and Plugin
+Prerelease are separate proof owners. This is candidate validation, not a test
+deferred until promotion. Direct human beta publication with approved
+preflight-only evidence remains an explicit existing exception to full-campaign
+validation; this tier does not change publication authority.
+Fork repositories keep their existing full tooling coverage because they do not
+use the canonical changed-test planner. Fork-origin PRs targeting this repository
+use the canonical PR selection and retain changed-owner coverage.
+
+Main push plans already omitted named tooling shards; they now also omit the
+maintainer leaves previously retained by fast configs, even for tooling-owner
+changes. A regression introduced by a later main merge can therefore remain invisible to
+main CI until an affected PR or full manual/release validation runs the family.
+The PR merge-ref result proves only the tree it tested. The current `ci-gate`
+aggregates selected jobs; it does not add a separate tooling proof against later
+main revisions.
+
 Scheduled QA runs nightly at 04:41 UTC. Its live runtime job runs the
 `gateway-restart-full-access-live` scenario with `openai/gpt-5.6-luna` alongside
 the three-restart replay-safety scenario. The Full Access check must preserve
