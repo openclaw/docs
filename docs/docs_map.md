@@ -12132,7 +12132,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Changelog-only evidence reuse
   - H2: Monthly Gateway extended-stable publication
   - H3: Prepare and stabilize the candidate
-  - H3: Publish the npm packages
+  - H3: Publish the release
   - H3: Verify and recover
   - H2: Regular release operator checklist
   - H2: Stable main closeout
