@@ -40,6 +40,10 @@ Changed plugins restart a running managed Gateway unless `--no-restart` is set; 
 Linux updates also refresh outdated OpenClaw-managed systemd policy when the core
 is already current or `--no-restart` is set. This policy-only refresh confirms
 `daemon-reload` without stopping the Gateway and preserves operator drop-ins.
+Native-definition reconciliation on launchd, Scheduled Tasks, and systemd keeps
+custom policy values with an advisory while refreshing recognized old defaults.
+For example, `TimeoutStartSec=45` stays unchanged while the old installer value
+`TimeoutStopSec=30` becomes `330`. Existing identity and command checks still apply.
 Maintenance stops also read the resident Gateway's recorded shutdown budget.
 Published 2026.9.5 residents keep their startup budget even after `daemon-reload`;
 their first stop therefore uses the short/unknown-budget path. The Gateway's

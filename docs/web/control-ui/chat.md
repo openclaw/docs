@@ -389,6 +389,10 @@ not give ordinary HTML files access to the Control UI origin. Relative assets
 are not served from the file's directory, and external resources remain subject
 to the sandbox's default content security policy.
 
+Authored in-page HTML links such as `href="#section"` scroll within the preview, including
+in `strict` mode. This leaves the original file and **Source** unchanged; authored
+base URLs, links targeting another window, and download links keep their behavior.
+
 Workspace file reads and edits retain their existing 256 KiB limit.
 For workspace HTML, **Edit**, in-file search, and explicit `file:line` navigation
 open **Source**. Switching back to **Preview** renders the latest unsaved editor
