@@ -13255,6 +13255,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: HTTPS proxy endpoint with a private CA
   - H2: How routing works
   - H3: Gateway loopback mode
+  - H3: WebChat or Codex fails after upgrading
   - H3: Containers
   - H2: Related proxy terms
   - H2: Validating the proxy
