@@ -701,6 +701,16 @@ Deferred publication or required flow work stops settlement before another task 
 admitted. The committed result survives, and the existing bounded flow-repair owner
 retains its obligation without replaying that task write.
 
+Task state-change notification acknowledgements use the same shared-state worker
+and publication owner. Direct sends and queued session events retain their producing
+task and event across preparation and transport waits. Acknowledgements preserve
+the current delivery origin and newest event watermark, with separate best-effort
+watermark and task timestamp writes. A committed acknowledgement is not replayed
+when projection publication fails; the existing read and flow owners retain recovery.
+Preparation cleanup joins any acknowledgement it already started. Terminal delivery
+status writes and native notification preparation retain their existing owners.
+Storage representation, schemas, retention, and update behavior are unchanged.
+
 Agent-event task progress uses the same shared-state worker and publication owner.
 Ingestion retains exact task, run, and backing identities without waiting for a native
 coordinator. Bounded progress batches preserve every tool-start count and the latest
