@@ -90,7 +90,7 @@ an invalid source folder.
 Select **+** beside the chat composer to open attachments and session capabilities in one menu:
 
 - **Skills** enables or disables individual skills for this session.
-- **Connectors** enables or disables configured MCP servers for this session. A **session** tag marks values that differ from the inherited configuration. **Browse connectors** opens the Plugins page on **Discover**.
+- **Connectors** enables or disables configured MCP servers for this session. A **session** tag marks values that differ from the inherited configuration.
 - **Web search** enables or disables managed web search plus native OpenAI and Codex search for this session.
 - **Manage plugins** opens the Plugins page.
 
@@ -324,8 +324,9 @@ deny rules still apply. See [Tool access configuration](/gateway/config-tools).
 
 Select a card to open its listing inside the Control UI: plugins open in
 **Plugins**, and skills open in **Skills**. A card's **Install** button opens
-the capability details. Select **Install** on a plugin overview to start installation;
-the Gateway requests any required capability or install-policy review.
+the capability details. Select **Install** on a plugin overview to start installation
+immediately. Configured install-policy warnings still require an explicit
+acknowledgment; see [Manage plugins](/web/control-ui/settings#manage-plugins).
 **Dismiss** dismisses the card from the current view.
 
 An installed capability shows a green checkmark and **Installed**. This means the
