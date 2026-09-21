@@ -49,6 +49,17 @@ forward directory-scan errors through the same error event. Use the result in
 the watcher lifecycle owner to stop native retries and select an existing
 refresh path.
 
+### Streaming file verification
+
+`sha256File(pathOrHandle, { maxBytes, signal })` from
+`openclaw/plugin-sdk/file-access-runtime` returns `{ bytes, digest }` without
+loading the whole file into memory. It reads through EOF and rejects files
+that grow beyond the byte limit. A borrowed handle stays open at its original
+offset; the caller owns admission and close. Path inputs reject final symlinks
+and close their owned handle. Cancellation settles pending work before rejecting.
+The optional native helper hashes off the JavaScript event loop; the fallback
+uses bounded buffers. Neither route provides a snapshot of concurrent writes.
+
 ### SQLite write admission
 
 `runSqliteImmediateTransaction(db, prepare, options?)` from
