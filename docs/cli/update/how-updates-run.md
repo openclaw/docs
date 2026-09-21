@@ -142,6 +142,12 @@ The updater retains them in the run report shown by `openclaw update status`,
 including when an intentional open channel policy requires no configuration change.
 Error findings and failed check execution still refuse the update.
 
+These checks do not run an agent turn or require a usable model-auth route.
+OAuth-only installations and installations without provider credentials can update.
+Auth diagnostics are advisory; optional inference repair runs through triage only
+after a failed update has settled. It uses the normal runtime credential resolver,
+including shared profiles and OAuth refresh.
+
 The new version answers the updater's native service capability probe before
 loading configuration or initializing debug capture. Probing capability does not
 open or migrate shared state, so the old Gateway can keep serving while its
