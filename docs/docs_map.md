@@ -1797,6 +1797,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Windows dependency-cache experiment
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
+  - H3: Hybrid hosted assignment guard
   - H2: Related
 
 ## ci/scheduled-workflows.md
