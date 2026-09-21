@@ -966,11 +966,14 @@ terminal callbacks cannot admit new speech. Summary publication checks the captu
 input revision, prior notes, and speech sequence in the same worker transaction as
 the summary write. The host retains live summary-generation, caller, and abort
 checks at transaction and commit admission; stale results preserve prior notes.
-Chronological
-list reads still use the parent process because their SQL date function observes
-its current timezone. Streamed reads, export snapshots, and session and export-state writes retain
-their existing owners until their snapshot and write-drainage lifecycles move
-together.
+Bounded transcript tool list and show
+queries execute on the same worker. Canonical UTC dates parse there; other date
+formats request the caller's native parser through retained preparation, preserving
+temporary skill timezones. A timezone change during such a read rejects the result
+instead of mixing interpretations. The query retains its ordering, payload limits,
+and synchronous statement snapshot. Streamed chronological reads, export snapshots,
+and session and export-state writes retain their existing owners until their
+snapshot and write-drainage lifecycles move together.
 
 SQLite worker transport preserves complete result values. Results within the
 64 MiB inline reply budget keep their existing reply path; larger results are
