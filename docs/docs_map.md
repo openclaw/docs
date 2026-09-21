@@ -12275,6 +12275,27 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Schema bumps and older updaters
   - H3: Profile-owned skill library
 
+## reference/database-schemas/worker-access-inventory.md
+
+- Route: /reference/database-schemas/worker-access-inventory
+- Headings:
+  - H2: Scope and interpretation
+  - H2: Profile priority and current cutover status
+  - H2: Next five independent lanes
+  - H2: Call sites by tier and owner
+  - H3: T1
+  - H3: T2
+  - H3: T3
+  - H3: W
+
+## reference/database-schemas/worker-access.md
+
+- Route: /reference/database-schemas/worker-access
+- Headings:
+  - H2: Keep one store owner
+  - H2: Carry facts, publish after commit
+  - H2: Migrate a caller
+
 ## reference/device-models.md
 
 - Route: /reference/device-models
