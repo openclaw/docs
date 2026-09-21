@@ -10866,6 +10866,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime/media
 - Headings:
+  - H2: FFmpeg command discovery
+  - H2: Realtime voice playback
   - H2: Media and generation namespaces
 
 ## plugins/sdk-runtime/models.md
