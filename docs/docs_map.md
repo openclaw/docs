@@ -1736,6 +1736,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Pipeline overview
   - H3: Test runtime selection
   - H3: Node execution and runtime compatibility
+  - H3: iOS simulator evidence
   - H3: macOS Swift phases
   - H2: Security review checks
   - H3: Enable enforcement after deployment
