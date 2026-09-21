@@ -43,7 +43,7 @@ updates the sidebar without renaming an existing branch.
 
 ## New-session preferences and recents
 
-For connections with a durable user profile, the Gateway stores each agent's latest folder, worktree, model, and thinking choices. The new-session picker also shows recent projects and folders derived only from sessions created by that profile. These conveniences follow the person across browsers; they do not grant access to a project or path.
+For connections with a durable user profile, the Gateway stores each agent's latest folder, worktree, model, thinking, and fast-mode choices. New sessions restore the last fast-mode choice, including an explicit off choice, for supported providers. The new-session picker also shows recent projects and folders derived only from sessions created by that profile. These conveniences follow the person across browsers; they do not grant access to a project or path.
 
 A custom worktree **Name** applies to the submitted session. Once its start is
 accepted, New session clears that name while remembering the repository, checkout
