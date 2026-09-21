@@ -578,8 +578,34 @@ instructions.
 If restart cannot run, the command prints `Gateway: restart skipped (...)` or
 `Gateway: restart failed: ...` with guidance to inspect the service and restart manually.
 With `--no-restart`, package replacement or git rebuild still runs, but the
-managed service is not stopped or restarted, so the running Gateway keeps old
-code until you restart it manually.
+updater does not stop or restart the Gateway. A running Gateway can still exit
+when it detects that its installation was replaced; restart it through its
+service or foreground process owner afterward.
+
+When updater-owned Doctor reaches maintenance before that foreground Gateway
+finishes shutting down, it waits for the same process to release state, up to
+the installation-check interval plus the existing restart-drain and service-stop
+allowances. Doctor retains the updater's live authority and still acquires its
+normal maintenance locks before repairing state.
+If shutdown has already removed the process identity, Doctor allows only the
+existing ten-second cleanup reserve and refuses any newly appearing owner.
+A different Gateway owner, lost update authority, or unresolved contention stops
+maintenance with recovery guidance. Ordinary Doctor commands and older update
+drivers without delegated Doctor authority retain their immediate refusal.
+
+Published 2026.9.5 Gateways do not have an installation-replacement watcher.
+Installing a newer candidate cannot add that behavior to the process already
+running. For that first foreground update, stop the Gateway through its foreground
+process owner and wait for it to exit, run `openclaw update`, then launch the
+Gateway again. Keep the same installation, profile, and state/config overrides.
+`--no-restart` does not authorize Doctor to stop that process or skip required
+state maintenance.
+
+If the package was already replaced and Doctor failed on the live Gateway lock,
+wait for the updater to exit, stop the foreground Gateway through its owner, and
+run `openclaw update repair --yes --no-restart --json` from the updated installation.
+Verify the repair result before starting the Gateway again. Preserve the existing
+state and recovery backups; replacing files alone does not complete maintenance.
 
 ### Control-plane response shape
 
