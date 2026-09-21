@@ -1805,6 +1805,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/scheduled-workflows
 - Headings:
   - H2: OpenClaw Performance
+  - H3: Gateway concurrency benchmark
   - H3: Vitest paired benchmark
   - H2: QA Lab
   - H2: CodeQL
