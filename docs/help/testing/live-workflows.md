@@ -12,6 +12,9 @@ When debugging real providers/models (requires real creds):
 
 - Live suite (models + gateway tool/image probes): `pnpm test:live`
 - Target one live file quietly: `pnpm test:live -- src/agents/models.profiles.live.test.ts`
+- Progress-card refresh: `OPENCLAW_LIVE_TEST=1 pnpm test:live -- src/gateway/gateway-progress-refresh.live.test.ts`
+  - Requires `OPENAI_API_KEY` and uses `openai/gpt-5.6-luna` with isolated Gateway state.
+  - Completes an earlier turn, then refreshes during a second turn while a command remains held. The original parent must update the card and retain its final reply. A later idle refresh must update the card without adding chat messages or resuming pending work.
 - Live subagent handoff stress:
   `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_SUBAGENT_STRESS=1 pnpm test:live -- src/agents/subagents/announce/subagent-yield-resume.live.test.ts`
   - Requires `OPENAI_API_KEY` and defaults to `openai/gpt-5.6-luna`; select another
