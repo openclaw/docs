@@ -1057,6 +1057,16 @@ admission or loading the delivery runtime. A recovery root applies to an existin
 queue entry, while fresh sends use their selected default root. This context stays
 internal and is not added to durable payloads or plugin callback inputs.
 
+Gateway lifecycle notices retain their original shared-state directory and
+supervisor mode through asynchronous modifying hooks, media staging, and queue
+publication. Immediate delivery, settlement, and retry recovery use that same
+captured context. Startup carries it through the sentinel read, revision-checked
+cleanup, enqueue, and delivery; public plugin send arguments cannot select this
+private context. Runtime retry services and delayed startup callbacks capture
+their state at registration and retain it across retries, session lookups, and
+update-ledger writes. Current configuration and delivery authority are still
+checked when each retry runs.
+
 Standalone session-delivery queue operations run in the shared-state worker.
 Producers, recovery, generated-media preparation, and the retry scheduler carry
 one captured database context through enqueue, retry bookkeeping, and settlement.
