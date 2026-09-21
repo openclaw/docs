@@ -1849,6 +1849,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/scope-and-routing/selection
 - Headings:
   - H2: Scope and routing
+  - H2: Process proof tier
 
 ## ci/watching-runs.md
 
