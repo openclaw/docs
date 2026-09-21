@@ -10860,6 +10860,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/gateway-and-nodes
 - Headings:
   - H2: Gateway and node namespaces
+  - H3: Person access lifetimes
   - H2: Gateway service events
 
 ## plugins/sdk-runtime/media.md
