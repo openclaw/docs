@@ -7036,6 +7036,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Published 2026.9.4 on large agent fleets
   - H2: Plugin repair warnings
   - H3: Missing temporary plugin captures
+  - H3: Large model-catalog temporary directories
   - H2: Reason codes
   - H2: Retained legacy session history
   - H2: CLI fallback
