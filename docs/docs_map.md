@@ -12196,6 +12196,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Transcript FTS row ownership
   - H3: Incremental canonical-session validation
   - H3: Cold transcript storage
   - H3: Creator namespace migration
@@ -12223,6 +12224,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Database layout
   - H3: Activity session recaps
+  - H3: Transcript search row ownership
   - H3: Cold transcript archives
   - H3: Plugin state listing index
   - H3: Mentions Inbox
