@@ -215,6 +215,40 @@ await store.register("key-1", { value: "hello" });
 const value = await store.lookup("key-1");
 ```
 
+For writes on behalf of a current tool invocation or other revocable action,
+require `store.withCurrent` before starting effects. Bind the host-provided
+assertion together with any action-specific permission check:
+
+```typescript
+if (!store.withCurrent) {
+  throw new Error("Update OpenClaw to authorize this state mutation.");
+}
+const actionStore = store.withCurrent({
+  assertCurrent: () => {
+    context.assertInvocationCurrent();
+    assertActionAllowed();
+  },
+});
+await actionStore.register("key-1", { value: "hello" });
+```
+
+The returned `PluginStateKeyedStore<T, 2>` is an immutable binding to the same
+namespace, settings, and plugin lifetime. It exposes the data-only operations;
+it has no `update`, `deleteIf`, or rebinding method. The assertion stays on the
+host and is checked after reads and at both transaction and final commit
+admission for writes, including bounded stores. Create a separate view for each
+action; do not keep one caller's authority on a shared service. The legacy
+`PluginStateKeyedStore<T>` keeps this capability optional for older hosts and
+adapters. An action requiring it must refuse when it is absent.
+
+`observe` and a comparison conflict return observations without committing the
+requested mutation; they also require current authority when returning that data.
+
+A refusal before the commit grant rolls back the mutation. Once commit is
+authorized, later revocation does not turn the settled write into a refusal.
+Recheck authority before the next external effect, and preserve the recorded
+result; never retry a committed or unknown write to compensate for revocation.
+
 The async store's `update` updater and `deleteIf` predicate are deprecated
 compatibility methods. They still run synchronously on the main thread inside
 the transaction containing the authoritative read and mutation, and remain
