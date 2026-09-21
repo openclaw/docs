@@ -70,6 +70,8 @@ Existing workspace instructions are never overwritten. If `AGENTS.md` already
 contains different instructions, choose a new workspace for the custom agent.
 Created agents appear in Agents home and
 the agent switcher.
+Opening **New agent** keeps your existing Ask OpenClaw conversation. Finish any
+pending wizard or approval before opening the creation choices.
 If team creation stops partway through, the custodian reports the retained
 agents so you can inspect them before creating the missing members.
 
