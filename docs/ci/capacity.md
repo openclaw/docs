@@ -88,7 +88,7 @@ shares of the complete config estimate.
 
 Native database-worker roots share a 20-file CI job ceiling, including every
 co-located envelope. The existing root registry owns classification; migrated
-files retain their original plugin's job and process limits. This partitions the
+files retain their owner-specific job and process limits. This partitions the
 185-file native envelope from [run 35176277297](https://github.com/openclaw/openclaw/actions/runs/35176277297)
 into ten non-overlapping envelopes. That run continued passing tests for more
 than 58 minutes before the job deadline; it is a lower bound, not a completed
@@ -96,6 +96,8 @@ family timing sample. The ceiling prevents the default cost estimate from
 packing the chunks back together. Fork isolation, process lifetimes, worker
 limits, timeouts, and the 50-job fallback cap stay unchanged. Hosted CI must
 establish the resulting job durations.
+
+Ordinary Codex tests use isolated thread workers and inherit file parallelism from the shared worker budget. Each file retires its mocked module graph and globals; an ordinary process contains at most 24 files. Database-worker-routed Codex tests already use isolated forks and retain an independent 12-file bound. The 300-second no-output watchdog, test deadlines, and assertions remain unchanged. These scheduling bounds are independent of the timing-weight calibration; a larger process bound does not by itself establish a wall-time or matrix-row improvement.
 
 Precise and fallback plugin envelopes share the same packing owner and a 240-second aggregate estimated budget per job, including multiple envelopes of the same config. This budget belongs only to changed-extension jobs; compact core budgets are unchanged. Members retain compatible runner/dist requirements and run one at a time. Each envelope retains its original child process, environment, native shard arguments and include scope, including process-bounded Codex, Matrix and Telegram work. Runtime-preparing envelopes remain separate, and an envelope above the budget stays alone. Worker limits, runner classes, timeouts, coverage and serial stop-on-failure behavior are unchanged.
 
