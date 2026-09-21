@@ -10998,7 +10998,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/typesafe
 - Headings:
   - H1: TypeSafe AI
+  - H2: Install
   - H2: Enable and configure
+  - H2: Local System One server
+  - H3: Run Kev
+  - H3: Connect OpenClaw
   - H2: Decision contract
   - H2: Optional evaluation tool
   - H2: Existing external installation
