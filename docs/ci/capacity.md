@@ -213,6 +213,13 @@ GitHub-hosted planning and other timing-sensitive groups retain it. Gateway
 plans still run exclusively. When core-2 shares a serial bin, its unproven
 siblings retain their two-worker caps at group scope.
 
+Agents-core files share the configured worker pool, including local scheduling
+and its one-worker throttle. Compact agents-core groups retain a two-worker cap.
+Their initial estimates divide serial timing history by the effective file
+workers, preserving the cost of an indivisible file. Separate parallel timing
+keys let subsequent measurements replace those estimates without being divided
+again. The file inventory and import-heavy CLI stripes remain unchanged.
+
 The [September 19 probe](https://github.com/openclaw/openclaw/actions/runs/35441442486)
 ran two predefined samples per cell on eight CPUs, 30.95 GiB, and Node 24.19.0.
 All twelve samples passed. Single-plan cells ran all 293 core-2 files; two-plan
