@@ -275,7 +275,16 @@ OpenAI plugin and does not apply to OpenAI-compatible proxy base URLs or Azure
 routes. Set `tools.web.search.provider` to another provider such as `brave` to
 keep the managed `web_search` tool for OpenAI models, or set
 `tools.web.search.enabled: false` to disable both managed search and native
-OpenAI search.
+OpenAI search. The same route selection applies to ordinary tool calls,
+Tool Search, and Code Mode; hosted search does not leave a second managed
+`web_search` callable hidden in the catalog. If plugin policy disables or excludes
+the OpenAI provider plugin, the managed search route stays available.
+
+Managed provider failures return the selected provider's identity and a safe,
+actionable diagnostic. Authentication failures identify the HTTP status and
+ask you to check credentials or select another provider. Upstream response
+bodies are not included in model-facing diagnostics. Automatic selection may
+try another configured provider; explicit provider choices never fall back.
 
 ## Native Codex web search
 
@@ -318,7 +327,8 @@ the existing binding for later resume.
 Direct OpenAI ChatGPT Responses traffic can also use OpenAI's hosted
 `web_search` tool. That separate path remains opt-in through
 `tools.web.search.openaiCodex.enabled: true` and only applies to eligible
-`openai/*` models using `api: "openai-chatgpt-responses"`.
+`openai/*` models using `api: "openai-chatgpt-responses"`. An explicitly selected
+managed search provider takes precedence on this transport too.
 
 ```json5
 {
