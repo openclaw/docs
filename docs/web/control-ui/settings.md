@@ -204,9 +204,13 @@ full README on one overview. Select a tool to read its full description. The
 metadata rail shows available release details, categories, repository, and
 documentation. Security audits link to ClawHub.
 
-Installed plugins offer **Reload plugin**, **Enable** or **Disable**, **Uninstall**
-when removable, and **Settings**. Installing from a catalog overview keeps the
-same URL and changes those actions in place. **Settings** opens an addressable
+Installed plugins offer **Ask OpenClaw**, **Enable** or **Disable**, **Uninstall**
+when removable, and an icon button for **Settings**, in that order. **Install**
+starts installation immediately; the Gateway requests a review only when the
+plugin requires capability consent or an install-policy acknowledgement. Installing
+from a catalog overview keeps the same URL and changes those actions in place.
+Ready new plugins become enabled; missing required configuration or an existing
+disabled choice keeps them disabled. **Settings** opens an addressable
 editor with plugin configuration and permissions; Back returns to the overview.
 Existing `#configuration` links still open the editor. Local controls and the
 installed README remain available when optional ClawHub metadata cannot load.
@@ -241,8 +245,11 @@ enabling, disabling, or removing a plugin and changing MCP servers require
 `operator.admin`; those actions stay disabled for read-only operators.
 
 Plugin-declared credential fields support masked key entry and an inline key-signup
-link. The eye reveals only the key you are entering; it never retrieves the stored
-secret. Leaving an empty input unchanged preserves its existing credential.
+link. The eye reveals the key you are entering. With no new key entered,
+administrators can choose **Show API key** to retrieve the stored literal for that
+field and current config revision. Secret references and environment values are
+never resolved or revealed. Leaving an empty input unchanged preserves its
+existing credential.
 
 Administrators can inspect and edit a declared credential's secret reference: its
 source (`env`, `file`, `exec`, or `store`), provider alias, and identifier. The

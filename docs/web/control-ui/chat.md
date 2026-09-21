@@ -323,8 +323,9 @@ If you use the `coding` tool profile, include `"message"` in `tools.alsoAllow`
 deny rules still apply. See [Tool access configuration](/gateway/config-tools).
 
 Select a card to open its listing inside the Control UI: plugins open in
-**Plugins**, and skills open in **Skills**. A plugin's **Install** button opens
-the existing installation review; a skill's **Install** button opens its details.
+**Plugins**, and skills open in **Skills**. A card's **Install** button opens
+the capability details. Select **Install** on a plugin overview to start installation;
+the Gateway requests any required capability or install-policy review.
 **Dismiss** dismisses the card from the current view.
 
 An installed capability shows a green checkmark and **Installed**. This means the
