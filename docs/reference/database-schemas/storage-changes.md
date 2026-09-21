@@ -367,22 +367,32 @@ synchronous call-through to the native kernels; their worker admission remains
 separate work. Receipt-coupled transaction hooks, Doctor metadata callbacks, and synchronous diagnostic reads
 retain their current owners and execution paths.
 
-Cron recovery proposal acquisition runs in the shared-state worker. Its original
-transaction observes the active receipt and matching running-marker association
-together, including the existing receipt table's first-use initialization.
-Startup, timer recovery, and settlement waiters await these facts and recheck their
-service generation, stop state, and applicable cancellation before recovery.
-Timer recovery collects every proposal before its synchronous repair batch, so
-retirement during observation cannot strand an earlier committed interruption.
-Startup and timer recovery publish committed interruption facts under the same
-partition lock after the existing reload, before new scheduling work rechecks
-its lifecycle. Retired timer batches still join the existing reservation cleanup
-and release only the execution slots they acquired.
-Process liveness and local receipt ownership remain with the host. The final
-recovery transaction still rereads and compares the exact receipt and job markers
-before repairing them; proposal facts do not grant authority. Recovery writes,
-execution authority checks, and guarded saves remain native. Schemas, retention,
-and update behavior are unchanged.
+Cron recovery observes each batch in one shared-state read-worker snapshot. Healthy
+live receipts need no writer admission. A missing receipt table uses its existing
+writable first-use initializer before observation resumes. Process liveness and
+local receipt ownership remain with the host; observation never grants repair
+authority.
+
+Each necessary repair runs in its own shared-state worker transaction, rereading
+the exact receipt, job markers, and task history. The host supplies current routing
+policy and revalidates database, scheduler, cancellation, and receipt ownership at
+transaction and commit admission. It retains the serialized outcome before granting
+commit; a matching compact native commit receipt certifies publication even if the
+ordinary worker reply is lost. Notification intents carry delivery facts without
+execution payloads. The host sends them only after commit and native settlement.
+Schedule maintenance and settled alert delivery use that same retained-outcome owner.
+Maintenance reads active receipts and updates unowned jobs in the worker, with host
+reservations and active-job facts prepared under the transaction and checked again
+before commit. Alert results update only the exact run, alert timestamp, and
+notification identity while delivery remains unsettled. Committed maintenance rows
+and notifications publish once even when the ordinary worker reply is lost.
+
+Startup, timer recovery, foreign-receipt monitoring, and settlement waiters use this
+same owner under the existing partition lock. If a later repair candidate fails or
+the generation retires, earlier committed interruptions still publish after reloading,
+before new scheduling work. Retired timer batches join reservation cleanup and release only
+the execution slots they acquired. Schemas, retention, and update behavior are
+unchanged; guarded saves and execution authority checks retain their existing owners.
 
 Read-only Cron inspection runs its native open, row decoding, and close in a
 bounded worker task. Ordinary cold reads and artifact-preserving cold reads keep
