@@ -4560,6 +4560,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Step 1: Route the tunnel to loopback
   - H2: Step 2: Protect the hostname with Access
   - H3: OIDC sign-in and existing people
+  - H3: Verified GitHub credit through OIDC
   - H2: Step 3: Trust those headers in the Gateway
   - H2: Step 4: Decide how nodes and workers get in
   - H2: Step 5: Connect each client
