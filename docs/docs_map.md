@@ -14764,6 +14764,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config
   - H2: Prompt and telemetry
   - H2: E2E validation
+  - H3: Real-model comparison
   - H2: Failure behavior
   - H2: Related
 
