@@ -366,6 +366,26 @@ Codex app-server first with `openclaw models auth login --provider openai`.
 The parent agent can use any model or runtime; only the bounded search worker
 runs through Codex.
 
+## CLI harness search
+
+OpenClaw's Claude Code, Codex CLI, and Gemini CLI adapters disable their native
+search tool when `tools.web.search.provider` selects a managed provider. The
+selected provider remains available through OpenClaw's MCP connection, subject
+to the normal tool policy. If that connection or provider is unavailable, the
+adapter does not silently restore native search.
+
+Omit `tools.web.search.provider` to leave native search available. Automatic
+selection is represented by an omitted provider, not the strings `"auto"` or
+`"openai"`; configured provider IDs must be declared by a search plugin.
+`tools.web.search.enabled: false` disables search even when a session has a
+stale enable override. Changing the native search setting updates the CLI
+session fingerprint so a resumed process cannot keep the old search policy.
+Turning search off for a session also removes it from OpenClaw's MCP tool list
+and invocation grant, while leaving unrelated tools available.
+
+Other external harnesses own their native tool behavior; configuring OpenClaw's
+managed provider does not establish that a third-party harness uses it.
+
 ## Network safety
 
 Managed HTTP `web_search` provider calls use OpenClaw's guarded fetch path,

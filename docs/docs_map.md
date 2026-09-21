@@ -14897,6 +14897,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Auto-detection
   - H2: Native OpenAI web search
   - H2: Native Codex web search
+  - H2: CLI harness search
   - H2: Network safety
   - H2: Config
   - H3: Storing API keys
