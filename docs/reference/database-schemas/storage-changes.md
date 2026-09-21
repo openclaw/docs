@@ -976,6 +976,25 @@ Workspace filtering still precedes appended library pins; workspace-only loads o
 plugin discovery retains its existing synchronous metadata path. Schemas,
 retention, and update behavior are unchanged.
 
+MCP OAuth storage reads, pending callback lookup, and requester counts run in
+workers. Read-only operations retain the captured store and the caller's snapshot
+and artifact-preserving scope through the shared-state read owner. Its existing
+worker pool owns queue admission, and canonical close joins accepted reads and
+worker cleanup. Provider creation prepares the redirect facts required by the
+SDK's synchronous metadata getters; credential and discovery callbacks await
+fresh storage reads. An earlier read cannot replace metadata acknowledged by a
+later write. If a write reports an error after a possible commit, the provider
+requires an acknowledged read before serving metadata again. Login callbacks
+recheck their current lifecycle after awaited reads. Status and inventory reads
+do not create state. Lease validation and mutations retain their native owners
+and captured store context until their complete lifecycle moves off the
+application thread.
+
+Requester MCP setup reads its sorted authorization set in one current read-worker
+operation. The worker decodes selected rows in caller order and returns only
+status facts; each message still observes current storage before runtime reuse.
+No schema, stored format, migration, or updater behavior changes.
+
 Model-context reads and session transcript preparation use the session-transcript
 worker with separate bounded queues. Background preparation cannot occupy the
 foreground context queue. Session exports read events, statistics, and session
