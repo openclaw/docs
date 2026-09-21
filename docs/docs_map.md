@@ -2259,6 +2259,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Shared state SQLite compaction
   - H2: Session SQLite migration
+  - H3: Changed archived registry
+  - H3: Import staging and validation
   - H3: Hard-linked legacy artifacts
   - H3: Downgrading after session SQLite migration
 
