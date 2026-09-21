@@ -266,8 +266,8 @@ Gateway core, database-worker, methods, methods-isolated, server, and
 server-isolated configs run with exclusive plan admission. Cold in-process
 Gateway boot measured 37 seconds alone and 50 seconds under contention against
 a 90-second test budget. Jobs containing these configs execute their packed
-plans serially. Existing bins, summed duration budgets, runner allocations,
-file partitions, and timing weights stay unchanged; formerly parallel jobs retain
+plans serially. Plan admission retains the existing summed duration budgets
+and runner allocations; formerly parallel jobs retain
 their two-worker ceiling through the job environment, except measured core-2
 bins whose other groups retain that ceiling individually. This adds no jobs and
 leaves ordinary jobs' concurrency unchanged. The shard runner enforces the same
@@ -288,6 +288,18 @@ and module state. One worker still runs files serially; the file inventory and
 no-output watchdog are unchanged.
 Shared test port claims cover both child-process startup and in-process listener
 lifetimes, including the handoff before a child binds its socket.
+
+Gateway server files also run in parallel forks, with a two-worker compact cap
+on every runner profile. The two native Vitest subprocess lifecycle fixtures run
+first in a serial project within the same config; their cold Gateway collection
+must not contend with ordinary files. The remaining files keep their parallel
+phase. The planner retains each native fixture's measured cost and divides only
+the remaining legacy serial work by the effective worker count; one-file groups retain
+their indivisible cost. Whole parallel invocations and sums of split invocations
+record separate timing identities. Singleton stripes restore the whole parent's
+per-file cost without multiplying measured child spans again.
+The existing file splitter and job packer consume those adjusted costs within
+the unchanged row and duration budgets.
 
 Complete hybrid main and pull-request plans retain their existing jobs and runner
 allocations while admitting measured runtime groups within 440 seconds, including
