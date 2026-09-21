@@ -190,6 +190,17 @@ fresh canonical-profile and alias query for their disclosure scope. Profile crea
 display-name and role changes, explicit avatar uploads, identity merges, and final
 identity/permission lookups keep their existing native owners.
 
+Chat startup prepares its requester from the profile catalog retained by the
+session projection. Metadata reads the current merge head after preparation
+waits and rejects a changed client identity or retired physical database. A
+missing catalog leaves optional metadata unavailable without opening SQLite.
+Legacy email clients resolve their alias through the read-only worker; only
+a missing alias enters the shared-state writer and existing profile transaction.
+Committed creation updates the same resident catalog before profile observers,
+including retained reconciliation when result delivery fails. Other profile
+mutation and authorization paths retain their existing owners. Schema, migration,
+update, and retention behavior are unchanged.
+
 Post-login Tailscale avatar adoption reads and conditionally writes through the
 shared-state worker. Its transaction follows the current merge target and preserves
 every non-null avatar, including an explicit empty upload. Committed descriptors
