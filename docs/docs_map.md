@@ -12228,6 +12228,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Startup on multi-agent hosts
   - H2: Troubleshooting
   - H3: Database paths cannot be compared
+  - H3: A mount probe times out while opening a local database
   - H3: A legacy Workshop index prevents shared-state reads
   - H3: The shared-state WAL keeps growing
   - H3: Doctor reports orphan task delivery rows
