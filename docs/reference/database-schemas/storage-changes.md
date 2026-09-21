@@ -31,6 +31,17 @@ the captured task owner and database lifecycle still authorize the operation.
 Maintenance joins the sweep before completing; expiry, storage formats, and
 update behavior are unchanged.
 
+Warm profile ensures read existing email, provider, and Gateway-owner identities
+without writer admission. Missing identities and display-name changes recheck
+their authoritative rows inside the existing write transaction. Exec authorization
+commits batch pending requests in order through the shared-state worker; unchanged
+policy snapshots require no write transaction. Changed batches reread policy and
+agent-deletion fences before committing, and execution rechecks current authority
+against the captured database owner. Coordinator contention stays on the worker
+for these commits. Remaining synchronous state writes report coordinator waits
+over 100 ms through the transaction diagnostics logger. Schema initialization,
+durability, migration, and update behavior are unchanged.
+
 Sandbox registry lists, point lookups, backend/scope runtime IDs, and browser
 registry reads execute in the shared-state read worker. CLI management and
 runtime provisioning await the same domain APIs. Reads retain inherited snapshot
