@@ -315,6 +315,11 @@ permission errors, uncertain writes, and other evaluation errors are not retried
 Checkout, runtime setup, and separately minted autoscrub token expiry are outside
 this recovery mechanism.
 
+Separately, read-only `GET` and `HEAD` requests retry HTTP `500`, `502`, `503`,
+and `504` responses after one, two, and four seconds, within the original
+30-second request timeout. These request retries exclude writes. HTTP errors
+include the request method and endpoint to identify the failed operation.
+
 If GitHub's changed-file count and file list disagree, the guards retry the complete
 file-list read after one, two, and four seconds. Each retry rereads PR metadata;
 changes to the head, target branch, or author still invalidate the evaluation.
