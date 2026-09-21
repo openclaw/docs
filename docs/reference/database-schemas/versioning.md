@@ -119,13 +119,19 @@ code is refused. Rollback uses the verified pre-migration backup and matching
 build, not marker changes or removal of the derived table alone. See
 [incremental canonical-session validation](/reference/database-schemas/agent-schema-history#incremental-canonical-session-validation).
 
-Agent schema 22 requires exact transcript FTS row ownership even though its
-mapping table is additive. Older writers would append rows without recording
-ownership, making later exact deletion incomplete. Both schema markers advance
-together under maintenance authority; existing projections are marked for lazy
-rebuild without scanning FTS content. Older readers and writers refuse the new
-version. See [transcript FTS row ownership](/reference/database-schemas/agent-schema-history#transcript-fts-row-ownership)
-for healing, deletion and rollback behavior.
+Agent schema 22 introduced exact transcript FTS row ownership with a nullable
+completeness count and lazy backfill. Schema 23 accepts that deployed shape as
+well as schema 21. It rebuilds the ownership map from existing FTS content,
+preserves pending reconciliation, and retires the old completeness counter.
+
+Agent schema 23 changes existing payload representations: transcript events can
+use Zstd BLOBs, memory embeddings use Float64 BLOBs, and memory full-text
+maintenance uses stable integer chunk identities. Older writers cannot preserve
+these contracts, so this requires a bump despite retaining logical event and
+chunk IDs. Shared-state schema remains 17. The usage-rollup cache format changes
+with this migration but is independently rebuildable. See
+[compact agent payload storage](/reference/database-schemas/agent-schema-history#compact-agent-payload-storage)
+for conversion, runtime requirements, and recovery.
 
 Agent schema 19 records collected input consumption in the nullable
 `session_pending_inputs.consumed_event_id TEXT` column. Doctor and the feature's
