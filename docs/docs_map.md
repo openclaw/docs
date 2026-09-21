@@ -4448,6 +4448,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recover state after reconnect
   - H3: Active-run cache matrix
   - H2: Render generated image artifacts
+  - H2: Download inline artifacts over HTTPS
   - H2: Use history metadata and stable anchors
   - H2: Subscribe instead of polling usage
   - H2: Backfill exec approvals
