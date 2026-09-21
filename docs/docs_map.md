@@ -3545,6 +3545,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session worktrees
   - H2: Troubleshoot creation
   - H2: Snapshots, cleanup, and restore
+  - H2: Exact-state detached retirement
   - H2: CLI
   - H2: Gateway methods
   - H2: Workboard workspaces
