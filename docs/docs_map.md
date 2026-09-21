@@ -5606,6 +5606,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What survives a restart
   - H2: Graceful restarts drain first
+  - H3: Maintenance custody observations
   - H3: Systemd stop deadlines
   - H2: Host sleep and process freezes
   - H2: Recovery after a failed update

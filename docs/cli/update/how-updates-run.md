@@ -37,8 +37,24 @@ the selected channel or installation method, or the Git target SHA equals
 explicit `--channel` or installation-method change finishes successfully.
 Changed plugins restart a running managed Gateway unless `--no-restart` is set; retained exact pins produce the same advisories as a core update without requiring a restart.
 
+Linux updates also refresh outdated OpenClaw-managed systemd policy when the core
+is already current or `--no-restart` is set. This policy-only refresh confirms
+`daemon-reload` without stopping the Gateway and preserves operator drop-ins.
+Maintenance stops also read the resident Gateway's recorded shutdown budget.
+Published 2026.9.5 residents keep their startup budget even after `daemon-reload`;
+their first stop therefore uses the short/unknown-budget path. The Gateway's
+lifecycle owner fences admission and reports drain progress until idle or the
+existing update step deadline (30 minutes by default, 45 for automatic updates).
+At that deadline, remaining turns can be interrupted with a warning in update
+history; reported write custody refuses the stop and names its owner phase.
+Residents without the optional `writeCustody` observation cannot distinguish
+backup or migration custody from ordinary root/cron work. At the deadline, they
+stop with a warning naming those counts; missing custody information never blocks
+the update. The next Gateway starts with the refreshed service policy. An operator drop-in
+that still shortens the native timeout is preserved and reported.
+
 Explicit package artifacts, such as tarball paths and URLs, compare known build
-IDs before a same-version no-op. Matching known identity remains nonmutating;
+IDs before a same-version no-op. Matching known identity leaves the package unchanged;
 different or missing identity continues through normal update validation and
 installation because a matching version alone does not establish artifact
 equality. Registry requests retain their version-based same-version no-op.
