@@ -1440,6 +1440,13 @@ runtimes discard late discovery results. Registration's alias bootstrap, tab
 mutations, and the final synchronous ownership check before closing a browser
 target retain their existing owners.
 
+Selected library resources read cold pin descriptions and eligible manifests
+through the shared read-only worker. Resource preparation retains its captured
+state root and admission through both reads and file preparation, preserving
+snapshot scopes, selected revision bytes, hidden-pin omission, and the first
+resource failure. Synchronous discovery and borrowed-database readers keep their
+existing contracts. This changes no schema, migration, or persistent data.
+
 ### Preserve the data and concurrency contracts
 
 Task, flow, and Cron receipt execution identity bindings run in the shared-state
