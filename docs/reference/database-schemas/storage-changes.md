@@ -984,14 +984,17 @@ their existing execution path unless their host explicitly supplies this operati
 Missing-file defaults still load plugin metadata only when those defaults need it.
 The operation changes no schema, persisted representation, or publication authority.
 
-Meeting transcript identity, descriptor, notes, summary, and utterance reads use
+Meeting transcript identity, descriptor, notes, summary, utterance, and export-ownership reads use
 the shared-state worker. Typed commands call the existing synchronous query
 kernels, preserve complete stored results and library error fields, and retain
 first-use schema creation. Compound enumeration, matching, and library reads
 use one deferred read snapshot, keeping their queries coherent with concurrent
 capture writes. Schema creation finishes before the
 read transaction, and domain errors are translated after it settles. Canonical
-close drains these reads before closing their worker connection. Capture utterance
+close drains these reads before closing their worker connection. Export-ownership
+queries return the existing ordered row facts; filesystem case, artifact identity,
+and hash checks stay with the export owner. Pending and manifest writes retain
+their existing transactions. Capture utterance
 appends also run their existing deduplication, sequence allocation, and insertion
 transaction on that worker. The capture records accepted speech before preparing
 its immutable input, preserves its order, and retains authority through native
