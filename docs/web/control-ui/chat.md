@@ -351,14 +351,18 @@ an explanation in chat.
 
 ### Source previews and copying code
 
-Long clipboard text appears as a compact chip in the composer and transcript.
-Its label shows the first 30 characters of a plain-text excerpt, with HTML and
-Markdown formatting removed. Empty or unavailable excerpts show **Pasted text**.
-In the transcript, chips sit above the text bubble alongside other attachments;
-multiple chips share a row and wrap when needed. Click a chip or press Enter to
-open the existing attachment side panel and copy the original text, preserving
-markup, line breaks, and indentation. The composer panel also offers **Show in
-text field** and removal. Messages containing only comment or pasted-text chips
+Long clipboard text appears as a file-sized card in the composer and a compact
+chip in the transcript. Its label shows the first 30 characters of a plain-text
+excerpt, with HTML and Markdown formatting removed. Empty or unavailable excerpts
+show **Pasted text**. In the transcript, chips sit above the text bubble alongside
+other attachments; multiple chips share a row and wrap when needed. Click the
+composer excerpt or icon, or a transcript chip, to open the existing attachment
+side panel and copy the original text, preserving markup, line breaks, and
+indentation. The excerpt and chip also support keyboard activation. Select
+**Show in text field** on the second row inside the composer card to return its
+text to the draft without opening the side panel.
+The composer side panel also offers the same action and removal. Messages
+containing only comment or pasted-text chips
 use a transparent shell.
 Newly uploaded text files remain file cards, even when their names resemble
 pasted-text attachments. Older history without origin metadata recognizes
