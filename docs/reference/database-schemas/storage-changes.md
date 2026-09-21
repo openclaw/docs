@@ -173,6 +173,15 @@ per-row uncertainty within a valid continuation. Placement retirement still uses
 its existing live placement, claim, and environment checks; this read migration
 changes no destructive-retirement permission, schema, retention, or update behavior.
 
+Session-row placement display facts use the shared-state fixed-read worker. Each
+batch reads placement, move, pending workspace result, and environment facts from
+one committed snapshot. Resident rows refresh after owner publications; archived
+pages and private exact reads prepare only selected rows. Presentation consumes
+prepared facts without reopening SQLite, and host-only conflict payloads remain
+bound to the captured placement generation, environment, epoch, or retained
+workspace-result claim. Placement mutations, authority checks, schema, retention,
+and update behavior keep their existing owners and contracts.
+
 Observed-project discovery and the CLI's lossless worktree cleanup result read
 managed worktree registry records through the shared-state worker. The read
 captures its database before waiting and preserves record ordering, cleanup
