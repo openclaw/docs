@@ -10844,6 +10844,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/channel
 - Headings:
   - H2: Channel namespaces
+  - H2: Awaited conversation binding mutations
 
 ## plugins/sdk-runtime/config-and-utilities.md
 
