@@ -1570,6 +1570,15 @@ existing contracts. This changes no schema, migration, or persistent data.
 
 ### Preserve the data and concurrency contracts
 
+Async device identity loads use the shared-state worker. A first creator runs
+the existing identity owner before database bootstrap, so pending legacy identity
+files still prevent creation. Read-only loads do not create a missing database
+or change its artifacts. Existing Ed25519 keys, first-writer convergence,
+permissions, and Doctor's migration and repair authority remain unchanged.
+Process identity caches retain their existing database-path and identity-key
+scope; warm cached values need no database operation. Schemas and update behavior
+are unchanged; no migration or operator action is required.
+
 Task, flow, and Cron receipt execution identity bindings run in the shared-state
 worker. Their synchronous transactions reread the exact live owner rows and
 recheck the caller's current execution authority before mutation and commit.
