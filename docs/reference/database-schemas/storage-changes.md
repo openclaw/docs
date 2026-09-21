@@ -1068,6 +1068,12 @@ and synchronous statement snapshot. Streamed chronological reads, export snapsho
 and session and export-state writes retain their existing owners until their
 snapshot and write-drainage lifecycles move together.
 
+Transcript artifact ownership recovery streams raw utterances in sequence order
+through the shared-state worker and returns their canonical JSONL SHA-256 digest.
+Metadata and summary reads keep their existing separate timing; this does not
+create an atomic snapshot across them. Artifact replacement, manifest repair,
+and export leases retain their existing owners.
+
 SQLite worker transport preserves complete result values. Results within the
 64 MiB inline reply budget keep their existing reply path; larger results are
 serialized once and transferred in 8 MiB frames. The original operation retains
