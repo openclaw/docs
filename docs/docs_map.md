@@ -4281,6 +4281,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/user-model
 - Headings:
+  - H2: Personal USER files on a shared Gateway
   - H2: Gateway profile and GitHub credit
   - H2: GitHub connections
   - H3: Publish with your account
