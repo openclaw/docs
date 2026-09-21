@@ -665,8 +665,11 @@ later row replacement, including ABA replacement, suppresses stale delivery.
 Registered Gateway task list, get, and history reads, artifact task-ID scope resolution, plus subagent list and wait
 preparation, asynchronously join the event batches accepted before their first
 wait. Later arrivals do not add batches to that fence. Preparation waits for
-persistence and required publication, refreshes the projection through its worker
-owner, and rechecks database, store, and task identity before exposing results.
+persistence and required publication. Reads reuse the resident projection when
+its only dirty scopes belong to live later metadata mutations that preserve task
+routing, access, and detail; those mutations retain their publication obligations.
+Broad invalidation, orphaned dirty scopes, and other mutations still require worker
+preparation. Reads recheck database, store, and task identity before exposing results.
 Gateway responses also recheck current task visibility; held pages retain their
 revision and selected-row checks. Wait notifications read the prepared resident
 view without joining their own publishing event. Fresh owner lookups retain the
