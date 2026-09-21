@@ -4490,7 +4490,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Ask the agent to open an app
   - H2: Desktop (interactive)
-  - H2: Native desktops
+  - H2: macOS image prerequisites
+  - H2: Native Windows prerequisites
   - H2: Desktop size
 
 ## gateway/cloud-workers/dispatching-a-session.md
