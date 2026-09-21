@@ -321,6 +321,13 @@ Configured Gateway agents share one model-catalog worker per plugin-inventory
 lifetime. Agent and authentication facts belong to each task; plugin registrations
 and captured source remain with the shared inventory. Standalone hosts that supply
 their own environment retain an isolated catalog worker for that environment.
+Each worker retains one prepared catalog generation. Replacement releases the
+previous generation's registrations after its work settles. Successfully disposed
+registrations leave their plugin caches; unchanged registrations remain reusable
+across agent requests within the same inventory.
+Catalog workers use a 512 MiB V8 old-generation limit rather than inheriting the
+Gateway's default heap budget. Explicit process-wide heap flags override this
+limit; native and external allocations are outside it.
 
 Catalog and authentication refresh tasks carry the host's prepared Claw consent
 provenance. Worker config reconstruction and provider imports consume these facts
