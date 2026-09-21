@@ -406,9 +406,10 @@ code's leading whitespace and final newline when present. Indented Markdown code
 blocks also work at the start of a message and remain literal while streaming,
 including blank lines within the block.
 
-Completed top-level code blocks keep your expansion and wrapping choices while
-later paragraphs stream into the same assistant reply. Replacing the message or
-correcting earlier content starts a fresh view.
+Code blocks keep your expansion and wrapping choices when their closing fence
+arrives and later paragraphs stream into the same assistant reply. Replacing the
+message, correcting earlier content, or changing rendering options starts a fresh
+view. References that change earlier Markdown can also reset the view.
 
 **Copy URL** in browser tab cards also works on plain HTTP connections where the
 browser does not provide its Clipboard API.
