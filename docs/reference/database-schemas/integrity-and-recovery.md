@@ -36,6 +36,10 @@ after they finish.
 Native execution workers can also borrow retained host proof after the host handle
 closes or is evicted. The receiving opener rechecks the physical file identity and
 shared revocation cell; a closed handle alone does not discard valid proof.
+When native execution establishes the first runtime proof, it returns that proof
+through its existing admission so later cleanup workers can reuse it without a
+host SQLite open. The host accepts it only for the admitted physical file and
+unchanged validation state; revocation during the open rejects the handoff.
 
 Cached opens, including later opens after startup, queue checks in the existing
 Gateway verifier. Background success is logged; only the full-check lease owner
