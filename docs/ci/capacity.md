@@ -86,20 +86,25 @@ silently execute the larger whole config. Uneven bounded chunks use their own
 file counts with the existing cost rates; native Vitest shards retain equal
 shares of the complete config estimate.
 
-Native database-worker roots share a 20-file CI job ceiling, including every
-co-located envelope. The existing root registry owns classification; migrated
-files retain their owner-specific job and process limits. This partitions the
-185-file native envelope from [run 35176277297](https://github.com/openclaw/openclaw/actions/runs/35176277297)
+All files routed to the database-worker config share a 20-file CI job ceiling,
+including every co-located envelope. The effective config owns classification;
+migrated files also retain any tighter original plugin job and process limits.
+This partitions the 185-file native envelope from [run 35176277297](https://github.com/openclaw/openclaw/actions/runs/35176277297)
 into ten non-overlapping envelopes. That run continued passing tests for more
 than 58 minutes before the job deadline; it is a lower bound, not a completed
-family timing sample. The ceiling prevents the default cost estimate from
-packing the chunks back together. Fork isolation, process lifetimes, worker
-limits, timeouts, and the 50-job fallback cap stay unchanged. Hosted CI must
-establish the resulting job durations.
+family timing sample. In [run 35477485803](https://github.com/openclaw/openclaw/actions/runs/35477485803),
+root-only counting allowed 149 database-worker files in one serial job; its
+test step took 27 minutes 30 seconds. The ceiling now prevents both oversized
+migrated envelopes and their reassembly during cost packing. Fork isolation,
+process file limits, worker limits, timeouts, and the 50-job fallback cap stay
+unchanged. Cost estimates remain advisory; hosted CI must establish the resulting
+job durations.
 
 Ordinary Codex tests use isolated thread workers and inherit file parallelism from the shared worker budget. Each file retires its mocked module graph and globals; an ordinary process contains at most 24 files. Database-worker-routed Codex tests already use isolated forks and retain an independent 12-file bound. The 300-second no-output watchdog, test deadlines, and assertions remain unchanged. These scheduling bounds are independent of the timing-weight calibration; a larger process bound does not by itself establish a wall-time or matrix-row improvement.
 
-Precise and fallback plugin envelopes share the same packing owner and a 240-second aggregate estimated budget per job, including multiple envelopes of the same config. This budget belongs only to changed-extension jobs; compact core budgets are unchanged. Members retain compatible runner/dist requirements and run one at a time. Each envelope retains its original child process, environment, native shard arguments and include scope, including process-bounded Codex, Matrix and Telegram work. Runtime-preparing envelopes remain separate, and an envelope above the budget stays alone. Worker limits, runner classes, timeouts, coverage and serial stop-on-failure behavior are unchanged.
+Precise and fallback plugin envelopes share the same packing owner and a 240-second aggregate estimated budget per job, including multiple envelopes of the same config. This budget belongs only to changed-extension jobs; compact core budgets are unchanged. Members retain compatible runner/dist requirements and run one at a time. Packing retains each produced envelope's child process, environment, native shard arguments and include scope, including process-bounded Codex, Matrix and Telegram work. Runtime-preparing envelopes remain separate, and an envelope above the budget stays alone. Worker limits, runner classes, timeouts, coverage and serial stop-on-failure behavior are unchanged.
+
+For explicitly bounded plugin configs, the prerequisite owner identifies files that need a built runtime. When those files span multiple envelopes, the producer groups them before applying the existing file limits, so unrelated tests do not cause repeated runtime builds. Each resulting envelope retains its actual prerequisite charge and measured file costs. Whole-config native Vitest shards retain their complete discovery and preparation contract.
 
 Most fallback rates use median wrapper seconds per counting file from 371 successful envelopes across four contributing PR runs in a ten-green-run sample: [35490342736](https://github.com/openclaw/openclaw/actions/runs/35490342736), [35490482496](https://github.com/openclaw/openclaw/actions/runs/35490482496), and [35491344005](https://github.com/openclaw/openclaw/actions/runs/35491344005). The 27-config table includes Feishu at 0.411 seconds/file. Existing runtime preparation allowances remain conservative additions to these fallback estimates.
 
@@ -116,6 +121,8 @@ The landed caps are 90 compact rows, 130 final PR Node rows and 70 final push No
 | hybrid     |              72 |                         120 → 118 |                   47 |
 
 Compact PR counts include two dist descriptors outside the Node matrix. Compact and push counts are unchanged because these Codex configs are outside compact groups, and canonical pushes do not append changed-extension envelopes. The largest Codex prediction falls from 609 to 291 seconds, including the existing 100-second runtime-preparation allowance. The remaining extension floor is 380 seconds in a non-Codex database-worker group. Overall longest predicted rows are 623 seconds on Blacksmith, 380 on GitHub, and 518 on hybrid. Every profile fits the landed caps, and the conservative registration ceiling remains the landed 5,010 bound.
+
+With the effective-config ceiling and prerequisite grouping applied to the `f5138cb0b27f` inventory, broad fallback covers all 482 database-worker files exactly once in 47 jobs, with at most 20 worker files per job. The all-packaged-plugin precise plan covers 478 worker files in 47 extension jobs plus one selected core-test job; broad fallback additionally owns four built-in plugin files. Blacksmith, hybrid and GitHub final broad PR Node counts are 119, 113 and 125; push counts are 54, 44 and 49. Regular Codex runtime consumers share one prepared envelope instead of three, and Telegram consumers share one instead of two. The sole prepared database-worker envelope retains its original 11-file scope and the refreshed 291-second estimate. The total forecast is 10,167 seconds. These are planner counts and estimates, not new runtime measurements. The shared packing algorithm, current measured rates, time budgets and all row caps are unchanged.
 
 Median rates are estimates, not elapsed-time guarantees. Before the Codex fixture change, replaying the historical 123-envelope layout against the largest matching observed child spans gave a 432.758-second combined envelope sum at 240 seconds, versus 520.688 seconds at the interim 320-second budget; its slowest individual envelope took 508.783 seconds. Whole-config observations can have different file inventories across source revisions. These are historical forecasts, not measured walls for the current combined jobs. The original job in run 35490342736 bundled 17 envelopes into 2,015.674 seconds of child spans and 2,049 seconds of wall time despite a 240-second prediction. Native PR CI must verify the improvement toward the ten-minute PR objective. Exact config/include-set observations and successful PR-run ingestion in the timing refit remain follow-up work; narrow PR samples must not prune unrelated observations merely because they were not selected.
 
