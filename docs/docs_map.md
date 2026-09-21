@@ -7027,6 +7027,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/update-troubleshooting
 - Headings:
   - H2: Recover in the Control UI
+  - H2: Doctor cannot enter maintenance during finalization
   - H2: Node and global install permissions
   - H2: Published 2026.9.4 on large agent fleets
   - H2: Plugin repair warnings
