@@ -49,11 +49,27 @@ Cache publication still belongs to the existing warmer on each backend.
 Node discovery scans only the toolcache's executable levels, avoiding bundled
 npm dependency trees before selecting an already-installed runtime.
 
-In hybrid mode, one additional `ubuntu-24.04` warmer row installs and saves only
-the hosted dependency store. Blacksmith and GitHub-hosted cache backends are
-separate; warming Linux only on Blacksmith leaves hosted checks on old seeds.
-The existing Linux row retains full warming, and all-Blacksmith/all-GitHub modes
-retain their two-row matrix. This adds no Blacksmith runner registrations.
+In hybrid mode, independent hosted dependency and code-warming jobs populate
+GitHub's cache backend. Blacksmith and GitHub-hosted cache archives remain
+separate. See [cache ownership and seed selection](/ci/scope-and-routing/node-test-lanes)
+for the full Linux and bounded hosted profiles.
+
+### Windows dependency-cache experiment
+
+Normal Windows CI keeps dependency setup uncached. In the September 20
+[benchmark](https://github.com/openclaw/openclaw/actions/runs/35547255790), median
+complete setup took 45.295s cold versus 52.738s with a restored store (+16.4%),
+despite reusing all 1,453 packages with zero downloads. Restoring the 763.8-MiB
+archive took 23.601/25.978/26.980s; the first sample spent 20.966s extracting it.
+Producer setup plus archive publication added 62.527s of job work.
+
+All seven native jobs passed, but the workflow failed qualification: its reducer
+rejected a 24-KiB difference in reported total RAM. These measurements use the
+original receipts, with no assertion changes or reruns. The exactly RAM-matched
+subset had a 47.369s cold median versus 52.738s warm (+11.3%); this descriptive
+comparison does not replace the failed qualification. Revisit caching only when
+complete setup improves after accounting for restore, extraction, frozen
+reconciliation, and producer work.
 
 ### Blacksmith runner capacity
 

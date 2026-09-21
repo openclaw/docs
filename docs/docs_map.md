@@ -1793,6 +1793,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/runners
 - Headings:
   - H2: Runners
+  - H3: Windows dependency-cache experiment
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
   - H2: Related
