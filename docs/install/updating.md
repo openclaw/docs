@@ -57,6 +57,12 @@ first, stop the Gateway through its actual supervisor or foreground process owne
 replace the package, run Doctor, and restart through that same owner.
 `--no-restart` cannot repair the old admission check.
 
+Updaters without the admission fix first shipped in 2026.7.2-beta.5, including
+2026.6.34–2026.6.35 and the 2026.7.33–2026.7.35 extended-stable line, refuse before staging with
+`plugins.load.paths: plugin path not found` when a configured plugin path is missing.
+Restore the custom plugin directory or remove its configured path, then update.
+`openclaw doctor --fix` repairs recognized bundled-path aliases but preserves unrelated custom paths.
+
 <Note>
 On macOS, the 2026.9.4 Gateway's `update.run` action or `/update` can hand off
 successfully, then fail at activation with `managed-service-preflight` and
