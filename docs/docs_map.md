@@ -11238,6 +11238,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Choose a model route
   - H2: Usage and cost tracking
   - H2: Getting started
+  - H2: Use Claude Opus 5.5
   - H2: Use Claude Fable 5.1
   - H3: Tool calls and retained thinking
   - H2: Claude sessions across computers
