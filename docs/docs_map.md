@@ -7687,6 +7687,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/linux
 - Headings:
   - H2: Desktop companion
+  - H3: Chrome extension setup
   - H3: Desktop compatibility
   - H3: Gateway selection
   - H3: Desktop sharing
@@ -13864,6 +13865,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: Chrome extension
   - H2: Requirements
   - H2: Install
+  - H2: Shared setup controller
   - H2: Use it
   - H3: Standalone direct-loopback relay
   - H3: Choose tab access
@@ -15251,6 +15253,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Questions
   - H2: Keyboard shortcuts
   - H2: Slash commands
+  - H2: Local Chrome setup
   - H2: Local shell commands
   - H2: OpenClaw setup and repair helper
   - H2: Tool output
