@@ -189,3 +189,12 @@ owners; these reporting snapshots grant no execution or deletion authority.
 This execution cutover does not change schemas, stored bytes, retention, config,
 or update behavior. A change to those contracts follows the
 [storage review checkpoint](/reference/database-schemas/storage-changes#review-checkpoint-for-material-changes).
+
+Administrative skill archive uploads use the shared-state worker for staging,
+expiry cleanup, commit, installation claims, lease renewal, and consumption. The
+host retains per-upload locks and temporary archive materialization. Installation
+completion joins accepted renewals before consuming or releasing the exact owner
+lease; database close joins the callback and its retained worker cleanup. Cleanup
+refuses a replacement physical database and cannot delete a successor's lease.
+Upload formats, expiry limits, installation permissions, and update behavior are
+unchanged.
