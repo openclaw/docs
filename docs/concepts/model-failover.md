@@ -194,6 +194,8 @@ If no explicit order is configured, OpenClaw uses a round-robin order:
 
 ### Session stickiness (cache-friendly)
 
+Clearing or rotating an auth pin affects only the selected agent’s session, including custom session stores and the reserved `global` and `unknown` session keys.
+
 OpenClaw **pins the automatically chosen auth profile per session** to keep provider caches warm. It does **not** rotate on every request. An automatic pin may rotate or clear when:
 
 - the session is reset (`/new` / `/reset`)
