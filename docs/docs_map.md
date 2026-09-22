@@ -2363,6 +2363,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Recover an unreadable native service definition
   - H3: Lifecycle requests from Gateway chat
   - H3: Pin the service runtime
+  - H3: Repair a LaunchAgent environment wrapper
   - H3: Install with a wrapper
 
 ## cli/health.md
