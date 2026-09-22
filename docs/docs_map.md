@@ -10907,6 +10907,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/models
 - Headings:
   - H2: Prepared simple completions
+  - H2: Low-level completions
   - H2: Model namespaces
   - H2: Prepared completion SDK compatibility
 
