@@ -124,6 +124,26 @@ Synchronous operator inspection uses the same selected-row reader. An unavailabl
 schema refuses the read rather than reporting missing backing sessions. Canonical
 admission, malformed-row handling, retention, and update behavior are unchanged.
 
+Shared GitHub publication prepares canonical profile identity and alias-binding
+lifetimes through the existing profile catalogue and read worker. Alias writers
+publish their committed binding facts before observers; worker creation and
+lost-reply reconciliation use the same catalogue publication owner. Final
+profile identity checks read those retained facts before and after policy callbacks,
+without a synchronous database fallback. Unsettled profile mutations keep publication
+pending until the mutation owner confirms its outcome. Store replacement invalidates the
+retained identity. Doctor alias repairs use exclusive Gateway maintenance, and
+the next Gateway prepares facts from the resulting store.
+Grant resumption reads the current assigned role and email aliases from that
+retained owner on each assertion. The requester resolves its role ceiling from
+those supplied facts through the shared role-policy owner.
+
+Session metadata and membership facts are prepared through the existing session
+worker. Their canonical writers publish committed changes before observers, and
+unknown or unavailable facts leave publication recovery pending until preparation
+succeeds. Incognito sessions retain facts from their existing in-memory writer
+lifetime. The requester evaluates these facts with the current role and profile
+aliases before and after policy callbacks.
+
 For writes, shared-state domain operations registered by
 `src/state/openclaw-state-worker-runtime.ts` reuse the broker and publish results
 through their original store/projection owner.
