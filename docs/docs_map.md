@@ -10858,6 +10858,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Plugin command runtime helpers
   - H2: Auth-profile resolution
+  - H2: Session transcript hydration
   - H2: Bounded model context
   - H2: Scoped session visibility
   - H2: Agent and session namespaces
