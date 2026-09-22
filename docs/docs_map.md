@@ -3739,6 +3739,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model fallback
   - H3: Candidate chain rules
   - H3: Which errors advance fallback
+  - H3: Misalignment precautions
   - H3: Cooldown skip vs probe behavior
   - H2: Session overrides and live model switching
   - H2: User-visible fallback notices
@@ -15029,6 +15030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Hosted embeds
   - H2: Chat transcript layout
   - H2: Subagent transcripts
+  - H2: Conversations stopped for review
   - H2: Chat message width
 
 ## web/control-ui/connect-and-pair.md

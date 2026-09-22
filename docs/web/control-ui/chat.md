@@ -648,6 +648,20 @@ are currently capped at 8,000 characters per text block. The Chat panel's full-t
 after a temporary session is removed; loading earlier messages does not recover
 a capped reply's missing text.
 
+## Conversations stopped for review
+
+When a provider stops a conversation as a misalignment precaution, chat holds
+ordinary sends, queued input, and Talk. **Review findings** opens the available
+explanation. If the provider and runtime support continuation, the dialog shows
+the exact continuation message and asks you to **Acknowledge findings and
+continue**. Sending that request keeps the chat paused until the provider accepts
+it; a refresh, another session, or newer findings cannot confirm an older review.
+
+Queued messages remain held after continuation. Review and retry each one
+separately if it is still needed. Without a supported continuation, the
+conversation remains stopped. See [misalignment precautions](/concepts/model-failover#misalignment-precautions)
+for runtime support and recovery limits.
+
 ## Chat message width
 
 Drag the side-panel divider to resize a task's transcript in **Tasks**. Messages
