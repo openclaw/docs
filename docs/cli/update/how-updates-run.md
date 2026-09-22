@@ -570,6 +570,17 @@ Gateway handoff remain supported.
 
 #### Update validation and service definitions
 
+Before restarting a writable managed service, update finalization uses the
+shared service audit and native installer to repair recognized stale policy.
+It backs up the definition, preserves supported custom settings, and records
+changed keys and backup paths in update warnings. Unknown operator edits remain
+unchanged. Update-time Doctor reports drift and leaves this rewrite to finalization.
+
+Candidate-owned rollback restores the verified definition backup before running
+the previous installer's recovery. When an older published updater owns rollback,
+that release's installer regenerates the definition with the settings it supports;
+the retained backup records the original bytes.
+
 With a local managed service and restart enabled, update validation precedes
 the stop as described above. The updater reports `Gateway: restarted and verified.`
 only after the restarted service passes verification. Plugin-owned readiness
