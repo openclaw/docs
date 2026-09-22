@@ -256,7 +256,9 @@ avatar bytes, fetch limits, and final identity and permission checks are unchang
 
 Required queued collector registration writes its named registry rows through the
 shared-state worker. The host captures those rows and deletions before waiting,
-retains the original database admission, and authorizes the transaction again
+and binds SQL values from the isolated capture without copying the full payload again.
+Binding retains both normalization passes and restores the capture before publication.
+The host retains the original database admission and authorizes the transaction again
 before mutation and commit. Synchronous Stop, replacement, and completion writes
 supersede pending row authority; delayed worker acknowledgments cannot overwrite
 newer local projections or notification history. Database shutdown joins physical
