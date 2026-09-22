@@ -8111,6 +8111,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Capability example: video understanding
   - H2: Contracts and enforcement
   - H3: What belongs in a contract
+  - H2: Skill previews
   - H2: Execution model
   - H2: Export boundary
   - H2: Internals and reference
