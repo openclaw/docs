@@ -1891,6 +1891,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw agent
   - H2: agent exec
   - H3: Code Mode model matrix
+  - H4: Paired performance workloads
   - H4: Gateway tasks and follow-up interviews
   - H3: agent exec options
   - H2: Options
