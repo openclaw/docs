@@ -1791,6 +1791,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Plugin Prerelease
 
+## ci/routing-costs.md
+
+- Route: /ci/routing-costs
+- Headings:
+  - H2: Routing from measured wall time
+  - H2: RunsOn remains unqualified
+  - H2: Packing and cost arithmetic
+  - H2: Measured compact packing
+  - H3: Native calibration
+  - H3: Current inventory
+  - H2: Whole-run acceptance
+
 ## ci/runners.md
 
 - Route: /ci/runners
@@ -1799,6 +1811,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Windows dependency-cache experiment
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
+  - H3: RunsOn qualification
   - H3: Hybrid hosted assignment guard
   - H2: Related
 
