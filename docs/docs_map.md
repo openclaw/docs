@@ -1444,6 +1444,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/telegram/messaging
 - Headings:
   - H2: Runtime behavior
+  - H2: Inbound text batching
   - H2: Message behavior
 
 ## channels/telegram/mini-app.md
