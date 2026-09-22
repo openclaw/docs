@@ -258,7 +258,9 @@ Gateway startup checks. The explicit step prepares the runtime once with
 `pnpm build qaRuntime`, then runs the config corpus and all eight state files in
 one Vitest process with at most four workers. A failed preparation stops the step
 before workers consume memory or attempt their own builds. Frozen targets from
-before the file split retain their config process and four state processes.
+before the file split retain their config process and four state processes,
+admitted in batches with one slot per four available CPUs (at least one slot).
+A failed corpus run is reported while the remaining shards still run.
 The corpus uses the normal bundled-plugin resolver to select the prepared
 runtime from this checkout instead of forcing TypeScript plugin entrypoints.
 Plugins whose Doctor contracts require source loading retain that behavior;
