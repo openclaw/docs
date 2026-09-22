@@ -67,6 +67,9 @@ Session-reclamation retirement honors settled cleanup reported by its worker,
 including after a failed request. After an unsettled native exit, the shared-state
 cleanup worker releases the exact retained lease. Retirement joins lease deletion and cleanup
 store close, keeping those writes off the host connection used by live snapshots.
+Automatic process-exit cleanup makes one attempt. A failed attempt retains worker
+and lease custody for an explicit lifecycle retry instead of repeatedly scheduling
+cleanup whenever the event loop drains.
 
 ## Migrate a caller
 
