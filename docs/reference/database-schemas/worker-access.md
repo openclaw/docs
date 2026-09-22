@@ -109,8 +109,10 @@ all four Gateway/tool callers through the existing worker lifecycle. Each caller
 rechecks current scope and authorization after awaiting. Warm `sessions.list`
 selects resident projection rows without host Kysely reads. Background refreshes
 prepare up to 64 dirty persistent rows in the history worker: entry metadata,
-membership, board presence, and activity-summary watermarks share one read
-snapshot per physical store. The projection retains each store through consumption
+board presence, and activity-summary watermarks share one read snapshot per
+physical store. Membership comes from the worker-maintained compact projection,
+which also retains participant display facts for per-viewer reads. The projection
+retains each store through consumption
 and rejects replies after projection or registry invalidation. Rows replaced or
 refreshed by direct reads while a reply is pending keep their newer facts; a dirty
 replacement retries under its own generation. Related rows use resident facts and
