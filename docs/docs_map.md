@@ -10466,6 +10466,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Start slots and deferral
   - H3: Deferred claim heartbeats
   - H2: Adapter
+  - H2: Progress and preview delivery ownership
   - H2: Outbound echo suppression
   - H2: Plain-text sanitization
   - H2: Delivery Evidence
