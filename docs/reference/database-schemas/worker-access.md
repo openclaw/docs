@@ -112,8 +112,12 @@ prepare up to 64 dirty persistent rows in the history worker: entry metadata,
 board presence, and activity-summary watermarks share one read snapshot per
 physical store. Membership comes from the worker-maintained compact projection,
 which also retains participant display facts for per-viewer reads. The projection
-retains each store through consumption
-and rejects replies after projection or registry invalidation. Rows replaced or
+retains each store through consumption and rejects replies after stored-fact or
+registry invalidation. Runtime owners classify their exact run, capacity, and
+Swarm notifications separately, so current display and activity changes do not
+discard an unchanged database read. The same projection prepares current runtime
+facts before consumption; explicit stored facts, membership changes, and unknown
+notifications retain their invalidation checks. Rows replaced or
 refreshed by direct reads while a reply is pending keep their newer facts; a dirty
 replacement retries under its own generation. Related rows use resident facts and
 existing invalidations to converge across batches.
