@@ -9264,6 +9264,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/code-mode-quickjs.md
+
+- Route: /plugins/reference/code-mode-quickjs
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+
 ## plugins/reference/codex.md
 
 - Route: /plugins/reference/codex
@@ -10556,6 +10563,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Plugin shapes
   - H2: Related
+  - H2: Code Mode executor runtime
   - H2: MCP subprocess runtime
   - H2: Workspace access
   - H2: Tool failure diagnostics
@@ -13888,6 +13896,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Choosing when to enable
   - H2: Activation
 
+## tools/code-mode/executors.md
+
+- Route: /tools/code-mode/executors
+- Headings:
+  - H2: Choose an executor
+  - H2: Set the executor
+  - H2: Understand waits and limits
+  - H2: Upgrade an existing configuration
+  - H2: Related
+
 ## tools/code-mode/guest-api.md
 
 - Route: /tools/code-mode/guest-api
@@ -13905,6 +13923,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Nested tool execution
   - H2: Run and snapshot lifecycle
   - H2: QuickJS-WASI runtime
+  - H2: Node runtime
   - H2: TypeScript
   - H2: Security boundary
 

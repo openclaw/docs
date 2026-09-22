@@ -2024,6 +2024,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "tools/code-mode/quickstart",
+                          "tools/code-mode/executors",
                           "tools/code-mode/configuration",
                           "tools/code-mode/tool-surface",
                           "tools/code-mode/guest-api",
@@ -4096,6 +4097,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "zh-CN/tools/code-mode/quickstart",
+                          "zh-CN/tools/code-mode/executors",
                           "zh-CN/tools/code-mode/configuration",
                           "zh-CN/tools/code-mode/tool-surface",
                           "zh-CN/tools/code-mode/guest-api",
@@ -6134,6 +6136,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "zh-TW/tools/code-mode/quickstart",
+                          "zh-TW/tools/code-mode/executors",
                           "zh-TW/tools/code-mode/configuration",
                           "zh-TW/tools/code-mode/tool-surface",
                           "zh-TW/tools/code-mode/guest-api",
@@ -8172,6 +8175,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "ja-JP/tools/code-mode/quickstart",
+                          "ja-JP/tools/code-mode/executors",
                           "ja-JP/tools/code-mode/configuration",
                           "ja-JP/tools/code-mode/tool-surface",
                           "ja-JP/tools/code-mode/guest-api",
@@ -10210,6 +10214,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "es/tools/code-mode/quickstart",
+                          "es/tools/code-mode/executors",
                           "es/tools/code-mode/configuration",
                           "es/tools/code-mode/tool-surface",
                           "es/tools/code-mode/guest-api",
@@ -12248,6 +12253,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "pt-BR/tools/code-mode/quickstart",
+                          "pt-BR/tools/code-mode/executors",
                           "pt-BR/tools/code-mode/configuration",
                           "pt-BR/tools/code-mode/tool-surface",
                           "pt-BR/tools/code-mode/guest-api",
@@ -14286,6 +14292,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "ko/tools/code-mode/quickstart",
+                          "ko/tools/code-mode/executors",
                           "ko/tools/code-mode/configuration",
                           "ko/tools/code-mode/tool-surface",
                           "ko/tools/code-mode/guest-api",
@@ -16324,6 +16331,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "de/tools/code-mode/quickstart",
+                          "de/tools/code-mode/executors",
                           "de/tools/code-mode/configuration",
                           "de/tools/code-mode/tool-surface",
                           "de/tools/code-mode/guest-api",
@@ -18362,6 +18370,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "fr/tools/code-mode/quickstart",
+                          "fr/tools/code-mode/executors",
                           "fr/tools/code-mode/configuration",
                           "fr/tools/code-mode/tool-surface",
                           "fr/tools/code-mode/guest-api",
@@ -20400,6 +20409,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "hi/tools/code-mode/quickstart",
+                          "hi/tools/code-mode/executors",
                           "hi/tools/code-mode/configuration",
                           "hi/tools/code-mode/tool-surface",
                           "hi/tools/code-mode/guest-api",
@@ -22438,6 +22448,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "ar/tools/code-mode/quickstart",
+                          "ar/tools/code-mode/executors",
                           "ar/tools/code-mode/configuration",
                           "ar/tools/code-mode/tool-surface",
                           "ar/tools/code-mode/guest-api",
@@ -24476,6 +24487,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "it/tools/code-mode/quickstart",
+                          "it/tools/code-mode/executors",
                           "it/tools/code-mode/configuration",
                           "it/tools/code-mode/tool-surface",
                           "it/tools/code-mode/guest-api",
@@ -26514,6 +26526,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "vi/tools/code-mode/quickstart",
+                          "vi/tools/code-mode/executors",
                           "vi/tools/code-mode/configuration",
                           "vi/tools/code-mode/tool-surface",
                           "vi/tools/code-mode/guest-api",
@@ -28552,6 +28565,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "nl/tools/code-mode/quickstart",
+                          "nl/tools/code-mode/executors",
                           "nl/tools/code-mode/configuration",
                           "nl/tools/code-mode/tool-surface",
                           "nl/tools/code-mode/guest-api",
@@ -30590,6 +30604,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "tr/tools/code-mode/quickstart",
+                          "tr/tools/code-mode/executors",
                           "tr/tools/code-mode/configuration",
                           "tr/tools/code-mode/tool-surface",
                           "tr/tools/code-mode/guest-api",
@@ -32628,6 +32643,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "uk/tools/code-mode/quickstart",
+                          "uk/tools/code-mode/executors",
                           "uk/tools/code-mode/configuration",
                           "uk/tools/code-mode/tool-surface",
                           "uk/tools/code-mode/guest-api",
@@ -34666,6 +34682,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "id/tools/code-mode/quickstart",
+                          "id/tools/code-mode/executors",
                           "id/tools/code-mode/configuration",
                           "id/tools/code-mode/tool-surface",
                           "id/tools/code-mode/guest-api",
@@ -36704,6 +36721,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "pl/tools/code-mode/quickstart",
+                          "pl/tools/code-mode/executors",
                           "pl/tools/code-mode/configuration",
                           "pl/tools/code-mode/tool-surface",
                           "pl/tools/code-mode/guest-api",
@@ -38742,6 +38760,7 @@
                         "group": "Code Mode",
                         "pages": [
                           "ru/tools/code-mode/quickstart",
+                          "ru/tools/code-mode/executors",
                           "ru/tools/code-mode/configuration",
                           "ru/tools/code-mode/tool-surface",
                           "ru/tools/code-mode/guest-api",
