@@ -105,6 +105,45 @@ When a session has someone to credit, its system prompt lists the exact trailers
 
 Turning **Git co-author credit** off stops attribution for future runs. It does not rewrite commits that already contain the public trailer.
 
+## Channel identity links
+
+An administrator can attest that a stable channel sender belongs to an existing Gateway profile. The link includes the channel, the configured channel account, and the sender's native ID. Display names, usernames, and `session.identityLinks` do not establish this association.
+
+All three Gateway methods require `operator.admin`:
+
+| Method                        | Parameters              | Result                                      |
+| ----------------------------- | ----------------------- | ------------------------------------------- |
+| `users.linkChannelIdentity`   | `profileId`, `identity` | The canonical profile ID and saved identity |
+| `users.listChannelIdentities` | `profileId`             | `links` for that profile                    |
+| `users.unlinkChannelIdentity` | `profileId`, `identity` | `removed`                                   |
+
+For example, the `identity` object for a Discord user is:
+
+```json
+{
+  "channelId": "discord",
+  "accountId": "team-bot",
+  "senderId": "100000000000000001"
+}
+```
+
+Use the exact configured account ID and immutable sender ID. An identical sender ID on another account is a different binding. Repeating the same link is safe. A link already owned by another profile must first be explicitly unlinked from that profile. Unlinking also checks the expected profile, so a stale request cannot remove someone else's binding. The shared **Owner** profile is not a person and cannot receive these links.
+
+Links follow explicit profile merges and the surviving profile's current role. Linking does not rename or merge people, rewrite transcript attribution, assign session ownership, or change session visibility. Permission resolution separately checks the trusted incoming sender and the linked person's current authority.
+
+Every linked sender whose current effective operator role includes `operator.admin` receives channel-owner authority automatically while any role-required person-access grant remains active. The role name does not matter, and no extra `gateway.auth.identityScopes` grant is needed. When operator roles are not configured, a matching administrative identity-scope grant supplies this authority instead. A configured nonadmin role prevents that fallback. Removing the link, demoting the person, or removing the role's administrative scope revokes inherited authority. Authority is rechecked before pending privileged actions take effect; already accepted operations finish their required cleanup. Explicit `commands.ownerAllowFrom` entries remain independent. See [Operator scopes](/gateway/operator-scopes).
+
+Managed updates retain the original person-access grant through staging and a
+required authorization check before parking the Gateway. Once parking is
+accepted, the native updater owns completion or recovery of that update while
+profile, role, and configuration checks remain current. A restarted policy service
+or renewed invitation does not authorize a new request on the original grant.
+See [Restart handoff](/cli/update/how-updates-run#restart-handoff).
+
+Channel policies and explicit command allowlists still apply, including to native commands. Cosmetic profile changes do not cancel an authorized request; changing its identity link or role requires a fresh request.
+
+These records use the existing shared-state identity table without changing its schema version. Older builds ignore the channel binding namespace; downgrading disables this recognition without converting the links into login accounts. Upgrading does not guess or backfill channel identities. Administrators can inspect and remove the links through the same methods after upgrading again.
+
 ## GitHub connections
 
 Open **Settings → Profile → GitHub connections** to connect **My GitHub** without changing the shared **System GitHub** account. Both accounts and their connection status remain visible together. Viewing these connections does not require selecting an agent or configuring a default agent. Connecting a credential does not change your verified GitHub sign-in identity, display name, avatar, Git co-author credit preference, or OpenClaw permissions.

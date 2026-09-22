@@ -40,7 +40,12 @@ cleanup while keeping the assertion and callable abort-reason values bound to
 the plugin instance. Plugin retirement also ends captured access.
 
 The Gateway binds the returned authority to the original person and carries it
-through WebSocket and HTTP requests. Ordinary transport disconnect is distinct
+through WebSocket and HTTP requests, and through commands admitted for a linked
+channel sender. Linked administrators must satisfy the same role-bound person
+policy, including after awaited command preparation. Revoking an admitted grant
+ends that command's authority; a replacement grant applies only to new admission.
+Explicitly configured command owners retain their independent authority.
+Ordinary transport disconnect is distinct
 from revocation. A policy must preserve independent staff access; it must not
 infer the requesting person's authority from a session's creator, display name,
 or sandbox state. Shared-secret system authority remains outside person policies.
