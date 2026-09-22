@@ -3470,6 +3470,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: Decision models
   - H2: Choose a provider and model
   - H2: Define a decision
+  - H2: Agent evaluation tool
   - H2: Call from a plugin
   - H2: Interpret scores and probabilities
   - H2: Limits and unavailable results
@@ -3525,6 +3526,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Currently documented flags
   - H2: Control UI Labs
+  - H2: Decision assistance
+  - H3: Core consumer contract
   - H2: Local model lean mode
   - H2: Experimental does not mean hidden
   - H2: Related
@@ -11065,7 +11068,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Run Kev
   - H3: Connect OpenClaw
   - H2: Decision contract
-  - H2: Optional evaluation tool
+  - H2: Agent evaluation tool
   - H2: Existing external installation
 
 ## plugins/vault.md
