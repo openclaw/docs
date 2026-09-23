@@ -7071,6 +7071,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recover in the Control UI
   - H2: Doctor cannot enter maintenance during finalization
   - H2: Node and global install permissions
+  - H3: System-scope systemd services
   - H2: Published 2026.9.4 on large agent fleets
   - H2: Plugin repair warnings
   - H3: Missing temporary plugin captures
