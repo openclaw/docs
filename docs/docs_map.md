@@ -13862,6 +13862,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser/lightweight
 - Headings:
   - H1: Lightweight browsers
+  - H2: Licensing and distribution
+  - H2: Alternatives reviewed
+  - H3: Obscura audit boundary
   - H2: Choose where the engine runs
   - H2: Docker with OpenClaw on the host
   - H2: Docker Compose with OpenClaw in a container
