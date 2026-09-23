@@ -10697,6 +10697,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
+  - H2: Managed node workspace acquisition
   - H2: How to migrate
 
 ## plugins/sdk-migration/import-paths.md
