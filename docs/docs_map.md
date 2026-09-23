@@ -13857,6 +13857,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser selection
   - H2: Control API (optional)
 
+## tools/browser/lightweight.md
+
+- Route: /tools/browser/lightweight
+- Headings:
+  - H1: Lightweight browsers
+  - H2: Choose where the engine runs
+  - H2: Docker with OpenClaw on the host
+  - H2: Docker Compose with OpenClaw in a container
+  - H2: Native Linux and macOS
+  - H2: Configure an opt-in profile
+  - H2: Session and capability limits
+  - H2: Verification and benchmarks
+  - H3: An externally managed engine
+
 ## tools/browser/profiles.md
 
 - Route: /tools/browser/profiles
