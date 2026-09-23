@@ -9126,6 +9126,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/agentsapi.md
+
+- Route: /plugins/reference/agentsapi
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+
 ## plugins/reference/alibaba.md
 
 - Route: /plugins/reference/alibaba
@@ -11888,6 +11895,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Naming map
   - H2: Implicit agent runtime
+  - H2: Agents API MVP
   - H2: Native Codex app-server auth
 
 ## providers/openai/setup.md
