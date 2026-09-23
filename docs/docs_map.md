@@ -12410,6 +12410,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/full-release-validation/dispatch
 - Headings:
+  - H2: Exact frozen-target test omissions
   - H2: Retain and reconcile the root request
   - H2: Select coverage
 
