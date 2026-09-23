@@ -10928,6 +10928,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/gateway-and-nodes
 - Headings:
   - H2: Gateway and node namespaces
+  - H3: Session resource methods
   - H3: Person access lifetimes
   - H3: Durable person access grants
   - H2: Gateway service events
@@ -15256,6 +15257,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The board
   - H2: Show a website fullscreen
   - H2: Share a browser dashboard with your agent
+  - H3: Session writer access
   - H2: What widgets are allowed to do
   - H2: MCP apps on the board
   - H2: A2UI widgets
