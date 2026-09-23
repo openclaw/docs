@@ -8471,6 +8471,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness/routing
 - Headings:
   - H2: Routing and model selection
+  - H3: Operator role model permissions
   - H2: Deployment patterns
   - H3: Basic Codex deployment
   - H3: Mixed provider deployment
