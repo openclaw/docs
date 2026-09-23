@@ -1152,6 +1152,10 @@ writing and committing. Token callbacks lock cancellation at commit admission
 and report saved credentials only after acknowledgement. Canonical close drains
 accepted lease work before releasing its exact owner; an uncertain write retains
 the lease barrier. Native maintenance and Doctor keep their existing owners.
+Lease verification releases each read snapshot before waiting for host admission,
+then rereads the exact unexpired owner from current committed state. Host scheduling
+does not pin the WAL; writes and renewals retain their transaction-held checks.
+Schemas, retention, durability, and update behavior are unchanged.
 
 Requester MCP setup reads its sorted authorization set in one current read-worker
 operation. The worker decodes selected rows in caller order and returns only
