@@ -12810,6 +12810,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Test performance tooling
   - H3: Kitchen Sink Gateway resource comparison
+  - H3: Plugin coverage inventory
   - H3: Reusing the resource host
   - H3: Zod schema compilation
   - H2: Benchmarks
