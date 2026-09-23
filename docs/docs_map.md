@@ -7084,6 +7084,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating
 - Headings:
+  - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
   - H3: Updating from 2026.9.2 across a schema bump
   - H3: From chat
