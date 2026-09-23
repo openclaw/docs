@@ -265,10 +265,10 @@ jobs:
           set -euo pipefail
           verify_response=""
           if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
-            verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" || true)"
+            verify_response="$(curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" || true)"
           fi
           if [ -z "${verify_response}" ] && [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)"
+            verify_response="$(curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)"
           fi
           if [ -n "${verify_response}" ]; then
             VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
@@ -298,6 +298,7 @@ jobs:
                     "Content-Type": "application/json",
                   },
                   method: "POST",
+                  signal: AbortSignal.timeout(30_000),
                 });
                 if (temporary.ok) {
                   const data = await temporary.json();
