@@ -45,7 +45,7 @@ export async function reconcileDocsHosts({
   async function list(apiPath) {
     const entries = [];
     for (let page = 1; ; page += 1) {
-      const data = await api(`${apiPath}${apiPath.includes("?") ? "&" : "?"}per_page=100&page=${page}`);
+      const data = await api(`${apiPath}${apiPath.includes("?") ? "&" : "?"}per_page=50&page=${page}`);
       if (!Array.isArray(data.result)) throw new Error(`Invalid list response: ${apiPath}`);
       entries.push(...data.result);
       const totalPages = data.result_info?.total_pages;
