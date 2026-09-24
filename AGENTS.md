@@ -37,7 +37,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 - Source sync starts in `openclaw/openclaw/.github/workflows/docs-sync-publish.yml`.
 - Sync mirrors `openclaw/openclaw/docs/**` into this repo and updates `.openclaw-sync/source.json`.
 - `translate-incremental.yml` runs normal debounced docs changes.
-- `translate-all.yml` runs full reconciliation from glossary changes, weekly schedule, release dispatch, or manual dispatch.
+- `translate-all.yml` reconciles missing or changed translations weekly or by manual dispatch. Matching-page retranslation requires explicit `force_retranslate` recovery.
 - Translation pending logic compares source file SHA-256 with each page's `x-i18n.source_hash`.
 - Locale workers upload artifacts; the shared finalizer pushes one aggregate i18n commit.
 - If translated MDX fails, the repair step may touch only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.

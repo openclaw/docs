@@ -9,13 +9,13 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 - Translation work is debounced so a burst of docs commits becomes one translation wave.
 - Locale jobs translate only pages whose source hash changed since the last successful locale output.
 - Successful locale outputs are committed together, even if one or more locale jobs fail.
-- A weekly reconciliation reruns every locale/page path to repair missed or flaky translations.
+- Weekly reconciliation fills missing or stale translations at high reasoning effort. Matching pages keep their existing output.
 
 ## Event flow
 
 1. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the OpenClaw docs tree into `openclaw/docs`, then replaces `docs/clawhub/` with the current `openclaw/clawhub/docs` input. The sync script also rewrites the publish `docs/docs.json`. The generated locale picker blocks exist there even though the source repo no longer commits them.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate All` (`openclaw/docs/.github/workflows/translate-all.yml`) is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
+3. `Translate Full` (`openclaw/docs/.github/workflows/translate-all.yml`) runs weekly or by manual dispatch. It reconciles the selected locales without forcing matching pages to translate again.
 4. The coordinator waits a cooldown window before starting translation.
 5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
 6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
@@ -85,20 +85,24 @@ The commit may contain a partial locale set. The job summary lists applied local
 
 ## Weekly reconciliation
 
-The weekly run uses `full` mode. It forces a full reconciliation across every locale and every source page instead of relying only on changed source hashes.
+The weekly run retains the `full` workflow lane and artifact contract, but selects only missing pages, stale source hashes, and pages with retired routing metadata. Translation, canary, and MDX repair jobs use high reasoning effort.
 
-Glossary changes also force full reconciliation because glossary guidance can affect pages whose source hashes did not change.
+To regenerate matching pages after a glossary change or a translation-quality incident, manually dispatch `translate-all.yml` with `force_retranslate=true`. Select `target_locale` to bound recovery to the affected locale when possible. This is the only whole-corpus retranslation path; ordinary manual runs use the same hash-based selection as the schedule.
+
+Routine canaries sample pending pages. When none are pending in the canary locale, translation is skipped. Explicit `canary_only` or `diagnostic_canary_only` runs still force their configured page sample.
+
+`resume_run_id` preserves the original source snapshot and retranslation selection, reuses successful shard receipts, and reruns failed or missing shards. Receipts from older full runs retain their original forced-retranslation contract. Mixed selection receipts are rejected. Within each worker, only the first forced attempt clears old outputs and uses `--overwrite`; strict checks and later attempts retain completed pages.
 
 Expected behavior:
 
-- regenerate or verify every locale page
+- translate missing or stale locale pages
 - prune stale locale pages
 - refresh translation memory as needed
 - still use parallel locale jobs
 - still commit one aggregate result
 - still tolerate individual locale failures
 
-The weekly run is the repair mechanism for LLM flakiness, partial failures, and missed incremental updates.
+The weekly run repairs missed updates and missing pages without repeating completed translations. Use explicit recovery for a same-source translation-quality repair.
 
 ## Deployment policy
 

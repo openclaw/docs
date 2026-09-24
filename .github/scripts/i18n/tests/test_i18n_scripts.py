@@ -249,6 +249,9 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("target_locale:", text)
         self.assertIn("resume_run_id:", text)
         self.assertIn("canary_only:", text)
+        self.assertRegex(text, r"force_retranslate:[\s\S]*?default: false")
+        self.assertIn("FORCE_RETRANSLATE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_retranslate }}", text)
+        self.assertEqual(6, text.count("force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}"))
         self.assertIn("cancel-in-progress: false", text)
 
     def test_full_workflow_gates_batches_after_canary(self) -> None:
@@ -259,7 +262,7 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("needs.translate-canary.result == 'success'", text)
             self.assertIn("inputs.canary_only != true", text)
         self.assertIn("artifact_role: canary", text)
-        self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", text)
+        self.assertIn("canary_source_path: ${{ (inputs.canary_only == true || inputs.diagnostic_canary_only == true) && (inputs.canary_source_path || 'channels/line.md') || '' }}", text)
         self.assertIn("diagnostic_canary_only:", text)
         self.assertEqual(7, text.count("inputs.diagnostic_canary_only != true"))
         self.assertIn(
@@ -306,7 +309,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("include-hidden-files: true", reusable)
         self.assertIn('PARTIAL_ARGS=(--allow-partial)', reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/clear_pending_locale_outputs.py"', reusable)
-        self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
+        self.assertIn('if [ "${FORCE_RETRANSLATE}" = "true" ] && [ "$attempt" -eq 1 ]; then', reusable)
         self.assertIn('PARTIAL_ARGS+=(--overwrite)', reusable)
         self.assertIn('echo "docs-i18n strict completion check $attempt/$max_attempts"', reusable)
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
@@ -363,7 +366,7 @@ class I18NScriptTests(unittest.TestCase):
     def test_translation_worker_preserves_progress_across_retries(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         self.assertIn("MODE: ${{ inputs.mode }}", reusable)
-        self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
+        self.assertIn('if [ "${FORCE_RETRANSLATE}" = "true" ] && [ "$attempt" -eq 1 ]; then', reusable)
         self.assertIn("PARTIAL_ARGS+=(--overwrite)", reusable)
         self.assertIn("PARTIAL_ARGS=(--allow-partial)", reusable)
         self.assertIn('"${PARTIAL_ARGS[@]}"', reusable)
@@ -371,6 +374,66 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotIn('if [ "${MODE}" = "full" ]; then\n              echo "docs-i18n strict completion check', reusable)
         self.assertIn('echo "docs-i18n strict completion check $attempt/$max_attempts"', reusable)
         self.assertNotIn("TRANSLATE_ARGS", reusable)
+
+    def test_worker_retry_does_not_retranslate_completed_pages(self) -> None:
+        for force in (False, True):
+            with self.subTest(force=force), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp).resolve()
+                docs = root / "docs"
+                (docs / "fr").mkdir(parents=True)
+                (root / "source/scripts/docs-i18n").mkdir(parents=True)
+                (root / ".openclaw-sync").mkdir()
+                sources = [docs / "first.md", docs / "second.md"]
+                for source in sources:
+                    source.write_text("source", encoding="utf-8")
+                    (docs / "fr" / source.name).write_text("translated" if force else "stale", encoding="utf-8")
+                untouched = docs / "fr/unchanged.md"
+                untouched.write_text("keep", encoding="utf-8")
+                # The shell extractor masks expressions; use a literal manifest
+                # name so this runs the actual workflow block without Actions.
+                manifest = root / ".openclaw-sync/docs-i18n-fr-s2of2.txt"
+                manifest.write_text("\n".join(map(str, sources)), encoding="utf-8")
+                shells = root / "shells"
+                shells.mkdir()
+                scripts = workflow_shell_check.extract_run_blocks(REPO_ROOT / ".github/workflows/translate-locale-reusable.yml", shells)
+                script = next(path for path in scripts if "docs-i18n partial attempt" in path.read_text())
+                script.write_text(script.read_text().replace("__GITHUB_EXPR__", "2"), encoding="utf-8")
+                bin_dir = root / "bin"
+                bin_dir.mkdir()
+                fake_go = bin_dir / "go"
+                fake_go.write_text(
+                    f"#!{sys.executable}\n"
+                    "import json, os, sys\nfrom pathlib import Path\n"
+                    "root = Path(os.environ['GITHUB_WORKSPACE'])\n"
+                    "state_file = root / 'calls.json'\n"
+                    "state = json.loads(state_file.read_text()) if state_file.exists() else {'calls': 0, 'generated': []}\n"
+                    "state['calls'] += 1\n"
+                    "for source in sys.argv[-2:]:\n"
+                    "    output = root / 'docs/fr' / Path(source).name\n"
+                    "    if '--overwrite' not in sys.argv and output.exists() and output.read_text() == 'translated': continue\n"
+                    "    if output.name == 'second.md' and state['calls'] <= 2: continue\n"
+                    "    output.write_text('translated')\n"
+                    "    state['generated'].append(output.name)\n"
+                    "state_file.write_text(json.dumps(state))\n"
+                    "sys.exit(1 if state['calls'] == 2 else 0)\n",
+                    encoding="utf-8",
+                )
+                fake_go.chmod(0o755)
+                (bin_dir / "sleep").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+                (bin_dir / "sleep").chmod(0o755)
+                # Keep Python available even on hosts whose PATH omits that alias.
+                (bin_dir / "python").symlink_to(sys.executable)
+                result = subprocess.run(
+                    ["bash", str(script)], cwd=root, text=True, capture_output=True, timeout=30,
+                    env={**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}", "GITHUB_WORKSPACE": str(root),
+                         "I18N_SCRIPT_DIR": str(SCRIPT_DIR), "LOCALE": "fr", "LOCALE_SLUG": "fr",
+                         "FORCE_RETRANSLATE": str(force).lower(), "WORKER_PARALLEL": "3", "THINKING_EFFORT": "high"},
+                )
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                calls = json.loads((root / "calls.json").read_text())
+                self.assertEqual(4, calls["calls"])
+                self.assertEqual(["first.md", "second.md"], calls["generated"])
+                self.assertEqual("keep", untouched.read_text())
 
     def test_clear_pending_locale_outputs_removes_only_requested_locale_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -500,18 +563,18 @@ class I18NScriptTests(unittest.TestCase):
                 f"{workflow_path.name} must resolve the Codex CLI version from toolchain.json",
             )
 
-        self.assertIn("effort: xhigh", reusable)
+        self.assertIn("effort: high", reusable)
         self.assertIn('go-version: "${{ env.GO_VERSION }}"', reusable)
         self.assertNotIn('codex-args:', reusable)
         self.assertNotIn('--full-auto', reusable)
         self.assertNotIn("effort: max", reusable)
-        self.assertEqual(1, full.count('thinking_effort: "xhigh"'))
-        self.assertEqual(6, full.count("thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}"))
+        self.assertEqual(1, full.count('thinking_effort: "high"'))
+        self.assertEqual(6, full.count("thinking_effort: ${{ inputs.translation_effort || 'high' }}"))
         self.assertIn("translation_effort:", full)
         self.assertIn("canary_source_path:", full)
-        self.assertIn("canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}", full)
+        self.assertIn("canary_source_path: ${{ (inputs.canary_only == true || inputs.diagnostic_canary_only == true) && (inputs.canary_source_path || 'channels/line.md') || '' }}", full)
         self.assertNotIn("- max", full)
-        self.assertEqual(1, incremental.count('thinking_effort: "xhigh"'))
+        self.assertEqual(1, incremental.count('thinking_effort: "high"'))
         self.assertNotIn('thinking_effort: "max"', incremental)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
@@ -624,9 +687,33 @@ class I18NScriptTests(unittest.TestCase):
                     prepare.read_resume_state(artifacts, backfill)
             artifact = self._write_artifact(root / "legacy", "single", metadata=legacy)
             with chdir(repo):
-                self.assertEqual(ref, prepare.read_resume_state(artifact, ref).publish_ref)
+                self.assertEqual(ref, prepare.read_resume_state(artifact, ref)[0].publish_ref)
                 with self.assertRaisesRegex(SystemExit, "empty or incomplete"):
                     prepare.read_resume_state(artifact, ref, "12,13")
+
+    def test_resume_inherits_and_validates_retranslation_selection(self) -> None:
+        state = prepare.MainState("b" * 40, "openclaw/openclaw", "a" * 40, "c" * 40)
+        metadata = {"locale": "fr", "locale_slug": "fr", "mode": "full", "source_sha": state.source_sha,
+                    "shard_index": 0, "shard_total": 1, "publish_ref": state.publish_ref,
+                    "source_metadata_oid": state.source_metadata_oid}
+        for recorded in (None, False, True):
+            with self.subTest(recorded=recorded), tempfile.TemporaryDirectory() as tmp:
+                receipt = dict(metadata)
+                if recorded is not None:
+                    receipt["force_retranslate"] = recorded
+                root = Path(tmp)
+                self._write_artifact(root, "fr", metadata=receipt)
+                with patch.object(prepare, "read_source_state", return_value=state), env({"FORCE_RETRANSLATE": "false"}):
+                    values = prepare.prepare("full", "Test", root)
+                self.assertEqual("false" if recorded is False else "true", values["force_retranslate"])
+                self.assertEqual(state.publish_ref, values["publish_ref"])
+        for value, message in (("false", "invalid retranslation"), (True, "contradictory retranslation")):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                self._write_artifact(root, "fr", metadata={**metadata, "force_retranslate": False})
+                self._write_artifact(root, "de", metadata={**metadata, "locale": "de", "locale_slug": "de", "force_retranslate": value})
+                with self.assertRaisesRegex(SystemExit, message):
+                    prepare.read_resume_state(root)
 
     def test_resume_workflow_uses_frozen_docs_and_current_staged_control_code(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -691,6 +778,7 @@ class I18NScriptTests(unittest.TestCase):
             outputs = dict(line.split("=", 1) for line in (root / "outputs").read_text().splitlines())
             self.assertEqual(original, outputs["publish_ref"])
             self.assertEqual("a" * 40, outputs["source_sha"])
+            self.assertEqual("true", outputs["force_retranslate"])
             run_git(repo, "checkout", "--detach", original)
             self.assertEqual((SCRIPT_DIR / "check_mdx_protected_attributes.mjs").read_bytes(),
                              (runner / "openclaw-i18n-scripts/check_mdx_protected_attributes.mjs").read_bytes())
@@ -702,12 +790,14 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual("old snapshot\n", (repo / "docs/.i18n/fr.tm.jsonl").read_text())
             result = subprocess.run([sys.executable, str(runner / "openclaw-i18n-scripts/package_artifact.py")], cwd=repo,
                 env={**test_env, "GITHUB_WORKSPACE": str(repo), "LOCALE": "fr", "LOCALE_SLUG": "fr", "MODE": "full",
-                     "SHARD_INDEX": "1", "SHARD_TOTAL": "2", "WORKER_PARALLEL": "3", "THINKING_EFFORT": "xhigh",
+                     "SHARD_INDEX": "1", "SHARD_TOTAL": "2", "WORKER_PARALLEL": "3", "THINKING_EFFORT": "high",
+                     "FORCE_RETRANSLATE": outputs["force_retranslate"],
                      "PENDING_COUNT": "1", "TOTAL_PENDING_COUNT": "126", "ALL_COUNT": "126", "TRANSLATE_OUTCOME": "failure"},
                 text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stderr)
             metadata = json.loads(result.stdout)
             self.assertEqual((original, oid), (metadata["publish_ref"], metadata["source_metadata_oid"]))
+            self.assertIs(True, metadata["force_retranslate"])
 
     def test_resume_flat_artifacts_replace_by_identity_and_reject_duplicate_or_misnamed_receipts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -804,7 +894,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
                 locale="de",
                 locale_slug="de",
-                mode="incremental",
                 shard_index=0,
                 shard_total=1,
             )
@@ -1191,7 +1280,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=tmp_path / ".openclaw-sync",
                 locale="fr",
                 locale_slug="fr",
-                mode="incremental",
                 shard_index=1,
                 shard_total=2,
             )
@@ -1217,7 +1305,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
                 locale="fr",
                 locale_slug="fr",
-                mode="full",
                 shard_index=0,
                 shard_total=1,
             )
@@ -1249,7 +1336,6 @@ class I18NScriptTests(unittest.TestCase):
                         openclaw_sync_dir=tmp_path / ".openclaw-sync",
                         locale="fr",
                         locale_slug="fr",
-                        mode="incremental",
                         shard_index=0,
                         shard_total=1,
                     )
@@ -1257,6 +1343,31 @@ class I18NScriptTests(unittest.TestCase):
                     self.assertEqual(2, result.all_count)
                     self.assertEqual(len(expected), result.total_pending_count)
                     self.assertEqual(expected, [file.relative_to((tmp_path / "docs").resolve()).as_posix() for file in result.shard_files])
+
+    def test_reconciliation_preserves_matching_pages_until_explicit_recovery(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            (docs / "fr").mkdir(parents=True)
+            source = docs / "index.md"
+            source.write_text("# Guide\n", encoding="utf-8")
+            digest = hashlib.sha256(source.read_bytes()).hexdigest()
+            output = docs / "fr/index.md"
+            output.write_text(f"---\nx-i18n:\n  source_hash: {digest}\n---\n\n# Guide FR\n", encoding="utf-8")
+            before = output.read_bytes()
+            for force, count in ((False, 0), (True, 1)):
+                with self.subTest(force=force):
+                    result = pending.build_pending_manifest(docs, root / ".openclaw-sync", "fr", "fr", 0, 1,
+                                                            pending_limit=1, force_retranslate=force)
+                    self.assertEqual(count, result.pending_count)
+                    self.assertEqual(count, result.total_pending_count)
+                    self.assertEqual(before, output.read_bytes())
+            source.write_text("# Changed guide\n", encoding="utf-8")
+            result = pending.build_pending_manifest(docs, root / ".openclaw-sync", "fr", "fr", 0, 1)
+            self.assertEqual([source.resolve()], result.shard_files)
+            output.unlink()
+            result = pending.build_pending_manifest(docs, root / ".openclaw-sync", "fr", "fr", 0, 1)
+            self.assertEqual([source.resolve()], result.shard_files)
 
     def test_pending_manifest_excludes_supported_locale_dirs_without_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1276,7 +1387,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=Path(tmp) / ".openclaw-sync",
                 locale="de",
                 locale_slug="de",
-                mode="incremental",
                 shard_index=0,
                 shard_total=1,
             )
@@ -1295,7 +1405,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=tmp_path / ".openclaw-sync",
                 locale="fr",
                 locale_slug="fr",
-                mode="full",
                 shard_index=0,
                 shard_total=1,
                 pending_limit=1,
@@ -1314,7 +1423,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=tmp_path / ".openclaw-sync",
                 locale="fr",
                 locale_slug="fr",
-                mode="full",
                 shard_index=0,
                 shard_total=1,
                 pending_limit=1,
@@ -1335,7 +1443,6 @@ class I18NScriptTests(unittest.TestCase):
                 openclaw_sync_dir=tmp_path / ".openclaw-sync",
                 locale="fr",
                 locale_slug="fr",
-                mode="full",
                 shard_index=0,
                 shard_total=1,
                 pending_limit=1,
@@ -1360,7 +1467,6 @@ class I18NScriptTests(unittest.TestCase):
                     openclaw_sync_dir=tmp_path / ".openclaw-sync",
                     locale="fr",
                     locale_slug="fr",
-                    mode="full",
                     shard_index=0,
                     shard_total=1,
                     pending_limit=1,
@@ -1382,7 +1488,6 @@ class I18NScriptTests(unittest.TestCase):
                     openclaw_sync_dir=tmp_path / ".openclaw-sync",
                     locale="fr",
                     locale_slug="fr",
-                    mode="full",
                     shard_index=0,
                     shard_total=1,
                     pending_limit=1,
@@ -1400,7 +1505,6 @@ class I18NScriptTests(unittest.TestCase):
                     openclaw_sync_dir=tmp_path / ".openclaw-sync",
                     locale="fr",
                     locale_slug="fr",
-                    mode="full",
                     shard_index=0,
                     shard_total=1,
                     pending_limit=1,

@@ -154,7 +154,7 @@ def inspect_resume_run(run_id: str, repository: str) -> dict[str, str]:
     return values
 
 
-def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids: str = "") -> MainState:
+def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids: str = "") -> tuple[MainState, bool]:
     artifacts = artifact_dirs(artifacts_root)
     require_artifact_count(artifacts, artifact_ids)
     if not artifacts:
@@ -162,12 +162,19 @@ def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids:
     sources: set[str] = set()
     snapshots: set[tuple[str, str]] = set()
     identities: set[str] = set()
+    retranslation_modes: set[bool] = set()
     legacy = False
     for artifact in artifacts:
         metadata = read_artifact_metadata(artifact)
         name = artifact_name(metadata)
         if metadata.get("mode") != "full" or metadata.get("artifact_role", "locale") != "locale":
             raise SystemExit(f"resume artifact {artifact.name} is not a full locale receipt")
+        # Older full-run receipts predate incremental reconciliation and always
+        # forced retranslation. Preserve that selection when resuming them.
+        force_retranslate = metadata.get("force_retranslate", True)
+        if not isinstance(force_retranslate, bool):
+            raise SystemExit(f"resume artifact {artifact.name} has invalid retranslation mode")
+        retranslation_modes.add(force_retranslate)
         locale = metadata.get("locale")
         if locale not in LOCALES or metadata.get("locale_slug") != locale.lower():
             raise SystemExit(f"resume artifact {artifact.name} has an unknown locale")
@@ -187,6 +194,8 @@ def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids:
             snapshots.add(snapshot)
     if len(sources) != 1 or len(snapshots) > 1:
         raise SystemExit("resume artifacts contain contradictory source snapshots")
+    if len(retranslation_modes) != 1:
+        raise SystemExit("resume artifacts contain contradictory retranslation modes")
     if legacy and not publish_ref:
         raise SystemExit("legacy resume artifacts lack publish_ref; supply the verified original resume_publish_ref")
     if publish_ref and not re.fullmatch(r"[0-9a-f]{40}", publish_ref):
@@ -199,7 +208,7 @@ def read_resume_state(artifacts_root: Path, publish_ref: str = "", artifact_ids:
     state = read_source_state(publish_ref or recorded[0])
     if state.source_sha != next(iter(sources)) or (recorded and state.source_metadata_oid != recorded[1]):
         raise SystemExit("resume publish snapshot does not match artifact source metadata")
-    return state
+    return state, next(iter(retranslation_modes))
 
 
 def is_translatable_doc_path(path: str) -> bool:
@@ -219,7 +228,7 @@ def incremental_should_translate_paths(changed_paths: list[str]) -> bool:
     has_translatable_docs = any(is_translatable_doc_path(path) for path in changed_paths)
     if not has_translatable_docs:
         if has_glossary_change:
-            print("Glossary-only change; weekly or manual full reconciliation will pick it up.")
+            print("Glossary-only change; use explicit manual retranslation to refresh matching pages.")
             return False
         print("No translatable docs changed after cooldown; skipping translation matrix.")
         return False
@@ -318,10 +327,12 @@ def prepare_translation_state(mode: str) -> tuple[MainState, int]:
 
 
 def prepare(mode: str, title: str, resume_artifacts_root: Path | None = None, resume_publish_ref: str = "") -> dict[str, str]:
+    force_retranslate = os.environ.get("FORCE_RETRANSLATE", "false") == "true"
     if resume_artifacts_root is not None:
         if mode != "full":
             raise SystemExit("only full translations support resume artifacts")
-        state, cooldown = read_resume_state(resume_artifacts_root, resume_publish_ref, os.environ.get("RESUME_ARTIFACT_IDS", "")), 0
+        state, force_retranslate = read_resume_state(resume_artifacts_root, resume_publish_ref, os.environ.get("RESUME_ARTIFACT_IDS", ""))
+        cooldown = 0
     elif resume_publish_ref:
         raise SystemExit("resume_publish_ref requires resume_run_id")
     elif mode == "retirements":
@@ -337,6 +348,7 @@ def prepare(mode: str, title: str, resume_artifacts_root: Path | None = None, re
 
     values = {
         "mode": mode,
+        "force_retranslate": "true" if force_retranslate else "false",
         "publish_ref": state.publish_ref,
         "should_translate": "true" if should_translate else "false",
         "source_repository": state.source_repository,
