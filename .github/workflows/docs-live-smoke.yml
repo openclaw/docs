@@ -3,11 +3,6 @@ name: Docs Live Smoke
 on:
   workflow_dispatch:
     inputs:
-      verify_retired_hosts:
-        description: "Verify retired docs host redirects after hostname reconciliation."
-        type: boolean
-        required: false
-        default: false
       commit_range:
         description: "Optional <base>..<head> git range; docs pages added within it are asserted live in addition to the fixed probes."
         type: string
@@ -66,7 +61,6 @@ jobs:
           BASE_URL: https://docs.openclaw.ai
           GITHUB_SHA: ${{ github.sha }}
           EXTRA_PAGES_FILE: /tmp/openclaw-added-routes.txt
-          VERIFY_RETIRED_HOSTS: ${{ inputs.verify_retired_hosts }}
           PAGES: |
             /tools/reactions
             /plugins/google-meet
@@ -233,8 +227,7 @@ jobs:
             console.log("/mcp: ok");
           };
           const assertHostRedirects = async () => {
-            const hosts = ["documentation.openclaw.ai"];
-            if (process.env.VERIFY_RETIRED_HOSTS === "true") hosts.push("docs2.openclaw.ai", "mintlify.openclaw.ai");
+            const hosts = ["documentation.openclaw.ai", "docs2.openclaw.ai", "mintlify.openclaw.ai"];
             for (const host of hosts) {
               for (const protocol of ["http", "https"]) {
                 const path = "/start/getting-started?from=host-smoke&keep=a%2Fb";

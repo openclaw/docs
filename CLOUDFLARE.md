@@ -146,9 +146,9 @@ coverage and old-object deletion remain unchanged.
 
 ### Router deployment
 
-1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` validates the hosting helpers/router, saves recovery, and deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build. This automatic path never reconciles DNS.
+1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
-3. Manual `pages.yml` dispatch with `deploy_worker=true` saves recovery and deploys the router using the workflow's pinned Wrangler version. Leave `reconcile_hosts=false` for an ordinary router update.
+3. Manual `pages.yml` dispatch with `deploy_worker=true` deploys the router using the workflow's pinned Wrangler version.
 4. Successful deployments dispatch `docs-live-smoke.yml`. Verify the actual upload and Worker deployment steps, not just a green workflow that skipped a stale snapshot. If a docs-only successor uploads the artifact without deploying the changed Worker, use the manual router dispatch.
 
 Local R2 build:
@@ -228,33 +228,9 @@ The Worker does not write HTML to `caches.default` and ignores older entries lab
 
 After router deployment, repeated HTML requests remain `X-OpenClaw-Docs-Cache: MISS`; repeated static or Markdown requests can show `MISS` then `HIT`.
 
-## Hostname reconciliation and retirement
-
-`scripts/cloudflare-docs-hosts.mjs` manages only address records and router routes for `docs2` and `mintlify` in the `openclaw.ai` zone, address records at the obsolete `mintlify-origin` host, and the known obsolete Mintlify verification TXT value at `_cf-custom-hostname.docs2.openclaw.ai`. Other TXT/MX records and unrelated hostnames/routes remain untouched. The retired aliases use proxied address records so the Worker receives requests. Canonical `docs` and `documentation` DNS and existing Ask Molty routes are inventoried and preserved. Their general routes must already target `openclaw-docs-router`; a mismatch stops retirement for inspection. A more-specific route on either retired hostname also stops reconciliation instead of silently replacing another service. Repeating reconciliation makes no changes when the desired state already exists.
-
-For retirement, dispatch **Pages** with `deploy_worker=true` and `reconcile_hosts=true` (reconciliation defaults to false). The workflow runs helper and router tests, inventories the planned changes, and saves a recovery snapshot before deployment. It deploys the redirect-capable Worker before changing DNS and routes, then dispatches live smoke with `verify_retired_hosts=true`. Ordinary smoke defaults that option to false so staged deployment does not require DNS retirement to have already happened.
-
-Both deployment workflows save recovery before every Worker deployment and preserve a sanitized artifact even when deployment or later checks fail. The full scoped recovery snapshot is a mode-0600 runner-local file; it includes prior deployment/version metadata when `CLOUDFLARE_ACCOUNT_ID` is available. It is never uploaded. A sanitized **public recovery artifact** contains only the scoped public DNS name/type/content/proxied/TTL, route pattern/script, and previous Worker version IDs, without account/zone/DNS/route API IDs, credentials, or unrelated records. It is uploaded even after failure, retained for seven days, and is sufficient to recreate the prior scoped DNS and routes. Download it before expiration. Previous Worker versions remain available through Cloudflare's deployment history.
-
-For a local read-only inventory:
-
-```sh
-node scripts/cloudflare-docs-hosts.mjs --dry-run
-```
-
-For local reconciliation after the matching Worker is deployed, provide `CLOUDFLARE_API_TOKEN` and a new private snapshot path outside the repo:
-
-```sh
-node scripts/cloudflare-docs-hosts.mjs --snapshot /private/recovery/docs-hosts.json
-```
-
-A snapshot write failure stops reconciliation before any mutation; an existing snapshot is never overwritten. `--snapshot-only` saves the before-state without changing Cloudflare. `--public-snapshot <path>` additionally saves the sanitized portable recovery document. The helper uses the existing Cloudflare token and does not rotate secrets or modify Mintlify account access.
-
-After all redirect probes pass, remove only the OpenClaw docs project's obsolete Mintlify publishing/preview integration using its administrative controls. Do not delete unrelated projects or shared credentials. This administrative retirement is separate from DNS reconciliation; repository changes alone do not disconnect that integration.
-
 ## Live Smoke
 
-After hostname reconciliation, explicitly run `gh workflow run docs-live-smoke.yml --ref main -f verify_retired_hosts=true` and require success; ordinary and scheduled content checks do not enable the retirement probes. Use these URLs after every deploy:
+Run `gh workflow run docs-live-smoke.yml --ref main` after deployment. It checks the current site and all three compatibility redirects. Use these URLs for manual checks:
 
 ```sh
 curl -I https://docs.openclaw.ai/
@@ -292,4 +268,5 @@ Expected results:
 
 ## Recovery
 
-If hostname reconciliation fails, use the saved scoped DNS/route before-state to restore only the entries changed by that run. Do not restore unrelated zone data. For a router regression, roll back to its prior Cloudflare deployment version and rerun live smoke. If DNS changes had not started, leave DNS alone. Mintlify account disconnection is a separate administrative step; do not assume restoring DNS reconnects a deleted integration.
+For a router regression, use Cloudflare's deployment history to roll back to the
+prior Worker version, then rerun live smoke. Routine deployment does not change DNS.

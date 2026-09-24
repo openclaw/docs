@@ -371,17 +371,6 @@ jobs:
           R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}
         run: npm run docs:r2:upload
 
-      - name: Save recovery before Worker deployment
-        if: steps.artifact-scope.outputs.deploy_worker == '1' && steps.current-main.outputs.stale == 'false'
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          node --test scripts/cloudflare-docs-hosts.test.mjs workers/*.test.mjs
-          node scripts/cloudflare-docs-hosts.mjs --snapshot-only \
-            --snapshot "$RUNNER_TEMP/docs-host-recovery/private-before-deploy.json" \
-            --public-snapshot "$RUNNER_TEMP/docs-host-recovery/public/before-deploy.json"
-
       - name: Deploy Worker before live smoke
         id: deploy-worker
         if: steps.artifact-scope.outputs.deploy_worker == '1' && steps.current-main.outputs.stale == 'false'
@@ -435,14 +424,3 @@ jobs:
         with:
           path: .cache/docs-og
           key: ${{ steps.og-cache.outputs.cache-primary-key }}
-
-      # Preserve recovery even when deployment or subsequent checks fail. Never
-      # upload full API responses from this public repository's runner.
-      - name: Preserve sanitized Worker recovery artifact
-        if: always() && steps.artifact-scope.outputs.deploy_worker == '1' && steps.current-main.outputs.stale == 'false'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: docs-worker-recovery-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/docs-host-recovery/public/*.json
-          retention-days: 7
-          if-no-files-found: warn
