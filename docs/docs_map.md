@@ -6065,6 +6065,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/team-server
 - Headings:
+  - H2: How we build OpenClaw with OpenClaw
   - H2: Before you begin
   - H2: 1. Install under one service account
   - H2: 2. Configure the public URL and authenticated ingress
