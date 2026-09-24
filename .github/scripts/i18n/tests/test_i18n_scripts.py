@@ -1966,10 +1966,7 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(
                 {("poison-text", "docs/fr/poison.md"),
                  ("mdx", "docs/fr/generic.mdx"), ("translated-mdx", "docs/fr/pending.md")},
-                # Publisher compatibility lands before source sync removes the
-                # retired indentation diagnostic from the mirrored checker.
-                {(error["type"], error["file"]) for error in report["errors"]
-                 if (error["type"], error["file"]) != ("mintlify-mdx", "docs/fr/accordion.md")},
+                {(error["type"], error["file"]) for error in report["errors"]},
             )
 
     def test_translated_mdx_preflight_bounds_reports_and_reveals_remaining_errors(self) -> None:

@@ -13,7 +13,6 @@ on:
       - "Makefile"
       - "package.json"
       - "package-lock.json"
-      - "scripts/cloudflare-docs-hosts.mjs"
       - "scripts/*.test.mjs"
       - "scripts/docs-site/**"
       - "workers/**"

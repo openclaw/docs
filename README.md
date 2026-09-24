@@ -53,14 +53,10 @@ English content and navigation are authored in [`openclaw/openclaw`](https://git
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
-Signed R2 requests and the hostname reconciliation helper default to a 30-second
-per-request timeout. A stalled R2 request enters the existing retry loop; a
-stalled reconciliation request fails the helper. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` for
-`scripts/docs-site/r2-upload.mjs`, or `CLOUDFLARE_API_TIMEOUT_MS` for
-`scripts/cloudflare-docs-hosts.mjs` (including dry runs), to raise the
-relevant budget. Use an integer from 1 to 2147483647 milliseconds (Node's maximum
-timer delay). The workflow job timeout remains an outer limit even when a request
-budget is raised.
+Signed R2 requests default to a 30-second per-request timeout. A stalled request
+enters the existing retry loop. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` to an integer
+from 1 to 2147483647 milliseconds to raise that budget. The workflow job timeout
+remains an outer limit.
 
 ## Local checks
 

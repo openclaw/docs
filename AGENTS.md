@@ -11,7 +11,7 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 ## Editable Here
 
 - `scripts/docs-site/**` for the website renderer, design, search, and preview tooling.
-- `workers/**`, `wrangler.toml`, and `scripts/cloudflare-docs-hosts*` for hosting and compatibility redirects.
+- `workers/**` and `wrangler.toml` for hosting and compatibility redirects.
 - `package.json`, `package-lock.json`, `Makefile`, and `.github/workflows/{pages,r2-pages,docs-code-ci,docs-live-smoke}.yml` for website builds, checks, and publishing.
 - `AGENTS.md`, `README.md`.
 - `CLOUDFLARE.md` for repo-owned hosting and deployment guidance.

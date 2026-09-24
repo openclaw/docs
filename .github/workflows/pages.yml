@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "workers/**"
-      - "scripts/cloudflare-docs-hosts.mjs"
       - ".github/workflows/pages.yml"
       - "wrangler.toml"
       - "CLOUDFLARE.md"
@@ -17,11 +16,6 @@ on:
         required: false
         type: boolean
         default: true
-      reconcile_hosts:
-        description: "Reconcile docs host DNS and redirects after deploying the router."
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   actions: write
@@ -52,28 +46,11 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Validate hosting helpers and router
-        run: node --test scripts/cloudflare-docs-hosts.test.mjs workers/*.test.mjs
-
-      - name: Require router deployment for hostname reconciliation
-        if: github.event_name == 'workflow_dispatch' && inputs.reconcile_hosts == true && inputs.deploy_worker != true
-        run: |
-          echo "Hostname reconciliation requires deploy_worker=true so redirects exist before DNS changes." >&2
-          exit 1
+      - name: Validate router
+        run: node --test workers/*.test.mjs
 
       - name: Validate Worker bundle
         run: npx wrangler@4.131.1 deploy --dry-run --config wrangler.toml
-
-      - name: Inventory and save recovery before deployment
-        if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          node scripts/cloudflare-docs-hosts.mjs --dry-run
-          node scripts/cloudflare-docs-hosts.mjs --snapshot-only \
-            --snapshot "$RUNNER_TEMP/docs-host-recovery/private-before-deploy.json" \
-            --public-snapshot "$RUNNER_TEMP/docs-host-recovery/public/before-deploy.json"
 
       - name: Deploy to Cloudflare
         if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
@@ -85,28 +62,8 @@ jobs:
             --tag "${GITHUB_SHA::12}" \
             --message "openclaw/docs ${GITHUB_SHA}"
 
-      - name: Reconcile docs hostnames
-        if: github.event_name == 'workflow_dispatch' && inputs.reconcile_hosts == true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          node scripts/cloudflare-docs-hosts.mjs \
-            --snapshot "$RUNNER_TEMP/docs-host-recovery/private-before-dns.json" \
-            --public-snapshot "$RUNNER_TEMP/docs-host-recovery/public/before-dns.json"
-
-      # This is a public repository: upload only sanitized public DNS/route data.
-      - name: Preserve sanitized recovery artifact
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: docs-host-recovery-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/docs-host-recovery/public/*.json
-          retention-days: 7
-          if-no-files-found: warn
-
       - name: Dispatch live smoke
-        if: github.event_name == 'workflow_dispatch' && (inputs.deploy_worker == true || inputs.reconcile_hosts == true)
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
         env:
           GH_TOKEN: ${{ github.token }}
-          VERIFY_RETIRED_HOSTS: ${{ inputs.reconcile_hosts == true }}
-        run: gh workflow run docs-live-smoke.yml --ref main -f verify_retired_hosts="$VERIFY_RETIRED_HOSTS"
+        run: gh workflow run docs-live-smoke.yml --ref main
