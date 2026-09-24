@@ -71,6 +71,18 @@ the old Gateway serves, then activates and verifies the update.
 openclaw update
 ```
 
+Starting with the release that adds [candidate-owned admission](/cli/update#candidate-owned-admission),
+package updates privately stage the target and let its code judge configuration,
+database schema, Node requirements, and plugin availability before activation.
+Later releases can therefore correct these admission decisions for users already
+on a supporting updater. The installed updater retains managed-service ownership
+and ancestry checks and every mutation. Older installed updaters keep their
+pre-staging refusals; a newer candidate cannot repair that first hop. Targets
+without the capability marker fall back to installed checks, as do
+`--admission installed` and `--dry-run` (which never stages a package).
+Admission selection is CLI-only: `--admission auto` is the default, and there is
+no environment-variable override.
+
 Managed-service inspection is best effort. If the service manager is unavailable,
 including Linux hosts without systemd, the update continues and records a warning.
 It leaves unverified service definitions unchanged and skips their automatic
@@ -135,7 +147,7 @@ containing the managed-helper authority fix, subsequent updates started through
 **from** the fixed version; it does not repair the 2026.9.4 macOS handoff in place.
 </Note>
 
-Registry updates inspect the exact candidate's Node requirement before staging.
+Package updates inspect the exact candidate's Node requirement before activation.
 An incompatible runtime produces `node-runtime-preflight`, with the target
 version, required engine range, selected Node version, and an upgrade command.
 npm directory permission failures produce `global-install-permission-denied`,
@@ -144,8 +156,8 @@ includes these outcomes in `failures`; the update report and Doctor's update
 history retain recorded failures. The serving Gateway stays in place during
 these preflight checks.
 
-These checks run in the **installed updater**. Older updaters cannot gain new
-preflight behavior from the candidate they have not installed yet. If upgrading
+Directory permission checks remain in the **installed updater**. Older updaters cannot gain new
+admission behavior from the candidate they have not staged yet. If upgrading
 from an older release, check [Node requirements](/install/node) and the npm
 prefix's permissions first; see [update troubleshooting](/install/update-troubleshooting#node-and-global-install-permissions).
 
