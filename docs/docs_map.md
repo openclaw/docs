@@ -6219,6 +6219,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Supported operator-facing variables
   - H3: Paths and instances
   - H4: `OPENCLAW_HOME`
+  - H3: Temporary compile cache
   - H3: Gateway and authentication
   - H3: Provider credentials
   - H3: Logging and diagnostics
