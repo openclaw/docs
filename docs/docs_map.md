@@ -8402,6 +8402,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/codex-harness
 - Headings:
+  - H2: Shared output projection
   - H2: Saved-account usage
   - H2: Native subagent status
   - H2: Requirements
