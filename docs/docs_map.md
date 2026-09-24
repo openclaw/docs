@@ -6067,7 +6067,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Before you begin
   - H2: 1. Install under one service account
   - H2: 2. Configure the public URL and authenticated ingress
-  - H3: Set both URL settings
+  - H3: Set the public URL once
   - H2: 3. Bootstrap administrators and assign roles
   - H2: 4. Synchronize people with verified GitHub identities
   - H3: Use an OIDC provider without losing existing profiles
