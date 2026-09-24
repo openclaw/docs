@@ -12223,7 +12223,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/AGENTS.default
 - Headings:
   - H2: First run (recommended)
-  - H2: Safety defaults
+  - H2: Care defaults
   - H2: Existing solutions preflight
   - H2: Session start (required)
   - H2: Soul (required)
@@ -12700,7 +12700,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: AGENTS.md - OpenClaw Workspace
   - H2: Your identity is pre-seeded
   - H2: Backup tip (recommended)
-  - H2: Safety defaults
+  - H2: Care defaults
   - H2: Existing solutions preflight
   - H2: Daily memory (recommended)
   - H2: Automations (optional)
@@ -12728,7 +12728,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: 3. Choose Your Avatar
   - H3: Save Your Identity
   - H2: 4. Finish With Recommendations
-  - H2: 5. One Safety Note
+  - H2: Done
   - H2: Related
 
 ## reference/templates/HEARTBEAT.md
