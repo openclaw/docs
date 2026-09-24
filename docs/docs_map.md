@@ -1860,6 +1860,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Manual dispatches
   - H3: Windows Testbox Probe
   - H4: Exact Windows test replay
+  - H4: Installed repair-worker compatibility and cleanup
   - H4: Installed Gateway startup measurements
 
 ## ci/scope-and-routing/node-test-lanes.md
