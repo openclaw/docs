@@ -8347,6 +8347,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/workspace-bootstrap-files
 - Headings:
   - H2: Workspace bootstrap files
+  - H3: Skill catalogs without a managed relay
 
 ## plugins/codex-harness-runtime.md
 
