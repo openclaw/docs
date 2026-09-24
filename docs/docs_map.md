@@ -1955,6 +1955,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Allowlist helpers
   - H2: Common options
   - H2: openclaw exec-policy
+  - H3: Inspect terminal access
+  - H3: Synchronize local command approvals
   - H2: Notes
   - H2: Related
 
