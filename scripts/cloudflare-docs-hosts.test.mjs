@@ -280,7 +280,7 @@ test("different active docs addresses and Ask Molty route configuration remain u
   await reconcileDocsHosts(options);
   for (const record of records) assert.deepEqual(state.records.find((item) => item.id === record.id), record);
   assert.deepEqual(state.routes.find((route) => route.id === "ask"), routes[0]);
-  assert.doesNotMatch(fs.readFileSync(options.publicSnapshotPath, "utf8"), /active-origin.example.com|192.0.2.42/);
+  assert.doesNotMatch(fs.readFileSync(options.publicSnapshotPath, "utf8"), /active-origin\.example\.com|192\.0\.2\.42/);
 });
 
 test("unexpected active docs routing blocks retirement before any mutation", async (t) => {
