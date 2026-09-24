@@ -236,7 +236,9 @@ That older updater still caps the entire validation sequence at five minutes;
 its `--timeout` option cannot increase this cap.
 
 Plugin rehearsal copies are temporary and rebuilt after interruption. Copying
-them avoids a disk flush for every file; canonical state and recovery backups
+uses up to four concurrent file copies and avoids a disk flush for every file.
+If a copy fails, active copies finish before cleanup; link publication and
+verification run only after all file copies succeed. Canonical state and recovery backups
 retain their existing durability guarantees. An older installed updater keeps
 its initial snapshot behavior until you launch an update from the newer version.
 
