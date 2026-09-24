@@ -1819,6 +1819,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/scheduled-workflows
 - Headings:
+  - H2: Hourly main CI
+  - H3: Restore per-push CI
+  - H3: What stays on pushes
   - H2: OpenClaw Performance
   - H3: Gateway concurrency benchmark
   - H3: Vitest paired benchmark
@@ -4849,6 +4852,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Environment
   - H3: env (inline env vars)
   - H3: Env var substitution
+  - H4: Default values
   - H2: Secrets
   - H3: secrets.egressProxy
   - H3: SecretRef
@@ -5146,6 +5150,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Health monitor config
   - H2: Inbound ingress health
   - H2: HTTP probes
+  - H3: Shared-state integrity failure
   - H3: Plugin replacement recovery
   - H3: CPU pressure and event-loop delay
   - H2: Uptime monitoring
@@ -10407,6 +10412,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/core-ownership
 - Headings:
   - H2: What core still owns
+  - H3: Current input files for local execution
   - H3: Workspace files on the harness host
   - H3: Input attachments for a remote workspace
   - H3: Host-only execution
@@ -12219,6 +12225,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Regular release operator checklist
   - H3: Fast path (default)
   - H3: Full checklist
+  - H3: Release priority
   - H2: Stable main closeout
   - H2: Post-release documentation publication
   - H2: Release preflight
@@ -13204,6 +13211,27 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other Bug Fixes
   - H2: Maintainer and Internal Changes
 
+## releases/2026.9.6.md
+
+- Route: /releases/2026.9.6
+- Headings:
+  - H1: v2026.9.6
+  - H2: Installation and Onboarding
+  - H2: Web UI
+  - H2: Updates and Maintenance
+  - H2: Messaging
+  - H2: Memory
+  - H2: Skills
+  - H2: Native Apps
+  - H2: Models and Providers
+  - H2: Automations and Scheduling
+  - H2: Browser and Computer Use
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+  - H2: Quality-of-Life Improvements
+  - H2: Other Bug Fixes
+  - H2: Maintainer and Internal Changes
+
 ## releases/index.md
 
 - Route: /releases
@@ -13863,6 +13891,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser/lightweight
 - Headings:
   - H1: Lightweight browsers
+  - H2: Browser plugin architecture
   - H2: Licensing and distribution
   - H2: Alternatives reviewed
   - H3: Obscura audit boundary
