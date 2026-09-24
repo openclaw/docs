@@ -8,6 +8,28 @@ let browser;
 before(async () => { browser = await chromium.launch({ headless: true }); });
 after(async () => { await browser?.close(); });
 
+test("published component anchors survive slugify upgrades", async () => {
+  const cases = [
+    ["APIUsage", "سلوك إعادة المحاولة", ["param-apiusage", "slwk-ieadt-almhawlt"]],
+    ["APISection fooBar APIs DNS2API", "ու ՈՒ Ու aŒb aœb aƏb aəb ẞ", ["param-api-section-foo-bar-apis-dns-2-api", "vo-vo-vo-a-b-a-b-a-b-a-b-ss"]],
+    ["a𝓀b a𝕆b aⓒb aⓓb", "Conway’s Law — DON’T", ["param-ahb-a-nb-a-b-b-a-c-b", "conways-law-dont"]],
+    ["ŌōfooBar", "before−after before⁓after", ["param-oofoo-bar", "before-after-before-after"]],
+  ];
+  const page = await browser.newPage();
+  try {
+    for (const [name, title, expected] of cases) {
+      const source = `<ParamField body="${name}">Usage</ParamField>\n\n<Accordion title="${title}">Details</Accordion>`;
+      await page.setContent(renderMdxish(source, createMarkdownRenderer()));
+      const actual = await page.locator("[id]").evaluateAll((elements) => elements.map((el) => el.id));
+      assert.deepEqual(actual, expected, name);
+      assert.deepEqual([...parseDocsDocument(source).ids], expected, name);
+      for (const id of expected) {
+        assert.equal(resolveDocsFragment(`#${id}`, new Set(actual)), id);
+      }
+    }
+  } finally { await page.close(); }
+});
+
 // The independent boundary is Chromium's DOM, not a second call to the ID helper.
 test("published headings, compatibility aliases and component IDs match the rendered DOM", async () => {
   const source = [
