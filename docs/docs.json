@@ -2198,6 +2198,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "providers/openai/setup",
+                          "providers/openai/authentication",
                           "providers/openai/models",
                           "providers/openai/runtimes",
                           "providers/openai/coverage-and-cost",
@@ -4240,6 +4241,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "zh-CN/providers/openai/setup",
+                          "zh-CN/providers/openai/authentication",
                           "zh-CN/providers/openai/models",
                           "zh-CN/providers/openai/runtimes",
                           "zh-CN/providers/openai/coverage-and-cost",
@@ -6282,6 +6284,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "zh-TW/providers/openai/setup",
+                          "zh-TW/providers/openai/authentication",
                           "zh-TW/providers/openai/models",
                           "zh-TW/providers/openai/runtimes",
                           "zh-TW/providers/openai/coverage-and-cost",
@@ -8324,6 +8327,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "ja-JP/providers/openai/setup",
+                          "ja-JP/providers/openai/authentication",
                           "ja-JP/providers/openai/models",
                           "ja-JP/providers/openai/runtimes",
                           "ja-JP/providers/openai/coverage-and-cost",
@@ -10366,6 +10370,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "es/providers/openai/setup",
+                          "es/providers/openai/authentication",
                           "es/providers/openai/models",
                           "es/providers/openai/runtimes",
                           "es/providers/openai/coverage-and-cost",
@@ -12408,6 +12413,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "pt-BR/providers/openai/setup",
+                          "pt-BR/providers/openai/authentication",
                           "pt-BR/providers/openai/models",
                           "pt-BR/providers/openai/runtimes",
                           "pt-BR/providers/openai/coverage-and-cost",
@@ -14450,6 +14456,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "ko/providers/openai/setup",
+                          "ko/providers/openai/authentication",
                           "ko/providers/openai/models",
                           "ko/providers/openai/runtimes",
                           "ko/providers/openai/coverage-and-cost",
@@ -16492,6 +16499,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "de/providers/openai/setup",
+                          "de/providers/openai/authentication",
                           "de/providers/openai/models",
                           "de/providers/openai/runtimes",
                           "de/providers/openai/coverage-and-cost",
@@ -18534,6 +18542,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "fr/providers/openai/setup",
+                          "fr/providers/openai/authentication",
                           "fr/providers/openai/models",
                           "fr/providers/openai/runtimes",
                           "fr/providers/openai/coverage-and-cost",
@@ -20576,6 +20585,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "hi/providers/openai/setup",
+                          "hi/providers/openai/authentication",
                           "hi/providers/openai/models",
                           "hi/providers/openai/runtimes",
                           "hi/providers/openai/coverage-and-cost",
@@ -22618,6 +22628,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "ar/providers/openai/setup",
+                          "ar/providers/openai/authentication",
                           "ar/providers/openai/models",
                           "ar/providers/openai/runtimes",
                           "ar/providers/openai/coverage-and-cost",
@@ -24660,6 +24671,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "it/providers/openai/setup",
+                          "it/providers/openai/authentication",
                           "it/providers/openai/models",
                           "it/providers/openai/runtimes",
                           "it/providers/openai/coverage-and-cost",
@@ -26702,6 +26714,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "vi/providers/openai/setup",
+                          "vi/providers/openai/authentication",
                           "vi/providers/openai/models",
                           "vi/providers/openai/runtimes",
                           "vi/providers/openai/coverage-and-cost",
@@ -28744,6 +28757,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "nl/providers/openai/setup",
+                          "nl/providers/openai/authentication",
                           "nl/providers/openai/models",
                           "nl/providers/openai/runtimes",
                           "nl/providers/openai/coverage-and-cost",
@@ -30786,6 +30800,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "fa/providers/openai/setup",
+                          "fa/providers/openai/authentication",
                           "fa/providers/openai/models",
                           "fa/providers/openai/runtimes",
                           "fa/providers/openai/coverage-and-cost",
@@ -32828,6 +32843,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "tr/providers/openai/setup",
+                          "tr/providers/openai/authentication",
                           "tr/providers/openai/models",
                           "tr/providers/openai/runtimes",
                           "tr/providers/openai/coverage-and-cost",
@@ -34870,6 +34886,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "uk/providers/openai/setup",
+                          "uk/providers/openai/authentication",
                           "uk/providers/openai/models",
                           "uk/providers/openai/runtimes",
                           "uk/providers/openai/coverage-and-cost",
@@ -36912,6 +36929,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "id/providers/openai/setup",
+                          "id/providers/openai/authentication",
                           "id/providers/openai/models",
                           "id/providers/openai/runtimes",
                           "id/providers/openai/coverage-and-cost",
@@ -38954,6 +38972,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "pl/providers/openai/setup",
+                          "pl/providers/openai/authentication",
                           "pl/providers/openai/models",
                           "pl/providers/openai/runtimes",
                           "pl/providers/openai/coverage-and-cost",
@@ -40996,6 +41015,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "th/providers/openai/setup",
+                          "th/providers/openai/authentication",
                           "th/providers/openai/models",
                           "th/providers/openai/runtimes",
                           "th/providers/openai/coverage-and-cost",
@@ -43038,6 +43058,7 @@
                         "group": "OpenAI",
                         "pages": [
                           "ru/providers/openai/setup",
+                          "ru/providers/openai/authentication",
                           "ru/providers/openai/models",
                           "ru/providers/openai/runtimes",
                           "ru/providers/openai/coverage-and-cost",

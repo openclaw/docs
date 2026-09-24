@@ -11897,6 +11897,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: GPT-5 prompt contribution
   - H2: Advanced configuration
 
+## providers/openai/authentication.md
+
+- Route: /providers/openai/authentication
+- Headings:
+  - H2: Compare capabilities
+  - H3: Choose model access and harness separately
+  - H2: Shared agent credential or personal account?
+  - H2: Set up an agent's credential
+  - H2: Check the selected account
+
 ## providers/openai/azure.md
 
 - Route: /providers/openai/azure
@@ -11950,6 +11960,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/setup
 - Headings:
   - H2: Getting started
+  - H2: Sign in with ChatGPT (preview)
+  - H3: Current limitations
 
 ## providers/openai/voice-and-speech.md
 
