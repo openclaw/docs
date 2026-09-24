@@ -134,7 +134,14 @@ function cloudflareMock(t, { records = [], routes = [], pageSize = 100, failMuta
     if (method === "GET") {
       state.reads.push(url.toString());
       let result;
-      if (pathname === "/zones") result = [{ id: "private-zone-id", name: "openclaw.ai", private: "zone metadata" }];
+      if (pathname === "/zones") {
+        // Cloudflare's zones API accepts only 5-50 results per page.
+        const perPage = Number(url.searchParams.get("per_page"));
+        if (!Number.isInteger(perPage) || perPage < 5 || perPage > 50) {
+          return Response.json({ success: false, errors: [{ code: 1000, message: "zones per_page must be between 5 and 50" }] }, { status: 400 });
+        }
+        result = [{ id: "private-zone-id", name: "openclaw.ai", private: "zone metadata" }];
+      }
       else if (pathname.endsWith("/dns_records")) result = state.records.filter((record) => record.name === url.searchParams.get("name"));
       else if (pathname.endsWith("/workers/routes")) result = state.routes;
       else if (pathname.endsWith("/deployments")) return Response.json({ success: true, result: { deployments: [{ id: "prior-deployment", versions: [{ version_id: "prior-version" }] }] } });
