@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Reduce translation token use by reconciling only missing or changed pages at high effort; keep full retranslation as explicit recovery and preserve completed work across retries and resumes.
+
 **Highlights:** Stable section links and reliable source indexing and translated docs, with bounded publishing requests and workflow jobs.
 
 - Keep YAML metadata out of translation MDX validation while preserving protected body attributes and repair offsets.

@@ -30,6 +30,10 @@ on:
       thinking_effort:
         required: true
         type: string
+      force_retranslate:
+        required: false
+        default: false
+        type: boolean
       pending_limit:
         required: false
         default: "0"
@@ -165,6 +169,7 @@ jobs:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           MODE: ${{ inputs.mode }}
+          FORCE_RETRANSLATE: ${{ inputs.force_retranslate }}
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
           PENDING_LIMIT: ${{ inputs.pending_limit }}
@@ -180,6 +185,7 @@ jobs:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           MODE: ${{ inputs.mode }}
+          FORCE_RETRANSLATE: ${{ inputs.force_retranslate }}
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
           OPENCLAW_DOCS_I18N_MODEL: ${{ secrets.OPENCLAW_I18N_MODEL }}
@@ -197,7 +203,7 @@ jobs:
           fi
 
           mapfile -t DOC_FILES < "${pending_file}"
-          if [ "${MODE}" = "full" ]; then
+          if [ "${FORCE_RETRANSLATE}" = "true" ]; then
             python "${I18N_SCRIPT_DIR}/clear_pending_locale_outputs.py" \
               --pending-file "${pending_file}" \
               --locale "${LOCALE}"
@@ -211,7 +217,7 @@ jobs:
           fi
           while [ "$attempt" -le "$max_attempts" ]; do
             PARTIAL_ARGS=(--allow-partial)
-            if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then
+            if [ "${FORCE_RETRANSLATE}" = "true" ] && [ "$attempt" -eq 1 ]; then
               PARTIAL_ARGS+=(--overwrite)
             fi
 
@@ -311,7 +317,7 @@ jobs:
           openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           prompt-file: .openclaw-sync/docs-mdx-repair.md
           model: ${{ steps.repair_model.outputs.model_slot == 'fallback' && secrets.OPENCLAW_I18N_FALLBACK_MODEL || secrets.OPENCLAW_I18N_MODEL }}
-          effort: xhigh
+          effort: high
           sandbox: workspace-write
           safety-strategy: drop-sudo
 
@@ -345,6 +351,7 @@ jobs:
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
           MODE: ${{ inputs.mode }}
+          FORCE_RETRANSLATE: ${{ inputs.force_retranslate }}
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
           WORKER_PARALLEL: ${{ inputs.worker_parallel }}

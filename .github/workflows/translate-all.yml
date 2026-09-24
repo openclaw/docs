@@ -62,13 +62,18 @@ on:
         required: true
         default: channels/line.md
         type: string
+      force_retranslate:
+        description: Recovery only. Retranslate matching pages in the selected locales; resume runs inherit their original selection.
+        required: false
+        default: false
+        type: boolean
       translation_effort:
-        description: Thinking effort for full translation batches.
+        description: Thinking effort for translation batches.
         required: true
-        default: xhigh
+        default: high
         type: choice
         options:
-          - xhigh
+          - high
 
 permissions:
   actions: write
@@ -120,6 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.prepare.outputs.mode }}
+      force_retranslate: ${{ steps.prepare.outputs.force_retranslate }}
       publish_ref: ${{ steps.prepare.outputs.publish_ref }}
       should_translate: ${{ steps.prepare.outputs.should_translate }}
       source_repository: ${{ steps.prepare.outputs.source_repository }}
@@ -185,6 +191,7 @@ jobs:
         id: prepare
         env:
           EVENT_NAME: ${{ github.event_name }}
+          FORCE_RETRANSLATE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_retranslate }}
           REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || '' }}
           DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
           DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
@@ -265,13 +272,14 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ inputs.canary_only == true || inputs.diagnostic_canary_only == true || needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: "0"
       shard_total: "1"
       worker_parallel: "3"
-      # Canary remains the source-blind behavior probe for prompt/source changes.
-      thinking_effort: "xhigh"
+      # Routine canaries sample pending pages; explicit probes can retranslate a fixed page.
+      thinking_effort: "high"
       pending_limit: "1"
-      canary_source_path: ${{ inputs.canary_source_path || 'channels/line.md' }}
+      canary_source_path: ${{ (inputs.canary_only == true || inputs.diagnostic_canary_only == true) && (inputs.canary_source_path || 'channels/line.md') || '' }}
       canary_live_path: channels/line
       canary_expected_h1: LINE
       canary_publish_required: ${{ inputs.canary_only == true }}
@@ -299,11 +307,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      # Scheduled/routine full runs default to xhigh; manual hard recovery can select Max.
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -328,10 +336,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -356,10 +365,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -384,10 +394,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -412,10 +423,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -440,10 +452,11 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      force_retranslate: ${{ needs.prepare.outputs.force_retranslate == 'true' }}
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
+      thinking_effort: ${{ inputs.translation_effort || 'high' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale

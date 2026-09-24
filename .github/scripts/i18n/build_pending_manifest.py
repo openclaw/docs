@@ -4,15 +4,16 @@
 Definition:
   This script mirrors the pending-doc selection logic from
   translate-locale-reusable.yml. It discovers source docs, excludes generated
-  and locale docs, compares source hashes and retired model metadata in
-  incremental mode, and writes the shard-specific pending file consumed by docs-i18n.
+  and locale docs, compares source hashes and retired model metadata, and writes
+  the shard-specific pending file consumed by docs-i18n. Explicit recovery can
+  force retranslation of matching pages.
 
 Parameters:
   --docs-root: Docs directory. Default: docs.
   --openclaw-sync-dir: State/output directory. Default: .openclaw-sync.
 
 Environment:
-  LOCALE, LOCALE_SLUG, MODE, SHARD_INDEX, SHARD_TOTAL, optional
+  LOCALE, LOCALE_SLUG, SHARD_INDEX, SHARD_TOTAL, optional FORCE_RETRANSLATE,
   PENDING_LIMIT, CANARY_SOURCE_PATH, and GITHUB_OUTPUT.
 
 Outputs:
@@ -20,8 +21,8 @@ Outputs:
   GITHUB_OUTPUT receives all_count, total_pending_count, and pending_count.
 
 Examples:
-  LOCALE=fr LOCALE_SLUG=fr MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
-  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=1 SHARD_TOTAL=4 python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=fr LOCALE_SLUG=fr SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=zh-CN LOCALE_SLUG=zh-cn FORCE_RETRANSLATE=true SHARD_INDEX=1 SHARD_TOTAL=4 python .github/scripts/i18n/build_pending_manifest.py
 """
 
 from __future__ import annotations
@@ -98,11 +99,11 @@ def build_pending_manifest(
     openclaw_sync_dir: Path,
     locale: str,
     locale_slug: str,
-    mode: str,
     shard_index: int,
     shard_total: int,
     pending_limit: int = 0,
     canary_source_path: str = "",
+    force_retranslate: bool = False,
 ) -> PendingResult:
     locale_dirs = {path.name for path in docs_root.iterdir() if is_locale_dir(path)}
     pending_path = openclaw_sync_dir / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
@@ -125,7 +126,7 @@ def build_pending_manifest(
         all_files.append(path.resolve())
         locale_path = docs_root / locale / rel
         source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
-        if mode == "full" or not translation_matches_source(locale_path, source_hash):
+        if force_retranslate or not translation_matches_source(locale_path, source_hash):
             pending_files.append(path.resolve())
 
     pending_files = sorted(pending_files)
@@ -148,8 +149,8 @@ def build_pending_manifest(
             # one non-publishing job; every path still passes the normal gates.
             shard_files = canary_sources
         else:
-            # Full canary publishes a real one-page probe before expensive batches,
-            # so choose the smallest deterministic sample to cap token and review cost.
+            # Routine canaries probe pending pages without publishing. Choose the
+            # smallest deterministic sample to cap token and review cost.
             shard_files = sorted(shard_files, key=lambda file: (file.stat().st_size, file.as_posix()))[:pending_limit]
 
     pending_path.parent.mkdir(parents=True, exist_ok=True)
@@ -185,8 +186,8 @@ def parse_args() -> argparse.Namespace:
   Writes .openclaw-sync/docs-i18n-<locale_slug>-s<index>of<total>.txt and GitHub output counts.
 
 Examples:
-  LOCALE=fr LOCALE_SLUG=fr MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
-  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=0 SHARD_TOTAL=1 PENDING_LIMIT=1 CANARY_SOURCE_PATH=channels/line.md python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=fr LOCALE_SLUG=fr SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=zh-CN LOCALE_SLUG=zh-cn FORCE_RETRANSLATE=true SHARD_INDEX=0 SHARD_TOTAL=1 PENDING_LIMIT=1 CANARY_SOURCE_PATH=channels/line.md python .github/scripts/i18n/build_pending_manifest.py
 """,
     )
     parser.add_argument("--docs-root", default="docs", type=Path)
@@ -203,11 +204,11 @@ def main() -> None:
         openclaw_sync_dir=args.openclaw_sync_dir,
         locale=os.environ["LOCALE"],
         locale_slug=os.environ["LOCALE_SLUG"],
-        mode=os.environ["MODE"],
         shard_index=shard_index,
         shard_total=shard_total,
         pending_limit=pending_limit,
         canary_source_path=os.environ.get("CANARY_SOURCE_PATH", ""),
+        force_retranslate=os.environ.get("FORCE_RETRANSLATE", "false") == "true",
     )
     append_output(result)
 
