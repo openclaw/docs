@@ -142,10 +142,10 @@ test("only admitted snapshots do expensive work or publish, including worker-onl
     for (const stale of ["false", "true", ""]) {
       for (const deployWorker of ["0", "1"]) {
         const admitted = stale === "false";
-        for (const name of [...sourceSteps, ...setupSteps, ...artifactSteps, "Deploy Worker before live smoke"]) {
+        for (const name of [...sourceSteps, ...setupSteps, ...artifactSteps, "Save recovery before Worker deployment", "Deploy Worker before live smoke"]) {
           const ownsWork = sourceSteps.includes(name) ? ["full", "locale", "page"].includes(scope)
             : setupSteps.includes(name) ? scope !== "none" || deployWorker === "1"
-            : name === "Deploy Worker before live smoke" ? deployWorker === "1" : scope !== "none";
+            : ["Save recovery before Worker deployment", "Deploy Worker before live smoke"].includes(name) ? deployWorker === "1" : scope !== "none";
           assert.equal(conditionMatches(name, scope, stale, deployWorker), admitted && ownsWork, `${name}: scope=${scope}, stale=${JSON.stringify(stale)}, worker=${deployWorker}`);
         }
       }
@@ -182,6 +182,21 @@ test("head checks bracket publication, with no late admission veto", () => {
   assert.ok(steps.indexOf(step("Upload changed R2 objects")) < steps.indexOf(step("Deploy Worker before live smoke")));
   assert.ok(steps.indexOf(step("Deploy Worker before live smoke")) < steps.indexOf(step("Dispatch live smoke")));
   assert.ok(steps.indexOf(step("Dispatch live smoke")) < steps.indexOf(step("Catch up docs main after publication")));
+});
+
+test("every automatic Worker deployment saves scoped recovery first without reconciling DNS", () => {
+  const snapshot = step("Save recovery before Worker deployment");
+  const artifact = step("Preserve sanitized Worker recovery artifact");
+  assert.ok(steps.indexOf(snapshot) < steps.indexOf(step("Deploy Worker before live smoke")));
+  assert.equal(snapshot.if, step("Deploy Worker before live smoke").if);
+  assert.match(snapshot.run, /node --test scripts\/cloudflare-docs-hosts\.test\.mjs workers\/\*\.test\.mjs/);
+  assert.match(snapshot.run, /cloudflare-docs-hosts\.mjs --snapshot-only/);
+  assert.match(snapshot.run, /--public-snapshot "\$RUNNER_TEMP\/docs-host-recovery\/public\/before-deploy\.json"/);
+  assert.match(artifact.if, /^always\(\) && /);
+  assert.ok(artifact.if.endsWith(snapshot.if));
+  assert.equal(artifact.with.path, "${{ runner.temp }}/docs-host-recovery/public/*.json");
+  assert.equal(artifact.with["retention-days"], 7);
+  assert.ok(steps.indexOf(artifact) > steps.indexOf(step("Dispatch live smoke")), "artifact preservation must not delay live smoke");
 });
 
 test("catch-up requires admitted publication, including unchanged uploads and Worker-only deployments", () => {

@@ -46,7 +46,7 @@ export const localeFlags = {
   th: "🇹🇭"
 };
 
-export const mintlifyLocaleToDir = {
+export const navigationLocaleToDir = {
   en: "en",
   "zh-Hans": "zh-CN",
   "zh-Hant": "zh-TW",
