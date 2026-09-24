@@ -8547,7 +8547,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: App inventory and ownership
   - H2: Connected account apps
   - H2: Thread app config
+  - H2: Approval decision order
+  - H3: Which configuration owns each setting
+  - H3: Native tool enablement
+  - H3: Native approval mode
   - H2: Destructive action policy
+  - H3: Approval examples
   - H2: Troubleshooting
   - H2: Related
 
