@@ -7627,6 +7627,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Dictation and attachments
   - H2: Wear OS companion
   - H2: Install outside Google Play
+  - H2: App and Gateway compatibility
   - H2: Mirror and control Android from a remote Mac
   - H3: Before you begin
   - H3: Enable ADB over TCP
