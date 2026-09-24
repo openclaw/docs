@@ -12247,7 +12247,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Publish the release
   - H3: Verify and recover
   - H2: Regular release operator checklist
-  - H3: Stable release process
+  - H3: Fast path (default)
   - H3: Full checklist
   - H3: Release priority
   - H2: Stable main closeout
@@ -12267,6 +12267,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Prepare once, then use the release button
   - H3: Recover a failed download
   - H3: Direct publication and owner recovery
+  - H3: Publication modes: strict default and operator fast path
   - H2: NPM workflow inputs
   - H2: Regular beta/latest stable release sequence
   - H2: Public references
