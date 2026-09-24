@@ -5,7 +5,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { DomUtils, parseDocument } from "htmlparser2";
 
-import { ignoredDocDirs, localeFlags, localeLabels, mintlifyLocaleToDir } from "./config.mjs";
+import { ignoredDocDirs, localeFlags, localeLabels, navigationLocaleToDir } from "./config.mjs";
 import { chromeStrings } from "./chrome-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
@@ -1022,7 +1022,7 @@ function walkFiles(dir) {
 function activeLocaleCodes() {
   const docsConfig = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
   const configured = (docsConfig.navigation?.languages ?? [])
-    .map((entry) => mintlifyLocaleToDir[entry.language] ?? entry.language);
+    .map((entry) => navigationLocaleToDir[entry.language] ?? entry.language);
   const knownLocaleDirs = fs.readdirSync(docsDir, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory() && !ignoredDocDirs.has(dirent.name) && localeLabels[dirent.name])
     .map((dirent) => dirent.name);

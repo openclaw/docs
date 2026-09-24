@@ -298,7 +298,11 @@ test("explicit HTML, not-found, trailing slash, methods and hosts keep their rou
   for (const [origin, target] of [
     ["http://docs.openclaw.ai", "https://docs.openclaw.ai"],
     ["https://documentation.openclaw.ai", "https://docs.openclaw.ai"],
-    ["https://mintlify.openclaw.ai", "https://docs2.openclaw.ai"],
+    ["https://mintlify.openclaw.ai", "https://docs.openclaw.ai"],
+    ["http://mintlify.openclaw.ai", "https://docs.openclaw.ai"],
+    ["https://docs2.openclaw.ai", "https://docs.openclaw.ai"],
+    ["http://docs2.openclaw.ai", "https://docs.openclaw.ai"],
+    ["http://documentation.openclaw.ai", "https://docs.openclaw.ai"],
   ]) {
     const response = await router.fetch(new Request(`${origin}/release.v2?incoming=1`), p.env, {});
     assert.equal(response.status, 308);

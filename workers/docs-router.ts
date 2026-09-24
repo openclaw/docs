@@ -32,9 +32,7 @@ type JsonRpcRequest = {
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
 const canonicalHost = "docs.openclaw.ai";
-const legacyHosts = new Set(["documentation.openclaw.ai"]);
-const mintlifyRedirectHosts = new Set(["mintlify.openclaw.ai"]);
-const mintlifyBackupHost = "docs2.openclaw.ai";
+const redirectHosts = new Set(["documentation.openclaw.ai", "docs2.openclaw.ai", "mintlify.openclaw.ai"]);
 const searchIndexKey = "docs-search.json";
 const searchIndexTtlMs = 60_000;
 const maxSearchQueryLength = 180;
@@ -45,18 +43,9 @@ let searchIndexCache: SearchIndex | undefined;
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    if (url.protocol === "http:") {
+    if (redirectHosts.has(url.hostname) || url.protocol === "http:") {
+      if (redirectHosts.has(url.hostname)) url.hostname = canonicalHost;
       url.protocol = "https:";
-      return Response.redirect(url.toString(), 308);
-    }
-
-    if (legacyHosts.has(url.hostname)) {
-      url.hostname = canonicalHost;
-      return Response.redirect(url.toString(), 308);
-    }
-
-    if (mintlifyRedirectHosts.has(url.hostname)) {
-      url.hostname = mintlifyBackupHost;
       return Response.redirect(url.toString(), 308);
     }
 

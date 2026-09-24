@@ -3,9 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
+import { resolvePreviewPaths, preparePreviewOutput } from "./preview-paths.mjs";
 
 import { stripMdxForLlms, firstHeading, titleize, textFromHtml, fileSlug, normalizeSlug } from "./document-text.mjs";
-import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
+import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, navigationLocaleToDir, rtlLocales } from "./config.mjs";
 import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
@@ -20,13 +21,21 @@ import { activeTabTitle, groupForPage, flattenNavEntries, flattenNav } from "./n
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
-const docsDir = path.join(root, "docs");
+const { values: cli } = parseArgs({
+  options: {
+    page: { type: "string", multiple: true, default: [] },
+    "source-root": { type: "string" },
+    "output-dir": { type: "string" },
+  },
+});
+const requestedPages = cli.page;
+const { sourceRoot, outDir, customOutput } = resolvePreviewPaths(root, cli);
+const docsDir = path.join(sourceRoot, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const shellPublicAssetsDir = path.join(siteAssetsDir, "assets");
-const outDir = path.join(root, "dist", "docs-site");
 const redirectMetadataPath = path.join(root, "dist", "docs-markdown-redirects.json");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
-const sourceMetadata = readSourceMetadata(root);
+const sourceMetadata = readSourceMetadata(sourceRoot);
 const md = createMarkdownRenderer();
 const renderArticle = (markdown, options) => renderMdxish(markdown, md, options);
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
@@ -51,15 +60,12 @@ const defaultOgVersion = createHash("sha256")
   .update(fs.readFileSync(path.join(siteAssetsDir, "og-card.png")))
   .digest("hex")
   .slice(0, 12);
-const { values: { page: requestedPages } } = parseArgs({
-  options: { page: { type: "string", multiple: true, default: [] } },
-});
 const previewPagesPerGroup = parseOptionalPositiveInt(
   process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
   "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
 );
 const configuredMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
-const previewMode = Boolean(requestedPages.length || previewPagesPerGroup || configuredMaxPages || process.env.DOCS_SITE_PREVIEW_LOCALE);
+const previewMode = Boolean(cli["source-root"] || cli["output-dir"] || requestedPages.length || previewPagesPerGroup || configuredMaxPages || process.env.DOCS_SITE_PREVIEW_LOCALE);
 const previewMaxPages = Math.min(configuredMaxPages || 30, 30);
 const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE || "en";
 const artifactMode = previewMode ? "shell" : process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
@@ -96,9 +102,13 @@ const localePickerLabels = {
 };
 
 // Preview builds skip redirects, so never let an earlier full build's records survive.
-fs.rmSync(redirectMetadataPath, { force: true });
-fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
-fs.mkdirSync(outDir, { recursive: true });
+if (customOutput) {
+  preparePreviewOutput(outDir);
+} else {
+  fs.rmSync(redirectMetadataPath, { force: true });
+  fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+  fs.mkdirSync(outDir, { recursive: true });
+}
 copyPublicFiles();
 const pageOgVersions = previewMode ? new Map() : await renderPageOgCards({
   pages, enNav: navByLocale.get("en") ?? [], outDir,
@@ -125,7 +135,7 @@ console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${ar
 function buildLocales(docsConfig) {
   const ordered = [];
   for (const entry of docsConfig.navigation?.languages ?? []) {
-    const code = mintlifyLocaleToDir[entry.language] ?? entry.language;
+    const code = navigationLocaleToDir[entry.language] ?? entry.language;
     ordered.push({ code, source: entry, root: code === "en" });
   }
   for (const dirent of fs.readdirSync(docsDir, { withFileTypes: true })) {
@@ -274,7 +284,7 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const options = { sourceFile: page.file, root, pageRoute: pageRoute(page) };
+  const options = { sourceFile: page.file, root: sourceRoot, pageRoute: pageRoute(page) };
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
   const html = rewriteInternalUrls(article, page.locale);
   const toc = tableOfContents(html);

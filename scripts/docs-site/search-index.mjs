@@ -3,13 +3,13 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
-import { mintlifyLocaleToDir } from "./config.mjs";
+import { navigationLocaleToDir } from "./config.mjs";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
 const outPath = path.join(site, "docs-search.json");
 const maxBodyChars = 12_000;
-const localeDirs = new Set(Object.values(mintlifyLocaleToDir));
+const localeDirs = new Set(Object.values(navigationLocaleToDir));
 const excludedTopLevel = new Set(["__elements", "assets", "og", "pagefind"]);
 const excludedFiles = new Set(["AGENTS.md", "CLAUDE.md", "__elements.md", "docs.json"]);
 

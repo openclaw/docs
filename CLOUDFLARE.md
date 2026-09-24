@@ -2,16 +2,13 @@
 
 Internal notes for `https://docs.openclaw.ai`.
 
-## Target Design
-
-Vincent's design is the desired steady state:
+## Hosting Design
 
 - Cloudflare R2 bucket `openclaw-docs` stores the full generated docs site.
-- `docs.openclaw.ai` is served from R2 through Cloudflare's CDN, not through a Worker on normal page traffic.
+- `docs.openclaw.ai` is served from R2 through the `openclaw-docs-router` Worker and Cloudflare CDN.
 - `docs.openclaw.ai/ask-molty/*` stays on the separate Ask Molty Worker.
 - `documentation.openclaw.ai` is legacy and redirects to `docs.openclaw.ai`.
-- `docs2.openclaw.ai` is the old Mintlify backup hostname.
-- `mintlify.openclaw.ai` redirects to `docs2.openclaw.ai`.
+- `docs2.openclaw.ai` and `mintlify.openclaw.ai` are compatibility aliases that redirect directly to `https://docs.openclaw.ai`, retaining each request path and query.
 - The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, the `/api/search` CLI endpoint, and source indexes.
 
 The repo-side pieces are in place:
@@ -35,10 +32,10 @@ remote object comparison and deletion accounting are unchanged.
 
 ## Current Production State
 
-Production is cut over to R2-backed storage with a small Worker router in front:
+The deployed website uses R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
-- Routes: `docs.openclaw.ai/*`, `documentation.openclaw.ai/*`
+- Routes: `docs.openclaw.ai/*`, `documentation.openclaw.ai/*`, `docs2.openclaw.ai/*`, `mintlify.openclaw.ai/*`
 - Router storage: native `DOCS_BUCKET` R2 binding to bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - The Worker applies the runtime cache policy below over the R2 object's metadata.
@@ -49,12 +46,6 @@ Why a Worker still exists:
 - R2 object storage does not redirect non-root trailing slash docs paths to slashless paths.
 - R2 object storage cannot negotiate markdown from `Accept: text/markdown` without router logic.
 - The CLI search endpoint `/api/search` reads `docs-search.json` from R2 and needs Worker logic.
-- The available Cloudflare auth can manage R2, DNS, custom domains, and Worker routes, but not zone Rulesets/Page Rules. Dashboard-session replay via `mcporter chrome-devtools` also returned Cloudflare API auth error `10000` for `/rulesets`.
-
-The pure Vincent target remains possible after a Cloudflare token/session with `Zone: Rulesets: Edit` is available. Until then, the Worker is the compatibility layer and R2 is the storage/source of truth.
-
-The old Worker Static Assets build remains the rollback path in git history.
-
 ## Required Cloudflare Access
 
 Cloudflare account:
@@ -68,8 +59,7 @@ Required Cloudflare API token scopes for bucket/domain/DNS setup:
 - `Account: R2 Storage: Edit`
 - `Account: Workers Scripts: Edit`
 - `Zone: DNS: Edit`
-- `Zone: Cache Rules: Edit` or `Zone: Rulesets: Edit`
-- `Zone: Zone Settings: Edit`
+- `Zone: Workers Routes: Edit`
 - `Zone: Read`
 
 R2 must be enabled for the account before bucket creation works.
@@ -156,9 +146,9 @@ coverage and old-object deletion remain unchanged.
 
 ### Router deployment
 
-1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
+1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` validates the hosting helpers/router, saves recovery, and deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build. This automatic path never reconciles DNS.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
-3. Manual `pages.yml` dispatch with `deploy_worker=true` deploys the router using the workflow's pinned Wrangler version. Leave `cutover_docs_hosts=false` for an ordinary router update.
+3. Manual `pages.yml` dispatch with `deploy_worker=true` saves recovery and deploys the router using the workflow's pinned Wrangler version. Leave `reconcile_hosts=false` for an ordinary router update.
 4. Successful deployments dispatch `docs-live-smoke.yml`. Verify the actual upload and Worker deployment steps, not just a green workflow that skipped a stale snapshot. If a docs-only successor uploads the artifact without deploying the changed Worker, use the manual router dispatch.
 
 Local R2 build:
@@ -190,7 +180,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 through the bucket binding. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 through the bucket binding. The retired hostnames have no independent publisher. Both HTTP and HTTPS requests redirect directly to the canonical HTTPS host. The existing more-specific Ask Molty routes on `docs` and `documentation` remain unchanged.
 
 ### Markdown for page aliases
 
@@ -234,48 +224,37 @@ The Worker router splits browser and edge cache headers so cached HTML does not 
 - hashed/static assets:
   - `Cache-Control: public, max-age=31536000, immutable`
 
-The Worker does not write HTML to `caches.default` and ignores older entries labeled HTML, including dotted aliases cached with obsolete year-immutable headers. Current R2 HTML receives the 60-second runtime policies above. Dotted Markdown negotiation verifies current R2 ownership even with warm caches; it adds one HEAD and never probes a Markdown companion for a proven static object. Ordinary warm static GETs retain their Worker cache HIT with no new R2 reads, and explicit canonical `.md` GETs retain their existing cache behavior. This bounded contract does not detect arbitrary static-to-HTML transitions on ordinary warm non-HTML cache hits, invalidate downstream clients already holding immutable content, or change existing TTLs. These are router behavior guarantees after deploying the change, not a claim of deployment or a cache purge. Recommended Cloudflare cache rules for the later pure-R2 path:
+The Worker does not write HTML to `caches.default` and ignores older entries labeled HTML, including dotted aliases cached with obsolete year-immutable headers. Current R2 HTML receives the 60-second runtime policies above. Dotted Markdown negotiation verifies current R2 ownership even with warm caches; it adds one HEAD and never probes a Markdown companion for a proven static object. Ordinary warm static GETs retain their Worker cache HIT with no new R2 reads, and explicit canonical `.md` GETs retain their existing cache behavior. This bounded contract does not detect arbitrary static-to-HTML transitions on ordinary warm non-HTML cache hits, invalidate downstream clients already holding immutable content, or change existing TTLs. These are router behavior guarantees after deploying the change, not a claim of deployment or a cache purge.
 
-1. Cache static assets and Pagefind files for one year.
-2. Cache HTML at the edge for one day with short browser TTL.
-3. Cache `.md`, `.txt`, `.json`, and `.jsonl` for one hour at the edge.
-4. Bypass cache for `/ask-molty/*`.
+After router deployment, repeated HTML requests remain `X-OpenClaw-Docs-Cache: MISS`; repeated static or Markdown requests can show `MISS` then `HIT`.
 
-After router deploy, verify repeated HTML requests remain `X-OpenClaw-Docs-Cache: MISS` and repeated static or markdown requests show `MISS` then `HIT`. After pure-R2 ruleset cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
+## Hostname reconciliation and retirement
 
-## Cutover Checklist
+`scripts/cloudflare-docs-hosts.mjs` manages only address records and router routes for `docs2` and `mintlify` in the `openclaw.ai` zone, address records at the obsolete `mintlify-origin` host, and the known obsolete Mintlify verification TXT value at `_cf-custom-hostname.docs2.openclaw.ai`. Other TXT/MX records and unrelated hostnames/routes remain untouched. The retired aliases use proxied address records so the Worker receives requests. Canonical `docs` and `documentation` DNS and existing Ask Molty routes are inventoried and preserved. Their general routes must already target `openclaw-docs-router`; a mismatch stops retirement for inspection. A more-specific route on either retired hostname also stops reconciliation instead of silently replacing another service. Repeating reconciliation makes no changes when the desired state already exists.
 
-1. Confirm R2 is enabled on the OpenClaw deployment account.
-2. Confirm the GitHub Cloudflare secrets are present:
-   - `CLOUDFLARE_ACCOUNT_ID`
-   - `CLOUDFLARE_API_TOKEN`
-3. Confirm the bucket exists:
+For retirement, dispatch **Pages** with `deploy_worker=true` and `reconcile_hosts=true` (reconciliation defaults to false). The workflow runs helper and router tests, inventories the planned changes, and saves a recovery snapshot before deployment. It deploys the redirect-capable Worker before changing DNS and routes, then dispatches live smoke with `verify_retired_hosts=true`. Ordinary smoke defaults that option to false so staged deployment does not require DNS retirement to have already happened.
 
-   ```sh
-   source ~/.profile
-   CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
-   CLOUDFLARE_API_TOKEN="$OPENCLAW_CLOUDFLARE_API_TOKEN" \
-   npx wrangler@4.130.0 r2 bucket list
-   ```
+Both deployment workflows save recovery before every Worker deployment and preserve a sanitized artifact even when deployment or later checks fail. The full scoped recovery snapshot is a mode-0600 runner-local file; it includes prior deployment/version metadata when `CLOUDFLARE_ACCOUNT_ID` is available. It is never uploaded. A sanitized **public recovery artifact** contains only the scoped public DNS name/type/content/proxied/TTL, route pattern/script, and previous Worker version IDs, without account/zone/DNS/route API IDs, credentials, or unrelated records. It is uploaded even after failure, retained for seven days, and is sufficient to recreate the prior scoped DNS and routes. Download it before expiration. Previous Worker versions remain available through Cloudflare's deployment history.
 
-4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router` from the manual Pages workflow.
-6. Live-test the URLs below.
+For a local read-only inventory:
 
-Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
+```sh
+node scripts/cloudflare-docs-hosts.mjs --dry-run
+```
 
-1. Add or verify Cloudflare rules:
-   - `/` rewrites to `/index.html` if needed.
-   - non-root trailing-slash docs paths redirect to slashless paths.
-   - cache rules match the policy above.
-   - `/ask-molty/*` remains routed to `openclaw-docs-chat-proxy`.
-2. Remove the `docs.openclaw.ai/*` and `documentation.openclaw.ai/*` routes from `openclaw-docs-router`.
-3. Purge Cloudflare cache.
-4. Live-test the URLs below.
+For local reconciliation after the matching Worker is deployed, provide `CLOUDFLARE_API_TOKEN` and a new private snapshot path outside the repo:
+
+```sh
+node scripts/cloudflare-docs-hosts.mjs --snapshot /private/recovery/docs-hosts.json
+```
+
+A snapshot write failure stops reconciliation before any mutation; an existing snapshot is never overwritten. `--snapshot-only` saves the before-state without changing Cloudflare. `--public-snapshot <path>` additionally saves the sanitized portable recovery document. The helper uses the existing Cloudflare token and does not rotate secrets or modify Mintlify account access.
+
+After all redirect probes pass, remove only the OpenClaw docs project's obsolete Mintlify publishing/preview integration using its administrative controls. Do not delete unrelated projects or shared credentials. This administrative retirement is separate from DNS reconciliation; repository changes alone do not disconnect that integration.
 
 ## Live Smoke
 
-Use these after every deploy:
+After hostname reconciliation, explicitly run `gh workflow run docs-live-smoke.yml --ref main -f verify_retired_hosts=true` and require success; ordinary and scheduled content checks do not enable the retirement probes. Use these URLs after every deploy:
 
 ```sh
 curl -I https://docs.openclaw.ai/
@@ -297,7 +276,7 @@ curl -I https://docs2.openclaw.ai/
 curl -I https://mintlify.openclaw.ai/
 ```
 
-Expected after R2 cutover:
+Expected results:
 
 - slashless HTML paths return `200`.
 - `.md` paths return `text/markdown`.
@@ -307,27 +286,10 @@ Expected after R2 cutover:
 - `/api/search?q=heartbeat` returns JSON search results from `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - `/llms-full.txt` and `/.well-known/llms-full.txt` return `200 text/plain` after the scheduled `LLMs Full Corpus` workflow has uploaded the nightly corpus.
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
-- repeated router requests become `X-OpenClaw-Docs-Cache: HIT`.
+- repeated static or Markdown requests can become `X-OpenClaw-Docs-Cache: HIT`; HTML stays `MISS`.
 - `/ask-molty/api/session` returns `401` when logged out.
-- no `X-OpenClaw-Docs-Origin: cloudflare-static-assets` header on normal docs pages.
+- both retired hostnames and `documentation` return direct `308` redirects to `https://docs.openclaw.ai`, retaining path and query (also test HTTP).
 
-Expected before R2 cutover:
+## Recovery
 
-- the same URLs work through the Worker Static Assets fallback.
-- docs responses include `X-OpenClaw-Docs-Origin: cloudflare-static-assets`.
-- repeated requests should show Cloudflare `cf-cache-status: HIT`.
-
-## Rollback
-
-If R2 cutover misbehaves:
-
-1. Re-add the `docs.openclaw.ai/*` and `documentation.openclaw.ai/*` routes to `openclaw-docs-router`.
-2. Re-run `.github/workflows/pages.yml` or deploy locally:
-
-   ```sh
-   source ~/.profile
-   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" npx wrangler@4.130.0 deploy --config wrangler.toml
-   ```
-
-3. Purge Cloudflare cache.
-4. Re-run the live smoke.
+If hostname reconciliation fails, use the saved scoped DNS/route before-state to restore only the entries changed by that run. Do not restore unrelated zone data. For a router regression, roll back to its prior Cloudflare deployment version and rerun live smoke. If DNS changes had not started, leave DNS alone. Mintlify account disconnection is a separate administrative step; do not assume restoring DNS reconnects a deleted integration.

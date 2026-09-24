@@ -8,6 +8,20 @@ let browser;
 before(async () => { browser = await chromium.launch({ headless: true }); });
 after(async () => { await browser?.close(); });
 
+test("component indentation does not swallow the following section", async () => {
+  const page = await browser.newPage();
+  try {
+    for (const component of ['Accordion title="Details"', "Note", "Tip", "Warning"]) {
+      const tag = component.split(" ")[0];
+      const source = `<${component}>\nBody\n  </${tag}>\n\n## Following section\n\nOutside body\n`;
+      await page.setContent(renderMdxish(source, createMarkdownRenderer()));
+      assert.equal(await page.locator("body > h2#following-section").count(), 1, tag);
+      assert.equal(await page.locator("body > p").last().textContent(), "Outside body", tag);
+      assert.equal(await page.locator("Accordion, Note, Tip, Warning").count(), 0, tag);
+    }
+  } finally { await page.close(); }
+});
+
 test("published component anchors survive slugify upgrades", async () => {
   const cases = [
     ["APIUsage", "سلوك إعادة المحاولة", ["param-apiusage", "slwk-ieadt-almhawlt"]],

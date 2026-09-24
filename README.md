@@ -3,15 +3,15 @@
 <!-- Keep README-owned media outside docs/**; docs/** is mirror output and sync prunes files absent from upstream source. -->
 ![OpenClaw Docs banner](.github/assets/readme-banner.jpg)
 
-Mirror repo for the published OpenClaw docs site.
+Website UI, translations, and publishing for the OpenClaw docs site.
 
-Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openclaw), under `docs/`.
+English content and navigation are authored in [`openclaw/openclaw`](https://github.com/openclaw/openclaw), under `docs/`, and synced here. This repository owns the current website renderer, design, search, and hosting.
 
 ## How it works
 
 1. English docs are authored in `openclaw/openclaw`.
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
-3. This repo stores the published docs tree plus generated locale output.
+3. This repo maintains the website UI and stores the synced docs tree plus generated locale output.
 4. `openclaw/docs/.github/workflows/translate-incremental.yml` debounces normal docs changes, while `translate-all.yml` handles full reconciliation for glossary changes, weekly schedule, release dispatch, or manual dispatch.
 5. `.github/workflows/r2-pages.yml` builds the full unpruned static site and uploads changed objects to Cloudflare R2.
 6. `.github/workflows/pages.yml` deploys the small Cloudflare Worker router that preserves clean URLs and markdown negotiation while reading docs from R2.
@@ -30,6 +30,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 
 ## Editing rules
 
+- Change the website UI, renderer, search, and hosting in this repo.
 - Do not treat this repo as the primary place for English doc edits.
 - Make English doc changes in `openclaw/openclaw`, then let sync copy them here.
 - Locale pages under `docs/<locale>/**` are generated output.
@@ -37,11 +38,10 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 
 ## Static site build
 
-- `npm run docs:build` renders the mirrored Mintlify-flavored docs into `dist/docs-site`.
+- `npm run docs:build` renders the synced Markdown and MDX-style docs into `dist/docs-site`.
 - English collection excludes top-level roots owned by published locales; each locale renders its own sources once, while nested or unrecognized directory names remain ordinary English paths.
 - Search titles and summaries and LLM corpus headings follow the page renderer's YAML frontmatter rules. The English corpus excludes language directories at the docs root while retaining nested paths such as `guide/fr/topic`.
 - Page-specific social preview images follow English navigation groups at every nesting depth.
-- `npm run docs:build:cloudflare` is the legacy Worker Static Assets fallback build.
 - `npm run docs:build:r2` renders the full unpruned site and prepares `dist/docs-r2-manifest.json` for R2 upload.
 - `npm run docs:r2:upload` uploads only changed R2 objects, reports cache hits/misses, and refuses to turn a broken remote manifest read into a full-tree reupload.
 - Manual R2 refreshes audit objects before upload; unchanged objects remain cache hits, and transient HEAD failures fall back to the signed manifest. `R2_UPLOAD_PUT_ALL=1` is the emergency escape hatch for intentionally rewriting every object.
@@ -53,11 +53,11 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
-Signed R2 requests and the hostname cutover helper default to a 30-second
+Signed R2 requests and the hostname reconciliation helper default to a 30-second
 per-request timeout. A stalled R2 request enters the existing retry loop; a
-stalled cutover request fails the helper. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` for
+stalled reconciliation request fails the helper. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` for
 `scripts/docs-site/r2-upload.mjs`, or `CLOUDFLARE_API_TIMEOUT_MS` for
-`scripts/cloudflare-cutover-docs-hosts.mjs` (including dry runs), to raise the
+`scripts/cloudflare-docs-hosts.mjs` (including dry runs), to raise the
 relevant budget. Use an integer from 1 to 2147483647 milliseconds (Node's maximum
 timer delay). The workflow job timeout remains an outer limit even when a request
 budget is raised.
