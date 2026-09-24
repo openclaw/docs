@@ -2658,7 +2658,8 @@
                   "gateway/remote",
                   "gateway/stable-https-url",
                   "gateway/tailscale",
-                  "gateway/cloudflare-access"
+                  "gateway/cloudflare-access",
+                  "gateway/team-server"
                 ]
               },
               {
@@ -4699,7 +4700,8 @@
                   "zh-CN/gateway/remote",
                   "zh-CN/gateway/stable-https-url",
                   "zh-CN/gateway/tailscale",
-                  "zh-CN/gateway/cloudflare-access"
+                  "zh-CN/gateway/cloudflare-access",
+                  "zh-CN/gateway/team-server"
                 ]
               },
               {
@@ -6740,7 +6742,8 @@
                   "zh-TW/gateway/remote",
                   "zh-TW/gateway/stable-https-url",
                   "zh-TW/gateway/tailscale",
-                  "zh-TW/gateway/cloudflare-access"
+                  "zh-TW/gateway/cloudflare-access",
+                  "zh-TW/gateway/team-server"
                 ]
               },
               {
@@ -8781,7 +8784,8 @@
                   "ja-JP/gateway/remote",
                   "ja-JP/gateway/stable-https-url",
                   "ja-JP/gateway/tailscale",
-                  "ja-JP/gateway/cloudflare-access"
+                  "ja-JP/gateway/cloudflare-access",
+                  "ja-JP/gateway/team-server"
                 ]
               },
               {
@@ -10822,7 +10826,8 @@
                   "es/gateway/remote",
                   "es/gateway/stable-https-url",
                   "es/gateway/tailscale",
-                  "es/gateway/cloudflare-access"
+                  "es/gateway/cloudflare-access",
+                  "es/gateway/team-server"
                 ]
               },
               {
@@ -12863,7 +12868,8 @@
                   "pt-BR/gateway/remote",
                   "pt-BR/gateway/stable-https-url",
                   "pt-BR/gateway/tailscale",
-                  "pt-BR/gateway/cloudflare-access"
+                  "pt-BR/gateway/cloudflare-access",
+                  "pt-BR/gateway/team-server"
                 ]
               },
               {
@@ -14904,7 +14910,8 @@
                   "ko/gateway/remote",
                   "ko/gateway/stable-https-url",
                   "ko/gateway/tailscale",
-                  "ko/gateway/cloudflare-access"
+                  "ko/gateway/cloudflare-access",
+                  "ko/gateway/team-server"
                 ]
               },
               {
@@ -16945,7 +16952,8 @@
                   "de/gateway/remote",
                   "de/gateway/stable-https-url",
                   "de/gateway/tailscale",
-                  "de/gateway/cloudflare-access"
+                  "de/gateway/cloudflare-access",
+                  "de/gateway/team-server"
                 ]
               },
               {
@@ -18986,7 +18994,8 @@
                   "fr/gateway/remote",
                   "fr/gateway/stable-https-url",
                   "fr/gateway/tailscale",
-                  "fr/gateway/cloudflare-access"
+                  "fr/gateway/cloudflare-access",
+                  "fr/gateway/team-server"
                 ]
               },
               {
@@ -21027,7 +21036,8 @@
                   "hi/gateway/remote",
                   "hi/gateway/stable-https-url",
                   "hi/gateway/tailscale",
-                  "hi/gateway/cloudflare-access"
+                  "hi/gateway/cloudflare-access",
+                  "hi/gateway/team-server"
                 ]
               },
               {
@@ -23068,7 +23078,8 @@
                   "ar/gateway/remote",
                   "ar/gateway/stable-https-url",
                   "ar/gateway/tailscale",
-                  "ar/gateway/cloudflare-access"
+                  "ar/gateway/cloudflare-access",
+                  "ar/gateway/team-server"
                 ]
               },
               {
@@ -25109,7 +25120,8 @@
                   "it/gateway/remote",
                   "it/gateway/stable-https-url",
                   "it/gateway/tailscale",
-                  "it/gateway/cloudflare-access"
+                  "it/gateway/cloudflare-access",
+                  "it/gateway/team-server"
                 ]
               },
               {
@@ -27150,7 +27162,8 @@
                   "vi/gateway/remote",
                   "vi/gateway/stable-https-url",
                   "vi/gateway/tailscale",
-                  "vi/gateway/cloudflare-access"
+                  "vi/gateway/cloudflare-access",
+                  "vi/gateway/team-server"
                 ]
               },
               {
@@ -29191,7 +29204,8 @@
                   "nl/gateway/remote",
                   "nl/gateway/stable-https-url",
                   "nl/gateway/tailscale",
-                  "nl/gateway/cloudflare-access"
+                  "nl/gateway/cloudflare-access",
+                  "nl/gateway/team-server"
                 ]
               },
               {
@@ -31232,7 +31246,8 @@
                   "tr/gateway/remote",
                   "tr/gateway/stable-https-url",
                   "tr/gateway/tailscale",
-                  "tr/gateway/cloudflare-access"
+                  "tr/gateway/cloudflare-access",
+                  "tr/gateway/team-server"
                 ]
               },
               {
@@ -33273,7 +33288,8 @@
                   "uk/gateway/remote",
                   "uk/gateway/stable-https-url",
                   "uk/gateway/tailscale",
-                  "uk/gateway/cloudflare-access"
+                  "uk/gateway/cloudflare-access",
+                  "uk/gateway/team-server"
                 ]
               },
               {
@@ -35314,7 +35330,8 @@
                   "id/gateway/remote",
                   "id/gateway/stable-https-url",
                   "id/gateway/tailscale",
-                  "id/gateway/cloudflare-access"
+                  "id/gateway/cloudflare-access",
+                  "id/gateway/team-server"
                 ]
               },
               {
@@ -37355,7 +37372,8 @@
                   "pl/gateway/remote",
                   "pl/gateway/stable-https-url",
                   "pl/gateway/tailscale",
-                  "pl/gateway/cloudflare-access"
+                  "pl/gateway/cloudflare-access",
+                  "pl/gateway/team-server"
                 ]
               },
               {
@@ -39396,7 +39414,8 @@
                   "ru/gateway/remote",
                   "ru/gateway/stable-https-url",
                   "ru/gateway/tailscale",
-                  "ru/gateway/cloudflare-access"
+                  "ru/gateway/cloudflare-access",
+                  "ru/gateway/team-server"
                 ]
               },
               {

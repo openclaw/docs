@@ -6056,6 +6056,25 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Learn more
   - H2: Related
 
+## gateway/team-server.md
+
+- Route: /gateway/team-server
+- Headings:
+  - H2: Before you begin
+  - H2: 1. Install under one service account
+  - H2: 2. Configure the public URL and authenticated ingress
+  - H3: Set both URL settings
+  - H2: 3. Bootstrap administrators and assign roles
+  - H2: 4. Synchronize people with verified GitHub identities
+  - H3: Use an OIDC provider without losing existing profiles
+  - H3: Configure GitHub access for repository work
+  - H2: 5. Connect chat and remote clients
+  - H2: 6. Give widgets a separate sandbox origin
+  - H2: 7. Share selected sessions from another Gateway
+  - H2: 8. Verify the complete flow
+  - H2: Keep operations recoverable
+  - H2: Troubleshooting
+
 ## gateway/telemetry.md
 
 - Route: /gateway/telemetry
