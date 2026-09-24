@@ -68,6 +68,11 @@ Roomy serial Blacksmith Node jobs use [measured Vitest worker sizing](/ci/capaci
 
 Source-only Linux Node shards can reuse content-validated compiled workers from the protected warmer; [fixed preparation costs](/ci/capacity#fixed-job-preparation) remain separate from test execution and runner capacity.
 
+Changed-target shards containing canonical E2E tests prepare the private-QA
+runtime once before launching test children. Only a successful preparation step
+enables prebuilt consumption, so the children reuse its JavaScript, assets, and
+freshness stamps instead of starting another full build.
+
 Vitest transform-cache fingerprints exclude the generated `.ci-harness` checkout so CI consumers and the protected warmer hash the same source inputs. Node bytecode caching remains enabled for ordinary Vitest runs; Vitest owns the worker-level coverage safeguard described in [local testing](/reference/test/local#core-commands).
 
 Transform keys also include each project's dependency optimizer directory. This
