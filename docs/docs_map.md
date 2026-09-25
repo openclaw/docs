@@ -8759,6 +8759,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/google-meet/tool-and-modes
 - Headings:
   - H2: Tool
+  - H2: Native participation requests
   - H2: Agent and bidi modes
 
 ## plugins/google-meet/transports.md
@@ -10938,6 +10939,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Memory runtime replacement
+  - H2: Browser meeting participation
   - H2: Worker provider allocation authority
   - H2: Other top-level api fields
   - H2: Where each section moved
