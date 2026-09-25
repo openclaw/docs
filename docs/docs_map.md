@@ -1796,6 +1796,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/routing-costs
 - Headings:
   - H2: Routing from measured wall time
+  - H2: Hosted assignment on the critical path
   - H2: RunsOn remains unqualified
   - H2: Packing and cost arithmetic
   - H2: Measured compact packing
