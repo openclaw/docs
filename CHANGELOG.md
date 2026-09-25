@@ -10,7 +10,7 @@
 - Refresh docs dependencies with Lucide 1.45.0, markdown-it 15.0.2, Wrangler 4.131.1, Node 26, and Go 1.27.
 - Compatibility: reject MCP JSON-RPC batches larger than 32 items before any search work; clients sending larger batches must split them. Thanks @SebTardif.
 - Render nested navigation groups recursively so protocol pages remain reachable and mirror-sync builds no longer generate `/undefined/undefined` links.
-- Preserve published heading IDs, emit unambiguous Mintlify link aliases and component targets, and open nested accordions for fragment navigation using the source-owned shared parsing and redirect contract.
+- Preserve published heading IDs, emit unambiguous link aliases and component targets, and open nested accordions for fragment navigation using the source-owned shared parsing and redirect contract.
 - Recover parser-diagnosed translation markup damage before validation, preserving translated prose and the existing failed-shard publication checks; thanks @hxy91819.
 - Fix redundant locale rendering by excluding locale-owned roots from English page collection, including accidental localized `AGENTS.md` pages and duplicate locale-root Markdown exports.
 - Keep YAML titles and summaries consistent across pages, search and the LLM corpus, and retain nested English paths whose directory names match locales.

@@ -227,7 +227,7 @@ jobs:
             console.log("/mcp: ok");
           };
           const assertHostRedirects = async () => {
-            const hosts = ["documentation.openclaw.ai", "docs2.openclaw.ai", "mintlify.openclaw.ai"];
+            const hosts = ["documentation.openclaw.ai"];
             for (const host of hosts) {
               for (const protocol of ["http", "https"]) {
                 const path = "/start/getting-started?from=host-smoke&keep=a%2Fb";

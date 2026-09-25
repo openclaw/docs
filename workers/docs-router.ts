@@ -32,7 +32,7 @@ type JsonRpcRequest = {
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
 const canonicalHost = "docs.openclaw.ai";
-const redirectHosts = new Set(["documentation.openclaw.ai", "docs2.openclaw.ai", "mintlify.openclaw.ai"]);
+const redirectHosts = new Set(["documentation.openclaw.ai"]);
 const searchIndexKey = "docs-search.json";
 const searchIndexTtlMs = 60_000;
 const maxSearchQueryLength = 180;

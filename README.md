@@ -92,9 +92,8 @@ MarkdownIt Anchor 10.0.0 preserves the canonical heading-ID contract from 9.2.1,
 including punctuation, percent bytes and duplicate suffixes. Each document gets a
 fresh parser environment so duplicate suffixes stay local to that document.
 TOC entries and copy controls use those IDs.
-Compatibility aliases follow the compiler shipped with `mint@4.2.808`
-(`@mintlify/common@1.0.1096`, `@sindresorhus/slugify@2.2.0`) for existing Mintlify
-links. They are emitted only when unambiguous. Markdown headings and authored HTML
+Published link aliases preserve existing section URLs. They are emitted only
+when unambiguous. Markdown headings and authored HTML
 or component IDs reserve their names first. A conflicting alias is omitted and
 reported by the source audit; an alias never moves a published target. Existing
 duplicate authored/canonical IDs remain visible as audit failures.
@@ -103,7 +102,7 @@ Titled Accordion/Expandable, Step and Tab components and named fields now emit
 fragment targets. Explicit IDs take precedence. Generated component targets
 allocate the next available numeric suffix after canonical/authored IDs and
 heading aliases have been reserved. Components without a title/name or explicit
-ID do not receive a synthetic target. A title that produces an empty Mintlify
+ID do not receive a synthetic target. A title that produces an empty published
 slug also needs an explicit ID. The `{#custom}` heading syntax remains
 unsupported; use explicit HTML IDs when authoring a distinct target.
 
