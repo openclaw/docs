@@ -10502,6 +10502,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Native sessions and transcript mirror
   - H2: Shared native binding lifecycle
+  - H2: Background command tasks
   - H2: Subagent task history
   - H2: Tool and media results
   - H2: Terminal tool outcomes
