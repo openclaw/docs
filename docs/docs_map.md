@@ -4730,6 +4730,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser
   - H2: UI
   - H2: Desktop
+  - H3: Desktop audio
   - H3: Paired node desktops
 
 ## gateway/config-channels.md
