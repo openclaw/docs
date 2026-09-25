@@ -365,6 +365,7 @@ jobs:
           MDX_SCOPE_OUTCOME: ${{ steps.mdx_scope.outcome || 'skipped' }}
           MDX_RECHECK_OUTCOME: ${{ steps.mdx_recheck.outcome || 'skipped' }}
           ARTIFACT_ROLE: ${{ inputs.artifact_role }}
+          OPENCLAW_DOCS_I18N_LOG_REJECTED_BODY: ${{ inputs.log_rejected_body && '1' || '0' }}
         run: |
           set -euo pipefail
 

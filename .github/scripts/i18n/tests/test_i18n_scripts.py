@@ -1786,6 +1786,75 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(expected, translated.read_text(encoding="utf-8"))
             self.assertEqual(expected, (artifact / "payload/docs/fr/tools/pdf.md").read_text(encoding="utf-8"))
 
+    def test_packaging_workflow_logs_rejected_mdx_only_when_requested(self) -> None:
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                repo = root / "repo"
+                runner = root / "runner"
+                repo.mkdir()
+                runner.mkdir()
+                init_repo(repo)
+                (repo / "docs/fr").mkdir(parents=True)
+                source = repo / "docs/index.md"
+                source.write_text('<a id="fixed" />\n# Source\n', encoding="utf-8")
+                self._prepare_mdx_checker(repo)
+                (repo / ".openclaw-sync/source.json").write_text(
+                    '{"repository":"openclaw/openclaw","sha":"source-a"}\n', encoding="utf-8"
+                )
+                run_git(repo, "add", "docs", ".openclaw-sync/source.json")
+                run_git(repo, "commit", "-m", "source")
+                translated = repo / "docs/fr/index.md"
+                body = '# Traduction «sans ancre»\n\nTexte avec "guillemets".\n'
+                translated.write_text(body, encoding="utf-8")
+                (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(
+                    str(source) + "\n", encoding="utf-8"
+                )
+                values = {
+                    "I18N_SCRIPT_DIR": str(SCRIPT_DIR),
+                    "OPENCLAW_DOCS_I18N_LOG_REJECTED_BODY": "0",
+                    "inputs.locale": "fr",
+                    "inputs.locale_slug": "fr",
+                    "steps.meta.outputs.sha": "source-a",
+                    "inputs.mode": "full",
+                    "inputs.force_retranslate": "false",
+                    "inputs.shard_index": "0",
+                    "inputs.shard_total": "1",
+                    "inputs.worker_parallel": "3",
+                    "inputs.thinking_effort": "high",
+                    "steps.pending.outputs.pending_count || '0'": "1",
+                    "steps.pending.outputs.total_pending_count || '0'": "1",
+                    "steps.pending.outputs.all_count || '0'": "1",
+                    "steps.translate_docs.outcome || 'skipped'": "success",
+                    "steps.mdx_check.outcome || 'skipped'": "success",
+                    "steps.mdx_repair.outcome || 'skipped'": "skipped",
+                    "steps.mdx_scope.outcome || 'skipped'": "skipped",
+                    "steps.mdx_recheck.outcome || 'skipped'": "skipped",
+                    "inputs.artifact_role": "canary",
+                    "inputs.log_rejected_body && '1' || '0'": "1" if enabled else "0",
+                }
+                result = self._retirement_step(
+                    repo, runner, values, "Prepare locale artifact",
+                    workflow_name="translate-locale-reusable.yml",
+                )
+                prefix = "docs-i18n: rejected protected-attribute body docs/fr/index.md "
+                rejected = [line.split(prefix, 1)[1] for line in result.stderr.splitlines() if prefix in line]
+                self.assertEqual([body] if enabled else [], [json.loads(value) for value in rejected])
+                self.assertEqual(body, translated.read_text(encoding="utf-8"))
+                artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+                metadata = json.loads((artifact / "metadata.json").read_text(encoding="utf-8"))
+                self.assertEqual("mdx protected attribute repair failed", metadata["failed_reason"])
+                self.assertEqual("failure", metadata["mdx_protected_attribute_repair_outcome"])
+                self.assertEqual(0, metadata["changed_count"])
+                self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
+                self.assertEqual("", (artifact / "deleted-files.txt").read_text(encoding="utf-8"))
+                self.assertEqual([], list((artifact / "payload").rglob("*")))
+                self.assertEqual("true", values["steps.package.outputs.failed"])
+                self._retirement_step(
+                    repo, runner, values, "Fail failed locale artifact", succeeds=False,
+                    workflow_name="translate-locale-reusable.yml",
+                )
+
     def test_protected_attribute_repair_skips_empty_manifest_without_node(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
