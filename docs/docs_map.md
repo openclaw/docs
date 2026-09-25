@@ -9000,6 +9000,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Transcript sources reference
   - H2: backupResources reference
   - H2: MCP server reference
+  - H2: UI capabilities
   - H2: controlUi reference
   - H2: dashboard reference
   - H2: catalog reference
