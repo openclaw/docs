@@ -8602,6 +8602,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin inspector package
   - H3: Maintainer acceptance lane
   - H2: Release notes
+  - H2: Related
 
 ## plugins/copilot.md
 
@@ -12645,7 +12646,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/secret-placeholder-conventions
 - Headings:
-  - H1: Secret placeholder conventions
+  - H1: Secret Placeholder Conventions
   - H2: Recommended style
   - H2: Avoid these patterns in docs
   - H2: Example
@@ -13834,6 +13835,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Timeout and no answer
   - H2: Tool schema
   - H2: Model guidance
+  - H2: Related
 
 ## tools/brave-search.md
 
