@@ -8,7 +8,6 @@ Internal notes for `https://docs.openclaw.ai`.
 - `docs.openclaw.ai` is served from R2 through the `openclaw-docs-router` Worker and Cloudflare CDN.
 - `docs.openclaw.ai/ask-molty/*` stays on the separate Ask Molty Worker.
 - `documentation.openclaw.ai` is legacy and redirects to `docs.openclaw.ai`.
-- `docs2.openclaw.ai` and `mintlify.openclaw.ai` are compatibility aliases that redirect directly to `https://docs.openclaw.ai`, retaining each request path and query.
 - The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, the `/api/search` CLI endpoint, and source indexes.
 
 The repo-side pieces are in place:
@@ -35,7 +34,7 @@ remote object comparison and deletion accounting are unchanged.
 The deployed website uses R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
-- Routes: `docs.openclaw.ai/*`, `documentation.openclaw.ai/*`, `docs2.openclaw.ai/*`, `mintlify.openclaw.ai/*`
+- Routes: `docs.openclaw.ai/*`, `documentation.openclaw.ai/*`
 - Router storage: native `DOCS_BUCKET` R2 binding to bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - The Worker applies the runtime cache policy below over the R2 object's metadata.
@@ -180,7 +179,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 through the bucket binding. The retired hostnames have no independent publisher. Both HTTP and HTTPS requests redirect directly to the canonical HTTPS host. The existing more-specific Ask Molty routes on `docs` and `documentation` remain unchanged.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 through the bucket binding. Both HTTP and HTTPS requests to `documentation` redirect directly to the canonical HTTPS host. The existing more-specific Ask Molty routes on `docs` and `documentation` remain unchanged.
 
 ### Markdown for page aliases
 
@@ -248,8 +247,6 @@ curl -I https://docs.openclaw.ai/.well-known/llms-full.txt
 curl -I https://docs.openclaw.ai/assets/docs-site.css
 curl -i https://docs.openclaw.ai/ask-molty/api/session
 curl -I https://documentation.openclaw.ai/start/getting-started
-curl -I https://docs2.openclaw.ai/
-curl -I https://mintlify.openclaw.ai/
 ```
 
 Expected results:
@@ -264,7 +261,7 @@ Expected results:
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - repeated static or Markdown requests can become `X-OpenClaw-Docs-Cache: HIT`; HTML stays `MISS`.
 - `/ask-molty/api/session` returns `401` when logged out.
-- both retired hostnames and `documentation` return direct `308` redirects to `https://docs.openclaw.ai`, retaining path and query (also test HTTP).
+- `documentation` returns direct `308` redirects to `https://docs.openclaw.ai`, retaining path and query (also test HTTP).
 
 ## Recovery
 

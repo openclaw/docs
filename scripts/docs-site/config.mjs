@@ -74,4 +74,4 @@ export const rtlLocales = new Set(["ar", "fa"]);
 
 export const ignoredDocDirs = new Set([".generated", ".i18n", "assets"]);
 
-export const ignoredDocFiles = new Set(["docs.json", "AGENTS.md", "nav-tabs-underline.js", "style.css"]);
+export const ignoredDocFiles = new Set(["docs.json", "AGENTS.md"]);
