@@ -12275,6 +12275,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Verify and recover
   - H2: Regular release operator checklist
   - H3: Fast path (default)
+  - H4: Orchestrated stable release
+  - H4: Manual fallback
   - H3: Full checklist
   - H3: Release priority
   - H3: Continuous release readiness
