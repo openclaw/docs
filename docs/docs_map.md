@@ -12323,7 +12323,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Prepare once, then use the release button
   - H3: Recover a failed download
   - H3: Direct publication and owner recovery
-  - H3: Publication modes: strict default and operator fast path
+  - H3: Publication requirements
   - H2: NPM workflow inputs
   - H2: Regular beta/latest stable release sequence
   - H2: Public references
