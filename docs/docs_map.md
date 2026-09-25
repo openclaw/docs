@@ -12131,6 +12131,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model discovery
   - H2: Related
 
+## providers/telnyx.md
+
+- Route: /providers/telnyx
+- Headings:
+  - H2: Requirements
+  - H2: Install plugin
+  - H2: Getting started
+  - H2: Default model
+  - H2: Live model discovery
+  - H2: Bundled fallback catalog
+  - H2: Manual config
+  - H2: Related
+
 ## providers/tencent.md
 
 - Route: /providers/tencent
