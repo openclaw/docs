@@ -5743,6 +5743,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/sandboxing/podman-backend
 - Headings:
   - H2: Podman backend
+  - H2: Changing connections and upgrading existing sandboxes
   - H2: Host init prerequisite
 
 ## gateway/sandboxing/setup-command.md
