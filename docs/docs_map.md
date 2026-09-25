@@ -1183,6 +1183,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What it does
   - H2: Config
   - H2: Runners
+  - H2: Installed-candidate fixtures
   - H2: Related
 
 ## channels/qqbot.md
