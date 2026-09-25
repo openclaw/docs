@@ -17,6 +17,35 @@ session lifecycles, or host-owned leases safe across Gateway instances.
 
 ### Keep operations at the owning store
 
+Deferred transcript projection reconciliation publishes bounded active-event and
+FTS chunks through the canonical agent database worker. The host captures the
+existing execution owner before scheduling, and revalidates it at each native
+transaction and commit grant. Prepared generation claims, canonical transcript
+bytes, bounded append-only catch-up, and atomic final readiness remain unchanged.
+A committed finalization returns its session change to the host for notification;
+refused or rolled-back finalization publishes no readiness notification. Unknown
+write outcomes are never replayed.
+
+Preflight and readiness polling use the existing read-only transcript worker.
+Readiness waits retain their original execution owner across lazy reader loading
+and forward cancellation to queued reads. Re-admission after retirement waits for
+the canonical database close, including native cleanup, to finish. A committed
+finalization stays successful if retirement prevents a subsequent orphan sweep
+from starting; the next preflight detects and removes any remaining derived rows.
+Incognito, maintenance, and deletion scopes keep their current native owner.
+Canonical shutdown joins accepted publication and planner lease cleanup; a newer
+scheduled owner cannot be consumed by an older retired pass. Schemas, retention,
+permissions, and update behavior are unchanged.
+
+Deferred agent recovery reads deletion status through the shared-state worker.
+Native preparation checks the current journal before transaction and commit
+admission without reentering SQLite on the host. These checks belong to each
+startup request; reusing the native actor for ordinary work does not retain them.
+Committed deletion invalidates the captured pending admission before observers
+run, while rollback and replacement admission owners remain unaffected. Startup
+migration preserves its pending-versus-completed cleanup diagnostics. No schema,
+retention, permission, or update migration changes are required.
+
 Callers should request domain operations, such as claiming a cron run or
 appending a transcript report, from the store that owns the invariant. That
 owner selects and decodes rows, validates current authority, commits changes,
@@ -274,8 +303,13 @@ keys, ordering, and admission diagnostics; unavailable reads remain errors.
 The Gateway resolves current profile aliases and disclosure
 scope after preparation. The history owner retains every selected durable store
 through the batch; canonical close revokes the pending listing instead of
-letting it reopen a later store generation. Process-local incognito reads and store-topology
-resolution retain their native owners. Checkout-deletion reference checks and
+letting it reopen a later store generation. Resident row topology prepares retained-deletion
+and registered-owner facts together in one deferred read transaction in the existing
+shared-state worker. Combined-store discovery and every query scope consume that same
+snapshot; unavailable deletion history remains conservative. The projection retains its
+original source lifetime and rechecks configuration and publication epochs after waiting.
+Synchronous consumers use prepared topology; pending refreshes do not revoke PR subscriptions.
+Process-local incognito reads and physical store resolution retain their native owners. Checkout-deletion reference checks and
 final exact-row authority checks remain synchronous; prepared listings do not
 grant deletion or session authority. Schemas, retention, and update behavior are unchanged.
 
