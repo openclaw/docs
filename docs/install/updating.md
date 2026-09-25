@@ -10,8 +10,8 @@ Keep OpenClaw up to date.
 
 For Docker, Podman, and Kubernetes image replacements, see
 [Upgrading container images](/install/docker#upgrading-container-images). The
-gateway runs startup-safe upgrade work before readiness and exits if mounted
-state needs manual repair.
+image entrypoint runs Doctor before starting the Gateway and exits if mounted
+state cannot be repaired safely.
 
 Before a significant update, [create a verified backup](#before-updating-create-a-verified-backup).
 Automatic config copies and migration recovery originals are not a full-state
