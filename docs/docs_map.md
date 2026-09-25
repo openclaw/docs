@@ -1823,6 +1823,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Hourly main CI
   - H3: Restore per-push CI
   - H3: What stays on pushes
+  - H2: Nightly Full Release Validation
   - H2: OpenClaw Performance
   - H3: Gateway concurrency benchmark
   - H3: Vitest paired benchmark
@@ -12276,6 +12277,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Fast path (default)
   - H3: Full checklist
   - H3: Release priority
+  - H3: Continuous release readiness
   - H2: Stable main closeout
   - H2: Post-release documentation publication
   - H2: Release preflight
