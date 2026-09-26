@@ -10670,6 +10670,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Code Mode executor runtime
   - H2: MCP subprocess runtime
   - H2: Workspace access
+  - H2: Agent workspace context
   - H2: Tool failure diagnostics
   - H2: ACP harness turns
 
