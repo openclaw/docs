@@ -5083,6 +5083,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Channel ownership during an update
+  - H2: Channel webhook listeners
   - H2: ACP agents' model precedence
   - H2: Missing plugins during migration
   - H2: Retired TaskFlow Webhooks plugin
