@@ -7210,6 +7210,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: File logs (JSONL)
   - H3: Console output
   - H3: Gateway WebSocket logs
+  - H3: Steering and input cancellation
   - H2: Configuring logging
   - H3: Log levels
   - H3: Provider request failures
