@@ -1,10 +1,10 @@
 /* Community-site composition, measured against community.openclaw.ai on 2026-09-25.
-   The wider frame accommodates documentation navigation and a readable article.
+   Full-width side rails surround a centered, readable article.
    Carapace continues to own color, type, controls and meaningful status tokens. */
 :root {
-  --docs-frame: 1180px;
-  --docs-nav: 210px;
-  --docs-toc: 180px;
+  --docs-nav: 240px;
+  --docs-toc: 220px;
+  --docs-reading-width: 960px;
   --docs-inset: 32px;
   --docs-invite-lift: 0px;
   --oc-radius-surface: 0px;
@@ -32,12 +32,12 @@ html { scroll-padding-top: calc(var(--sticky-header-h, 102px) + 28px); }
 .header-links .top-icon-link, .theme-toggle { min-width: 36px; min-height: 36px; }
 
 .doc-shell {
-  width: min(calc(100% - 48px), var(--docs-frame));
-  max-width: var(--docs-frame);
-  grid-template-columns: var(--docs-nav) minmax(0, 1fr) var(--docs-toc);
+  width: 100%;
+  max-width: none;
+  grid-template-columns: var(--docs-nav) minmax(0, 1fr);
   gap: 0;
   padding: 0;
-  border-inline: 1px solid var(--line);
+  border-inline: 0;
 }
 .sidebar { width: auto; top: calc(var(--sticky-header-h, 102px) + 24px); max-height: calc(100dvh - var(--sticky-header-h, 102px) - 48px); padding: 24px 18px 32px; }
 .nav-section { margin-bottom: 28px; }
@@ -45,6 +45,7 @@ html { scroll-padding-top: calc(var(--sticky-header-h, 102px) + 28px); }
 .nav-link { border-left: 0; border-inline-start: 2px solid transparent; padding: 7px 10px; border-radius: 0; font-size: 13px; line-height: 1.5; }
 .nav-link.active { border-inline-start-color: var(--brand); box-shadow: none; background: color-mix(in srgb, var(--brand) 7%, transparent); }
 .article { width: 100%; min-width: 0; padding: 40px var(--docs-inset) 64px; border-inline: 1px solid var(--line); }
+.article > :is(.article-header, .doc, .page-feedback, .page-nav) { max-width: var(--docs-reading-width); margin-inline: auto; }
 .article-header { margin-bottom: 36px; }
 .article-meta-row { gap: 12px; margin-bottom: 28px; }
 .article h1 { font-size: clamp(32px, 3vw, 42px); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; }
@@ -77,11 +78,11 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .community-invite__close { --oc-focus-ring: rgb(255 255 255 / 85%); }
 @media (min-width: 821px) {
   body.has-community-invite .sidebar { max-height: calc(100dvh - var(--sticky-header-h, 102px) - 48px - var(--community-invite-h, 0px) - var(--docs-invite-lift)); }
-  .community-invite { bottom: calc(18px + var(--docs-invite-lift)); left: auto; right: auto; inset-inline-start: max(42px, calc((100vw - var(--docs-frame)) / 2 + 18px)); width: calc(var(--docs-nav) - 36px); }
+  .community-invite { bottom: calc(18px + var(--docs-invite-lift)); left: auto; right: auto; inset-inline-start: 18px; width: calc(var(--docs-nav) - 36px); }
 }
 
 /* A quiet structural footer uses the main site's hierarchy, with docs destinations. */
-.site-footer { width: min(calc(100% - 48px), var(--docs-frame)); margin: 0 auto; border: 1px solid var(--line); background: var(--bg); }
+.site-footer { width: 100%; margin: 0; border-block: 1px solid var(--line); border-inline: 0; background: var(--bg); }
 .site-footer-inner { max-width: none; display: grid; grid-template-columns: 1.5fr repeat(3, .7fr); align-items: stretch; gap: 0; padding: 0; font-family: var(--oc-font-body); }
 .site-footer-brand { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 48px; }
 .site-footer .site-footer-logo, .site-footer .site-footer-logo:visited { color: var(--ink); font: 700 20px/1 var(--oc-font-body); }
@@ -99,7 +100,7 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 
 /* Keep one visible focus perimeter, including controls whose base style clears it. */
 :root :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
-:root :is(.nav-link, .docs-section > summary, .toc > summary, .oc-code-tab, .doc [role="tab"], .language-option, .search-result):focus-visible { outline-offset: -3px; }
+:root :is(.nav-link, .docs-section > summary, .toc > summary, .toc a, .oc-code-tab, .doc [role="tab"], .language-option, .search-result):focus-visible { outline-offset: -3px; }
 .sidebar:focus-within { mask-image: none; -webkit-mask-image: none; }
 .search-head:focus-within { border-color: var(--line); box-shadow: none; }
 .search-head [data-search-input]:focus-visible { outline: none; box-shadow: none; }
@@ -110,10 +111,8 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .language-picker:has(.language-native:focus-visible) .language-trigger { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
 
 @media (max-width: 1280px) {
-  :root { --docs-inset: 40px; --toc-left: calc(max(24px, (100vw - var(--docs-frame)) / 2) + var(--docs-nav) + var(--docs-inset)); --toc-room: calc(100vw - var(--toc-left) - 24px); }
-  .doc-shell { grid-template-columns: var(--docs-nav) minmax(0, 1fr); }
+  :root { --docs-inset: 40px; }
   .article { border-inline-end: 0; }
-  .toc { left: auto; right: auto; inset-inline-start: var(--toc-left); width: max-content; max-height: none; top: calc(var(--sticky-header-h) + 8px); padding: 0; }
 }
 @media (max-width: 1024px) {
   :root { --docs-nav: 204px; --docs-inset: 32px; }
@@ -190,10 +189,10 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .page-tools, .page-nav small, .page-feedback, .oc-code-label, .oc-code-tab { font-family: var(--oc-font-mono); }
 .toc[open] nav { grid-auto-rows: max-content; }
 
-.docs-home { --docs-frame: 1060px; --docs-inset: 24px; --docs-nav: 210px; --toc-left: calc(max(24px, (100vw - var(--docs-frame)) / 2) + var(--docs-nav) + 24px); --toc-room: calc(100vw - var(--toc-left) - 24px); }
-.docs-home .doc-shell { grid-template-columns: var(--docs-nav) minmax(0, 1fr); }
-.docs-home .article { border-inline-end: 0; padding-top: 32px; }
-.docs-home .article-header { margin-bottom: 20px; }
+.docs-home { --docs-inset: 24px; }
+.docs-home .article { padding-top: 0; }
+.docs-home .article-header { margin-bottom: 20px; padding-top: 32px; }
+.page-intro:empty { display: none; }
 .docs-home .article-kicker { display: none; }
 .docs-home .home-section-title, .docs-home .doc > h2 { color: var(--brand); font: 600 12.8px/1.4 var(--oc-font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .docs-home .home-section-title { margin: 28px 0 0; }
@@ -234,7 +233,7 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
   .header-links .language-picker { order: 2; }
   .nav-toggle { order: 3; width: 36px; height: 40px; }
   .theme-toggle { order: 4; width: 36px; min-width: 36px; }
-  .docs-home .article { padding-top: 28px; }
+  .docs-home .article-header { padding-top: 28px; }
   .docs-home .home-section-title { margin-top: 28px; }
   .docs-home .doc > .oc-card-grid:not(:first-child) { grid-template-columns: 1fr; }
   .doc .oc-card-grid > .oc-card, .doc .oc-card-group > .oc-card { padding: 24px 20px; }
@@ -255,10 +254,6 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 
 .docs-home .home-intro { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
 .site-footer { background: color-mix(in srgb, var(--bg) 94%, black); }
-@media (min-width: 821px) and (max-width: 1280px) {
-  .toc { top: calc(var(--header-row-h) + 9px); inset-inline-start: auto; inset-inline-end: calc(max(24px, (100vw - var(--docs-frame)) / 2) + 12px); }
-  .toc nav { left: auto; right: auto; inset-inline-start: auto; inset-inline-end: 0; }
-}
 
 
 
@@ -299,7 +294,7 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .sidebar { top: calc(var(--header-row-h, 54px) + 24px); max-height: calc(100dvh - var(--header-row-h, 54px) - 48px); }
 body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-row-h, 54px) - 48px - var(--community-invite-h, 0px) - var(--docs-invite-lift)), var(--sidebar-available-height, 100dvh)); }
 
-/* Compact TOC stays in the reading pane, leaving global navigation in the sidebar. */
+/* Compact TOC stays in the reading pane; desktop pages share a right-hand rail. */
 .main { display: block; grid-column: 2 / -1; min-width: 0; }
 .toc { position: sticky; top: var(--header-row-h, 54px); left: auto; right: auto; inset-inline-start: auto; inset-inline-end: auto; z-index: 60; width: 100%; max-width: none; max-height: none; margin: 0; padding: 0; overflow: visible; border-bottom: 1px solid var(--line); border-inline-start: 1px solid var(--line); background: var(--bg); opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
 .toc h2 { display: none; }
@@ -311,14 +306,18 @@ body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-
 .toc[open] nav { display: grid; align-content: start; grid-auto-rows: max-content; gap: 2px; }
 .toc a { padding: 8px 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (min-width: 1281px) {
-  body:not(.docs-home) .main { display: grid; grid-template-columns: minmax(0, 1fr) var(--docs-toc); }
-  body:not(.docs-home) .main:not(:has(.toc)) { grid-template-columns: minmax(0, 1fr); }
-  body:not(.docs-home) .article { grid-column: 1; grid-row: 1; }
-  body:not(.docs-home) .toc { grid-column: 2; grid-row: 1; align-self: start; top: calc(var(--header-row-h, 54px) + 24px); width: auto; max-height: calc(100dvh - var(--header-row-h, 54px) - 48px); padding: 24px 18px; border: 0; overflow: auto; }
-  body:not(.docs-home) .toc summary { display: none; }
-  body:not(.docs-home) .toc h2 { display: flex; }
-  body:not(.docs-home) .toc nav { position: static; display: block; width: auto; max-height: none; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
-  body:not(.docs-home) .toc a { white-space: normal; padding: 7px 0; }
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) var(--docs-toc); }
+  .main:not(:has(.toc)) { grid-template-columns: minmax(0, 1fr); }
+  .page-intro { grid-column: 1 / -1; grid-row: 1; }
+  .article { grid-column: 1; grid-row: 2; }
+  /* Keep the scrollable rail above the fixed chat launcher. */
+  .toc { grid-column: 2; grid-row: 2; align-self: start; top: calc(var(--header-row-h, 54px) + 24px); width: auto; max-height: min(calc(100dvh - var(--header-row-h, 54px) - 104px), var(--toc-available-height, 100dvh)); padding: 40px 18px 24px; border: 0; overflow: auto; }
+  .docs-home .toc { padding-block-start: 32px; }
+  .toc summary { display: none; }
+  .toc h2 { display: flex; }
+  .toc[open] nav { position: static; display: block; width: auto; max-height: none; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
+  .toc a { white-space: normal; padding: 7px 8px; }
+  .toc a:not(.toc-l3) { margin-inline: -8px; }
 }
 @media (max-width: 820px) {
   .sidebar, body.has-community-invite .sidebar { top: 0; max-height: calc(100dvh - var(--community-invite-h, 0px)); }

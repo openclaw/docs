@@ -346,10 +346,10 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <body class="oc-app-surface${page.slug === "index" ? " docs-home" : ""}">
 ${siteHeader(page)}
 ${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ↗ open live docs.</aside>` : ""}
-<div class="page-intro">${page.slug === "index" ? homeHero(page) : ""}</div>
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
+<div class="page-intro">${page.slug === "index" ? homeHero(page) : ""}</div>
 ${tocHtml(toc, page.locale)}
 <main class="article" id="main">
 <header class="article-header">

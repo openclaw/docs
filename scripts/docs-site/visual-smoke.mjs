@@ -101,8 +101,13 @@ async function checkRtlNavigationResize() {
 }
 
 async function checkLandingNavigation() {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 800 }, reducedMotion: "reduce" });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  const alignedToc = await page.evaluate(() => Math.abs(
+    document.querySelector(".toc h2").getBoundingClientRect().top
+      - document.querySelector(".article-meta-row").getBoundingClientRect().top,
+  ) < 1);
+  if (!alignedToc) throw new Error("home TOC should begin alongside the breadcrumbs below the hero");
   await page.locator(".hero-search").click();
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.keyboard.press("Escape");
@@ -125,14 +130,18 @@ async function checkLandingNavigation() {
   await page.locator(".docs-section > summary").first().click();
   await page.mouse.move(1100, 500);
   await page.mouse.wheel(0, 1100);
-  await page.locator(".toc.is-visible summary").waitFor({ state: "visible" });
-  await page.waitForFunction(() => document.querySelector(".toc summary").getBoundingClientRect().top <= document.querySelector(".site-header").getBoundingClientRect().bottom + 1);
-  const tocInChrome = await page.evaluate(() => {
-    const toc = document.querySelector(".toc summary").getBoundingClientRect();
-    const header = document.querySelector(".site-header").getBoundingClientRect();
-    return toc.top >= header.bottom - 1 && toc.bottom <= header.bottom + 48;
+  await page.locator(".toc h2").waitFor({ state: "visible" });
+  const wideColumns = await page.evaluate(() => {
+    const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+    const shell = rect(".doc-shell"), sidebar = rect(".sidebar"), article = rect(".article"), toc = rect(".toc");
+    return Math.abs(shell.left) < 1 && Math.abs(shell.right - innerWidth) < 1
+      && sidebar.right <= article.left + 1 && article.right <= toc.left + 1
+      && Math.abs(toc.right - shell.right) < 1
+      && getComputedStyle(document.querySelector(".toc summary")).display === "none"
+      && Math.abs(rect(".docs-hero").left - article.left) < 1
+      && Math.abs(rect(".docs-hero").right - toc.right) < 1;
   });
-  if (!tocInChrome) throw new Error("landing TOC obscures the reading lane");
+  if (!wideColumns) throw new Error("desktop docs should span the viewport with navigation, content, and TOC columns");
   await page.locator('.sidebar a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
   if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
