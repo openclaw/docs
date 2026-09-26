@@ -43,7 +43,15 @@ const next=items[items.indexOf(document.activeElement)+(e.shiftKey?-1:1)];if(nex
 // CSS can blur responsive controls before the media-change callback runs.
 // Retain actual widget focus, but never reclaim focus after an unrelated action.
 let languageFocusOwned=false;let navigationFocusOwned=false;
-document.addEventListener("focusin",e=>{languageFocusOwned=Boolean(e.target?.closest?.("[data-language-picker]"));navigationFocusOwned=Boolean(e.target?.closest?.(".sidebar,.community-invite,[data-nav-toggle]"))});
+function revealSidebarFocus(){
+const target=document.activeElement;
+if(mobileNavQuery.matches||!target?.closest(".sidebar")||!isUsableFocusTarget(target))return;
+const launcher=document.querySelector(".docs-chat-launcher");
+if(!isUsableFocusTarget(launcher))return;
+const focusRect=target.getBoundingClientRect(),launcherRect=launcher.getBoundingClientRect();
+if(focusRect.left<launcherRect.right&&focusRect.right>launcherRect.left&&focusRect.top<launcherRect.bottom&&focusRect.bottom>launcherRect.top)target.scrollIntoView({block:"center",inline:"nearest"});
+}
+document.addEventListener("focusin",e=>{languageFocusOwned=Boolean(e.target?.closest?.("[data-language-picker]"));navigationFocusOwned=Boolean(e.target?.closest?.(".sidebar,.community-invite,[data-nav-toggle]"));if(e.target?.closest?.(".sidebar"))requestAnimationFrame(revealSidebarFocus)});
 document.addEventListener("pointerdown",e=>{if(!e.target?.closest?.("[data-language-picker]"))languageFocusOwned=false;if(!e.target?.closest?.(".sidebar,.community-invite,[data-nav-toggle]"))navigationFocusOwned=false});
 function syncLanguageControl(){const trigger=document.querySelector("[data-language-trigger]");const native=document.querySelector("[data-language-native]");if(!trigger||!native)return;const useNative=mobileNavQuery.matches;const active=document.activeElement;const transfer=languageFocusOwned||active===trigger||active===native;trigger.tabIndex=useNative?-1:0;trigger.setAttribute("aria-hidden",String(useNative));native.tabIndex=useNative?0:-1;native.setAttribute("aria-hidden",String(!useNative));if(useNative){closeLanguage();if(transfer)native.focus({preventScroll:true})}else if(transfer){trigger.focus({preventScroll:true})}}
 mobileNavQuery.addEventListener("change",()=>{const restoreNavigation=navigationFocusOwned;if(!mobileNavQuery.matches)setNavOpen(false);syncSidebarAccess();syncLanguageControl();if(restoreNavigation&&!modal?.classList.contains("open")&&!isUsableFocusTarget(document.activeElement)){const target=mobileNavQuery.matches?document.querySelector("[data-nav-toggle]"):(document.querySelector(".docs-section.current>summary")||document.querySelector(".docs-section>summary"));target?.focus()}});

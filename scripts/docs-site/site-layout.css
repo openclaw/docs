@@ -332,5 +332,7 @@ body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-
 
 @media (min-width: 821px) {
   .sidebar { padding-block: 12px 16px; scroll-padding-block: 12px; }
+  /* The RTL rail shares the chat launcher's corner; its last item needs scroll room. */
+  :root[dir="rtl"] .sidebar { padding-block-end: 80px; }
   .docs-section > summary { min-height: 36px; padding-block: 7px; }
 }
