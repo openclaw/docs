@@ -5083,6 +5083,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Channel ownership during an update
   - H2: ACP agents' model precedence
   - H2: Missing plugins during migration
+  - H2: Retired TaskFlow Webhooks plugin
   - H2: Schema publication during a 2026.9.2 update
   - H2: Replay a July 2026 config upgrade
   - H2: Checks 0-2
@@ -10355,14 +10356,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
 
-## plugins/reference/webhooks.md
-
-- Route: /plugins/reference/webhooks
-- Headings:
-  - H2: Distribution
-  - H2: Surface
-  - H2: Related docs
-
 ## plugins/reference/whatsapp.md
 
 - Route: /plugins/reference/whatsapp
@@ -11237,22 +11230,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Conversation startup behavior
   - H3: Twilio stream disconnect grace
   - H2: Stale call reaper
-
-## plugins/webhooks.md
-
-- Route: /plugins/webhooks
-- Headings:
-  - H2: Configure routes
-  - H2: Security model
-  - H2: Request format
-  - H2: Supported actions
-  - H3: `create_flow`
-  - H3: `run_task`
-  - H3: Waiting and completion
-  - H3: Cancellation
-  - H2: Response shape
-  - H3: Errors and troubleshooting
-  - H2: Related
 
 ## plugins/workboard.md
 
