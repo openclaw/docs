@@ -1050,6 +1050,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Environment variables
   - H2: History context
   - H2: Configuration
+  - H2: Migrating an existing webhook endpoint
 
 ## channels/msteams/manifest-and-permissions.md
 
