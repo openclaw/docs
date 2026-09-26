@@ -4918,6 +4918,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: tools.sessions
   - H2: `tools.sessions_spawn`
   - H2: agents.defaults.subagents
+  - H2: tools.swarm
 
 ## gateway/config-tools/tool-policy.md
 
