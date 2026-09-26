@@ -611,6 +611,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/feishu/configuration-reference
 - Headings:
   - H2: Configuration reference
+  - H2: Gateway webhook route
 
 ## channels/feishu/dynamic-agents.md
 
