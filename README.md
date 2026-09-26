@@ -38,6 +38,7 @@ English content and navigation are authored in [`openclaw/openclaw`](https://git
 
 ## Static site build
 
+- `scripts/docs-site/site-layout.css` adapts the community site's compact network header, ruled frame, connected panels, and footer to documentation. The full source section tree is available in the left sidebar, with native expandable groups. The landing page has a search-led hero and a 1060px two-column frame; articles retain a wider reading lane and TOC. `hero-art.mjs` owns the shared ASCII artwork with reduced-motion and route cleanup. Shared semantic tokens and component foundations remain in `site-css.mjs`; structural panels are square, while controls retain rounded corners.
 - `npm run docs:build` renders the synced Markdown and MDX-style docs into `dist/docs-site`.
 - English collection excludes top-level roots owned by published locales; each locale renders its own sources once, while nested or unrecognized directory names remain ordinary English paths.
 - Search titles and summaries and LLM corpus headings follow the page renderer's YAML frontmatter rules. The English corpus excludes language directories at the docs root while retaining nested paths such as `guide/fr/topic`.

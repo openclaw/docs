@@ -145,8 +145,8 @@ if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
   throw new Error("zh-CN reactions: article links do not stay in locale");
 }
 const itChannels = fs.readFileSync(path.join(site, "it/channels/index.html"), "utf8");
-if (!/class="tab-link active" href="(?:\/docs)?\/it\/channels"/.test(itChannels)) {
-  throw new Error("it channels: localized tabs are missing active Channels tab");
+if (!/class="nav-link active" href="(?:\/docs)?\/it\/channels" aria-current="page"/.test(itChannels)) {
+  throw new Error("it channels: localized navigation is missing the active page");
 }
 if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
@@ -161,9 +161,12 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
   throw new Error("it channels: x-default hreflang alternate is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
-if (!/<div class="main">\s*<main class="article" id="main">/.test(index)
-  || /<main class="main"/.test(index)) {
-  throw new Error("index: the primary landmark must not use the display-contents layout wrapper");
+const indexDocument = parseDocument(index);
+const mainLandmarks = DomUtils.findAll((node) => node.name === "main", indexDocument.children);
+if (mainLandmarks.length !== 1 || mainLandmarks[0].attribs.id !== "main"
+  || !mainLandmarks[0].attribs.class?.split(/\s+/).includes("article")
+  || mainLandmarks[0].attribs.class?.split(/\s+/).includes("main")) {
+  throw new Error("index: expected one article main landmark, separate from the layout wrapper");
 }
 if (!index.includes('class="site-footer"') || !index.includes('class="site-footer-links"')) {
   throw new Error("index: site footer is missing");
@@ -333,10 +336,13 @@ if (!/theme-toggle-icon-dark/.test(index)
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
-if (!/class="site-footer"/.test(index)
-  || !/an <a href="https:\/\/openclaw\.org"[^>]*>OpenClaw Foundation<\/a> project/.test(index)
-  || !/\.site-footer\{border-top:1px solid var\(--line\)/.test(siteCss)
-  || !/\.site-footer-inner\{[^}]*justify-content:space-between/.test(siteCss)) {
+const footer = DomUtils.findOne((node) => node.name === "footer", indexDocument.children);
+const foundationLink = footer && DomUtils.findOne(
+  (node) => node.name === "a" && node.attribs.href === "https://openclaw.org"
+    && DomUtils.textContent(node).trim() === "OpenClaw Foundation",
+  footer.children,
+);
+if (!foundationLink) {
   throw new Error("assets: site footer with Foundation attribution is missing");
 }
 if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
@@ -345,7 +351,7 @@ if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#262
 if (!/--oc-status-success-bg: rgb\(34 197 94 \/ 0\.12\)/.test(siteCss)
   || !/\.oc-app-surface\s*\{/.test(siteCss)
   || !/\.oc-action\s*\{/.test(siteCss)
-  || !/class="oc-app-surface"/.test(index)
+  || !DomUtils.findOne((node) => node.name === "body" && node.attribs.class?.split(/\s+/).includes("oc-app-surface"), indexDocument.children)
   || !/class="oc-card oc-card-interactive"/.test(index)) {
   throw new Error("assets: v0.0.1 product tokens and shared component primitives were not bundled and consumed");
 }
@@ -395,10 +401,10 @@ if (!/@media\(max-width:820px\)\{\.community-invite\{left:0;bottom:0;z-index:91/
 }
 if (!/data-community-invite-dismiss/.test(siteJs)
   || !/openclaw\.docs\.community-invite/.test(siteJs)
-  || !/card\.hidden=state===null\|\|state\.dismissedAtMs!==undefined/.test(siteJs)) {
+  || !/function dismissCommunityInvite/.test(siteJs)) {
   throw new Error("assets: community invite dismissal is not wired to local storage");
 }
-if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
+if (!/\.header-row\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
   || !/:root\{--shell-pad:56px;--rail-gap:56px;--rail-max:272px;--article-max:820px\}/.test(siteCss)
   || !/\.doc-shell\{display:grid;grid-template-columns:minmax\(var\(--rail-max\),1fr\) minmax\(0,var\(--article-max\)\) minmax\(var\(--rail-max\),1fr\);gap:var\(--rail-gap\);padding:38px var\(--shell-pad\) 90px\}/.test(siteCss)
@@ -408,7 +414,6 @@ if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
 if (!/body\{[^}]*font:var\(--oc-font-size-md\)\/1\.7 var\(--oc-font-body\)/.test(siteCss)
   || !/::selection\{background:var\(--brand\);color:var\(--on-brand\)\}/.test(siteCss)
   || /body::before\{[^}]*background-image:radial-gradient/.test(siteCss)
-  || !/\.tab-link\{[^}]*font:700 var\(--oc-font-size-sm\)\/1\.4 var\(--oc-font-mono\)/.test(siteCss)
   || !/\.article h1\{font:700 clamp\(34px,3\.8vw,44px\)\/1\.08 var\(--oc-font-display\)/.test(siteCss)
   || !/\.doc\{font-size:var\(--oc-font-size-md\)\}/.test(siteCss)) {
   throw new Error("assets: docs type scale drifted from the reference skin");
@@ -440,8 +445,6 @@ if (!/function scrollActiveNavLink/.test(siteJs)
 }
 if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/function syncTocDisclosure/.test(siteJs)
-  || !/function compactTocVisible\(\)\{const articleHeader=document\.querySelector\("\.article-header"\)/.test(siteJs)
-  || !/if\(!visible&&toc\.open\)toc\.open=false/.test(siteJs)
   || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
   throw new Error("assets: compact page orientation should refresh across PJAX navigation");
 }
@@ -470,12 +473,10 @@ if (!/let tocObserver=null/.test(siteJs)
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
-if (!/class="mobile-tabs" aria-label="Docs sections"/.test(index)
-  || !/class="mobile-tab-link active"[^>]*aria-current="location"/.test(index)
-  || !/class="mobile-section-switcher"><summary>/.test(index)
-  || !/\.mobile-section-switcher\[open\] \.mobile-tabs\{display:grid;gap:2px/.test(siteCss)
-  || !/\.mobile-tab-link\.active\{background:var\(--soft\);color:var\(--brand\)/.test(siteCss)) {
-  throw new Error("assets: mobile global docs navigation is missing");
+if (!/class="docs-sections" aria-label="Docs sections"/.test(index)
+  || !/class="docs-section current"[^>]*><summary aria-current="true">/.test(index)
+  || /class="(?:tabs|mobile-tabs)"/.test(index)) {
+  throw new Error("assets: complete vertical docs navigation is missing");
 }
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");

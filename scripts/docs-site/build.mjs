@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { homeContentHtml } from "./home-content.mjs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
@@ -86,7 +87,7 @@ const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elemen
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 let pages = allPages;
 let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
-let navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 if (previewMode) {
   const previewKeys = collectPreviewPageKeys(navByLocale, {
     locale: previewLocale,
@@ -95,7 +96,7 @@ if (previewMode) {
   });
   pages = allPages.filter((page) => previewKeys.has(pageKey(page.locale, page.slug)));
   pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
-  navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+  // Keep the full source navigation. Only rendering is bounded; unbuilt links use live docs.
 }
 const localePickerLabels = {
   "pt-BR": "Português (BR)"
@@ -342,25 +343,27 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
-<body class="oc-app-surface">
-${siteHeader(page, nav, activeTab)}
+<body class="oc-app-surface${page.slug === "index" ? " docs-home" : ""}">
+${siteHeader(page)}
+${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ↗ open live docs.</aside>` : ""}
+<div class="page-intro">${page.slug === "index" ? homeHero(page) : ""}</div>
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
+${tocHtml(toc, page.locale)}
 <main class="article" id="main">
 <header class="article-header">
 ${articleMeta(page, nav)}
 ${page.hidden ? "" : pageMarkdownScript(page)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
-<h1>${escapeHtml(page.title)}</h1>
+${page.slug === "index" ? `<h2 class="home-section-title">${escapeHtml(activeTab)}</h2>` : `<h1>${escapeHtml(page.title)}</h1>`}
 ${pageStatus(page)}
 </header>
 ${pageSearchMetadata(page, nav)}
-<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
+<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${page.slug === 'index' ? homeContentHtml(html) : html}</div>
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
 </main>
-${tocHtml(toc, page.locale)}
 </div>
 </div>
 ${communityInvite(page.locale)}
@@ -376,51 +379,54 @@ function assetUrl(file) {
   return `${publicPath(file)}?v=${encodeURIComponent(shellAssetVersion)}`;
 }
 
-function siteHeader(page, nav, activeTab) {
-  const tabs = nav.map((tab) => {
-    const href = pageUrl(firstPage(tab));
-    const active = tab.title === activeTab ? " active" : "";
-    const current = tab.title === activeTab ? ' aria-current="location"' : "";
-    return `<a class="tab-link${active}" href="${href}"${current}>${escapeHtml(tab.title)}</a>`;
-  }).join("");
+function homeHero(page) {
+  return `<section class="docs-hero" aria-labelledby="docs-hero-title">
+<p class="hero-eyebrow">Open source · Documentation</p>
+<h1 id="docs-hero-title" dir="auto">${escapeHtml(page.title)} <em dir="ltr">Docs.</em></h1>
+<p class="hero-description">${escapeHtml(page.summary || config.description || "")}</p>
+<button class="hero-search" type="button" data-search-open>${icon("search")}<span>Search documentation</span><kbd aria-hidden="true">⌘ K</kbd></button>
+</section>`;
+}
+
+function siteHeader(page) {
+  const network = [["Product", "https://openclaw.ai/"], ["Install", "https://openclaw.ai/install"], ["Ecosystem", "https://openclaw.ai/ecosystem"], ["Integrations", "https://openclaw.ai/integrations"], ["Blog", "https://openclaw.ai/blog"], ["Community", "https://community.openclaw.ai/"]];
   return `<header class="site-header">
 <div class="header-row">
-<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
-<button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
-<nav class="header-links">${languagePicker(page)}${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
-<button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+<div class="header-left"><a class="brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}"${previewLinkAttrs(allPageByKey.get(pageKey(page.locale, "index")) ?? page, "OpenClaw Docs")}><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
+<nav class="network-nav" aria-label="OpenClaw sites">${network.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}</nav>
+<button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
+<nav class="header-links" aria-label="Documentation tools">${languagePicker(page)}${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button><button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 </div>
-<nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
 </header>`;
 }
 
 function siteFooter() {
+  const home = { locale: "en", slug: "index", title: "Docs" };
+  const groups = [
+    ["Product", [["Install", "https://openclaw.ai/install"], ["Showcase", "https://openclaw.ai/showcase"], ["Integrations", "https://openclaw.ai/integrations"], ["Docs", pageUrl(home), home]]],
+    ["Resources", [["Blog", "https://openclaw.ai/blog"], ["Podcast", "https://openclaw.ai/podcast"], ["Press", "https://openclaw.ai/press"], ["Shoutouts", "https://openclaw.ai/shoutouts"], ["Releases", "https://github.com/openclaw/openclaw/releases"]]],
+    ["Project", [["Foundation", "https://openclaw.org"], ["Security", "https://openclaw.ai/security"], ["GitHub", "https://github.com/openclaw/openclaw"]]],
+  ];
   return `<footer class="site-footer">
 <div class="site-footer-inner">
-<p class="site-footer-note">© 2026 OpenClaw — an <a href="https://openclaw.org" target="_blank" rel="noopener">OpenClaw Foundation</a> project</p>
-<nav class="site-footer-links" aria-label="OpenClaw links">
-<a href="https://openclaw.ai" target="_blank" rel="noopener">openclaw.ai</a>
-<a href="https://openclaw.org" target="_blank" rel="noopener">openclaw.org</a>
-<a href="https://github.com/openclaw/openclaw/releases" target="_blank" rel="noopener">${icon("package")}Releases</a>
-<a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">${icon("github")}GitHub</a>
-<a href="https://discord.com/invite/clawd" target="_blank" rel="noopener">${icon("discord")}Discord</a>
-</nav>
+<section class="site-footer-brand" aria-label="OpenClaw">
+<a class="site-footer-logo" href="https://openclaw.ai">OpenClaw</a>
+<p class="site-footer-note">An <a href="https://openclaw.org">OpenClaw Foundation</a> project.</p>
+<nav class="site-footer-socials" aria-label="Community"><a href="https://github.com/openclaw/openclaw" aria-label="GitHub">${icon("github")}</a><a href="https://discord.com/invite/clawd" aria-label="Discord">${icon("discord")}</a></nav>
+</section>
+${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${title}"><h2>${title}</h2>${links.map(([label, href, target]) => `<a href="${escapeAttr(href)}"${target ? previewLinkAttrs(target, label) : ""}>${label}</a>`).join("")}</nav>`).join("")}
 </div>
+<div class="site-footer-legal"><p>Open-source assistant infrastructure.</p><p>© 2026</p><a href="https://openclaw.org">OpenClaw Foundation</a></div>
 </footer>`;
 }
 
 function sidebar(page, nav, activeTab) {
-  const currentTab = nav.find((tab) => tab.title === activeTab) ?? nav[0];
-  const groups = currentTab?.groups ?? [];
-  const mobileTabs = nav.map((tab) => {
-    const active = tab.title === currentTab?.title;
-    return `<a class="mobile-tab-link${active ? " active" : ""}" href="${pageUrl(firstPage(tab))}"${active ? ' aria-current="location"' : ""}>${escapeHtml(tab.title)}</a>`;
-  }).join("");
   return `<aside class="sidebar">
-<div class="sidebar-head"><strong>Browse docs</strong><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
-<details class="mobile-section-switcher"><summary><span class="mobile-section-copy"><span class="mobile-section-label">Section</span><strong>${escapeHtml(currentTab?.title ?? "Docs")}</strong></span><span class="mobile-section-chevron" aria-hidden="true">${icon("chevron-down")}</span></summary><nav class="mobile-tabs" aria-label="Docs sections">${mobileTabs}</nav></details>
-<p class="sidebar-section-label">In this section</p>
-<nav aria-label="${escapeAttr(`${currentTab?.title ?? "Docs"} pages`)}">${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
+<div class="sidebar-head"><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
+<nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
+    const current = tab.title === activeTab;
+    return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
+  }).join("")}</nav>
 </aside>`;
 }
 
@@ -460,7 +466,7 @@ function languagePicker(page) {
     const active = locale.code === page.locale;
     return `<option value="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}"${active ? " selected" : ""}>${escapeHtml(localeFlag(locale.code))} ${escapeHtml(localeDisplayName(locale.code))}</option>`;
   }).join("");
-  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-label="${escapeAttr(`Language: ${currentLabel}`)}" aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
 }
 
 function localeFlag(code) {
@@ -504,7 +510,7 @@ function breadcrumbs(page, nav) {
   const group = groupForPage(nav, page.slug);
   const parts = [
     activeTab && activeTabPage
-      ? { className: "breadcrumb-tab", html: `<a href="${escapeAttr(pageUrl(activeTabPage))}">${escapeHtml(activeTab)}</a>` }
+      ? { className: "breadcrumb-tab", html: `<a href="${escapeAttr(pageUrl(activeTabPage))}"${previewLinkAttrs(activeTabPage, activeTab)}>${escapeHtml(activeTab)}</a>` }
       : activeTab ? { className: "breadcrumb-tab", html: `<span>${escapeHtml(activeTab)}</span>` } : null,
     group ? { className: "breadcrumb-group", html: `<span>${escapeHtml(group)}</span>` } : null,
     { className: "breadcrumb-page", html: `<span aria-current="page">${escapeHtml(page.title)}</span>` },
@@ -575,6 +581,8 @@ function icon(name) {
     "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
     "moon": '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+    "chevron-left": '<path d="m15 18-6-6 6-6"/>',
+    "chevron-right": '<path d="m9 18 6-6-6-6"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "file-text": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
@@ -604,7 +612,7 @@ function navEntryHtml(activePage, entry) {
 
 function navLink(activePage, page) {
   const active = activePage.locale === page.locale && activePage.slug === page.slug ? " active" : "";
-  return `<a class="nav-link${active}" href="${pageUrl(page)}">${escapeHtml(page.title)}</a>`;
+  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}</a>`;
 }
 
 function tableOfContents(html) {
@@ -621,7 +629,7 @@ function tocHtml(items, locale) {
 
 function pager(prev, next) {
   if (!prev && !next) return "";
-  return `<nav class="page-nav">${prev ? `<a class="oc-card oc-card-interactive" href="${pageUrl(prev)}"><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="oc-card oc-card-interactive next" href="${pageUrl(next)}"><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
+  return `<nav class="page-nav">${prev ? `<a class="oc-card oc-card-interactive" href="${pageUrl(prev)}"${previewLinkAttrs(prev, `Previous: ${prev.title}`)}><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="oc-card oc-card-interactive next" href="${pageUrl(next)}"${previewLinkAttrs(next, `Next: ${next.title}`)}><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
 }
 
 function pageFeedback(page) {
@@ -869,8 +877,18 @@ function internalPageUrl(page) {
   return pageByKey.has(pageKey(page.locale, page.slug)) ? pageUrl(page) : `${docsOrigin()}${pageRoute(page)}`;
 }
 
+function isPreviewRemote(page) {
+  return previewMode && !pageByKey.has(pageKey(page.locale, page.slug));
+}
+
+function previewLinkAttrs(page, label = page.title) {
+  return isPreviewRemote(page)
+    ? ` data-preview-live title="Opens live docs; not built in this local preview" aria-label="${escapeAttr(label)} (opens live docs)"`
+    : "";
+}
+
 function pageUrl(page) {
-  return publicPath(pageRoute(page));
+  return isPreviewRemote(page) ? `${docsOrigin()}${pageRoute(page)}` : publicPath(pageRoute(page));
 }
 
 function pageRoute(page) {

@@ -61,10 +61,9 @@ test("deep first pages and section metadata use descendant pages in normal and p
     assert.equal(built.status, 0, built.stderr);
     const html = fs.readFileSync(path.join(f.root, "dist/docs-site/guide/first/index.html"), "utf8");
     assert.ok(!html.includes("undefined/undefined"));
-    assert.match(html, /class="tab-link active" href="\/guide\/first"/);
-    assert.match(html, /class="mobile-tab-link active" href="\/guide\/first"/);
+    assert.match(html, /class="docs-section current"[^>]*data-docs-section="Deep docs"><summary aria-current="true">/);
     assert.match(html, /class="breadcrumb-part breadcrumb-tab"><a href="\/guide\/first">Deep docs<\/a>/);
     assert.match(html, /data-pagefind-meta="section">Reference<\/span>/);
-    assert.match(html, /class="nav-link active" href="\/guide\/first">First<\/a>/);
+    assert.match(html, /class="nav-link active" href="\/guide\/first" aria-current="page">First<\/a>/);
   }
 });

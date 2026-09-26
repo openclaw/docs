@@ -34,15 +34,122 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 
 try {
+  await checkLandingNavigation();
   await checkDesktop();
   await checkTocScrollspy();
   await checkAmbientCodePage();
   await checkMobile();
+  await checkRtlNavigationResize();
   await checkLightMode();
   console.log(`docs visual smoke ok: screenshots in ${path.relative(root, artifacts)}`);
 } finally {
   await browser.close();
   server.close();
+}
+
+async function checkRtlNavigationResize() {
+  if (!fs.existsSync(path.join(site, "ar/index.html"))) return;
+  for (const reopen of [false, true]) {
+    const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
+    try {
+      await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
+      await page.locator("[data-nav-toggle]").click();
+      await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Space");
+      if (reopen) {
+        await page.waitForFunction(() => document.querySelector(".docs-section").open);
+        await page.keyboard.press("Tab");
+        await page.keyboard.press("Escape");
+        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+        await page.keyboard.press("Enter");
+        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+      }
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.waitForFunction(() => {
+        const target = document.activeElement;
+        if (!target?.matches(".docs-section.current > summary")) return false;
+        const r = target.getBoundingClientRect();
+        const points = [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
+          [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]];
+        return r.top >= document.querySelector(".site-header").getBoundingClientRect().bottom
+          && r.bottom <= innerHeight && points.every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
+      });
+      await page.screenshot({ path: path.join(artifacts, `rtl-navigation-${reopen ? "reopened" : "opening"}-resize.png`) });
+      const limit = await page.locator(".sidebar a,.sidebar summary").count();
+      for (const [key, end] of [["Tab", ".docs-section:last-child>summary"], ["Shift+Tab", ".docs-section:first-child>summary"]]) {
+        for (let step = 0; step < limit; step += 1) {
+          await page.keyboard.press(key);
+          await page.waitForFunction(() => {
+            const target = document.activeElement;
+            if (!target?.closest(".sidebar")) return false;
+            const r = target.getBoundingClientRect();
+            return [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
+              [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]]
+              .every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
+          });
+          if (await page.evaluate((selector) => document.activeElement.matches(selector), end)) break;
+        }
+        if (!await page.evaluate((selector) => document.activeElement.matches(selector), end)) {
+          throw new Error(`RTL navigation traversal did not reach ${end}`);
+        }
+      }
+    } finally {
+      await page.close();
+    }
+  }
+}
+
+async function checkLandingNavigation() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.locator(".hero-search").click();
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
+  await page.keyboard.press("Escape");
+  if (!await page.evaluate(() => document.activeElement?.matches(".hero-search"))) {
+    throw new Error("hero search did not return keyboard focus to its opener");
+  }
+  const sections = await page.locator(".docs-section > summary").allTextContents();
+  if (!sections.includes("Help") || await page.locator(".tabs,.docs-navigation").count()) {
+    throw new Error("complete vertical docs navigation is missing");
+  }
+  await page.locator(".docs-section > summary").first().click();
+  const gatewaySection = page.locator('.docs-section[data-docs-section="Gateway & Ops"] > summary');
+  await gatewaySection.click();
+  await page.waitForFunction(() => {
+    const summary = document.querySelector('.docs-section[data-docs-section="Gateway & Ops"] > summary');
+    const rect = summary.getBoundingClientRect();
+    const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
+    return rect.top >= sidebar.top && rect.bottom <= sidebar.bottom && summary.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+  });
+  await page.locator(".docs-section > summary").first().click();
+  await page.mouse.move(1100, 500);
+  await page.mouse.wheel(0, 1100);
+  await page.locator(".toc.is-visible summary").waitFor({ state: "visible" });
+  await page.waitForFunction(() => document.querySelector(".toc summary").getBoundingClientRect().top <= document.querySelector(".site-header").getBoundingClientRect().bottom + 1);
+  const tocInChrome = await page.evaluate(() => {
+    const toc = document.querySelector(".toc summary").getBoundingClientRect();
+    const header = document.querySelector(".site-header").getBoundingClientRect();
+    return toc.top >= header.bottom - 1 && toc.bottom <= header.bottom + 48;
+  });
+  if (!tocInChrome) throw new Error("landing TOC obscures the reading lane");
+  await page.locator('.sidebar a[href="/start/getting-started"]').click();
+  await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
+  if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
+  const sectionUsable = await page.evaluate(() => {
+    const link = document.querySelector(".sidebar .nav-link.active");
+    const rect = link.getBoundingClientRect();
+    return link.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+  });
+  if (!sectionUsable) throw new Error("current page navigation is not reachable after a route change");
+  await page.goBack();
+  await page.waitForFunction(() => document.querySelectorAll(".oc-hero-art pre").length === 1);
+  const still = await page.locator(".oc-hero-art pre").textContent();
+  await page.waitForTimeout(250);
+  if (await page.locator(".oc-hero-art pre").textContent() !== still) {
+    throw new Error("hero animation ignored reduced-motion preference");
+  }
+  await page.close();
 }
 
 async function checkDesktop() {
@@ -443,7 +550,8 @@ async function checkTocScrollspy() {
     throw new Error(`toc scrollspy failed on long page: ${JSON.stringify(scrolled)}`);
   }
 
-  await page.click('a.nav-link[href$="/channels/telegram"]');
+  await page.locator('.docs-section[data-docs-section="Channels"] > summary').click();
+  await page.click('.docs-section[data-docs-section="Channels"] a.nav-link[href$="/channels/telegram"]');
   await page.waitForURL("**/channels/telegram");
   await page.locator(".toc a").first().waitFor({ state: "visible" });
   const afterPjax = await scrollToTocItem(page, 2);
@@ -520,12 +628,12 @@ async function scrollToTocItem(page, index) {
 
 async function checkMobileToc(page) {
   await page.goto(`${base}/releases/2026.8.1`, { waitUntil: "networkidle" });
-  const hiddenAtTop = await page.evaluate(() => ({
+  const closedAtTop = await page.evaluate(() => ({
     open: document.querySelector(".toc")?.hasAttribute("open"),
     opacity: getComputedStyle(document.querySelector(".toc")).opacity,
   }));
-  if (hiddenAtTop.open || hiddenAtTop.opacity !== "0") {
-    throw new Error(`mobile toc should stay hidden beside the page title: ${JSON.stringify(hiddenAtTop)}`);
+  if (closedAtTop.open || closedAtTop.opacity !== "1") {
+    throw new Error(`mobile toc should be a closed, visible reading control: ${JSON.stringify(closedAtTop)}`);
   }
 
   await page.evaluate(() => {
@@ -569,13 +677,18 @@ async function checkMobileToc(page) {
     throw new Error(`mobile toc sheet failed: ${JSON.stringify(open)}`);
   }
 
+  await page.keyboard.press("Tab");
+  if (!await page.evaluate(() => document.activeElement?.matches(".toc a"))) {
+    throw new Error("mobile toc links are not keyboard reachable");
+  }
   await page.keyboard.press("Escape");
   const closed = await page.evaluate(() => ({
     bodyOverflow: getComputedStyle(document.body).overflow,
     chatVisibility: getComputedStyle(document.querySelector(".docs-chat")).visibility,
     open: document.querySelector(".toc")?.hasAttribute("open"),
+    focusReturned: document.activeElement?.matches(".toc summary"),
   }));
-  if (closed.open || closed.bodyOverflow === "hidden" || closed.chatVisibility === "hidden") {
+  if (closed.open || !closed.focusReturned || closed.bodyOverflow === "hidden" || closed.chatVisibility === "hidden") {
     throw new Error(`mobile toc did not clean up after closing: ${JSON.stringify(closed)}`);
   }
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
@@ -588,6 +701,7 @@ async function checkMobile() {
   const page = await browser.newPage({ viewport: { width: 390, height: 980 }, isMobile: true });
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
   await page.screenshot({ path: path.join(artifacts, "elements-mobile-dark.png"), fullPage: true });
+  await checkMobileKeyboardOverlays(page);
 
   const geometry = await page.evaluate(() => {
     const header = document.querySelector(".site-header")?.getBoundingClientRect();
@@ -605,7 +719,7 @@ async function checkMobile() {
       headerWidth: header?.width,
       menuThemeOverlap: overlap(menu, theme),
       themeHasChrome: parseFloat(themeStyle.borderTopWidth) > 0 || themeStyle.backgroundColor !== "rgba(0, 0, 0, 0)",
-      brandCenterDelta: brand ? Math.abs((brand.left + brand.right) / 2 - innerWidth / 2) : null,
+      brandClear: Boolean(brand && brand.left >= 0 && brand.right <= innerWidth && !overlap(brand, search) && !overlap(brand, menu) && !overlap(brand, theme)),
       githubVisible: Boolean(github && github.width > 0 && github.height > 0),
       discordVisible: Boolean(discord && discord.width > 0 && discord.height > 0),
       searchInViewport: search ? search.left >= 0 && search.right <= innerWidth : false,
@@ -615,8 +729,7 @@ async function checkMobile() {
   });
   if (geometry.menuThemeOverlap
     || geometry.themeHasChrome
-    || geometry.brandCenterDelta === null
-    || geometry.brandCenterDelta > 2
+    || !geometry.brandClear
     || geometry.githubVisible
     || geometry.discordVisible
     || !geometry.searchInViewport
@@ -645,8 +758,9 @@ async function checkMobile() {
     const close = document.querySelector("[data-nav-close]")?.getBoundingClientRect();
     const toggle = document.querySelector("[data-nav-toggle]");
     const closeStyle = getComputedStyle(document.querySelector("[data-nav-close]"));
-    const sectionSwitcher = document.querySelector(".mobile-section-switcher");
+    const sectionSwitcher = document.querySelector(".docs-sections");
     const sectionSwitcherRect = sectionSwitcher?.getBoundingClientRect();
+    const invitation = document.querySelector(".community-invite");
     return {
       bodyOpen: document.body.classList.contains("nav-open"),
       ariaExpanded: toggle?.getAttribute("aria-expanded"),
@@ -655,10 +769,11 @@ async function checkMobile() {
       sidebarWidth: sidebar?.width,
       sidebarTop: sidebar?.top,
       sidebarBottom: sidebar?.bottom,
+      unobscuredBottom: invitation && !invitation.hidden ? invitation.getBoundingClientRect().top : innerHeight,
       closeVisible: closeStyle.display !== "none" && close && close.height >= 36,
       sectionSwitcherVisible: Boolean(sectionSwitcherRect && sectionSwitcherRect.width > 0 && sectionSwitcherRect.height > 0),
-      sectionSwitcherOpen: sectionSwitcher?.hasAttribute("open"),
-      sectionSwitcherCurrent: sectionSwitcher?.querySelector(".mobile-section-copy > strong")?.textContent?.trim(),
+      sectionSwitcherOpen: Boolean(sectionSwitcher?.querySelector(".docs-section[open]")),
+      sectionSwitcherCurrent: sectionSwitcher?.querySelector(".docs-section.current > summary")?.textContent?.trim(),
       drawerAtTop: (document.querySelector(".sidebar")?.scrollTop ?? -1) <= 1,
       closeFocused: document.activeElement === document.querySelector("[data-nav-close]"),
       viewport: innerWidth,
@@ -671,62 +786,29 @@ async function checkMobile() {
     || Math.abs(menu.sidebarRight - menu.viewport) >= 1
     || Math.abs(menu.sidebarWidth - menu.viewport) >= 1
     || Math.abs(menu.sidebarTop) >= 1
-    || Math.abs(menu.sidebarBottom - menu.viewportHeight) >= 1
+    || Math.abs(menu.sidebarBottom - menu.unobscuredBottom) > 1
     || !menu.closeVisible
     || !menu.sectionSwitcherVisible
     || menu.sectionSwitcherOpen
     || !menu.sectionSwitcherCurrent
     || !menu.drawerAtTop
     || !menu.closeFocused) {
-    throw new Error(`mobile menu drawer failed (expected full-bleed on phones): ${JSON.stringify(menu)}`);
+    throw new Error(`mobile menu drawer failed (expected full unobscured phone area): ${JSON.stringify(menu)}`);
   }
   await page.locator("[data-community-invite-dismiss]").click();
   await page.locator(".community-invite").waitFor({ state: "hidden" });
-  await page.click(".mobile-section-switcher > summary");
-  await page.locator(".mobile-tabs").waitFor({ state: "visible" });
-  await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
-  const sections = await page.evaluate(() => {
-    const links = [...document.querySelectorAll(".mobile-tab-link")];
-    const rects = links.map((link) => link.getBoundingClientRect());
-    return {
-      open: document.querySelector(".mobile-section-switcher")?.hasAttribute("open"),
-      desktopLabels: [...document.querySelectorAll(".tab-link")].map((link) => link.textContent?.trim()),
-      labels: links.map((link) => link.textContent?.trim()),
-      activeCount: document.querySelectorAll('.mobile-tab-link[aria-current="location"]').length,
-      linksVisible: rects.every((rect) => rect.width > 0 && rect.height > 0),
-      linksInViewport: rects.every((rect) => rect.left >= 0 && rect.right <= innerWidth),
-    };
-  });
-  if (!sections.open
-    || !expectedTabs.length
-    || JSON.stringify(sections.labels) !== JSON.stringify(expectedTabs)
-    || JSON.stringify(sections.desktopLabels) !== JSON.stringify(expectedTabs)
-    || sections.activeCount !== 1
-    || !sections.linksVisible
-    || !sections.linksInViewport) {
-    throw new Error(`mobile docs section switcher failed: ${JSON.stringify({ expectedTabs, ...sections })}`);
+  const sectionLabels = await page.locator(".docs-section > summary").allTextContents();
+  if (JSON.stringify(sectionLabels.map(label => label.trim())) !== JSON.stringify(expectedTabs)) {
+    throw new Error(`vertical sections lost source navigation: ${JSON.stringify(sectionLabels)}`);
   }
-  for (const height of [980, 700]) {
+  for (const height of [980, 600]) {
     await page.setViewportSize({ width: 390, height });
-    const scrollArea = await page.evaluate(() => {
-      const container = document.querySelector(".mobile-tabs");
-      return {
-        clientHeight: container?.clientHeight ?? 0,
-        scrollHeight: container?.scrollHeight ?? 0,
-      };
-    });
-    if (height === 700 && scrollArea.scrollHeight <= scrollArea.clientHeight) {
-      throw new Error(`short mobile section switcher should remain scrollable: ${JSON.stringify(scrollArea)}`);
-    }
-    await page.locator(".mobile-tab-link").last().scrollIntoViewIfNeeded();
-    await page.locator(".mobile-tab-link").last().click({ trial: true });
-    const lastLinkReachable = await page.evaluate(() => {
-      const container = document.querySelector(".mobile-tabs")?.getBoundingClientRect();
-      const lastLink = [...document.querySelectorAll(".mobile-tab-link")].at(-1)?.getBoundingClientRect();
-      return Boolean(container && lastLink && lastLink.top >= container.top - 1 && lastLink.bottom <= container.bottom + 1);
-    });
-    if (!lastLinkReachable) throw new Error(`mobile section switcher did not expose its final link at height ${height}`);
-    await page.screenshot({ path: path.join(artifacts, `elements-mobile-menu-${height}-scrolled.png`), fullPage: false });
+    await page.locator(".docs-section:last-child > summary").scrollIntoViewIfNeeded();
+    await page.locator(".docs-section:last-child > summary").click();
+    await page.locator(".docs-section:last-child .nav-link").last().scrollIntoViewIfNeeded();
+    await page.locator(".docs-section:last-child .nav-link").last().click({ trial: true });
+    await page.screenshot({ path: path.join(artifacts, `elements-mobile-sections-${height}.png`), fullPage: false });
+    await page.locator(".docs-section:last-child > summary").click();
   }
   await page.setViewportSize({ width: 390, height: 980 });
   await page.keyboard.press("Escape");
@@ -860,6 +942,154 @@ async function checkAmbientCodePage() {
     throw new Error(`ambient code copy state failed: ${JSON.stringify(copied)}`);
   }
   await page.close();
+}
+
+async function checkMobileKeyboardOverlays(page) {
+  let reachedLanguage = false;
+  for (let index = 0; index < 12; index += 1) {
+    await page.keyboard.press("Tab");
+    const focused = await page.evaluate(() => ({
+      hiddenPanel: Boolean(document.activeElement?.closest(".sidebar,.community-invite")),
+      duplicateLanguage: document.activeElement?.matches("[data-language-trigger]"),
+      nativeLanguage: document.activeElement?.matches("[data-language-native]"),
+    }));
+    if (focused.hiddenPanel || focused.duplicateLanguage) {
+      throw new Error(`closed phone controls accepted keyboard focus: ${JSON.stringify(focused)}`);
+    }
+    reachedLanguage ||= focused.nativeLanguage;
+  }
+  if (!reachedLanguage) throw new Error("phone language select is not keyboard reachable");
+
+  await page.click("[data-nav-toggle]");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+  await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 0.1);
+  // The docked invitation is separated from the sidebar in DOM order.
+  // Exercise the whole collapsed drawer cycle in both directions, including that gap.
+  for (const key of ["Tab", "Shift+Tab"]) {
+    let reachedInvitation = false;
+    let completedCycle = false;
+    for (let index = 0; index < 30; index += 1) {
+      await page.keyboard.press(key);
+      const focus = await page.evaluate(() => ({
+        inside: Boolean(document.activeElement?.closest(".sidebar,.community-invite")),
+        invitation: Boolean(document.activeElement?.closest(".community-invite")),
+        close: document.activeElement?.matches("[data-nav-close]"),
+      }));
+      if (!focus.inside) throw new Error(`${key} escaped the phone drawer`);
+      reachedInvitation ||= focus.invitation;
+      if (focus.close) { completedCycle = true; break; }
+    }
+    if (!reachedInvitation || !completedCycle) throw new Error(`${key} did not cycle through the drawer and docked invitation`);
+  }
+  await page.keyboard.press("Shift+Tab");
+  const originalViewport = page.viewportSize();
+  await page.setViewportSize({ width: 390, height: 600 });
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  for (let index = 1, count = await page.locator(".docs-section > summary").count(); index < count; index += 1) {
+    await page.keyboard.press("Tab");
+  }
+  const finalSection = await page.evaluate(() => {
+    const target = document.querySelector(".docs-section:last-child > summary");
+    const rect = target.getBoundingClientRect();
+    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    return { focused: document.activeElement === target, unobscured: target.contains(hit), hitClass: hit?.className };
+  });
+  if (!finalSection.focused || !finalSection.unobscured) {
+    throw new Error(`invitation obscures the focused final section: ${JSON.stringify(finalSection)}`);
+  }
+  // Rotation must keep the existing focused link visible in both nested scrollports.
+  for (const resizedViewport of [{ width: 390, height: 320 }, { width: 780, height: 390 }]) {
+    await page.setViewportSize(resizedViewport);
+    await page.waitForFunction(() => {
+      const target = document.querySelector(".docs-section:last-child > summary");
+      const rect = target.getBoundingClientRect();
+      return document.activeElement === target && [rect.top + 2, rect.bottom - 2].every((y) =>
+        target.contains(document.elementFromPoint(rect.x + rect.width / 2, y)));
+    });
+  }
+  await page.keyboard.press("Escape");
+  await page.setViewportSize(originalViewport);
+  await page.click("[data-nav-toggle]");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
+  if (await page.evaluate(() => document.body.classList.contains("nav-open"))) {
+    throw new Error("search left the phone drawer active underneath it");
+  }
+  await page.fill("[data-search-input]", "gateway");
+  await page.click("[data-search-clear]");
+  if (await page.inputValue("[data-search-input]") !== "") {
+    throw new Error("the first Clear-search activation was consumed by another overlay");
+  }
+  await page.keyboard.press("Tab");
+  if (!await page.evaluate(() => Boolean(document.activeElement?.closest(".search-modal")))) {
+    throw new Error("phone drawer stole focus from the search dialog");
+  }
+  await page.keyboard.press("Escape");
+  await page.click(".site-header [data-search-open]");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
+  await page.keyboard.press("Escape");
+  if (!await page.evaluate(() => document.activeElement?.matches("[data-search-open]"))) {
+    throw new Error("search dismissal did not restore its opening control");
+  }
+  const viewport = page.viewportSize();
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.click("[data-language-trigger]");
+  await page.keyboard.press("Tab");
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.activeElement?.matches("[data-language-native]"));
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.waitForFunction(() => document.activeElement?.matches("[data-language-trigger]"));
+  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.querySelector("[data-language-native]")?.getAttribute("aria-hidden") === "false");
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-language-native]"));
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.click(".site-header [data-search-open]");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
+  await page.keyboard.press("Escape");
+  await page.setViewportSize(viewport);
+  if (!await page.evaluate(() => document.activeElement?.matches("[data-search-open]"))) {
+    throw new Error("responsive language handoff stole focus from an unrelated control");
+  }
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.waitForFunction(() => !matchMedia("(max-width:820px)").matches && !document.querySelector(".sidebar").inert && document.activeElement?.matches("[data-search-open]"));
+  let reachedSidebar = false;
+  for (let index = 0; index < 40; index += 1) {
+    await page.keyboard.press("Tab");
+    reachedSidebar = await page.evaluate(() => document.activeElement?.matches(".docs-section > summary"));
+    if (reachedSidebar) break;
+  }
+  if (!reachedSidebar) {
+    const state = await page.evaluate(() => ({ active: document.activeElement?.outerHTML.slice(0, 500), viewport: [innerWidth, innerHeight], navOpen: document.body.classList.contains("nav-open"), sidebarInert: document.querySelector(".sidebar")?.inert, searchOpen: document.querySelector(".search-modal")?.classList.contains("open"), summaries: document.querySelectorAll(".docs-section > summary").length }));
+    await page.screenshot({ path: path.join(artifacts, "navigation-focus-failure.png") });
+    throw new Error(`desktop navigation is not keyboard reachable: ${JSON.stringify(state)}`);
+  }
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.waitForFunction(() => document.activeElement?.matches(".docs-section > summary"));
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+  await page.click("[data-nav-toggle]");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.waitForFunction(() => document.activeElement?.matches(".docs-section > summary"));
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.waitForFunction(() => {
+    const target = document.activeElement;
+    if (!target?.matches(".docs-section > summary")) return false;
+    const rect = target.getBoundingClientRect();
+    return target.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+  });
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+  await page.evaluate(() => scrollTo(0, 0));
 }
 
 async function checkLightMode() {
