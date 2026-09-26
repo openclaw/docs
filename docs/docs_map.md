@@ -12290,45 +12290,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/RELEASING
 - Headings:
+  - H2: Release channels
   - H2: Version naming
   - H2: Release cadence
-  - H2: Linux companion publication
-  - H2: Release changelog artifacts
-  - H3: Changelog-only evidence reuse
-  - H2: Monthly Gateway extended-stable publication
-  - H3: Prepare and stabilize the candidate
-  - H3: Publish the release
-  - H3: Verify and recover
-  - H2: Regular release operator checklist
-  - H3: Fast path (default)
-  - H4: Orchestrated stable release
-  - H4: Manual fallback
-  - H3: Full checklist
-  - H3: Release priority
-  - H3: Continuous release readiness
-  - H3: Release tooling fast lane
-  - H2: Stable main closeout
-  - H2: Post-release documentation publication
-  - H2: Release preflight
-  - H3: Previous updater compatibility
-  - H3: Design proposal: immutable runtime generations
-  - H3: Required checks
-  - H2: Release test boxes
-  - H3: Vitest
-  - H3: Docker
-  - H3: QA Lab
-  - H3: Package
-  - H2: Regular release publish automation
-  - H3: Check publication gates
-  - H4: Probe the bootstrap token
-  - H3: Prepare once, then use the release button
-  - H3: Recover a failed download
-  - H3: Direct publication and owner recovery
-  - H3: Publication requirements
-  - H2: NPM workflow inputs
-  - H2: Regular beta/latest stable release sequence
-  - H2: Public references
-  - H2: Related
+  - H2: Release validation
+  - H2: Packages and apps can become available at different times
+  - H2: Release notes and verification
+  - H3: Downstream packaging
+  - H2: Maintainer procedures
 
 ## reference/api-usage-costs.md
 
