@@ -13594,20 +13594,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Linux (systemd user service)
   - H2: Related docs
 
-## start/showcase.md
-
-- Route: /start/showcase
-- Headings:
-  - H2: Fresh from Discord
-  - H2: Automation and workflows
-  - H2: Knowledge and memory
-  - H2: Voice and phone
-  - H2: Infrastructure and deployment
-  - H2: Home and hardware
-  - H2: Community projects
-  - H2: Submit your project
-  - H2: Related
-
 ## start/teams.md
 
 - Route: /start/teams

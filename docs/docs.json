@@ -836,7 +836,11 @@
     },
     {
       "source": "/showcase",
-      "destination": "/start/showcase"
+      "destination": "https://openclaw.ai/showcase"
+    },
+    {
+      "source": "/start/showcase",
+      "destination": "https://openclaw.ai/showcase"
     },
     {
       "source": "/signal",
@@ -1295,7 +1299,6 @@
                 "group": "Overview",
                 "pages": [
                   "index",
-                  "start/showcase",
                   "start/why-openclaw",
                   "start/why-openclaw/the-trust-boundary",
                   "start/why-openclaw/policy-as-code",
@@ -3373,7 +3376,6 @@
                 "group": "首页",
                 "pages": [
                   "zh-CN/index",
-                  "zh-CN/start/showcase",
                   "zh-CN/start/why-openclaw",
                   "zh-CN/start/why-openclaw/the-trust-boundary",
                   "zh-CN/start/why-openclaw/policy-as-code",
@@ -5417,7 +5419,6 @@
                 "group": "Overview",
                 "pages": [
                   "zh-TW/index",
-                  "zh-TW/start/showcase",
                   "zh-TW/start/why-openclaw",
                   "zh-TW/start/why-openclaw/the-trust-boundary",
                   "zh-TW/start/why-openclaw/policy-as-code",
@@ -7461,7 +7462,6 @@
                 "group": "概要",
                 "pages": [
                   "ja-JP/index",
-                  "ja-JP/start/showcase",
                   "ja-JP/start/why-openclaw",
                   "ja-JP/start/why-openclaw/the-trust-boundary",
                   "ja-JP/start/why-openclaw/policy-as-code",
@@ -9505,7 +9505,6 @@
                 "group": "Resumen",
                 "pages": [
                   "es/index",
-                  "es/start/showcase",
                   "es/start/why-openclaw",
                   "es/start/why-openclaw/the-trust-boundary",
                   "es/start/why-openclaw/policy-as-code",
@@ -11549,7 +11548,6 @@
                 "group": "Visão geral",
                 "pages": [
                   "pt-BR/index",
-                  "pt-BR/start/showcase",
                   "pt-BR/start/why-openclaw",
                   "pt-BR/start/why-openclaw/the-trust-boundary",
                   "pt-BR/start/why-openclaw/policy-as-code",
@@ -13593,7 +13591,6 @@
                 "group": "개요",
                 "pages": [
                   "ko/index",
-                  "ko/start/showcase",
                   "ko/start/why-openclaw",
                   "ko/start/why-openclaw/the-trust-boundary",
                   "ko/start/why-openclaw/policy-as-code",
@@ -15637,7 +15634,6 @@
                 "group": "Überblick",
                 "pages": [
                   "de/index",
-                  "de/start/showcase",
                   "de/start/why-openclaw",
                   "de/start/why-openclaw/the-trust-boundary",
                   "de/start/why-openclaw/policy-as-code",
@@ -17681,7 +17677,6 @@
                 "group": "Vue d'ensemble",
                 "pages": [
                   "fr/index",
-                  "fr/start/showcase",
                   "fr/start/why-openclaw",
                   "fr/start/why-openclaw/the-trust-boundary",
                   "fr/start/why-openclaw/policy-as-code",
@@ -19725,7 +19720,6 @@
                 "group": "Overview",
                 "pages": [
                   "hi/index",
-                  "hi/start/showcase",
                   "hi/start/why-openclaw",
                   "hi/start/why-openclaw/the-trust-boundary",
                   "hi/start/why-openclaw/policy-as-code",
@@ -21769,7 +21763,6 @@
                 "group": "نظرة عامة",
                 "pages": [
                   "ar/index",
-                  "ar/start/showcase",
                   "ar/start/why-openclaw",
                   "ar/start/why-openclaw/the-trust-boundary",
                   "ar/start/why-openclaw/policy-as-code",
@@ -23813,7 +23806,6 @@
                 "group": "Panoramica",
                 "pages": [
                   "it/index",
-                  "it/start/showcase",
                   "it/start/why-openclaw",
                   "it/start/why-openclaw/the-trust-boundary",
                   "it/start/why-openclaw/policy-as-code",
@@ -25857,7 +25849,6 @@
                 "group": "Overview",
                 "pages": [
                   "vi/index",
-                  "vi/start/showcase",
                   "vi/start/why-openclaw",
                   "vi/start/why-openclaw/the-trust-boundary",
                   "vi/start/why-openclaw/policy-as-code",
@@ -27901,7 +27892,6 @@
                 "group": "Overview",
                 "pages": [
                   "nl/index",
-                  "nl/start/showcase",
                   "nl/start/why-openclaw",
                   "nl/start/why-openclaw/the-trust-boundary",
                   "nl/start/why-openclaw/policy-as-code",
@@ -29945,7 +29935,6 @@
                 "group": "Overview",
                 "pages": [
                   "fa/index",
-                  "fa/start/showcase",
                   "fa/start/why-openclaw",
                   "fa/start/why-openclaw/the-trust-boundary",
                   "fa/start/why-openclaw/policy-as-code",
@@ -31989,7 +31978,6 @@
                 "group": "Genel bakis",
                 "pages": [
                   "tr/index",
-                  "tr/start/showcase",
                   "tr/start/why-openclaw",
                   "tr/start/why-openclaw/the-trust-boundary",
                   "tr/start/why-openclaw/policy-as-code",
@@ -34033,7 +34021,6 @@
                 "group": "Overview",
                 "pages": [
                   "uk/index",
-                  "uk/start/showcase",
                   "uk/start/why-openclaw",
                   "uk/start/why-openclaw/the-trust-boundary",
                   "uk/start/why-openclaw/policy-as-code",
@@ -36077,7 +36064,6 @@
                 "group": "Ringkasan",
                 "pages": [
                   "id/index",
-                  "id/start/showcase",
                   "id/start/why-openclaw",
                   "id/start/why-openclaw/the-trust-boundary",
                   "id/start/why-openclaw/policy-as-code",
@@ -38121,7 +38107,6 @@
                 "group": "Przeglad",
                 "pages": [
                   "pl/index",
-                  "pl/start/showcase",
                   "pl/start/why-openclaw",
                   "pl/start/why-openclaw/the-trust-boundary",
                   "pl/start/why-openclaw/policy-as-code",
@@ -40165,7 +40150,6 @@
                 "group": "Overview",
                 "pages": [
                   "th/index",
-                  "th/start/showcase",
                   "th/start/why-openclaw",
                   "th/start/why-openclaw/the-trust-boundary",
                   "th/start/why-openclaw/policy-as-code",
@@ -42209,7 +42193,6 @@
                 "group": "Overview",
                 "pages": [
                   "ru/index",
-                  "ru/start/showcase",
                   "ru/start/why-openclaw",
                   "ru/start/why-openclaw/the-trust-boundary",
                   "ru/start/why-openclaw/policy-as-code",
