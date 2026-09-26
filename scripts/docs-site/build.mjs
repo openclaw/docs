@@ -422,7 +422,7 @@ ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${t
 
 function sidebar(page, nav, activeTab) {
   return `<aside class="sidebar">
-<div class="sidebar-head"><strong>Browse docs</strong><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
+<div class="sidebar-head"><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
 <nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
     const current = tab.title === activeTab;
     return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;

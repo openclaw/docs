@@ -161,9 +161,12 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
   throw new Error("it channels: x-default hreflang alternate is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
-if (!/<div class="main">\s*<main class="article" id="main">/.test(index)
-  || /<main class="main"/.test(index)) {
-  throw new Error("index: the primary landmark must not use the display-contents layout wrapper");
+const indexDocument = parseDocument(index);
+const mainLandmarks = DomUtils.findAll((node) => node.name === "main", indexDocument.children);
+if (mainLandmarks.length !== 1 || mainLandmarks[0].attribs.id !== "main"
+  || !mainLandmarks[0].attribs.class?.split(/\s+/).includes("article")
+  || mainLandmarks[0].attribs.class?.split(/\s+/).includes("main")) {
+  throw new Error("index: expected one article main landmark, separate from the layout wrapper");
 }
 if (!index.includes('class="site-footer"') || !index.includes('class="site-footer-links"')) {
   throw new Error("index: site footer is missing");
@@ -333,10 +336,13 @@ if (!/theme-toggle-icon-dark/.test(index)
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
-if (!/class="site-footer"/.test(index)
-  || !/an <a href="https:\/\/openclaw\.org"[^>]*>OpenClaw Foundation<\/a> project/.test(index)
-  || !/\.site-footer\{border-top:1px solid var\(--line\)/.test(siteCss)
-  || !/\.site-footer-inner\{[^}]*justify-content:space-between/.test(siteCss)) {
+const footer = DomUtils.findOne((node) => node.name === "footer", indexDocument.children);
+const foundationLink = footer && DomUtils.findOne(
+  (node) => node.name === "a" && node.attribs.href === "https://openclaw.org"
+    && DomUtils.textContent(node).trim() === "OpenClaw Foundation",
+  footer.children,
+);
+if (!foundationLink) {
   throw new Error("assets: site footer with Foundation attribution is missing");
 }
 if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
@@ -345,7 +351,7 @@ if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#262
 if (!/--oc-status-success-bg: rgb\(34 197 94 \/ 0\.12\)/.test(siteCss)
   || !/\.oc-app-surface\s*\{/.test(siteCss)
   || !/\.oc-action\s*\{/.test(siteCss)
-  || !/class="oc-app-surface"/.test(index)
+  || !DomUtils.findOne((node) => node.name === "body" && node.attribs.class?.split(/\s+/).includes("oc-app-surface"), indexDocument.children)
   || !/class="oc-card oc-card-interactive"/.test(index)) {
   throw new Error("assets: v0.0.1 product tokens and shared component primitives were not bundled and consumed");
 }

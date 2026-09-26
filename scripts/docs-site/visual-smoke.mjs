@@ -65,8 +65,8 @@ async function checkLandingNavigation() {
   await page.waitForFunction(() => {
     const summary = document.querySelector('.docs-section[data-docs-section="Gateway & Ops"] > summary');
     const rect = summary.getBoundingClientRect();
-    const head = document.querySelector(".sidebar-head").getBoundingClientRect();
-    return rect.top >= head.bottom && summary.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+    const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
+    return rect.top >= sidebar.top && rect.bottom <= sidebar.bottom && summary.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
   });
   await page.locator(".docs-section > summary").first().click();
   await page.mouse.move(1100, 500);

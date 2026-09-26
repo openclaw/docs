@@ -86,7 +86,6 @@ html{scroll-padding-top:calc(var(--sticky-header-h) + 54px)}
   .theme-toggle{border:0!important;background:transparent!important}
   .sidebar{height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;padding:0 18px 28px}
   .sidebar-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;min-height:64px;margin:0 -2px 14px;padding:10px 2px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(16px)}
-  .sidebar-head>strong{color:var(--ink);font:720 var(--oc-font-size-base)/1.2 var(--oc-font-body)}
   .sidebar-close{display:inline-grid;place-items:center;width:40px;height:40px;margin:0;padding:0;border:1px solid var(--line-strong);border-radius:var(--oc-radius-control);background:var(--paper);color:var(--muted);cursor:pointer;transition:color var(--oc-duration-fast) var(--oc-ease-out),border-color var(--oc-duration-fast) var(--oc-ease-out),background var(--oc-duration-fast) var(--oc-ease-out)}
   .sidebar-close:hover,.sidebar-close:focus-visible{border-color:color-mix(in srgb,var(--brand) 44%,var(--line-strong));background:var(--paper-2);color:var(--ink);outline:0}
   .sidebar-close .icon{width:18px;height:18px}

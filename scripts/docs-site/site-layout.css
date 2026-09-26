@@ -281,8 +281,6 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .nav-link[data-preview-live]::after { margin-inline-start: auto; flex: 0 0 auto; }
 
 /* One complete, vertically browsable section tree replaces the tab strip. */
-.sidebar-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin: 0 0 12px; padding: 0 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
-.sidebar-head > strong { color: var(--muted); font: 600 11px/1.4 var(--oc-font-mono); text-transform: uppercase; letter-spacing: .08em; }
 .docs-sections { display: grid; gap: 2px; }
 .docs-section { min-width: 0; }
 .docs-section > summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 9px 12px; color: var(--text); font: 500 14px/1.45 var(--oc-font-body); cursor: pointer; list-style: none; }
@@ -324,7 +322,7 @@ body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-
 }
 @media (max-width: 820px) {
   .sidebar, body.has-community-invite .sidebar { top: 0; max-height: calc(100dvh - var(--community-invite-h, 0px)); }
-  .sidebar-head { min-height: 60px; padding: 10px 0; }
+  .sidebar-head { min-height: 60px; padding: 10px 0; justify-content: flex-end; }
   .docs-section > summary { min-height: 44px; }
   .docs-section-pages { margin-inline: 12px 0; }
   .toc { border-inline: 0; }
@@ -333,7 +331,6 @@ body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-
 }
 
 @media (min-width: 821px) {
-  .sidebar { padding-block: 12px 16px; scroll-padding-block: 56px 12px; }
-  .sidebar-head { top: -12px; min-height: 48px; margin-top: -12px; margin-bottom: 8px; padding-top: 12px; }
+  .sidebar { padding-block: 12px 16px; scroll-padding-block: 12px; }
   .docs-section > summary { min-height: 36px; padding-block: 7px; }
 }
