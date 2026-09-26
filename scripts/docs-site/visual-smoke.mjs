@@ -49,50 +49,54 @@ try {
 
 async function checkRtlNavigationResize() {
   if (!fs.existsSync(path.join(site, "ar/index.html"))) return;
-  const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
-  try {
-    await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
-    await page.locator("[data-nav-toggle]").click();
-    await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Space");
-    await page.waitForFunction(() => document.querySelector(".docs-section").open);
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Escape");
-    await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
-    await page.keyboard.press("Enter");
-    await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
-    await page.setViewportSize({ width: 844, height: 390 });
-    await page.waitForFunction(() => {
-      const target = document.activeElement;
-      if (!target?.matches(".docs-section.current > summary")) return false;
-      const r = target.getBoundingClientRect();
-      const points = [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
-        [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]];
-      return r.top >= document.querySelector(".site-header").getBoundingClientRect().bottom
-        && r.bottom <= innerHeight && points.every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
-    });
-    await page.screenshot({ path: path.join(artifacts, "rtl-navigation-resize.png") });
-    const limit = await page.locator(".sidebar a,.sidebar summary").count();
-    for (const [key, end] of [["Tab", ".docs-section:last-child>summary"], ["Shift+Tab", ".docs-section:first-child>summary"]]) {
-      for (let step = 0; step < limit; step += 1) {
-        await page.keyboard.press(key);
-        await page.waitForFunction(() => {
-          const target = document.activeElement;
-          if (!target?.closest(".sidebar")) return false;
-          const r = target.getBoundingClientRect();
-          return [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
-            [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]]
-            .every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
-        });
-        if (await page.evaluate((selector) => document.activeElement.matches(selector), end)) break;
+  for (const reopen of [false, true]) {
+    const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
+    try {
+      await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
+      await page.locator("[data-nav-toggle]").click();
+      await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Space");
+      if (reopen) {
+        await page.waitForFunction(() => document.querySelector(".docs-section").open);
+        await page.keyboard.press("Tab");
+        await page.keyboard.press("Escape");
+        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
+        await page.keyboard.press("Enter");
+        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
       }
-      if (!await page.evaluate((selector) => document.activeElement.matches(selector), end)) {
-        throw new Error(`RTL navigation traversal did not reach ${end}`);
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.waitForFunction(() => {
+        const target = document.activeElement;
+        if (!target?.matches(".docs-section.current > summary")) return false;
+        const r = target.getBoundingClientRect();
+        const points = [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
+          [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]];
+        return r.top >= document.querySelector(".site-header").getBoundingClientRect().bottom
+          && r.bottom <= innerHeight && points.every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
+      });
+      await page.screenshot({ path: path.join(artifacts, `rtl-navigation-${reopen ? "reopened" : "opening"}-resize.png`) });
+      const limit = await page.locator(".sidebar a,.sidebar summary").count();
+      for (const [key, end] of [["Tab", ".docs-section:last-child>summary"], ["Shift+Tab", ".docs-section:first-child>summary"]]) {
+        for (let step = 0; step < limit; step += 1) {
+          await page.keyboard.press(key);
+          await page.waitForFunction(() => {
+            const target = document.activeElement;
+            if (!target?.closest(".sidebar")) return false;
+            const r = target.getBoundingClientRect();
+            return [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
+              [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]]
+              .every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
+          });
+          if (await page.evaluate((selector) => document.activeElement.matches(selector), end)) break;
+        }
+        if (!await page.evaluate((selector) => document.activeElement.matches(selector), end)) {
+          throw new Error(`RTL navigation traversal did not reach ${end}`);
+        }
       }
+    } finally {
+      await page.close();
     }
-  } finally {
-    await page.close();
   }
 }
 
