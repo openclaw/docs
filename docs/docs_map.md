@@ -1758,6 +1758,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/release-validation/full-release-validation
 - Headings:
+  - H2: Mobile store releases
   - H2: Full Release Validation
 
 ## ci/release-validation/install-smoke-and-docker-e2e.md
