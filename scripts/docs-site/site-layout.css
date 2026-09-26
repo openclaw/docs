@@ -311,7 +311,7 @@ body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-
   .page-intro { grid-column: 1 / -1; grid-row: 1; }
   .article { grid-column: 1; grid-row: 2; }
   /* Keep the scrollable rail above the fixed chat launcher. */
-  .toc { grid-column: 2; grid-row: 2; align-self: start; top: calc(var(--header-row-h, 54px) + 24px); width: auto; max-height: min(calc(100dvh - var(--header-row-h, 54px) - 104px), var(--toc-available-height, 100dvh)); padding: 40px 18px 24px; border: 0; overflow: auto; }
+  .toc { grid-column: 2; grid-row: 2; align-self: start; top: var(--header-row-h, 54px); width: auto; max-height: min(calc(100dvh - var(--header-row-h, 54px) - 80px), var(--toc-available-height, 100dvh)); padding: 40px 18px 24px; border: 0; overflow: auto; }
   .docs-home .toc { padding-block-start: 32px; }
   .toc summary { display: none; }
   .toc h2 { display: flex; }

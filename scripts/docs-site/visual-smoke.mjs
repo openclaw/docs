@@ -145,6 +145,11 @@ async function checkLandingNavigation() {
   await page.locator('.sidebar a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
   if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
+  const articleTocAligned = await page.evaluate(() => Math.abs(
+    document.querySelector(".toc h2").getBoundingClientRect().top
+      - document.querySelector(".article-meta-row").getBoundingClientRect().top,
+  ) < 1);
+  if (!articleTocAligned) throw new Error("article TOC should align with breadcrumbs without relying on the preview notice");
   const sectionUsable = await page.evaluate(() => {
     const link = document.querySelector(".sidebar .nav-link.active");
     const rect = link.getBoundingClientRect();
