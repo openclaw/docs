@@ -5962,6 +5962,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/security/rate-limiting
 - Headings:
+  - H2: Unauthenticated WebSocket connections
   - H2: Authentication attempts (pre-auth)
   - H3: Browser-origin connections
   - H3: Unconfigured same-host reverse proxies
