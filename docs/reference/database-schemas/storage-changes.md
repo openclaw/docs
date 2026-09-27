@@ -1980,13 +1980,18 @@ the authoritative row in the worker transaction before deletion. Reads retain
 existing-only admission, and all stages of a prune use the captured database
 context. The cold hook CLI retains its separate read-only locator worker.
 
-Browser board-change and deleted-session events discover retained dashboard tabs
-and Stop intents through the shared-state worker. Discovery reads the existing
-`browser.session-tabs` namespace without creating missing state. Browser service
-shutdown joins accepted board-event discovery and reconciliation; replaced
-runtimes discard late discovery results. Registration's alias bootstrap, tab
-mutations, and the final synchronous ownership check before closing a browser
-target retain their existing owners.
+Browser tab reads and mutations use the shared-state worker, including alias
+bootstrap, dashboard Stop intents, and board-event reconciliation. Reads of the
+existing `browser.session-tabs` namespace do not create missing state. Mutations
+use worker comparisons and publish process-local aliases only after acceptance;
+only explicit comparison conflicts are recomputed. Private per-tab admission
+keeps the final ownership read and synchronous close dispatch ordered with local
+mutations, and releases before the network response. An unidentified Playwright
+close briefly joins dashboard mutations while preserving its empty-store fallback;
+ordinary tab activity remains independent. Service shutdown joins accepted tab
+operations and reconciliation, and replaced runtimes cannot publish late aliases.
+Stored records, bounds, and update behavior are unchanged; no migration or
+operator action is required.
 
 Selected library resources read cold pin descriptions and eligible manifests
 through the shared read-only worker. Resource preparation retains its captured
