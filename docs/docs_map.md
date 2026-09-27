@@ -3956,6 +3956,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/presence
 - Headings:
+  - H2: Ask the agent about presence
   - H2: Presence fields (what shows up)
   - H2: Who can see presence
   - H2: Producers (where presence comes from)
@@ -8718,6 +8719,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/geolocation
 - Headings:
   - H2: Quickstart
+  - H3: Gateway lookup
   - H2: Why some clients never show a location
   - H2: Configuration
   - H3: Using a different database
