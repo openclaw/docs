@@ -14916,10 +14916,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How a turn runs
   - H2: Modes
   - H2: Why this exists
-  - H2: API
-  - H2: Runtime boundary
+  - H2: Structured controls
+  - H3: Search
+  - H3: Describe
+  - H3: Call
+  - H3: Batch search
+  - H3: Directory mode
+  - H2: Execution policy
   - H2: Config
-  - H2: Prompt and telemetry
+  - H2: Upgrading
+  - H2: Session activity
   - H2: E2E validation
   - H3: Real-model comparison
   - H2: Failure behavior
