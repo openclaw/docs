@@ -1228,6 +1228,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/slack/access-control
 - Headings:
+  - H2: Linked requester identity
   - H2: Actions and gates
   - H2: Live policy changes
   - H2: Access control and routing
@@ -4283,6 +4284,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Gateway profile and GitHub credit
   - H2: Merging duplicate profiles
   - H2: Channel identity links
+  - H3: Assign to me from a channel
   - H2: GitHub connections
   - H3: Publish with your account
   - H3: Disconnect and reconnect
