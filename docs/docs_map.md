@@ -228,8 +228,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Automations vs Heartbeat
   - H2: Core concepts
   - H3: Automations
-  - H3: Tasks
-  - H3: Task Flow
+  - H3: Background execution and workflows
   - H3: Standing orders
   - H3: Hooks
   - H3: Heartbeat
@@ -254,57 +253,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Best practices
   - H3: Do
   - H3: Avoid
-  - H2: Related
-
-## automation/taskflow.md
-
-- Route: /automation/taskflow
-- Headings:
-  - H2: When to use Task Flow
-  - H2: Sync modes
-  - H3: Managed mode
-  - H4: Launching and linking child tasks
-  - H4: Run a managed Lobster workflow
-  - H3: Mirrored mode
-  - H2: Flow statuses
-  - H2: Durable state and revision tracking
-  - H2: Cancel behavior
-  - H2: CLI commands
-  - H2: Reliable scheduled workflow pattern
-  - H2: How flows relate to tasks
-  - H2: Related
-
-## automation/tasks.md
-
-- Route: /automation/tasks
-- Headings:
-  - H2: TL;DR
-  - H2: Quick start
-  - H2: What creates a task
-  - H2: Task lifecycle
-  - H2: Delivery and notifications
-  - H3: Notification policies
-  - H2: CLI reference
-  - H3: tasks list
-  - H3: tasks show
-  - H3: tasks cancel
-  - H3: tasks retry and dismiss
-  - H3: tasks notify
-  - H3: tasks audit
-  - H3: tasks maintenance
-  - H3: tasks flow list, show, and cancel
-  - H2: Chat task board (/tasks)
-  - H3: Control UI
-  - H2: Status integration (task pressure)
-  - H2: Storage and maintenance
-  - H3: Where tasks live
-  - H3: Automatic maintenance
-  - H2: How tasks relate to other systems
-  - H3: Tasks and Task Flow
-  - H3: Tasks and automations
-  - H3: Tasks and heartbeat
-  - H3: Tasks and sessions
-  - H3: Tasks and agent runs
   - H2: Related
 
 ## channels/a2a.md
@@ -3036,24 +2984,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Notes
   - H2: Related
 
-## cli/tasks.md
-
-- Route: /cli/tasks
-- Headings:
-  - H2: Usage
-  - H2: Root Options
-  - H2: Subcommands
-  - H3: list
-  - H3: show
-  - H3: notify
-  - H3: cancel
-  - H3: retry
-  - H3: dismiss
-  - H3: audit
-  - H3: maintenance
-  - H3: flow
-  - H2: Related
-
 ## cli/transcripts.md
 
 - Route: /cli/transcripts
@@ -5100,6 +5030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Missing plugins during migration
   - H2: Retired TaskFlow Webhooks plugin
   - H2: Schema publication during a 2026.9.2 update
+  - H2: Native Codex recovery after Tasks removal
   - H2: Replay a July 2026 config upgrade
   - H2: Checks 0-2
 
@@ -5561,7 +5492,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/ledgers
 - Headings:
   - H2: Audit ledger RPC
-  - H2: Task ledger RPCs
 
 ## gateway/protocol/operator-methods.md
 
@@ -5687,7 +5617,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How interrupted work is detected
   - H2: Automatic resume
   - H3: Subagents
-  - H3: Background tasks
   - H3: Agent-requested restarts
   - H2: Safety valves and observability
   - H2: Verify recovery after an update
@@ -7306,7 +7235,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Voice Call channel
   - H3: watchOS companion surfaces
   - H2: QA evidence summary
-  - H3: Readiness by area
+  - H3: Historical category evidence
 
 ## maturity/taxonomy.md
 
@@ -10523,8 +10452,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Native sessions and transcript mirror
   - H2: Shared native binding lifecycle
-  - H2: Background command tasks
-  - H2: Subagent task history
   - H2: Tool and media results
   - H2: Terminal tool outcomes
   - H2: Settled tool finalization
@@ -10981,7 +10908,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/background-work
 - Headings:
   - H2: Background work namespaces
-  - H2: Harness task execution ownership
+  - H2: Native harness completion delivery
 
 ## plugins/sdk-runtime/channel.md
 
@@ -14419,7 +14346,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tool parameters
   - H3: run
   - H3: resume
-  - H3: Managed Task Flow mode
   - H2: Output envelope
   - H2: Approvals
   - H2: Safety
@@ -15182,7 +15108,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Mermaid diagrams
   - H2: Hosted embeds
   - H2: Chat transcript layout
-  - H2: Subagent transcripts
+  - H2: Run transcripts
   - H2: Conversations stopped for review
   - H2: Chat message width
 

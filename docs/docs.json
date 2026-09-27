@@ -1063,10 +1063,6 @@
       "destination": "/gateway/trusted-proxy-auth"
     },
     {
-      "source": "/automation/clawflow",
-      "destination": "/automation/taskflow"
-    },
-    {
       "source": "/automation/poll",
       "destination": "/cli/message"
     },
@@ -1089,10 +1085,6 @@
     {
       "source": "/automation/gmail-pubsub",
       "destination": "/automation/cron-jobs#gmail-pubsub-integration"
-    },
-    {
-      "source": "/cli/flows",
-      "destination": "/cli/tasks#flow"
     },
     {
       "source": "/concepts/memory-qmd",
@@ -1285,6 +1277,22 @@
     {
       "source": "/ci/runner-backend-modes",
       "destination": "/ci/runners#runner-backend-modes"
+    },
+    {
+      "source": "/automation/tasks",
+      "destination": "/automation#background-execution-and-workflows"
+    },
+    {
+      "source": "/automation/taskflow",
+      "destination": "/tools/lobster"
+    },
+    {
+      "source": "/cli/tasks",
+      "destination": "/automation#background-execution-and-workflows"
+    },
+    {
+      "source": "/plugins/webhooks",
+      "destination": "/automation#background-execution-and-workflows"
     }
   ],
   "navigation": {
@@ -1912,8 +1920,6 @@
                     ]
                   },
                   "automation/imap",
-                  "automation/tasks",
-                  "automation/taskflow",
                   "automation/standing-orders",
                   "automation/hooks",
                   {
@@ -2792,7 +2798,6 @@
                       "cli/models",
                       "cli/promos",
                       "cli/sessions",
-                      "cli/tasks",
                       "cli/transcripts",
                       "cli/wiki"
                     ]
@@ -3988,8 +3993,6 @@
                     ]
                   },
                   "zh-CN/automation/imap",
-                  "zh-CN/automation/tasks",
-                  "zh-CN/automation/taskflow",
                   "zh-CN/automation/standing-orders",
                   "zh-CN/automation/hooks",
                   {
@@ -4834,7 +4837,6 @@
                       "zh-CN/cli/models",
                       "zh-CN/cli/promos",
                       "zh-CN/cli/sessions",
-                      "zh-CN/cli/tasks",
                       "zh-CN/cli/transcripts",
                       "zh-CN/cli/wiki"
                     ]
@@ -6030,8 +6032,6 @@
                     ]
                   },
                   "zh-TW/automation/imap",
-                  "zh-TW/automation/tasks",
-                  "zh-TW/automation/taskflow",
                   "zh-TW/automation/standing-orders",
                   "zh-TW/automation/hooks",
                   {
@@ -6876,7 +6876,6 @@
                       "zh-TW/cli/models",
                       "zh-TW/cli/promos",
                       "zh-TW/cli/sessions",
-                      "zh-TW/cli/tasks",
                       "zh-TW/cli/transcripts",
                       "zh-TW/cli/wiki"
                     ]
@@ -8072,8 +8071,6 @@
                     ]
                   },
                   "ja-JP/automation/imap",
-                  "ja-JP/automation/tasks",
-                  "ja-JP/automation/taskflow",
                   "ja-JP/automation/standing-orders",
                   "ja-JP/automation/hooks",
                   {
@@ -8918,7 +8915,6 @@
                       "ja-JP/cli/models",
                       "ja-JP/cli/promos",
                       "ja-JP/cli/sessions",
-                      "ja-JP/cli/tasks",
                       "ja-JP/cli/transcripts",
                       "ja-JP/cli/wiki"
                     ]
@@ -10114,8 +10110,6 @@
                     ]
                   },
                   "es/automation/imap",
-                  "es/automation/tasks",
-                  "es/automation/taskflow",
                   "es/automation/standing-orders",
                   "es/automation/hooks",
                   {
@@ -10960,7 +10954,6 @@
                       "es/cli/models",
                       "es/cli/promos",
                       "es/cli/sessions",
-                      "es/cli/tasks",
                       "es/cli/transcripts",
                       "es/cli/wiki"
                     ]
@@ -12156,8 +12149,6 @@
                     ]
                   },
                   "pt-BR/automation/imap",
-                  "pt-BR/automation/tasks",
-                  "pt-BR/automation/taskflow",
                   "pt-BR/automation/standing-orders",
                   "pt-BR/automation/hooks",
                   {
@@ -13002,7 +12993,6 @@
                       "pt-BR/cli/models",
                       "pt-BR/cli/promos",
                       "pt-BR/cli/sessions",
-                      "pt-BR/cli/tasks",
                       "pt-BR/cli/transcripts",
                       "pt-BR/cli/wiki"
                     ]
@@ -14198,8 +14188,6 @@
                     ]
                   },
                   "ko/automation/imap",
-                  "ko/automation/tasks",
-                  "ko/automation/taskflow",
                   "ko/automation/standing-orders",
                   "ko/automation/hooks",
                   {
@@ -15044,7 +15032,6 @@
                       "ko/cli/models",
                       "ko/cli/promos",
                       "ko/cli/sessions",
-                      "ko/cli/tasks",
                       "ko/cli/transcripts",
                       "ko/cli/wiki"
                     ]
@@ -16240,8 +16227,6 @@
                     ]
                   },
                   "de/automation/imap",
-                  "de/automation/tasks",
-                  "de/automation/taskflow",
                   "de/automation/standing-orders",
                   "de/automation/hooks",
                   {
@@ -17086,7 +17071,6 @@
                       "de/cli/models",
                       "de/cli/promos",
                       "de/cli/sessions",
-                      "de/cli/tasks",
                       "de/cli/transcripts",
                       "de/cli/wiki"
                     ]
@@ -18282,8 +18266,6 @@
                     ]
                   },
                   "fr/automation/imap",
-                  "fr/automation/tasks",
-                  "fr/automation/taskflow",
                   "fr/automation/standing-orders",
                   "fr/automation/hooks",
                   {
@@ -19128,7 +19110,6 @@
                       "fr/cli/models",
                       "fr/cli/promos",
                       "fr/cli/sessions",
-                      "fr/cli/tasks",
                       "fr/cli/transcripts",
                       "fr/cli/wiki"
                     ]
@@ -20324,8 +20305,6 @@
                     ]
                   },
                   "hi/automation/imap",
-                  "hi/automation/tasks",
-                  "hi/automation/taskflow",
                   "hi/automation/standing-orders",
                   "hi/automation/hooks",
                   {
@@ -21170,7 +21149,6 @@
                       "hi/cli/models",
                       "hi/cli/promos",
                       "hi/cli/sessions",
-                      "hi/cli/tasks",
                       "hi/cli/transcripts",
                       "hi/cli/wiki"
                     ]
@@ -22366,8 +22344,6 @@
                     ]
                   },
                   "ar/automation/imap",
-                  "ar/automation/tasks",
-                  "ar/automation/taskflow",
                   "ar/automation/standing-orders",
                   "ar/automation/hooks",
                   {
@@ -23212,7 +23188,6 @@
                       "ar/cli/models",
                       "ar/cli/promos",
                       "ar/cli/sessions",
-                      "ar/cli/tasks",
                       "ar/cli/transcripts",
                       "ar/cli/wiki"
                     ]
@@ -24408,8 +24383,6 @@
                     ]
                   },
                   "it/automation/imap",
-                  "it/automation/tasks",
-                  "it/automation/taskflow",
                   "it/automation/standing-orders",
                   "it/automation/hooks",
                   {
@@ -25254,7 +25227,6 @@
                       "it/cli/models",
                       "it/cli/promos",
                       "it/cli/sessions",
-                      "it/cli/tasks",
                       "it/cli/transcripts",
                       "it/cli/wiki"
                     ]
@@ -26450,8 +26422,6 @@
                     ]
                   },
                   "vi/automation/imap",
-                  "vi/automation/tasks",
-                  "vi/automation/taskflow",
                   "vi/automation/standing-orders",
                   "vi/automation/hooks",
                   {
@@ -27296,7 +27266,6 @@
                       "vi/cli/models",
                       "vi/cli/promos",
                       "vi/cli/sessions",
-                      "vi/cli/tasks",
                       "vi/cli/transcripts",
                       "vi/cli/wiki"
                     ]
@@ -28492,8 +28461,6 @@
                     ]
                   },
                   "nl/automation/imap",
-                  "nl/automation/tasks",
-                  "nl/automation/taskflow",
                   "nl/automation/standing-orders",
                   "nl/automation/hooks",
                   {
@@ -29338,7 +29305,6 @@
                       "nl/cli/models",
                       "nl/cli/promos",
                       "nl/cli/sessions",
-                      "nl/cli/tasks",
                       "nl/cli/transcripts",
                       "nl/cli/wiki"
                     ]
@@ -30534,8 +30500,6 @@
                     ]
                   },
                   "fa/automation/imap",
-                  "fa/automation/tasks",
-                  "fa/automation/taskflow",
                   "fa/automation/standing-orders",
                   "fa/automation/hooks",
                   {
@@ -31380,7 +31344,6 @@
                       "fa/cli/models",
                       "fa/cli/promos",
                       "fa/cli/sessions",
-                      "fa/cli/tasks",
                       "fa/cli/transcripts",
                       "fa/cli/wiki"
                     ]
@@ -32576,8 +32539,6 @@
                     ]
                   },
                   "tr/automation/imap",
-                  "tr/automation/tasks",
-                  "tr/automation/taskflow",
                   "tr/automation/standing-orders",
                   "tr/automation/hooks",
                   {
@@ -33422,7 +33383,6 @@
                       "tr/cli/models",
                       "tr/cli/promos",
                       "tr/cli/sessions",
-                      "tr/cli/tasks",
                       "tr/cli/transcripts",
                       "tr/cli/wiki"
                     ]
@@ -34618,8 +34578,6 @@
                     ]
                   },
                   "uk/automation/imap",
-                  "uk/automation/tasks",
-                  "uk/automation/taskflow",
                   "uk/automation/standing-orders",
                   "uk/automation/hooks",
                   {
@@ -35464,7 +35422,6 @@
                       "uk/cli/models",
                       "uk/cli/promos",
                       "uk/cli/sessions",
-                      "uk/cli/tasks",
                       "uk/cli/transcripts",
                       "uk/cli/wiki"
                     ]
@@ -36660,8 +36617,6 @@
                     ]
                   },
                   "id/automation/imap",
-                  "id/automation/tasks",
-                  "id/automation/taskflow",
                   "id/automation/standing-orders",
                   "id/automation/hooks",
                   {
@@ -37506,7 +37461,6 @@
                       "id/cli/models",
                       "id/cli/promos",
                       "id/cli/sessions",
-                      "id/cli/tasks",
                       "id/cli/transcripts",
                       "id/cli/wiki"
                     ]
@@ -38702,8 +38656,6 @@
                     ]
                   },
                   "pl/automation/imap",
-                  "pl/automation/tasks",
-                  "pl/automation/taskflow",
                   "pl/automation/standing-orders",
                   "pl/automation/hooks",
                   {
@@ -39548,7 +39500,6 @@
                       "pl/cli/models",
                       "pl/cli/promos",
                       "pl/cli/sessions",
-                      "pl/cli/tasks",
                       "pl/cli/transcripts",
                       "pl/cli/wiki"
                     ]
@@ -40744,8 +40695,6 @@
                     ]
                   },
                   "th/automation/imap",
-                  "th/automation/tasks",
-                  "th/automation/taskflow",
                   "th/automation/standing-orders",
                   "th/automation/hooks",
                   {
@@ -41590,7 +41539,6 @@
                       "th/cli/models",
                       "th/cli/promos",
                       "th/cli/sessions",
-                      "th/cli/tasks",
                       "th/cli/transcripts",
                       "th/cli/wiki"
                     ]
@@ -42786,8 +42734,6 @@
                     ]
                   },
                   "ru/automation/imap",
-                  "ru/automation/tasks",
-                  "ru/automation/taskflow",
                   "ru/automation/standing-orders",
                   "ru/automation/hooks",
                   {
@@ -43632,7 +43578,6 @@
                       "ru/cli/models",
                       "ru/cli/promos",
                       "ru/cli/sessions",
-                      "ru/cli/tasks",
                       "ru/cli/transcripts",
                       "ru/cli/wiki"
                     ]
