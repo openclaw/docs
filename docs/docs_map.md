@@ -6626,6 +6626,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: SQLite library selection on macOS
   - H2: Memory search without an extension-capable library
+  - H2: Browser subprocesses
   - H2: Known limitations
   - H2: History across releases
   - H2: Related
