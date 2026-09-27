@@ -3964,6 +3964,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 3) system-event beacons
   - H3: 4) Node connects (role: node)
   - H2: Connection rows and beacon deduplication
+  - H2: Online and recent activity
   - H2: TTL and bounded size
   - H2: Remote/tunnel caveat (loopback IPs)
   - H2: Consumers
