@@ -2075,6 +2075,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw connect
   - H2: Create a join command
   - H2: Connect in the foreground
+  - H2: Reconnect a paired node
   - H2: Environment-managed cloud nodes
   - H2: Install as a service
   - H2: Accepted targets
