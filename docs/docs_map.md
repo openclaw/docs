@@ -3094,6 +3094,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: update status
   - H2: Run history and reports
 
+## cli/users.md
+
+- Route: /cli/users
+- Headings:
+  - H1: openclaw users
+  - H2: Common options
+  - H2: List profiles
+  - H2: Link an email alias
+  - H2: Merge duplicate profiles
+
 ## cli/voicecall.md
 
 - Route: /cli/voicecall
@@ -4271,6 +4281,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Personal USER files on a shared Gateway
   - H2: Gateway profile and GitHub credit
+  - H2: Merging duplicate profiles
   - H2: Channel identity links
   - H2: GitHub connections
   - H3: Publish with your account
