@@ -72,8 +72,8 @@ do not pass an empty shell variable to request that scope.
 
 `channels logs --lines` requires a positive integer. Omit `--lines` to use the default of `200`; explicitly empty values are rejected.
 
-`channels logs --channel <name>` matches subsystem or module names rooted at `<name>`
-or `gateway/channels/<name>`, including slash-separated descendants. Similar names
+`channels logs --channel <name>` matches subsystem or module names rooted at `<name>`,
+`channels/<name>`, or `gateway/channels/<name>`, including slash-separated descendants. Similar names
 such as `discord-archive` do not match `discord`.
 
 `channels status --probe` is the live path: on a reachable gateway it runs per-account
