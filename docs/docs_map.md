@@ -457,6 +457,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Durable media delivery
   - H2: Native progress and agent activity rows
   - H2: Group mention gating
+  - H3: Bot-created threads
   - H3: Mention detection
   - H3: Bot-to-bot messages
   - H3: Configuration example
@@ -580,6 +581,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Access control
   - H3: Direct messages
   - H3: Group chats
+  - H3: Mentions in bot-started threads
   - H2: Group configuration examples
   - H3: Allow all groups, no @mention required
   - H3: Allow all groups, still require @mention
@@ -694,6 +696,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/groups
 - Headings:
   - H2: Beginner intro (2 minutes)
+  - H2: Bot-created threads
   - H2: Visible replies
   - H2: Context visibility and allowlists
   - H2: Session keys
@@ -976,6 +979,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Threads
   - H3: Session routing (sessionScope)
   - H3: Reply threading (threadReplies)
+  - H3: Mentions in bot-created threads
   - H3: Thread inheritance and slash commands
   - H2: ACP conversation bindings
   - H3: Thread binding config
@@ -1019,6 +1023,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Config writes
   - H2: Access control (DMs + groups)
+  - H3: Mentions in bot-created threads
   - H2: Team and Channel IDs (Common Gotcha)
   - H2: Private channels
 
@@ -1475,6 +1480,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/telegram/threads-and-sessions
 - Headings:
   - H2: Forum topics and sessions
+  - H2: Bot-created forum topics
 
 ## channels/telegram/transports.md
 
@@ -10622,6 +10628,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-plugins/mention-policy
 - Headings:
   - H2: Inbound mention policy
+  - H2: Bot-owned threads
 
 ## plugins/sdk-channel-plugins/message-adapter.md
 
