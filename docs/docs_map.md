@@ -7608,6 +7608,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: 4. Approve pairing (CLI)
   - H3: 5. Verify the node is connected
   - H3: 6. Chat + history
+  - H4: Agent browser in chat
   - H3: 7. Camera
   - H3: 8. Voice + expanded Android command surface
   - H3: 9. Workspace files (read-only)
