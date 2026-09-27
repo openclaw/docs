@@ -903,7 +903,7 @@ the sentinel.
 
   </Step>
   <Step id="validate-the-candidate" title="Check the update">
-    Runs Doctor health checks, config and plugin planning, and the isolated migration and test Gateway checks described above. Validation failure leaves the old Gateway serving.
+    Runs Doctor health checks, config and plugin planning, and the isolated migration and test Gateway checks described above. Validation failure leaves the old Gateway serving. If validation leaves source edits in the temporary worktree, progress reports a failed candidate clean check.
   </Step>
   <Step title="Activate and verify">
     Stops the managed service, checks out the exact staged commit SHA, publishes the prepared runtime, and runs required Doctor migrations. Core dependencies and the checkout build were prepared before downtime; plugin convergence follows while the service remains stopped.
