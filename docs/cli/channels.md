@@ -80,6 +80,9 @@ state plus probe results such as `works`, `probe failed`, `audit ok`, or `audit 
 If the gateway is unreachable, `channels status` falls back to config-only summaries
 instead of live probe output.
 
+If the Gateway answers with an error, such as an unknown `--channel`, the command
+reports that error and exits nonzero instead of showing an unreachable fallback.
+
 Before probing channels, the command waits for local Gateway startup using the shared readiness budget and reports its observed phase. Startup still in progress at the deadline is a non-failing result, not an unreachable Gateway. In that case `--json` returns `{ "status": "starting", "startupPhase": "…" }`; rerun after startup to collect channel results.
 
 The command reads existing local device authentication without creating an identity or persisting tokens returned by the Gateway, including when `--probe` is enabled.
