@@ -59,6 +59,15 @@ Adding an already saved Gateway uses its existing connection settings; use
 **Manage Gateways** to replace its setup.
 Saved offline entries remain listed; connection status is separate from selection.
 
+In **Manage Gateways**, tap **Rename** to choose a name used only on this phone.
+The name appears in the sidebar and picker and survives switching Gateways,
+reconnecting, app restarts, and discovery updates. The secondary address still
+distinguishes Gateways with the same name. Clear the name to restore the default.
+Renaming does not change the Gateway's address, identity, or saved credentials.
+Downgrading to an older Android build can discard these local names when that
+build starts and rewrites the registry. Gateway addresses and credentials are
+unaffected; after upgrading again, choose the local names again if needed.
+
 Unsent text and finished attachments stay with their Gateway, agent, and session
 when you switch away and back. Finish recording, stop dictation or Talk, and let
 media imports or pending send admission finish before using the quick picker.
