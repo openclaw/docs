@@ -3370,6 +3370,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Protocol typing and codegen
   - H2: Remote access
   - H2: Operations snapshot
+  - H3: Timed work and shutdown
   - H2: Invariants
   - H2: Related
 
@@ -6580,6 +6581,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: SQLite library selection on macOS
   - H2: Memory search without an extension-capable library
   - H2: Browser subprocesses
+  - H2: Bun-only installs
   - H2: Known limitations
   - H2: History across releases
   - H2: Related
