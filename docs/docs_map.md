@@ -11929,7 +11929,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/setup
 - Headings:
   - H2: Getting started
-  - H2: Sign in with ChatGPT (preview)
+  - H2: Sign in with ChatGPT (Beta)
   - H3: Current limitations
 
 ## providers/openai/voice-and-speech.md
