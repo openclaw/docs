@@ -10707,6 +10707,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Compatibility policy
   - H3: Retained helper contracts
+  - H3: WebSocket options and constructors
   - H3: Gateway worker environment creation
   - H3: Harness attempt result migration
   - H3: Model-provider result compatibility
