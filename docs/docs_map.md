@@ -1757,6 +1757,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/routing-costs
 - Headings:
   - H2: Routing from measured wall time
+  - H3: Telegram process overlap
   - H2: Hosted assignment on the critical path
   - H2: Ratchet admission and Node tests
   - H2: RunsOn remains unqualified
