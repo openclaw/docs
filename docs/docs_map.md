@@ -14579,6 +14579,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Adoption
   - H2: Update a card
+  - H2: Before an active run ends
   - H2: Format the note
   - H2: Limits
   - H2: Clear a card
