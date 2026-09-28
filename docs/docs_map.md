@@ -4775,6 +4775,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-gateway
 - Headings:
   - H2: Gateway
+  - H3: Disable file and image uploads
   - H3: OpenAI-compatible endpoints
   - H3: Multi-instance isolation
   - H3: gateway.tls
