@@ -12030,6 +12030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Token Plan catalog
   - H2: Thinking controls
   - H2: Multimodal add-ons
+  - H3: Video generation
   - H2: Advanced configuration
   - H2: Related
 
