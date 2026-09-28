@@ -8,6 +8,13 @@ read_when:
 
 ## Runners
 
+Hosted Node 24 setup honors the workflow's existing `NODE_VERSION` pin when the
+setup input is `24.x`. This prevents runner-image refreshes from silently choosing
+a different patch version. Explicit compatibility versions retain their own
+selection, and self-hosted setup retains its existing range and toolchain-cache
+policy. A restored cache key is not runtime proof: record the selected binary and
+`node -v` when comparing runner backends.
+
 Runner choice follows contributor trust, not whether a pull request came from a fork. Every `runs-on` expression admits Blacksmith only when `github.event.pull_request.author_association` is `OWNER`, `MEMBER`, `COLLABORATOR`, or `CONTRIBUTOR`, so a fork pull request from someone who has already landed a commit is routed exactly like a maintainer pull request. `FIRST_TIME_CONTRIBUTOR`, `FIRST_TIMER`, `NONE`, and `MANNEQUIN` stay on GitHub-hosted runners, which are free for public repositories, so an unreviewed author cannot spend Blacksmith capacity. Maintainers report `CONTRIBUTOR` here because org membership is concealed; keep `CONTRIBUTOR` in that list or maintainer pull requests lose Blacksmith. Pushes and manual dispatches are unaffected. Cache trust is a separate, stricter boundary: exact dependency restores require a pull request from `openclaw/openclaw`, and ordinary CI never publishes the shared archives. The separate trusted warmer owns publication.
 
 | Runner                           | Jobs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
