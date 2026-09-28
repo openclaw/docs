@@ -69,6 +69,11 @@ planner retains the compact selected-owner rows, including plugin work. This
 keeps the selected files, configs, worker limits, and process owners intact; broad
 PRs may have longer rows instead of failing preflight solely because of splitting.
 Dist descriptors do not consume the Node row budget.
+If the retained plan still exceeds the cap, only changed-target chunks are
+partitioned by build and concurrency requirements, then balanced by predicted
+seconds into the remaining rows while preserving every selected target. Plans
+that cannot fit those separate policies or whose other owners already fill the
+cap still fail preflight.
 
 Explicitly selected plugin tests retain their canonical config, native-loader
 isolation, worker policy, and group timing. The release-only switch controls the
