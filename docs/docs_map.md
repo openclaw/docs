@@ -7097,6 +7097,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
+  - H3: Package-publication recovery
   - H3: Updating from 2026.9.2 across a schema bump
   - H3: From chat
   - H2: Inspect FreeBSD service discovery
@@ -12338,6 +12339,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Conversation environments
   - H3: Cloud repository workspaces
   - H2: Sandbox runtime reservations
+  - H2: Package-publication recovery receipt
 
 ## reference/database-schemas/personal-data.md
 
