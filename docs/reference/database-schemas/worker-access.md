@@ -590,21 +590,28 @@ opening settles. The remaining native Cron transitions still need migration.
 This cutover preserves schemas, stored bytes, retention, configuration, and update
 behavior.
 
-Native cron receipt guards read deletion authority through their transaction's
-admitted connection. Other synchronous current-authority readers may reuse that
+Cron receipt guards use the current read-only owner without initializing storage
+or waiting for the worker's writer transaction. They read deletion authority
+through the admitted connection. Synchronous current-authority readers may reuse that
 same thread's managed write transaction, including its pending lifecycle rows;
 ordinary discovery reads retain committed-state isolation. This avoids preparing
 a child-process snapshot while holding the shared-state write transaction. Agent
 database admission refusals remain with their in-memory admission owner. Schemas,
 retention, configuration, and update behavior are unchanged.
 
-Cron activation, exact reservation cleanup, and stale-family removal use typed
+Cron reservation creation, activation, exact reservation cleanup, and stale-family removal use typed
 commands through the existing worker mutation owner. The host retains the
 partition lock, reservation identity, live policy, and runner settlement. The
 worker rereads durable receipt and deletion guards before committing. Publication
 uses the matching committed receipt once; a lost reply never causes a replay.
 Deferred receipt finishing retains the captured physical worker context through
-settlement. Reservation creation and remaining manual or timer finalizers retain
+settlement. Reservation transactions supply compact receipt facts to the host's
+liveness and current-caller checks. Prospective local receipt ownership lasts
+through native settlement; only committed receipts transfer to callers, and a
+conflict retries only after confirmed rollback. Owner edits observe receipts
+through the read worker before their existing synchronous authority capture.
+Pending work retains the partition queue and fences retired service generations,
+including deferred startup jobs. Remaining manual or timer finalizers retain
 their native implementation as migration debt. Schemas, retention, configuration,
 and update behavior are unchanged.
 
