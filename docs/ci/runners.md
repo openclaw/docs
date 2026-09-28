@@ -24,6 +24,10 @@ Runner choice follows contributor trust, not whether a pull request came from a 
 
 The table lists default placement. On eligible hybrid first attempts, the [hosted budget](/ci/capacity#bounded-hybrid-hosted-offload) can move `security-fast`, all three `checks-ui` rows, and only the browser-extension E2E row to `ubuntu-24.04`; the default Blacksmith routes apply when optional admission is closed.
 
+Baseline ratchets and Node shards start independently after preflight; the final gate still requires the selected ratchets to pass. Standalone ratchets and `check-plan` use the existing Blacksmith 4-class on trusted same-repository hybrid first attempts, automatic main runs, and admitted qualification dispatches. The GitHub override, hybrid retries, ordinary manual and frozen targets, and untrusted or noncanonical contexts retain hosted routing. Narrowed check rows still wait for their complete compiler/lint plan. See [admission measurements and cost](/ci/routing-costs#ratchet-admission-and-node-tests).
+
+RunsOn retains its hosted placement for standalone ratchets and check planning, including qualification dispatches.
+
 Healthy eligible main pushes and Windows-selected PRs can additionally offload five check rows under the [assignment guard](#hybrid-hosted-assignment-guard). Main alone can then offload lint and central test types. Each decision consumes remaining capacity within the same 45-row limit; the original runner remains the fallback. Artifact builds retain the 16-class: their hosted maximum reached 898 seconds before preflight and gate overhead. See the [routing measurements and qualification gaps](/ci/routing-costs).
 
 Native Swift builds/tests, iOS build phases, screenshot shards, and Periphery scans use Xcode 27 on GitHub-hosted `xcode-27`, the preview macOS 27 image. This toolchain change preserves hosted placement, job counts, worker caps, coverage, and deadlines; it adds no Blacksmith registrations. The Swift source-language minimum remains 6.3. Native compatibility and complete job timings require proof on the new image.

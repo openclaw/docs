@@ -838,3 +838,5 @@ artifacts remain errors in report-only mode.
 
 - [Install overview](/install)
 - [Release channels](/install/development-channels)
+
+When exactly one non-control workload remains, the PR failure monitor exits successfully. The aggregate still waits for and validates that workload; retiring the observer does not admit a failed or unfinished job.
