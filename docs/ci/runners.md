@@ -56,6 +56,11 @@ Actions includes that path in cache compatibility. Pnpm's side-effects cache
 carries native postinstall outputs such as Matrix crypto's binary and version
 marker, so a compatible warm install skips the download. Cold caches and changed
 native build inputs still require the upstream asset.
+Linux setup uses hard links when that store is private to the job's workspace,
+including store-only restores on hosted runners. This avoids copying cached
+packages on filesystems without clone support. Shared or external stores and
+ordinary macOS installs retain their configured import method; frozen-lockfile
+reconciliation and lifecycle scripts still run.
 Setup restores the configured store root before activating pnpm. The same
 artifact contains the pinned pnpm wrapper and Linux native executable archives
 under `toolchain/`, keyed by the complete `packageManager` pin. Bootstrap checks
