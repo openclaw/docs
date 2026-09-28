@@ -12537,6 +12537,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Keep model settings stable
   - H2: Primary knobs
+  - H3: Worker turns
   - H3: cacheRetention
   - H3: contextPruning.mode: "cache-ttl"
   - H3: Heartbeat keep-warm
