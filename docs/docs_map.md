@@ -9674,6 +9674,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/kie.md
+
+- Route: /plugins/reference/kie
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/kilocode.md
 
 - Route: /plugins/reference/kilocode
@@ -11623,6 +11631,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Notes
   - H2: Related
 
+## providers/kie.md
+
+- Route: /providers/kie
+- Headings:
+  - H2: Setup
+  - H2: Video generation
+  - H2: Live testing
+  - H2: Related
+
 ## providers/kilocode.md
 
 - Route: /providers/kilocode
@@ -11767,6 +11784,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup
   - H2: Defaults
   - H2: Model catalog
+  - H2: Video generation
   - H2: When to choose Novita
   - H2: Troubleshooting
   - H2: Related
@@ -12219,6 +12237,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Rate limits and overloads
   - H2: Config example
   - H2: Built-in catalog
+  - H2: Video generation
   - H2: Thinking levels
   - H2: Advanced configuration
   - H2: Related

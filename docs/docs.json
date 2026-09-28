@@ -2251,6 +2251,7 @@
                     "pages": [
                       "providers/comfy",
                       "providers/fal",
+                      "providers/kie",
                       "providers/pixverse",
                       "providers/runway",
                       "providers/vydra"
@@ -4291,6 +4292,7 @@
                     "pages": [
                       "zh-CN/providers/comfy",
                       "zh-CN/providers/fal",
+                      "zh-CN/providers/kie",
                       "zh-CN/providers/pixverse",
                       "zh-CN/providers/runway",
                       "zh-CN/providers/vydra"
@@ -6331,6 +6333,7 @@
                     "pages": [
                       "zh-TW/providers/comfy",
                       "zh-TW/providers/fal",
+                      "zh-TW/providers/kie",
                       "zh-TW/providers/pixverse",
                       "zh-TW/providers/runway",
                       "zh-TW/providers/vydra"
@@ -8371,6 +8374,7 @@
                     "pages": [
                       "ja-JP/providers/comfy",
                       "ja-JP/providers/fal",
+                      "ja-JP/providers/kie",
                       "ja-JP/providers/pixverse",
                       "ja-JP/providers/runway",
                       "ja-JP/providers/vydra"
@@ -10411,6 +10415,7 @@
                     "pages": [
                       "es/providers/comfy",
                       "es/providers/fal",
+                      "es/providers/kie",
                       "es/providers/pixverse",
                       "es/providers/runway",
                       "es/providers/vydra"
@@ -12451,6 +12456,7 @@
                     "pages": [
                       "pt-BR/providers/comfy",
                       "pt-BR/providers/fal",
+                      "pt-BR/providers/kie",
                       "pt-BR/providers/pixverse",
                       "pt-BR/providers/runway",
                       "pt-BR/providers/vydra"
@@ -14491,6 +14497,7 @@
                     "pages": [
                       "ko/providers/comfy",
                       "ko/providers/fal",
+                      "ko/providers/kie",
                       "ko/providers/pixverse",
                       "ko/providers/runway",
                       "ko/providers/vydra"
@@ -16531,6 +16538,7 @@
                     "pages": [
                       "de/providers/comfy",
                       "de/providers/fal",
+                      "de/providers/kie",
                       "de/providers/pixverse",
                       "de/providers/runway",
                       "de/providers/vydra"
@@ -18571,6 +18579,7 @@
                     "pages": [
                       "fr/providers/comfy",
                       "fr/providers/fal",
+                      "fr/providers/kie",
                       "fr/providers/pixverse",
                       "fr/providers/runway",
                       "fr/providers/vydra"
@@ -20611,6 +20620,7 @@
                     "pages": [
                       "hi/providers/comfy",
                       "hi/providers/fal",
+                      "hi/providers/kie",
                       "hi/providers/pixverse",
                       "hi/providers/runway",
                       "hi/providers/vydra"
@@ -22651,6 +22661,7 @@
                     "pages": [
                       "ar/providers/comfy",
                       "ar/providers/fal",
+                      "ar/providers/kie",
                       "ar/providers/pixverse",
                       "ar/providers/runway",
                       "ar/providers/vydra"
@@ -24691,6 +24702,7 @@
                     "pages": [
                       "it/providers/comfy",
                       "it/providers/fal",
+                      "it/providers/kie",
                       "it/providers/pixverse",
                       "it/providers/runway",
                       "it/providers/vydra"
@@ -26731,6 +26743,7 @@
                     "pages": [
                       "vi/providers/comfy",
                       "vi/providers/fal",
+                      "vi/providers/kie",
                       "vi/providers/pixverse",
                       "vi/providers/runway",
                       "vi/providers/vydra"
@@ -28771,6 +28784,7 @@
                     "pages": [
                       "nl/providers/comfy",
                       "nl/providers/fal",
+                      "nl/providers/kie",
                       "nl/providers/pixverse",
                       "nl/providers/runway",
                       "nl/providers/vydra"
@@ -30811,6 +30825,7 @@
                     "pages": [
                       "fa/providers/comfy",
                       "fa/providers/fal",
+                      "fa/providers/kie",
                       "fa/providers/pixverse",
                       "fa/providers/runway",
                       "fa/providers/vydra"
@@ -32851,6 +32866,7 @@
                     "pages": [
                       "tr/providers/comfy",
                       "tr/providers/fal",
+                      "tr/providers/kie",
                       "tr/providers/pixverse",
                       "tr/providers/runway",
                       "tr/providers/vydra"
@@ -34891,6 +34907,7 @@
                     "pages": [
                       "uk/providers/comfy",
                       "uk/providers/fal",
+                      "uk/providers/kie",
                       "uk/providers/pixverse",
                       "uk/providers/runway",
                       "uk/providers/vydra"
@@ -36931,6 +36948,7 @@
                     "pages": [
                       "id/providers/comfy",
                       "id/providers/fal",
+                      "id/providers/kie",
                       "id/providers/pixverse",
                       "id/providers/runway",
                       "id/providers/vydra"
@@ -38971,6 +38989,7 @@
                     "pages": [
                       "pl/providers/comfy",
                       "pl/providers/fal",
+                      "pl/providers/kie",
                       "pl/providers/pixverse",
                       "pl/providers/runway",
                       "pl/providers/vydra"
@@ -41011,6 +41030,7 @@
                     "pages": [
                       "th/providers/comfy",
                       "th/providers/fal",
+                      "th/providers/kie",
                       "th/providers/pixverse",
                       "th/providers/runway",
                       "th/providers/vydra"
@@ -43051,6 +43071,7 @@
                     "pages": [
                       "ru/providers/comfy",
                       "ru/providers/fal",
+                      "ru/providers/kie",
                       "ru/providers/pixverse",
                       "ru/providers/runway",
                       "ru/providers/vydra"
