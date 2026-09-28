@@ -7941,6 +7941,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/mac/webchat
 - Headings:
   - H2: Message times and models
+  - H2: Thread view options
   - H2: Pending questions and approvals
   - H2: Sources
   - H2: Diagrams
