@@ -5002,6 +5002,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Command-lane diagnostics
   - H2: Stability recorder
   - H2: CPU profile
+  - H2: Full heap snapshot
   - H2: Sampling heap profile
   - H2: Useful options
   - H2: Disable diagnostics
