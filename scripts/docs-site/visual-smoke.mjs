@@ -360,7 +360,7 @@ async function checkDesktop() {
     throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/start/getting-started`, { waitUntil: "networkidle" });
   await checkPageActions(page, "desktop dark");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
   const searchShortcut = await page.evaluate(() => {
@@ -917,7 +917,7 @@ async function checkMobile() {
     || discordOverflow.escaping.length) {
     throw new Error(`discord mobile overflow failed: ${JSON.stringify(discordOverflow)}`);
   }
-  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/start/getting-started`, { waitUntil: "networkidle" });
   await checkPageActions(page, "mobile dark");
   await page.close();
 }
@@ -1158,7 +1158,7 @@ async function checkLightMode() {
   if (skin.theme !== "light" || skin.codeText !== "#26262c" || parseFloat(skin.badgeRadius) < 2 || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
-  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/start/getting-started`, { waitUntil: "networkidle" });
   await checkPageActions(page, "desktop light");
   await page.close();
 }
