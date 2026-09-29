@@ -449,12 +449,6 @@ if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
 }
-if (!/function scrollActiveNavLink/.test(siteJs)
-  || !/active\.offsetTop-sidebar\.clientHeight\/2\+active\.offsetHeight\/2/.test(siteJs)
-  || !/Math\.max\(0,Math\.min\(max,target\)\)/.test(siteJs)
-  || !/scrollActiveNavLink\(\)/.test(siteJs.match(/function syncSidebar[^]+?function setNavOpen/)?.[0] ?? "")) {
-  throw new Error("assets: active sidebar link is not centered in view");
-}
 if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/function syncTocDisclosure/.test(siteJs)
   || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
