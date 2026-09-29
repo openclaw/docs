@@ -331,6 +331,8 @@
 .docs-layout .doc .docs-media-content > p { margin: 0; text-align: center; }
 .docs-layout .doc .docs-media-content :is(img,video,iframe) { max-width: 100%; margin: 0; vertical-align: middle; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-control); box-shadow: 0 10px 24px #24201a24,0 2px 4px #24201a0d; }
 .docs-layout .doc .docs-media-content img { width: auto; height: auto; max-height: min(520px,65svh); object-fit: contain; }
+/* Authored SVG diagrams use fixed ink colors, including over transparent areas. */
+.docs-layout .doc .docs-media-content img:is([src$=".svg" i],[src*=".svg?" i],[src*=".svg#" i]) { background: #fff; }
 .docs-layout .docs-media-content .oc-frame { padding: 16px; }
 .docs-layout .docs-media-content .oc-frame figcaption { padding: 0 0 12px; }
 .docs-layout .oc-mermaid-actions { inset: 10px 10px auto auto; }

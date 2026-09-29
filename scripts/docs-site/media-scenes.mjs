@@ -1,4 +1,31 @@
+import { createHash } from "node:crypto";
 import { parseDocument } from "htmlparser2";
+
+const imageTextures = [
+  "mesh-coral-rise",
+  "mesh-split-coral",
+  "mesh-vermilion-margin",
+  "mesh-ember-night",
+  "mesh-silver-coral",
+];
+
+function mediaSource(node) {
+  if (["img", "video", "iframe", "source"].includes(node.name)) {
+    const src = node.attribs.src || node.attribs.srcset || node.attribs.poster;
+    if (src) return src;
+  }
+  for (const child of node.children ?? []) {
+    const src = mediaSource(child);
+    if (src) return src;
+  }
+  return "";
+}
+
+function imageTexture(node) {
+  // Key the artwork to the media, not page order, translated copy, or a build.
+  const hash = createHash("sha256").update(mediaSource(node)).digest().readUInt32BE(0);
+  return imageTextures[hash % imageTextures.length];
+}
 
 export function mediaSceneHtml(content, { texture = "mesh-silver-coral", className = "" } = {}) {
   const [width, height] = [1536, 1024];
@@ -21,7 +48,7 @@ export function frameArticleMedia(html) {
     if (node.name !== "img") return false;
     const src = node.attribs.src ?? "";
     const width = Number.parseFloat(node.attribs.width);
-    return !/\.svg(?:[?#]|$)|\/openclaw-hero-(?:light|dark)\.png(?:[?#]|$)/i.test(src)
+    return !/\/openclaw-hero-(?:light|dark)\.png(?:[?#]|$)/i.test(src)
       && !(width > 0 && width <= 96);
   };
   const visit = (node) => {
@@ -31,10 +58,10 @@ export function frameArticleMedia(html) {
     const nested = children(node);
     const isFrame = classes.includes("oc-mermaid") || classes.includes("oc-frame");
     const isMediaParagraph = node.name === "p" && nested.length > 0 && nested.every(media);
-    const isStandalonePlayer = ["video", "iframe"].includes(node.name)
-      && !["p", "a", "span"].includes(node.parent?.name);
-    if (isFrame || isMediaParagraph || isStandalonePlayer) {
-      ranges.push([node.startIndex, node.endIndex + 1, classes.includes("oc-mermaid") ? "mesh-ember-night" : "mesh-silver-coral"]);
+    const isStandaloneMedia = media(node)
+      && (!node.parent?.name || ["div", "section", "article", "figure", "li"].includes(node.parent.name));
+    if (isFrame || isMediaParagraph || isStandaloneMedia) {
+      ranges.push([node.startIndex, node.endIndex + 1, classes.includes("oc-mermaid") ? "mesh-ember-night" : imageTexture(node)]);
       return;
     }
     for (const child of nested) visit(child);
