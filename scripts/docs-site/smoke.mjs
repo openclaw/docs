@@ -306,7 +306,7 @@ const maturityTaxonomy = fs.readFileSync(path.join(site, "maturity/taxonomy/inde
 if (!maturityScorecard.includes('class="maturity-summary-grid"')
   || !maturityScorecard.includes('class="maturity-surface-table"')
   || !maturityTaxonomy.includes('class="maturity-level-list"')
-  || !maturityTaxonomy.includes("<summary>CLI - M4 Stable - 7 areas</summary>")
+  || !DomUtils.findAll((node) => node.name === "summary", parseDocument(maturityTaxonomy).children).some((node) => DomUtils.textContent(node).trim() === "CLI - M4 Stable - 7 areas")
   || !/<div class="maturity-category-docs">\s*<p><a href="\/install">Index<\/a>/.test(maturityTaxonomy)
   || maturityTaxonomy.includes("<pre><code>&lt;/div&gt;")
   || /<div class="maturity-category-docs">[^<]*\[Index\]\(\/install\/index\)/.test(maturityTaxonomy)
