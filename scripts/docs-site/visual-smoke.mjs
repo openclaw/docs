@@ -229,6 +229,18 @@ async function checkDesktop() {
   if (!mermaidOverlayFocus.activeInOverlay || !mermaidOverlayFocus.bodyLocked) {
     throw new Error(`mermaid overlay focus trap failed: ${JSON.stringify(mermaidOverlayFocus)}`);
   }
+  await page.locator("[data-mermaid-overlay-canvas]").click({ position: { x: 8, y: 8 } });
+  if (!await page.locator("[data-mermaid-overlay].open").count()) {
+    throw new Error("clicking inside the diagram dismissed it");
+  }
+  await page.locator(".oc-mermaid-overlay-head").click({ position: { x: 8, y: 8 } });
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
+  if (!await page.evaluate(() => document.activeElement?.matches("[data-mermaid-expand]")
+    && !document.body.classList.contains("has-mermaid-overlay"))) {
+    throw new Error("backdrop dismissal did not restore focus and scrolling");
+  }
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
   await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
   await page.goBack();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
