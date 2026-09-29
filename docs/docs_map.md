@@ -8022,6 +8022,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Windows node mode
   - H2: Local MCP mode
   - H2: Native Windows CLI and Gateway
+  - H3: Updating from 2026.9.4
   - H2: WSL2 Gateway
   - H2: Gateway auto-start before Windows login
   - H2: Expose WSL services over LAN
