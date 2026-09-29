@@ -274,6 +274,15 @@
 .docs-layout .doc .oc-code { box-shadow: var(--docs-surface-shadow); background: var(--code-block); }
 .docs-layout .doc .oc-code figcaption { background: transparent; min-height: 40px; }
 .docs-layout .doc .oc-code figcaption .oc-code-label { font: 500 11px/1.4 var(--oc-font-mono); letter-spacing: .06em; }
+.docs-layout .doc .oc-code-tabs { gap: 24px; padding: 0 18px; border-block-end: 1px solid var(--docs-border); background: transparent; overflow-x: auto; scrollbar-width: thin; }
+.docs-layout .doc .oc-code-tab { position: relative; flex: 0 0 auto; min-block-size: 44px; padding: 10px 0; border-radius: 4px; background: transparent; color: var(--muted); font: 500 12px/1.4 var(--oc-font-mono); white-space: nowrap; }
+.docs-layout .doc .oc-code-tab.active { color: var(--ink); background: transparent; }
+.docs-layout .doc .oc-code-tab::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 2px; border-radius: 1px; background: transparent; }
+.docs-layout .doc .oc-code-tab.active::after { background: var(--brand); }
+.docs-layout .doc .oc-code-tab:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: -2px; }
+@media (hover:hover) and (pointer:fine) {
+  .docs-layout .doc .oc-code-tab:hover { color: var(--ink); background: transparent; }
+  .docs-layout .doc .oc-code-tab:not(.active):hover::after { background: color-mix(in srgb,var(--muted) 45%,transparent); }}
 .docs-layout .doc .oc-callout { box-shadow: var(--docs-surface-shadow); }
 :root[data-theme="light"] .docs-layout .doc .oc-callout { border: 1px solid var(--docs-border); }
 :root[data-theme="light"] .docs-layout .doc .oc-code-expand { color: color-mix(in srgb,var(--brand) 85%,var(--ink)); }
