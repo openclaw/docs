@@ -6204,6 +6204,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider credentials
   - H3: Logging and diagnostics
   - H3: Feature and runtime toggles
+  - H3: Filesystem observation
   - H2: Provider credentials and workspace .env
   - H2: Config env block
   - H2: Shell env import
@@ -10852,6 +10853,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Infrastructure
   - H3: File-watch capacity errors
+  - H3: Filesystem observation and worker notifications
   - H3: Streaming file verification
   - H3: Browser lifecycle cleanup
   - H3: SQLite write admission
