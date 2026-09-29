@@ -520,7 +520,9 @@ async function checkTocScrollspy() {
   }
 
   await openSection(page, "Channels");
-  await page.locator('.docs-section[data-docs-section="Channels"] .nav-section').filter({ has: page.locator('a[href$="/channels/telegram"]') }).locator(":scope > summary").click();
+  const closedTelegramGroups = page.locator('.docs-section[data-docs-section="Channels"] details:not([open])')
+    .filter({ has: page.locator('a[href$="/channels/telegram"]') });
+  while (await closedTelegramGroups.count()) await closedTelegramGroups.first().locator(":scope > summary").click();
   await page.click('.docs-section[data-docs-section="Channels"] a.nav-link[href$="/channels/telegram"]');
   await page.waitForURL("**/channels/telegram");
   await page.locator(".toc a").first().waitFor({ state: "visible" });
