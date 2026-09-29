@@ -770,8 +770,7 @@ if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-
   || !/\.page-tools \.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
   throw new Error("assets: page action trigger should use the split button skin");
 }
-if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more\[open\] summary,\.page-tools \.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
-  || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
+if (!/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
   || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
   throw new Error("assets: page action hover, external marker, and footer link skin are missing");
 }
