@@ -176,7 +176,19 @@ html{scroll-padding-top:calc(var(--sticky-header-h) + 54px)}
    the doubling. */
 @supports (corner-shape: superellipse(1.5)){
 :root{--oc-corner-radius-scale:1.25}
-.oc-card.oc-card,.oc-cta-card.oc-cta-card{border-radius:calc(var(--oc-radius-lg) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}}
+.oc-card.oc-card,.oc-cta-card.oc-cta-card{border-radius:calc(var(--oc-radius-lg) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}
+.oc-cta.oc-cta,.oc-stat.oc-stat,.oc-chart.oc-chart,.oc-table-wrap.oc-table-wrap,.oc-callout.oc-callout,.oc-code.oc-code,.oc-tabs.oc-tabs,.oc-code-group.oc-code-group,.oc-accordion.oc-accordion,.oc-param.oc-param,.oc-frame.oc-frame,.oc-panel.oc-panel,.oc-prompt.oc-prompt,.oc-mermaid.oc-mermaid,.oc-tile.oc-tile,.oc-mermaid-overlay-canvas.oc-mermaid-overlay-canvas,.page-nav.page-nav a,.page-tools .page-actions-more .page-actions-menu.page-actions-menu,.search-panel.search-panel,.language-menu.language-menu,.toc.toc nav,.docs-chat-panel.docs-chat-panel,.docs-chat-message.docs-chat-message,.docs-chat-code.docs-chat-code,.docs-chat-auth-card.docs-chat-auth-card{border-radius:calc(var(--oc-radius-surface) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}
+.search-button.search-button,.language-trigger.language-trigger,.language-option.language-option,.theme-toggle.theme-toggle,.sidebar-close.sidebar-close,.heading-anchor.heading-anchor,.page-status-badge.page-status-badge,.page-tools.page-tools a,.page-tools.page-tools button,.page-tools .page-action.page-action,.page-feedback.page-feedback button,.page-feedback-links.page-feedback-links a,.page-feedback-submit.page-feedback-submit,.page-feedback-composer.page-feedback-composer textarea,.oc-prompt.oc-prompt button,.oc-cta-link.oc-cta-link,.oc-code-tab.oc-code-tab,.oc-code.oc-code figcaption button,.oc-mermaid-expand.oc-mermaid-expand,.oc-mermaid-overlay-close.oc-mermaid-overlay-close,.search-head.search-head input,.search-close.search-close,.search-hints.search-hints button,.search-result.search-result,.search-empty-kbd.search-empty-kbd,.docs-chat-launcher.docs-chat-launcher,.docs-chat-icon.docs-chat-icon,.docs-chat-verify.docs-chat-verify,.docs-chat-form.docs-chat-form textarea,.docs-chat-form.docs-chat-form button,.toc.toc summary,.toc.toc a,.community-invite__cta.community-invite__cta{border-radius:calc(var(--oc-radius-control) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}
+/* The Copy page control is one split button: two halves that each round only
+   their outer pair of corners. corner-shape still has to be set on both so the
+   drawn corners match the rest of the page; a 0-radius corner draws no curve
+   either way. */
+.page-tools .page-actions-primary.page-actions-primary{border-radius:calc(var(--oc-radius-control) * var(--oc-corner-radius-scale)) 0 0 calc(var(--oc-radius-control) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}
+.page-tools .page-actions-more.page-actions-more summary{border-radius:0 calc(var(--oc-radius-control) * var(--oc-corner-radius-scale)) calc(var(--oc-radius-control) * var(--oc-corner-radius-scale)) 0;corner-shape:superellipse(1.5)}
+/* Only while the invite card floats: docked to the mobile drawer it is a flush
+   sheet with square corners (border-radius:0 in the <=820px tier), which this
+   block would otherwise outrank. */
+@media(min-width:821px){.community-invite.community-invite{border-radius:calc(var(--oc-radius-surface) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}}}
 ${maturityCss}
 ${siteLayoutCss}
 ${docsLayoutCss}
