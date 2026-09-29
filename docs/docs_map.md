@@ -7086,6 +7086,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Node and global install permissions
   - H3: System-scope systemd services
   - H2: Published 2026.9.4 on large agent fleets
+  - H2: Headless nodes waiting on 2026.9.6
   - H2: Plugin repair warnings
   - H3: Missing temporary plugin captures
   - H3: Database snapshots under continuous writes
