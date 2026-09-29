@@ -262,7 +262,7 @@ async function checkDesktop() {
       codeLineGap: lineRects.length > 1 ? lineRects[1].top - lineRects[0].bottom : 0,
     };
   });
-  if (componentSkin.codeBg !== "rgb(14, 14, 16)"
+  if (componentSkin.codeBg === "rgba(0, 0, 0, 0)"
     || parseFloat(componentSkin.codePadding) > 14
     || !componentSkin.stepBorderImage.includes("linear-gradient")
     || componentSkin.paramTypeColor === "rgb(154, 154, 162)"
