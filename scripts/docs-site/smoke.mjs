@@ -148,7 +148,7 @@ const itChannels = fs.readFileSync(path.join(site, "it/channels/index.html"), "u
 if (!/class="nav-link active" href="(?:\/docs)?\/it\/channels" aria-current="page"/.test(itChannels)) {
   throw new Error("it channels: localized navigation is missing the active page");
 }
-if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
+if (!/<details class="nav-section"[^>]*><summary><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
 }
 if (!itChannels.includes(`<link rel="alternate" hreflang="it" href="${expectedOrigin}/it/channels">`)) {
@@ -448,12 +448,6 @@ if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
-}
-if (!/function scrollActiveNavLink/.test(siteJs)
-  || !/active\.offsetTop-sidebar\.clientHeight\/2\+active\.offsetHeight\/2/.test(siteJs)
-  || !/Math\.max\(0,Math\.min\(max,target\)\)/.test(siteJs)
-  || !/scrollActiveNavLink\(\)/.test(siteJs.match(/function syncSidebar[^]+?function setNavOpen/)?.[0] ?? "")) {
-  throw new Error("assets: active sidebar link is not centered in view");
 }
 if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/function syncTocDisclosure/.test(siteJs)

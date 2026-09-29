@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { homeContentHtml } from "./home-content.mjs";
+import { docsQuickNav } from "./docs-navigation.mjs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
@@ -423,6 +424,7 @@ ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${t
 function sidebar(page, nav, activeTab) {
   return `<aside class="sidebar">
 <div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
+${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
 <nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
     const current = tab.title === activeTab;
     return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
@@ -613,12 +615,13 @@ function icon(name) {
 }
 
 function navGroupHtml(activePage, group) {
-  return `<section class="nav-section"><h2>${escapeHtml(group.title)}</h2>${group.pages.map((entry) => navEntryHtml(activePage, entry)).join("")}</section>`;
+  return `<details class="nav-section" open><summary><h2>${escapeHtml(group.title)}</h2>${icon("chevron-down")}</summary>${group.pages.map((entry) => navEntryHtml(activePage, entry)).join("")}</details>`;
 }
 
 function navEntryHtml(activePage, entry) {
+  const current = entry.group && flattenNavEntries(entry.pages).some((page) => page.locale === activePage.locale && page.slug === activePage.slug);
   return entry.group
-    ? `<div class="nav-nested"><h2>${escapeHtml(entry.group)}</h2>${entry.pages.map((child) => navEntryHtml(activePage, child)).join("")}</div>`
+    ? `<details class="nav-nested"${current ? " open" : ""}><summary><h2>${escapeHtml(entry.group)}</h2>${icon("chevron-down")}</summary>${entry.pages.map((child) => navEntryHtml(activePage, child)).join("")}</details>`
     : navLink(activePage, entry);
 }
 

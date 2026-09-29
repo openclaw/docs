@@ -39,7 +39,7 @@ test("requested pages outside navigation fit inside the 30-page preview, includi
   const html = fs.readFileSync(path.join(f.site, "target/index.html"), "utf8");
   assert.match(html, /Requested page/);
   const sidebar = html.match(/<aside class="sidebar">([\s\S]*?)<\/aside>/)[1];
-  assert.equal([...sidebar.matchAll(/class="nav-link/g)].length, 35);
+  assert.equal([...sidebar.slice(sidebar.indexOf('<nav class="docs-sections"')).matchAll(/class="nav-link/g)].length, 35);
   assert.match(sidebar, /href="\/guide\/page-0"/);
   assert.match(sidebar, /href="https:\/\/docs\.openclaw\.ai\/guide\/page-34" data-preview-live/);
   assert.match(html, /Full navigation shown; 30 pages built locally/);
