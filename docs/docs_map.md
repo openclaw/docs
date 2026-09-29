@@ -5634,6 +5634,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Graceful restarts drain first
   - H3: Maintenance custody observations
   - H3: Systemd stop deadlines
+  - H3: Launchd stop deadlines
   - H2: Host sleep and process freezes
   - H2: Recovery after a failed update
   - H2: How interrupted work is detected
