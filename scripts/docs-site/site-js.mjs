@@ -72,6 +72,26 @@ syncLanguageControl();
 const communityFooter=document.querySelector(".site-footer");
 if(communityFooter&&typeof IntersectionObserver!=="undefined"){const observer=new IntersectionObserver(entries=>{communityFooterVisible=entries.some(entry=>entry.isIntersecting);syncCommunityInvite()});observer.observe(communityFooter)}
 function swap(selector,nextDoc){const current=document.querySelector(selector);const incoming=nextDoc.querySelector(selector);if(current&&incoming)current.replaceWith(incoming)}
+let accordionResizeObserver;
+function initAccordionMotion(){
+  accordionResizeObserver?.disconnect();
+  if(!window.CSS?.supports("selector(::details-content)")||!CSS.supports("transition-behavior:allow-discrete")||!("ResizeObserver" in window))return;
+  const sync=content=>{
+    const accordion=content.parentElement;
+    if(accordion.open)accordion.style.setProperty("--accordion-content-height",content.getBoundingClientRect().height+"px");
+  };
+  accordionResizeObserver=new ResizeObserver(entries=>entries.forEach(entry=>sync(entry.target)));
+  document.querySelectorAll(".oc-accordion").forEach(accordion=>{
+    const content=accordion.querySelector(":scope>.oc-accordion-content");
+    if(!content)return;
+    sync(content);
+    if(!accordion.hasAttribute("data-accordion-motion")){
+      accordion.addEventListener("toggle",()=>sync(content));
+      accordion.setAttribute("data-accordion-motion","");
+    }
+    accordionResizeObserver.observe(content);
+  });
+}
 function initCodeGroups(){document.querySelectorAll(".oc-code-group").forEach(group=>{if(group.dataset.codeGroupReady)return;const blocks=[...group.querySelectorAll(":scope > .oc-code")];if(!blocks.length)return;group.dataset.codeGroupReady="true";const preferred=localStorage.getItem("preferredCodeTab")||"";const preferredIndex=Math.max(0,blocks.findIndex(block=>(block.dataset.codeLabel||"Code")===preferred));const activeIndex=preferredIndex||0;const tabs=document.createElement("div");tabs.className="oc-code-tabs";tabs.setAttribute("role","tablist");blocks.forEach((block,i)=>{const label=block.dataset.codeLabel||"Code";const button=document.createElement("button");button.type="button";button.className="oc-code-tab"+(i===activeIndex?" active":"");button.textContent=label;button.setAttribute("role","tab");button.setAttribute("aria-selected",String(i===activeIndex));button.addEventListener("click",()=>{tabs.querySelectorAll(".oc-code-tab").forEach(tab=>{tab.classList.remove("active");tab.setAttribute("aria-selected","false")});blocks.forEach(item=>item.classList.remove("active"));button.classList.add("active");button.setAttribute("aria-selected","true");block.classList.add("active");localStorage.setItem("preferredCodeTab",label)});tabs.appendChild(button);block.classList.toggle("active",i===activeIndex)});group.prepend(tabs)})}
 const mermaidExpandIcon='<svg class="icon icon-maximize-2" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/></svg>';
 const mermaidCloseIcon='<svg class="icon icon-x" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -113,7 +133,7 @@ function tocLinkId(link){return fragmentId(link.hash)}
 function setActiveTocLink(id){const toc=document.querySelector(".toc");if(!toc)return;let active=null;toc.querySelectorAll('a[href^="#"]').forEach(link=>{const on=Boolean(id&&tocLinkId(link)===id);link.classList.toggle("active",on);if(on)active=link});if(active){const list=active.closest(".toc");if(list&&list.scrollHeight>list.clientHeight){const lr=list.getBoundingClientRect();if(!isCompactToc()&&lr.top>parseFloat(getComputedStyle(list).top)+1)return;const ar=active.getBoundingClientRect();if(ar.top<lr.top)list.scrollTop+=ar.top-lr.top;else if(ar.bottom>lr.bottom)list.scrollTop+=ar.bottom-lr.bottom}}}
 function currentTocHeadingId(headings){const top=parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)||120;const scroller=document.scrollingElement||document.documentElement;if(scroller.scrollTop+innerHeight>=scroller.scrollHeight-2)return headings.at(-1)?.id||"";let current=headings[0];for(const heading of headings){if(heading.getBoundingClientRect().top<=top+1)current=heading;else break}return current?.id||""}
 function initTocScrollspy(){tocObserver?.disconnect();tocObserver=null;if(tocScrollHandler){removeEventListener("scroll",tocScrollHandler);tocScrollHandler=null;}const toc=document.querySelector(".toc");if(!toc)return;const links=[...toc.querySelectorAll('a[href^="#"]')];const headings=[...document.querySelectorAll(".doc h2[id],.doc h3[id]")].filter(heading=>links.some(link=>tocLinkId(link)===heading.id));links.forEach(link=>link.classList.remove("active"));if(!headings.length)return;const sync=()=>{if(Date.now()<tocSpyHoldUntil)return;setActiveTocLink(currentTocHeadingId(headings))};let tocScrollRaf=0;tocScrollHandler=()=>{cancelAnimationFrame(tocScrollRaf);tocScrollRaf=requestAnimationFrame(sync)};addEventListener("scroll",tocScrollHandler,{passive:true});requestAnimationFrame(sync);if(!("IntersectionObserver" in window)){sync();return}tocObserver=new IntersectionObserver(sync,{rootMargin:"-120px 0px -70% 0px",threshold:[0,1]});headings.forEach(heading=>tocObserver.observe(heading))}
-async function navigateTo(url,replace=false){if(navigating)return false;navigating=true;closeLanguage();closeMermaidOverlay();try{const res=await fetch(url.href,{credentials:"same-origin"});if(!res.ok||!res.headers.get("content-type")?.includes("text/html"))return false;const nextDoc=new DOMParser().parseFromString(await res.text(),"text/html");if(!nextDoc.querySelector(".main"))return false;disposeHomeHero();document.body.classList.toggle("docs-home",nextDoc.body.classList.contains("docs-home"));syncSidebar(nextDoc);swap(".header-left",nextDoc);swap(".main",nextDoc);initHomeHero();syncStickyHeaderOffset();syncTocDisclosure();initCodeGroups();initPageFeedback();initMermaid();document.title=nextDoc.title;history[replace?"replaceState":"pushState"]({docs:true},"",url.href);currentDocKey=url.pathname+url.search;setNavOpen(false);initTocScrollspy();scrollTarget(url.hash);syncCommunityInvite();return true}catch{return false}finally{navigating=false}}
+async function navigateTo(url,replace=false){if(navigating)return false;navigating=true;closeLanguage();closeMermaidOverlay();try{const res=await fetch(url.href,{credentials:"same-origin"});if(!res.ok||!res.headers.get("content-type")?.includes("text/html"))return false;const nextDoc=new DOMParser().parseFromString(await res.text(),"text/html");if(!nextDoc.querySelector(".main"))return false;disposeHomeHero();document.body.classList.toggle("docs-home",nextDoc.body.classList.contains("docs-home"));syncSidebar(nextDoc);swap(".header-left",nextDoc);swap(".main",nextDoc);initHomeHero();syncStickyHeaderOffset();syncTocDisclosure();initCodeGroups();initAccordionMotion();initPageFeedback();initMermaid();document.title=nextDoc.title;history[replace?"replaceState":"pushState"]({docs:true},"",url.href);currentDocKey=url.pathname+url.search;setNavOpen(false);initTocScrollspy();scrollTarget(url.hash);syncCommunityInvite();return true}catch{return false}finally{navigating=false}}
 function unavailableSearch(){return {unavailable:true,search:async()=>({results:[]})}}
 function loadPagefind(){if(pagefindReady)return pagefindReady;const src=withBase("/pagefind/pagefind.js")+(pagefindLoadAttempt?"?retry="+pagefindLoadAttempt:"");pagefindLoadAttempt+=1;pagefindReady=import(src).then(m=>m.init?.().then?.(()=>m)??m).catch(()=>{pagefindReady=null;return unavailableSearch()});return pagefindReady}
 let searchReturnFocus=null;
@@ -176,7 +196,7 @@ form.addEventListener("submit",async e=>{e.preventDefault();if(authState!=="read
 syncStickyHeaderOffset();
 syncTocDisclosure();
 initChat();
-initCodeGroups();
+initCodeGroups();initAccordionMotion();
 initPageFeedback();
 initMermaid();
 syncCommunityInvite();
