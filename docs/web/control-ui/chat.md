@@ -12,6 +12,11 @@ sidebarTitle: "Chat"
 
 How the chat pane behaves: the session rail, the composer, and how the transcript renders.
 
+When your role or session policy blocks messages, the composer is disabled and
+shows the reason before you try to send. This includes sandbox requirements,
+shared-session write restrictions, and read-only operator access. Your existing
+draft stays in place when access changes.
+
 Saved split panes keep their conversation and arrangement. If an older saved pane
 does not identify its agent, it shows **Choose a conversation** instead of opening
 another agent's history. Select that pane, then choose **Home** or a conversation
