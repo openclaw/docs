@@ -75,4 +75,3 @@ function channelDirectory(icon) {
 <div class="home-channel-grid">${channels.map(([label, slug, glyph, color]) => `<a class="home-channel" href="/channels/${slug}"><span class="home-channel-icon" style="--channel-color:${color}">${channelIcons[glyph]}</span><span>${label}</span>${icon("arrow-right")}</a>`).join("")}<a class="home-channel home-channel-more" href="/channels"><span class="home-channel-icon">${icon("grid-2x2")}</span><span>See all channels</span>${icon("arrow-right")}</a></div>
 </section>`;
 }
-
