@@ -622,6 +622,7 @@ for (const marker of [
   'class="oc-accordion"',
   'class="oc-param"',
   'class="oc-frame"',
+  'class="docs-media-scene"',
   'class="oc-tooltip"',
   'class="oc-param-default"',
   'class="oc-pill page-status-badge page-status-beta"',

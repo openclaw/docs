@@ -20,6 +20,7 @@ import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
 import { icons as lucideIcons } from "lucide";
+import { frameArticleMedia } from "./media-scenes.mjs";
 
 const languages = {
   bash,
@@ -208,7 +209,7 @@ function mermaidHtml(source) {
 
 export function renderMdxish(markdown, md, options) {
   const { tokens, env } = parseDocsDocument(markdown, md, options);
-  return rewriteDocsRelativeLinks(postprocess(md.renderer.render(tokens, md.options, env)), options);
+  return rewriteDocsRelativeLinks(frameArticleMedia(postprocess(md.renderer.render(tokens, md.options, env))), options);
 }
 
 function postprocess(html) {

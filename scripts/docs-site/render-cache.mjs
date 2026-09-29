@@ -59,6 +59,7 @@ function rendererSignature() {
   for (const file of [
     new URL("./render-cache.mjs", import.meta.url),
     new URL("./mdx-ish.mjs", import.meta.url),
+    new URL("./media-scenes.mjs", import.meta.url),
     new URL("../../.openclaw-sync/lib/docs-markdown.mjs", import.meta.url),
     new URL("../../package-lock.json", import.meta.url),
   ]) {

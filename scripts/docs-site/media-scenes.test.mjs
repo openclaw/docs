@@ -1,0 +1,61 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { parseDocument, DomUtils } from "htmlparser2";
+import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+
+const render = (source) => parseDocument(renderMdxish(source, createMarkdownRenderer()));
+const find = (document, predicate) => DomUtils.findAll(predicate, document.children);
+const hasClass = (node, name) => node.attribs?.class?.split(/\s+/).includes(name);
+const scenes = (document) => find(document, (node) => hasClass(node, "docs-media-scene"));
+
+test("article diagrams and demos share a single decorative frame without losing content or controls", () => {
+  const document = render(`
+\`\`\`mermaid
+flowchart LR
+  A[Chat] --> B[Gateway]
+\`\`\`
+
+<Frame caption="Connected channel">
+[![Settings screenshot](/settings.png)](/channels)
+</Frame>
+
+![Dashboard screenshot](/dashboard.webp)
+
+<video controls poster="/demo.webp"><source src="/demo.mp4" type="video/mp4"></video>
+
+<iframe title="Product walkthrough" src="https://www.youtube-nocookie.com/embed/example" allowfullscreen></iframe>
+`);
+  assert.equal(scenes(document).length, 5);
+  for (const scene of scenes(document)) {
+    assert.equal(scenes(scene).length, 0, "explicit Frames must not receive nested frames");
+    const backgrounds = find(scene, (node) => hasClass(node, "docs-media-background"));
+    assert.equal(backgrounds.length, 1);
+    assert.equal(backgrounds[0].attribs.alt, "");
+    assert.equal(backgrounds[0].attribs.loading, "lazy");
+  }
+  assert.equal(find(document, (node) => node.attribs["data-mermaid"])[0].attribs["data-mermaid"], "flowchart LR\n  A[Chat] --> B[Gateway]");
+  assert.equal(DomUtils.textContent(find(document, (node) => node.name === "figcaption")[0]), "Connected channel");
+  assert.equal(find(document, (node) => node.name === "a")[0].attribs.href, "/channels");
+  assert.equal(find(document, (node) => node.name === "video")[0].attribs.controls, "");
+  assert.equal(find(document, (node) => node.name === "source")[0].attribs.src, "/demo.mp4");
+  assert.equal(find(document, (node) => node.name === "iframe")[0].attribs.title, "Product walkthrough");
+});
+
+test("inline icons, brand illustrations, and source code are not turned into demos", () => {
+  const document = render(`
+Use ![Status](/status.png) next to the label.
+
+<p><img src="/badge.png" width="24" alt="Status"></p>
+
+<p><img src="/assets/openclaw-hero-light.png"><img src="/assets/openclaw-hero-dark.png"></p>
+
+\`\`\`html
+<video controls src="/example.mp4"></video>
+\`\`\`
+`);
+  assert.equal(scenes(document).length, 0);
+  assert.equal(find(document, (node) => node.name === "img").length, 4);
+  assert.match(DomUtils.textContent(document), /Use\s+next to the label/);
+  assert.equal(find(document, (node) => node.name === "img")[0].attribs.alt, "Status");
+  assert.match(DomUtils.textContent(document), /<video controls src="\/example.mp4"><\/video>/);
+});
