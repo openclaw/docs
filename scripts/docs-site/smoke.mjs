@@ -148,7 +148,7 @@ const itChannels = fs.readFileSync(path.join(site, "it/channels/index.html"), "u
 if (!/class="nav-link active" href="(?:\/docs)?\/it\/channels" aria-current="page"/.test(itChannels)) {
   throw new Error("it channels: localized navigation is missing the active page");
 }
-if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
+if (!/<details class="nav-section"[^>]*><summary><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
 }
 if (!itChannels.includes(`<link rel="alternate" hreflang="it" href="${expectedOrigin}/it/channels">`)) {

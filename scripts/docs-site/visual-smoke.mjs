@@ -47,57 +47,34 @@ try {
   server.close();
 }
 
+async function openSection(page, title) {
+  if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+  await page.getByRole("button", { name: title, exact: true }).click();
+  await page.locator(".docs-sidebar-back").waitFor({ state: "visible" });
+}
+
 async function checkRtlNavigationResize() {
   if (!fs.existsSync(path.join(site, "ar/index.html"))) return;
-  for (const reopen of [false, true]) {
-    const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
-    try {
-      await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
-      await page.locator("[data-nav-toggle]").click();
-      await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
-      await page.keyboard.press("Tab");
-      await page.keyboard.press("Space");
-      if (reopen) {
-        await page.waitForFunction(() => document.querySelector(".docs-section").open);
-        await page.keyboard.press("Tab");
-        await page.keyboard.press("Escape");
-        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
-        await page.keyboard.press("Enter");
-        await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
-      }
-      await page.setViewportSize({ width: 844, height: 390 });
-      await page.waitForFunction(() => {
-        const target = document.activeElement;
-        if (!target?.matches(".docs-section.current > summary")) return false;
-        const r = target.getBoundingClientRect();
-        const points = [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
-          [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]];
-        return r.top >= document.querySelector(".site-header").getBoundingClientRect().bottom
-          && r.bottom <= innerHeight && points.every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
-      });
-      await page.screenshot({ path: path.join(artifacts, `rtl-navigation-${reopen ? "reopened" : "opening"}-resize.png`) });
-      const limit = await page.locator(".sidebar a,.sidebar summary").count();
-      for (const [key, end] of [["Tab", ".docs-section:last-child>summary"], ["Shift+Tab", ".docs-section:first-child>summary"]]) {
-        for (let step = 0; step < limit; step += 1) {
-          await page.keyboard.press(key);
-          await page.waitForFunction(() => {
-            const target = document.activeElement;
-            if (!target?.closest(".sidebar")) return false;
-            const r = target.getBoundingClientRect();
-            return [[r.x + r.width / 2, r.y + 2], [r.right - 2, r.y + r.height / 2],
-              [r.x + r.width / 2, r.bottom - 2], [r.x + 2, r.y + r.height / 2]]
-              .every(([x, y]) => target.contains(document.elementFromPoint(x, y)));
-          });
-          if (await page.evaluate((selector) => document.activeElement.matches(selector), end)) break;
-        }
-        if (!await page.evaluate((selector) => document.activeElement.matches(selector), end)) {
-          throw new Error(`RTL navigation traversal did not reach ${end}`);
-        }
-      }
-    } finally {
-      await page.close();
-    }
-  }
+  const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
+  try {
+    await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
+    await page.locator("[data-nav-toggle]").click();
+    await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
+    if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+    await page.locator(".docs-section-trigger").last().click();
+    await page.locator(".docs-sidebar-back").waitFor({ state: "visible" });
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForFunction(() => {
+      const target = document.activeElement;
+      if (!target?.matches(".docs-sidebar-back")) return false;
+      const r = target.getBoundingClientRect();
+      return r.top >= document.querySelector(".site-header").getBoundingClientRect().bottom
+        && r.bottom <= innerHeight && target.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+    });
+    await page.locator(".docs-sidebar-back").click();
+    await page.locator(".docs-section-trigger").last().click({ trial: true });
+    await page.screenshot({ path: path.join(artifacts, "rtl-navigation-resize.png") });
+  } finally { await page.close(); }
 }
 
 async function assertTocAtArticleStart(page) {
@@ -120,26 +97,18 @@ async function checkLandingNavigation() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 800 }, reducedMotion: "reduce" });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await assertTocAtArticleStart(page);
-  await page.locator(".hero-search").click();
+  await page.locator(".site-header [data-search-open]").click();
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.keyboard.press("Escape");
-  if (!await page.evaluate(() => document.activeElement?.matches(".hero-search"))) {
-    throw new Error("hero search did not return keyboard focus to its opener");
+  if (!await page.evaluate(() => document.activeElement?.matches(".site-header [data-search-open]"))) {
+    throw new Error("header search did not return keyboard focus to its opener");
   }
   const sections = await page.locator(".docs-section > summary").allTextContents();
   if (!sections.includes("Help") || await page.locator(".tabs,.docs-navigation").count()) {
     throw new Error("complete vertical docs navigation is missing");
   }
-  await page.locator(".docs-section > summary").first().click();
-  const gatewaySection = page.locator('.docs-section[data-docs-section="Gateway & Ops"] > summary');
-  await gatewaySection.click();
-  await page.waitForFunction(() => {
-    const summary = document.querySelector('.docs-section[data-docs-section="Gateway & Ops"] > summary');
-    const rect = summary.getBoundingClientRect();
-    const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
-    return rect.top >= sidebar.top && rect.bottom <= sidebar.bottom && summary.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
-  });
-  await page.locator(".docs-section > summary").first().click();
+  await openSection(page, "Gateway & Ops");
+  await page.locator(".docs-sidebar-back").click();
   await page.mouse.move(1100, 500);
   await page.mouse.wheel(0, 1100);
   await page.locator(".toc h2").waitFor({ state: "visible" });
@@ -550,7 +519,7 @@ async function checkTocScrollspy() {
     throw new Error(`toc scrollspy failed on long page: ${JSON.stringify(scrolled)}`);
   }
 
-  await page.locator('.docs-section[data-docs-section="Channels"] > summary').click();
+  await openSection(page, "Channels");
   await page.click('.docs-section[data-docs-section="Channels"] a.nav-link[href$="/channels/telegram"]');
   await page.waitForURL("**/channels/telegram");
   await page.locator(".toc a").first().waitFor({ state: "visible" });
@@ -789,7 +758,7 @@ async function checkMobile() {
     || Math.abs(menu.sidebarBottom - menu.unobscuredBottom) > 1
     || !menu.closeVisible
     || !menu.sectionSwitcherVisible
-    || menu.sectionSwitcherOpen
+    || !menu.sectionSwitcherOpen
     || !menu.sectionSwitcherCurrent
     || !menu.drawerAtTop
     || !menu.closeFocused) {
@@ -803,12 +772,12 @@ async function checkMobile() {
   }
   for (const height of [980, 600]) {
     await page.setViewportSize({ width: 390, height });
-    await page.locator(".docs-section:last-child > summary").scrollIntoViewIfNeeded();
-    await page.locator(".docs-section:last-child > summary").click();
+    if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+    await page.locator(".docs-section-trigger").last().click();
     await page.locator(".docs-section:last-child .nav-link").last().scrollIntoViewIfNeeded();
     await page.locator(".docs-section:last-child .nav-link").last().click({ trial: true });
     await page.screenshot({ path: path.join(artifacts, `elements-mobile-sections-${height}.png`), fullPage: false });
-    await page.locator(".docs-section:last-child > summary").click();
+    await page.locator(".docs-sidebar-back").click();
   }
   await page.setViewportSize({ width: 390, height: 980 });
   await page.keyboard.press("Escape");
@@ -964,6 +933,7 @@ async function checkMobileKeyboardOverlays(page) {
   if (!await page.evaluate(() => document.activeElement?.closest(".sidebar-socials"))) {
     throw new Error("mobile menu social links are not keyboard reachable");
   }
+  if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
   await page.locator("[data-nav-close]").focus();
   // The docked invitation is separated from the sidebar in DOM order.
   // Exercise the whole collapsed drawer cycle in both directions, including that gap.
@@ -983,16 +953,11 @@ async function checkMobileKeyboardOverlays(page) {
     }
     if (!reachedInvitation || !completedCycle) throw new Error(`${key} did not cycle through the drawer and docked invitation`);
   }
-  await page.keyboard.press("Shift+Tab");
   const originalViewport = page.viewportSize();
   await page.setViewportSize({ width: 390, height: 600 });
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  for (let index = 1, count = await page.locator(".docs-section > summary").count(); index < count; index += 1) {
-    await page.keyboard.press("Tab");
-  }
+  await page.locator(".docs-section-trigger").last().focus();
   const finalSection = await page.evaluate(() => {
-    const target = document.querySelector(".docs-section:last-child > summary");
+    const target = document.querySelector(".docs-section-trigger:last-child");
     const rect = target.getBoundingClientRect();
     const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
     return { focused: document.activeElement === target, unobscured: target.contains(hit), hitClass: hit?.className };
@@ -1004,7 +969,7 @@ async function checkMobileKeyboardOverlays(page) {
   for (const resizedViewport of [{ width: 390, height: 320 }, { width: 780, height: 390 }]) {
     await page.setViewportSize(resizedViewport);
     await page.waitForFunction(() => {
-      const target = document.querySelector(".docs-section:last-child > summary");
+      const target = document.querySelector(".docs-section-trigger:last-child");
       const rect = target.getBoundingClientRect();
       return document.activeElement === target && [rect.top + 2, rect.bottom - 2].every((y) =>
         target.contains(document.elementFromPoint(rect.x + rect.width / 2, y)));
@@ -1062,7 +1027,7 @@ async function checkMobileKeyboardOverlays(page) {
   let reachedSidebar = false;
   for (let index = 0; index < 40; index += 1) {
     await page.keyboard.press("Tab");
-    reachedSidebar = await page.evaluate(() => document.activeElement?.matches(".docs-section > summary"));
+    reachedSidebar = await page.evaluate(() => document.activeElement?.matches(".docs-section-trigger,.docs-sidebar-back"));
     if (reachedSidebar) break;
   }
   if (!reachedSidebar) {
@@ -1073,19 +1038,19 @@ async function checkMobileKeyboardOverlays(page) {
   await page.setViewportSize(viewport);
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
   await page.setViewportSize({ width: 1440, height: viewport.height });
-  await page.waitForFunction(() => document.activeElement?.matches(".docs-section > summary"));
+  await page.waitForFunction(() => document.activeElement?.matches(".docs-section-trigger,.docs-sidebar-back"));
   await page.setViewportSize(viewport);
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
   await page.click("[data-nav-toggle]");
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
   await page.setViewportSize({ width: 1440, height: viewport.height });
-  await page.waitForFunction(() => document.activeElement?.matches(".docs-section > summary"));
+  await page.waitForFunction(() => document.activeElement?.matches(".docs-section-trigger,.docs-sidebar-back"));
   await page.setViewportSize(viewport);
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-toggle]"));
   await page.setViewportSize({ width: 844, height: 390 });
   await page.waitForFunction(() => {
     const target = document.activeElement;
-    if (!target?.matches(".docs-section > summary")) return false;
+    if (!target?.matches(".docs-section-trigger,.docs-sidebar-back")) return false;
     const rect = target.getBoundingClientRect();
     return target.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
   });

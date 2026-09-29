@@ -81,6 +81,10 @@ for (const base of ["", "/manual"]) {
       assert.ok(html(route).includes(`<html lang="${locale}"`), route);
       assert.ok(html(route).includes(`<link rel="canonical" href="${origin}${route}">`), route);
     }
+    for (const locale of ["de", "fr"]) {
+      const quickNav = html(`/${locale}/target`).match(/<nav class="docs-quick-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
+      assert.ok(quickNav.includes(`href="${base}/${locale}/"`), `${locale}: Overview stays in the current language`);
+    }
     const german = html("/de/target");
     const sidebar = german.match(/<aside class="sidebar">([\s\S]*?)<\/aside>/)[1];
     assert.ok(sidebar.includes("Deutsche Navigation"));
