@@ -1080,7 +1080,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius !== "0px" || skin.minCardWidth < 150) {
+  if (skin.theme !== "light" || skin.codeText !== "#26262c" || parseFloat(skin.badgeRadius) < 2 || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
