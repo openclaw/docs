@@ -127,7 +127,24 @@ function initPageFeedback(){document.querySelectorAll(".page-feedback").forEach(
 function handleDocsControlClick(e){if(e.target.matches("[data-mermaid-overlay]")||e.target.closest("[data-mermaid-overlay-close]")){closeMermaidOverlay();return true}const expandMermaid=e.target.closest("[data-mermaid-expand]");if(expandMermaid){openMermaidOverlay(expandMermaid);return true}const copyCode=e.target.closest("[data-code-copy]");if(copyCode){copyText(codeTextForCopy(copyCode.closest(".oc-code")),copyCode);return true}const expandCode=e.target.closest("[data-code-expand]");if(expandCode){toggleCodeExpand(expandCode);return true}const copyPrompt=e.target.closest("[data-prompt-copy]");if(copyPrompt){const prompt=copyPrompt.closest(".oc-prompt")?.textContent?.replace(/Copy\\s*$/,"").trim()||"";copyText(prompt,copyPrompt);return true}const copyPage=e.target.closest("[data-copy-page]");if(copyPage){copyPageMarkdown(copyPage);return true}const headingAnchor=e.target.closest("[data-heading-anchor]");if(headingAnchor){const url=new URL(location.href);url.hash=headingAnchor.dataset.headingAnchor||"";copyText(url.href,headingAnchor);return true}const feedback=e.target.closest("[data-feedback-value]");if(feedback){setFeedbackState(feedback.closest(".page-feedback"),feedback.dataset.feedbackValue,{persist:true});return true}return false}
 const resolveDocsFragment=${resolveDocsFragment.toString()};
 function fragmentId(hash){return resolveDocsFragment(hash,{has:id=>Boolean(document.getElementById(id))})??hash.slice(1)}
-function scrollTarget(hash){if(hash){const id=fragmentId(hash);const found=document.getElementById(id);const target=found?.classList.contains("anchor-alias")?found.closest("h1,h2,h3,h4,h5,h6"):found;for(let node=target;node;node=node.parentElement){if(node.tagName==="DETAILS")node.open=true}target?.scrollIntoView();tocSpyHoldUntil=Date.now()+900;setActiveTocLink(target?.id)}else{scrollTo(0,0)}}
+function revealTarget(target){
+  const animated=[];
+  for(let node=target;node;node=node.parentElement){
+    if(node.tagName!=="DETAILS")continue;
+    if(node.hasAttribute("data-accordion-motion")){
+      animated.push(node);
+      node.setAttribute("data-accordion-reveal","");
+    }
+    node.open=true;
+  }
+  // Fragment navigation needs the final layout before scrolling, including nested disclosures.
+  for(const accordion of animated){
+    const content=accordion.querySelector(":scope>.oc-accordion-content");
+    accordion.style.setProperty("--accordion-content-height",content.getBoundingClientRect().height+"px");
+  }
+  for(const accordion of animated)accordion.removeAttribute("data-accordion-reveal");
+}
+function scrollTarget(hash){if(hash){const id=fragmentId(hash);const found=document.getElementById(id);const target=found?.classList.contains("anchor-alias")?found.closest("h1,h2,h3,h4,h5,h6"):found;revealTarget(target);target?.scrollIntoView();tocSpyHoldUntil=Date.now()+900;setActiveTocLink(target?.id)}else{scrollTo(0,0)}}
 let tocObserver=null;let tocScrollHandler=null;let tocSpyHoldUntil=0;let currentDocKey=location.pathname+location.search;
 function tocLinkId(link){return fragmentId(link.hash)}
 function setActiveTocLink(id){const toc=document.querySelector(".toc");if(!toc)return;let active=null;toc.querySelectorAll('a[href^="#"]').forEach(link=>{const on=Boolean(id&&tocLinkId(link)===id);link.classList.toggle("active",on);if(on)active=link});if(active){const list=active.closest(".toc");if(list&&list.scrollHeight>list.clientHeight){const lr=list.getBoundingClientRect();if(!isCompactToc()&&lr.top>parseFloat(getComputedStyle(list).top)+1)return;const ar=active.getBoundingClientRect();if(ar.top<lr.top)list.scrollTop+=ar.top-lr.top;else if(ar.bottom>lr.bottom)list.scrollTop+=ar.bottom-lr.bottom}}}

@@ -63,6 +63,7 @@ ${designSystemCss}
 @supports selector(::details-content){
   .oc-accordion[data-accordion-motion]::details-content{height:0;overflow:clip;opacity:0;transition:height var(--oc-duration-ui) var(--oc-ease-out),opacity var(--oc-duration-ui) var(--oc-ease-out),content-visibility var(--oc-duration-ui) allow-discrete}
   .oc-accordion[data-accordion-motion][open]::details-content{height:var(--accordion-content-height,0px);opacity:1}
+  .oc-accordion[data-accordion-motion][data-accordion-reveal]::details-content{height:auto;opacity:1;content-visibility:visible;transition:none}
   .oc-accordion:has(>summary:focus-visible)::details-content{transition:none}
   @media(prefers-reduced-motion:reduce){
     .oc-accordion[data-accordion-motion]::details-content{transition:opacity var(--oc-duration-fast) var(--oc-ease-out),content-visibility var(--oc-duration-fast) allow-discrete}}}
