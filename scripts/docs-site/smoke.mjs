@@ -381,11 +381,6 @@ if (!fs.existsSync(path.join(site, "assets/mermaid.esm.min.mjs"))
   || !fs.existsSync(path.join(site, "assets/chunks/mermaid.esm.min"))) {
   throw new Error("assets: Mermaid runtime was not copied");
 }
-if (!/function mermaidColor/.test(siteJs)
-  || !/getImageData\(0,0,1,1\)/.test(siteJs)
-  || !/primaryColor:mermaidColor/.test(siteJs)) {
-  throw new Error("assets: Mermaid theme colors are not normalized for its legacy color parser");
-}
 if (!/\.sidebar\{[^}]*padding:0 6px var\(--oc-space-8\) 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
 }

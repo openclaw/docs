@@ -644,7 +644,7 @@ function tocHtml(items, locale) {
 
 function pager(prev, next) {
   if (!prev && !next) return "";
-  return `<nav class="page-nav">${prev ? `<a class="oc-card oc-card-interactive" href="${pageUrl(prev)}"${previewLinkAttrs(prev, `Previous: ${prev.title}`)}><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="oc-card oc-card-interactive next" href="${pageUrl(next)}"${previewLinkAttrs(next, `Next: ${next.title}`)}><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
+  return `<nav class="page-nav" aria-label="Page navigation">${prev ? `<a class="prev" href="${pageUrl(prev)}"${previewLinkAttrs(prev, `Previous: ${prev.title}`)}><small>${icon("arrow-right")}Previous</small><strong>${escapeHtml(prev.title)}</strong></a>` : ""}${next ? `<a class="next" href="${pageUrl(next)}"${previewLinkAttrs(next, `Next: ${next.title}`)}><small>Next${icon("arrow-right")}</small><strong>${escapeHtml(next.title)}</strong></a>` : ""}</nav>`;
 }
 
 function pageFeedback(page) {

@@ -230,6 +230,10 @@
   .docs-layout .doc .oc-cta { padding: 22px; }
   .docs-layout .doc .oc-chart { padding: 20px; }
   .docs-layout .doc .oc-chart-row { grid-template-columns: minmax(62px,80px) minmax(0,1fr) minmax(4ch,auto); gap: 10px; }}
+.docs-layout .toc { background: var(--bg); }
+.docs-layout .toc h2 { font: 500 12px var(--oc-font-body); text-transform: none; letter-spacing: 0; }
+.docs-layout .toc a { color: var(--docs-muted); font-size: 13px; line-height: 1.5; }
+.docs-layout .toc a.active { color: var(--brand); }
 .docs-layout .doc .oc-card-grid, .docs-layout .doc .oc-card-group { border: 0; gap: 14px; }
 .docs-layout .doc .oc-card { padding: 22px; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); transition: background 160ms ease, border-color 160ms ease; }
 .docs-layout .doc .oc-card > div > strong:first-child, .docs-layout .doc .oc-card > h3, .docs-layout .doc .oc-card > strong { color: var(--ink); font: 600 16px/1.4 var(--oc-font-body); letter-spacing: -.1px; text-transform: none; }
@@ -294,6 +298,23 @@
 .docs-layout .page-tools .page-action strong { font: 500 13px/1.4 var(--oc-font-body); }
 .docs-layout .page-tools .page-action small { margin-block-start: 3px; font: 400 12px/1.4 var(--oc-font-body); }
 .docs-layout .page-tools .page-action-external { display: grid; place-items: center; inline-size: 16px; block-size: 20px; font: 400 14px/1 var(--oc-font-body); }
+.docs-layout .oc-mermaid { min-height: 0; margin-block: 24px; padding: 48px 28px 28px; border-color: var(--docs-border); background: var(--paper); color: var(--text); box-shadow: none; }
+.docs-layout .oc-mermaid-actions { inset: 10px 10px auto auto; }
+.docs-layout .oc-mermaid-expand { width: 32px; height: 32px; border: 0; background: transparent; box-shadow: none; color: var(--muted); }
+.docs-layout .oc-mermaid-expand .icon { width: 16px; min-width: 16px; max-width: 16px; height: 16px; stroke-width: 1.5; }
+.docs-layout :is(.oc-mermaid-expand,.oc-mermaid-overlay-close):hover { border-color: var(--docs-border); background: color-mix(in srgb,var(--ink) 6%,var(--paper)); color: var(--ink); }
+.docs-layout :is(.oc-mermaid-expand,.oc-mermaid-overlay-close):focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 2px; }
+.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg rect.actor { rx: 10px; ry: 10px; }
+.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg .node rect { rx: 8px; ry: 8px; }
+.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg .actor-line { stroke-width: 1px; stroke-dasharray: 4 5; }
+.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg :is(.messageLine0,.messageLine1) { stroke-width: 1.25px; }
+.docs-layout .oc-mermaid-overlay-canvas { border-color: var(--docs-border); background: var(--paper); box-shadow: none; padding: 32px; }
+.docs-layout .doc .oc-mermaid.is-error { padding: 18px 20px; border-color: var(--docs-border); }
+.docs-layout .oc-mermaid-error { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--muted); font: 400 12px/1.5 var(--oc-font-body); }
+.docs-layout .oc-mermaid-error svg { flex: 0 0 16px; color: var(--oc-status-warning-fg); }
+.docs-layout .doc .oc-mermaid.is-error pre { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--text); font-size: 12px; line-height: 1.65; }
+@media (max-width: 520px) {
+  .docs-layout .oc-mermaid { padding: 44px 16px 20px; }}
 /* A section title belongs to its first block, regardless of that block's default margin. */
 .docs-layout .article .doc > :is(h2,h3,h4,h5,h6) + :where(p,ul,ol,blockquote,figure,aside,details,div,section) { margin-block-start: 0; }
 .docs-layout .site-footer { margin-top: 0; border-bottom: 0; background: var(--bg); }
@@ -304,6 +325,7 @@
 @media (hover:hover) {
   .docs-layout .docs-quick-nav .nav-link:hover { background: var(--paper); color: var(--ink); }
   .docs-layout .doc .oc-card:hover { background: color-mix(in srgb,var(--ink) 3%,var(--docs-surface)); border-color: color-mix(in srgb,var(--ink) 20%,transparent); transform: none; }}
+@media (min-width:1281px) { .docs-layout .toc { padding-block-start: 43px; background: transparent; }}
 @media (max-width:1280px) {
   .docs-layout { --docs-nav: 240px; --docs-inset: 38px; }}
 @media (max-width:1120px) {
