@@ -123,7 +123,7 @@ async function checkLandingNavigation() {
       && Math.abs(rect(".docs-hero").right - toc.right) < 1;
   });
   if (!wideColumns) throw new Error("desktop docs should span the viewport with navigation, content, and TOC columns");
-  await page.locator('.sidebar a[href="/start/getting-started"]').click();
+  await page.locator('.docs-quick-nav a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
   if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
   await assertTocAtArticleStart(page);
