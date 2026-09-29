@@ -1,4 +1,5 @@
 import { parseDocument } from "htmlparser2";
+import { featuredGuides } from "./home-sections.mjs";
 import { channelIcons } from "./channel-icons.mjs";
 import { homeContentHtml } from "./home-content.mjs";
 
@@ -45,6 +46,7 @@ export function homeLayoutHtml(source, icon) {
 ${quickLinks ? `<div class="home-quick-links">${slice(quickLinks)}</div>` : ""}
 ${take("quick-start", "home-setup home-reading-section")}
 ${channelDirectory(icon)}
+${featuredGuides(icon)}
 ${take("key-capabilities", "home-directory home-capabilities")}
 <div class="home-about">${take("what-is-openclaw%3F")}${take("how-it-works", "home-architecture home-reading-section")}${introduction}</div>
 ${take("dashboard")}
