@@ -826,9 +826,20 @@ for (const locale of activeLocaleCodes()) {
     throw new Error(`localized Codex Supervisor redirect: wrong ${locale} destination`);
   }
 }
-const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
-if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
-  throw new Error("showcase: external card href was not rendered");
+for (const locale of activeLocaleCodes()) {
+  const localePrefix = locale === "en" ? "" : `${locale}/`;
+  for (const prefix of new Set(["", "docs/", basePath ? `${basePath.slice(1)}/` : ""])) {
+    for (const route of ["showcase", "start/showcase"]) {
+      const rel = `${prefix}${localePrefix}${route}`;
+      const html = fs.readFileSync(path.join(site, rel, "index.html"), "utf8");
+      if (!html.includes('content="0; url=https://openclaw.ai/showcase"')) {
+        throw new Error(`retired showcase: /${rel} must redirect to the live website`);
+      }
+      if (fs.existsSync(path.join(site, `${rel}.md`))) {
+        throw new Error(`retired showcase: /${rel}.md must not publish stale content`);
+      }
+    }
+  }
 }
 assertInternalRoutes();
 assertEditSourceLinks();

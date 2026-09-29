@@ -187,16 +187,16 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
 </CardGroup>
 
 <CardGroup cols={2}>
-  <Card title="Two-column A" href="/start/showcase" icon="layout-dashboard">
-    Mirrors the showcase contract that should not grow into three columns.
+  <Card title="Two-column A" href="/start/getting-started" icon="layout-dashboard">
+    A two-column group should not grow into three columns.
   </Card>
-  <Card title="Two-column B" href="/start/showcase" icon="layout-dashboard">
+  <Card title="Two-column B" href="/start/getting-started" icon="layout-dashboard">
     Keeps paired decision cards aligned on desktop.
   </Card>
-  <Card title="Two-column C" href="/start/showcase" icon="layout-dashboard">
+  <Card title="Two-column C" href="/start/getting-started" icon="layout-dashboard">
     Wraps to the next row without changing the requested column count.
   </Card>
-  <Card title="Two-column D" href="/start/showcase" icon="layout-dashboard">
+  <Card title="Two-column D" href="/start/getting-started" icon="layout-dashboard">
     Gives visual smoke enough items to count row geometry.
   </Card>
 </CardGroup>

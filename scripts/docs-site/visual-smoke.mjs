@@ -523,27 +523,6 @@ async function checkDesktop() {
     || parseFloat(minimizedFloatingChat.bodyPaddingRight ?? "0") !== 0) {
     throw new Error(`minimized floating desktop chat failed: ${JSON.stringify(minimizedFloatingChat)}`);
   }
-  await page.goto(`${base}/start/showcase`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(350);
-  const showcaseCardGrid = await page.evaluate(() => {
-    const grid = document.querySelector(".oc-card-grid.oc-card-cols-2");
-    const cards = [...grid?.querySelectorAll(":scope > .oc-card") ?? []];
-    const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
-    const columns = cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
-    return {
-      exists: Boolean(grid),
-      cardCount: cards.length,
-      columns,
-      width: grid?.getBoundingClientRect().width,
-      template: grid ? getComputedStyle(grid).gridTemplateColumns : "",
-    };
-  });
-  if (!showcaseCardGrid.exists
-    || showcaseCardGrid.cardCount === 0
-    || showcaseCardGrid.columns > 2
-    || ((showcaseCardGrid.width ?? 0) > 520 && showcaseCardGrid.columns !== 2)) {
-    throw new Error(`showcase card grid columns failed: ${JSON.stringify(showcaseCardGrid)}`);
-  }
   await page.close();
 }
 
