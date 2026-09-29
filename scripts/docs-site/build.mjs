@@ -337,13 +337,11 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <link rel="icon" href="${publicPath("/assets/openclaw.svg")}" type="image/svg+xml">
 <link rel="icon" type="image/png" sizes="32x32" href="${publicPath("/assets/favicon-32.png")}">
 <link rel="apple-touch-icon" href="${publicPath("/assets/apple-touch-icon.png")}">
-<link rel="preconnect" href="https://api.fontshare.com">
-<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&f[]=sentient@400i&display=swap" rel="stylesheet">
+<link rel="preload" href="${publicPath("/assets/fonts/Switzer-Regular.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
-<body class="oc-app-surface${page.slug === "index" ? " docs-home" : ""}">
+<body class="oc-app-surface docs-layout${page.slug === "index" ? " docs-home" : ""}">
 ${siteHeader(page)}
 ${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ↗ open live docs.</aside>` : ""}
 <div class="doc-shell">
@@ -815,6 +813,7 @@ function writeStaticAssets() {
   const assetsDir = path.join(outDir, "assets");
   fs.mkdirSync(assetsDir, { recursive: true });
   copyDir(shellPublicAssetsDir, assetsDir);
+  copyDir(path.join(siteAssetsDir, "fonts"), path.join(assetsDir, "fonts"));
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), shellCss, "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), shellJs, "utf8");
   const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
