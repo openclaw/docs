@@ -402,6 +402,47 @@ async function checkDesktop() {
   if (!searchOpen.open || !searchOpen.focused) {
     throw new Error(`search shortcut did not open and focus input: ${JSON.stringify(searchOpen)}`);
   }
+  const expectSuggestion = async (label) => {
+    const state = await page.evaluate(() => {
+      const input = document.querySelector("[data-search-input]");
+      const list = document.getElementById(input.getAttribute("aria-controls"));
+      const active = document.getElementById(input.getAttribute("aria-activedescendant"));
+      return {
+        focused: document.activeElement === input,
+        expanded: input.getAttribute("aria-expanded"),
+        label: active?.textContent.trim(),
+        selected: active?.getAttribute("aria-selected"),
+        highlighted: active?.classList.contains("active"),
+        inList: list?.getAttribute("role") === "listbox" && list.contains(active),
+        selectionCount: list?.querySelectorAll('[aria-selected="true"]').length,
+      };
+    });
+    if (!state.focused || state.expanded !== "true" || state.label !== label
+      || state.selected !== "true" || !state.highlighted || !state.inList || state.selectionCount !== 1) {
+      throw new Error(`search suggestion keyboard selection failed: ${JSON.stringify(state)}`);
+    }
+  };
+  await expectSuggestion("Install OpenClaw");
+  await page.keyboard.press("ArrowUp");
+  await expectSuggestion("Build a plugin");
+  await page.keyboard.press("ArrowDown");
+  await expectSuggestion("Install OpenClaw");
+  await page.keyboard.press("ArrowDown");
+  await expectSuggestion("Connect Telegram");
+  await page.keyboard.press("Enter");
+  if (await page.inputValue("[data-search-input]") !== "telegram"
+    || await page.getAttribute("[data-search-input]", "aria-controls") !== "docs-search-results") {
+    throw new Error("Enter did not turn the selected suggestion into a search");
+  }
+  await page.click("[data-search-clear]");
+  await expectSuggestion("Install OpenClaw");
+  await page.keyboard.press("Shift+Tab");
+  if (!await page.evaluate(() => document.activeElement?.closest(".search-modal")
+    && document.activeElement.tabIndex >= 0 && document.activeElement.getAttribute("role") !== "option")) {
+    throw new Error("search focus trap selected a list option outside the tab order");
+  }
+  await page.keyboard.press("Tab");
+  await expectSuggestion("Install OpenClaw");
   await page.keyboard.press("Escape");
   await page.evaluate(() => {
     const textarea = document.createElement("textarea");
