@@ -371,7 +371,6 @@ ${pager(prev, next)}
 </main>
 </div>
 </div>
-${communityInvite(page.locale)}
 ${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
@@ -438,27 +437,6 @@ ${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
 <div class="sidebar-tools">
 <nav class="sidebar-socials" aria-label="Community links"><a href="https://github.com/openclaw/openclaw">${icon("github")}<span>GitHub</span></a><a href="https://discord.com/invite/clawd">${icon("discord")}<span>Discord</span></a></nav>
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
-</div>
-</aside>`;
-}
-
-// Body-level sibling of .doc-shell, never a child of .sidebar: the narrow-layout drawer is
-// transformed and masked, which would make it the containing block for this position:fixed card
-// and clip it. CSS floats it over wide layouts and docks it flush to the drawer bottom on narrow
-// ones, so one element and one dismissal serve both. Ships hidden so a browser that already
-// dismissed it never flashes the card; the shell script reveals it only when local storage is
-// readable and holds no dismissal.
-function communityInvite(locale) {
-  const strings = chromeStringsForLocale(locale);
-  return `<aside class="community-invite" aria-label="${escapeAttr(strings.communityLabel)}" hidden>
-<div class="community-invite__header">
-<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="${escapeAttr(strings.communityImageAlt)}" width="1024" height="538" loading="lazy" decoding="async">
-<button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
-</div>
-<div class="community-invite__body">
-<h2 class="community-invite__title">${escapeHtml(strings.communityTitle)}</h2>
-<p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
-<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>${escapeHtml(strings.communityCta)}</span></a>
 </div>
 </aside>`;
 }
