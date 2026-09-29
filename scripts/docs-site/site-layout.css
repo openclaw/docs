@@ -62,7 +62,7 @@ html { scroll-padding-top: calc(var(--sticky-header-h, 102px) + 28px); }
 /* Each cell owns its trailing edges; the collection owns its leading edges. */
 .doc .oc-card-grid, .doc .oc-card-group { gap: 0; margin: 24px 0 32px; border-top: 1px solid var(--line); border-inline-start: 1px solid var(--line); }
 .doc .oc-card-grid > .oc-card, .doc .oc-card-group > .oc-card { height: 100%; padding: 24px; border: 0; border-inline-end: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
-.doc .oc-card-grid > .oc-card:hover, .doc .oc-card-group > .oc-card:hover { transform: none; background: var(--paper); }
+.doc .oc-card-grid > .oc-card:hover, .doc .oc-card-group > .oc-card:hover { transform: none; }
 .doc .oc-card h3, .doc .oc-card strong { font-weight: 600; }
 .doc .oc-card p { font-size: 14px; line-height: 1.6; }
 body:not(.docs-home) .doc .oc-card-grid:not(.oc-card-cols-1):not(.oc-card-cols-3):not(.oc-card-cols-4) > .oc-card:last-child:nth-child(odd),
@@ -249,8 +249,6 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
   .docs-hero .oc-hero-art pre { font-size: 9px; letter-spacing: 1.5px; }
   .hero-search kbd { display: none; }
 }
-
-.doc .oc-card-grid > .oc-card:hover, .doc .oc-card-group > .oc-card:hover { background: var(--oc-bg-surface); }
 
 .docs-home .home-intro { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
 .site-footer { background: color-mix(in srgb, var(--bg) 94%, black); }

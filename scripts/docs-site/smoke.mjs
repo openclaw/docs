@@ -306,7 +306,7 @@ const maturityTaxonomy = fs.readFileSync(path.join(site, "maturity/taxonomy/inde
 if (!maturityScorecard.includes('class="maturity-summary-grid"')
   || !maturityScorecard.includes('class="maturity-surface-table"')
   || !maturityTaxonomy.includes('class="maturity-level-list"')
-  || !maturityTaxonomy.includes("<summary>CLI - M4 Stable - 7 areas</summary>")
+  || !DomUtils.findAll((node) => node.name === "summary", parseDocument(maturityTaxonomy).children).some((node) => DomUtils.textContent(node).trim() === "CLI - M4 Stable - 7 areas")
   || !/<div class="maturity-category-docs">\s*<p><a href="\/install">Index<\/a>/.test(maturityTaxonomy)
   || maturityTaxonomy.includes("<pre><code>&lt;/div&gt;")
   || /<div class="maturity-category-docs">[^<]*\[Index\]\(\/install\/index\)/.test(maturityTaxonomy)
@@ -551,11 +551,9 @@ if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
 if (!/\.oc-step:last-child\{[^}]*border-image:linear-gradient\(to bottom,var\(--line\)/.test(siteCss)) {
   throw new Error("assets: final step rail should fade out");
 }
-if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px solid var\(--callout-accent\)/.test(siteCss)
-  || !/\.oc-callout\{[^}]*background:var\(--callout-surface\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)/.test(siteCss)
-  || !/\.oc-callout-warning\{--callout-accent:var\(--oc-status-warning-fg\)\}/.test(siteCss)
+if (!/\.oc-callout-warning\{--callout-accent:var\(--oc-status-warning-fg\)\}/.test(siteCss)
   || !/\.oc-callout-check\{--callout-accent:var\(--oc-status-success-fg\)\}/.test(siteCss)) {
-  throw new Error("assets: callout tones should use reference-aligned component skin");
+  throw new Error("assets: callout icons should retain semantic warning and success colors");
 }
 if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
@@ -565,7 +563,6 @@ if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after,[^{]+\.oc-chart-donut-key\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
   || !/\.oc-chart-donut-segment\{[^}]*stroke-dasharray:var\(--oc-chart-share\)/.test(siteCss)
-  || !/:root\[data-theme="light"\] \.oc-callout\{background:var\(--paper\);border-color:var\(--line-strong\);border-left-color:var\(--callout-accent\)\}/.test(siteCss)
   || !/\.oc-cta\{[^}]*grid-template-columns:minmax\(0,1fr\) auto/.test(siteCss)
   || !/\.oc-cta-link\{[^}]*transition:background var\(--oc-duration-fast\) var\(--oc-ease-out\),border-color var\(--oc-duration-fast\) var\(--oc-ease-out\),color var\(--oc-duration-fast\) var\(--oc-ease-out\),filter var\(--oc-duration-fast\) var\(--oc-ease-out\)/.test(siteCss)
   || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:var\(--oc-accent-primary-hover\);border-color:var\(--oc-accent-primary-hover\);color:var\(--on-brand\)\}/.test(siteCss)
@@ -594,6 +591,17 @@ if (!fs.existsSync(elementsIndexPath)) {
   throw new Error("__elements: hidden component fixture page is missing");
 }
 const elementsIndex = fs.readFileSync(elementsIndexPath, "utf8");
+const callouts = DomUtils.findAll(
+  (node) => node.name === "aside" && node.attribs.class?.split(" ").includes("oc-callout"),
+  parseDocument(elementsIndex).children,
+);
+for (const callout of callouts) {
+  const icons = DomUtils.findAll((node) => node.name === "svg", callout.children);
+  if (icons.length !== 1 || icons[0].attribs["aria-hidden"] !== "true"
+    || icons[0].attribs.focusable !== "false" || !icons[0].children.length) {
+    throw new Error("__elements: each callout needs one decorative, non-focusable icon");
+  }
+}
 if (!elementsIndex.includes('data-code-label="json5"')
   || !elementsIndex.includes('data-code-label="openclaw.json5"')
   || /data-code-label="[^"]*validate=false/.test(elementsIndex)) {

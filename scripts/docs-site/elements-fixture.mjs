@@ -352,6 +352,12 @@ Use a CTA when a long-form article has one obvious next action. Keep it specific
 <AccordionGroup>
   <Accordion title="What should be visible?">
     Accordion summaries should be scannable, and their body text should not look like nested cards.
+
+    <Accordion title="Can a link reveal nested content?">
+      ### Nested disclosure target
+
+      A direct link or table-of-contents link should open both disclosures and bring this heading into view.
+    </Accordion>
   </Accordion>
   <Expandable title="What can be expanded?">
     Expandables use the same quiet disclosure treatment as accordions.

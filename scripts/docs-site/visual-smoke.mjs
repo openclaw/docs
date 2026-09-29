@@ -34,6 +34,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 
 try {
+  await checkAccordionNavigation();
   await checkLandingNavigation();
   await checkDesktop();
   await checkTocScrollspy();
@@ -45,6 +46,47 @@ try {
 } finally {
   await browser.close();
   server.close();
+}
+
+async function checkAccordionNavigation() {
+  for (const reducedMotion of ["no-preference", "reduce"]) {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion });
+    const hash = "#nested-disclosure-target";
+    const assertTargetVisible = async () => {
+      await page.waitForFunction(() => {
+        const target = document.getElementById("nested-disclosure-target");
+        if (!target) return false;
+        for (let node = target.parentElement; node; node = node.parentElement) {
+          if (node.tagName === "DETAILS" && !node.open) return false;
+        }
+        const rect = target.getBoundingClientRect();
+        const headerBottom = document.querySelector(".site-header").getBoundingClientRect().bottom;
+        return rect.top >= headerBottom && rect.bottom <= innerHeight;
+      }, null, { timeout: 3000 });
+    };
+    try {
+      await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+      await page.locator(`.toc a[href="${hash}"]`).click();
+      await assertTargetVisible();
+
+      await page.goto("about:blank");
+      await page.goto(`${base}/__elements${hash}`, { waitUntil: "networkidle" });
+      await assertTargetVisible();
+
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      await page.evaluate((hash) => {
+        const link = document.createElement("a");
+        link.href = `/__elements${hash}`;
+        link.textContent = "Nested disclosure target";
+        document.querySelector(".doc").prepend(link);
+      }, hash);
+      await page.getByRole("link", { name: "Nested disclosure target", exact: true }).click();
+      await page.waitForURL(`**/__elements${hash}`);
+      await assertTargetVisible();
+    } finally {
+      await page.close();
+    }
+  }
 }
 
 async function openSection(page, title) {
@@ -1080,7 +1122,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#26262c" || skin.badgeRadius !== "0px" || skin.minCardWidth < 150) {
+  if (skin.theme !== "light" || skin.codeText !== "#26262c" || parseFloat(skin.badgeRadius) < 2 || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.goto(`${base}/`, { waitUntil: "networkidle" });

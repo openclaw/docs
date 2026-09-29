@@ -255,13 +255,28 @@ function styleObjectToCss(body) {
   return declarations.join("; ");
 }
 
+const calloutIcons = {
+  tip: "lightbulb",
+  info: "message-square-text",
+  note: "sticky-note",
+  warning: "triangle-alert",
+  check: "check",
+  say: "quote",
+  banner: "megaphone",
+  update: "refresh-cw",
+};
+
 function expandMarker(payload, state = {}) {
   const [kind, encoded = ""] = payload.split(":");
   const value = Buffer.from(encoded, "base64url").toString("utf8");
   if (kind === "blockOpen") return `<div class="oc-${escapeAttr(value)}">`;
   if (kind === "blockClose") return "</div>";
-  if (kind === "calloutOpen") return `<aside class="oc-callout oc-callout-${slug(value)}"><strong>${escapeHtml(value)}</strong>`;
-  if (kind === "calloutClose") return "</aside>";
+  if (kind === "calloutOpen") {
+    const tone = slug(value);
+    const icon = iconSvg(calloutIcons[tone] ?? "message-square-text", "oc-callout-icon");
+    return `<aside class="oc-callout oc-callout-${tone}">${icon}<div class="oc-callout-content"><strong class="oc-callout-title">${escapeHtml(value)}</strong>`;
+  }
+  if (kind === "calloutClose") return "</div></aside>";
   if (kind === "chart") return chartHtml(value);
   if (kind === "cardSelf") return cardHtml(value, true);
   if (kind === "cardOpen") return cardHtml(value, false);
@@ -307,8 +322,11 @@ function expandMarker(payload, state = {}) {
   if (kind === "stepClose") return "</li>";
   if (kind === "tabOpen") return `<section class="oc-tab"><h3>${escapeHtml(parseAttrs(value).title ?? "Tab")}</h3>`;
   if (kind === "tabClose") return "</section>";
-  if (kind === "accordionOpen") return `<details class="oc-accordion"><summary>${escapeHtml(parseAttrs(value).title ?? "Details")}</summary>`;
-  if (kind === "accordionClose") return "</details>";
+  if (kind === "accordionOpen") {
+    const title = escapeHtml(parseAttrs(value).title ?? "Details");
+    return `<details class="oc-accordion"><summary><span>${title}</span>${iconSvg("chevron-down", "oc-accordion-chevron")}</summary><div class="oc-accordion-content">`;
+  }
+  if (kind === "accordionClose") return "</div></details>";
   if (kind === "panelOpen") {
     const attrs = parseAttrs(value);
     const title = attrs.title ? `<strong>${escapeHtml(attrs.title)}</strong>` : "";
@@ -398,9 +416,10 @@ function ctaActions(attrs, context = "block") {
 function ctaLink(href, label, variant, nested = false) {
   const actionVariant = variant === "primary" ? "primary" : "secondary";
   const className = `oc-action oc-action-${actionVariant} oc-cta-link oc-cta-link-${escapeAttr(variant)}`;
+  const content = `${escapeHtml(label)}${iconSvg("arrow-right", "oc-cta-arrow")}`;
   return nested
-    ? `<span class="${className}" data-href="${escapeAttr(href)}">${escapeHtml(label)}</span>`
-    : `<a class="${className}" href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;
+    ? `<span class="${className}" data-href="${escapeAttr(href)}">${content}</span>`
+    : `<a class="${className}" href="${escapeAttr(href)}">${content}</a>`;
 }
 
 function statHtml(rawAttrs, selfClosing) {
@@ -489,7 +508,7 @@ function lineChart(points, max, unit, options = {}) {
 
 function donutChart(points, unit) {
   const total = points.reduce((sum, point) => sum + Math.max(point.value, 0), 0) || 1;
-  const colors = ["var(--brand)", "var(--accent-2)", "#7aa7ff", "#c084fc", "#d97706", "#f472b6"];
+  const colors = Array.from({ length: 6 }, (_, index) => `var(--oc-chart-series-${index + 1})`);
   let offset = 0;
   const segments = points.map((point, index) => {
     const pct = Math.max(0, (point.value / total) * 100);
@@ -607,14 +626,14 @@ function lucideIconBody(kebab) {
     .join("");
 }
 
-function iconSvg(name) {
+function iconSvg(name, className = "oc-card-icon") {
   const key = slug(name);
   let body = iconCache.get(key);
   if (body === undefined) {
     body = lucideIconBody(ICON_ALIASES[key] ?? key) ?? ICON_FALLBACK;
     iconCache.set(key, body);
   }
-  return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
+  return `<svg class="${escapeAttr(className)}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
 }
 
 function slug(value) {
