@@ -5,6 +5,7 @@ import { homeLayoutHtml } from "./home-layout.mjs";
 import { homeAsciiArt } from "./home-ascii.mjs";
 import { docsQuickNav } from "./docs-navigation.mjs";
 import path from "node:path";
+import { glimmAssetName, glimmEntry, glimmRuntime } from "./glimm-runtime.mjs";
 import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
 import { resolvePreviewPaths, preparePreviewOutput } from "./preview-paths.mjs";
@@ -817,6 +818,9 @@ function writeStaticAssets() {
   copyDir(path.join(siteAssetsDir, "fonts"), path.join(assetsDir, "fonts"));
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), shellCss, "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), shellJs, "utf8");
+  const glimmDir = path.dirname(glimmEntry);
+  fs.writeFileSync(path.join(assetsDir, glimmAssetName), glimmRuntime, "utf8");
+  fs.copyFileSync(path.join(glimmDir, "..", "LICENSE"), path.join(assetsDir, "glimm-LICENSE.txt"));
   const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
   const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
   if (fs.existsSync(mermaidEntry)) {
