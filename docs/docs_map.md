@@ -10487,6 +10487,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Native Codex harness mode
   - H2: Agents API environment
+  - H2: Agents API HTTP MCP servers
   - H2: Runtime strictness
 
 ## plugins/sdk-agent-harness/selection-policy.md
