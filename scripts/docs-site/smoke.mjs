@@ -759,13 +759,6 @@ if (!/\.heading-anchor\{[^}]*opacity:0/.test(siteCss)
   || !/\.heading-anchor\[data-copy-state="copied"\] \.heading-anchor-check/.test(siteCss)) {
   throw new Error("assets: heading copy anchor skin is missing");
 }
-if (!/\.oc-code figcaption button:before/.test(siteCss)
-  || !/\.oc-code figcaption button:after/.test(siteCss)
-  || !/\.oc-code figcaption button\[data-copy-state="copied"\]:before/.test(siteCss)
-  || !/\.oc-code figcaption button\[data-copy-state="copied"\]:after/.test(siteCss)
-  || !/\.oc-code figcaption \.oc-code-label/.test(siteCss)) {
-  throw new Error("assets: code copy button icon skin is missing");
-}
 if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
   || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px;white-space:nowrap/.test(siteCss)
@@ -781,12 +774,6 @@ if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more
   || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
   || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
   throw new Error("assets: page action hover, external marker, and footer link skin are missing");
-}
-if (!/\.doc \.oc-code\.is-expandable\{position:relative\}/.test(siteCss)
-  || !/\.doc \.oc-code\.is-expandable\.is-expanded pre\{max-height:none\}/.test(siteCss)
-  || !/\.doc \.oc-code\.is-expandable:not\(\.is-expanded\):after\{[^}]*linear-gradient\(180deg,transparent,var\(--code-block\)\)/.test(siteCss)
-  || !/\.oc-code-expand\{[^}]*border-top:1px solid var\(--code-border\)/.test(siteCss)) {
-  throw new Error("assets: expandable code affordance skin is missing");
 }
 if (!/\.oc-step \.oc-code\{max-width:100%;margin:14px 0 18px\}/.test(siteCss)
   || !/\.oc-step \.oc-code:last-child\{margin-bottom:0\}/.test(siteCss)) {

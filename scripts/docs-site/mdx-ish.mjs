@@ -98,6 +98,10 @@ function headingCheckIcon() {
   return `<svg xmlns="http://www.w3.org/2000/svg" class="heading-anchor-icon heading-anchor-check lucide lucide-check-icon lucide-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>`;
 }
 
+export function copyControlContent(label, showLabel = false) {
+  return `${iconSvg("copy", "oc-copy-icon oc-copy-default")}${iconSvg("check", "oc-copy-icon oc-copy-check")}${iconSvg("triangle-alert", "oc-copy-icon oc-copy-error")}<span ${showLabel ? 'class="oc-copy-label" data-copy-feedback' : 'class="oc-visually-hidden"'}>${escapeHtml(label)}</span>`;
+}
+
 function renderFence(tokens, idx) {
   const token = tokens[idx];
   const { lang, label, lines, highlight, focus, wrap, expandable } = parseCodeInfo(token.info);
@@ -112,7 +116,7 @@ function renderFence(tokens, idx) {
     expandable ? "is-expandable" : "",
   ].filter(Boolean).join(" ");
   const expandControl = expandable ? `<button type="button" class="oc-code-expand" data-code-expand aria-expanded="false">Show more</button>` : "";
-  return `<figure class="${classes}" data-code-label="${escapeAttr(dataLabel)}"><figcaption><span class="oc-code-label">${escapeHtml(dataLabel)}</span><button type="button" data-code-copy data-copy-label="Copy code" aria-label="Copy code"><span class="oc-visually-hidden">Copy code</span></button></figcaption><pre><code${className}>${highlighted}</code></pre>${expandControl}</figure>`;
+  return `<figure class="${classes}" data-code-label="${escapeAttr(dataLabel)}"><figcaption><span class="oc-code-label">${escapeHtml(dataLabel)}</span><button type="button" data-code-copy data-copy-control data-copy-label="Copy code" aria-label="Copy code" title="Copy code">${copyControlContent("Copy code")}</button></figcaption><div class="oc-code-viewport"><pre><code${className}>${highlighted}</code></pre></div>${expandControl}</figure>`;
 }
 
 function parseCodeInfo(rawInfo = "") {
@@ -336,9 +340,9 @@ function expandMarker(payload, state = {}) {
   if (kind === "promptOpen") {
     const attrs = parseAttrs(value);
     const title = attrs.title ?? "Prompt";
-    return `<section class="oc-prompt"><header><strong>${escapeHtml(title)}</strong><button type="button" data-prompt-copy aria-label="Copy prompt">Copy</button></header>`;
+    return `<section class="oc-prompt"><header><strong>${escapeHtml(title)}</strong><button type="button" data-prompt-copy data-copy-control data-copy-label="Copy prompt" aria-label="Copy prompt" title="Copy prompt">${copyControlContent("Copy prompt")}</button></header><div class="oc-prompt-content">`;
   }
-  if (kind === "promptClose") return "</section>";
+  if (kind === "promptClose") return "</div></section>";
   if (kind === "mermaidBlock") return mermaidHtml(value);
   if (kind === "frameOpen") {
     const caption = parseAttrs(value).caption;

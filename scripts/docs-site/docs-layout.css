@@ -235,6 +235,7 @@
 .docs-layout .doc .oc-card > div > strong:first-child, .docs-layout .doc .oc-card > h3, .docs-layout .doc .oc-card > strong { color: var(--ink); font: 600 16px/1.4 var(--oc-font-body); letter-spacing: -.1px; text-transform: none; }
 .docs-layout .doc .oc-card p { margin-top: 8px; color: var(--docs-muted); font-size: var(--docs-detail-size); line-height: 1.6; text-wrap: pretty; }
 .docs-layout .doc .oc-card-icon { width: 21px; height: 21px; color: var(--docs-muted); }
+.docs-layout .doc .oc-code, .docs-layout .doc .oc-code-group, .docs-layout .doc .oc-callout, .docs-layout .doc .oc-table-wrap, .docs-layout .doc .oc-tabs, .docs-layout .doc .oc-panel { border-radius: var(--oc-radius-surface); border-color: var(--docs-border); }
 .docs-layout .doc pre { scrollbar-width: thin; scrollbar-color: color-mix(in srgb,var(--muted) 65%,transparent) transparent; }
 .docs-layout .doc pre::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 .docs-layout .doc pre::-webkit-scrollbar-track, .docs-layout .doc pre::-webkit-scrollbar-corner { background: transparent; border: 0; box-shadow: none; }
@@ -250,17 +251,26 @@
   .docs-layout .doc .oc-table :is(th,td) { padding-inline: 10px; }
   .docs-layout .doc .oc-table :is(th,td):first-child { padding-inline-start: 0; }
   .docs-layout .doc .oc-table :is(th,td):last-child { padding-inline-end: 0; }}
+.docs-layout .doc .oc-code { box-shadow: var(--docs-surface-shadow); background: var(--code-block); }
+.docs-layout .doc .oc-code figcaption { background: transparent; min-height: 40px; }
+.docs-layout .doc .oc-code figcaption .oc-code-label { font: 500 11px/1.4 var(--oc-font-mono); letter-spacing: .06em; }
 .docs-layout .doc .oc-callout { box-shadow: var(--docs-surface-shadow); }
 :root[data-theme="light"] .docs-layout .doc .oc-callout { border: 1px solid var(--docs-border); }
+:root[data-theme="light"] .docs-layout .doc .oc-code-expand { color: color-mix(in srgb,var(--brand) 85%,var(--ink)); }
 .docs-layout .doc .oc-step::before { border: 1px solid var(--docs-border); background: var(--paper); color: var(--brand); box-shadow: var(--docs-surface-shadow); }
+.docs-layout .doc .oc-code pre { font-size: 13px; line-height: 1.65; }
 .docs-layout .doc pre code { font-size: inherit; }
 /* Focus metadata quiets surrounding lines without making their text translucent. */
 .docs-layout .doc .code-line.is-dimmed { opacity: 1; color: color-mix(in srgb,var(--muted) 90%,var(--ink)); }
 .docs-layout .doc .code-line.is-dimmed span { color: inherit; font-weight: inherit; }
 :root[data-theme="light"] .docs-layout .doc .code-line.is-highlighted { background: color-mix(in srgb,var(--brand) 7%,transparent); }
+:root[data-theme="light"] .docs-layout .doc .code-line::before,
+:root[data-theme="light"] .docs-layout .doc .oc-code-label { color: var(--tok-comment); }
 .docs-layout .doc .oc-tabs { display: grid; gap: 28px; margin-block: 24px 32px; padding: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; }
 .docs-layout .doc .oc-tab { display: flow-root; min-width: 0; padding: 0; border: 0; }
 .docs-layout .doc .oc-tab > h3 { margin: 0 0 10px; color: var(--ink); font: 600 14px/1.5 var(--oc-font-body); letter-spacing: 0; }
+.docs-layout .doc .oc-tab > .oc-code { margin-block: 16px; }
+.docs-layout .doc .oc-tab > h3 + .oc-code { margin-top: 0; }
 .docs-layout .doc .oc-tab > :last-child { margin-bottom: 0; }
 .docs-layout .doc .oc-param { min-width: 0; margin: 0; padding: 22px 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .docs-layout .doc :is(h2,h3) + .oc-param { padding-block-start: 4px; }
@@ -274,6 +284,16 @@
 .docs-layout .doc .oc-param > :last-child { margin-bottom: 0; }
 @media (max-width: 520px) {
   .docs-layout .doc .oc-param > header > code { flex-basis: 100%; }}
+.docs-layout .page-tools { font-family: var(--oc-font-body); }
+.docs-layout .page-tools :is(.page-actions-primary,.page-actions-more > summary,.page-action):focus-visible { outline-offset: -3px; }
+.docs-layout .page-tools .page-actions-menu { inset-block-start: calc(100% + 6px); inline-size: 300px; min-inline-size: 0; max-inline-size: calc(100vw - 32px); gap: 2px; padding: 8px; }
+.docs-layout .page-tools .page-action { grid-template-columns: 20px minmax(0,1fr) 16px; gap: 12px; min-block-size: 58px; padding: 10px 12px; font-weight: 400; }
+.docs-layout .page-tools .page-action:is(:hover,:focus-visible) { background: color-mix(in srgb,var(--ink) 6%,var(--paper)); color: var(--ink); }
+.docs-layout .page-tools .page-action > .icon { inline-size: 20px; min-inline-size: 20px; block-size: 20px; color: var(--text); }
+.docs-layout .page-tools .page-action > span { min-inline-size: 0; }
+.docs-layout .page-tools .page-action strong { font: 500 13px/1.4 var(--oc-font-body); }
+.docs-layout .page-tools .page-action small { margin-block-start: 3px; font: 400 12px/1.4 var(--oc-font-body); }
+.docs-layout .page-tools .page-action-external { display: grid; place-items: center; inline-size: 16px; block-size: 20px; font: 400 14px/1 var(--oc-font-body); }
 /* A section title belongs to its first block, regardless of that block's default margin. */
 .docs-layout .article .doc > :is(h2,h3,h4,h5,h6) + :where(p,ul,ol,blockquote,figure,aside,details,div,section) { margin-block-start: 0; }
 .docs-layout .site-footer { margin-top: 0; border-bottom: 0; background: var(--bg); }

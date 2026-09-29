@@ -13,7 +13,7 @@ import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
-import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { createMarkdownRenderer, renderMdxish, copyControlContent } from "./mdx-ish.mjs";
 import { createRenderCache } from "./render-cache.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
@@ -531,7 +531,7 @@ function pageTools(page) {
   const markdownUrl = publicPath(pageMarkdownRoute(page));
   const markdownCanonicalUrl = `${docsOrigin()}${pageMarkdownRoute(page)}`;
   const markdownPrompt = `Read from ${markdownCanonicalUrl} so I can ask questions about it.`;
-  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}" data-page-markdown-url="${escapeAttr(markdownUrl)}"><div class="page-actions"><button type="button" class="page-actions-primary" data-copy-page data-copy-label="Copy page">${icon("copy")}<span data-copy-feedback>Copy page</span></button><details class="page-actions-more"><summary aria-label="Open page actions"><span class="page-actions-chevron">${icon("chevron-down")}</span></summary><div class="page-actions-menu"><button type="button" class="page-action" data-copy-page data-copy-label="Copy page">${icon("copy")}<span><strong data-copy-feedback>Copy page</strong><small>Copy page as Markdown for LLMs</small></span></button>${pageActionLink("View as Markdown", "View this page as plain text", markdownUrl, "markdown")}${pageActionLink("Open in ChatGPT", "Ask questions about this page", assistantUrl("https://chatgpt.com/", "hints=search", markdownPrompt), "openai")}${pageActionLink("Open in Claude", "Ask questions about this page", assistantUrl("https://claude.ai/new", "", markdownPrompt), "anthropic")}</div></details></div></div>`;
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}" data-page-markdown-url="${escapeAttr(markdownUrl)}"><div class="page-actions"><button type="button" class="page-actions-primary" data-copy-page data-copy-control data-copy-label="Copy page" aria-label="Copy page" title="Copy page as Markdown">${copyControlContent("Copy page", true)}</button><details class="page-actions-more"><summary aria-label="Open page actions"><span class="page-actions-chevron">${icon("chevron-down")}</span></summary><div class="page-actions-menu">${pageActionLink("View as Markdown", "View this page as plain text", markdownUrl, "markdown")}${pageActionLink("Open in ChatGPT", "Ask questions about this page", assistantUrl("https://chatgpt.com/", "hints=search", markdownPrompt), "openai")}${pageActionLink("Open in Claude", "Ask questions about this page", assistantUrl("https://claude.ai/new", "", markdownPrompt), "anthropic")}</div></details></div></div>`;
 }
 
 function pageActionLink(title, description, href, iconName) {
