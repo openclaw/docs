@@ -162,6 +162,15 @@ if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${exp
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 const indexDocument = parseDocument(index);
+for (const id of ["quick-start", "what-is-openclaw%3F"]) {
+  const heading = DomUtils.findOne((node) => node.name === "h2" && node.attribs.id === id, indexDocument.children);
+  if (!heading) throw new Error(`index: homepage section ${id} is missing`);
+  for (let parent = heading.parent; parent; parent = parent.parent) {
+    if (parent.name === "details" && !Object.hasOwn(parent.attribs, "open")) {
+      throw new Error(`index: homepage section ${id} is hidden behind a disclosure`);
+    }
+  }
+}
 const mainLandmarks = DomUtils.findAll((node) => node.name === "main", indexDocument.children);
 if (mainLandmarks.length !== 1 || mainLandmarks[0].attribs.id !== "main"
   || !mainLandmarks[0].attribs.class?.split(/\s+/).includes("article")
