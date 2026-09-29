@@ -322,6 +322,8 @@
 .docs-layout .site-footer-links { border: 0; }
 .docs-layout .site-footer-links h2 { text-transform: none; font: 500 12px var(--oc-font-body); letter-spacing: 0; }
 .docs-layout .site-footer-legal { padding-bottom: 26px; font: 400 11px var(--oc-font-body); }
+.docs-layout .search-panel { border: 1px solid var(--docs-border); border-radius: var(--oc-radius-surface); background: var(--paper); }
+.docs-layout:not(:has([data-docs-chat])) [data-search-molty] { display: none; }
 @media (hover:hover) {
   .docs-layout .docs-quick-nav .nav-link:hover { background: var(--paper); color: var(--ink); }
   .docs-layout .doc .oc-card:hover { background: color-mix(in srgb,var(--ink) 3%,var(--docs-surface)); border-color: color-mix(in srgb,var(--ink) 20%,transparent); transform: none; }}

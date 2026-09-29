@@ -664,15 +664,15 @@ function raiseIssueUrl(page) {
 function searchModal() {
   const avatar = chatAvatarAssets();
   const suggestions = [
-    "Install OpenClaw",
-    "Set up Telegram",
-    "Fix Gateway",
-    "Build a plugin",
+    { label: "Install OpenClaw", query: "install" },
+    { label: "Connect Telegram", query: "telegram" },
+    { label: "Troubleshoot the Gateway", query: "gateway troubleshooting" },
+    { label: "Build a plugin", query: "plugins" },
   ];
   const molty = chatApiUrl
     ? `<button class="search-molty" type="button" data-search-molty><img src="${avatar.staticPath}" alt=""><span><span data-search-molty-prefix>Ask Molty</span> <strong data-search-molty-term hidden></strong></span><span class="search-molty-shortcut" aria-hidden="true">${icon("command")}${icon("corner-down-left")}</span></button>`
     : "";
-  return `<div class="search-modal"><div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..." aria-label="Search documentation"><button class="search-close" type="button" data-search-clear aria-label="Clear search">${icon("x")}</button></div><div class="search-hints" aria-label="Search suggestions">${suggestions.map(label => `<button type="button" data-search-suggestion="${escapeAttr(label)}">${escapeHtml(label)}</button>`).join("")}</div><div class="search-results" data-search-results role="listbox" aria-label="Search results"></div>${molty}</div></div>`;
+  return `<div class="search-modal"><div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation"><div class="search-head">${icon("search")}<input data-search-input placeholder="Search documentation…" aria-label="Search documentation" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="docs-search-results"><button class="search-clear" type="button" data-search-clear aria-label="Clear search" title="Clear search" hidden>${icon("x")}</button><button class="search-close" type="button" data-search-close aria-label="Close search" title="Close search (Escape)"><span class="search-close-key">Esc</span><span class="search-close-label">Cancel</span></button></div><div class="search-hints"><p id="docs-search-suggestions-label">Suggested searches</p><div class="search-suggestions" id="docs-search-suggestions" role="listbox" aria-labelledby="docs-search-suggestions-label">${suggestions.map(({ label, query }, index) => `<button type="button" role="option" tabindex="-1" aria-selected="false" id="docs-search-suggestion-${index}" data-search-suggestion="${escapeAttr(query)}">${icon("search")}<span>${escapeHtml(label)}</span>${icon("corner-down-left")}</button>`).join("")}</div></div><div class="search-results" id="docs-search-results" data-search-results role="listbox" aria-label="Search results"></div>${molty}</div></div>`;
 }
 
 function writeLlmsIndex() {

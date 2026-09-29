@@ -102,11 +102,19 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 :root :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
 :root :is(.nav-link, .docs-section > summary, .toc > summary, .toc a, .oc-code-tab, .doc [role="tab"], .language-option, .search-result):focus-visible { outline-offset: -3px; }
 .sidebar:focus-within { mask-image: none; -webkit-mask-image: none; }
-.search-head:focus-within { border-color: var(--line); box-shadow: none; }
+.search-head:focus-within { border-color: color-mix(in srgb, var(--ink) 16%, transparent); box-shadow: none; }
 .search-head [data-search-input]:focus-visible { outline: none; box-shadow: none; }
 .search-panel, .language-menu, .toc nav, .docs-chat-panel { border-radius: 8px; }
 .search-result { border-radius: 0; }
-.search-result.active { box-shadow: inset 2px 0 var(--brand); }
+.search-results {
+  --search-fade-top: 0px;
+  --search-fade-bottom: 0px;
+  scroll-padding-block: 24px;
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--search-fade-top), #000 calc(100% - var(--search-fade-bottom)), transparent), linear-gradient(#000, #000), linear-gradient(#000, #000);
+  mask-size: 100% 100%, 12px 100%, 12px 100%;
+  mask-position: center, left, right;
+  mask-repeat: no-repeat;
+}
 .search-modal.open { overflow: auto; }
 .language-picker:has(.language-native:focus-visible) .language-trigger { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
 
