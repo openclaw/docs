@@ -11316,12 +11316,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage and cost tracking
   - H2: Getting started
   - H2: Use Claude Opus 5.5
+  - H2: Use Claude Sonnet 5.5
   - H2: Use Claude Fable 5.1
   - H3: Tool calls and retained thinking
   - H2: Claude sessions across computers
   - H2: Live model discovery
-  - H2: Thinking defaults (Claude Opus 5, Sonnet 5, Mythos 5, Fable 5, 4.8, and 4.6)
-  - H2: Safety refusal fallback (Claude Opus 5 and Fable 5)
+  - H2: Thinking defaults (Claude 5.5, 5, 4.8, and 4.6)
+  - H2: Safety refusal fallback (Claude Opus, Sonnet 5.5, and Fable)
   - H3: Why this exists
   - H3: How it works
   - H3: Observability and billing
