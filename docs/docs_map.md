@@ -10852,6 +10852,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Infrastructure
   - H3: File-watch capacity errors
   - H3: Streaming file verification
+  - H3: Browser lifecycle cleanup
   - H3: SQLite write admission
   - H3: Worker task admission
   - H3: SQLite worker stores
