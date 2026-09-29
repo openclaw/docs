@@ -138,7 +138,7 @@ async function assertTocAtArticleStart(page) {
 async function checkLandingNavigation() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 800 }, reducedMotion: "reduce" });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
-  await assertTocAtArticleStart(page);
+  await page.locator(".home-layout").waitFor({ state: "visible" });
   await page.locator(".site-header [data-search-open]").click();
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.keyboard.press("Escape");
@@ -153,21 +153,16 @@ async function checkLandingNavigation() {
   await page.locator(".docs-sidebar-back").click();
   await page.mouse.move(1100, 500);
   await page.mouse.wheel(0, 1100);
-  await page.locator(".toc h2").waitFor({ state: "visible" });
   const wideColumns = await page.evaluate(() => {
-    const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
-    const shell = rect(".doc-shell"), sidebar = rect(".sidebar"), article = rect(".article"), toc = rect(".toc");
-    return Math.abs(shell.left) < 1 && Math.abs(shell.right - innerWidth) < 1
-      && sidebar.right <= article.left + 1 && article.right <= toc.left + 1
-      && Math.abs(toc.right - shell.right) < 1
-      && getComputedStyle(document.querySelector(".toc summary")).display === "none"
-      && Math.abs(rect(".docs-hero").left - article.left) < 1
-      && Math.abs(rect(".docs-hero").right - toc.right) < 1;
+    const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
+    const article = document.querySelector(".article").getBoundingClientRect();
+    return sidebar.right <= article.left + 1 && article.right <= innerWidth + 1
+      && document.documentElement.scrollWidth <= innerWidth + 1;
   });
-  if (!wideColumns) throw new Error("desktop docs should span the viewport with navigation, content, and TOC columns");
+  if (!wideColumns) throw new Error("homepage content overlaps its navigation or overflows the viewport");
   await page.locator('.docs-quick-nav a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
-  if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
+  if (await page.locator(".home-layout").count()) throw new Error("landing hero survived article navigation");
   await assertTocAtArticleStart(page);
   const sectionUsable = await page.evaluate(() => {
     const link = document.querySelector(".sidebar .nav-link.active");
@@ -176,10 +171,10 @@ async function checkLandingNavigation() {
   });
   if (!sectionUsable) throw new Error("current page navigation is not reachable after a route change");
   await page.goBack();
-  await page.waitForFunction(() => document.querySelectorAll(".oc-hero-art pre").length === 1);
-  const still = await page.locator(".oc-hero-art pre").textContent();
+  await page.waitForFunction(() => document.querySelectorAll(".home-ascii svg").length === 1);
+  const still = await page.locator(".home-ascii svg").textContent();
   await page.waitForTimeout(250);
-  if (await page.locator(".oc-hero-art pre").textContent() !== still) {
+  if (await page.locator(".home-ascii svg").textContent() !== still) {
     throw new Error("hero animation ignored reduced-motion preference");
   }
   await page.close();

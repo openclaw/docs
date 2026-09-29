@@ -6,7 +6,7 @@ import { fixture, write } from "./test-helpers/redirect-fixture.mjs";
 
 const origin = "https://docs.openclaw.ai";
 const english = {
-  "index.md": "# English home\n",
+  "index.md": "# English home\n\n[Read the target](/target)\n\n![Example](/assets/example.png)\n",
   "target.mdx": "# English target\n\n## Part\nTarget body\n",
   "fallback.md": "# English fallback\n",
   "guide/de/topic.mdx": "# Nested German name\n",
@@ -85,6 +85,8 @@ for (const base of ["", "/manual"]) {
       const quickNav = html(`/${locale}/target`).match(/<nav class="docs-quick-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
       assert.ok(quickNav.includes(`href="${base}/${locale}"`), `${locale}: Overview stays in the current language`);
     }
+    assert.ok(html("/").includes(`href="${base}/target">Read the target</a>`), "homepage source links receive the base path once");
+    assert.ok(html("/").includes(`src="${base}/assets/example.png"`), "homepage images receive the base path once");
     const german = html("/de/target");
     const sidebar = german.match(/<aside class="sidebar">([\s\S]*?)<\/aside>/)[1];
     assert.ok(sidebar.includes("Deutsche Navigation"));
