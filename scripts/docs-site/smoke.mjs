@@ -206,6 +206,18 @@ if (previewOrigin !== expectedOrigin && /<link rel="canonical"[^>]+documentation
 if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*aria-selected="true"/.test(index)) {
   throw new Error("index: custom language picker is missing active state");
 }
+const indexTree = parseDocument(index);
+const mobileLanguage = DomUtils.findAll(node => node.attribs?.["data-language-native"] !== undefined, indexTree.children);
+const mobileTools = DomUtils.findOne(node => node.attribs?.class === "sidebar-tools", indexTree.children);
+const siteHeader = DomUtils.findOne(node => node.name === "header" && node.attribs?.class === "site-header", indexTree.children);
+if (mobileLanguage.length !== 1 || !mobileTools || !siteHeader || !DomUtils.findOne(node => node === mobileLanguage[0], siteHeader.children)) {
+  throw new Error("index: site header must contain the single native language control");
+}
+for (const href of ["https://github.com/openclaw/openclaw", "https://discord.com/invite/clawd"]) {
+  if (!DomUtils.findOne(node => node.name === "a" && node.attribs?.href === href, mobileTools.children)) {
+    throw new Error(`index: mobile navigation is missing ${href}`);
+  }
+}
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
 }

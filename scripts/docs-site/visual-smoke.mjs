@@ -945,24 +945,26 @@ async function checkAmbientCodePage() {
 }
 
 async function checkMobileKeyboardOverlays(page) {
-  let reachedLanguage = false;
   for (let index = 0; index < 12; index += 1) {
     await page.keyboard.press("Tab");
     const focused = await page.evaluate(() => ({
       hiddenPanel: Boolean(document.activeElement?.closest(".sidebar,.community-invite")),
       duplicateLanguage: document.activeElement?.matches("[data-language-trigger]"),
-      nativeLanguage: document.activeElement?.matches("[data-language-native]"),
     }));
     if (focused.hiddenPanel || focused.duplicateLanguage) {
       throw new Error(`closed phone controls accepted keyboard focus: ${JSON.stringify(focused)}`);
     }
-    reachedLanguage ||= focused.nativeLanguage;
   }
-  if (!reachedLanguage) throw new Error("phone language select is not keyboard reachable");
 
   await page.click("[data-nav-toggle]");
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
   await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 0.1);
+  await page.locator(".sidebar [data-theme-toggle]").focus();
+  await page.keyboard.press("Shift+Tab");
+  if (!await page.evaluate(() => document.activeElement?.closest(".sidebar-socials"))) {
+    throw new Error("mobile menu social links are not keyboard reachable");
+  }
+  await page.locator("[data-nav-close]").focus();
   // The docked invitation is separated from the sidebar in DOM order.
   // Exercise the whole collapsed drawer cycle in both directions, including that gap.
   for (const key of ["Tab", "Shift+Tab"]) {

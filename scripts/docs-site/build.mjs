@@ -391,9 +391,11 @@ function siteHeader(page) {
   return `<header class="site-header">
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}"${previewLinkAttrs(allPageByKey.get(pageKey(page.locale, "index")) ?? page, "OpenClaw Docs")}><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
+<button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search documentation</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
+<div class="header-actions">
 <nav class="network-nav" aria-label="OpenClaw sites">${network.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}</nav>
-<button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
 <nav class="header-links" aria-label="Documentation tools">${languagePicker(page)}${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button><button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
+</div>
 </div>
 </header>`;
 }
@@ -420,11 +422,15 @@ ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${t
 
 function sidebar(page, nav, activeTab) {
   return `<aside class="sidebar">
-<div class="sidebar-head"><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
+<div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
 <nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
     const current = tab.title === activeTab;
     return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
   }).join("")}</nav>
+<div class="sidebar-tools">
+<nav class="sidebar-socials" aria-label="Community links"><a href="https://github.com/openclaw/openclaw">${icon("github")}<span>GitHub</span></a><a href="https://discord.com/invite/clawd">${icon("discord")}<span>Discord</span></a></nav>
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
+</div>
 </aside>`;
 }
 
@@ -458,13 +464,13 @@ function languagePicker(page) {
     : locales;
   const options = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
-    return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
+    return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">${icon("check")}</span></a>`;
   }).join("");
   const nativeOptions = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
     return `<option value="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}"${active ? " selected" : ""}>${escapeHtml(localeFlag(locale.code))} ${escapeHtml(localeDisplayName(locale.code))}</option>`;
   }).join("");
-  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-label="${escapeAttr(`Language: ${currentLabel}`)}" aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-label="${escapeAttr(`Language: ${currentLabel}`)}" aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select></div>`;
 }
 
 function localeFlag(code) {
@@ -572,6 +578,14 @@ function icon(name) {
   if (name === "openai") return `<svg class="icon icon-openai" aria-hidden="true" focusable="false" fill="currentColor" fill-rule="evenodd" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21.55 10.004a5.416 5.416 0 00-.478-4.501c-1.217-2.09-3.662-3.166-6.05-2.66A5.59 5.59 0 0010.831 1C8.39.995 6.224 2.546 5.473 4.838A5.553 5.553 0 001.76 7.496a5.487 5.487 0 00.691 6.5 5.416 5.416 0 00.477 4.502c1.217 2.09 3.662 3.165 6.05 2.66A5.586 5.586 0 0013.168 23c2.443.006 4.61-1.546 5.361-3.84a5.553 5.553 0 003.715-2.66 5.488 5.488 0 00-.693-6.497v.001zm-8.381 11.558a4.199 4.199 0 01-2.675-.954c.034-.018.093-.05.132-.074l4.44-2.53a.71.71 0 00.364-.623v-6.176l1.877 1.069c.02.01.033.029.036.05v5.115c-.003 2.274-1.87 4.118-4.174 4.123zM4.192 17.78a4.059 4.059 0 01-.498-2.763c.032.02.09.055.131.078l4.44 2.53c.225.13.504.13.73 0l5.42-3.088v2.138a.068.068 0 01-.027.057L9.9 19.288c-1.999 1.136-4.552.46-5.707-1.51h-.001zM3.023 8.216A4.15 4.15 0 015.198 6.41l-.002.151v5.06a.711.711 0 00.364.624l5.42 3.087-1.876 1.07a.067.067 0 01-.063.005l-4.489-2.559c-1.995-1.14-2.679-3.658-1.53-5.63h.001zm15.417 3.54l-5.42-3.088L14.896 7.6a.067.067 0 01.063-.006l4.489 2.557c1.998 1.14 2.683 3.662 1.529 5.633a4.163 4.163 0 01-2.174 1.807V12.38a.71.71 0 00-.363-.623zm1.867-2.773a6.04 6.04 0 00-.132-.078l-4.44-2.53a.731.731 0 00-.729 0l-5.42 3.088V7.325a.068.068 0 01.027-.057L14.1 4.713c2-1.137 4.555-.46 5.707 1.513.487.833.664 1.809.499 2.757h.001zm-11.741 3.81l-1.877-1.068a.065.065 0 01-.036-.051V6.559c.001-2.277 1.873-4.122 4.181-4.12.976 0 1.92.338 2.671.954-.034.018-.092.05-.131.073l-4.44 2.53a.71.71 0 00-.365.623l-.003 6.173v.002zm1.02-2.168L12 9.25l2.414 1.375v2.75L12 14.75l-2.415-1.375v-2.75z"/></svg>`;
   if (name === "anthropic") return `<svg class="icon icon-anthropic" aria-hidden="true" focusable="false" fill="currentColor" fill-rule="evenodd" height="18" viewBox="0 0 256 257" width="18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid"><path d="m50.228 170.321 50.357-28.257.843-2.463-.843-1.361h-2.462l-8.426-.518-28.775-.778-24.952-1.037-24.175-1.296-6.092-1.297L0 125.796l.583-3.759 5.12-3.434 7.324.648 16.202 1.101 24.304 1.685 17.629 1.037 26.118 2.722h4.148l.583-1.685-1.426-1.037-1.101-1.037-25.147-17.045-27.22-18.017-14.258-10.37-7.713-5.25-3.888-4.925-1.685-10.758 7-7.713 9.397.649 2.398.648 9.527 7.323 20.35 15.75L94.817 91.9l3.889 3.24 1.555-1.102.195-.777-1.75-2.917-14.453-26.118-15.425-26.572-6.87-11.018-1.814-6.61c-.648-2.723-1.102-4.991-1.102-7.778l7.972-10.823L71.42 0 82.05 1.426l4.472 3.888 6.61 15.101 10.694 23.786 16.591 32.34 4.861 9.592 2.592 8.879.973 2.722h1.685v-1.556l1.36-18.211 2.528-22.36 2.463-28.776.843-8.1 4.018-9.722 7.971-5.25 6.222 2.981 5.12 7.324-.713 4.73-3.046 19.768-5.962 30.98-3.889 20.739h2.268l2.593-2.593 10.499-13.934 17.628-22.036 7.778-8.749 9.073-9.657 5.833-4.601h11.018l8.1 12.055-3.628 12.443-11.342 14.388-9.398 12.184-13.48 18.147-8.426 14.518.778 1.166 2.01-.194 30.46-6.481 16.462-2.982 19.637-3.37 8.88 4.148.971 4.213-3.5 8.62-20.998 5.184-24.628 4.926-36.682 8.685-.454.324.519.648 16.526 1.555 7.065.389h17.304l32.21 2.398 8.426 5.574 5.055 6.805-.843 5.184-12.962 6.611-17.498-4.148-40.83-9.721-14-3.5h-1.944v1.167l11.666 11.406 21.387 19.314 26.767 24.887 1.36 6.157-3.434 4.86-3.63-.518-23.526-17.693-9.073-7.972-20.545-17.304h-1.36v1.814l4.73 6.935 25.017 37.59 1.296 11.536-1.814 3.76-6.481 2.268-7.13-1.297-14.647-20.544-15.1-23.138-12.185-20.739-1.49.843-7.194 77.448-3.37 3.953-7.778 2.981-6.48-4.925-3.436-7.972 3.435-15.749 4.148-20.544 3.37-16.333 3.046-20.285 1.815-6.74-.13-.454-1.49.194-15.295 20.999-23.267 31.433-18.406 19.702-4.407 1.75-7.648-3.954.713-7.064 4.277-6.286 25.47-32.405 15.36-20.092 9.917-11.6-.065-1.686h-.583L44.07 198.125l-12.055 1.555-5.185-4.86.648-7.972 2.463-2.593 20.35-13.999-.064.065Z"/></svg>`;
   const paths = {
+    "check": '<path d="m20 6-11 11-5-5"/>',
+    "grid-2x2": '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    "terminal": '<path d="M12 19h8"/><path d="m4 17 6-6-6-6"/>',
+    "download": '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
+    "book-open": '<path d="M12 5v16"/><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"/>',
+    "list-checks": '<path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/>',
+    "settings": '<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>',
+    "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
     "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
     "command": '<path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/>',
     "corner-down-left": '<path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/>',
