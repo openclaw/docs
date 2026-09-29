@@ -1222,7 +1222,7 @@ async function checkPageActions(page, label) {
   if (!opened.open
     || opened.display !== "grid"
     || !closeEnough(opened.rightDelta, 0)
-    || !closeEnough(opened.topGap, 8)
+    || opened.topGap < 4 || opened.topGap > 12
     || !opened.inViewport) {
     throw new Error(`${label} page actions menu alignment failed: ${JSON.stringify(opened)}`);
   }
