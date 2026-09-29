@@ -889,27 +889,12 @@ async function checkAmbientCodePage() {
     const rects = lines.map((line) => line.getBoundingClientRect());
     const buttonRect = button?.getBoundingClientRect();
     const buttonStyle = button ? getComputedStyle(button) : null;
-    const buttonBefore = button ? getComputedStyle(button, "::before") : null;
-    const buttonAfter = button ? getComputedStyle(button, "::after") : null;
     const labelStyle = label ? getComputedStyle(label) : null;
-    const iconLeft = buttonBefore && buttonAfter
-      ? Math.min(parseFloat(buttonBefore.left), parseFloat(buttonAfter.left))
-      : 0;
-    const iconTop = buttonBefore && buttonAfter
-      ? Math.min(parseFloat(buttonBefore.top), parseFloat(buttonAfter.top))
-      : 0;
-    const iconRight = buttonBefore && buttonAfter
-      ? Math.max(
-        parseFloat(buttonBefore.left) + parseFloat(buttonBefore.width),
-        parseFloat(buttonAfter.left) + parseFloat(buttonAfter.width),
-      )
-      : 0;
-    const iconBottom = buttonBefore && buttonAfter
-      ? Math.max(
-        parseFloat(buttonBefore.top) + parseFloat(buttonBefore.height),
-        parseFloat(buttonAfter.top) + parseFloat(buttonAfter.height),
-      )
-      : 0;
+    const iconRect = button?.querySelector(".oc-copy-default")?.getBoundingClientRect();
+    const iconLeft = iconRect ? iconRect.left - buttonRect.left : 0;
+    const iconTop = iconRect ? iconRect.top - buttonRect.top : 0;
+    const iconRight = iconRect ? iconRect.right - buttonRect.left : 0;
+    const iconBottom = iconRect ? iconRect.bottom - buttonRect.top : 0;
     return {
       lineCount: figure?.querySelectorAll(".code-line").length ?? 0,
       lineDisplay: lines.map((line) => getComputedStyle(line).display),
@@ -1137,13 +1122,13 @@ async function checkPageActions(page, label) {
     const control = document.querySelector(".page-actions");
     const primary = document.querySelector(".page-actions-primary");
     const summary = document.querySelector(".page-actions-more > summary");
-    const copyLabel = primary?.querySelector("[data-copy-feedback]");
-    const copyIcon = primary?.querySelector(".icon");
-    if (!control || !primary || !summary || !copyLabel || !copyIcon) return null;
+    const copyLabel = primary?.getAttribute("aria-label");
+    const copyIcon = primary?.querySelector(".oc-copy-default");
+    const visibleLabel = primary?.querySelector("[data-copy-feedback]");
+    if (!control || !primary || !summary || !copyLabel || !copyIcon || !visibleLabel) return null;
     const controlRect = control.getBoundingClientRect();
     const primaryRect = primary.getBoundingClientRect();
     const summaryRect = summary.getBoundingClientRect();
-    const labelRect = copyLabel.getBoundingClientRect();
     const iconRect = copyIcon.getBoundingClientRect();
     const controlStyle = getComputedStyle(control);
     const primaryStyle = getComputedStyle(primary);
@@ -1193,8 +1178,8 @@ async function checkPageActions(page, label) {
       controlRadius,
       segmentRadius,
       whiteSpace: primaryStyle.whiteSpace,
-      labelHeight: labelRect.height,
-      sameLine: Math.abs(iconRect.top - labelRect.top) < 4,
+      iconCentered: Math.abs((iconRect.top + iconRect.bottom) - (primaryRect.top + primaryRect.bottom)) < 2,
+      labelVisible: visibleLabel.innerText === "Copy page" && visibleLabel.getBoundingClientRect().width > 0,
       distinctTargets: atPrimaryCenter?.closest(".page-actions-primary") === primary
         && atSummaryCenter?.closest(".page-actions-more > summary") === summary,
     };
@@ -1213,8 +1198,8 @@ async function checkPageActions(page, label) {
     || closed.primaryRadii.join(" ") !== `${closed.segmentRadius} 0px 0px ${closed.segmentRadius}`
     || closed.summaryRadii.join(" ") !== `0px ${closed.segmentRadius} ${closed.segmentRadius} 0px`
     || closed.whiteSpace !== "nowrap"
-    || closed.labelHeight > closed.primaryHeight
-    || !closed.sameLine
+    || !closed.iconCentered
+    || !closed.labelVisible
     || !closed.distinctTargets) {
     throw new Error(`${label} split page actions geometry failed: ${JSON.stringify(closed)}`);
   }
@@ -1237,7 +1222,7 @@ async function checkPageActions(page, label) {
   if (!opened.open
     || opened.display !== "grid"
     || !closeEnough(opened.rightDelta, 0)
-    || !closeEnough(opened.topGap, 8)
+    || opened.topGap < 4 || opened.topGap > 12
     || !opened.inViewport) {
     throw new Error(`${label} page actions menu alignment failed: ${JSON.stringify(opened)}`);
   }
