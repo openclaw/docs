@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { DomUtils, parseDocument } from "htmlparser2";
 import { fixture, write } from "./test-helpers/redirect-fixture.mjs";
 
 // Exact docs.json subtree mirrored at 60887fb76 from openclaw/openclaw@e3e2953f.
@@ -38,10 +39,14 @@ for (const base of ["", "/manual"]) {
         for (const target of leaves(protocolGroup.pages)) {
           assert.ok(sidebar.includes(`href="${base}/${locale}${target}"`), `${locale}${slug} → ${target}`);
         }
-        for (const match of html.matchAll(/href="(\/[^"?#]*)"/g)) {
-          const route = match[1].slice(base.length).replace(/^\//, "");
+        const document = parseDocument(sidebar);
+        const sourceNavigation = DomUtils.findOne((node) => node.name === "nav" && node.attribs["aria-label"] === "Docs sections", document.children);
+        // The fixture owns the source tree; shell quick links point outside its tiny page set.
+        const links = DomUtils.findAll((node) => node.name === "a", sourceNavigation.children);
+        for (const link of links) {
+          const route = link.attribs.href.slice(base.length).replace(/^\//, "");
           const site = path.join(f.root, "dist/docs-site");
-          assert.ok(fs.existsSync(path.join(site, route)) || fs.existsSync(path.join(site, route, "index.html")), match[1]);
+          assert.ok(fs.existsSync(path.join(site, route)) || fs.existsSync(path.join(site, route, "index.html")), link.attribs.href);
         }
       }
     }
@@ -49,11 +54,11 @@ for (const base of ["", "/manual"]) {
 }
 
 test("deep first pages and section metadata use descendant pages in normal and preview builds", (t) => {
-  const f = fixture(t, [], { "guide/first.md": "# First\n", "guide/second.md": "# Second\n" });
+  const f = fixture(t, [], { "guide/first.md": "# First\n", "guide/second.md": "# Second\n", "guide/other.md": "# Other\n" });
   write(f.root, "docs/docs.json", JSON.stringify({
     name: "Deep navigation fixture",
     navigation: { languages: [{ language: "en", tabs: [{ tab: "Deep docs", groups: [{
-      group: "Reference", pages: ["missing", { group: "Empty", pages: ["also-missing"] }, { group: "Outer", pages: [{ group: "Inner", pages: ["guide/first", "guide/second"] }] }],
+      group: "Reference", pages: ["missing", { group: "Empty", pages: ["also-missing"] }, { group: "Outer", pages: [{ group: "Inner", pages: ["guide/first", "guide/second"] }] }, { group: "Other guides", pages: ["guide/other"] }],
     }] }] }] },
   }));
   for (const options of [{}, { DOCS_SITE_PREVIEW_LOCALE: "en", DOCS_SITE_PREVIEW_PAGES_PER_GROUP: "1" }]) {
@@ -65,5 +70,13 @@ test("deep first pages and section metadata use descendant pages in normal and p
     assert.match(html, /class="breadcrumb-part breadcrumb-tab"><a href="\/guide\/first">Deep docs<\/a>/);
     assert.match(html, /data-pagefind-meta="section">Reference<\/span>/);
     assert.match(html, /class="nav-link active" href="\/guide\/first" aria-current="page">First<\/a>/);
+    const document = parseDocument(html);
+    const sidebar = DomUtils.findOne((node) => node.name === "aside" && node.attribs.class === "sidebar", document.children);
+    const disclosures = DomUtils.findAll((node) => node.name === "details", sidebar.children);
+    for (const title of ["Reference", "Outer", "Inner", "Other guides"]) {
+      const group = disclosures.find((node) => DomUtils.textContent(node.children.find((child) => child.name === "summary")) === title);
+      assert.ok(group, `${title} must be a keyboard-operable native disclosure`);
+      assert.equal(Object.hasOwn(group.attribs, "open"), title !== "Other guides", `${title}: reveal the current page without expanding unrelated subgroups`);
+    }
   }
 });
