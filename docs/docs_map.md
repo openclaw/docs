@@ -3085,6 +3085,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/update/repair-and-recovery
 - Headings:
   - H2: Recover a failed update
+  - H3: Original state captures
   - H3: Retained updater runtime
   - H2: Candidate Doctor stack overflow
   - H2: update repair
