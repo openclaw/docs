@@ -330,7 +330,7 @@ async function checkDesktop() {
     || wideCardGrids["2"]?.[0]?.columns !== 2
     || wideCardGrids["3"]?.[0]?.columns !== 3
     || (wideCardGrids["4"] ?? []).length < 2
-    || !wideCardGrids["4"].every((grid) => grid.columns === 4)) {
+    || !wideCardGrids["4"].every((grid) => grid.columns === expectedCardColumns(4, grid.width))) {
     throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
