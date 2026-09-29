@@ -48,7 +48,7 @@ try {
 }
 
 async function openSection(page, title) {
-  if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+  if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
   await page.getByRole("button", { name: title, exact: true }).click();
   await page.locator(".docs-sidebar-back").waitFor({ state: "visible" });
 }
@@ -60,7 +60,7 @@ async function checkRtlNavigationResize() {
     await page.goto(`${base}/ar/`, { waitUntil: "networkidle" });
     await page.locator("[data-nav-toggle]").click();
     await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
-    if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+    if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
     await page.locator(".docs-section-trigger").last().click();
     await page.locator(".docs-sidebar-back").waitFor({ state: "visible" });
     await page.setViewportSize({ width: 844, height: 390 });
@@ -775,7 +775,7 @@ async function checkMobile() {
   }
   for (const height of [980, 600]) {
     await page.setViewportSize({ width: 390, height });
-    if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+    if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
     await page.locator(".docs-section-trigger").last().click();
     await page.locator(".docs-section:last-child .nav-link").last().scrollIntoViewIfNeeded();
     await page.locator(".docs-section:last-child .nav-link").last().click({ trial: true });
@@ -936,7 +936,7 @@ async function checkMobileKeyboardOverlays(page) {
   if (!await page.evaluate(() => document.activeElement?.closest(".sidebar-socials"))) {
     throw new Error("mobile menu social links are not keyboard reachable");
   }
-  if (await page.locator(".docs-sidebar-back").isVisible()) await page.locator(".docs-sidebar-back").click();
+  if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
   await page.locator("[data-nav-close]").focus();
   // The docked invitation is separated from the sidebar in DOM order.
   // Exercise the whole collapsed drawer cycle in both directions, including that gap.
