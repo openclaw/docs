@@ -51,7 +51,7 @@
   --tok-punct: #5d6672;
 }
 .docs-layout .site-header { background: color-mix(in srgb,var(--bg) 92%,transparent); border-bottom: 1px solid var(--docs-border); backdrop-filter: blur(18px); }
-.docs-layout .header-row { display: grid; grid-template-columns: minmax(0,1fr) clamp(200px,26vw,400px) minmax(0,1fr); height: 64px; max-width: 1660px; margin-inline: auto; padding-inline: 24px; gap: 20px; }
+.docs-layout .header-row { display: grid; grid-template-columns: minmax(0,1fr) clamp(200px,26vw,400px) minmax(max-content,1fr); height: 64px; max-width: 1660px; margin-inline: auto; padding-inline: 24px; gap: 20px; }
 .docs-layout .header-left { min-width: 0; }
 .docs-layout .header-actions { display: flex; align-items: center; justify-self: end; gap: 16px; }
 .docs-layout .brand { gap: 8px; letter-spacing: 0; }
