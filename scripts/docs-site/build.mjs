@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { homeContentHtml } from "./home-content.mjs";
+import { homeLayoutHtml } from "./home-layout.mjs";
+import { homeAsciiArt } from "./home-ascii.mjs";
 import { docsQuickNav } from "./docs-navigation.mjs";
 import path from "node:path";
 import { createHash } from "node:crypto";
@@ -288,7 +290,8 @@ function writePage(page) {
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
   const options = { sourceFile: page.file, root: sourceRoot, pageRoute: pageRoute(page) };
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
-  const html = rewriteInternalUrls(article, page.locale);
+  const composed = page.slug === "index" && page.locale === "en" ? homeLayoutHtml(article, icon) : article;
+  const html = rewriteInternalUrls(composed, page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -299,6 +302,8 @@ function writePage(page) {
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
+  const home = page.slug === "index" && page.locale === "en";
+  const homeHtml = home ? html : "";
   const lang = page.locale;
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = page.slug === "index" ? `${config.name} Docs` : `${page.title} - ${config.name}`;
@@ -342,14 +347,15 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
-<body class="oc-app-surface docs-layout${page.slug === "index" ? " docs-home" : ""}">
+<body class="oc-app-surface docs-layout${page.slug === "index" ? " docs-home" : ""}${home ? " docs-home-layout" : ""}">
 ${siteHeader(page)}
 ${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ↗ open live docs.</aside>` : ""}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
-<div class="page-intro">${page.slug === "index" ? homeHero(page) : ""}</div>
-${tocHtml(toc, page.locale)}
+${home ? homeAsciiArt : ""}
+<div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
+${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
 <main class="article" id="main">
 <header class="article-header">
 ${articleMeta(page, nav)}
@@ -359,7 +365,7 @@ ${page.slug === "index" ? `<h2 class="home-section-title">${escapeHtml(activeTab
 ${pageStatus(page)}
 </header>
 ${pageSearchMetadata(page, nav)}
-<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${page.slug === 'index' ? homeContentHtml(html) : html}</div>
+<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${home ? homeHtml : page.slug === "index" ? homeContentHtml(html) : html}</div>
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
 </main>
