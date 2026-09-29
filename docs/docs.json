@@ -1782,6 +1782,7 @@
                         ]
                       },
                       "plugins/teams-meetings",
+                      "plugins/slack-huddles",
                       "plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -3857,6 +3858,7 @@
                         ]
                       },
                       "zh-CN/plugins/teams-meetings",
+                      "zh-CN/plugins/slack-huddles",
                       "zh-CN/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -5898,6 +5900,7 @@
                         ]
                       },
                       "zh-TW/plugins/teams-meetings",
+                      "zh-TW/plugins/slack-huddles",
                       "zh-TW/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -7939,6 +7942,7 @@
                         ]
                       },
                       "ja-JP/plugins/teams-meetings",
+                      "ja-JP/plugins/slack-huddles",
                       "ja-JP/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -9980,6 +9984,7 @@
                         ]
                       },
                       "es/plugins/teams-meetings",
+                      "es/plugins/slack-huddles",
                       "es/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -12021,6 +12026,7 @@
                         ]
                       },
                       "pt-BR/plugins/teams-meetings",
+                      "pt-BR/plugins/slack-huddles",
                       "pt-BR/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -14062,6 +14068,7 @@
                         ]
                       },
                       "ko/plugins/teams-meetings",
+                      "ko/plugins/slack-huddles",
                       "ko/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -16103,6 +16110,7 @@
                         ]
                       },
                       "de/plugins/teams-meetings",
+                      "de/plugins/slack-huddles",
                       "de/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -18144,6 +18152,7 @@
                         ]
                       },
                       "fr/plugins/teams-meetings",
+                      "fr/plugins/slack-huddles",
                       "fr/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -20185,6 +20194,7 @@
                         ]
                       },
                       "hi/plugins/teams-meetings",
+                      "hi/plugins/slack-huddles",
                       "hi/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -22226,6 +22236,7 @@
                         ]
                       },
                       "ar/plugins/teams-meetings",
+                      "ar/plugins/slack-huddles",
                       "ar/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -24267,6 +24278,7 @@
                         ]
                       },
                       "it/plugins/teams-meetings",
+                      "it/plugins/slack-huddles",
                       "it/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -26308,6 +26320,7 @@
                         ]
                       },
                       "vi/plugins/teams-meetings",
+                      "vi/plugins/slack-huddles",
                       "vi/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -28349,6 +28362,7 @@
                         ]
                       },
                       "nl/plugins/teams-meetings",
+                      "nl/plugins/slack-huddles",
                       "nl/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -30390,6 +30404,7 @@
                         ]
                       },
                       "fa/plugins/teams-meetings",
+                      "fa/plugins/slack-huddles",
                       "fa/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -32431,6 +32446,7 @@
                         ]
                       },
                       "tr/plugins/teams-meetings",
+                      "tr/plugins/slack-huddles",
                       "tr/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -34472,6 +34488,7 @@
                         ]
                       },
                       "uk/plugins/teams-meetings",
+                      "uk/plugins/slack-huddles",
                       "uk/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -36513,6 +36530,7 @@
                         ]
                       },
                       "id/plugins/teams-meetings",
+                      "id/plugins/slack-huddles",
                       "id/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -38554,6 +38572,7 @@
                         ]
                       },
                       "pl/plugins/teams-meetings",
+                      "pl/plugins/slack-huddles",
                       "pl/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -40595,6 +40614,7 @@
                         ]
                       },
                       "th/plugins/teams-meetings",
+                      "th/plugins/slack-huddles",
                       "th/plugins/voice-call",
                       {
                         "group": "Voice call",
@@ -42636,6 +42656,7 @@
                         ]
                       },
                       "ru/plugins/teams-meetings",
+                      "ru/plugins/slack-huddles",
                       "ru/plugins/voice-call",
                       {
                         "group": "Voice call",

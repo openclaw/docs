@@ -1220,6 +1220,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/slack
 - Headings:
   - H2: What each page covers
+  - H2: Huddles
   - H2: Where each section moved
   - H2: Configuration reference
   - H2: Related
@@ -10128,6 +10129,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/slack-huddles.md
+
+- Route: /plugins/reference/slack-huddles
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/slack.md
 
 - Route: /plugins/reference/slack
@@ -10923,6 +10932,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Memory runtime replacement
+  - H2: Browser meeting status ownership
   - H2: Browser meeting participation
   - H2: Worker provider allocation authority
   - H2: Other top-level api fields
@@ -11065,6 +11075,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Attribute the source node
   - H2: Security boundary
   - H2: Troubleshooting
+  - H2: Related
+
+## plugins/slack-huddles.md
+
+- Route: /plugins/slack-huddles
+- Headings:
+  - H2: Requirements
+  - H2: Install and enable
+  - H2: Configure
+  - H2: Join and manage a huddle
+  - H2: Handle manual actions
+  - H2: Limits
   - H2: Related
 
 ## plugins/team-reports.md
