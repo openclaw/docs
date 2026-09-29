@@ -857,8 +857,6 @@ async function checkMobile() {
     || !menu.closeFocused) {
     throw new Error(`mobile menu drawer failed (expected bounded unobscured drawer): ${JSON.stringify(menu)}`);
   }
-  await page.locator("[data-community-invite-dismiss]").click();
-  await page.locator(".community-invite").waitFor({ state: "hidden" });
   const sectionLabels = await page.locator(".docs-section > summary").allTextContents();
   if (JSON.stringify(sectionLabels.map(label => label.trim())) !== JSON.stringify(expectedTabs)) {
     throw new Error(`vertical sections lost source navigation: ${JSON.stringify(sectionLabels)}`);
@@ -1013,23 +1011,22 @@ async function checkMobileKeyboardOverlays(page) {
   }
   if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
   await page.locator("[data-nav-close]").focus();
-  // The docked invitation is separated from the sidebar in DOM order.
-  // Exercise the whole collapsed drawer cycle in both directions, including that gap.
+  // The fixed footer stays inside the drawer focus cycle in both directions.
   for (const key of ["Tab", "Shift+Tab"]) {
-    let reachedInvitation = false;
+    let reachedFooter = false;
     let completedCycle = false;
-    for (let index = 0; index < 30; index += 1) {
+    for (let index = 0; index < 50; index += 1) {
       await page.keyboard.press(key);
       const focus = await page.evaluate(() => ({
         inside: Boolean(document.activeElement?.closest(".sidebar,.community-invite")),
-        invitation: Boolean(document.activeElement?.closest(".community-invite")),
+        footer: Boolean(document.activeElement?.closest(".sidebar-tools")),
         close: document.activeElement?.matches("[data-nav-close]"),
       }));
       if (!focus.inside) throw new Error(`${key} escaped the phone drawer`);
-      reachedInvitation ||= focus.invitation;
+      reachedFooter ||= focus.footer;
       if (focus.close) { completedCycle = true; break; }
     }
-    if (!reachedInvitation || !completedCycle) throw new Error(`${key} did not cycle through the drawer and docked invitation`);
+    if (!reachedFooter || !completedCycle) throw new Error(`${key} did not cycle through the drawer and footer`);
   }
   const originalViewport = page.viewportSize();
   await page.setViewportSize({ width: 390, height: 600 });
@@ -1041,7 +1038,7 @@ async function checkMobileKeyboardOverlays(page) {
     return { focused: document.activeElement === target, unobscured: target.contains(hit), hitClass: hit?.className };
   });
   if (!finalSection.focused || !finalSection.unobscured) {
-    throw new Error(`invitation obscures the focused final section: ${JSON.stringify(finalSection)}`);
+    throw new Error(`drawer footer obscures the focused final section: ${JSON.stringify(finalSection)}`);
   }
   // Rotation must keep the existing focused link visible in both nested scrollports.
   for (const resizedViewport of [{ width: 390, height: 320 }, { width: 780, height: 390 }]) {

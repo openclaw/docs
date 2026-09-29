@@ -1,5 +1,5 @@
 import { parseDocument } from "htmlparser2";
-import { featuredGuides } from "./home-sections.mjs";
+import { featuredGuides, communitySection } from "./home-sections.mjs";
 import { channelIcons } from "./channel-icons.mjs";
 import { homeContentHtml } from "./home-content.mjs";
 
@@ -54,6 +54,7 @@ ${take("configuration-(optional)")}
 ${take("browse-docs", "home-directory home-browse")}
 ${take("start-here", "home-directory home-resources")}
 ${take("learn-more", "home-directory home-resources")}
+${communitySection(icon)}
 ${sections.map((section) => `<section class="home-reading-section">${section.html}</section>`).join("\n")}
 </div>`;
 }
