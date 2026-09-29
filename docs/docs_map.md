@@ -12344,6 +12344,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Session hot facts and snapshots
   - H3: Compact agent payload storage
   - H3: Transcript FTS row ownership
   - H3: Incremental canonical-session validation
