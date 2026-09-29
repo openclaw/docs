@@ -562,6 +562,13 @@ publication, rollback, and uncertain-outcome owners. Native harness mutation
 objects remain with their process-held owner. No cross-database atomicity,
 retention change, or new update step is introduced.
 
+Deletion keeps the configured session store's artifact directory when worker
+admission pins an alias to its physical database. Process-held native deletion
+checks the original session immediately before its synchronous mutation; it does
+not recheck that row after removing it in the same transaction. Archive locations,
+Incognito expiry, schemas, retention, and update behavior retain their existing
+contracts.
+
 Cron retention discovery uses a separate, single-worker maintenance lane within the
 same session database lifecycle owner. Foreground history and exact-entry reads
 keep their own queue while full-store validation runs. Both lanes retain the same
