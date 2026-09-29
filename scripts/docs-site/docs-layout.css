@@ -299,6 +299,15 @@
 .docs-layout .page-tools .page-action small { margin-block-start: 3px; font: 400 12px/1.4 var(--oc-font-body); }
 .docs-layout .page-tools .page-action-external { display: grid; place-items: center; inline-size: 16px; block-size: 20px; font: 400 14px/1 var(--oc-font-body); }
 .docs-layout .oc-mermaid { min-height: 0; margin-block: 24px; padding: 48px 28px 28px; border-color: var(--docs-border); background: var(--paper); color: var(--text); box-shadow: none; }
+.docs-media-scene { position: relative; isolation: isolate; min-width: 0; margin-block: 24px; padding: clamp(16px,3vw,40px); overflow: clip; border: 1px solid color-mix(in srgb,var(--ink) 7%,var(--bg)); border-radius: var(--oc-radius-lg); background: var(--paper); background-clip: padding-box; }
+.docs-layout .doc .docs-media-background { position: absolute; z-index: -1; inset: 0; display: block; width: 100%; height: 100%; max-width: none; margin: 0; border: 0; border-radius: 0; object-fit: cover; object-position: center; pointer-events: none; box-shadow: none; }
+.docs-media-content { position: relative; min-width: 0; }
+.docs-layout .docs-media-content > :is(.oc-mermaid,.oc-frame) { margin: 0; background: var(--paper); box-shadow: 0 10px 24px #24201a18,0 2px 4px #24201a0d; }
+.docs-layout .doc .docs-media-content > p { margin: 0; text-align: center; }
+.docs-layout .doc .docs-media-content :is(img,video,iframe) { max-width: 100%; margin: 0; vertical-align: middle; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-control); box-shadow: 0 10px 24px #24201a24,0 2px 4px #24201a0d; }
+.docs-layout .doc .docs-media-content img { width: auto; height: auto; max-height: min(520px,65svh); object-fit: contain; }
+.docs-layout .docs-media-content .oc-frame { padding: 16px; }
+.docs-layout .docs-media-content .oc-frame figcaption { padding: 0 0 12px; }
 .docs-layout .oc-mermaid-actions { inset: 10px 10px auto auto; }
 .docs-layout .oc-mermaid-expand { width: 32px; height: 32px; border: 0; background: transparent; box-shadow: none; color: var(--muted); }
 .docs-layout .oc-mermaid-expand .icon { width: 16px; min-width: 16px; max-width: 16px; height: 16px; stroke-width: 1.5; }
