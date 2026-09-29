@@ -7477,6 +7477,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Allowlist the commands
   - H2: Point exec at the node
   - H2: Invoking commands
+  - H2: Codex sessions on a node
   - H2: Exec node binding
 
 ## nodes/node-host.md
@@ -7489,6 +7490,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Remote gateway via SSH tunnel (loopback bind)
   - H3: Restrict the node command surface
   - H3: Start a node host (service)
+  - H3: Session-host workspace permissions
   - H3: Automatic node updates
   - H3: Pair + name
   - H3: Headless identity state
