@@ -244,3 +244,6 @@
 .docs-layout .docs-chat-launcher:active { transform: scale(.97); }
 @media (hover:hover) and (pointer:fine) {
   .docs-layout .docs-chat-launcher:hover { border-color: color-mix(in srgb,var(--ink) 30%,var(--paper)); background: color-mix(in srgb,var(--ink) 4%,var(--paper)); }}
+@media (min-width:821px) {
+  .docs-layout:dir(rtl) :is(.docs-sidebar-directory, .docs-sidebar-context > .docs-sections) { padding-block-end: 88px; }
+}
