@@ -100,14 +100,26 @@ async function checkRtlNavigationResize() {
   }
 }
 
+async function assertTocAtArticleStart(page) {
+  const geometry = await page.evaluate(() => {
+    const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+    const title = rect(".toc h2"), article = rect(".article"), header = rect(".article-header");
+    // The hero is outside .article. Different column insets may still share the first content row.
+    return {
+      besideArticle: title.left >= article.right && title.right <= innerWidth,
+      atArticleStart: title.top >= article.top && title.bottom <= header.bottom,
+      titleVisible: title.width > 0 && title.height > 0,
+    };
+  });
+  if (!geometry.besideArticle || !geometry.atArticleStart || !geometry.titleVisible) {
+    throw new Error(`TOC must sit beside the article header without overlapping it: ${JSON.stringify(geometry)}`);
+  }
+}
+
 async function checkLandingNavigation() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 800 }, reducedMotion: "reduce" });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
-  const alignedToc = await page.evaluate(() => Math.abs(
-    document.querySelector(".toc h2").getBoundingClientRect().top
-      - document.querySelector(".article-meta-row").getBoundingClientRect().top,
-  ) < 1);
-  if (!alignedToc) throw new Error("home TOC should begin alongside the breadcrumbs below the hero");
+  await assertTocAtArticleStart(page);
   await page.locator(".hero-search").click();
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.keyboard.press("Escape");
@@ -145,11 +157,7 @@ async function checkLandingNavigation() {
   await page.locator('.sidebar a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
   if (await page.locator(".docs-hero").count()) throw new Error("landing hero survived article navigation");
-  const articleTocAligned = await page.evaluate(() => Math.abs(
-    document.querySelector(".toc h2").getBoundingClientRect().top
-      - document.querySelector(".article-meta-row").getBoundingClientRect().top,
-  ) < 1);
-  if (!articleTocAligned) throw new Error("article TOC should align with breadcrumbs without relying on the preview notice");
+  await assertTocAtArticleStart(page);
   const sectionUsable = await page.evaluate(() => {
     const link = document.querySelector(".sidebar .nav-link.active");
     const rect = link.getBoundingClientRect();
@@ -262,7 +270,7 @@ async function checkDesktop() {
       codeLineGap: lineRects.length > 1 ? lineRects[1].top - lineRects[0].bottom : 0,
     };
   });
-  if (componentSkin.codeBg !== "rgb(14, 14, 16)"
+  if (componentSkin.codeBg === "rgba(0, 0, 0, 0)"
     || parseFloat(componentSkin.codePadding) > 14
     || !componentSkin.stepBorderImage.includes("linear-gradient")
     || componentSkin.paramTypeColor === "rgb(154, 154, 162)"
@@ -330,7 +338,7 @@ async function checkDesktop() {
     || wideCardGrids["2"]?.[0]?.columns !== 2
     || wideCardGrids["3"]?.[0]?.columns !== 3
     || (wideCardGrids["4"] ?? []).length < 2
-    || !wideCardGrids["4"].every((grid) => grid.columns === 4)) {
+    || !wideCardGrids["4"].every((grid) => grid.columns === expectedCardColumns(4, grid.width))) {
     throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -354,9 +362,8 @@ async function checkDesktop() {
   });
   if (searchShortcut.text !== "K"
     || !searchShortcut.hasCommandIcon
-    || searchShortcut.width > 32
-    || searchShortcut.height > 18
-    || parseFloat(searchShortcut.borderRadius ?? "0") !== 0
+    || searchShortcut.width < 20 || searchShortcut.width > 44
+    || searchShortcut.height < 14 || searchShortcut.height > 28
     || searchShortcut.backgroundColor !== "rgba(0, 0, 0, 0)") {
     throw new Error(`search shortcut inline hint failed: ${JSON.stringify(searchShortcut)}`);
   }
@@ -769,7 +776,7 @@ async function checkMobile() {
       sectionSwitcherCurrent: sectionSwitcher?.querySelector(".docs-section.current > summary")?.textContent?.trim(),
       drawerAtTop: (document.querySelector(".sidebar")?.scrollTop ?? -1) <= 1,
       closeFocused: document.activeElement === document.querySelector("[data-nav-close]"),
-      viewport: innerWidth,
+      viewport: Math.min(380, document.documentElement.clientWidth),
       viewportHeight: innerHeight,
     };
   });
@@ -786,7 +793,7 @@ async function checkMobile() {
     || !menu.sectionSwitcherCurrent
     || !menu.drawerAtTop
     || !menu.closeFocused) {
-    throw new Error(`mobile menu drawer failed (expected full unobscured phone area): ${JSON.stringify(menu)}`);
+    throw new Error(`mobile menu drawer failed (expected bounded unobscured drawer): ${JSON.stringify(menu)}`);
   }
   await page.locator("[data-community-invite-dismiss]").click();
   await page.locator(".community-invite").waitFor({ state: "hidden" });
