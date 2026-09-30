@@ -23,10 +23,6 @@
 @media (prefers-reduced-motion:reduce) {
  .docs-layout .doc .release-strip::before, .release-strip-action svg { transition-duration:100ms; }
 }
-[data-release-version] [data-release-new] { display:none; }
-[data-release-unread] [data-release-new] { display:inline; }
-[data-release-unread] [data-release-latest] { display:none; }
-.release-strip:not([data-release-unread]) .release-strip-label i { background:var(--muted); opacity:.55; }
 @media(max-width:1100px) and (min-width:821px), (max-width:600px) {
  .docs-layout .doc .release-strip { flex-direction:column; align-items:flex-start; gap:14px; padding:18px; }
  .release-strip-body { flex-direction:column; align-items:flex-start; gap:14px; }

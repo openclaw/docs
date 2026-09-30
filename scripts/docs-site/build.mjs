@@ -362,7 +362,7 @@ ${sidebar(page, nav, activeTab)}
 ${home ? homeAsciiArt : ""}
 <div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
 ${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
-<main class="article" id="main"${announcement && page === announcedReleasePage ? ` data-release-page="${escapeAttr(announcement.version)}"` : ""}>
+<main class="article" id="main">
 <header class="article-header">
 ${articleMeta(page, nav)}
 ${page.hidden ? "" : pageMarkdownScript(page)}

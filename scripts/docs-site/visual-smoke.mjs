@@ -216,10 +216,10 @@ async function checkLandingNavigation() {
     await page.setViewportSize({ width, height: 800 });
     const description = await page.locator(".home-description").evaluate((node) => {
       const rect = node.getBoundingClientRect();
-      return { height: rect.height, lineHeight: parseFloat(getComputedStyle(node).lineHeight), bounded: rect.left >= 0 && rect.right <= innerWidth };
+      return { text: node.innerText.replace(/\s+/g, " ").trim(), bounded: rect.left >= 0 && rect.right <= innerWidth, clipped: node.scrollHeight > node.clientHeight + 1 };
     });
-    if (!description.bounded || description.height > description.lineHeight * 2 + 1) {
-      throw new Error(`Homepage description must fit in two lines (${width}px): ${JSON.stringify(description)}`);
+    if (!description.bounded || description.clipped || description.text !== "Your AI assistant, right in the chat apps you already use. Open source and on your machine, ready to help with email, calendars, and the rest of your day.") {
+      throw new Error(`Homepage must show the full introduction at every width (${width}px): ${JSON.stringify(description)}`);
     }
   }
   await page.setViewportSize({ width: 1440, height: 800 });
