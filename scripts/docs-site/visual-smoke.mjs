@@ -34,6 +34,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 
 try {
+  await checkLanguageSelection();
   await checkAccordionNavigation();
   await checkLandingNavigation();
   await checkDesktop();
@@ -46,6 +47,58 @@ try {
 } finally {
   await browser.close();
   server.close();
+}
+
+async function checkLanguageSelection() {
+  const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
+  try {
+    await page.goto(`${base}/`, { waitUntil: "networkidle" });
+    if (await page.locator("[data-locale-option]").count() < 2) throw new Error("language selection requires the full locale menu");
+    const lastLocale = await page.locator("[data-locale-option]").last().getAttribute("href");
+    await page.locator("[data-language-trigger]").click();
+    await page.keyboard.press("End");
+    await page.keyboard.press("Enter");
+    await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === lastLocale.replace(/\/$/, ""));
+    const routes = [lastLocale];
+    if (fs.existsSync(path.join(site, "ar/index.html"))) routes.push("/ar/");
+    for (const route of routes) {
+      for (const width of [320, 390]) {
+        await page.setViewportSize({ width, height: 600 });
+        await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+        await page.evaluate(() => scrollTo({ top: 160, behavior: "instant" }));
+        const before = await page.evaluate(() => scrollY);
+        const trigger = await page.locator("[data-language-trigger]").boundingBox();
+        // Locator clicks may scroll a sticky header to its original document position.
+        await page.mouse.click(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
+        const opened = await page.evaluate(() => {
+          const option = document.activeElement;
+          const menu = document.querySelector(".language-menu").getBoundingClientRect();
+          const selected = option.getBoundingClientRect();
+          return {
+            selected: option.matches("[data-locale-option][aria-selected=true]"),
+            visible: selected.top >= menu.top && selected.bottom <= menu.bottom,
+            bounded: menu.left >= 0 && menu.right <= innerWidth && menu.top >= document.querySelector(".site-header").getBoundingClientRect().bottom && menu.bottom <= innerHeight,
+            scrollY,
+          };
+        });
+        if (!opened.selected || !opened.visible || !opened.bounded || opened.scrollY !== before) {
+          throw new Error(`language menu must reveal the selected locale without moving the page (${route}, ${width}px): ${JSON.stringify(opened)}`);
+        }
+        for (const viewport of [{ width: 1440, height: 900 }, { width, height: 600 }, { width, height: 420 }]) {
+          await page.setViewportSize(viewport);
+          await page.waitForFunction(() => {
+            const option = document.activeElement;
+            const menu = option?.closest(".language-menu")?.getBoundingClientRect();
+            const selected = option?.getBoundingClientRect();
+            return option?.matches("[data-locale-option][aria-selected=true]") && menu
+              && selected.top >= menu.top && selected.bottom <= menu.bottom;
+          }, null, { timeout: 3000 });
+        }
+        await page.keyboard.press("Escape");
+        await page.waitForFunction(() => document.activeElement?.matches("[data-language-trigger]"));
+      }
+    }
+  } finally { await page.close(); }
 }
 
 async function checkAccordionNavigation() {
@@ -994,9 +1047,9 @@ async function checkMobileKeyboardOverlays(page) {
     await page.keyboard.press("Tab");
     const focused = await page.evaluate(() => ({
       hiddenPanel: Boolean(document.activeElement?.closest(".sidebar,.community-invite")),
-      duplicateLanguage: document.activeElement?.matches("[data-language-trigger]"),
+      hiddenLanguageOption: Boolean(document.activeElement?.closest(".language-picker:not(.open) .language-menu")),
     }));
-    if (focused.hiddenPanel || focused.duplicateLanguage) {
+    if (focused.hiddenPanel || focused.hiddenLanguageOption) {
       throw new Error(`closed phone controls accepted keyboard focus: ${JSON.stringify(focused)}`);
     }
   }
@@ -1078,17 +1131,32 @@ async function checkMobileKeyboardOverlays(page) {
   const viewport = page.viewportSize();
   await page.setViewportSize({ width: 1440, height: viewport.height });
   await page.click("[data-language-trigger]");
-  await page.keyboard.press("Tab");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-locale-option][aria-selected=true]"));
   await page.setViewportSize(viewport);
-  await page.waitForFunction(() => document.activeElement?.matches("[data-language-native]"));
-  await page.setViewportSize({ width: 1440, height: viewport.height });
+  await page.waitForFunction(() => {
+    const option = document.activeElement;
+    const menu = option?.closest(".language-menu");
+    if (!menu || !option.matches("[data-locale-option]")) return false;
+    const rect = menu.getBoundingClientRect();
+    return rect.left >= 0 && rect.right <= innerWidth && rect.top >= document.querySelector(".site-header").getBoundingClientRect().bottom && rect.bottom <= innerHeight;
+  });
+  const firstLocale = await page.locator("[data-locale-option]").first().getAttribute("href");
+  const lastLocale = await page.locator("[data-locale-option]").last().getAttribute("href");
+  await page.keyboard.press("End");
+  if (await page.evaluate(() => document.activeElement?.getAttribute("href")) !== lastLocale) throw new Error("language menu End did not reach the last locale");
+  await page.keyboard.press("ArrowDown");
+  if (await page.evaluate(() => document.activeElement?.getAttribute("href")) !== firstLocale) throw new Error("language menu did not wrap to the first locale");
+  await page.keyboard.press("Escape");
   await page.waitForFunction(() => document.activeElement?.matches("[data-language-trigger]"));
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-search-open]"));
+  await page.locator("[data-language-trigger]").focus();
+  await page.setViewportSize({ width: 1440, height: viewport.height });
   await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.setViewportSize(viewport);
-  await page.waitForFunction(() => document.querySelector("[data-language-native]")?.getAttribute("aria-hidden") === "false");
   await page.keyboard.press("Escape");
-  await page.waitForFunction(() => document.activeElement?.matches("[data-language-native]"));
+  await page.waitForFunction(() => document.activeElement?.matches("[data-language-trigger]"));
   await page.setViewportSize({ width: 1440, height: viewport.height });
   await page.click(".site-header [data-search-open]");
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
