@@ -294,6 +294,13 @@ source and caller authority remain checked at admission and commit. General
 placement getters and lifecycle guards remain separate migration work. Journal
 formats, schemas, pack limits, retention, and update behavior are unchanged.
 
+Idle auto-suspend discovery reads placement candidates, pending results, and
+workspace journals through the existing shared-state reader. It preserves
+candidate order and skips every durable pending result or journal. Per-candidate
+environment and move checks remain live, and reclaim rechecks idle policy,
+session work, and the exact placement before draining. Those synchronous guards
+remain separate migration work; suspension policy and teardown are unchanged.
+
 Worker session-tool grants and operation journals use the same shared-state
 writer. The placement authority owner publishes committed tool grants and fences
 pending revocation, so synchronous tool-grant checks do not query SQLite. Closing a
