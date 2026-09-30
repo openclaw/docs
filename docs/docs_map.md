@@ -7961,6 +7961,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Conversation in the native window
   - H2: Message times and models
   - H2: Thread view options
+  - H2: Online people
   - H2: Pending questions and approvals
   - H2: Sources
   - H2: Diagrams
