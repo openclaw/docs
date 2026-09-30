@@ -352,7 +352,7 @@
 .docs-layout .doc .docs-media-content :is(img,video,iframe) { max-width: 100%; margin: 0; vertical-align: middle; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-control); box-shadow: 0 10px 24px #24201a24,0 2px 4px #24201a0d; }
 .docs-layout .doc .docs-media-content img { width: auto; height: auto; max-height: min(520px,65svh); object-fit: contain; }
 /* Authored SVG diagrams use fixed ink colors, including over transparent areas. */
-.docs-layout .doc .docs-media-content img:is([src$=".svg" i],[src*=".svg?" i],[src*=".svg#" i]) { background: #fff; }
+.docs-layout .doc .docs-media-content img:is([src$=".svg" i],[src*=".svg?" i],[src*=".svg#" i]) { background: #fff; background-clip: padding-box; }
 .docs-layout .docs-media-content .oc-frame { padding: 16px; }
 .docs-layout .docs-media-content .oc-frame figcaption { padding: 0 0 12px; }
 .docs-layout .oc-mermaid-actions { inset: 10px 10px auto auto; }
@@ -587,6 +587,16 @@
 /* Keep the link inset inside the scrollers so their tracks meet the sidebar edge. */
 .docs-sidebar-directory, .docs-sidebar-context > .docs-sections { padding-inline-end: var(--docs-sidebar-inset-end); }
 .docs-sidebar-directory, .docs-sidebar-context > .docs-sections { --nav-fade-top: 0px; --nav-fade-bottom: 0px; scrollbar-width: thin; scrollbar-gutter: stable; overscroll-behavior-y: contain; scroll-padding-block: 32px; mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade-top), #000 calc(100% - var(--nav-fade-bottom)), transparent), linear-gradient(#000, #000), linear-gradient(#000, #000); mask-size: 100% 100%, 12px 100%, 12px 100%; mask-position: center, left, right; mask-repeat: no-repeat; }
+/* Both navigation levels inherit the thumb color; keep the gutter stable during the fade. */
+@property --docs-sidebar-thumb { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@media (hover:hover) and (pointer:fine) {
+  .docs-layout .sidebar { --docs-sidebar-thumb: transparent; scrollbar-color: var(--docs-sidebar-thumb) transparent; transition: --docs-sidebar-thumb var(--oc-duration-ui) ease, transform var(--oc-duration-ui) var(--oc-ease-out); }
+  .docs-layout .sidebar:hover { --docs-sidebar-thumb: color-mix(in srgb,var(--muted) 42%,transparent); transition-duration: var(--oc-duration-fast), var(--oc-duration-ui); }
+  .docs-layout .sidebar:has(:focus-visible) { --docs-sidebar-thumb: color-mix(in srgb,var(--muted) 42%,transparent); transition-duration: 0s, var(--oc-duration-ui); }
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce) {
+  .docs-layout .sidebar { transition-property: --docs-sidebar-thumb; transition-duration: var(--oc-duration-fast); }
+}
 .docs-sidebar-levels .can-scroll-up { --nav-fade-top: 28px; }
 .docs-sidebar-levels .can-scroll-down { --nav-fade-bottom: 36px; }
 .docs-sidebar-levels[data-level="section"] .docs-sidebar-directory,
@@ -598,7 +608,7 @@
 .docs-sidebar-levels[data-instant="true"] > * { transition: none; }
 .docs-section-trigger, .docs-sidebar-back { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: var(--oc-radius-control); padding: 10px; color: var(--docs-muted); background: transparent; font: 400 13px/1.4 var(--oc-font-body); text-align: start; cursor: pointer; }
 .docs-section-trigger { min-height: 38px; padding-block: 8px; font-size: 14px; line-height: 22px; }
-.docs-section-trigger .icon { width: 12px; height: 12px; flex: 0 0 12px; margin-inline-start: auto; transform: rotate(-90deg); color: var(--muted); opacity: .42; stroke-width: 1.5; }
+.docs-section-trigger .icon { width: 12px; min-width: 12px; height: 12px; flex: 0 0 12px; margin-inline-start: auto; transform: rotate(-90deg); color: var(--muted); opacity: .42; stroke-width: 1.5; }
 :root[dir="rtl"] .docs-section-trigger .icon { transform: rotate(90deg); }
 .docs-section-trigger[aria-current="true"] { color: var(--ink); font-weight: 600; }
 .docs-sidebar-back { flex-shrink: 0; width: calc(100% - var(--docs-sidebar-inset-end)); margin-block: 16px; background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); color: var(--ink); font-size: 14px; font-weight: 600; }
