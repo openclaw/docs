@@ -42,7 +42,7 @@ test("requested pages outside navigation fit inside the 30-page preview, includi
   assert.equal([...sidebar.slice(sidebar.indexOf('<nav class="docs-sections"')).matchAll(/class="nav-link/g)].length, 35);
   assert.match(sidebar, /href="\/guide\/page-0"/);
   assert.match(sidebar, /href="https:\/\/docs\.openclaw\.ai\/guide\/page-34" data-preview-live/);
-  assert.match(html, /Full navigation shown; 30 pages built locally/);
+  assert.doesNotMatch(html, /aria-label="Local preview"/);
   assert.match(html, /href="https:\/\/docs\.openclaw\.ai\/guide\/page-34"/);
   for (const file of ["fr", "sitemap.xml", "llms.txt", "robots.txt", "og"]) {
     assert.equal(fs.existsSync(path.join(f.site, file)), false, file);

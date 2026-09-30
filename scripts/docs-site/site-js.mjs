@@ -18,6 +18,8 @@ ${createHomeGlimm.toString()}
 const homeGlimm=createHomeGlimm(()=>import(withBase(${JSON.stringify("/assets/" + glimmAssetName)})));
 let disposeHomeHero=()=>{};function initHomeHero(){disposeHomeHero();const disposeHero=mountOpenClawHeroArt(document.querySelector(".docs-hero"));const disposeAscii=mountHomeAscii(document.querySelector(".home-ascii"));disposeHomeHero=()=>{disposeHero();disposeAscii()}}
 const root=document.documentElement;const saved=localStorage.getItem("theme");root.dataset.theme=saved||"dark";
+function syncHeaderSurface(){document.querySelector(".site-header")?.classList.toggle("is-scrolled",window.scrollY>4)}
+syncHeaderSurface();addEventListener("scroll",syncHeaderSurface,{passive:true});
 const modal=document.querySelector(".search-modal");const input=document.querySelector("[data-search-input]");const results=document.querySelector("[data-search-results]");const moltySearch=document.querySelector("[data-search-molty]");const moltySearchPrefix=document.querySelector("[data-search-molty-prefix]");const moltySearchTerm=document.querySelector("[data-search-molty-term]");let pagefindReady;let pagefindLoadAttempt=0;let navigating=false;let searchActiveIndex=-1;
 function withBase(url){const base=window.OPENCLAW_DOCS_BASE||"";if(!base||!url.startsWith("/"))return url;return url===base||url.startsWith(base+"/")?url:base+url}
 function closeLanguage(){const picker=document.querySelector("[data-language-picker]");const trigger=document.querySelector("[data-language-trigger]");const restore=picker?.querySelector(".language-menu")?.contains(document.activeElement);picker?.classList.remove("open");trigger?.setAttribute("aria-expanded","false");if(restore)trigger?.focus({preventScroll:true})}
