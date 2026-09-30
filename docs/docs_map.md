@@ -115,6 +115,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Agent-turn options
   - H3: Command payloads
   - H3: Script payloads
+  - H2: Authoring recurring jobs
   - H2: Execution styles
   - H3: Codex apps in scheduled automations
 
