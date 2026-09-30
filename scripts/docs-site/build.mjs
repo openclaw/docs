@@ -350,7 +350,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 </head>
 <body class="oc-app-surface docs-layout${page.slug === "index" ? " docs-home" : ""}${home ? " docs-home-layout" : ""}">
 ${siteHeader(page)}
-${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ↗ open live docs.</aside>` : ""}
+${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ${icon("external-link")} open live docs.</aside>` : ""}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
@@ -516,7 +516,7 @@ function pageTools(page) {
 }
 
 function pageActionLink(title, description, href, iconName) {
-  return `<a class="page-action" href="${escapeAttr(href)}" target="_blank" rel="noreferrer">${icon(iconName)}<span><strong>${escapeHtml(title)}</strong><small>${escapeHtml(description)}</small></span><span class="page-action-external" aria-hidden="true">↗</span></a>`;
+  return `<a class="page-action" href="${escapeAttr(href)}" target="_blank" rel="noreferrer">${icon(iconName)}<span><strong>${escapeHtml(title)}</strong><small>${escapeHtml(description)}</small></span><span class="page-action-external" aria-hidden="true">${icon("external-link")}</span></a>`;
 }
 
 function assistantUrl(baseUrl, extraQuery, prompt) {
@@ -569,6 +569,7 @@ function icon(name) {
     "list-checks": '<path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/>',
     "settings": '<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>',
     "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    "external-link": '<path d="M15 3h6v6"/><path d="m21 3-11 11"/><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>',
     "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
     "command": '<path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/>',
     "corner-down-left": '<path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/>',
