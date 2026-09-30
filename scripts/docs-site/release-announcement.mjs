@@ -19,5 +19,5 @@ export function releaseBadgeHtml(release) {
 
 export function releaseStripHtml(release, icon) {
   if (!release) return "";
-  return `<a class="release-strip" href="${escape(release.href)}"><span class="release-strip-body"><span class="release-strip-heading"><span class="release-strip-label"><i aria-hidden="true"></i>New release</span><span class="release-strip-version">v${escape(release.version)}</span></span><span class="release-strip-summary">${escape(release.summary)}</span></span><span class="release-strip-action"><span class="release-strip-action-label">Read release notes</span> ${icon("arrow-right")}</span></a>`;
+  return `<a class="release-strip" href="${escape(release.href)}"><span class="release-strip-body"><span class="release-strip-heading"><span class="release-strip-label">New release</span><i aria-hidden="true"></i><span class="release-strip-version">v${escape(release.version)}</span></span><span class="release-strip-summary">${escape(release.summary)}</span></span><span class="release-strip-action"><span class="release-strip-action-label">Read release notes</span> ${icon("arrow-right")}</span></a>`;
 }
