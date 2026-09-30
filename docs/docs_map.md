@@ -12000,6 +12000,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Naming map
   - H2: Implicit agent runtime
   - H2: Agents API MVP
+  - H3: What works with a hosted VM
+  - H3: Set up Agents API
+  - H3: Sessions and instructions
+  - H3: Tools, MCP, and files
+  - H3: Current limits and other environments
   - H2: Native Codex app-server auth
 
 ## providers/openai/setup.md
