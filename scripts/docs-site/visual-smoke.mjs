@@ -67,7 +67,9 @@ async function checkLanguageSelection() {
         await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
         await page.evaluate(() => scrollTo({ top: 160, behavior: "instant" }));
         const before = await page.evaluate(() => scrollY);
-        await page.locator("[data-language-trigger]").click();
+        const trigger = await page.locator("[data-language-trigger]").boundingBox();
+        // Locator clicks may scroll a sticky header to its original document position.
+        await page.mouse.click(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
         const opened = await page.evaluate(() => {
           const option = document.activeElement;
           const menu = document.querySelector(".language-menu").getBoundingClientRect();
@@ -81,6 +83,16 @@ async function checkLanguageSelection() {
         });
         if (!opened.selected || !opened.visible || !opened.bounded || opened.scrollY !== before) {
           throw new Error(`language menu must reveal the selected locale without moving the page (${route}, ${width}px): ${JSON.stringify(opened)}`);
+        }
+        for (const viewport of [{ width: 1440, height: 900 }, { width, height: 600 }, { width, height: 420 }]) {
+          await page.setViewportSize(viewport);
+          await page.waitForFunction(() => {
+            const option = document.activeElement;
+            const menu = option?.closest(".language-menu")?.getBoundingClientRect();
+            const selected = option?.getBoundingClientRect();
+            return option?.matches("[data-locale-option][aria-selected=true]") && menu
+              && selected.top >= menu.top && selected.bottom <= menu.bottom;
+          }, null, { timeout: 3000 });
         }
         await page.keyboard.press("Escape");
         await page.waitForFunction(() => document.activeElement?.matches("[data-language-trigger]"));
