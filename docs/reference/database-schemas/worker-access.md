@@ -264,6 +264,18 @@ claims; uncertain writes retain recovery custody and are not replayed. Other
 placement lifecycle methods and their synchronous guards remain separate
 migration work. Schemas, stored fields, and update behavior are unchanged.
 
+Worker session-tool grants and operation journals use the same shared-state
+writer. The placement authority owner publishes committed tool grants and fences
+pending revocation, so synchronous tool-grant checks do not query SQLite. Closing a
+turn seals new tool admission immediately, then joins already accepted operation
+settlement before clearing replay state. A committed receipt survives reply loss;
+an uncertain write fences further effects and reports recovery instead of replaying
+the operation or waiting indefinitely. Source, child, and sibling-parent reads use
+the existing session reader worker with incarnation admission and captured physical
+store targets. The retained transcript owner still validates its lifecycle revision
+and writer identity through its existing source guard. Schemas, journal retention,
+restart recovery, and update behavior are unchanged.
+
 Memory session preparation retains only export text, provenance, timestamps, and
 classification/reset facts from each decoded SQLite event. Full-message observers
 retain their original snapshot, and callbacks run after its read transaction closes.
