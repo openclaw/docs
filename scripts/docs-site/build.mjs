@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { releaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
 import { homeContentHtml } from "./home-content.mjs";
 import { homeLayoutHtml } from "./home-layout.mjs";
 import { homeAsciiArt } from "./home-ascii.mjs";
@@ -89,6 +90,11 @@ if (previewMode && !localeCodes.has(previewLocale)) {
 }
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
+const announcedReleasePage = releaseAnnouncement
+  ? allPageByKey.get(pageKey("en", `releases/${releaseAnnouncement.version}`))
+  : null;
+// Never publish an announcement that leads to an absent or hidden page.
+const announcement = announcedReleasePage && !announcedReleasePage.hidden ? releaseAnnouncement : null;
 let pages = allPages;
 let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
@@ -291,7 +297,7 @@ function writePage(page) {
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
   const options = { sourceFile: page.file, root: sourceRoot, pageRoute: pageRoute(page) };
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
-  const composed = page.slug === "index" && page.locale === "en" ? homeLayoutHtml(article, icon) : article;
+  const composed = page.slug === "index" && page.locale === "en" ? homeLayoutHtml(article, icon, announcement ? { ...announcement, href: pageRoute(announcedReleasePage) } : null) : article;
   const html = rewriteInternalUrls(composed, page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
@@ -357,7 +363,7 @@ ${sidebar(page, nav, activeTab)}
 ${home ? homeAsciiArt : ""}
 <div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
 ${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
-<main class="article" id="main">
+<main class="article" id="main"${announcement && page === announcedReleasePage ? ` data-release-page="${escapeAttr(announcement.version)}"` : ""}>
 <header class="article-header">
 ${articleMeta(page, nav)}
 ${page.hidden ? "" : pageMarkdownScript(page)}
@@ -433,7 +439,8 @@ function sidebar(page, nav, activeTab) {
 ${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
 <nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
     const current = tab.title === activeTab;
-    return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
+    const release = page.locale === "en" && announcement && flattenNav([tab]).includes(announcedReleasePage) ? announcement : null;
+    return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${releaseVersionHtml(release)}${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
   }).join("")}</nav>
 <div class="sidebar-tools">
 <nav class="sidebar-socials" aria-label="Community links"><a href="https://github.com/openclaw/openclaw">${icon("github")}<span>GitHub</span></a><a href="https://discord.com/invite/clawd">${icon("discord")}<span>Discord</span></a></nav>
@@ -609,7 +616,7 @@ function navEntryHtml(activePage, entry) {
 
 function navLink(activePage, page) {
   const active = activePage.locale === page.locale && activePage.slug === page.slug ? " active" : "";
-  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}</a>`;
+  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${announcement && page === announcedReleasePage ? releaseBadgeHtml(announcement) : ""}</a>`;
 }
 
 function tableOfContents(html) {

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 
+const releaseAnnouncementCss = fs.readFileSync(new URL("./release-announcement.css", import.meta.url), "utf8");
 const maturityCss = fs.readFileSync(new URL("./maturity.css", import.meta.url), "utf8");
 const docsLayoutCss = fs.readFileSync(new URL("./docs-layout.css", import.meta.url), "utf8");
 const siteLayoutCss = fs.readFileSync(new URL("./site-layout.css", import.meta.url), "utf8");
@@ -263,5 +264,6 @@ html{scroll-padding-top:calc(var(--sticky-header-h) + 54px)}
 ${maturityCss}
 ${siteLayoutCss}
 ${docsLayoutCss}
+${releaseAnnouncementCss}
 `;
 }

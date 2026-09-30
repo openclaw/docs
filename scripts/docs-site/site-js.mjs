@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createReleaseAnnouncements } from "./release-announcement-runtime.mjs";
 import { initSidebarLevels } from "./sidebar-levels.mjs";
 import { homeAsciiGlyph, mountHomeAscii } from "./home-ascii.mjs";
 import { createHomeGlimm } from "./home-glimm.mjs";
@@ -12,6 +13,8 @@ export function siteJs() {
   return `
 ${heroRuntime}
 ${initSidebarLevels.toString()}
+${createReleaseAnnouncements.toString()}
+const syncReleaseAnnouncements=createReleaseAnnouncements();
 ${homeAsciiGlyph.toString()}
 ${mountHomeAscii.toString()}
 ${createHomeGlimm.toString()}
@@ -96,6 +99,8 @@ if(focused&&document.activeElement!==search)search.focus({preventScroll:true});
 }
 mobileNavQuery.addEventListener("change",()=>{const restoreNavigation=navigationFocusOwned;if(!mobileNavQuery.matches)setNavOpen(false);syncSidebarAccess();syncHeaderSearchPosition();if(restoreNavigation&&!modal?.classList.contains("open")&&!isUsableFocusTarget(document.activeElement)){const target=mobileNavQuery.matches?document.querySelector("[data-nav-toggle]"):([...document.querySelectorAll(".docs-sidebar-back,.docs-section-trigger,.docs-section>summary")].find(isUsableFocusTarget));target?.focus()}});
 initSidebarLevels();
+syncReleaseAnnouncements();
+window.addEventListener("storage",event=>{if(event.key==="openclaw.docs.release-seen"||event.key===null)syncReleaseAnnouncements()});
 syncSidebarAccess();
 syncHeaderSearchPosition();
 // The footer persists outside PJAX swaps. Do not let the floating invitation cover it.
@@ -205,7 +210,7 @@ function tocLinkId(link){return fragmentId(link.hash)}
 function setActiveTocLink(id){const toc=document.querySelector(".toc");if(!toc)return;let active=null;toc.querySelectorAll('a[href^="#"]').forEach(link=>{const on=Boolean(id&&tocLinkId(link)===id);link.classList.toggle("active",on);if(on)active=link});if(active){const list=active.closest(".toc");if(list&&list.scrollHeight>list.clientHeight){const lr=list.getBoundingClientRect();if(!isCompactToc()&&lr.top>parseFloat(getComputedStyle(list).top)+1)return;const ar=active.getBoundingClientRect();if(ar.top<lr.top)list.scrollTop+=ar.top-lr.top;else if(ar.bottom>lr.bottom)list.scrollTop+=ar.bottom-lr.bottom}}}
 function currentTocHeadingId(headings){const top=parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)||120;const scroller=document.scrollingElement||document.documentElement;if(scroller.scrollTop+innerHeight>=scroller.scrollHeight-2)return headings.at(-1)?.id||"";let current=headings[0];for(const heading of headings){if(heading.getBoundingClientRect().top<=top+1)current=heading;else break}return current?.id||""}
 function initTocScrollspy(){tocObserver?.disconnect();tocObserver=null;if(tocScrollHandler){removeEventListener("scroll",tocScrollHandler);tocScrollHandler=null;}const toc=document.querySelector(".toc");if(!toc)return;const links=[...toc.querySelectorAll('a[href^="#"]')];const headings=[...document.querySelectorAll(".doc h2[id],.doc h3[id]")].filter(heading=>links.some(link=>tocLinkId(link)===heading.id));links.forEach(link=>link.classList.remove("active"));if(!headings.length)return;const sync=()=>{if(Date.now()<tocSpyHoldUntil)return;setActiveTocLink(currentTocHeadingId(headings))};let tocScrollRaf=0;tocScrollHandler=()=>{cancelAnimationFrame(tocScrollRaf);tocScrollRaf=requestAnimationFrame(sync)};addEventListener("scroll",tocScrollHandler,{passive:true});requestAnimationFrame(sync);if(!("IntersectionObserver" in window)){sync();return}tocObserver=new IntersectionObserver(sync,{rootMargin:"-120px 0px -70% 0px",threshold:[0,1]});headings.forEach(heading=>tocObserver.observe(heading))}
-async function navigateTo(url,replace=false,animateHome=false){if(navigating)return false;navigating=true;if(!animateHome)homeGlimm.cancel();closeLanguage();closeMermaidOverlay();try{const res=await fetch(url.href,{credentials:"same-origin"});if(!res.ok||!res.headers.get("content-type")?.includes("text/html"))return false;const nextDoc=new DOMParser().parseFromString(await res.text(),"text/html");if(!nextDoc.querySelector(".main"))return false;const commit=()=>{disposeHomeHero();for(const name of ["docs-home","docs-home-layout"])document.body.classList.toggle(name,nextDoc.body.classList.contains(name));syncSidebar(nextDoc);swap(".header-left",nextDoc);swap(".main",nextDoc);initHomeHero();syncStickyHeaderOffset();syncTocDisclosure();initCodeGroups();initCodeFades();initAccordionMotion();initPageFeedback();initMermaid();document.title=nextDoc.title;history[replace?"replaceState":"pushState"]({docs:true},"",url.href);currentDocKey=url.pathname+url.search;setNavOpen(false);initTocScrollspy();scrollTarget(url.hash);syncCommunityInvite()};if(animateHome)await homeGlimm.run(commit);else commit();return true}catch{return false}finally{navigating=false}}
+async function navigateTo(url,replace=false,animateHome=false){if(navigating)return false;navigating=true;if(!animateHome)homeGlimm.cancel();closeLanguage();closeMermaidOverlay();try{const res=await fetch(url.href,{credentials:"same-origin"});if(!res.ok||!res.headers.get("content-type")?.includes("text/html"))return false;const nextDoc=new DOMParser().parseFromString(await res.text(),"text/html");if(!nextDoc.querySelector(".main"))return false;const commit=()=>{disposeHomeHero();for(const name of ["docs-home","docs-home-layout"])document.body.classList.toggle(name,nextDoc.body.classList.contains(name));syncSidebar(nextDoc);swap(".header-left",nextDoc);swap(".main",nextDoc);initHomeHero();syncStickyHeaderOffset();syncTocDisclosure();initCodeGroups();initCodeFades();initAccordionMotion();initPageFeedback();initMermaid();document.title=nextDoc.title;history[replace?"replaceState":"pushState"]({docs:true},"",url.href);currentDocKey=url.pathname+url.search;syncReleaseAnnouncements();setNavOpen(false);initTocScrollspy();scrollTarget(url.hash);syncCommunityInvite()};if(animateHome)await homeGlimm.run(commit);else commit();return true}catch{return false}finally{navigating=false}}
 function unavailableSearch(){return {unavailable:true,search:async()=>({results:[]})}}
 function loadPagefind(){if(pagefindReady)return pagefindReady;const src=withBase("/pagefind/pagefind.js")+(pagefindLoadAttempt?"?retry="+pagefindLoadAttempt:"");pagefindLoadAttempt+=1;pagefindReady=import(src).then(m=>m.init?.().then?.(()=>m)??m).catch(()=>{pagefindReady=null;return unavailableSearch()});return pagefindReady}
 let searchReturnFocus=null;
