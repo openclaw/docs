@@ -16,7 +16,7 @@ export function releaseVersionHtml(release) {
 }
 
 export function releaseBadgeHtml(release) {
-  return release ? ` <span class="release-entry-badge" ${attributes(release)}>${stateLabel("New", "Latest")}</span>` : "";
+  return release ? ` <span class="release-entry-badge" ${attributes(release)}><i aria-hidden="true"></i>${stateLabel("New", "Latest")}</span>` : "";
 }
 
 export function releaseStripHtml(release, icon) {
