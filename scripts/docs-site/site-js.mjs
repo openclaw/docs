@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { initSidebarLevels } from "./sidebar-levels.mjs";
-import { homeAsciiGlyph, mountHomeAscii } from "./home-ascii.mjs";
+import { mountHomeHero } from "./home-hero.mjs";
 import { createHomeGlimm } from "./home-glimm.mjs";
 import { glimmAssetName } from "./glimm-runtime.mjs";
 // The emitted runtime also supports the classic-script navigation harness.
@@ -12,11 +12,10 @@ export function siteJs() {
   return `
 ${heroRuntime}
 ${initSidebarLevels.toString()}
-${homeAsciiGlyph.toString()}
-${mountHomeAscii.toString()}
+${mountHomeHero.toString()}
 ${createHomeGlimm.toString()}
 const homeGlimm=createHomeGlimm(()=>import(withBase(${JSON.stringify("/assets/" + glimmAssetName)})));
-let disposeHomeHero=()=>{};function initHomeHero(){disposeHomeHero();const disposeHero=mountOpenClawHeroArt(document.querySelector(".docs-hero"));const disposeAscii=mountHomeAscii(document.querySelector(".home-ascii"));disposeHomeHero=()=>{disposeHero();disposeAscii()}}
+let disposeHomeHero=()=>{};function initHomeHero(){disposeHomeHero();const disposeHero=mountOpenClawHeroArt(document.querySelector(".docs-hero"));const disposeBackground=mountHomeHero(document.querySelector(".home-hero"));disposeHomeHero=()=>{disposeHero();disposeBackground()}}
 const root=document.documentElement;const saved=localStorage.getItem("theme");root.dataset.theme=saved||"dark";
 function syncHeaderSurface(){
 const header=document.querySelector(".site-header");header?.classList.toggle("is-scrolled",window.scrollY>4);
@@ -103,7 +102,6 @@ if(focused&&document.activeElement!==search)search.focus({preventScroll:true});
 }
 mobileNavQuery.addEventListener("change",()=>{const restoreNavigation=navigationFocusOwned;if(!mobileNavQuery.matches)setNavOpen(false);syncSidebarAccess();syncHeaderSearchPosition();if(restoreNavigation&&!modal?.classList.contains("open")&&!isUsableFocusTarget(document.activeElement)){const target=mobileNavQuery.matches?document.querySelector("[data-nav-toggle]"):([...document.querySelectorAll(".docs-sidebar-back,.docs-section-trigger,.docs-section>summary")].find(isUsableFocusTarget));target?.focus()}});
 initSidebarLevels();
-
 syncSidebarAccess();
 syncHeaderSearchPosition();
 // The footer persists outside PJAX swaps. Do not let the floating invitation cover it.

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { releaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
 import { homeContentHtml } from "./home-content.mjs";
 import { homeLayoutHtml } from "./home-layout.mjs";
-import { homeAsciiArt } from "./home-ascii.mjs";
+import { homeHeroArt } from "./home-hero.mjs";
 import { docsQuickNav } from "./docs-navigation.mjs";
 import path from "node:path";
 import { glimmAssetName, glimmEntry, glimmRuntime } from "./glimm-runtime.mjs";
@@ -359,7 +359,7 @@ ${siteHeader(page)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
-${home ? homeAsciiArt : ""}
+${home ? homeHeroArt : ""}
 <div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
 ${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
 <main class="article" id="main">

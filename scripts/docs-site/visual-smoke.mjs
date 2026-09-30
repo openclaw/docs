@@ -37,6 +37,7 @@ try {
   await checkLanguageSelection();
   await checkAccordionNavigation();
   await checkLandingNavigation();
+  await checkHomeHero();
   await checkCommunityBanner();
   await checkHeaderSurface();
   await checkDesktop();
@@ -246,7 +247,7 @@ async function checkLandingNavigation() {
   if (!wideColumns) throw new Error("homepage content overlaps its navigation or overflows the viewport");
   await page.locator('.docs-quick-nav a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
-  if (await page.locator(".home-layout").count()) throw new Error("landing hero survived article navigation");
+  if (await page.locator(".home-layout,.home-hero").count()) throw new Error("landing hero survived article navigation");
   await assertTocAtArticleStart(page);
   const sectionUsable = await page.evaluate(() => {
     const link = document.querySelector(".sidebar .nav-link.active");
@@ -255,13 +256,48 @@ async function checkLandingNavigation() {
   });
   if (!sectionUsable) throw new Error("current page navigation is not reachable after a route change");
   await page.goBack();
-  await page.waitForFunction(() => document.querySelectorAll(".home-ascii svg").length === 1);
-  const still = await page.locator(".home-ascii svg").textContent();
-  await page.waitForTimeout(250);
-  if (await page.locator(".home-ascii svg").textContent() !== still) {
-    throw new Error("hero animation ignored reduced-motion preference");
-  }
+  await page.locator(".home-hero").waitFor({ state: "visible" });
+  await assertHomeHero(page);
   await page.close();
+}
+
+async function assertHomeHero(page) {
+  await page.waitForFunction(() => {
+    const node = document.querySelector(".home-hero");
+    if (!node) return false;
+    const rect = node.getBoundingClientRect();
+    const main = node.parentElement.getBoundingClientRect();
+    const rtl = getComputedStyle(node).direction === "rtl";
+    const viewport = document.documentElement.clientWidth;
+    const fullBleed = rtl ? Math.abs(rect.left) < 1 : Math.abs(rect.right - viewport) < 1;
+    const clearOfSidebar = rtl ? Math.abs(rect.right - main.right) < 1 : Math.abs(rect.left - main.left) < 1;
+    return fullBleed && clearOfSidebar && rect.top + scrollY < 0
+      && document.documentElement.scrollWidth <= viewport;
+  });
+  await page.locator(".home-hero").evaluate(async (node) => {
+    const background = getComputedStyle(node, "::before").backgroundImage;
+    const image = new Image();
+    image.src = background.slice(5, -2);
+    await image.decode();
+  });
+}
+
+async function checkHomeHero() {
+  const page = await browser.newPage({ reducedMotion: "reduce" });
+  try {
+    await page.goto(`${base}/`, { waitUntil: "networkidle" });
+    for (const theme of ["dark", "light"]) {
+      if (await page.locator("html").getAttribute("data-theme") !== theme) {
+        await page.locator(".site-header [data-theme-toggle]").click();
+      }
+      for (const width of [390, 820, 1440, 1920, 2560]) {
+        await page.setViewportSize({ width, height: 900 });
+        await assertHomeHero(page);
+      }
+    }
+  } finally {
+    await page.close();
+  }
 }
 
 async function checkCommunityBanner() {

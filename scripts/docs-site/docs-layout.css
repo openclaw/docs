@@ -424,6 +424,7 @@
 .docs-layout:not(:has([data-docs-chat])) [data-search-molty] { display: none; }
 
 /* Homepage: navigation, setup, then reference content. */
+.docs-layout.docs-home-layout { position: relative; isolation: isolate; }
 .docs-layout.docs-home-layout .main { display: block; position: relative; }
 .docs-layout.docs-home-layout .main > .toc, .docs-layout.docs-home-layout .article-header, .docs-layout.docs-home-layout .page-feedback, .docs-layout.docs-home-layout .page-nav { display: none; }
 .docs-layout.docs-home-layout .article { padding: 0 48px 64px; }
@@ -431,9 +432,10 @@
 .home-heading { position: relative; isolation: isolate; display: flex; align-items: center; min-height: 192px; margin: 0; padding: 48px 0 40px; }
 .home-heading-copy { position: relative; z-index: 1; max-width: 100%; }
 .home-layout h2[tabindex="-1"]:focus { outline: none; }
-.docs-layout .home-ascii { display: none; }
-.docs-home-layout .home-ascii { position: absolute; z-index: 0; display: flex; justify-content: center; inset-block-start: 0; inset-inline: 0; height: 128px; color: var(--brand); overflow: clip; pointer-events: none; user-select: none; mask-image: linear-gradient(#000, #000b 42%, #0005 75%, transparent); }
-.home-ascii svg { position: relative; display: block; width: 100%; max-width: none; height: 100%; flex: 0 0 auto; fill: currentColor; font: 9px monospace; opacity: .58; }
+/* The artwork stays behind the header and content, inside the main pane. */
+.home-hero { --home-hero-image: url("home-hero-diagonal-dark.svg"); position: absolute; z-index: -1; inset-block-start: calc(-60px - var(--header-row-h,64px)); inset-inline: 0; height: 400px; overflow: clip; pointer-events: none; user-select: none; mask-image: linear-gradient(90deg,transparent 15%,#000 55%,#000 88%,transparent); }
+.home-hero::before { content: ""; display: block; width: 100%; height: 100%; background: var(--home-hero-image) right top / 100% 100% no-repeat; opacity: .48; mask-image: linear-gradient(#000 45%,transparent); }
+:root[data-theme="light"] .home-hero { --home-hero-image: url("home-hero-diagonal-light.svg"); }
 .docs-layout .home-heading h1 { margin: 0; font-size: 42px; font-weight: 600; letter-spacing: -1.4px; }
 .home-heading .home-description { max-width: 52rem; margin: 16px 0 0; color: var(--docs-muted); font-size: var(--docs-body-size); line-height: 1.6; }
 .home-layout > section:not(.home-heading), .home-about { padding-block: 56px; border-bottom: 1px solid var(--docs-border); }
@@ -543,7 +545,9 @@
   .docs-layout .docs-quick-nav .nav-link, .docs-layout .docs-section > summary { min-height: 44px; }
   .docs-layout .docs-section-pages .nav-link { min-height: 38px; display: flex; align-items: center; }
   .home-heading { min-height: 170px; padding: 38px 0 28px; }
-  .docs-home-layout .home-ascii { height: 140px; }
+  .home-hero { --home-hero-image: url("home-hero-diagonal-dark-mobile.svg"); inset-block-start: calc(-35px - var(--header-row-h,64px)); height: 280px; mask-image: linear-gradient(90deg,transparent 8%,#000 58%,#000 88%,transparent); }
+  .home-hero::before { opacity: .38; }
+  :root[data-theme="light"] .home-hero { --home-hero-image: url("home-hero-diagonal-light-mobile.svg"); }
   .docs-layout .home-heading h1 { font-size: 36px; }
   .home-layout > section:not(.home-heading), .home-about { padding-block: 34px; }}
 @media (max-width:580px) {
