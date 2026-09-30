@@ -1,12 +1,13 @@
 export function createHomeGlimm(load) {
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const desktopPointer = matchMedia("(min-width: 821px) and (hover: hover) and (pointer: fine)");
   let modulePromise;
   let glimm;
   let active;
   let preloadScheduled = false;
 
   function prepare() {
-    if (reducedMotion.matches || document.hidden) return Promise.resolve(null);
+    if (!desktopPointer.matches || reducedMotion.matches || document.hidden) return Promise.resolve(null);
     return modulePromise ??= load().then((module) => glimm = module).catch(() => {
       modulePromise = null;
       return null;
@@ -18,7 +19,7 @@ export function createHomeGlimm(load) {
   }
 
   function schedulePreload() {
-    if (preloadScheduled || modulePromise || reducedMotion.matches || document.hidden || document.readyState !== "complete") return;
+    if (preloadScheduled || modulePromise || !desktopPointer.matches || reducedMotion.matches || document.hidden || document.readyState !== "complete") return;
     preloadScheduled = true;
     // Leave initial rendering and page assets alone; importing creates no GPU work.
     setTimeout(() => {
@@ -30,7 +31,7 @@ export function createHomeGlimm(load) {
 
   function run(commit) {
     cancel();
-    if (!glimm || reducedMotion.matches || document.hidden) return Promise.resolve().then(commit);
+    if (!glimm || !desktopPointer.matches || reducedMotion.matches || document.hidden) return Promise.resolve().then(commit);
 
     return new Promise((resolve, reject) => {
       let canvas, shader, sweep;
@@ -81,6 +82,7 @@ export function createHomeGlimm(load) {
   if (document.readyState === "complete") schedulePreload();
   else window.addEventListener("load", schedulePreload, { once: true });
   reducedMotion.addEventListener("change", () => { cancel(); schedulePreload(); });
+  desktopPointer.addEventListener("change", () => { cancel(); schedulePreload(); });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) cancel();
     else if (document.readyState === "complete") schedulePreload();

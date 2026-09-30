@@ -5,7 +5,7 @@
 .docs-layout .nav-link:has(.release-entry-badge) { display:flex; align-items:center; gap:8px; }
 .release-entry-badge { display:inline-flex; align-items:center; gap:5px; padding:1px 5px; border-radius:4px; color:color-mix(in srgb,var(--brand) 70%,var(--ink)); background:color-mix(in srgb,var(--brand) 9%,transparent); font:500 10px/1.5 var(--oc-font-body); }
 /* One link: release identity, summary, then action; stacked on narrow screens. */
-.docs-layout .doc .release-strip { position:relative; isolation:isolate; display:flex; align-items:center; justify-content:space-between; gap:42px; margin:0 0 24px; padding:20px 22px; border:1px solid var(--docs-border); border-radius:12px; background:var(--docs-surface); color:var(--ink); text-decoration:none; box-shadow:var(--docs-surface-shadow); }
+.docs-layout .doc .release-strip { position:relative; isolation:isolate; display:flex; align-items:center; justify-content:space-between; gap:42px; margin:0 0 24px; padding:20px 22px; border:1px solid var(--docs-border); border-radius:var(--oc-radius-lg); background:var(--docs-surface); color:var(--ink); text-decoration:none; box-shadow:var(--docs-surface-shadow); }
 .release-strip-body { position:relative; z-index:1; display:flex; align-items:center; gap:42px; min-width:0; }
 .release-strip-heading { display:flex; flex-direction:column; align-items:flex-start; gap:5px; min-width:132px; flex:none; }
 .release-strip-label { display:inline-flex; align-items:center; gap:7px; color:var(--docs-muted); font:400 11px/1.5 var(--oc-font-body); }
@@ -13,7 +13,7 @@
 .release-strip-summary { color:var(--docs-muted); font:400 14px/1.5 var(--oc-font-body); text-wrap:pretty; min-width:0; }
 .release-strip-action { position:relative; z-index:1; display:inline-flex; align-items:center; gap:12px; flex:none; font:500 12px/1.5 var(--oc-font-body); color:var(--ink); white-space:nowrap; }
 .release-strip-action svg { flex:0 0 16px; color:var(--ink); opacity:.48; transition:opacity 160ms ease; }
-.docs-layout .doc .release-strip::before { content:""; position:absolute; inset:1px; border-radius:11px; background:var(--ink); opacity:0; pointer-events:none; transition:opacity 160ms ease; }
+.docs-layout .doc .release-strip::before { content:""; position:absolute; inset:1px; border-radius:calc(var(--oc-radius-lg) - 1px); corner-shape:inherit; background:var(--ink); opacity:0; pointer-events:none; transition:opacity 160ms ease; }
 .docs-layout .doc .release-strip:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
 @media (hover:hover) and (pointer:fine) {
  .docs-layout .doc .release-strip:hover { border-color:var(--docs-border); color:var(--ink); }
