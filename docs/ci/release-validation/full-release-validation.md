@@ -81,7 +81,11 @@ Docker seed runs all six lanes in every ordinary manual/release scope:
 `npm-beta` and `npm-stable` qualification. The survivor uses `legacy-operator-state`
 with `auto-auth`, so the published driver must update
 the running managed Gateway. Every admitted canonical main run retains this
-exact combination; PRs select Docker seed and QA Smoke through their owner maps.
+exact combination. Frozen targets retain it when their declared scenario catalog
+supports `legacy-operator-state`; historical targets retain `base` with `auto-auth`.
+Missing historical catalogs keep that fallback; malformed or invalid catalogs fail.
+PRs defer the complete survivor to hourly main and Full Release Validation, while
+the other Docker seed lanes and QA Smoke retain their owner maps.
 Ordinary manual/release CI builds the full declaration-complete package. Main and
 selected PRs, including exact-head `release_gate` fallbacks, use the
 existing `ciArtifacts` profile and canonical packer with `--skip-build`, retaining
