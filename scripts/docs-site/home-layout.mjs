@@ -42,7 +42,7 @@ export function homeLayoutHtml(source, icon, release = null) {
 
   return `<div class="home-layout">
 <section class="home-heading" aria-labelledby="docs-title">
-  <div class="home-heading-copy"><h1 id="docs-title">OpenClaw</h1><p class="home-description"><span>Your AI assistant, right in the chat apps you already use.</span><span>Open source and on your machine, ready to help with email, calendars, and the rest of your day.</span></p></div>
+  <div class="home-heading-copy"><h1 id="docs-title">OpenClaw</h1><p class="home-description"><span>Organizes your inbox, sends emails, and manages your calendar.</span><span>All from the chat apps you already use.</span></p></div>
 </section>
 ${releaseStripHtml(release, icon)}
 ${quickLinks ? `<div class="home-quick-links">${slice(quickLinks)}</div>` : ""}

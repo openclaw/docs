@@ -219,7 +219,7 @@ async function checkLandingNavigation() {
       const rect = node.getBoundingClientRect();
       return { text: node.innerText.replace(/\s+/g, " ").trim(), bounded: rect.left >= 0 && rect.right <= innerWidth, clipped: node.scrollHeight > node.clientHeight + 1 };
     });
-    if (!description.bounded || description.clipped || description.text !== "Your AI assistant, right in the chat apps you already use. Open source and on your machine, ready to help with email, calendars, and the rest of your day.") {
+    if (!description.bounded || description.clipped || description.text !== "Organizes your inbox, sends emails, and manages your calendar. All from the chat apps you already use.") {
       throw new Error(`Homepage must show the full introduction at every width (${width}px): ${JSON.stringify(description)}`);
     }
   }
