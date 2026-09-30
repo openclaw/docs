@@ -586,6 +586,7 @@ function icon(name) {
     "chevron-left": '<path d="m15 18-6-6 6-6"/>',
     "chevron-right": '<path d="m9 18 6-6-6-6"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+    "list-sort-ascending": '<path d="M3 19h18"/><path d="M15 12H3"/><path d="M9 5H3"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "file-text": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
     "message-circle": '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>',
@@ -627,7 +628,8 @@ function tableOfContents(html) {
 function tocHtml(items, locale) {
   if (!items.length) return "";
   const label = chromeStringsForLocale(locale).onThisPage;
-  return `<details class="toc" aria-label="${escapeAttr(label)}" open><summary><span>${escapeHtml(label)}</span></summary><h2>${escapeHtml(label)}</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
+  const tocIcon = icon("list-sort-ascending");
+  return `<details class="toc" aria-label="${escapeAttr(label)}" open><summary><span class="toc-label">${tocIcon}${escapeHtml(label)}</span><span class="toc-current" data-toc-current></span></summary><h2>${tocIcon}${escapeHtml(label)}</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
 }
 
 function pager(prev, next) {

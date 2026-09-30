@@ -21,7 +21,12 @@ ${createHomeGlimm.toString()}
 const homeGlimm=createHomeGlimm(()=>import(withBase(${JSON.stringify("/assets/" + glimmAssetName)})));
 let disposeHomeHero=()=>{};function initHomeHero(){disposeHomeHero();const disposeHero=mountOpenClawHeroArt(document.querySelector(".docs-hero"));const disposeAscii=mountHomeAscii(document.querySelector(".home-ascii"));disposeHomeHero=()=>{disposeHero();disposeAscii()}}
 const root=document.documentElement;const saved=localStorage.getItem("theme");root.dataset.theme=saved||"dark";
-function syncHeaderSurface(){document.querySelector(".site-header")?.classList.toggle("is-scrolled",window.scrollY>4)}
+function syncHeaderSurface(){
+const header=document.querySelector(".site-header");header?.classList.toggle("is-scrolled",window.scrollY>4);
+const summary=document.querySelector(".toc summary")?.getBoundingClientRect();
+const headerBottom=header?.getBoundingClientRect().bottom||0;
+document.body.classList.toggle("has-docked-toc",Boolean(summary?.height&&Math.abs(summary.top-headerBottom)<1));
+}
 syncHeaderSurface();addEventListener("scroll",syncHeaderSurface,{passive:true});
 const modal=document.querySelector(".search-modal");const input=document.querySelector("[data-search-input]");const results=document.querySelector("[data-search-results]");const moltySearch=document.querySelector("[data-search-molty]");const moltySearchPrefix=document.querySelector("[data-search-molty-prefix]");const moltySearchTerm=document.querySelector("[data-search-molty-term]");let pagefindReady;let pagefindLoadAttempt=0;let navigating=false;let searchActiveIndex=-1;
 function withBase(url){const base=window.OPENCLAW_DOCS_BASE||"";if(!base||!url.startsWith("/"))return url;return url===base||url.startsWith(base+"/")?url:base+url}
@@ -60,7 +65,7 @@ function syncCommunityInvite(){const card=document.querySelector(".community-inv
 function dismissCommunityInvite(){const serialized=JSON.stringify({dismissedAtMs:Date.now()});try{localStorage.setItem(communityInviteKey,serialized);if(localStorage.getItem(communityInviteKey)!==serialized)return}catch{return}syncCommunityInvite()}
 function syncSidebar(nextDoc){const current=document.querySelector(".sidebar");const incoming=nextDoc.querySelector(".sidebar");if(!current||!incoming)return;const scroll=current.scrollTop;if(sameSidebarLinks(current,incoming)){for(const selector of ["a",".docs-section",".docs-section>summary"]){const next=[...incoming.querySelectorAll(selector)];current.querySelectorAll(selector).forEach((element,i)=>{element.className=next[i].className;const value=next[i].getAttribute("aria-current");if(value===null)element.removeAttribute("aria-current");else element.setAttribute("aria-current",value)})}current.scrollTop=scroll}else{const opened=new Set([...current.querySelectorAll(".docs-section[open]")].map(section=>section.dataset.docsSection));for(const section of incoming.querySelectorAll(".docs-section"))section.open=opened.has(section.dataset.docsSection);current.replaceWith(incoming);initSidebarLevels();syncHeaderSearchPosition()}document.querySelector(".docs-sidebar-levels")?.syncSection();scrollActiveNavLink()}
 // Compact layouts use a sticky disclosure in the reading pane; wide layouts keep the TOC rail.
-const compactTocQuery=matchMedia("(max-width:1280px)");function isCompactToc(){return compactTocQuery.matches}function syncStickyHeaderOffset(){const headerHeight=document.querySelector(".site-header")?.getBoundingClientRect().height||0;root.style.setProperty("--header-row-h",headerHeight+"px");const tocHeight=isCompactToc()?document.querySelector(".toc summary")?.getBoundingClientRect().height||0:0;root.style.setProperty("--sticky-header-h",Math.ceil(headerHeight+tocHeight)+"px")}
+const compactTocQuery=matchMedia("(max-width:1280px)");function isCompactToc(){return compactTocQuery.matches}function syncStickyHeaderOffset(){const headerHeight=document.querySelector(".site-header")?.getBoundingClientRect().height||0;root.style.setProperty("--header-row-h",headerHeight+"px");const tocHeight=isCompactToc()?document.querySelector(".toc summary")?.getBoundingClientRect().height||0:0;root.style.setProperty("--sticky-header-h",Math.ceil(headerHeight+tocHeight)+"px");syncHeaderSurface();syncTocCurrentFade()}
 function syncTocSpace(){
 const toc=document.querySelector(".toc");if(!toc)return;
 if(isCompactToc()){toc.style.removeProperty("--toc-available-height");return}
