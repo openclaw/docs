@@ -628,9 +628,25 @@ before publishing the finished event and alert. A lost ordinary reply does not s
 those effects or replay the write; uncertain outcomes do not publish. A committed
 source retirement carries its exact identity through an operation failure so the
 stream owner can finish its conditional status write without replaying retirement.
-The original failure is still reported, and the final write retains its source checks. Other native
-scheduler transaction callers retain the shared row kernel and remain separate
-caller-migration work. No stored format, public method, or retention policy changes.
+The original failure is still reported, and the final write retains its source checks.
+No stored format, public method, or retention policy changes.
+
+Skipped-run outcomes, startup catch-up planning, and reservation cleanup use the
+same worker and synchronous row kernel. Native transactions combine current row
+markers and receipts with host activity and exact local reservation facts; the
+host rechecks those facts before granting commit. Startup receipt cleanup and
+deferred schedule comparisons remain atomic and preserve stored row order for
+staggering. Manual, scheduled, and startup cleanup keep their distinct missing-row
+and marker predicates. Captured caller and storage authority survive queue waits;
+committed completion can finish across a scheduler restart in the same store,
+without admitting new work for the retired generation. Cleanup retries require a
+known non-commit, and later startup cleanup cannot replay an earlier committed or
+uncertain reservation write. A committed skip keeps its original history attribution
+and notification default even if routing changes before completion; captured absence
+cannot adopt a newly configured recipient. Transport availability and alert-cycle
+checks still run at delivery and settlement. The synchronous service writer is removed; native
+transaction kernels remain inside their existing storage owners. Schemas, stored
+bytes, public contracts, retention, and installed-updater behavior are unchanged.
 
 Cron recovery observes each batch in one shared-state read-worker snapshot. Healthy
 live receipts need no writer admission. A missing receipt table uses its existing
