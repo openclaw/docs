@@ -11977,6 +11977,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Retired subscription model references
   - H2: GPT-6 Astra
   - H3: Async tools, steering, and reasoning changes
+  - H2: GPT-6.1 Sol
   - H2: GPT-6 Sol and Luna
   - H2: GPT-5.6 limited preview
 
