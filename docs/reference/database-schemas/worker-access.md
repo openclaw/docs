@@ -683,9 +683,15 @@ host retains pending-media, descendant-settlement, and busy-session checks; the
 lifecycle mutation still compares each complete expected entry and rechecks its
 commit guard. Shared-store ownership, retention, schemas, and update behavior
 are unchanged. Discovery closes every matching retained SQLite reader before
-releasing its captured alias ownership, allowing successful Node reads to keep
-the existing worker warm. Failed reads, uncertain native cleanup, and Bun retain
-worker retirement; idle retirement remains unchanged.
+releasing its captured alias ownership, allowing successful reads on Node and Bun
+with the admitted native-close capability to keep the existing worker warm.
+Failed reads, uncertain native cleanup, and Bun without that capability retain
+worker retirement; idle retirement remains unchanged. Long-lived pool hosts await
+the existing SQLite runtime/library owner's decision before creating pools.
+Workers keep the decision inherited at creation: early workers stay conservative,
+while later workers inherit the completed capability. Per-operation host reads use
+conservative cleanup until that decision settles without sealing it;
+see [native-close lifecycle](/reference/database-schemas/storage-changes#keep-engine-specific-capabilities-owned).
 
 Shared GitHub publication prepares canonical profile identity and alias-binding
 lifetimes through the existing profile catalogue and read worker. Alias writers

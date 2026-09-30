@@ -6590,6 +6590,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Memory search without an extension-capable library
   - H2: Browser subprocesses
   - H2: Bun-only installs
+  - H2: SQLite worker lifecycle
   - H2: Known limitations
   - H2: History across releases
   - H2: Related
