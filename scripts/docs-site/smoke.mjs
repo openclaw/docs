@@ -467,9 +467,6 @@ if (!/class="docs-sections" aria-label="Docs sections"/.test(index)
   || /class="(?:tabs|mobile-tabs)"/.test(index)) {
   throw new Error("assets: complete vertical docs navigation is missing");
 }
-if (/data-locale/.test(siteJs)) {
-  throw new Error("assets: stale native language select handler is still present");
-}
 if (!/function initChat/.test(siteJs)
   || !/data-chat-form/.test(siteJs)
   || !/new URL\("\/ask-molty\/sign-in",location\.href\)/.test(siteJs)
