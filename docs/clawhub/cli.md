@@ -153,6 +153,8 @@ See [CLI login](/clawhub/auth#cli-login) for the approval steps and expiry guida
   - `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`)
   - `<skill>/.clawhub/origin.json` (legacy `.clawdhub`)
 
+A completed replacement stays installed if deleting its old backup fails. The leftover `.backup-` directory can be removed once the file lock is released. Failures before the replacement completes still restore the previous install.
+
 ### `uninstall <skill>`
 
 - Removes `<workdir>/<dir>/<slug>` and deletes the lockfile entry.
@@ -300,7 +302,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/6520846333a827bdce3008d1514617b03b58c577/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/d26329b44c98a1d9a5fb29ad0c569908d628d23a/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -823,7 +825,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/6520846333a827bdce3008d1514617b03b58c577/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/d26329b44c98a1d9a5fb29ad0c569908d628d23a/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
