@@ -8680,6 +8680,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Create a feature plugin
   - H2: Define operations once
   - H2: Contribute and replace views
+  - H3: Host capabilities
+  - H3: Dock a conversation
   - H2: Build and reload
   - H2: Approve an agent-built artifact
 
@@ -11053,6 +11055,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-subpaths
 - Headings:
   - H2: Plugin entry
+  - H3: Control UI conversation dock
   - H3: Capability catalog entry
   - H3: Compatibility and private-local helpers
   - H3: Bundled plugin helper subpaths
@@ -15260,6 +15263,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: OpenClaw system care
   - H2: Home dock
+  - H2: Plugin conversation docks
   - H2: Operator terminal
   - H2: Browser panel
   - H2: GitHub side panel
