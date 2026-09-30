@@ -2,8 +2,8 @@
 // docs/releases/<version>.md page must have arrived through source sync first.
 // Set to null to disable the announcement.
 export const releaseAnnouncement = {
-  version: "2026.9.6",
-  summary: "Managed updates, restart recovery, and 30-day Usage reporting.",
+  version: "2026.9.7",
+  summary: "Smoother chats, safer updates, and Sign in with ChatGPT (Beta).",
 };
 
 const escape = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
