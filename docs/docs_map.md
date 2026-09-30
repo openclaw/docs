@@ -6584,6 +6584,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/bun-compatibility
 - Headings:
   - H2: Requirements
+  - H2: macOS app private runtime
   - H2: SQLite library selection on macOS
   - H2: Memory search without an extension-capable library
   - H2: Browser subprocesses
