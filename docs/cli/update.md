@@ -339,6 +339,12 @@ require storing a task password.
 This target-CLI protection does not cover every Doctor or plugin child or the
 in-process service preparation before package mutation.
 
+After Scheduled Task autostart has been suspended, cancelling before installation
+mutation restores it before exit, while retaining checks on the original update
+owner and task identity. This protection belongs to the installed updater;
+installing a release with the fix enables it for the next update that release
+performs.
+
 ## Options
 
 Post-core repair Doctor and `openclaw update finalize` run without a separate
