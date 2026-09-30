@@ -38,6 +38,7 @@ try {
   await checkAccordionNavigation();
   await checkLandingNavigation();
   await checkCommunityBanner();
+  await checkHeaderSurface();
   await checkDesktop();
   await checkTocScrollspy();
   await checkAmbientCodePage();
@@ -273,6 +274,28 @@ async function checkCommunityBanner() {
       }
     } finally { await page.close(); }
   }
+}
+
+async function checkHeaderSurface() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await page.goto(`${base}/`, { waitUntil: "networkidle" });
+    for (const theme of ["dark", "light"]) {
+      await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
+      await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+      await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor === "rgba(0, 0, 0, 0)");
+      await page.evaluate(() => scrollTo({ top: 300, behavior: "instant" }));
+      await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor !== "rgba(0, 0, 0, 0)");
+      await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+      await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor === "rgba(0, 0, 0, 0)");
+    }
+    await page.getByRole("link", { name: "Community", exact: true }).first().focus();
+    for (const name of ["GitHub", "Discord", "Language: English", "Toggle theme"]) {
+      await page.keyboard.press("Tab");
+      const activeName = await page.evaluate(() => document.activeElement.getAttribute("aria-label"));
+      if (activeName !== name) throw new Error(`Header keyboard order: expected ${name}, got ${activeName}`);
+    }
+  } finally { await page.close(); }
 }
 
 async function checkDesktop() {

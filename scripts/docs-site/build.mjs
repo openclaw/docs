@@ -350,7 +350,6 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 </head>
 <body class="oc-app-surface docs-layout${page.slug === "index" ? " docs-home" : ""}${home ? " docs-home-layout" : ""}">
 ${siteHeader(page)}
-${previewMode ? `<aside class="preview-notice" aria-label="Local preview" data-pagefind-ignore><strong>Local preview</strong> · Full navigation shown; ${pages.length} pages built locally. Links marked ${icon("external-link")} open live docs.</aside>` : ""}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
@@ -401,7 +400,7 @@ function siteHeader(page) {
 <button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search documentation</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
 <div class="header-actions">
 <nav class="network-nav" aria-label="OpenClaw sites">${network.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}</nav>
-<nav class="header-links" aria-label="Documentation tools">${languagePicker(page)}${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button><button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
+<nav class="header-links" aria-label="Community and preferences"><div class="header-social-group" role="group" aria-label="Social links">${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}</div><div class="header-preferences-group" role="group" aria-label="Preferences">${languagePicker(page)}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></div><button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button></nav>
 </div>
 </div>
 </header>`;
