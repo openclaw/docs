@@ -75,6 +75,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Delivery and output
   - H3: Failure notifications
+  - H4: Owner-conversation repair
   - H3: Output language
 
 ## automation/cron-jobs/gmail.md
