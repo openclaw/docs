@@ -249,9 +249,13 @@ commits tombstones, and purges derived index rows in separate transactions under
 writer turn. Optional schema preparation commits before those transactions. Origin
 rows are removed only after derived-state and filesystem cleanup succeeds. Failed
 or uncertain native results stop the remaining phases without replaying writes;
-an explicit retry still uses the durable tombstones and retained lineage. Initial
-index planning and vector inspection, session policy metadata reads, and cold
-bootstrap remain separate. Schemas, stored formats, and update behavior are unchanged.
+an explicit retry still uses the durable tombstones and retained lineage. Index
+planning and vector inspection use the same retrieval worker and captured store
+target. Indexed memory text stays with that reader; the host receives only selected
+chunk identities, source paths, and counts. Preview remains noncreating, and native
+vector inspection closes its probe and read-only connection before replying.
+Session policy metadata reads and cold bootstrap remain separate. Schemas, stored
+formats, and update behavior are unchanged.
 
 Generated embedding-cache publication uses the existing memory publication worker
 and the captured published database, including during a shadow rebuild. Its native
