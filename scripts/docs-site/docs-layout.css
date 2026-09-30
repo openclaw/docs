@@ -539,19 +539,17 @@
 .home-guide-copy h3 .icon { width: 15px; height: 15px; flex: 0 0 15px; color: var(--muted); }
 .home-guide-copy p { color: var(--docs-muted); margin: 0; font-size: 14px; line-height: 1.6; }
 .doc .home-guide:focus-visible { outline: 2px solid var(--brand); outline-offset: 6px; }
-.home-discord { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); background: var(--docs-surface); color: var(--ink); }
-.home-discord-copy { position: relative; z-index: 1; padding: 38px; }
+.home-community { container: community / inline-size; }
+.home-discord { --ink: #f0f1f2; --docs-muted: #a0a5aa; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); overflow: hidden; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); background: #191b1d; color: var(--ink); }
+.home-discord-copy { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; min-width: 0; padding: 38px; }
 .docs-layout .home-discord-copy h3 { font: 600 27px/1.3 var(--oc-font-body); letter-spacing: -.6px; margin: 0 0 14px; color: var(--ink); }
 .home-discord-copy p { font-size: 14px; color: var(--docs-muted); margin: 0 0 24px; }
 .doc .home-discord-button { display: inline-flex; align-items: center; gap: 12px; padding: 10px 16px; border: 1px solid transparent; border-radius: var(--oc-radius-control); background: #5865f2; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color 160ms ease; }
 .doc .home-discord-button:focus-visible { outline: 2px solid #5865f2; outline-offset: 3px; }
 .home-discord-button .icon { width: 15px; height: 15px; }
-.home-discord-art { position: relative; min-width: 0; align-self: stretch; aspect-ratio: 2; margin: 0; margin-inline-start: -48px; overflow: clip; mask-image: linear-gradient(90deg,transparent,#000 22%); }
+.home-discord-art { position: relative; min-width: 0; align-self: center; aspect-ratio: 1.6; margin: 0; overflow: clip; mask-image: linear-gradient(90deg,transparent,#000 12%); }
 .home-discord-art img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; margin: 0; border: 0; border-radius: 0; object-fit: cover; object-position: center; }
-.home-discord-art .home-discord-art-light { display: none; }
-:root[data-theme="light"] .home-discord-art .home-discord-art-light { display: block; }
-:root[data-theme="light"] .home-discord-art .home-discord-art-dark { display: none; }
-:root[dir="rtl"] .home-discord-art { mask-image: linear-gradient(270deg,transparent,#000 22%); }
+:root[dir="rtl"] .home-discord-art { mask-image: linear-gradient(270deg,transparent,#000 12%); }
 .home-community-grid { margin-top: 18px; }
 .doc .home-community-link { padding: 24px; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); color: var(--ink); background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); text-decoration: none; }
 .home-community-link > .icon { width: 23px; height: 23px; margin-bottom: 22px; color: var(--docs-muted); }
@@ -638,11 +636,12 @@
   .home-guide-grid, .home-community-grid { grid-template-columns: 1fr; }
   .home-guide-copy { padding: 22px; }
   .home-section-heading { gap: 12px; }
-  .home-section-heading .home-text-link { white-space: nowrap; }
+  .home-section-heading .home-text-link { white-space: nowrap; }}
+@container community (max-width:640px) {
   .home-discord { grid-template-columns: 1fr; }
-  .home-discord-copy { padding: 28px; }
+  .home-discord-copy { padding: 8px 24px 28px; }
   .docs-layout .home-discord-copy h3 { font-size: 23px; }
-  .home-discord-art, :root[dir="rtl"] .home-discord-art { margin: 0; mask-image: linear-gradient(180deg,transparent,#000 18%); }}
+  .home-discord-art, :root[dir="rtl"] .home-discord-art { grid-row: 1; aspect-ratio: 1.7; mask-image: linear-gradient(180deg,#000 72%,transparent); }}
 
 /* A quiet, reachable launcher shared by desktop and mobile. */
 .docs-layout .docs-chat-launcher { min-height: 44px; height: 44px; gap: 8px; padding: 0 14px 0 9px; border-color: color-mix(in srgb,var(--ink) 14%,var(--paper)); border-radius: 14px; background: var(--paper); font: 600 14px/1 var(--oc-font-body); box-shadow: 0 2px 8px #0001,0 6px 24px #0001; }

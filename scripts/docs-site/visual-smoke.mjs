@@ -37,6 +37,7 @@ try {
   await checkLanguageSelection();
   await checkAccordionNavigation();
   await checkLandingNavigation();
+  await checkCommunityBanner();
   await checkDesktop();
   await checkTocScrollspy();
   await checkAmbientCodePage();
@@ -231,6 +232,47 @@ async function checkLandingNavigation() {
     throw new Error("hero animation ignored reduced-motion preference");
   }
   await page.close();
+}
+
+async function checkCommunityBanner() {
+  for (const theme of ["dark", "light"]) {
+    const page = await browser.newPage({ reducedMotion: "reduce" });
+    try {
+      await page.addInitScript((theme) => localStorage.setItem("theme", theme), theme);
+      for (const width of [320, 390, 820, 1024, 1440, 1920]) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(`${base}/#community`, { waitUntil: "networkidle" });
+        const banner = page.locator(".home-discord");
+        await banner.scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => [...document.querySelectorAll(".home-discord-art img")]
+          .every((img) => img.complete && img.naturalWidth > 0));
+        const geometry = await banner.evaluate((node) => {
+          const rect = node.getBoundingClientRect();
+          const art = node.querySelector(".home-discord-art").getBoundingClientRect();
+          const title = node.querySelector("h3").getBoundingClientRect();
+          const description = node.querySelector("p").getBoundingClientRect();
+          const button = node.querySelector("a").getBoundingClientRect();
+          const stacked = art.bottom <= title.top;
+          return {
+            stacked,
+            centered: Math.abs((title.top + button.bottom) / 2 - (rect.top + rect.bottom) / 2) < 3,
+            aligned: Math.abs(title.left - description.left) < 1 && Math.abs(title.left - button.left) < 1,
+            bounded: [art, title, description, button].every((item) => item.left >= rect.left && item.right <= rect.right
+              && item.top >= rect.top && item.bottom <= rect.bottom),
+            noOverlap: stacked || (button.right <= art.left && title.right <= art.left),
+            noOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
+          };
+        });
+        if (!geometry.aligned || !geometry.bounded || !geometry.noOverlap || !geometry.noOverflow
+          || (width <= 390 && !geometry.stacked) || (width >= 1440 && (geometry.stacked || !geometry.centered))) {
+          throw new Error(`community banner layout (${theme}, ${width}px): ${JSON.stringify(geometry)}`);
+        }
+        if (width === 390 || width === 1440) {
+          await banner.screenshot({ path: path.join(artifacts, `community-${theme}-${width}.png`) });
+        }
+      }
+    } finally { await page.close(); }
+  }
 }
 
 async function checkDesktop() {
