@@ -845,11 +845,11 @@ async function checkCompactToc() {
       await page.keyboard.press("Escape");
     }
     await page.setViewportSize({ width: 1440, height: 900 });
-    const edges = await page.evaluate(() => ({
-      toc: document.querySelector(".toc").getBoundingClientRect().right,
-      theme: document.querySelector(".header-row .theme-toggle").getBoundingClientRect().right,
-    }));
-    if (Math.abs(edges.toc - edges.theme) > 1) throw new Error(`TOC and header must share the right inset: ${JSON.stringify(edges)}`);
+    // Header controls move between compact and desktop containers on resize.
+    await page.waitForFunction(() => Math.abs(
+      document.querySelector(".toc").getBoundingClientRect().right
+      - document.querySelector(".header-row .theme-toggle").getBoundingClientRect().right
+    ) <= 1, null, { timeout: 3000 });
   } finally { await page.close(); }
 }
 
