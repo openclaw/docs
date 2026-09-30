@@ -65,7 +65,7 @@
   --tok-punct: #5d6672;
 }
 .docs-layout .site-header { --header-max-width: 1660px; --header-padding: 24px; --brand-reflection-offset: calc(max(0px,(100% - var(--header-max-width)) / 2) + var(--header-padding) + 13px); --brand-reflection-x: var(--brand-reflection-offset); background: transparent; border-bottom: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.docs-layout .site-header.is-scrolled, .docs-layout.nav-open .site-header { background: color-mix(in srgb,var(--bg) 94%,transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.docs-layout .site-header.is-scrolled, .docs-layout.nav-open .site-header { background: color-mix(in srgb,var(--bg) 84%,transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
 .docs-layout .header-row { position: relative; display: grid; grid-template-columns: minmax(0,1fr) clamp(200px,26vw,400px) minmax(max-content,1fr); height: 64px; max-width: var(--header-max-width); margin-inline: auto; padding-inline: var(--header-padding); gap: 20px; }
 @media (hover:hover) and (pointer:fine) {
   .docs-layout .site-header::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 140px 50px at var(--brand-reflection-x) -4px,var(--brand),transparent 75%); opacity: 0; transition: opacity var(--oc-duration-fast) ease; }
