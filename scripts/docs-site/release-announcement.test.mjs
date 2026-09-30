@@ -94,7 +94,7 @@ for (const blockedStorage of [false, true]) {
     await page.getByRole("link", { name: `v${version} Latest`, exact: true }).waitFor();
     assert.equal(await page.locator(".release-entry-badge i").isVisible(), true, "Latest keeps its status dot after reading");
     await page.getByRole("button", { name: "Back to all documentation", exact: true }).click();
-    assert.equal(await page.locator(".release-nav-version i").isVisible(), true, "the version dot stays visible after reading");
+    await page.locator(".docs-section-trigger .release-nav-version i").waitFor({ state: "visible" });
     await page.getByRole("link", { name: "Home", exact: true }).click();
     await page.getByRole("link", { name: /Latest release.*Read release notes/ }).waitFor();
     if (!blockedStorage) {
