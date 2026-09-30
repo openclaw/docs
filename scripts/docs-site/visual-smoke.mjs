@@ -105,11 +105,11 @@ async function checkLanguageSelection() {
 
 async function checkAccordionNavigation() {
   for (const reducedMotion of ["no-preference", "reduce"]) {
+    for (const hash of ["#nested-disclosure-target", "#release-source-target"]) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion });
-    const hash = "#nested-disclosure-target";
     const assertTargetVisible = async () => {
-      await page.waitForFunction(() => {
-        const target = document.getElementById("nested-disclosure-target");
+      await page.waitForFunction((hash) => {
+        const target = document.getElementById(hash.slice(1));
         if (!target) return false;
         for (let node = target.parentElement; node; node = node.parentElement) {
           if (node.tagName === "DETAILS" && !node.open) return false;
@@ -117,7 +117,7 @@ async function checkAccordionNavigation() {
         const rect = target.getBoundingClientRect();
         const headerBottom = document.querySelector(".site-header").getBoundingClientRect().bottom;
         return rect.top >= headerBottom && rect.bottom <= innerHeight;
-      }, null, { timeout: 3000 });
+      }, hash, { timeout: 3000 });
     };
     try {
       await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
@@ -138,8 +138,25 @@ async function checkAccordionNavigation() {
       await page.getByRole("link", { name: "Nested disclosure target", exact: true }).click();
       await page.waitForURL(`**/__elements${hash}`);
       await assertTargetVisible();
+      if (hash === "#release-source-target") {
+        const summary = page.locator(".release-source-toggle > summary");
+        // Interrupt closing with another pointer click, then check the nested body is not clipped.
+        await summary.click();
+        await summary.click();
+        await page.waitForFunction(() => {
+          const source = document.querySelector(".release-source-toggle");
+          const body = source.querySelector(".release-source-content");
+          return source.open && body.getBoundingClientRect().bottom <= source.getBoundingClientRect().bottom + 1;
+        });
+        await summary.focus();
+        await page.keyboard.press("Enter");
+        if (await page.locator(".release-source-toggle").getAttribute("open") !== null) throw new Error("Sources must close with the keyboard");
+        await page.keyboard.press("Space");
+        await assertTargetVisible();
+      }
     } finally {
       await page.close();
+    }
     }
   }
 }

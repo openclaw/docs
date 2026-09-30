@@ -357,6 +357,14 @@ Use a CTA when a long-form article has one obvious next action. Keep it specific
       ### Nested disclosure target
 
       A direct link or table-of-contents link should open both disclosures and bring this heading into view.
+
+      <details class="release-source-toggle">
+        <summary>Sources and complete change list</summary>
+
+        ### Release source target
+
+        Source details remain reachable through nested disclosures and direct links.
+      </details>
     </Accordion>
   </Accordion>
   <Expandable title="What can be expanded?">

@@ -605,6 +605,7 @@ for (const marker of [
   'class="oc-step"',
   'class="oc-tab"',
   'class="oc-accordion"',
+  'class="release-source-toggle"',
   'class="oc-param"',
   'class="oc-frame"',
   'class="docs-media-scene"',
