@@ -3855,6 +3855,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Finding sessions by owner
   - H2: Reading the avatars
   - H2: People cards
+  - H2: Reactions
   - H2: Mentioning people
   - H2: Mentions Inbox
   - H2: Agent-spawned sessions
@@ -12388,6 +12389,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/layout
 - Headings:
   - H2: Database layout
+  - H3: Session reactions
   - H3: Activity session recaps
   - H3: Transcript search row ownership
   - H3: Cold transcript archives
@@ -15195,6 +15197,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/chat
 - Headings:
   - H2: Collaborator drafts
+  - H2: Reactions
   - H2: Session rail and side chat
   - H2: Session links in messages
   - H2: Suggested tasks
