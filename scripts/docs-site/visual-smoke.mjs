@@ -975,7 +975,7 @@ async function checkMobile() {
     || !menu.closeFocused) {
     throw new Error(`mobile menu drawer failed (expected bounded unobscured drawer): ${JSON.stringify(menu)}`);
   }
-  const sectionLabels = await page.locator(".docs-section > summary").allTextContents();
+  const sectionLabels = await page.locator(".docs-section > summary > span:first-child").allTextContents();
   if (JSON.stringify(sectionLabels.map(label => label.trim())) !== JSON.stringify(expectedTabs)) {
     throw new Error(`vertical sections lost source navigation: ${JSON.stringify(sectionLabels)}`);
   }

@@ -1,3 +1,4 @@
+import { releaseStripHtml } from "./release-announcement.mjs";
 import { parseDocument } from "htmlparser2";
 import { featuredGuides, communitySection } from "./home-sections.mjs";
 import { channelIcons } from "./channel-icons.mjs";
@@ -7,7 +8,7 @@ import { homeContentHtml } from "./home-content.mjs";
 // Each image supplies src, width and height; the icon remains the fallback.
 const capabilityArtwork = {};
 
-export function homeLayoutHtml(source, icon) {
+export function homeLayoutHtml(source, icon, release = null) {
   const html = homeContentHtml(source);
   const nodes = parseDocument(html, { withStartIndices: true, withEndIndices: true }).children;
   const tags = nodes.filter((node) => node.type === "tag");
@@ -43,6 +44,7 @@ export function homeLayoutHtml(source, icon) {
 <section class="home-heading" aria-labelledby="docs-title">
   <div class="home-heading-copy"><h1 id="docs-title">OpenClaw docs</h1><p class="home-description">Set up OpenClaw and connect it to the apps you use.</p></div>
 </section>
+${releaseStripHtml(release, icon)}
 ${quickLinks ? `<div class="home-quick-links">${slice(quickLinks)}</div>` : ""}
 ${take("quick-start", "home-setup home-reading-section")}
 ${channelDirectory(icon)}
