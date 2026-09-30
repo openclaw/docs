@@ -194,6 +194,17 @@ async function checkLandingNavigation() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 800 }, reducedMotion: "reduce" });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await page.locator(".home-layout").waitFor({ state: "visible" });
+  for (const width of [320, 390, 820, 1100, 1101, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 800 });
+    const description = await page.locator(".home-description").evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      return { height: rect.height, lineHeight: parseFloat(getComputedStyle(node).lineHeight), bounded: rect.left >= 0 && rect.right <= innerWidth };
+    });
+    if (!description.bounded || description.height > description.lineHeight * 2 + 1) {
+      throw new Error(`Homepage description must fit in two lines (${width}px): ${JSON.stringify(description)}`);
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 800 });
   await page.locator(".site-header [data-search-open]").click();
   await page.waitForFunction(() => document.activeElement?.matches("[data-search-input]"));
   await page.keyboard.press("Escape");
