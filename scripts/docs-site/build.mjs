@@ -453,11 +453,7 @@ function languagePicker(page) {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">${icon("check")}</span></a>`;
   }).join("");
-  const nativeOptions = pickerLocales.map((locale) => {
-    const active = locale.code === page.locale;
-    return `<option value="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}"${active ? " selected" : ""}>${escapeHtml(localeFlag(locale.code))} ${escapeHtml(localeDisplayName(locale.code))}</option>`;
-  }).join("");
-  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-label="${escapeAttr(`Language: ${currentLabel}`)}" aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div><select class="language-native" data-language-native aria-label="Language">${nativeOptions}</select></div>`;
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-label="${escapeAttr(`Language: ${currentLabel}`)}" aria-haspopup="listbox" aria-controls="language-menu" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div id="language-menu" class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
 }
 
 function localeFlag(code) {

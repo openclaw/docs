@@ -116,7 +116,6 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
   mask-repeat: no-repeat;
 }
 .search-modal.open { overflow: auto; }
-.language-picker:has(.language-native:focus-visible) .language-trigger { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
 
 @media (max-width: 1280px) {
   :root { --docs-inset: 40px; }

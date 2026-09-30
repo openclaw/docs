@@ -216,11 +216,11 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
   throw new Error("index: custom language picker is missing active state");
 }
 const indexTree = parseDocument(index);
-const mobileLanguage = DomUtils.findAll(node => node.attribs?.["data-language-native"] !== undefined, indexTree.children);
+const languageTriggers = DomUtils.findAll(node => node.name === "button" && node.attribs?.["aria-controls"] === "language-menu", indexTree.children);
 const mobileTools = DomUtils.findOne(node => node.attribs?.class === "sidebar-tools", indexTree.children);
 const siteHeader = DomUtils.findOne(node => node.name === "header" && node.attribs?.class === "site-header", indexTree.children);
-if (mobileLanguage.length !== 1 || !mobileTools || !siteHeader || !DomUtils.findOne(node => node === mobileLanguage[0], siteHeader.children)) {
-  throw new Error("index: site header must contain the single native language control");
+if (languageTriggers.length !== 1 || !mobileTools || !siteHeader || !DomUtils.findOne(node => node === languageTriggers[0], siteHeader.children)) {
+  throw new Error("index: site header must contain a single language menu button");
 }
 for (const href of ["https://github.com/openclaw/openclaw", "https://discord.com/invite/clawd"]) {
   if (!DomUtils.findOne(node => node.name === "a" && node.attribs?.href === href, mobileTools.children)) {
@@ -331,11 +331,6 @@ if (!maturityScorecard.includes('class="maturity-summary-grid"')
 if (!/\.language-menu\{top:calc\(100% \+ 8px\);width:min\(270px,calc\(100vw - 32px\)\);max-height:min\(62vh,430px\)/.test(siteCss)
   || !/\.language-menu::-webkit-scrollbar-track\{background:transparent\}/.test(siteCss)) {
   throw new Error("assets: compact language picker is missing");
-}
-if (!/data-language-native/.test(index)
-  || !/\.language-native\{display:none\}/.test(siteCss)
-  || !/\.language-native\{display:block;position:absolute/.test(siteCss)) {
-  throw new Error("assets: native language select fallback for coarse pointers is missing");
 }
 if (/\.header-links a[\s{:.[]/.test(siteCss)) {
   throw new Error("assets: .header-links descendant anchor rules override .language-option layout; scope to .header-links>a");
