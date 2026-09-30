@@ -91,6 +91,14 @@ the caller rechecks its original executor and requester before continuing schema
 inspection, native stop, or publication. Accepted writes retain the same signal
 settlement owner; other phase callers keep their current contracts until migrated.
 
+Candidate Doctor records a predecessor Gateway stop through the same writer and
+joins the receipt before continuing maintenance, including when native stop
+verification fails afterward. Only a completed receipt in the original running
+update counts as recorded; uncertain native cleanup still refuses continuation.
+Finalization reads that receipt through the read worker and rechecks its current
+owner before inspecting and adopting the stopped service. Receipt encoding,
+restart policy, and older-driver behavior are unchanged.
+
 The installed updater still owns its first upgrade hop. Shipped synchronous
 ledger APIs, effect guards, general command progress, and finalization writes
 remain with their existing owners until their separate worker cutovers.
