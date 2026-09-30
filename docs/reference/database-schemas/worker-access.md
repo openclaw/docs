@@ -78,6 +78,13 @@ cleanup leaves history pending when an accepted write's outcome is unknown; a
 later successful receipt does not clear that uncertainty. Stored formats,
 schemas, and path-redaction rules are unchanged.
 
+Mutable execution also awaits validation, activation, and inspected Git-target
+phase receipts through that worker. The phase transformation and terminal-row
+no-op behavior stay with the existing ledger kernel. After each receipt wait,
+the caller rechecks its original executor and requester before continuing schema
+inspection, native stop, or publication. Accepted writes retain the same signal
+settlement owner; other phase callers keep their current contracts until migrated.
+
 The installed updater still owns its first upgrade hop. Shipped synchronous
 ledger APIs, effect guards, general command progress, and finalization writes
 remain with their existing owners until their separate worker cutovers.
