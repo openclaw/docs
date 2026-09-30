@@ -41,6 +41,7 @@ try {
   await checkHeaderSurface();
   await checkDesktop();
   await checkTocScrollspy();
+  await checkCompactToc();
   await checkAmbientCodePage();
   await checkMobile();
   await checkRtlNavigationResize();
@@ -734,7 +735,7 @@ async function checkTocScrollspy() {
   }
 
   const scrolled = await scrollToTocItem(page, 4);
-  if (!scrolled || scrolled.activeHash !== scrolled.expectedHash || scrolled.scrollY < 700) {
+  if (!scrolled || scrolled.activeHash !== scrolled.expectedHash || scrolled.scrollY < 700 || scrolled.currentTitle !== scrolled.activeTitle) {
     throw new Error(`toc scrollspy failed on long page: ${JSON.stringify(scrolled)}`);
   }
 
@@ -749,6 +750,7 @@ async function checkTocScrollspy() {
   if (!afterPjax
     || afterPjax.pathname !== "/channels/telegram"
     || afterPjax.activeHash !== afterPjax.expectedHash
+    || afterPjax.currentTitle !== afterPjax.activeTitle
     || afterPjax.activeCount !== 1) {
     throw new Error(`toc scrollspy failed after PJAX navigation: ${JSON.stringify(afterPjax)}`);
   }
@@ -811,10 +813,44 @@ async function scrollToTocItem(page, index) {
       expectedHash,
       activeHash: active[0]?.hash ?? null,
       activeCount: active.length,
+      activeTitle: active[0]?.textContent.trim(),
+      currentTitle: document.querySelector("[data-toc-current]")?.textContent,
       pathname: location.pathname,
       scrollY,
     };
   }, expected);
+}
+
+async function checkCompactToc() {
+  const page = await browser.newPage({ viewport: { width: 1024, height: 650 } });
+  try {
+    await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
+    for (const width of [1024, 320]) {
+      await page.setViewportSize({ width, height: 650 });
+      await scrollToTocItem(page, 4);
+      await page.waitForFunction(() => {
+        const header = document.querySelector(".site-header").getBoundingClientRect();
+        const summary = document.querySelector(".toc summary").getBoundingClientRect();
+        return Math.abs(header.bottom - summary.top) < 1;
+      });
+      const current = await page.locator("[data-toc-current]").evaluate(node => {
+        const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+        return { visible: rect.width > 0 && rect.right <= innerWidth, ellipsis: style.textOverflow === "ellipsis", fading: style.maskImage !== "none", overflowing: node.scrollWidth > node.clientWidth + 1 };
+      });
+      if (!current.visible || current.ellipsis || current.fading !== current.overflowing) throw new Error(`Compact TOC context failed (${width}px): ${JSON.stringify(current)}`);
+      const summary = await page.locator(".toc summary").boundingBox();
+      await page.mouse.click(summary.x + 30, summary.y + summary.height / 2);
+      const nav = await page.locator(".toc nav").boundingBox();
+      if (!nav || nav.x > summary.x + 16 || nav.y < summary.y + summary.height || nav.y + nav.height > 650) throw new Error(`Compact TOC dropdown must open at the leading edge within the viewport: ${JSON.stringify(nav)}`);
+      await page.keyboard.press("Escape");
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    // Header controls move between compact and desktop containers on resize.
+    await page.waitForFunction(() => Math.abs(
+      document.querySelector(".toc").getBoundingClientRect().right
+      - document.querySelector(".header-row .theme-toggle").getBoundingClientRect().right
+    ) <= 1, null, { timeout: 3000 });
+  } finally { await page.close(); }
 }
 
 async function checkMobileToc(page) {
