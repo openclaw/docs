@@ -230,6 +230,17 @@ planning. Synchronous ingestion filters consume prepared tombstones. Forget's
 live lineage rechecks and supplied-connection mutation transactions retain their
 existing owner. Session policy metadata reads and cold bootstrap also remain separate.
 
+Generated embedding-cache publication uses the existing memory publication worker
+and the captured published database, including during a shadow rebuild. Its native
+transaction rereads the index revision and session tombstones before reserving cache
+capacity and writing vectors. Conflicting dimensions invalidate the generation
+before its writer turn releases, even when clearing fails or loses its reply;
+the error still propagates without replay. Bounded staging retains one vector row
+at a time and preserves cache binary values. Source-file inspection remains on the
+host. Cache reads and pruning, the published-generation guard for shadow source
+writes, and cold opening remain separate work. Schemas, cache retention, and stored
+formats are unchanged.
+
 The exported `OpenClawAgentSqliteWorkerStore` type retains its `run` and `close`
 contract for existing adapters. The factory's inferred return type additionally
 provides the typed single-command `execute` method.
