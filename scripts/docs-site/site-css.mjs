@@ -63,12 +63,12 @@ ${designSystemCss}
 .oc-accordion-content>:last-child{margin-block-end:0}
 /* Keep native disclosure semantics; unsupported browsers simply toggle instantly. */
 @supports selector(::details-content){
-  .oc-accordion[data-accordion-motion]::details-content{height:0;overflow:clip;opacity:0;transition:height var(--oc-duration-ui) var(--oc-ease-out),opacity var(--oc-duration-ui) var(--oc-ease-out),content-visibility var(--oc-duration-ui) allow-discrete}
-  .oc-accordion[data-accordion-motion][open]::details-content{height:var(--accordion-content-height,0px);opacity:1}
-  .oc-accordion[data-accordion-motion][data-accordion-reveal]::details-content{height:auto;opacity:1;content-visibility:visible;transition:none}
-  .oc-accordion:has(>summary:focus-visible)::details-content{transition:none}
+  [data-accordion-motion]::details-content{height:0;overflow:clip;opacity:0;transition:height var(--oc-duration-ui) var(--oc-ease-out),opacity var(--oc-duration-ui) var(--oc-ease-out),content-visibility var(--oc-duration-ui) allow-discrete}
+  [data-accordion-motion][open]::details-content{height:var(--accordion-content-height,0px);opacity:1}
+  [data-accordion-motion][data-accordion-reveal]::details-content{height:auto;opacity:1;content-visibility:visible;transition:none}
+  [data-accordion-motion]:has(>summary:focus-visible)::details-content{transition:none}
   @media(prefers-reduced-motion:reduce){
-    .oc-accordion[data-accordion-motion]::details-content{transition:opacity var(--oc-duration-fast) var(--oc-ease-out),content-visibility var(--oc-duration-fast) allow-discrete}}}
+    [data-accordion-motion]::details-content{transition:opacity var(--oc-duration-fast) var(--oc-ease-out),content-visibility var(--oc-duration-fast) allow-discrete}}}
 .oc-accordion>summary:focus-visible>.oc-accordion-chevron{transition:none}
 @media(prefers-reduced-motion:reduce){.oc-accordion-chevron{transition:none}}
 @media(hover:hover) and (pointer:fine){.oc-accordion>summary:hover{background:color-mix(in srgb,var(--ink) 7%,var(--paper))}.oc-accordion>summary:hover>.oc-accordion-chevron{opacity:1}}

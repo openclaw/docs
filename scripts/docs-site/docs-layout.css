@@ -192,6 +192,20 @@
 .docs-layout .doc p { line-height: var(--docs-leading); }
 .docs-layout .doc :is(h1,h2,h3,h4,h5,h6) { color: var(--ink); }
 .docs-layout .doc strong { color: inherit; font-weight: 600; }
+/* Keep release-source disclosures native, with the same fine chevron as the shell. */
+.docs-layout .doc .release-source-toggle > summary { display: flex; align-items: center; gap: 7px; min-block-size: 44px; border-radius: var(--oc-radius-inset); cursor: pointer; list-style: none; }
+.docs-layout .doc .release-source-toggle > summary::-webkit-details-marker { display: none; }
+.docs-layout .doc .release-source-toggle > summary::before { content: ""; flex: 0 0 14px; inline-size: 14px; block-size: 14px; background: currentColor; color: var(--muted); mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m5.5 3 5 5-5 5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; transform: rotate(0deg); transform-origin: center; transition: transform var(--oc-duration-ui) var(--oc-ease-out); }
+:root[dir="rtl"] .docs-layout .doc .release-source-toggle > summary::before { transform: rotate(180deg); }
+.docs-layout .doc .release-source-toggle[open] > summary::before,
+:root[dir="rtl"] .docs-layout .doc .release-source-toggle[open] > summary::before { transform: rotate(90deg); }
+.docs-layout .doc .release-source-content { display: flow-root; }
+.docs-layout .doc .release-source-toggle > summary:focus-visible::before { transition: none; }
+@media (prefers-reduced-motion:reduce) {
+  .docs-layout .doc .release-source-toggle > summary::before { transition: none; }}
+.docs-layout .doc .release-source-toggle > summary:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 2px; }
+@media (hover:hover) and (pointer:fine) {
+  .docs-layout .doc .release-source-toggle > summary:hover::before { color: var(--ink); }}
 .docs-layout .doc > :is(p,ul,ol,blockquote) { max-inline-size: var(--docs-prose-measure); margin-block: 0 var(--docs-paragraph-gap); }
 .docs-layout .doc blockquote { margin: 1.5rem 0; padding: 0; padding-inline-start: 1rem; border: 0; border-inline-start: 2px solid color-mix(in srgb,var(--ink) 16%,transparent); color: var(--docs-muted); font: 400 var(--docs-body-size)/var(--docs-leading) var(--oc-font-body); }
 .docs-layout .doc blockquote > :first-child { margin-block-start: 0; }

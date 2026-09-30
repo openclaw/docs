@@ -138,8 +138,14 @@ function initAccordionMotion(){
     if(accordion.open)accordion.style.setProperty("--accordion-content-height",content.getBoundingClientRect().height+"px");
   };
   accordionResizeObserver=new ResizeObserver(entries=>entries.forEach(entry=>sync(entry.target)));
-  document.querySelectorAll(".oc-accordion").forEach(accordion=>{
-    const content=accordion.querySelector(":scope>.oc-accordion-content");
+  document.querySelectorAll(".oc-accordion,.release-source-toggle").forEach(accordion=>{
+    let content=accordion.querySelector(":scope>.oc-accordion-content,:scope>.release-source-content");
+    if(!content&&accordion.matches(".release-source-toggle")){
+      const summary=accordion.querySelector(":scope>summary");if(!summary)return;
+      content=document.createElement("div");content.className="release-source-content";
+      while(summary.nextSibling)content.append(summary.nextSibling);
+      accordion.append(content);
+    }
     if(!content)return;
     sync(content);
     if(!accordion.hasAttribute("data-accordion-motion")){
@@ -206,7 +212,7 @@ function revealTarget(target){
   }
   // Fragment navigation needs the final layout before scrolling, including nested disclosures.
   for(const accordion of animated){
-    const content=accordion.querySelector(":scope>.oc-accordion-content");
+    const content=accordion.querySelector(":scope>.oc-accordion-content,:scope>.release-source-content");
     accordion.style.setProperty("--accordion-content-height",content.getBoundingClientRect().height+"px");
   }
   for(const accordion of animated)accordion.removeAttribute("data-accordion-reveal");
