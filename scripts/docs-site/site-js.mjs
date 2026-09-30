@@ -21,15 +21,21 @@ const root=document.documentElement;const saved=localStorage.getItem("theme");ro
 const modal=document.querySelector(".search-modal");const input=document.querySelector("[data-search-input]");const results=document.querySelector("[data-search-results]");const moltySearch=document.querySelector("[data-search-molty]");const moltySearchPrefix=document.querySelector("[data-search-molty-prefix]");const moltySearchTerm=document.querySelector("[data-search-molty-term]");let pagefindReady;let pagefindLoadAttempt=0;let navigating=false;let searchActiveIndex=-1;
 function withBase(url){const base=window.OPENCLAW_DOCS_BASE||"";if(!base||!url.startsWith("/"))return url;return url===base||url.startsWith(base+"/")?url:base+url}
 function closeLanguage(){const picker=document.querySelector("[data-language-picker]");const trigger=document.querySelector("[data-language-trigger]");const restore=picker?.querySelector(".language-menu")?.contains(document.activeElement);picker?.classList.remove("open");trigger?.setAttribute("aria-expanded","false");if(restore)trigger?.focus({preventScroll:true})}
-function toggleLanguage(){const picker=document.querySelector("[data-language-picker]");const trigger=document.querySelector("[data-language-trigger]");if(picker?.classList.contains("open")){closeLanguage();return}picker?.classList.add("open");trigger?.setAttribute("aria-expanded","true");(picker?.querySelector(".language-option.active")??picker?.querySelector(".language-option"))?.focus()}
+function focusLanguageOption(option){
+if(!option)return;option.focus({preventScroll:true});
+const menu=option.closest(".language-menu");if(!menu)return;
+const top=option.offsetTop,bottom=top+option.offsetHeight;
+if(top<menu.scrollTop)menu.scrollTop=top;else if(bottom>menu.scrollTop+menu.clientHeight)menu.scrollTop=bottom-menu.clientHeight;
+}
+function toggleLanguage(){const picker=document.querySelector("[data-language-picker]");const trigger=document.querySelector("[data-language-trigger]");if(picker?.classList.contains("open")){closeLanguage();return}picker?.classList.add("open");trigger?.setAttribute("aria-expanded","true");focusLanguageOption(picker?.querySelector(".language-option.active")??picker?.querySelector(".language-option"))}
 function handleLanguageKeydown(e){
 const picker=e.target?.closest?.("[data-language-picker]");if(!picker)return false;
 const trigger=picker.querySelector("[data-language-trigger]");
-if(e.target===trigger&&(e.key==="ArrowDown"||e.key==="ArrowUp")){e.preventDefault();if(!picker.classList.contains("open"))toggleLanguage();const options=picker.querySelectorAll("[data-locale-option]");(e.key==="ArrowUp"?options[options.length-1]:options[0])?.focus();return true}
+if(e.target===trigger&&(e.key==="ArrowDown"||e.key==="ArrowUp")){e.preventDefault();if(!picker.classList.contains("open"))toggleLanguage();const options=picker.querySelectorAll("[data-locale-option]");focusLanguageOption(e.key==="ArrowUp"?options[options.length-1]:options[0]);return true}
 if(!e.target.matches("[data-locale-option]"))return false;
 const options=[...picker.querySelectorAll("[data-locale-option]")],index=options.indexOf(e.target);
 let next;if(e.key==="ArrowDown")next=(index+1)%options.length;else if(e.key==="ArrowUp")next=(index-1+options.length)%options.length;else if(e.key==="Home")next=0;else if(e.key==="End")next=options.length-1;else return false;
-e.preventDefault();options[next]?.focus();return true;
+e.preventDefault();focusLanguageOption(options[next]);return true;
 }
 function isPlainLeftClick(e){return e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey}
 function isDocsPage(url){if(url.origin!==location.origin)return false;const base=window.OPENCLAW_DOCS_BASE||"";if(base&&url.pathname!==base&&!url.pathname.startsWith(base+"/"))return false;if(/\\/(?:assets|pagefind)\\//.test(url.pathname))return false;return !/\\.[a-z0-9]{2,8}$/i.test(url.pathname)}
