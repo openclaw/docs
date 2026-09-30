@@ -512,8 +512,16 @@
 .docs-layout .home-layout .home-reading-section > *,
 .docs-layout .home-layout .home-intro { max-width: none; }
 .docs-layout .home-quick-links .oc-card-grid { grid-template-columns: repeat(4,minmax(0,1fr)); margin: 0 0 16px; gap: 0; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); overflow: hidden; background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); }
-.docs-layout .home-quick-links .oc-card { display: block; padding: 26px 24px; border: 0; border-inline-start: 1px solid var(--docs-border); border-radius: 0; background: transparent; box-shadow: none; }
-.docs-layout .home-quick-links .oc-card:first-child { border-inline-start: 0; }
+.docs-layout .home-quick-links .oc-card { display: block; padding: 26px 24px; border: 0; border-inline-start: 1px solid var(--docs-border); border-radius: 0; corner-shape: inherit; background: transparent; box-shadow: none; }
+/* The focused link owns the same outer corners as its responsive group. */
+.docs-layout .home-quick-links .oc-card:first-child { border-inline-start: 0; border-start-start-radius: inherit; }
+.docs-layout .home-quick-links .oc-card:last-child { border-end-end-radius: inherit; }
+@media (min-width:1101px) {
+  .docs-layout .home-quick-links .oc-card:first-child { border-end-start-radius: inherit; }
+  .docs-layout .home-quick-links .oc-card:last-child { border-start-end-radius: inherit; }}
+@media (min-width:581px) and (max-width:1100px) {
+  .docs-layout .home-quick-links .oc-card:nth-child(2) { border-start-end-radius: inherit; }
+  .docs-layout .home-quick-links .oc-card:nth-child(3) { border-end-start-radius: inherit; }}
 .docs-layout .home-quick-links .oc-card > .oc-card-icon { width: 36px; height: 36px; padding: 8px; margin: 0 0 22px; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-control); color: var(--brand); background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); }
 .docs-layout .home-quick-links .oc-card p { margin-top: 10px; }
 .docs-layout .home-quick-links .oc-card:focus-visible { outline: 2px solid var(--brand); outline-offset: -3px; background: var(--paper); }
@@ -621,6 +629,8 @@
 @media (max-width:580px) {
   .docs-layout .home-quick-links .oc-card-grid { grid-template-columns: 1fr; }
   .docs-layout .home-quick-links .oc-card { display: grid; grid-template-columns: 32px minmax(0,1fr); align-items: start; min-height: 0; gap: 12px; border-inline-start: 0; padding: 18px; }
+  .docs-layout .home-quick-links .oc-card:first-child { border-start-end-radius: inherit; }
+  .docs-layout .home-quick-links .oc-card:last-child { border-end-start-radius: inherit; }
   .docs-layout .home-quick-links .oc-card + .oc-card { border-top: 1px solid var(--docs-border); }
   .docs-layout .home-quick-links .oc-card > .oc-card-icon { width: 32px; height: 32px; padding: 6px; margin: 0; }
   .docs-layout .home-quick-links .oc-card > div > strong:first-child { margin: 3px 0 0; line-height: 26px; }
