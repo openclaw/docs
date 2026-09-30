@@ -437,6 +437,7 @@
 .home-hero::before { content: ""; display: block; width: 100%; height: 100%; background: var(--home-hero-image) right top / 100% 100% no-repeat; opacity: .48; mask-image: linear-gradient(#000 45%,transparent); }
 :root[data-theme="light"] .home-hero { --home-hero-image: url("home-hero-diagonal-light.svg"); }
 .docs-layout .home-heading h1 { margin: 0; font-size: 42px; font-weight: 600; letter-spacing: -1.4px; }
+.home-description > span { display: block; }
 .home-heading .home-description { max-width: 52rem; margin: 16px 0 0; color: var(--docs-muted); font-size: var(--docs-body-size); line-height: 1.6; }
 .home-layout > section:not(.home-heading), .home-about { padding-block: 56px; border-bottom: 1px solid var(--docs-border); }
 .home-layout > section.home-community { border-bottom: 0; }
@@ -483,7 +484,7 @@
 .home-channel > .icon { width: 12px; height: 12px; margin-inline-start: auto; color: var(--muted); opacity: .35; }
 .home-channel-more > .icon { opacity: 1; }
 @media (hover:hover) {
-  .docs-layout .docs-quick-nav .nav-link:hover { background: var(--paper); color: var(--ink); }
+  .docs-layout .docs-quick-nav .nav-link:hover:not(.active) { background: var(--paper); color: var(--ink); }
   .docs-layout .doc .oc-card:hover { background: color-mix(in srgb,var(--ink) 3%,var(--docs-surface)); border-color: color-mix(in srgb,var(--ink) 20%,transparent); transform: none; }
   .home-channel:hover > .icon { opacity: 1; }
   .doc .home-channel:hover { color: var(--ink); border-color: color-mix(in srgb,var(--ink) 24%,transparent); background: var(--paper); }}
@@ -545,6 +546,7 @@
   .docs-layout .docs-quick-nav .nav-link, .docs-layout .docs-section > summary { min-height: 44px; }
   .docs-layout .docs-section-pages .nav-link { min-height: 38px; display: flex; align-items: center; }
   .home-heading { min-height: 170px; padding: 38px 0 28px; }
+  .home-heading .home-description { text-wrap: balance; }
   .home-hero { --home-hero-image: url("home-hero-diagonal-dark-mobile.svg"); inset-block-start: calc(-35px - var(--header-row-h,64px)); height: 280px; mask-image: linear-gradient(90deg,transparent 8%,#000 58%,#000 88%,transparent); }
   .home-hero::before { opacity: .38; }
   :root[data-theme="light"] .home-hero { --home-hero-image: url("home-hero-diagonal-light-mobile.svg"); }
