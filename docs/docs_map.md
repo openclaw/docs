@@ -75,6 +75,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Delivery and output
   - H3: Failure notifications
+  - H4: Owner-conversation repair
   - H3: Output language
 
 ## automation/cron-jobs/gmail.md
@@ -3855,6 +3856,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Finding sessions by owner
   - H2: Reading the avatars
   - H2: People cards
+  - H2: Reactions
   - H2: Mentioning people
   - H2: Mentions Inbox
   - H2: Agent-spawned sessions
@@ -6584,10 +6586,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/bun-compatibility
 - Headings:
   - H2: Requirements
+  - H2: macOS app private runtime
   - H2: SQLite library selection on macOS
   - H2: Memory search without an extension-capable library
   - H2: Browser subprocesses
   - H2: Bun-only installs
+  - H2: SQLite worker lifecycle
   - H2: Known limitations
   - H2: History across releases
   - H2: Related
@@ -7957,6 +7961,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Conversation in the native window
   - H2: Message times and models
   - H2: Thread view options
+  - H2: Online people
   - H2: Pending questions and approvals
   - H2: Sources
   - H2: Diagrams
@@ -8677,6 +8682,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Create a feature plugin
   - H2: Define operations once
   - H2: Contribute and replace views
+  - H3: Host capabilities
+  - H3: Dock a conversation
   - H2: Build and reload
   - H2: Approve an agent-built artifact
 
@@ -10945,6 +10952,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Memory runtime replacement
+  - H2: Browser meeting transport builders
   - H2: Browser meeting status ownership
   - H2: Browser meeting participation
   - H2: Worker provider allocation authority
@@ -11049,6 +11057,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-subpaths
 - Headings:
   - H2: Plugin entry
+  - H3: Control UI conversation dock
   - H3: Capability catalog entry
   - H3: Compatibility and private-local helpers
   - H3: Bundled plugin helper subpaths
@@ -11976,6 +11985,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick choice
   - H3: Retired subscription model references
+  - H2: Daybreak Blue and Red
   - H2: GPT-6 Astra
   - H3: Async tools, steering, and reasoning changes
   - H2: GPT-6.1 Sol
@@ -12387,6 +12397,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/layout
 - Headings:
   - H2: Database layout
+  - H3: Session reactions
   - H3: Activity session recaps
   - H3: Transcript search row ownership
   - H3: Cold transcript archives
@@ -13289,6 +13300,27 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /releases/2026.9.6
 - Headings:
   - H1: v2026.9.6
+  - H2: Installation and Onboarding
+  - H2: Web UI
+  - H2: Updates and Maintenance
+  - H2: Messaging
+  - H2: Memory
+  - H2: Skills
+  - H2: Native Apps
+  - H2: Models and Providers
+  - H2: Automations and Scheduling
+  - H2: Browser and Computer Use
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+  - H2: Quality-of-Life Improvements
+  - H2: Other Bug Fixes
+  - H2: Maintainer and Internal Changes
+
+## releases/2026.9.7.md
+
+- Route: /releases/2026.9.7
+- Headings:
+  - H1: v2026.9.7
   - H2: Installation and Onboarding
   - H2: Web UI
   - H2: Updates and Maintenance
@@ -15194,6 +15226,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/chat
 - Headings:
   - H2: Collaborator drafts
+  - H2: Reactions
   - H2: Session rail and side chat
   - H2: Session links in messages
   - H2: Suggested tasks
@@ -15254,6 +15287,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: OpenClaw system care
   - H2: Home dock
+  - H2: Plugin conversation docks
   - H2: Operator terminal
   - H2: Browser panel
   - H2: GitHub side panel
