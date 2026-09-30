@@ -15088,6 +15088,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/tts/api
 - Headings:
   - H2: Agent tool
+  - H3: Tool profiles
   - H2: Gateway RPC
 
 ## tools/tts/commands.md
