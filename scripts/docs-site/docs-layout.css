@@ -596,6 +596,9 @@
 .home-guide-copy h3 .icon { width: 15px; height: 15px; flex: 0 0 15px; color: var(--muted); }
 .home-guide-copy p { color: var(--docs-muted); margin: 0; font-size: 14px; line-height: 1.6; }
 .doc .home-guide:focus-visible { outline: 2px solid var(--brand); outline-offset: 6px; }
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .home-guide-art .docs-media-content { will-change: transform; transition: transform calc(var(--oc-duration-ui) * 2) ease; }
+  .home-guide:hover .home-guide-art .docs-media-content { transform: scale(1.025); }}
 .home-community { container: community / inline-size; }
 .home-discord { --ink: #f0f1f2; --docs-muted: #a0a5aa; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); overflow: hidden; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-lg); background: #121416; color: var(--ink); }
 .home-discord-copy { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; min-width: 0; padding: 38px; }
