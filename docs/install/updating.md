@@ -228,6 +228,23 @@ Pending package-publication recovery in either the CLI or selected service
 installation blocks writable preparation. Follow the package recovery command
 reported by the update before retrying; Doctor does not clear those artifacts.
 
+If a pnpm-owned install fails with `IO error: not a terminal`, the installed
+updater may be triggering an interactive pnpm build-approval prompt while
+capturing its output. A newer candidate cannot repair that first update.
+Follow the [manual package-manager procedure](/install/updating/update-methods#alternative-manual-npm-pnpm-or-bun),
+preserving the owning account, prefix, and state/configuration. Back up and stop
+the Gateway through its actual owner before replacing the package. For the
+installation step in a POSIX shell, supply noninteractive input:
+
+```bash
+pnpm add -g --allow-build=openclaw openclaw@VERSION </dev/null
+```
+
+Replace `VERSION` with a release containing this fix. Then run Doctor and restart
+through the same owner as described in the manual procedure. Updates driven by
+the fixed version supply noninteractive input to pnpm themselves. The recovery
+command permits OpenClaw's own install scripts without approving additional dependencies.
+
 The installed 2026.9.4 updater can refuse with `managed-service-preflight` before
 the target code runs. To reach a release containing this repair, use the
 [manual package-manager procedure](/install/updating/update-methods#alternative-manual-npm-pnpm-or-bun)
