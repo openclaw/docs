@@ -1687,6 +1687,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/local-proof
 - Headings:
   - H2: Local equivalents
+  - H3: Opt-in compiler evidence
   - H2: Workflow lint tools
   - H2: Surface ratchets
   - H2: Local check gates and changed routing
