@@ -6532,6 +6532,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent reliability evals (skills)
   - H2: Cost budget
   - H2: Raw SQLite state access
+  - H2: Skills watchers
   - H2: Flake triage
   - H2: Adding regressions (guidance)
 
