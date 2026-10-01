@@ -14926,6 +14926,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config overrides
   - H2: Environment injection
   - H2: Snapshots and refresh
+  - H2: Search installed skills
   - H2: Token impact
   - H2: Related
 
