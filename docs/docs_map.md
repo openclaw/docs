@@ -6642,6 +6642,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/bun
 - Headings:
   - H2: Install
+  - H2: Bun-only global install
   - H2: Lifecycle scripts
   - H2: Caveats
   - H2: Related
