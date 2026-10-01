@@ -7474,6 +7474,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model selection guidance
   - H2: Attachment policy
   - H3: File-attachment extraction
+  - H2: Vision models and image replay cost
   - H2: Config examples
   - H2: Status output
   - H2: Notes
