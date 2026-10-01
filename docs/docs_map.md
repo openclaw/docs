@@ -2934,6 +2934,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/sessions
 - Headings:
   - H1: openclaw sessions
+  - H2: Import transcripts
   - H2: Archive sessions
   - H2: Delete sessions
   - H2: Tail trajectory progress
@@ -7531,6 +7532,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /nodes/session-catalogs
 - Headings:
+  - H2: Import transcripts
   - H2: Codex sessions and transcripts
   - H2: Claude sessions and transcripts
   - H2: OpenCode and Pi sessions
