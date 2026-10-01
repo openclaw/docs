@@ -14547,6 +14547,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tool parameters
   - H3: run
   - H3: resume
+  - H3: Structured input
   - H2: Output envelope
   - H2: Approvals
   - H2: Safety
