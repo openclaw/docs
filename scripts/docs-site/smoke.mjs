@@ -393,11 +393,14 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   || !/\.sidebar\.can-scroll-down\{--sidebar-fade-bottom:30px\}/.test(siteCss)) {
   throw new Error("assets: sidebar overflow affordance is missing");
 }
-// Community discovery lives in the home content and drawer social links.
-if (/class="community-invite"/.test(index)
+const communityInvite = DomUtils.findOne((node) => node.name === "aside"
+  && node.attribs?.class?.split(" ").includes("community-invite"), indexDocument.children);
+if (!communityInvite
+  || !DomUtils.findOne((node) => node.name === "button" && "data-community-invite-dismiss" in node.attribs, communityInvite.children)
+  || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://discord.com/invite/clawd", communityInvite.children)
   || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://discord.com/invite/clawd",
     DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes("home-community"), indexDocument.children)?.children ?? [])) {
-  throw new Error("homepage community invitation is missing or still floating over content");
+  throw new Error("community invitation, dismissal control, or homepage Discord link is missing");
 }
 if (!/\.header-row\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)

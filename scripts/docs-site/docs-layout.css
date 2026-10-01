@@ -528,7 +528,8 @@
   .docs-layout :is(.search-button,.nav-toggle,.theme-toggle) { flex-shrink: 0; }
   .docs-layout .main { border: 0; }
   .docs-layout .article, .docs-layout.docs-home-layout .article { padding-inline: 24px; }
-  .docs-layout .sidebar { --docs-sidebar-inset-end: 20px; top: 0; width: min(380px,100vw); padding: 0 20px; max-height: 100dvh; height: 100dvh; }
+  .docs-layout :is(.sidebar,.community-invite) { width: min(380px,100vw); }
+  .docs-layout .sidebar { --docs-sidebar-inset-end: 20px; top: 0; padding: 0 20px; max-height: 100dvh; height: 100dvh; }
   .docs-layout .sidebar-head { min-height: 60px; margin: 0; padding-block: 8px; justify-content: space-between; border-bottom: 1px solid var(--docs-border); }
   .docs-layout .sidebar-brand { min-height: 44px; gap: 8px; }
   .docs-layout .sidebar-brand .brand-tag { display: inline; }

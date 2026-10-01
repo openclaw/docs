@@ -337,6 +337,25 @@ async function checkCommunityBanner() {
           await banner.screenshot({ path: path.join(artifacts, `community-${theme}-${width}.png`) });
         }
       }
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      const invite = page.getByRole("complementary", { name: "Join the OpenClaw community on Discord" });
+      await invite.waitFor({ state: "visible" });
+      const floating = await invite.evaluate((node) => {
+        const card = node.getBoundingClientRect();
+        const launcher = document.querySelector(".docs-chat-launcher").getBoundingClientRect();
+        return card.left > innerWidth / 2 && card.right <= innerWidth && card.bottom <= innerHeight
+          && launcher.bottom < card.top;
+      });
+      if (!floating) throw new Error(`Discord invitation must float at the right with Molty above it (${theme})`);
+      await page.getByRole("button", { name: "Ask Molty", exact: true }).click();
+      await invite.waitFor({ state: "hidden" });
+      await page.getByRole("button", { name: "Minimize", exact: true }).click();
+      await invite.waitFor({ state: "visible" });
+      await invite.getByRole("button", { name: "Dismiss and don't show again" }).click();
+      await page.reload({ waitUntil: "networkidle" });
+      await invite.waitFor({ state: "hidden" });
+      const launcherAtBottom = await page.locator(".docs-chat-launcher").evaluate((node) => innerHeight - node.getBoundingClientRect().bottom < 40);
+      if (!launcherAtBottom) throw new Error("Molty must return to the bottom after the invitation is dismissed");
     } finally { await page.close(); }
   }
 }
@@ -1079,13 +1098,30 @@ async function checkMobile() {
   if (JSON.stringify(sectionLabels.map(label => label.trim())) !== JSON.stringify(expectedTabs)) {
     throw new Error(`vertical sections lost source navigation: ${JSON.stringify(sectionLabels)}`);
   }
-  for (const height of [980, 600]) {
-    await page.setViewportSize({ width: 390, height });
+  for (const viewport of [{ width: 390, height: 980 }, { width: 440, height: 896 }, { width: 390, height: 600 }, { width: 320, height: 568 }, { width: 820, height: 600 }]) {
+    await page.setViewportSize(viewport);
     if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
     await page.locator(".docs-section-trigger").last().click();
     await page.locator(".docs-section:last-child .nav-link").last().scrollIntoViewIfNeeded();
     await page.locator(".docs-section:last-child .nav-link").last().click({ trial: true });
-    await page.screenshot({ path: path.join(artifacts, `elements-mobile-sections-${height}.png`), fullPage: false });
+    const invite = await page.evaluate(() => {
+      const card = document.querySelector(".community-invite");
+      const rect = card.getBoundingClientRect();
+      const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
+      const cta = card.querySelector(".community-invite__cta");
+      const button = cta.getBoundingClientRect();
+      return {
+        visible: !card.hidden && !card.inert,
+        aligned: Math.abs(rect.left - sidebar.left) < 1 && Math.abs(rect.right - sidebar.right) < 1,
+        belowNavigation: Math.abs(rect.top - sidebar.bottom) < 1,
+        contained: button.left >= rect.left && button.right <= rect.right && button.top >= rect.top && button.bottom <= Math.min(rect.bottom, innerHeight),
+        unobscured: [button.top + 2, button.bottom - 2].every(y => cta.contains(document.elementFromPoint(button.left + button.width / 2, y))),
+      };
+    });
+    if (Object.values(invite).some(value => !value)) {
+      throw new Error(`mobile invitation or CTA clipped (${viewport.width}x${viewport.height}): ${JSON.stringify(invite)}`);
+    }
+    await page.screenshot({ path: path.join(artifacts, `elements-mobile-sections-${viewport.width}-${viewport.height}.png`), fullPage: false });
     await page.locator(".docs-sidebar-back").click();
   }
   await page.setViewportSize({ width: 390, height: 980 });
@@ -1259,7 +1295,7 @@ async function checkMobileKeyboardOverlays(page) {
     throw new Error(`drawer footer obscures the focused final section: ${JSON.stringify(finalSection)}`);
   }
   // Rotation must keep the existing focused link visible in both nested scrollports.
-  for (const resizedViewport of [{ width: 390, height: 320 }, { width: 780, height: 390 }]) {
+  for (const resizedViewport of [{ width: 390, height: 440 }, { width: 390, height: 320 }, { width: 780, height: 390 }]) {
     await page.setViewportSize(resizedViewport);
     await page.waitForFunction(() => {
       const target = document.querySelector(".docs-section-trigger:last-child");
