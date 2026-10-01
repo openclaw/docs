@@ -1080,6 +1080,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/nextcloud-talk
 - Headings:
   - H2: Install
+  - H2: How messages reach the agent
   - H2: Quick setup (beginner)
   - H2: Notes
   - H2: Moving existing webhook endpoints to the Gateway
