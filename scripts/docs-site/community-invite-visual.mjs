@@ -35,14 +35,21 @@ try {
     try {
       for (const theme of ["dark", "light"]) {
         for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 800 }, { width: 390, height: 844 }, { width: 320, height: 568 }, { width: 820, height: 600 }]) {
-          const page = await browser.newPage({ viewport, reducedMotion: "reduce" });
+          const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
+          const page = await context.newPage();
           const label = `${name}-${theme}-${viewport.width}`;
           // macOS WebKit follows Safari’s default of using Option-Tab for links.
           const tabKey = name === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab";
           const errors = [];
           page.on("pageerror", (error) => errors.push(error.message));
           try {
-            await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+            await page.addInitScript((value) => {
+              localStorage.setItem("theme", value);
+              // Existing visitors have a valid dismissal under the original key.
+              if (localStorage.getItem("openclaw.docs.community-invite") === null) {
+                localStorage.setItem("openclaw.docs.community-invite", JSON.stringify({ dismissedAtMs: 1 }));
+              }
+            }, theme);
             await page.goto(base, { waitUntil: "networkidle" });
             const mobile = viewport.width <= 820;
             if (mobile) {
@@ -104,14 +111,24 @@ try {
               await page.getByRole("button", { name: "Minimize", exact: true }).click();
               await invite.waitFor({ state: "visible" });
             }
+            const peer = viewport.width === 1440 && theme === "dark" ? await context.newPage() : null;
+            if (peer) {
+              await peer.goto(base, { waitUntil: "networkidle" });
+              await peer.getByRole("complementary", { name: "Find your people" }).waitFor({ state: "visible" });
+            }
             await invite.getByRole("button", { name: "Dismiss and don't show again" }).click();
             await invite.waitFor({ state: "hidden" });
+            if (peer) {
+              await peer.getByRole("complementary", { name: "Find your people" }).waitFor({ state: "hidden" });
+              await peer.close();
+            }
+            assert.equal(await page.evaluate(() => localStorage.getItem("openclaw.docs.community-invite")), '{"dismissedAtMs":1}', `${label}: legacy preference remains untouched`);
             await page.reload({ waitUntil: "networkidle" });
             if (mobile) await page.locator("[data-nav-toggle]").click();
             await invite.waitFor({ state: "hidden" });
             assert.deepEqual(errors, [], label);
             checked++;
-          } catch (error) { throw new Error(`${label}: ${error.message}`, { cause: error }); } finally { await page.close(); }
+          } catch (error) { throw new Error(`${label}: ${error.message}`, { cause: error }); } finally { await context.close(); }
         }
       }
     } finally { await browser.close(); }
