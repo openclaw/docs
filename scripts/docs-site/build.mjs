@@ -22,7 +22,8 @@ import { createRenderCache } from "./render-cache.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
-import { renderPageOgCards } from "./og-cards.mjs";
+import { renderPageOgCards, renderOgPng } from "./og-cards.mjs";
+import { renderDefaultOgSvg } from "./og-card-template.mjs";
 import { activeTabTitle, groupForPage, flattenNavEntries, flattenNav } from "./navigation.mjs";
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
@@ -62,8 +63,10 @@ const defaultShellAssetVersion = createHash("sha256")
   .digest("hex")
   .slice(0, 12);
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
+const defaultOgSvg = renderDefaultOgSvg();
+const defaultOgPng = await renderOgPng(defaultOgSvg);
 const defaultOgVersion = createHash("sha256")
-  .update(fs.readFileSync(path.join(siteAssetsDir, "og-card.png")))
+  .update(defaultOgPng)
   .digest("hex")
   .slice(0, 12);
 const previewPagesPerGroup = parseOptionalPositiveInt(
@@ -835,10 +838,8 @@ function writeStaticAssets() {
     });
   }
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
-  for (const file of ["og-card.png", "og-card.svg"]) {
-    const source = path.join(siteAssetsDir, file);
-    if (fs.existsSync(source)) fs.copyFileSync(source, path.join(outDir, file));
-  }
+  fs.writeFileSync(path.join(outDir, "og-card.png"), defaultOgPng);
+  fs.writeFileSync(path.join(outDir, "og-card.svg"), defaultOgSvg);
   if (process.env.DOCS_SITE_CNAME) {
     fs.writeFileSync(path.join(outDir, "CNAME"), `${process.env.DOCS_SITE_CNAME}\n`, "utf8");
   }

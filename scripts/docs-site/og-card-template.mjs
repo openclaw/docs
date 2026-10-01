@@ -1,91 +1,76 @@
-const TITLE_SIZES = [96, 82, 70, 60, 52];
-const TITLE_MAX_LINES = 2;
-const TITLE_MAX_WIDTH = 1044;
-const SUMMARY_SIZE = 26;
-const SUMMARY_MAX_LINES = 2;
-const SUMMARY_MAX_WIDTH = 1044;
-const GLYPH_RATIO_TITLE = 0.55;
-const GLYPH_RATIO_SUMMARY = 0.52;
-const ASCENT_RATIO = 0.78;
-const LINE_HEIGHT_RATIO = 1.06;
+import fs from "node:fs";
 
-const PAD_X = 78;
-const KICKER_BASELINE_Y = 192;
-const TITLE_BLOCK_TOP = 218;
-const FOOTER_TOP = 524;
+// Resolved dark-theme roles from docs-layout.css for the SVG rasterizer (which
+// has no CSS custom-property cascade). Artwork and mark stay renderer-owned.
+const color = {
+  page: "#0c0d0d",       // --bg
+  text: "#f0f1f2",       // --ink
+  secondary: "#c4c7cb",  // --text
+  accent: "#ef674c",     // --brand
+};
+const hero = fs.readFileSync(new URL("./assets/home-hero-diagonal-dark.svg", import.meta.url), "utf8");
+const mark = fs.readFileSync(new URL("./assets/openclaw.svg", import.meta.url), "utf8");
+const really = fs.readFileSync(new URL("./assets/og-really.svg", import.meta.url), "utf8");
+const PAD_X = 64;
+const CONTENT_WIDTH = 1072;
+const TITLE_SIZES = [80, 72, 64, 56, 48];
+const TITLE_BLOCK_TOP = 226;
+const SUMMARY_SIZE = 28;
+const ASCENT_RATIO = 0.8;
+const LINE_HEIGHT_RATIO = 1.12;
+const CONTENT_BOTTOM = 528;
+
+export function renderDefaultOgSvg() {
+  return frame("OpenClaw documentation — The AI that really does things.", `
+  <g font-size="104" font-weight="600" letter-spacing="-2.7" fill="${color.text}">
+    <text x="210" y="282">The AI that</text>
+    ${really.replace("<svg ", '<svg x="718" y="162.8333" width="277.3333" height="151.6667" ')}
+    <text x="600" y="405" text-anchor="middle">does things.</text>
+  </g>
+  <g font-size="28" fill="${color.secondary}" text-anchor="middle">
+    <text x="600" y="495"><tspan font-weight="600" fill="${color.text}">Open source.</tspan> Run it on your machine or in the cloud,</text>
+    <text x="600" y="534">with your own models or your choice of AI provider.</text>
+  </g>`);
+}
 
 export function renderPageOgSvg({ title, kicker, summary }) {
   const safeTitle = (title || "Documentation").trim();
-  const safeKicker = (kicker || "OpenClaw").trim();
+  const safeKicker = (kicker || "Documentation").trim();
   const safeSummary = (summary || "").trim();
-
-  const titleFit = fitText(safeTitle, TITLE_SIZES, TITLE_MAX_WIDTH, TITLE_MAX_LINES, GLYPH_RATIO_TITLE);
-  const titleLetterSpacing = titleFit.size >= 88 ? -2.5 : titleFit.size >= 70 ? -2 : -1.4;
+  const titleFit = fitText(safeTitle, TITLE_SIZES, CONTENT_WIDTH, 2, 0.58);
   const titleBlockBottom = TITLE_BLOCK_TOP + titleFit.lines.length * titleFit.size * LINE_HEIGHT_RATIO;
-
-  const summaryAvailable = FOOTER_TOP - 18 - (titleBlockBottom + 22);
-  const summaryMaxLines = Math.max(0, Math.min(SUMMARY_MAX_LINES, Math.floor(summaryAvailable / (SUMMARY_SIZE * 1.4))));
-  const summaryFit = safeSummary && summaryMaxLines > 0
-    ? fitText(safeSummary, [SUMMARY_SIZE], SUMMARY_MAX_WIDTH, summaryMaxLines, GLYPH_RATIO_SUMMARY)
-    : { lines: [], size: SUMMARY_SIZE };
   const summaryBlockTop = titleBlockBottom + 22;
+  const summaryMaxLines = Math.max(0, Math.min(2, Math.floor((CONTENT_BOTTOM - 26 - summaryBlockTop) / (SUMMARY_SIZE * LINE_HEIGHT_RATIO))));
+  const summaryFit = safeSummary && summaryMaxLines > 0
+    ? fitText(safeSummary, [SUMMARY_SIZE], CONTENT_WIDTH, summaryMaxLines, 0.55)
+    : { lines: [], size: SUMMARY_SIZE };
+  const kickerFit = fitText(safeKicker, [22], CONTENT_WIDTH, 1, 0.58);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(`${safeTitle} — OpenClaw documentation`)}">
-${defs()}
-  <rect width="1200" height="630" fill="#101012"/>
-  <rect x="0" y="0" width="1200" height="4" fill="#f5654a"/>
-  <line x1="78" y1="498" x2="1122" y2="498" stroke="#2f2f34" stroke-width="1"/>
+  return frame(`${safeTitle} — OpenClaw documentation`, `
+  <text x="${PAD_X}" y="190" font-size="22" fill="${color.accent}">${escapeXml(kickerFit.lines[0])}</text>
+  ${textLines(titleFit, TITLE_BLOCK_TOP, { weight: 600, spacing: -1.8, fill: color.text })}
+  ${textLines(summaryFit, summaryBlockTop, { fill: color.secondary })}`);
+}
 
-  <g transform="translate(${PAD_X} 78)">
-    <rect width="22" height="22" fill="#f5654a"/>
-    <text x="36" y="17" font-family="'JetBrains Mono', monospace" font-size="18" font-weight="700" fill="#9a9aa2" letter-spacing="0.18em">DOCS.OPENCLAW.AI</text>
-  </g>
-
-  <g transform="translate(940 56)">
-    <use href="#lobster" width="200" height="200"/>
-  </g>
-
-  <text x="${PAD_X}" y="${KICKER_BASELINE_Y}" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="700" fill="#ff8f78" letter-spacing="0.18em">${escapeXml(safeKicker.toUpperCase())}</text>
-
-  ${titleFit.lines.map((line, i) => `<text x="${PAD_X}" y="${baselineY(TITLE_BLOCK_TOP, titleFit.size, i)}" font-family="Switzer, sans-serif" font-size="${titleFit.size}" font-weight="700" fill="#ededed" letter-spacing="${titleLetterSpacing}">${escapeXml(line)}</text>`).join("\n  ")}
-
-  ${summaryFit.lines.map((line, i) => `<text x="${PAD_X}" y="${baselineY(summaryBlockTop, SUMMARY_SIZE, i)}" font-family="Switzer, sans-serif" font-size="${SUMMARY_SIZE}" font-weight="400" fill="#bcbcc4" letter-spacing="-0.2">${escapeXml(line)}</text>`).join("\n  ")}
-
-  <g transform="translate(${PAD_X} ${FOOTER_TOP})">
-    <rect width="10" height="10" fill="#f5654a"/>
-    <text x="22" y="9" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="700" fill="#ededed">docs.openclaw.ai</text>
-    <text x="22" y="40" font-family="'JetBrains Mono', monospace" font-size="16" font-weight="400" fill="#9a9aa2">Self-hosted gateway · AI coding agents from any chat</text>
-  </g>
-
-  <g transform="translate(1122 ${FOOTER_TOP})" opacity="0.85" text-anchor="end">
-    <text font-family="'JetBrains Mono', monospace" font-size="14" font-weight="700" fill="#4fc8ae" letter-spacing="0.18em">v1 · MIT</text>
-    <text y="28" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="400" fill="#9a9aa2">github.com/openclaw/openclaw</text>
+function frame(label, content) {
+  // Reuse Vyctor's actual homepage artwork, not a separate approximation. Inline
+  // the SVG so card bytes (and their cache keys) include every artwork change.
+  const artwork = hero.replace("<svg ", '<svg x="0" y="0" width="1200" height="360" ');
+  const logo = mark.replace("<svg ", '<svg x="64" y="54" width="44" height="44" ');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(label)}">
+  <rect width="1200" height="630" fill="${color.page}"/>
+  <g opacity="0.6">${artwork}</g>
+  ${logo}
+  <g font-family="Switzer, sans-serif">
+    <text x="122" y="88" font-size="34" font-weight="600" letter-spacing="-0.8" fill="${color.text}">OpenClaw</text>
+    <text x="1136" y="86" text-anchor="end" font-size="24" fill="${color.secondary}">Documentation</text>
+    ${content}
   </g>
 </svg>`;
 }
 
-function baselineY(blockTop, size, lineIndex) {
-  return Math.round(blockTop + size * ASCENT_RATIO + lineIndex * size * LINE_HEIGHT_RATIO);
-}
-
-function defs() {
-  return `<defs>
-    <linearGradient id="lobster-grad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ff4d4d"/>
-      <stop offset="1" stop-color="#991b1b"/>
-    </linearGradient>
-    <symbol id="lobster" viewBox="0 0 120 120" overflow="visible">
-      <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lobster-grad)"/>
-      <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lobster-grad)"/>
-      <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lobster-grad)"/>
-      <path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-      <path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-      <circle cx="45" cy="35" r="6" fill="#101012"/>
-      <circle cx="75" cy="35" r="6" fill="#101012"/>
-      <circle cx="46" cy="34" r="2.5" fill="#00e5cc"/>
-      <circle cx="76" cy="34" r="2.5" fill="#00e5cc"/>
-    </symbol>
-  </defs>`;
+function textLines(fit, top, { weight = 400, spacing = 0, fill }) {
+  return fit.lines.map((line, i) => `<text x="${PAD_X}" y="${Math.round(top + fit.size * ASCENT_RATIO + i * fit.size * LINE_HEIGHT_RATIO)}" font-size="${fit.size}" font-weight="${weight}" letter-spacing="${spacing}" fill="${fill}">${escapeXml(line)}</text>`).join("\n  ");
 }
 
 function fitText(text, sizes, maxWidth, maxLines, glyphRatio) {
@@ -97,17 +82,21 @@ function fitText(text, sizes, maxWidth, maxLines, glyphRatio) {
   const size = sizes[sizes.length - 1];
   const maxChars = Math.max(8, Math.floor(maxWidth / (size * glyphRatio)));
   const lines = wrapWords(text, maxChars).slice(0, maxLines);
-  if (lines.length === maxLines) {
-    const last = lines[maxLines - 1];
-    lines[maxLines - 1] = last.length > maxChars - 1
-      ? last.slice(0, maxChars - 1).replace(/\s+\S*$/, "") + "…"
-      : last + "…";
-  }
+  const last = lines[maxLines - 1];
+  lines[maxLines - 1] = last.length > maxChars - 1
+    ? last.slice(0, maxChars - 1).replace(/\s+\S*$/, "") + "…"
+    : last + "…";
   return { lines, size };
 }
 
 function wrapWords(text, maxChars) {
-  const words = text.split(/\s+/).filter(Boolean);
+  // Long command names/paths must wrap too, not escape the image bounds.
+  const words = text.split(/\s+/).filter(Boolean).flatMap((word) => {
+    const chunks = [];
+    const letters = Array.from(word);
+    for (let i = 0; i < letters.length; i += maxChars) chunks.push(letters.slice(i, i + maxChars).join(""));
+    return chunks;
+  });
   const lines = [];
   let current = "";
   for (const word of words) {
