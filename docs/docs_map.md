@@ -7809,6 +7809,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Unexpected repeated restarts
   - H3: Attach-only development
   - H2: App-hosted lifecycle and updates
+  - H3: Existing app-managed Node services
   - H2: Version compatibility
   - H2: State directory on macOS
   - H2: Debug app connectivity
