@@ -5053,6 +5053,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Runtime config migration
+  - H2: Retention policy
   - H2: Channel ownership during an update
   - H2: Channel webhook listeners
   - H2: ACP agents' model precedence
