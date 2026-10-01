@@ -2120,6 +2120,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Migrating older jobs
   - H2: Common edits
   - H2: Common admin commands
+  - H3: History across automations
   - H2: Related
 
 ## cli/daemon.md
