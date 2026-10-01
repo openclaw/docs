@@ -6,7 +6,6 @@
   --docs-toc: 220px;
   --docs-reading-width: 960px;
   --docs-inset: 32px;
-  --docs-invite-lift: 0px;
   --oc-radius-surface: 0px;
   --oc-corner-radius-scale: 1;
   --shell-pad: 24px;
@@ -14,8 +13,6 @@
   --rail-max: var(--docs-nav);
   --article-max: none;
 }
-
-:root[dir="rtl"] { --docs-invite-lift: 64px; }
 
 html { scroll-padding-top: calc(var(--sticky-header-h, 102px) + 28px); }
 .site-header { background: color-mix(in srgb, var(--bg) 94%, transparent); }
@@ -77,8 +74,8 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 /* This control always sits on dark artwork, including in the light theme. */
 .community-invite__close { --oc-focus-ring: rgb(255 255 255 / 85%); }
 @media (min-width: 821px) {
-  body.has-community-invite .sidebar { max-height: calc(100dvh - var(--sticky-header-h, 102px) - 48px - var(--community-invite-h, 0px) - var(--docs-invite-lift)); }
-  .community-invite { bottom: calc(18px + var(--docs-invite-lift)); left: auto; right: auto; inset-inline-start: 18px; width: calc(var(--docs-nav) - 36px); }
+  .community-invite { bottom: 18px; inset-inline-start: auto; inset-inline-end: auto; left: auto; right: 18px; width: 300px; z-index: 55; }
+  body.has-community-invite .docs-chat:not(.open) .docs-chat-launcher { bottom: calc(var(--community-invite-h, 0px) + 12px); }
 }
 
 /* A quiet structural footer uses the main site's hierarchy, with docs destinations. */
@@ -295,7 +292,7 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .docs-section-pages .nav-section h2 { padding-inline: 10px; font-size: 9px; }
 .docs-section-pages .nav-link { font-size: 12.5px; padding: 7px 10px; }
 .sidebar { top: calc(var(--header-row-h, 54px) + 24px); max-height: calc(100dvh - var(--header-row-h, 54px) - 48px); }
-body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-row-h, 54px) - 48px - var(--community-invite-h, 0px) - var(--docs-invite-lift)), var(--sidebar-available-height, 100dvh)); }
+body.has-community-invite .sidebar { max-height: min(calc(100dvh - var(--header-row-h, 54px) - 48px), var(--sidebar-available-height, 100dvh)); }
 
 /* Compact TOC stays in the reading pane; desktop pages share a right-hand rail. */
 .main { display: block; grid-column: 2 / -1; min-width: 0; }

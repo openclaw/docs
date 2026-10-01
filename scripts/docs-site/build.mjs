@@ -380,6 +380,7 @@ ${pager(prev, next)}
 </main>
 </div>
 </div>
+${communityInvite(page.locale)}
 ${siteFooter()}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
@@ -447,6 +448,23 @@ ${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
 <div class="sidebar-tools">
 <nav class="sidebar-socials" aria-label="Community links"><a href="https://github.com/openclaw/openclaw">${icon("github")}<span>GitHub</span></a><a href="https://discord.com/invite/clawd">${icon("discord")}<span>Discord</span></a></nav>
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
+</div>
+</aside>`;
+}
+
+// Keep this outside the transformed mobile drawer so its fixed card is not clipped.
+// Start hidden to avoid flashing an invitation that the visitor already dismissed.
+function communityInvite(locale) {
+  const strings = chromeStringsForLocale(locale);
+  return `<aside class="community-invite" aria-label="${escapeAttr(strings.communityLabel)}" hidden>
+<div class="community-invite__header">
+<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="${escapeAttr(strings.communityImageAlt)}" width="1024" height="538" loading="lazy" decoding="async">
+<button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
+</div>
+<div class="community-invite__body">
+<h2 class="community-invite__title">${escapeHtml(strings.communityTitle)}</h2>
+<p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
+<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>${escapeHtml(strings.communityCta)}</span></a>
 </div>
 </aside>`;
 }
