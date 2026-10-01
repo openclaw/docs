@@ -7717,6 +7717,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What it does
   - H2: Settings
   - H2: Session colors
+  - H2: Reactions
   - H2: Message times and models
   - H2: Sources in chat
   - H2: Diagrams in chat
