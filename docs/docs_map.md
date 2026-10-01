@@ -6645,6 +6645,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Bun-only global install
   - H2: Lifecycle scripts
   - H2: Caveats
+  - H2: Known limitations
+  - H3: Updating from 2026.9.7 with an older system Node
+  - H3: Rollback finalization on 2026.9.7
   - H2: Related
 
 ## install/cloudflare.md
