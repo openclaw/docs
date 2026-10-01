@@ -15383,7 +15383,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Busy initial connection
   - H2: Warm reload
+  - H3: Upgrading existing browser data
+  - H2: Offline page reload
   - H2: Gateway updates and suspended tabs
+  - H2: Visualizations during a connection loss
   - H2: Connection loss and reconnect
 
 ## web/control-ui/panels.md
