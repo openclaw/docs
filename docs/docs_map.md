@@ -1777,6 +1777,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/runners
 - Headings:
   - H2: Runners
+  - H3: Testbox spending limits
+  - H3: CI runner routing
   - H3: Windows dependency-cache experiment
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
@@ -13027,6 +13029,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test/remote-proof
 - Headings:
   - H2: Remote proof policy for agents
+  - H2: Testbox runner sizing
   - H2: Crabbox repository setup
 
 ## reference/test/runner-internals.md
