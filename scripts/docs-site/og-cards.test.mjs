@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -18,6 +19,17 @@ test("preview image URLs follow PNG changes without churning for body-only edits
     const site = path.join(f.root, "dist/docs-site");
     const imageUrl = (locale = "") => fs.readFileSync(path.join(site, locale, "guide/index.html"), "utf8")
       .match(/property="og:image" content="([^"]+)"/)[1];
+    const defaultPng = fs.readFileSync(path.join(site, "og-card.png"));
+    const defaultSvg = fs.readFileSync(path.join(site, "og-card.svg"), "utf8");
+    assert.equal(defaultPng.readUInt32BE(16), 1200);
+    assert.equal(defaultPng.readUInt32BE(20), 630);
+    assert.equal(new URL(imageUrl("fr")).searchParams.get("v"),
+      createHash("sha256").update(defaultPng).digest("hex").slice(0, 12));
+    assert.match(defaultSvg, /The AI that really does things\./);
+    assert.doesNotMatch(defaultSvg, /coding agent|v1 · MIT/);
+    const home = fs.readFileSync(path.join(site, "index.html"), "utf8");
+    assert.ok(home.includes(`property="og:image" content="${imageUrl("fr")}"`));
+    assert.ok(home.includes(`name="twitter:image" content="${imageUrl("fr")}"`));
     return { url: imageUrl(), fallback: imageUrl("fr"), png: fs.readFileSync(path.join(site, "og/guide.png")) };
   };
   const before = build("Original guide", "Original body.");

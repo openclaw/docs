@@ -52,7 +52,7 @@ export async function renderPageOgCards({ pages, enNav, outDir, cacheDir, siteNa
   return pageOgVersions;
 }
 
-function renderOgPng(svg) {
+export function renderOgPng(svg) {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL("./og-render-worker.mjs", import.meta.url), {
       workerData: { svg },
