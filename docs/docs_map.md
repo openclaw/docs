@@ -5083,6 +5083,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Runtime config migration
   - H2: Retention policy
+  - H2: Cron ownership before roster migration
+  - H2: Legacy cron delivery settings
   - H2: Channel ownership during an update
   - H2: Sender tool policies
   - H2: Channel webhook listeners
