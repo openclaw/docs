@@ -7744,6 +7744,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H2: Settings
+  - H2: Sessions
   - H2: Session colors
   - H2: Reactions
   - H2: Message times and models
