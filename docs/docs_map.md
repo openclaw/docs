@@ -8594,6 +8594,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Compatibility registry
   - H2: Deprecation policy
   - H2: Current compatibility areas
+  - H3: Session-store bridge retirement
   - H3: Synchronous plugin state
   - H3: Session agent resolution aliases
   - H3: Auth profile cooldown classifications
