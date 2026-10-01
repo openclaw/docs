@@ -8076,6 +8076,25 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## plugins/agentsapi.md
+
+- Route: /plugins/agentsapi
+- Headings:
+  - H2: What is Agents API?
+  - H3: What you can do
+  - H2: Set up Agents API
+  - H3: 1. Sign in with an API key
+  - H3: 2. Enable the plugin and choose your model
+  - H3: 3. Start a conversation and try a task
+  - H2: Continue a task
+  - H2: Work with files and tools
+  - H2: Advanced configuration and reference
+  - H3: Files and storage
+  - H3: MCP connections
+  - H3: Self-hosted execution
+  - H3: Session settings and diagnostics
+  - H3: Current limitations
+
 ## plugins/apple-fm.md
 
 - Route: /plugins/apple-fm
@@ -9194,6 +9213,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Distribution
   - H2: Surface
+  - H2: Related docs
 
 ## plugins/reference/alibaba.md
 
@@ -12004,12 +12024,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Naming map
   - H2: Implicit agent runtime
-  - H2: Agents API MVP
-  - H3: What works with a hosted VM
-  - H3: Set up Agents API
-  - H3: Sessions and instructions
-  - H3: Tools, MCP, and files
-  - H3: Current limits and other environments
   - H2: Native Codex app-server auth
 
 ## providers/openai/setup.md
