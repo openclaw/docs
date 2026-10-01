@@ -7771,6 +7771,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Launchd (Gateway as LaunchAgent)
   - H3: Unexpected repeated restarts
   - H3: Attach-only development
+  - H2: App-hosted lifecycle and updates
   - H2: Version compatibility
   - H2: State directory on macOS
   - H2: Debug app connectivity
