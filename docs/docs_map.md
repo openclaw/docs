@@ -2026,6 +2026,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Author locally
   - H2: Inspect and preview
   - H2: Inspect installed state
+  - H2: Migrate an existing agent
   - H2: Update an installed Claw
   - H2: Remove an installed Claw
   - H2: Export an installed agent
