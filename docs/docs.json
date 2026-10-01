@@ -1646,6 +1646,7 @@
                 "pages": [
                   "concepts/agent-workspace",
                   "concepts/managed-worktrees",
+                  "concepts/storage-locations",
                   "concepts/oauth",
                   "start/bootstrapping",
                   "concepts/experimental-features"
@@ -1821,6 +1822,7 @@
                     "pages": [
                       "plugins/admin-http-rpc",
                       "plugins/beam",
+                      "plugins/cloudflare",
                       "plugins/geolocation",
                       "plugins/logbook",
                       "plugins/oc-path",
@@ -2757,6 +2759,7 @@
                       "cli/openclaw",
                       "cli/reset",
                       "cli/setup",
+                      "cli/storage",
                       "cli/uninstall",
                       "cli/update",
                       {
@@ -3724,6 +3727,7 @@
                 "pages": [
                   "zh-CN/concepts/agent-workspace",
                   "zh-CN/concepts/managed-worktrees",
+                  "zh-CN/concepts/storage-locations",
                   "zh-CN/concepts/oauth",
                   "zh-CN/start/bootstrapping",
                   "zh-CN/concepts/experimental-features"
@@ -3899,6 +3903,7 @@
                     "pages": [
                       "zh-CN/plugins/admin-http-rpc",
                       "zh-CN/plugins/beam",
+                      "zh-CN/plugins/cloudflare",
                       "zh-CN/plugins/geolocation",
                       "zh-CN/plugins/logbook",
                       "zh-CN/plugins/oc-path",
@@ -4801,6 +4806,7 @@
                       "zh-CN/cli/openclaw",
                       "zh-CN/cli/reset",
                       "zh-CN/cli/setup",
+                      "zh-CN/cli/storage",
                       "zh-CN/cli/uninstall",
                       "zh-CN/cli/update",
                       {
@@ -5768,6 +5774,7 @@
                 "pages": [
                   "zh-TW/concepts/agent-workspace",
                   "zh-TW/concepts/managed-worktrees",
+                  "zh-TW/concepts/storage-locations",
                   "zh-TW/concepts/oauth",
                   "zh-TW/start/bootstrapping",
                   "zh-TW/concepts/experimental-features"
@@ -5943,6 +5950,7 @@
                     "pages": [
                       "zh-TW/plugins/admin-http-rpc",
                       "zh-TW/plugins/beam",
+                      "zh-TW/plugins/cloudflare",
                       "zh-TW/plugins/geolocation",
                       "zh-TW/plugins/logbook",
                       "zh-TW/plugins/oc-path",
@@ -6845,6 +6853,7 @@
                       "zh-TW/cli/openclaw",
                       "zh-TW/cli/reset",
                       "zh-TW/cli/setup",
+                      "zh-TW/cli/storage",
                       "zh-TW/cli/uninstall",
                       "zh-TW/cli/update",
                       {
@@ -7812,6 +7821,7 @@
                 "pages": [
                   "ja-JP/concepts/agent-workspace",
                   "ja-JP/concepts/managed-worktrees",
+                  "ja-JP/concepts/storage-locations",
                   "ja-JP/concepts/oauth",
                   "ja-JP/start/bootstrapping",
                   "ja-JP/concepts/experimental-features"
@@ -7987,6 +7997,7 @@
                     "pages": [
                       "ja-JP/plugins/admin-http-rpc",
                       "ja-JP/plugins/beam",
+                      "ja-JP/plugins/cloudflare",
                       "ja-JP/plugins/geolocation",
                       "ja-JP/plugins/logbook",
                       "ja-JP/plugins/oc-path",
@@ -8889,6 +8900,7 @@
                       "ja-JP/cli/openclaw",
                       "ja-JP/cli/reset",
                       "ja-JP/cli/setup",
+                      "ja-JP/cli/storage",
                       "ja-JP/cli/uninstall",
                       "ja-JP/cli/update",
                       {
@@ -9856,6 +9868,7 @@
                 "pages": [
                   "es/concepts/agent-workspace",
                   "es/concepts/managed-worktrees",
+                  "es/concepts/storage-locations",
                   "es/concepts/oauth",
                   "es/start/bootstrapping",
                   "es/concepts/experimental-features"
@@ -10031,6 +10044,7 @@
                     "pages": [
                       "es/plugins/admin-http-rpc",
                       "es/plugins/beam",
+                      "es/plugins/cloudflare",
                       "es/plugins/geolocation",
                       "es/plugins/logbook",
                       "es/plugins/oc-path",
@@ -10933,6 +10947,7 @@
                       "es/cli/openclaw",
                       "es/cli/reset",
                       "es/cli/setup",
+                      "es/cli/storage",
                       "es/cli/uninstall",
                       "es/cli/update",
                       {
@@ -11900,6 +11915,7 @@
                 "pages": [
                   "pt-BR/concepts/agent-workspace",
                   "pt-BR/concepts/managed-worktrees",
+                  "pt-BR/concepts/storage-locations",
                   "pt-BR/concepts/oauth",
                   "pt-BR/start/bootstrapping",
                   "pt-BR/concepts/experimental-features"
@@ -12075,6 +12091,7 @@
                     "pages": [
                       "pt-BR/plugins/admin-http-rpc",
                       "pt-BR/plugins/beam",
+                      "pt-BR/plugins/cloudflare",
                       "pt-BR/plugins/geolocation",
                       "pt-BR/plugins/logbook",
                       "pt-BR/plugins/oc-path",
@@ -12977,6 +12994,7 @@
                       "pt-BR/cli/openclaw",
                       "pt-BR/cli/reset",
                       "pt-BR/cli/setup",
+                      "pt-BR/cli/storage",
                       "pt-BR/cli/uninstall",
                       "pt-BR/cli/update",
                       {
@@ -13944,6 +13962,7 @@
                 "pages": [
                   "ko/concepts/agent-workspace",
                   "ko/concepts/managed-worktrees",
+                  "ko/concepts/storage-locations",
                   "ko/concepts/oauth",
                   "ko/start/bootstrapping",
                   "ko/concepts/experimental-features"
@@ -14119,6 +14138,7 @@
                     "pages": [
                       "ko/plugins/admin-http-rpc",
                       "ko/plugins/beam",
+                      "ko/plugins/cloudflare",
                       "ko/plugins/geolocation",
                       "ko/plugins/logbook",
                       "ko/plugins/oc-path",
@@ -15021,6 +15041,7 @@
                       "ko/cli/openclaw",
                       "ko/cli/reset",
                       "ko/cli/setup",
+                      "ko/cli/storage",
                       "ko/cli/uninstall",
                       "ko/cli/update",
                       {
@@ -15988,6 +16009,7 @@
                 "pages": [
                   "de/concepts/agent-workspace",
                   "de/concepts/managed-worktrees",
+                  "de/concepts/storage-locations",
                   "de/concepts/oauth",
                   "de/start/bootstrapping",
                   "de/concepts/experimental-features"
@@ -16163,6 +16185,7 @@
                     "pages": [
                       "de/plugins/admin-http-rpc",
                       "de/plugins/beam",
+                      "de/plugins/cloudflare",
                       "de/plugins/geolocation",
                       "de/plugins/logbook",
                       "de/plugins/oc-path",
@@ -17065,6 +17088,7 @@
                       "de/cli/openclaw",
                       "de/cli/reset",
                       "de/cli/setup",
+                      "de/cli/storage",
                       "de/cli/uninstall",
                       "de/cli/update",
                       {
@@ -18032,6 +18056,7 @@
                 "pages": [
                   "fr/concepts/agent-workspace",
                   "fr/concepts/managed-worktrees",
+                  "fr/concepts/storage-locations",
                   "fr/concepts/oauth",
                   "fr/start/bootstrapping",
                   "fr/concepts/experimental-features"
@@ -18207,6 +18232,7 @@
                     "pages": [
                       "fr/plugins/admin-http-rpc",
                       "fr/plugins/beam",
+                      "fr/plugins/cloudflare",
                       "fr/plugins/geolocation",
                       "fr/plugins/logbook",
                       "fr/plugins/oc-path",
@@ -19109,6 +19135,7 @@
                       "fr/cli/openclaw",
                       "fr/cli/reset",
                       "fr/cli/setup",
+                      "fr/cli/storage",
                       "fr/cli/uninstall",
                       "fr/cli/update",
                       {
@@ -20076,6 +20103,7 @@
                 "pages": [
                   "hi/concepts/agent-workspace",
                   "hi/concepts/managed-worktrees",
+                  "hi/concepts/storage-locations",
                   "hi/concepts/oauth",
                   "hi/start/bootstrapping",
                   "hi/concepts/experimental-features"
@@ -20251,6 +20279,7 @@
                     "pages": [
                       "hi/plugins/admin-http-rpc",
                       "hi/plugins/beam",
+                      "hi/plugins/cloudflare",
                       "hi/plugins/geolocation",
                       "hi/plugins/logbook",
                       "hi/plugins/oc-path",
@@ -21153,6 +21182,7 @@
                       "hi/cli/openclaw",
                       "hi/cli/reset",
                       "hi/cli/setup",
+                      "hi/cli/storage",
                       "hi/cli/uninstall",
                       "hi/cli/update",
                       {
@@ -22120,6 +22150,7 @@
                 "pages": [
                   "ar/concepts/agent-workspace",
                   "ar/concepts/managed-worktrees",
+                  "ar/concepts/storage-locations",
                   "ar/concepts/oauth",
                   "ar/start/bootstrapping",
                   "ar/concepts/experimental-features"
@@ -22295,6 +22326,7 @@
                     "pages": [
                       "ar/plugins/admin-http-rpc",
                       "ar/plugins/beam",
+                      "ar/plugins/cloudflare",
                       "ar/plugins/geolocation",
                       "ar/plugins/logbook",
                       "ar/plugins/oc-path",
@@ -23197,6 +23229,7 @@
                       "ar/cli/openclaw",
                       "ar/cli/reset",
                       "ar/cli/setup",
+                      "ar/cli/storage",
                       "ar/cli/uninstall",
                       "ar/cli/update",
                       {
@@ -24164,6 +24197,7 @@
                 "pages": [
                   "it/concepts/agent-workspace",
                   "it/concepts/managed-worktrees",
+                  "it/concepts/storage-locations",
                   "it/concepts/oauth",
                   "it/start/bootstrapping",
                   "it/concepts/experimental-features"
@@ -24339,6 +24373,7 @@
                     "pages": [
                       "it/plugins/admin-http-rpc",
                       "it/plugins/beam",
+                      "it/plugins/cloudflare",
                       "it/plugins/geolocation",
                       "it/plugins/logbook",
                       "it/plugins/oc-path",
@@ -25241,6 +25276,7 @@
                       "it/cli/openclaw",
                       "it/cli/reset",
                       "it/cli/setup",
+                      "it/cli/storage",
                       "it/cli/uninstall",
                       "it/cli/update",
                       {
@@ -26208,6 +26244,7 @@
                 "pages": [
                   "vi/concepts/agent-workspace",
                   "vi/concepts/managed-worktrees",
+                  "vi/concepts/storage-locations",
                   "vi/concepts/oauth",
                   "vi/start/bootstrapping",
                   "vi/concepts/experimental-features"
@@ -26383,6 +26420,7 @@
                     "pages": [
                       "vi/plugins/admin-http-rpc",
                       "vi/plugins/beam",
+                      "vi/plugins/cloudflare",
                       "vi/plugins/geolocation",
                       "vi/plugins/logbook",
                       "vi/plugins/oc-path",
@@ -27285,6 +27323,7 @@
                       "vi/cli/openclaw",
                       "vi/cli/reset",
                       "vi/cli/setup",
+                      "vi/cli/storage",
                       "vi/cli/uninstall",
                       "vi/cli/update",
                       {
@@ -28252,6 +28291,7 @@
                 "pages": [
                   "nl/concepts/agent-workspace",
                   "nl/concepts/managed-worktrees",
+                  "nl/concepts/storage-locations",
                   "nl/concepts/oauth",
                   "nl/start/bootstrapping",
                   "nl/concepts/experimental-features"
@@ -28427,6 +28467,7 @@
                     "pages": [
                       "nl/plugins/admin-http-rpc",
                       "nl/plugins/beam",
+                      "nl/plugins/cloudflare",
                       "nl/plugins/geolocation",
                       "nl/plugins/logbook",
                       "nl/plugins/oc-path",
@@ -29329,6 +29370,7 @@
                       "nl/cli/openclaw",
                       "nl/cli/reset",
                       "nl/cli/setup",
+                      "nl/cli/storage",
                       "nl/cli/uninstall",
                       "nl/cli/update",
                       {
@@ -30296,6 +30338,7 @@
                 "pages": [
                   "fa/concepts/agent-workspace",
                   "fa/concepts/managed-worktrees",
+                  "fa/concepts/storage-locations",
                   "fa/concepts/oauth",
                   "fa/start/bootstrapping",
                   "fa/concepts/experimental-features"
@@ -30471,6 +30514,7 @@
                     "pages": [
                       "fa/plugins/admin-http-rpc",
                       "fa/plugins/beam",
+                      "fa/plugins/cloudflare",
                       "fa/plugins/geolocation",
                       "fa/plugins/logbook",
                       "fa/plugins/oc-path",
@@ -31373,6 +31417,7 @@
                       "fa/cli/openclaw",
                       "fa/cli/reset",
                       "fa/cli/setup",
+                      "fa/cli/storage",
                       "fa/cli/uninstall",
                       "fa/cli/update",
                       {
@@ -32340,6 +32385,7 @@
                 "pages": [
                   "tr/concepts/agent-workspace",
                   "tr/concepts/managed-worktrees",
+                  "tr/concepts/storage-locations",
                   "tr/concepts/oauth",
                   "tr/start/bootstrapping",
                   "tr/concepts/experimental-features"
@@ -32515,6 +32561,7 @@
                     "pages": [
                       "tr/plugins/admin-http-rpc",
                       "tr/plugins/beam",
+                      "tr/plugins/cloudflare",
                       "tr/plugins/geolocation",
                       "tr/plugins/logbook",
                       "tr/plugins/oc-path",
@@ -33417,6 +33464,7 @@
                       "tr/cli/openclaw",
                       "tr/cli/reset",
                       "tr/cli/setup",
+                      "tr/cli/storage",
                       "tr/cli/uninstall",
                       "tr/cli/update",
                       {
@@ -34384,6 +34432,7 @@
                 "pages": [
                   "uk/concepts/agent-workspace",
                   "uk/concepts/managed-worktrees",
+                  "uk/concepts/storage-locations",
                   "uk/concepts/oauth",
                   "uk/start/bootstrapping",
                   "uk/concepts/experimental-features"
@@ -34559,6 +34608,7 @@
                     "pages": [
                       "uk/plugins/admin-http-rpc",
                       "uk/plugins/beam",
+                      "uk/plugins/cloudflare",
                       "uk/plugins/geolocation",
                       "uk/plugins/logbook",
                       "uk/plugins/oc-path",
@@ -35461,6 +35511,7 @@
                       "uk/cli/openclaw",
                       "uk/cli/reset",
                       "uk/cli/setup",
+                      "uk/cli/storage",
                       "uk/cli/uninstall",
                       "uk/cli/update",
                       {
@@ -36428,6 +36479,7 @@
                 "pages": [
                   "id/concepts/agent-workspace",
                   "id/concepts/managed-worktrees",
+                  "id/concepts/storage-locations",
                   "id/concepts/oauth",
                   "id/start/bootstrapping",
                   "id/concepts/experimental-features"
@@ -36603,6 +36655,7 @@
                     "pages": [
                       "id/plugins/admin-http-rpc",
                       "id/plugins/beam",
+                      "id/plugins/cloudflare",
                       "id/plugins/geolocation",
                       "id/plugins/logbook",
                       "id/plugins/oc-path",
@@ -37505,6 +37558,7 @@
                       "id/cli/openclaw",
                       "id/cli/reset",
                       "id/cli/setup",
+                      "id/cli/storage",
                       "id/cli/uninstall",
                       "id/cli/update",
                       {
@@ -38472,6 +38526,7 @@
                 "pages": [
                   "pl/concepts/agent-workspace",
                   "pl/concepts/managed-worktrees",
+                  "pl/concepts/storage-locations",
                   "pl/concepts/oauth",
                   "pl/start/bootstrapping",
                   "pl/concepts/experimental-features"
@@ -38647,6 +38702,7 @@
                     "pages": [
                       "pl/plugins/admin-http-rpc",
                       "pl/plugins/beam",
+                      "pl/plugins/cloudflare",
                       "pl/plugins/geolocation",
                       "pl/plugins/logbook",
                       "pl/plugins/oc-path",
@@ -39549,6 +39605,7 @@
                       "pl/cli/openclaw",
                       "pl/cli/reset",
                       "pl/cli/setup",
+                      "pl/cli/storage",
                       "pl/cli/uninstall",
                       "pl/cli/update",
                       {
@@ -40516,6 +40573,7 @@
                 "pages": [
                   "th/concepts/agent-workspace",
                   "th/concepts/managed-worktrees",
+                  "th/concepts/storage-locations",
                   "th/concepts/oauth",
                   "th/start/bootstrapping",
                   "th/concepts/experimental-features"
@@ -40691,6 +40749,7 @@
                     "pages": [
                       "th/plugins/admin-http-rpc",
                       "th/plugins/beam",
+                      "th/plugins/cloudflare",
                       "th/plugins/geolocation",
                       "th/plugins/logbook",
                       "th/plugins/oc-path",
@@ -41593,6 +41652,7 @@
                       "th/cli/openclaw",
                       "th/cli/reset",
                       "th/cli/setup",
+                      "th/cli/storage",
                       "th/cli/uninstall",
                       "th/cli/update",
                       {
@@ -42560,6 +42620,7 @@
                 "pages": [
                   "ru/concepts/agent-workspace",
                   "ru/concepts/managed-worktrees",
+                  "ru/concepts/storage-locations",
                   "ru/concepts/oauth",
                   "ru/start/bootstrapping",
                   "ru/concepts/experimental-features"
@@ -42735,6 +42796,7 @@
                     "pages": [
                       "ru/plugins/admin-http-rpc",
                       "ru/plugins/beam",
+                      "ru/plugins/cloudflare",
                       "ru/plugins/geolocation",
                       "ru/plugins/logbook",
                       "ru/plugins/oc-path",
@@ -43637,6 +43699,7 @@
                       "ru/cli/openclaw",
                       "ru/cli/reset",
                       "ru/cli/setup",
+                      "ru/cli/storage",
                       "ru/cli/uninstall",
                       "ru/cli/update",
                       {

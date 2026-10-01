@@ -1954,6 +1954,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw backup
   - H2: Notes
+  - H2: Offsite archives
+  - H3: Offsite retention
+  - H3: List and verify remote archives
   - H2: Restore a full archive
   - H2: Private update captures
   - H2: SQLite snapshots
@@ -1961,6 +1964,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Versioned Git backups
   - H2: Schedule backups
   - H2: Recorded runs and freshness
+  - H3: Record external backup jobs
   - H2: What gets backed up
   - H2: Invalid config behavior
   - H2: Size and performance
@@ -2981,6 +2985,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Secrets
   - H2: Memory
   - H2: Related
+
+## cli/storage.md
+
+- Route: /cli/storage
+- Headings:
+  - H1: openclaw storage
+  - H2: List
+  - H2: Initialize
+  - H2: Test
 
 ## cli/system.md
 
@@ -4180,6 +4193,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: List and cancel
   - H2: Lifecycle states
   - H2: Related
+
+## concepts/storage-locations.md
+
+- Route: /concepts/storage-locations
+- Headings:
+  - H1: Storage locations
+  - H2: Configure and initialize a directory
+  - H2: Configuration reference
+  - H2: Choose encryption deliberately
+  - H2: Share a location across installations
+  - H2: Diagnose a location
 
 ## concepts/streaming.md
 
@@ -8286,6 +8310,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Checklist
   - H2: Related
 
+## plugins/cloudflare.md
+
+- Route: /plugins/cloudflare
+- Headings:
+  - H1: Cloudflare
+  - H2: Create a bucket and credentials
+  - H2: Configure a location
+  - H2: Initialize and test
+  - H2: Settings
+  - H2: Troubleshooting
+
 ## plugins/codex-computer-use.md
 
 - Route: /plugins/codex-computer-use
@@ -9383,6 +9418,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/cloudflare-ai-gateway.md
 
 - Route: /plugins/reference/cloudflare-ai-gateway
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/cloudflare.md
+
+- Route: /plugins/reference/cloudflare
 - Headings:
   - H2: Distribution
   - H2: Surface
@@ -10855,6 +10898,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-overview/capabilities
 - Headings:
   - H2: Capability registration
+  - H3: Storage providers
   - H3: Worker providers
   - H2: Decision models (contract version 1)
   - H3: Calling from a third-party plugin
