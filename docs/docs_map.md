@@ -3521,6 +3521,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Control UI Labs
   - H2: Decision assistance
   - H3: Core consumer contract
+  - H3: Conversational tool filtering
   - H2: Local model lean mode
   - H2: Experimental does not mean hidden
   - H2: Related
