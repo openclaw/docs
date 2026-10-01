@@ -402,6 +402,17 @@ if (!communityInvite
     DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes("home-community"), indexDocument.children)?.children ?? [])) {
   throw new Error("community invitation, dismissal control, or homepage Discord link is missing");
 }
+const communityLinks = DomUtils.findAll((node) => node.name === "a", communityInvite.children);
+const expectedCommunityLinks = [
+  ["Reddit", "https://www.reddit.com/r/openclaw/"],
+  ["Discord", "https://discord.com/invite/clawd"],
+  ["X", "https://x.com/openclaw"],
+];
+if (JSON.stringify(communityLinks.map((node) => [DomUtils.textContent(node).trim(), node.attribs.href])) !== JSON.stringify(expectedCommunityLinks)
+  || communityLinks.some((node) => node.attribs.target !== "_blank" || !node.attribs.rel?.split(" ").includes("noopener"))) {
+  throw new Error("community invitation must link to Reddit, Discord, and X in order with safe new tabs");
+}
+
 if (!/\.header-row\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{width:100%;max-width:1780px;margin:0 auto;flex:1 0 auto\}/.test(siteCss)
   || !/:root\{--shell-pad:56px;--rail-gap:56px;--rail-max:272px;--article-max:820px\}/.test(siteCss)

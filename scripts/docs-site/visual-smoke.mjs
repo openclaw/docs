@@ -338,7 +338,7 @@ async function checkCommunityBanner() {
         }
       }
       await page.goto(`${base}/`, { waitUntil: "networkidle" });
-      const invite = page.getByRole("complementary", { name: "Join the OpenClaw community on Discord" });
+      const invite = page.getByRole("complementary", { name: "Find your people" });
       await invite.waitFor({ state: "visible" });
       const floating = await invite.evaluate((node) => {
         const card = node.getBoundingClientRect();
@@ -346,7 +346,7 @@ async function checkCommunityBanner() {
         return card.left > innerWidth / 2 && card.right <= innerWidth && card.bottom <= innerHeight
           && launcher.bottom < card.top;
       });
-      if (!floating) throw new Error(`Discord invitation must float at the right with Molty above it (${theme})`);
+      if (!floating) throw new Error(`Community invitation must float at the right with Molty above it (${theme})`);
       await page.getByRole("button", { name: "Ask Molty", exact: true }).click();
       await invite.waitFor({ state: "hidden" });
       await page.getByRole("button", { name: "Minimize", exact: true }).click();
@@ -1108,14 +1108,20 @@ async function checkMobile() {
       const card = document.querySelector(".community-invite");
       const rect = card.getBoundingClientRect();
       const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
-      const cta = card.querySelector(".community-invite__cta");
-      const button = cta.getBoundingClientRect();
+      const links = [...card.querySelectorAll(".community-invite__cta")];
       return {
         visible: !card.hidden && !card.inert,
         aligned: Math.abs(rect.left - sidebar.left) < 1 && Math.abs(rect.right - sidebar.right) < 1,
         belowNavigation: Math.abs(rect.top - sidebar.bottom) < 1,
-        contained: button.left >= rect.left && button.right <= rect.right && button.top >= rect.top && button.bottom <= Math.min(rect.bottom, innerHeight),
-        unobscured: [button.top + 2, button.bottom - 2].every(y => cta.contains(document.elementFromPoint(button.left + button.width / 2, y))),
+        contained: links.length === 3 && links.every((link) => {
+          const button = link.getBoundingClientRect();
+          return button.left >= rect.left && button.right <= rect.right && button.top >= rect.top
+            && button.bottom <= Math.min(rect.bottom, innerHeight) && link.scrollWidth <= link.clientWidth;
+        }),
+        unobscured: links.every((link) => {
+          const button = link.getBoundingClientRect();
+          return [button.top + 2, button.bottom - 2].every(y => link.contains(document.elementFromPoint(button.left + button.width / 2, y)));
+        }),
       };
     });
     if (Object.values(invite).some(value => !value)) {

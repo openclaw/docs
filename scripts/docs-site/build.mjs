@@ -456,15 +456,19 @@ ${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
 // Start hidden to avoid flashing an invitation that the visitor already dismissed.
 function communityInvite(locale) {
   const strings = chromeStringsForLocale(locale);
-  return `<aside class="community-invite" aria-label="${escapeAttr(strings.communityLabel)}" hidden>
+  return `<aside class="community-invite" aria-labelledby="community-invite-title" hidden>
 <div class="community-invite__header">
-<img class="community-invite__art" src="${publicPath("/assets/discord-invite.webp")}" alt="${escapeAttr(strings.communityImageAlt)}" width="1024" height="538" loading="lazy" decoding="async">
+<img class="community-invite__art" src="${publicPath("/assets/community-invite.webp")}" alt="" width="768" height="320" loading="lazy" decoding="async">
 <button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
 </div>
 <div class="community-invite__body">
-<h2 class="community-invite__title">${escapeHtml(strings.communityTitle)}</h2>
+<h2 class="community-invite__title" id="community-invite-title">${escapeHtml(strings.communityTitle)}</h2>
 <p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
-<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>${escapeHtml(strings.communityCta)}</span></a>
+<div class="community-invite__links" dir="ltr">
+<a class="community-invite__cta" href="https://www.reddit.com/r/openclaw/" target="_blank" rel="noopener noreferrer">${icon("reddit")}<span>Reddit</span></a>
+<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>Discord</span></a>
+<a class="community-invite__cta" href="https://x.com/openclaw" target="_blank" rel="noopener noreferrer">${icon("x-social")}<span>X</span></a>
+</div>
 </div>
 </aside>`;
 }
@@ -582,6 +586,8 @@ function truthy(value) {
 
 function icon(name) {
   const attrs = `class="icon icon-${escapeAttr(name)}" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"`;
+  if (name === "reddit") return `<svg ${attrs} fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 3.314 1.343 6.314 3.515 8.485l-2.286 2.286C.775 23.225 1.097 24 1.738 24H12c6.627 0 12-5.373 12-12S18.627 0 12 0Zm4.388 3.199c1.104 0 1.999.895 1.999 1.999 0 1.105-.895 2-1.999 2-.946 0-1.739-.657-1.947-1.539v.002c-1.147.162-2.032 1.15-2.032 2.341v.007c1.776.067 3.4.567 4.686 1.363.473-.363 1.064-.58 1.707-.58 1.547 0 2.802 1.254 2.802 2.802 0 1.117-.655 2.081-1.601 2.531-.088 3.256-3.637 5.876-7.997 5.876-4.361 0-7.905-2.617-7.998-5.87-.954-.447-1.614-1.415-1.614-2.538 0-1.548 1.255-2.802 2.803-2.802.645 0 1.239.218 1.712.585 1.275-.79 2.881-1.291 4.64-1.365v-.01c0-1.663 1.263-3.034 2.88-3.207.188-.911.993-1.595 1.959-1.595Zm-8.085 8.376c-.784 0-1.459.78-1.506 1.797-.047 1.016.64 1.429 1.426 1.429.786 0 1.371-.369 1.418-1.385.047-1.017-.553-1.841-1.338-1.841Zm7.406 0c-.786 0-1.385.824-1.338 1.841.047 1.017.634 1.385 1.418 1.385.785 0 1.473-.413 1.426-1.429-.046-1.017-.721-1.797-1.506-1.797Zm-3.703 4.013c-.974 0-1.907.048-2.77.135-.147.015-.241.168-.183.305.483 1.154 1.622 1.964 2.953 1.964 1.33 0 2.47-.81 2.953-1.964.057-.137-.037-.29-.184-.305-.863-.087-1.795-.135-2.769-.135Z"/></svg>`;
+  if (name === "x-social") return `<svg ${attrs} fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.2 22H17l-4.9-7.4L5.6 22H2.4l7.2-8.4L1.5 2h6.4l4.5 6.8L18.9 2ZM17.5 20h2L6.8 3.9H4.7L17.5 20Z"/></svg>`;
   if (name === "github") return `<svg ${attrs} fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z"/></svg>`;
   if (name === "discord") return `<svg ${attrs} fill="currentColor"><path d="M20.32 4.37A19.8 19.8 0 0 0 15.37 2.84a13.77 13.77 0 0 0-.63 1.31 18.4 18.4 0 0 0-5.48 0 13.7 13.7 0 0 0-.64-1.31 19.72 19.72 0 0 0-4.95 1.54C.55 9.07-.32 13.64.1 18.15a19.9 19.9 0 0 0 6.07 3.07 14.6 14.6 0 0 0 1.3-2.11 12.9 12.9 0 0 1-2.05-.98c.17-.13.34-.26.5-.39a14.2 14.2 0 0 0 12.16 0c.17.14.33.27.5.39-.65.38-1.33.7-2.05.98.38.74.82 1.45 1.3 2.11a19.86 19.86 0 0 0 6.08-3.07c.5-5.23-.84-9.76-3.59-13.78ZM8.02 15.38c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.18 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Zm7.96 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Z"/></svg>`;
   if (name === "markdown") return `<svg class="icon icon-markdown" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 3.75H2.75C1.64543 3.75 0.75 4.64543 0.75 5.75V12.25C0.75 13.3546 1.64543 14.25 2.75 14.25H15.25C16.3546 14.25 17.25 13.3546 17.25 12.25V5.75C17.25 4.64543 16.3546 3.75 15.25 3.75Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.75 11.25V6.75H8.356L6.25 9.5L4.144 6.75H3.75V11.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 9.5L13.25 11.25L15 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.25 11.25V6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

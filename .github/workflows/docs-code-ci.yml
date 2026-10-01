@@ -45,7 +45,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Syntax check scripts
         run: |
@@ -82,3 +82,6 @@ jobs:
 
       - name: Visual smoke
         run: npm run docs:visual
+
+      - name: Community invitation in Chromium and WebKit
+        run: npm run docs:visual:community

@@ -17,7 +17,8 @@
     "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs",
     "skills:install": "npx --yes skills@1.5.25 add openclaw/carapace --skill openclaw-design openclaw-brand openclaw-carapace openclaw-design-system openclaw-marketing-pages openclaw-design-audit --agent codex --copy --yes",
     "test": "node --test scripts/*.test.mjs scripts/docs-site/*.test.mjs workers/*.test.mjs",
-    "test:i18n": "python3 .github/scripts/i18n/tests/test_i18n_scripts.py"
+    "test:i18n": "python3 .github/scripts/i18n/tests/test_i18n_scripts.py",
+    "docs:visual:community": "node scripts/docs-site/community-invite-visual.mjs"
   },
   "devDependencies": {
     "@mdx-js/mdx": "3.1.1",
