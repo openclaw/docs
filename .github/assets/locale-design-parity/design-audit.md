@@ -2,7 +2,7 @@
 
 Carapace v0.6.2; consumer base fb8f0f8c8a6182582490dce1d846926a8e05d3b2, with this PR applied.
 
-No significant design drift remains in the audited states: 0 errors, 0 warnings, 0 informational findings. All 20 final visual passes passed, and all 218 repository tests passed.
+No significant design drift remains in the audited states: 0 errors, 0 warnings, 0 informational findings. All 20 final visual passes passed, all 218 repository tests passed, and the full 15,458-page shell build, smoke checks, and standard visual suite passed.
 
 ## Fixed findings
 
@@ -10,7 +10,7 @@ No significant design drift remains in the audited states: 0 errors, 0 warnings,
 - **layout/locale-section-placement** (error, mechanical), [scripts/docs-site/home-layout.mjs:74](../../../scripts/docs-site/home-layout.mjs#L74): Section placement depended on English heading anchors. Identify section roles by stable source links and component structure while retaining translated anchors. Reference: openclaw-marketing-pages/references/page-patterns.md.
 - **copy/locale-coverage** (warning, mechanical), [scripts/docs-site/home-strings.mjs:1](../../../scripts/docs-site/home-strings.mjs#L1): Renderer-owned home copy and quick-navigation controls were English-only. Provide a complete checked copy table for all 21 supported locales. Reference: openclaw-marketing-pages/SKILL.md.
 - **component/locale-release-state** (warning, mechanical), [scripts/docs-site/release-announcement.mjs:13](../../../scripts/docs-site/release-announcement.mjs#L13): Latest indicators depended on English locale rather than the release being represented in navigation. Match the release slug and localize its labels; preserve valid source fallback links. Reference: openclaw-carapace/SKILL.md.
-- **layout/overflow** (error, mechanical), [scripts/docs-site/docs-layout.css:108](../../../scripts/docs-site/docs-layout.css#L108): The RTL language popover extended beyond the left viewport edge. Reset physical horizontal anchoring and use the logical end edge. Reference: openclaw-design-audit/references/rubric.md.
+- **layout/overflow** (error, mechanical), [scripts/docs-site/docs-layout.css:108](../../../scripts/docs-site/docs-layout.css#L108): The RTL language popover extended beyond the left viewport edge, and desktop menus began inside the header. Use the logical end edge and keep the desktop popover below the header. Reference: openclaw-design-audit/references/rubric.md.
 - **layout/overlay-overlap** (warning, mechanical), [scripts/docs-site/docs-layout.css:425](../../../scripts/docs-site/docs-layout.css#L425): The fixed chat launcher overlapped the footer Foundation link on desktop. Restore the base footer bottom clearance and assert non-overlap. Reference: scripts/docs-site/AGENTS.md.
 
 ## Coverage

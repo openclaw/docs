@@ -51,7 +51,8 @@ try{
    const heroFile=path.join(artifacts,name+'-home.png');await page.screenshot({path:heroFile,animations:'disabled'});screenshots.push(heroFile);
    await page.locator('[data-language-trigger]').click();
    const language=await page.locator('.language-menu').boundingBox();
-   if(!language||language.x< -1||language.x+language.width>config.width+1)errors.push({check:'language menu bounds',language});
+   const headerBottom=await page.locator('.site-header').evaluate(node=>node.getBoundingClientRect().bottom);
+   if(!language||language.x< -1||language.x+language.width>config.width+1||language.y<headerBottom||language.y+language.height>page.viewportSize().height+1)errors.push({check:'language menu bounds',language});
    await page.keyboard.press('Escape');
    await page.locator('.site-header [data-search-open]').click();
    await page.locator('[data-search-input]').waitFor({state:'visible'});await page.keyboard.press('Escape');

@@ -65,8 +65,8 @@
       "kind": "mechanical",
       "file": "scripts/docs-site/docs-layout.css",
       "line": 108,
-      "message": "The RTL language popover extended beyond the left viewport edge.",
-      "remediation": "Reset physical horizontal anchoring and use the logical end edge.",
+      "message": "The RTL language popover extended beyond the left viewport edge, and desktop menus began inside the header.",
+      "remediation": "Use the logical end edge and keep the desktop popover below the header.",
       "reference": "openclaw-design-audit/references/rubric.md",
       "category": "layout",
       "status": "fixed"
@@ -87,6 +87,8 @@
   "coverage": {
     "localesWithSourceAndCopyTests": 21,
     "repositoryTests": 218,
+    "fullSitePages": 15458,
+    "fullVisualSmoke": true,
     "visualPasses": 20
   },
   "passes": [
