@@ -11574,6 +11574,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/comfy
 - Headings:
+  - H2: Comfy Cloud with MCP OAuth
+  - H2: Workflow plugin
   - H2: What it supports
   - H2: Getting started
   - H2: Configuration
