@@ -810,6 +810,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/matrix-migration
 - Headings:
   - H2: What the migration does automatically
+  - H2: Retired pre-July state files
   - H2: Upgrading from OpenClaw releases older than 2026.4
   - H2: Recommended upgrade flow
   - H2: Common messages and what they mean
