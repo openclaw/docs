@@ -48,7 +48,8 @@ function isDocsPage(url){if(url.origin!==location.origin)return false;const base
 function sameSidebarLinks(a,b){const signature=node=>[...node.querySelectorAll("a,summary,h2")].map(el=>el.tagName+":"+(el.getAttribute("href")||"")+":"+el.textContent);const ah=signature(a),bh=signature(b);return ah.length===bh.length&&ah.every((value,i)=>value===bh[i])}
 function updateSidebarFade(){const sidebar=document.querySelector(".sidebar");if(!sidebar)return;const levels=sidebar.querySelector(".docs-sidebar-levels");if(levels){levels.updateFade();return}const overflow=sidebar.scrollHeight>sidebar.clientHeight+1;const canUp=overflow&&sidebar.scrollTop>1;const canDown=overflow&&sidebar.scrollTop+sidebar.clientHeight<sidebar.scrollHeight-1;sidebar.classList.toggle("has-overflow",overflow);sidebar.classList.toggle("can-scroll-up",canUp);sidebar.classList.toggle("can-scroll-down",canDown)}
 function scrollActiveNavLink(){const sidebar=document.querySelector(".sidebar");const active=[...sidebar?.querySelectorAll(".nav-link.active")||[]].find(isUsableFocusTarget);if(!sidebar||!active||!isUsableFocusTarget(active)){updateSidebarFade();return}const scroller=active.closest(".docs-sidebar-context > .docs-sections,.docs-sidebar-directory")||sidebar;const target=scroller.scrollTop+active.getBoundingClientRect().top-scroller.getBoundingClientRect().top-scroller.clientHeight/2+active.offsetHeight/2;const max=scroller.scrollHeight-scroller.clientHeight;scroller.scrollTop=Math.max(0,Math.min(max,target));updateSidebarFade()}
-const communityInviteKey="openclaw.docs.community-invite";
+// Bump only for an intentional site-wide reset; v2 introduces the Reddit/Discord/X invitation.
+const communityInviteKey="openclaw.docs.community-invite.v2";
 let communityFooterVisible=false;
 // Null means storage is unusable or holds a value that is not ours, and the card stays hidden;
 // an empty object is a browser that has never dismissed it.
