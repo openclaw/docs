@@ -11125,6 +11125,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime/state-and-system
 - Headings:
+  - H2: SQLite maintenance lifetime
   - H2: State, config, and system namespaces
   - H2: Synchronous keyed store migration
   - H2: Per-agent SQLite writes
