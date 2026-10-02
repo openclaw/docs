@@ -2459,6 +2459,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/mcp/apps
 - Headings:
   - H2: MCP Apps
+  - H2: Plugin extensions
+  - H2: Behavior and security boundaries
 
 ## cli/mcp/control-ui.md
 
@@ -8586,6 +8588,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Supervise Codex sessions
   - H2: Native Codex plugins
   - H2: Computer Use
+  - H2: Rich MCP forms
 
 ## plugins/codex-harness/placement.md
 
@@ -10772,6 +10775,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin shapes
   - H2: Related
   - H2: Code Mode executor runtime
+  - H2: Native MCP App adapters
   - H2: MCP subprocess runtime
   - H2: Workspace access
   - H2: Agent workspace context
@@ -14611,6 +14615,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Add a server from the composer
   - H2: Add a server from the CLI
   - H2: Configure a server directly
+  - H2: Interactive apps and plugin extensions
   - H2: Approvals
   - H2: Troubleshooting
   - H3: The server appears in Settings but exposes no tools
