@@ -10855,6 +10855,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway worker environment creation
   - H3: Harness attempt result migration
   - H3: Model-provider result compatibility
+  - H3: Memory session inventory readers
   - H3: Memory read missing results
   - H3: Config record migrations
   - H3: Plugin state migration declarations
