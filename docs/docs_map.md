@@ -4910,6 +4910,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-tools/github-identity
 - Headings:
   - H2: tools.github
+  - H2: Sandbox opt-in
 
 ## gateway/config-tools/provider-examples.md
 
@@ -5724,6 +5725,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Tool policy and escape hatches
   - H2: Multi-agent overrides
+  - H3: Managed GitHub identity
   - H2: Minimal enable example
   - H2: Related
 
