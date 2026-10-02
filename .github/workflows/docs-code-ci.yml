@@ -75,6 +75,8 @@ jobs:
             docs-og-v1-${{ runner.os }}-${{ hashFiles('scripts/docs-site/og-cache.mjs', 'scripts/docs-site/og-render-worker.mjs', 'scripts/docs-site/fonts/**', 'package-lock.json') }}-
 
       - name: Build shell artifact
+        env:
+          DOCS_SITE_GA4_ENABLED: "1"
         run: npm run docs:build:r2:shell
 
       - name: Smoke shell artifact

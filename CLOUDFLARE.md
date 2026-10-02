@@ -45,6 +45,27 @@ Why a Worker still exists:
 - R2 object storage does not redirect non-root trailing slash docs paths to slashless paths.
 - R2 object storage cannot negotiate markdown from `Accept: text/markdown` without router logic.
 - The CLI search endpoint `/api/search` reads `docs-search.json` from R2 and needs Worker logic.
+## Google Analytics
+
+The docs shell uses native Google tag `G-3SK7X2YLSJ` for OpenClaw Websites
+property `557069374`, stream `15954198155`, on `https://docs.openclaw.ai` only.
+The existing router provides uncached `GET /api/analytics-consent` from trusted
+Cloudflare `request.cf.country`; browser-supplied geography headers are ignored.
+No Google credentials or visitor geography belong in site artifacts.
+
+See [the event, privacy, consent, and verification contract](scripts/docs-site/ANALYTICS.md).
+The shared regional policy governs a Basic Consent Mode gate and persistent
+Google Analytics choices. Enhanced Measurement remains enabled; automatic
+history pageviews are suppressed because the docs shell owns initial/PJAX views.
+User-provided data and advertising features stay off. Existing server traffic
+counts remain separate from these controls.
+
+Run `node --test scripts/docs-site/analytics*.test.mjs workers/analytics-consent.test.mjs`.
+The optional `DOCS_GA4_SDK_PATH` points to a coordinator-approved public SDK file;
+fixtures intercept every request without forwarding collection. Browser transport
+is not provider ingestion. Production activation requires the coordinated release
+GO after hosting, consent, actual-SDK, and repository checks.
+
 ## Required Cloudflare Access
 
 Cloudflare account:
