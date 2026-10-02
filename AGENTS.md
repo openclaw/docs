@@ -15,7 +15,7 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - `package.json`, `package-lock.json`, `Makefile`, and `.github/workflows/{pages,r2-pages,docs-code-ci,docs-live-smoke}.yml` for website builds, checks, and publishing.
 - `AGENTS.md`, `README.md`.
 - `CLOUDFLARE.md` for repo-owned hosting and deployment guidance.
-- `.agents/skills/autoreview/**` for the repo-local canonical review skill mirror.
+- `.agents/skills/autoreview/SKILL.md` for the shared review skill entrypoint.
 - `.github/pull_request_template.md` for repo-owned contribution guidance.
 - `.github/assets/**` for repo-owned README media that must not be pruned by docs sync.
 - `.github/workflows/translate-*.yml`.
