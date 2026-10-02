@@ -134,6 +134,23 @@ Gateway `cron.add` and `cron.update` requests still accept the deprecated
 `announce`. This request adapter does not repair stored `deliver` values; those
 still require Doctor.
 
+## Exec approval policy
+
+Doctor normalizes legacy exec approval policy already stored in SQLite as well
+as imported JSON files. Before rewriting a SQLite row, it preserves a verified,
+private database snapshot named `openclaw.sqlite.pre-exec-approvals-migration-*.bak`.
+It moves the historical `default` agent policy into `main`, retaining explicit
+`main` values and merging allowlist entries and MCP grants. String allowlist
+entries become objects with stable IDs. Obsolete `commandText` and unrecognized
+source labels remain in the backup; current command-use metadata, socket
+credentials, and the row's update timestamp are preserved.
+
+Runtime readers require canonical policy and report `openclaw doctor --fix`
+guidance for a legacy row without replacing it. The update-time Doctor pass
+runs the same migration. Repeating Doctor leaves the normalized row and its IDs
+unchanged. Published SDK and operator input normalization remain available at
+the input boundary.
+
 ## Channel ownership during an update
 
 When Doctor migrates a legacy `agents.list` roster without a `default: true` marker
