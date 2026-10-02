@@ -94,14 +94,14 @@ for (const region of ["opt_in", "unknown"]) test(`${region} waits for explicit c
   assert.equal(commands[2][0], "config");
 });
 
-test("notice/opt-out begins only after the trusted response and never fabricates explicit consent", async t => {
+test("notice/opt-out never grants without a valid saved explicit choice", async t => {
   const f = await openConsent(t, { region: "notice_opt_out", delayRegion: true });
   assert.equal(f.sdkRequests.length, 0);
   f.releaseRegion();
   await f.page.getByRole("heading", { name: "Google Analytics on this site", exact: true }).waitFor();
-  await f.page.waitForFunction(() => window.dataLayer?.some(entry => entry[1] === "page_view"));
   assert.equal(await f.page.evaluate(key => localStorage.getItem(key), key), null);
-  assert.equal((await f.queue()).filter(event => event.name === "page_view").length, 1);
+  assert.equal(f.sdkRequests.length, 0);
+  assert.equal((await f.queue()).filter(event => event.name === "page_view").length, 0);
 });
 
 test("synthetic pageshow notifications never invent restored navigation views", async t => {
@@ -125,14 +125,15 @@ test("a late regional default cannot override an explicit decline", async t => {
   assert.equal(JSON.parse(await f.page.evaluate(key => localStorage.getItem(key), key)).analytics, "denied");
 });
 
-test("a notice dismissed before region resolution is shown before regional enablement", async t => {
+test("a late region response cannot create consent after dismissal", async t => {
   const f = await openConsent(t, { region: "notice_opt_out", delayRegion: true });
   await f.page.getByRole("button", { name: "Google Analytics choices", exact: true }).click();
   await f.page.getByRole("button", { name: "Close Google Analytics choices", exact: true }).click();
   assert.equal(f.sdkRequests.length, 0);
   f.releaseRegion();
   await f.page.getByRole("heading", { name: "Google Analytics on this site", exact: true }).waitFor();
-  await f.page.waitForFunction(() => window.dataLayer?.some(entry => entry[1] === "page_view"));
+  assert.equal(f.sdkRequests.length, 0);
+  assert.equal((await f.queue()).length, 0);
 });
 
 test("region timeout leaves analytics off until an explicit choice", async t => {
