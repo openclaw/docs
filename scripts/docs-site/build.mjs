@@ -410,7 +410,7 @@ function siteHeader(page) {
 <button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search documentation</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
 <div class="header-actions">
 <nav class="network-nav" aria-label="OpenClaw sites">${network.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}</nav>
-<nav class="header-links" aria-label="Community and preferences"><div class="header-social-group" role="group" aria-label="Social links">${topIconLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topIconLink("Discord", "https://discord.com/invite/clawd", "discord")}</div><div class="header-preferences-group" role="group" aria-label="Preferences">${languagePicker(page)}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></div><button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button></nav>
+<nav class="header-links" aria-label="Community and preferences"><div class="header-social-group" role="group" aria-label="Social links">${socialIconLinks()}</div><div class="header-preferences-group" role="group" aria-label="Preferences">${languagePicker(page)}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></div><button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button></nav>
 </div>
 </div>
 </header>`;
@@ -446,7 +446,7 @@ ${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
     return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${releaseVersionHtml(release)}${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
   }).join("")}</nav>
 <div class="sidebar-tools">
-<nav class="sidebar-socials" aria-label="Community links"><a href="https://github.com/openclaw/openclaw">${icon("github")}<span>GitHub</span></a><a href="https://discord.com/invite/clawd">${icon("discord")}<span>Discord</span></a></nav>
+<nav class="sidebar-socials" aria-label="Community links">${socialIconLinks()}</nav>
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
 </div>
 </aside>`;
@@ -495,8 +495,13 @@ function localeDisplayName(code) {
   return localePickerLabels[code] ?? localeLabels[code] ?? code;
 }
 
-function topIconLink(label, href, iconName) {
-  return `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}">${icon(iconName)}</a>`;
+function socialIconLinks() {
+  return [
+    ["GitHub", "https://github.com/openclaw/openclaw", "github"],
+    ["X", "https://x.com/openclaw", "x-social"],
+    ["Discord", "https://discord.com/invite/clawd", "discord"],
+    ["Reddit", "https://www.reddit.com/r/openclaw/", "reddit"],
+  ].map(([label, href, iconName]) => `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}">${icon(iconName)}</a>`).join("");
 }
 
 function firstStatusLine(content) {

@@ -536,7 +536,7 @@
   .docs-layout .sidebar-close { width: 44px; height: 44px; border: 0; background: transparent; }
   .docs-layout .sidebar-tools { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; padding: 12px 0 max(12px,env(safe-area-inset-bottom)); margin-inline-end: var(--docs-sidebar-inset-end); border-top: 1px solid var(--docs-border); background: var(--bg); }
   .sidebar-socials { display: flex; align-items: center; gap: 4px; }
-  .sidebar-socials a { display: flex; align-items: center; gap: 8px; min-height: 44px; padding-inline: 8px; border-radius: var(--oc-radius-control); color: var(--docs-muted); font-size: 13px; }
+  .sidebar-socials a { display: flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; border-radius: var(--oc-radius-control); color: var(--docs-muted); }
   .sidebar-socials .icon { width: 17px; height: 17px; }
   .docs-layout .sidebar-tools .theme-toggle { display: inline-grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 1px solid var(--docs-border); border-radius: var(--oc-radius-control); background: var(--paper); color: var(--docs-muted); cursor: pointer; }
   .sidebar-tools .theme-toggle .icon { width: 18px; height: 18px; }

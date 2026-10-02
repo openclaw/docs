@@ -393,6 +393,20 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   || !/\.sidebar\.can-scroll-down\{--sidebar-fade-bottom:30px\}/.test(siteCss)) {
   throw new Error("assets: sidebar overflow affordance is missing");
 }
+const expectedSocialLinks = [
+  ["GitHub", "https://github.com/openclaw/openclaw"],
+  ["X", "https://x.com/openclaw"],
+  ["Discord", "https://discord.com/invite/clawd"],
+  ["Reddit", "https://www.reddit.com/r/openclaw/"],
+];
+for (const className of ["header-social-group", "sidebar-socials"]) {
+  const group = DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes(className), indexDocument.children);
+  const links = DomUtils.findAll((node) => node.name === "a", group?.children ?? []);
+  if (JSON.stringify(links.map((node) => [node.attribs["aria-label"], node.attribs.href])) !== JSON.stringify(expectedSocialLinks)
+    || links.some((node) => !DomUtils.findOne((child) => child.name === "svg", node.children))) {
+    throw new Error(`${className}: expected accessible GitHub, X, Discord, and Reddit icon links`);
+  }
+}
 const communityInvite = DomUtils.findOne((node) => node.name === "aside"
   && node.attribs?.class?.split(" ").includes("community-invite"), indexDocument.children);
 if (!communityInvite
