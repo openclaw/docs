@@ -5570,6 +5570,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Operator helper methods
   - H3: models.list views
+  - H2: Skill registry details
   - H2: Exec approvals
   - H2: Agent delivery fallback
 
@@ -5624,6 +5625,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Models and usage
   - H2: Channels and login helpers
   - H2: Plugin management
+  - H3: Catalog detail and client confirmation
   - H2: Messaging and logs
   - H2: Operator terminal
 
