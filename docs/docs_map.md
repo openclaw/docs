@@ -10619,6 +10619,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Native sessions and transcript mirror
   - H2: Shared native binding lifecycle
   - H2: Tool and media results
+  - H2: Harness delivery defaults
   - H2: Terminal tool outcomes
   - H2: Settled tool finalization
 
