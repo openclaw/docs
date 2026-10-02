@@ -77,6 +77,8 @@ jobs:
     env:
       DOCS_SITE_CANONICAL_ORIGIN: https://docs.openclaw.ai
       DOCS_SITE_CNAME: docs.openclaw.ai
+      # Closed until the rollout owner authorizes activation after endpoint proof.
+      DOCS_SITE_GA4_ENABLED: ${{ vars.DOCS_SITE_GA4_ENABLED || '0' }}
     environment:
       name: cloudflare
       url: https://docs.openclaw.ai

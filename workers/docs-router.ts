@@ -1,4 +1,5 @@
 import { docsNotFoundHtml } from "./not-found.ts";
+import { analyticsConsentResponse } from "./analytics-consent.ts";
 
 interface Env {
   DOCS_BUCKET?: R2Bucket;
@@ -48,6 +49,8 @@ export default {
       url.protocol = "https:";
       return Response.redirect(url.toString(), 308);
     }
+
+    if (url.pathname === "/api/analytics-consent") return analyticsConsentResponse(request);
 
     if (url.pathname === "/api/search") {
       if (request.method !== "GET" && request.method !== "HEAD") {

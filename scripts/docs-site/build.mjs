@@ -16,6 +16,8 @@ import { ignoredDocDirs, ignoredDocFiles, localeFlags, localeLabels, navigationL
 import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
+import { webVitalsAssetName, webVitalsRuntime } from "./web-vitals-runtime.mjs";
+import { analyticsConsentHtml } from "./analytics-consent.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish, copyControlContent } from "./mdx-ish.mjs";
 import { createRenderCache } from "./render-cache.mjs";
@@ -319,6 +321,8 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const description = page.summary || config.description || "";
   const ogTitle = page.slug === "index" ? `${config.name} Docs` : `${page.title} · ${config.name}`;
   const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
+  const analyticsEligible = process.env.DOCS_SITE_GA4_ENABLED === "1" && !previewMode && !page.hidden && !basePath && canonicalOrigin === "https://docs.openclaw.ai";
+  // tableOfContents already caps this shared UI/analytics heading list at 24.
   const pageOgVersion = page.locale === "en" ? pageOgVersions.get(page.slug) : undefined;
   const pageOgPath = pageOgVersion
     ? `/og/${page.slug}.png`
@@ -360,7 +364,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 ${siteHeader(page)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
-<div class="main">
+<div class="main"${analyticsEligible ? ` data-analytics-path="${escapeAttr(pageRoute(page))}" data-analytics-title="${escapeAttr(title)}" data-analytics-sections="${escapeAttr(JSON.stringify(toc.map(item => item.id)))}" data-analytics-release="${/^[a-f0-9]{40}$/i.test(process.env.GITHUB_SHA ?? "") ? process.env.GITHUB_SHA.slice(0, 12) : "local"}"` : ""}>
 ${homeHeroArt}
 <div class="page-intro"></div>
 ${tocHtml(toc, page.locale)}
@@ -380,7 +384,8 @@ ${pager(prev, next)}
 </div>
 </div>
 ${communityInvite(page.locale)}
-${siteFooter()}
+${siteFooter(analyticsEligible)}
+${analyticsEligible ? analyticsConsentHtml() : ""}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
@@ -407,7 +412,7 @@ function siteHeader(page) {
 </header>`;
 }
 
-function siteFooter() {
+function siteFooter(analyticsEligible = false) {
   const home = { locale: "en", slug: "index", title: "Docs" };
   const socials = [
     ["X", "https://x.com/openclaw", "x-social"],
@@ -433,7 +438,7 @@ function siteFooter() {
 </section>
 ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${title}"><h2>${title}</h2>${links.map(([label, href, target]) => `<a href="${escapeAttr(href)}"${target ? previewLinkAttrs(target, label) : ""}>${label}</a>`).join("")}</nav>`).join("")}
 </div>
-<div class="site-footer-legal"><p>Open-source assistant infrastructure.</p><p>© 2026</p><a href="https://openclaw.org">OpenClaw Foundation</a></div>
+<div class="site-footer-legal"><p>Open-source assistant infrastructure.</p><p>© 2026</p><a href="https://openclaw.org">OpenClaw Foundation</a>${analyticsEligible ? '<button type="button" class="oc-action oc-action-ghost" data-analytics-choices aria-expanded="false">Google Analytics choices</button>' : ""}</div>
 </footer>`;
 }
 
@@ -685,7 +690,7 @@ function pageFeedback(page) {
   const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
   const pagePath = pageRoute(page);
   const canonicalUrl = `${docsOrigin()}${pagePath}`;
-  return `<section class="page-feedback" aria-label="Page feedback" data-feedback-path="${escapeAttr(pagePath)}" data-feedback-url="${escapeAttr(canonicalUrl)}" data-feedback-repo="${escapeAttr(feedbackIssueRepository)}"><div class="page-feedback-prompt"><span>Was this useful?</span><button class="oc-action oc-action-ghost" type="button" data-feedback-value="yes" aria-pressed="false">Yes</button><button class="oc-action oc-action-ghost" type="button" data-feedback-value="no" aria-pressed="false">No</button><output data-feedback-result></output></div><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav><div class="page-feedback-composer" data-feedback-composer hidden><textarea data-feedback-detail rows="3" placeholder="What were you looking for?" aria-label="What was missing?"></textarea><a class="oc-action oc-action-secondary page-feedback-submit" data-feedback-issue-link target="_blank" rel="noopener noreferrer">${icon("github")}<span>Open issue</span></a></div></section>`;
+  return `<section class="page-feedback" aria-label="Page feedback" data-feedback-path="${escapeAttr(pagePath)}" data-feedback-url="${escapeAttr(canonicalUrl)}" data-feedback-repo="${escapeAttr(feedbackIssueRepository)}"><div class="page-feedback-prompt"><span>Was this useful?</span><button class="oc-action oc-action-ghost" type="button" data-feedback-value="yes" aria-pressed="false">Yes</button><button class="oc-action oc-action-ghost" type="button" data-feedback-value="no" aria-pressed="false">No</button><output data-feedback-result></output></div><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav><div class="page-feedback-composer" data-feedback-composer hidden><textarea data-feedback-detail rows="3" placeholder="What were you looking for?" aria-label="What was missing?"></textarea><button class="oc-action oc-action-secondary page-feedback-submit" data-feedback-issue-link type="button">${icon("github")}<span>Open issue</span></button></div></section>`;
 }
 
 function raiseIssueUrl(page) {
@@ -829,7 +834,7 @@ function chatWidget() {
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
 </div>
-<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="Ask a question..."></textarea><button type="submit" data-chat-submit aria-label="Send">${icon("send")}</button></form>
+<form class="docs-chat-form" id="docs-assistant-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="Ask a question..."></textarea><button type="submit" data-chat-submit aria-label="Send">${icon("send")}</button></form>
 </div>
 </section>`;
 }
@@ -866,6 +871,7 @@ function writeStaticAssets() {
   copyDir(path.join(siteAssetsDir, "fonts"), path.join(assetsDir, "fonts"));
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), shellCss, "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), shellJs, "utf8");
+  fs.writeFileSync(path.join(assetsDir, webVitalsAssetName), webVitalsRuntime, "utf8");
   const glimmDir = path.dirname(glimmEntry);
   fs.writeFileSync(path.join(assetsDir, glimmAssetName), glimmRuntime, "utf8");
   fs.copyFileSync(path.join(glimmDir, "..", "LICENSE"), path.join(assetsDir, "glimm-LICENSE.txt"));

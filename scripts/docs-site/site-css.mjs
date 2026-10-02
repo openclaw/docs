@@ -4,6 +4,7 @@ const releaseAnnouncementCss = fs.readFileSync(new URL("./release-announcement.c
 const maturityCss = fs.readFileSync(new URL("./maturity.css", import.meta.url), "utf8");
 const docsLayoutCss = fs.readFileSync(new URL("./docs-layout.css", import.meta.url), "utf8");
 const siteLayoutCss = fs.readFileSync(new URL("./site-layout.css", import.meta.url), "utf8");
+const analyticsConsentCss = fs.readFileSync(new URL("./analytics-consent.css", import.meta.url), "utf8");
 const designSystemCss = [
   "@openclaw/carapace/tokens.css",
   "@openclaw/carapace/themes.css",
@@ -263,6 +264,7 @@ html{scroll-padding-top:calc(var(--sticky-header-h) + 54px)}
 @media(min-width:821px){.community-invite.community-invite{border-radius:calc(var(--oc-radius-surface) * var(--oc-corner-radius-scale));corner-shape:superellipse(1.5)}}}
 ${maturityCss}
 ${siteLayoutCss}
+${analyticsConsentCss}
 ${docsLayoutCss}
 ${releaseAnnouncementCss}
 `;

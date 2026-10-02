@@ -35,6 +35,7 @@
     "pagefind": "1.5.2",
     "playwright": "^1.63.0",
     "tsx": "4.23.13",
+    "web-vitals": "6.2.2",
     "yaml": "2.9.0"
   },
   "dependencies": {
