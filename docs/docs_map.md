@@ -5624,6 +5624,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: System and identity
   - H2: Models and usage
+  - H2: Memory
   - H2: Channels and login helpers
   - H2: Plugin management
   - H3: Catalog detail and client confirmation
@@ -10999,6 +11000,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Exclusive slots
   - H2: Memory embedding adapters
   - H2: Provider-neutral memory runtime
+  - H3: Host consumers
+  - H3: Memory audience
   - H3: Compatibility and host integration
   - H3: Dreaming remains separate
   - H2: Bundled Memory Core workers
@@ -15046,6 +15049,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Reset a conversation
   - H3: Cascade stop
   - H2: Authentication
+  - H3: Memory audience inheritance
 
 ## tools/subagents/operations.md
 
