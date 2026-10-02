@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 2,
+  "carapaceVersion": "v0.6.2",
+  "designSystemVersion": "v0.6.2",
+  "consumerSha": "fb8f0f8c8a6182582490dce1d846926a8e05d3b2",
+  "workingTree": true,
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 0
+  },
+  "findings": [],
+  "resolvedFindings": [
+    {
+      "id": "component/locale-parity",
+      "severity": "error",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/build.mjs",
+      "line": 303,
+      "message": "Non-English homepages used a separate legacy hero and layout.",
+      "remediation": "Use the same home composition and layout class in every locale.",
+      "reference": "openclaw-marketing-pages/references/page-patterns.md",
+      "category": "component",
+      "status": "fixed"
+    },
+    {
+      "id": "layout/locale-section-placement",
+      "severity": "error",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/home-layout.mjs",
+      "line": 74,
+      "message": "Section placement depended on English heading anchors.",
+      "remediation": "Identify section roles by stable source links and component structure while retaining translated anchors.",
+      "reference": "openclaw-marketing-pages/references/page-patterns.md",
+      "category": "layout",
+      "status": "fixed"
+    },
+    {
+      "id": "copy/locale-coverage",
+      "severity": "warning",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/home-strings.mjs",
+      "line": 1,
+      "message": "Renderer-owned home copy and quick-navigation controls were English-only.",
+      "remediation": "Provide a complete checked copy table for all 21 supported locales.",
+      "reference": "openclaw-marketing-pages/SKILL.md",
+      "category": "copy",
+      "status": "fixed"
+    },
+    {
+      "id": "component/locale-release-state",
+      "severity": "warning",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/release-announcement.mjs",
+      "line": 13,
+      "message": "Latest indicators depended on English locale rather than the release being represented in navigation.",
+      "remediation": "Match the release slug and localize its labels; preserve valid source fallback links.",
+      "reference": "openclaw-carapace/SKILL.md",
+      "category": "component",
+      "status": "fixed"
+    },
+    {
+      "id": "layout/overflow",
+      "severity": "error",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/docs-layout.css",
+      "line": 108,
+      "message": "The RTL language popover extended beyond the left viewport edge, and desktop menus began inside the header.",
+      "remediation": "Use the logical end edge and keep the desktop popover below the header.",
+      "reference": "openclaw-design-audit/references/rubric.md",
+      "category": "layout",
+      "status": "fixed"
+    },
+    {
+      "id": "layout/overlay-overlap",
+      "severity": "warning",
+      "kind": "mechanical",
+      "file": "scripts/docs-site/docs-layout.css",
+      "line": 425,
+      "message": "The fixed chat launcher overlapped the footer Foundation link on desktop.",
+      "remediation": "Restore the base footer bottom clearance and assert non-overlap.",
+      "reference": "scripts/docs-site/AGENTS.md",
+      "category": "layout",
+      "status": "fixed"
+    }
+  ],
+  "coverage": {
+    "localesWithSourceAndCopyTests": 21,
+    "repositoryTests": 218,
+    "fullSitePages": 15458,
+    "fullVisualSmoke": true,
+    "visualPasses": 20
+  },
+  "passes": [
+    {
+      "number": 1,
+      "locale": "en",
+      "theme": "dark",
+      "width": 1440,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 2,
+      "locale": "en",
+      "theme": "light",
+      "width": 1440,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 3,
+      "locale": "en",
+      "theme": "dark",
+      "width": 390,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 4,
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 5,
+      "locale": "de",
+      "theme": "dark",
+      "width": 1440,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 6,
+      "locale": "de",
+      "theme": "light",
+      "width": 1440,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 7,
+      "locale": "de",
+      "theme": "dark",
+      "width": 390,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 8,
+      "locale": "de",
+      "theme": "light",
+      "width": 390,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 9,
+      "locale": "ar",
+      "theme": "dark",
+      "width": 1440,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 10,
+      "locale": "ar",
+      "theme": "light",
+      "width": 1440,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 11,
+      "locale": "ar",
+      "theme": "dark",
+      "width": 390,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 12,
+      "locale": "ar",
+      "theme": "light",
+      "width": 390,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 13,
+      "locale": "ja-JP",
+      "theme": "dark",
+      "width": 1440,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 14,
+      "locale": "ja-JP",
+      "theme": "light",
+      "width": 1440,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 15,
+      "locale": "ja-JP",
+      "theme": "dark",
+      "width": 390,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 16,
+      "locale": "ja-JP",
+      "theme": "light",
+      "width": 390,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 17,
+      "locale": "fr",
+      "theme": "dark",
+      "width": 1440,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 18,
+      "locale": "fr",
+      "theme": "light",
+      "width": 1440,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 19,
+      "locale": "fr",
+      "theme": "dark",
+      "width": 390,
+      "engine": "webkit",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "number": 20,
+      "locale": "fr",
+      "theme": "light",
+      "width": 390,
+      "engine": "chromium",
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

@@ -1,14 +1,16 @@
 import { releaseStripHtml } from "./release-announcement.mjs";
-import { parseDocument } from "htmlparser2";
+import { parseDocument, DomUtils } from "htmlparser2";
 import { featuredGuides, communitySection } from "./home-sections.mjs";
 import { channelIcons } from "./channel-icons.mjs";
 import { homeContentHtml } from "./home-content.mjs";
+import { homeStringsForLocale, escapeUiText } from "./home-strings.mjs";
 
 // Approved decorative headers go here, keyed by the source card's destination.
 // Each image supplies src, width and height; the icon remains the fallback.
 const capabilityArtwork = {};
 
-export function homeLayoutHtml(source, icon, release = null) {
+export function homeLayoutHtml(source, icon, release = null, locale = "en") {
+  const copy = homeStringsForLocale(locale);
   const html = homeContentHtml(source);
   const nodes = parseDocument(html, { withStartIndices: true, withEndIndices: true }).children;
   const tags = nodes.filter((node) => node.type === "tag");
@@ -23,8 +25,16 @@ export function homeLayoutHtml(source, icon, release = null) {
     id: node.attribs.id,
     html: html.slice(node.startIndex, headings[index + 1]?.startIndex ?? html.length),
   }));
+  // Translated headings have translated anchors. Place sections by their stable
+  // links/components, while keeping each source heading and anchor untouched.
+  for (const section of sections) section.role = sectionRole(section, locale);
+  for (let index = 0; index < sections.length - 1; index += 1) {
+    if (!sections[index].role && sections[index + 1].role === "how-it-works") {
+      sections[index].role = "what-is-openclaw%3F";
+    }
+  }
   const take = (id, className = "home-reading-section") => {
-    const index = sections.findIndex((section) => section.id === id);
+    const index = sections.findIndex((section) => section.role === id || section.id === id);
     if (index < 0) return "";
     const [section] = sections.splice(index, 1);
     let content = section.html;
@@ -42,13 +52,13 @@ export function homeLayoutHtml(source, icon, release = null) {
 
   return `<div class="home-layout">
 <section class="home-heading" aria-labelledby="docs-title">
-  <div class="home-heading-copy"><h1 id="docs-title">OpenClaw</h1><p class="home-description"><span>The AI that really does things.</span><span>Any OS. Any Platform. The lobster way. 🦞</span></p></div>
+  <div class="home-heading-copy"><h1 id="docs-title">OpenClaw</h1><p class="home-description">${copy.tagline.map((text) => `<span>${escapeUiText(text)}</span>`).join("")}</p></div>
 </section>
-${releaseStripHtml(release, icon)}
+${releaseStripHtml(release, icon, locale)}
 ${quickLinks ? `<div class="home-quick-links">${slice(quickLinks)}</div>` : ""}
 ${take("quick-start", "home-setup home-reading-section")}
-${channelDirectory(icon)}
-${featuredGuides(icon)}
+${channelDirectory(icon, locale)}
+${featuredGuides(icon, locale)}
 ${take("key-capabilities", "home-directory home-capabilities")}
 <div class="home-about">${take("what-is-openclaw%3F")}${take("how-it-works", "home-architecture home-reading-section")}${introduction}</div>
 ${take("dashboard")}
@@ -56,12 +66,34 @@ ${take("configuration-(optional)")}
 ${take("browse-docs", "home-directory home-browse")}
 ${take("start-here", "home-directory home-resources")}
 ${take("learn-more", "home-directory home-resources")}
-${communitySection(icon)}
+${communitySection(icon, locale)}
 ${sections.map((section) => `<section class="home-reading-section">${section.html}</section>`).join("\n")}
 </div>`;
 }
 
-function channelDirectory(icon) {
+function sectionRole(section, locale) {
+  const document = parseDocument(section.html);
+  const hasClass = (name) => DomUtils.findOne((node) => node.attribs?.class?.split(/\s+/).includes(name), document.children);
+  const links = new Set(DomUtils.findAll((node) => node.name === "a" && node.attribs.href, document.children)
+    .map((node) => {
+      const href = node.attribs.href;
+      const prefix = `/${locale}`;
+      return locale !== "en" && (href === prefix || href.startsWith(prefix + "/"))
+        ? href.slice(prefix.length) || "/" : href;
+    }));
+  if (hasClass("oc-steps")) return "quick-start";
+  if (hasClass("oc-mermaid")) return "how-it-works";
+  if (links.has("/tools/plugin") && links.has("/nodes/images")) return "key-capabilities";
+  if (links.has("/providers") && links.has("/platforms")) return "browse-docs";
+  if (links.has("/start/hubs") && links.has("/gateway/remote")) return "start-here";
+  if (links.has("/reference/credits")) return "learn-more";
+  if (links.has("http://127.0.0.1:18789/")) return "dashboard";
+  if (hasClass("oc-code") && DomUtils.textContent(document).includes("openclaw.json")) return "configuration-(optional)";
+  return null;
+}
+
+function channelDirectory(icon, locale) {
+  const [title, description, allChannels] = homeStringsForLocale(locale).channels;
   const channels = [
     ["Discord", "discord", "discord", "#8991ff"],
     ["Telegram", "telegram", "telegram", "#68b6e8"],
@@ -76,7 +108,7 @@ function channelDirectory(icon) {
     ["Mattermost", "mattermost", "mattermost", "#6b9bd6"],
   ];
   return `<section class="home-channels" aria-labelledby="connect-a-channel">
-<div class="home-section-heading"><div><h2 id="connect-a-channel">Connect a channel</h2><p>Use OpenClaw from your chat app.</p></div></div>
-<div class="home-channel-grid">${channels.map(([label, slug, glyph, color]) => `<a class="home-channel" href="/channels/${slug}"><span class="home-channel-icon" style="--channel-color:${color}">${channelIcons[glyph]}</span><span>${label}</span>${icon("arrow-right")}</a>`).join("")}<a class="home-channel home-channel-more" href="/channels"><span class="home-channel-icon">${icon("grid-2x2")}</span><span>See all channels</span>${icon("arrow-right")}</a></div>
+<div class="home-section-heading"><div><h2 id="connect-a-channel">${escapeUiText(title)}</h2><p>${escapeUiText(description)}</p></div></div>
+<div class="home-channel-grid">${channels.map(([label, slug, glyph, color]) => `<a class="home-channel" href="/channels/${slug}"><span class="home-channel-icon" style="--channel-color:${color}">${channelIcons[glyph]}</span><span>${label}</span>${icon("arrow-right")}</a>`).join("")}<a class="home-channel home-channel-more" href="/channels"><span class="home-channel-icon">${icon("grid-2x2")}</span><span>${escapeUiText(allChannels)}</span>${icon("arrow-right")}</a></div>
 </section>`;
 }

@@ -7,6 +7,7 @@ import { DomUtils, parseDocument } from "htmlparser2";
 
 import { ignoredDocDirs, localeFlags, localeLabels, navigationLocaleToDir } from "./config.mjs";
 import { chromeStrings } from "./chrome-strings.mjs";
+import { homeStrings } from "./home-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
@@ -508,7 +509,8 @@ if (!/let tocObserver=null/.test(siteJs)
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
-if (!/class="docs-sections" aria-label="Docs sections"/.test(index)
+const docsSections = DomUtils.findOne((node) => node.attribs?.class === "docs-sections", indexDocument.children);
+if (docsSections?.attribs["aria-label"] !== homeStrings.en.navigation[6]
   || !/class="docs-section current"[^>]*><summary aria-current="true">/.test(index)
   || /class="(?:tabs|mobile-tabs)"/.test(index)) {
   throw new Error("assets: complete vertical docs navigation is missing");
@@ -968,6 +970,16 @@ function assertEditSourceLinks() {
 
 function assertLocalizedChrome() {
   for (const locale of activeLocaleCodes()) {
+    if (!homeStrings[locale]) throw new Error(`homepage strings: missing locale ${locale}`);
+    const homeFile = path.join(site, locale === "en" ? "" : locale, "index.html");
+    const homeDocument = parseDocument(fs.readFileSync(homeFile, "utf8"));
+    const homeLayouts = DomUtils.findAll((node) => node.attribs?.class === "home-layout", homeDocument.children);
+    if (homeLayouts.length !== 1 || DomUtils.findOne((node) => node.attribs?.class === "docs-hero", homeDocument.children)) {
+      throw new Error(`homepage layout: ${locale} must use the shared composition`);
+    }
+    if (!DomUtils.textContent(homeLayouts[0]).includes(homeStrings[locale].tagline[0])) {
+      throw new Error(`homepage strings: ${locale} did not render its localized tagline`);
+    }
     const rel = `${locale === "en" ? "" : `${locale}/`}start/getting-started/index.html`;
     const file = path.join(site, rel);
     if (!fs.existsSync(file)) throw new Error(`chrome strings: missing rendered sample ${rel}`);
@@ -979,6 +991,9 @@ function assertLocalizedChrome() {
     );
     const text = (node) => DomUtils.textContent(node).trim();
     if (!byClass("home-hero")) throw new Error(`page background: missing on ${rel}`);
+    if (byClass("docs-sections")?.attribs["aria-label"] !== homeStrings[locale].navigation[6]) {
+      throw new Error(`navigation label: ${rel} did not render its locale label`);
+    }
     const toc = byClass("toc");
     const tocSummary = toc && DomUtils.findOne((node) => node.name === "summary", toc.children);
     const tocHeading = toc && DomUtils.findOne((node) => node.name === "h2", toc.children);

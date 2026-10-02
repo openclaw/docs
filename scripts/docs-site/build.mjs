@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { releaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
-import { homeContentHtml } from "./home-content.mjs";
 import { homeLayoutHtml } from "./home-layout.mjs";
+import { homeStringsForLocale } from "./home-strings.mjs";
 import { homeHeroArt } from "./home-hero.mjs";
 import { docsQuickNav } from "./docs-navigation.mjs";
 import path from "node:path";
@@ -300,7 +300,7 @@ function writePage(page) {
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
   const options = { sourceFile: page.file, root: sourceRoot, pageRoute: pageRoute(page) };
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
-  const composed = page.slug === "index" && page.locale === "en" ? homeLayoutHtml(article, icon, announcement ? { ...announcement, href: pageRoute(announcedReleasePage) } : null) : article;
+  const composed = page.slug === "index" ? homeLayoutHtml(article, icon, announcement ? { ...announcement, href: pageRoute(announcedReleasePage) } : null, page.locale) : article;
   const html = rewriteInternalUrls(composed, page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
@@ -312,8 +312,7 @@ function writePage(page) {
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
-  const home = page.slug === "index" && page.locale === "en";
-  const homeHtml = home ? html : "";
+  const home = page.slug === "index";
   const lang = page.locale;
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = page.slug === "index" ? `${config.name} Docs` : `${page.title} - ${config.name}`;
@@ -363,8 +362,8 @@ ${siteHeader(page)}
 ${sidebar(page, nav, activeTab)}
 <div class="main">
 ${homeHeroArt}
-<div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
-${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
+<div class="page-intro"></div>
+${tocHtml(toc, page.locale)}
 <main class="article" id="main">
 <header class="article-header">
 ${articleMeta(page, nav)}
@@ -374,7 +373,7 @@ ${page.slug === "index" ? `<h2 class="home-section-title">${escapeHtml(activeTab
 ${pageStatus(page)}
 </header>
 ${pageSearchMetadata(page, nav)}
-<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${home ? homeHtml : page.slug === "index" ? homeContentHtml(html) : html}</div>
+<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
 </main>
@@ -393,24 +392,16 @@ function assetUrl(file) {
   return `${publicPath(file)}?v=${encodeURIComponent(shellAssetVersion)}`;
 }
 
-function homeHero(page) {
-  return `<section class="docs-hero" aria-labelledby="docs-hero-title">
-<p class="hero-eyebrow">Open source · Documentation</p>
-<h1 id="docs-hero-title" dir="auto">${escapeHtml(page.title)} <em dir="ltr">Docs.</em></h1>
-<p class="hero-description">${escapeHtml(page.summary || config.description || "")}</p>
-<button class="hero-search" type="button" data-search-open>${icon("search")}<span>Search documentation</span><kbd aria-hidden="true">⌘ K</kbd></button>
-</section>`;
-}
-
 function siteHeader(page) {
+  const controls = homeStringsForLocale(page.locale).controls;
   const network = [["Product", "https://openclaw.ai/"], ["Install", "https://openclaw.ai/install"], ["Ecosystem", "https://openclaw.ai/ecosystem"], ["Integrations", "https://openclaw.ai/integrations"], ["Blog", "https://openclaw.ai/blog"], ["Community", "https://community.openclaw.ai/"]];
   return `<header class="site-header">
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}"${previewLinkAttrs(allPageByKey.get(pageKey(page.locale, "index")) ?? page, "OpenClaw Docs")}><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
-<button class="search-button" type="button" data-search-open aria-label="Search documentation">${icon("search")}<span class="search-label">Search documentation</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
+<button class="search-button" type="button" data-search-open aria-label="${escapeAttr(controls[0])}">${icon("search")}<span class="search-label">${escapeHtml(controls[0])}</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
 <div class="header-actions">
 <nav class="network-nav" aria-label="OpenClaw sites">${network.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}</nav>
-<nav class="header-links" aria-label="Community and preferences"><div class="header-social-group" role="group" aria-label="Social links">${socialIconLinks()}</div><div class="header-preferences-group" role="group" aria-label="Preferences">${languagePicker(page)}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></div><button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button></nav>
+<nav class="header-links" aria-label="Community and preferences"><div class="header-social-group" role="group" aria-label="Social links">${socialIconLinks()}</div><div class="header-preferences-group" role="group" aria-label="Preferences">${languagePicker(page)}<button class="theme-toggle" type="button" data-theme-toggle aria-label="${escapeAttr(controls[1])}"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></div><button class="nav-toggle" type="button" data-nav-toggle aria-label="${escapeAttr(controls[2])}" aria-expanded="false"><span></span><span></span><span></span></button></nav>
 </div>
 </div>
 </header>`;
@@ -447,17 +438,18 @@ ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${t
 }
 
 function sidebar(page, nav, activeTab) {
+  const copy = homeStringsForLocale(page.locale);
   return `<aside class="sidebar">
-<div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">${icon("x")}</button></div>
-${rewriteInternalUrls(docsQuickNav(page.slug, icon), page.locale)}
-<nav class="docs-sections" aria-label="Docs sections">${nav.map((tab) => {
+<div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="${escapeAttr(copy.controls[3])}">${icon("x")}</button></div>
+${rewriteInternalUrls(docsQuickNav(page.slug, icon, page.locale), page.locale)}
+<nav class="docs-sections" aria-label="${escapeAttr(copy.navigation[6])}" data-back-label="${escapeAttr(copy.controls[4])}" data-sections-label="${escapeAttr(copy.navigation[6])}">${nav.map((tab) => {
     const current = tab.title === activeTab;
-    const release = page.locale === "en" && announcement && flattenNav([tab]).includes(announcedReleasePage) ? announcement : null;
-    return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${releaseVersionHtml(release)}${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
+    const release = announcement && flattenNav([tab]).some((entry) => entry.slug === announcedReleasePage.slug) ? announcement : null;
+    return `<details class="docs-section${current ? " current" : ""}" name="docs-sections" data-docs-section="${escapeAttr(tab.title)}"><summary${current ? ' aria-current="true"' : ""}><span>${escapeHtml(tab.title)}</span>${releaseVersionHtml(release, page.locale)}${icon("chevron-down")}</summary><div class="docs-section-pages">${tab.groups.map((group) => navGroupHtml(page, group)).join("")}</div></details>`;
   }).join("")}</nav>
 <div class="sidebar-tools">
 <nav class="sidebar-socials" aria-label="Community links">${socialIconLinks()}</nav>
-<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="${escapeAttr(copy.controls[1])}"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button>
 </div>
 </aside>`;
 }
@@ -663,7 +655,7 @@ function navEntryHtml(activePage, entry) {
 
 function navLink(activePage, page) {
   const active = activePage.locale === page.locale && activePage.slug === page.slug ? " active" : "";
-  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${announcement && page === announcedReleasePage ? releaseBadgeHtml(announcement) : ""}</a>`;
+  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${announcement && page.slug === announcedReleasePage.slug ? releaseBadgeHtml(announcement, activePage.locale) : ""}</a>`;
 }
 
 function tableOfContents(html) {

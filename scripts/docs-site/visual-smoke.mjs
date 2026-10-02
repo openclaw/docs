@@ -67,7 +67,7 @@ async function checkLanguageSelection() {
     const routes = [lastLocale];
     if (fs.existsSync(path.join(site, "ar/index.html"))) routes.push("/ar/");
     for (const route of routes) {
-      for (const width of [320, 390]) {
+      for (const width of [320, 390, 1440]) {
         await page.setViewportSize({ width, height: 600 });
         await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
         await page.evaluate(() => scrollTo({ top: 160, behavior: "instant" }));
@@ -293,6 +293,11 @@ async function checkPageBackground() {
   try {
     for (const route of routes) {
       await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+      if (route.endsWith("/")) {
+        if (await page.locator(".home-layout").count() !== 1 || await page.locator(".docs-hero").count()) {
+          throw new Error(`Every locale homepage must use the shared layout: ${route}`);
+        }
+      }
       for (const theme of ["dark", "light"]) {
         await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
         for (const width of [390, 820, 1440, 1920, 2560]) {
@@ -455,6 +460,14 @@ async function checkFooterSocials() {
             .screenshot({ path: path.join(artifacts, `footer-${theme}-${width}.png`) });
         }
       }
+      await page.evaluate(() => scrollTo({ top: document.scrollingElement.scrollHeight, behavior: "instant" }));
+      await page.waitForFunction(() => innerHeight - document.querySelector(".docs-chat-launcher").getBoundingClientRect().bottom < 40);
+      const footerObscured = await page.evaluate(() => {
+        const link = document.querySelector(".site-footer-legal a").getBoundingClientRect();
+        const chat = document.querySelector(".docs-chat-launcher").getBoundingClientRect();
+        return link.left < chat.right && link.right > chat.left && link.top < chat.bottom && link.bottom > chat.top;
+      });
+      if (footerObscured) throw new Error(`Footer link is obscured by chat (${width}px)`);
     }
   } finally { await page.close(); }
 }
