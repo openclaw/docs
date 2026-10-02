@@ -37,7 +37,7 @@ try {
   await checkLanguageSelection();
   await checkAccordionNavigation();
   await checkLandingNavigation();
-  await checkHomeHero();
+  await checkPageBackground();
   await checkCommunityBanner();
   await checkHeaderSurface();
   await checkFooterSocials();
@@ -248,7 +248,8 @@ async function checkLandingNavigation() {
   if (!wideColumns) throw new Error("homepage content overlaps its navigation or overflows the viewport");
   await page.locator('.docs-quick-nav a[href="/start/getting-started"]').click();
   await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/start/getting-started");
-  if (await page.locator(".home-layout,.home-hero").count()) throw new Error("landing hero survived article navigation");
+  if (await page.locator(".home-layout").count()) throw new Error("landing content survived article navigation");
+  await assertPageBackground(page);
   await assertTocAtArticleStart(page);
   const sectionUsable = await page.evaluate(() => {
     const link = document.querySelector(".sidebar .nav-link.active");
@@ -257,15 +258,15 @@ async function checkLandingNavigation() {
   });
   if (!sectionUsable) throw new Error("current page navigation is not reachable after a route change");
   await page.goBack();
-  await page.locator(".home-hero").waitFor({ state: "visible" });
-  await assertHomeHero(page);
+  await page.locator(".home-layout").waitFor({ state: "visible" });
+  await assertPageBackground(page);
   await page.close();
 }
 
-async function assertHomeHero(page) {
+async function assertPageBackground(page) {
   await page.waitForFunction(() => {
     const node = document.querySelector(".home-hero");
-    if (!node) return false;
+    if (!node || document.querySelectorAll(".home-hero").length !== 1) return false;
     const rect = node.getBoundingClientRect();
     const main = node.parentElement.getBoundingClientRect();
     const rtl = getComputedStyle(node).direction === "rtl";
@@ -273,6 +274,7 @@ async function assertHomeHero(page) {
     const fullBleed = rtl ? Math.abs(rect.left) < 1 : Math.abs(rect.right - viewport) < 1;
     const clearOfSidebar = rtl ? Math.abs(rect.right - main.right) < 1 : Math.abs(rect.left - main.left) < 1;
     return fullBleed && clearOfSidebar && rect.top + scrollY < 0
+      && getComputedStyle(node).pointerEvents === "none"
       && document.documentElement.scrollWidth <= viewport;
   });
   await page.locator(".home-hero").evaluate(async (node) => {
@@ -283,22 +285,23 @@ async function assertHomeHero(page) {
   });
 }
 
-async function checkHomeHero() {
+async function checkPageBackground() {
   const page = await browser.newPage({ reducedMotion: "reduce" });
+  const routes = ["/", "/start/getting-started", ...["de", "ar"].flatMap((locale) =>
+    [`/${locale}/`, `/${locale}/start/getting-started`].filter((route) =>
+      fs.existsSync(path.join(site, route, "index.html"))))];
   try {
-    await page.goto(`${base}/`, { waitUntil: "networkidle" });
-    for (const theme of ["dark", "light"]) {
-      if (await page.locator("html").getAttribute("data-theme") !== theme) {
-        await page.locator(".site-header [data-theme-toggle]").click();
-      }
-      for (const width of [390, 820, 1440, 1920, 2560]) {
-        await page.setViewportSize({ width, height: 900 });
-        await assertHomeHero(page);
+    for (const route of routes) {
+      await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+      for (const theme of ["dark", "light"]) {
+        await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
+        for (const width of [390, 820, 1440, 1920, 2560]) {
+          await page.setViewportSize({ width, height: 900 });
+          await assertPageBackground(page);
+        }
       }
     }
-  } finally {
-    await page.close();
-  }
+  } finally { await page.close(); }
 }
 
 async function checkCommunityBanner() {

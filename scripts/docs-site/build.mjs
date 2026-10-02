@@ -362,7 +362,7 @@ ${siteHeader(page)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <div class="main">
-${home ? homeHeroArt : ""}
+${homeHeroArt}
 <div class="page-intro">${page.slug === "index" && !home ? homeHero(page) : ""}</div>
 ${tocHtml(home ? tableOfContents(homeHtml) : toc, page.locale)}
 <main class="article" id="main">

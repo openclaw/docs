@@ -83,6 +83,7 @@ for (const rel of required) {
   if (!rel.endsWith(".html")) continue;
   const html = fs.readFileSync(file, "utf8");
   if (!/<title>[^<]+<\/title>/i.test(html)) throw new Error(`${rel}: missing title`);
+  if (!html.includes('class="home-hero"')) throw new Error(`${rel}: missing shared page background`);
   for (const pattern of poison) {
     if (pattern.test(html)) throw new Error(`${rel}: poison matched ${pattern}`);
   }
@@ -977,6 +978,7 @@ function assertLocalizedChrome() {
       document.children,
     );
     const text = (node) => DomUtils.textContent(node).trim();
+    if (!byClass("home-hero")) throw new Error(`page background: missing on ${rel}`);
     const toc = byClass("toc");
     const tocSummary = toc && DomUtils.findOne((node) => node.name === "summary", toc.children);
     const tocHeading = toc && DomUtils.findOne((node) => node.name === "h2", toc.children);

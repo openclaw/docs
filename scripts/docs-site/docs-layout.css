@@ -4,6 +4,8 @@
 @font-face { font-family: Switzer; src: url('fonts/Switzer-Bold.woff2') format('woff2'); font-style: normal; font-weight: 700; font-display: swap; }
 
 .docs-layout {
+  position: relative;
+  isolation: isolate;
   --header-padding: 24px;
   --docs-nav: 256px;
   --docs-toc: 200px;
@@ -177,7 +179,7 @@
 .docs-layout .docs-section-pages .nav-section { margin-bottom: 12px; }
 .docs-layout .docs-section-pages h2 { margin: 14px 0 8px; padding-inline: 12px; color: var(--ink); font: 500 11px var(--oc-font-body); letter-spacing: 0; text-transform: none; }
 .docs-layout .docs-section-pages .nav-link { margin-inline-start: 4px; padding: 6px 8px; border: 0; border-radius: var(--oc-radius-control); color: var(--docs-muted); font-size: 12px; line-height: 1.55; }
-.docs-layout .main { border-inline-start: 0; }
+.docs-layout .main { position: relative; border-inline-start: 0; }
 .docs-layout .article { padding: 48px var(--docs-inset) 80px; border: 0; }
 .docs-layout .article h1 { font-size: 2.375rem; font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
 .docs-layout .article-header { margin-bottom: 28px; }
@@ -425,15 +427,14 @@
 .docs-layout:not(:has([data-docs-chat])) [data-search-molty] { display: none; }
 
 /* Homepage: navigation, setup, then reference content. */
-.docs-layout.docs-home-layout { position: relative; isolation: isolate; }
-.docs-layout.docs-home-layout .main { display: block; position: relative; }
+.docs-layout.docs-home-layout .main { display: block; }
 .docs-layout.docs-home-layout .main > .toc, .docs-layout.docs-home-layout .article-header, .docs-layout.docs-home-layout .page-feedback, .docs-layout.docs-home-layout .page-nav { display: none; }
 .docs-layout.docs-home-layout .article { padding: 0 48px 64px; }
 .docs-layout.docs-home-layout .article > .doc { max-width: 1040px; width: 100%; }
 .home-heading { position: relative; isolation: isolate; display: flex; align-items: center; min-height: 192px; margin: 0; padding: 48px 0 40px; }
 .home-heading-copy { position: relative; z-index: 1; max-width: 100%; }
 .home-layout h2[tabindex="-1"]:focus { outline: none; }
-/* The artwork stays behind the header and content, inside the main pane. */
+/* Shared by every page and locale, behind the header and content in the main pane. */
 .home-hero { --home-hero-image: url("home-hero-diagonal-dark.svg"); position: absolute; z-index: -1; inset-block-start: calc(-60px - var(--header-row-h,64px)); inset-inline: 0; height: 400px; overflow: clip; pointer-events: none; user-select: none; mask-image: linear-gradient(90deg,transparent 15%,#000 55%,#000 88%,transparent); }
 .home-hero::before { content: ""; display: block; width: 100%; height: 100%; background: var(--home-hero-image) right top / 100% 100% no-repeat; opacity: .48; mask-image: linear-gradient(#000 45%,transparent); }
 :root[data-theme="light"] .home-hero { --home-hero-image: url("home-hero-diagonal-light.svg"); }
