@@ -374,10 +374,42 @@ async function checkHeaderSurface() {
       await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor === "rgba(0, 0, 0, 0)");
     }
     await page.getByRole("link", { name: "Community", exact: true }).first().focus();
-    for (const name of ["GitHub", "Discord", "Language: English", "Toggle theme"]) {
+    for (const name of ["GitHub", "X", "Discord", "Reddit", "Language: English", "Toggle theme"]) {
       await page.keyboard.press("Tab");
       const activeName = await page.evaluate(() => document.activeElement.getAttribute("aria-label"));
       if (activeName !== name) throw new Error(`Header keyboard order: expected ${name}, got ${activeName}`);
+    }
+    for (const width of [320, 390, 820, 821, 1024, 1120, 1121, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      const mobile = width <= 820;
+      if (mobile) {
+        await page.locator("[data-nav-toggle]").click();
+        await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 1);
+      }
+      const geometry = await page.evaluate((mobile) => {
+        const container = document.querySelector(mobile ? ".sidebar-tools" : ".header-row").getBoundingClientRect();
+        const links = [...document.querySelectorAll(mobile ? ".sidebar-socials a" : ".header-social-group a")];
+        const controls = [...document.querySelectorAll(mobile
+          ? ".sidebar-tools a,.sidebar-tools button"
+          : ".header-row .brand,.search-button,.network-nav a,.header-social-group a,.header-row .language-trigger,.header-row .theme-toggle")]
+          .map((node) => node.getBoundingClientRect()).filter((rect) => rect.width > 0 && rect.height > 0);
+        return {
+          names: links.map((node) => node.getAttribute("aria-label")),
+          targets: links.every((node) => {
+            const rect = node.getBoundingClientRect();
+            return rect.width + 0.01 >= (mobile ? 44 : 36) && rect.height + 0.01 >= (mobile ? 44 : 36);
+          }),
+          bounded: controls.every((rect) => rect.left >= Math.max(0, container.left) - 1
+            && rect.right <= Math.min(innerWidth, container.right) + 1),
+          clear: controls.every((rect, i) => controls.slice(i + 1).every((other) =>
+            rect.right <= other.left || other.right <= rect.left || rect.bottom <= other.top || other.bottom <= rect.top)),
+        };
+      }, mobile);
+      if (geometry.names.join(",") !== "GitHub,X,Discord,Reddit" || !geometry.targets || !geometry.bounded || !geometry.clear) {
+        throw new Error(`Social navigation geometry (${width}px): ${JSON.stringify(geometry)}`);
+      }
+      if (mobile) await page.locator("[data-nav-close]").click();
     }
   } finally { await page.close(); }
 }
@@ -1009,8 +1041,7 @@ async function checkMobile() {
     const themeStyle = getComputedStyle(document.querySelector("[data-theme-toggle]"));
     const search = document.querySelector("[data-search-open]")?.getBoundingClientRect();
     const brand = document.querySelector(".brand")?.getBoundingClientRect();
-    const github = document.querySelector('.top-icon-link[aria-label="GitHub"]')?.getBoundingClientRect();
-    const discord = document.querySelector('.top-icon-link[aria-label="Discord"]')?.getBoundingClientRect();
+    const socials = [...document.querySelectorAll('.header-social-group a')].map((link) => link.getBoundingClientRect());
     const code = document.querySelector(".oc-code")?.getBoundingClientRect();
     const step = document.querySelector(".oc-step")?.getBoundingClientRect();
     const overlap = (a, b) => Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
@@ -1019,8 +1050,7 @@ async function checkMobile() {
       menuThemeOverlap: overlap(menu, theme),
       themeHasChrome: parseFloat(themeStyle.borderTopWidth) > 0 || themeStyle.backgroundColor !== "rgba(0, 0, 0, 0)",
       brandClear: Boolean(brand && brand.left >= 0 && brand.right <= innerWidth && !overlap(brand, search) && !overlap(brand, menu) && !overlap(brand, theme)),
-      githubVisible: Boolean(github && github.width > 0 && github.height > 0),
-      discordVisible: Boolean(discord && discord.width > 0 && discord.height > 0),
+      socialsVisible: socials.some((rect) => rect.width > 0 && rect.height > 0),
       searchInViewport: search ? search.left >= 0 && search.right <= innerWidth : false,
       codeInViewport: code ? code.left >= 0 && code.right <= innerWidth + 1 : false,
       stepInset: step?.left,
@@ -1029,8 +1059,7 @@ async function checkMobile() {
   if (geometry.menuThemeOverlap
     || geometry.themeHasChrome
     || !geometry.brandClear
-    || geometry.githubVisible
-    || geometry.discordVisible
+    || geometry.socialsVisible
     || !geometry.searchInViewport
     || !geometry.codeInViewport
     || geometry.stepInset < 0) {
@@ -1265,9 +1294,11 @@ async function checkMobileKeyboardOverlays(page) {
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
   await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 0.1);
   await page.locator(".sidebar [data-theme-toggle]").focus();
-  await page.keyboard.press("Shift+Tab");
-  if (!await page.evaluate(() => document.activeElement?.closest(".sidebar-socials"))) {
-    throw new Error("mobile menu social links are not keyboard reachable");
+  for (const name of ["Reddit", "Discord", "X", "GitHub"]) {
+    await page.keyboard.press("Shift+Tab");
+    const activeName = await page.evaluate(() => document.activeElement?.closest(".sidebar-socials")
+      && document.activeElement.getAttribute("aria-label"));
+    if (activeName !== name) throw new Error(`Mobile social keyboard order: expected ${name}, got ${activeName}`);
   }
   if (await page.locator(".docs-sidebar-levels").getAttribute("data-level") === "section") await page.locator(".docs-sidebar-back").click();
   await page.locator("[data-nav-close]").focus();
