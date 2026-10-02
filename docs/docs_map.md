@@ -10860,6 +10860,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: WebSocket options and constructors
   - H3: Gateway worker environment creation
   - H3: Harness attempt result migration
+  - H3: Awaited session persistence
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
   - H3: Memory read missing results
@@ -10875,6 +10876,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
+  - H2: Await session transcript persistence
+  - H3: Await extension session changes
+  - H3: Await provider replay metadata
   - H2: Managed node workspace acquisition
   - H2: Migrate durable ingress files through Doctor
   - H2: How to migrate
@@ -11077,6 +11081,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin command runtime helpers
   - H2: Auth-profile resolution
   - H2: Session transcript hydration
+  - H2: Awaited transcript mutations
   - H2: Bounded model context
   - H2: Scoped session visibility
   - H2: Agent and session namespaces
