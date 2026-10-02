@@ -361,6 +361,23 @@ const foundationLink = footer && DomUtils.findOne(
 if (!foundationLink) {
   throw new Error("assets: site footer with Foundation attribution is missing");
 }
+const footerSocialGroup = DomUtils.findOne((node) => node.attribs?.class === "site-footer-socials", footer.children);
+const footerSocialLinks = DomUtils.findAll((node) => node.name === "a", footerSocialGroup?.children ?? []);
+const expectedFooterSocials = [
+  ["X", "https://x.com/openclaw"],
+  ["GitHub", "https://github.com/openclaw/openclaw"],
+  ["Discord", "https://discord.com/invite/clawd"],
+  ["Reddit", "https://www.reddit.com/r/openclaw/"],
+  ["TikTok", "https://www.tiktok.com/@open_claw"],
+  ["LinkedIn", "https://www.linkedin.com/company/the-openclaw-foundation"],
+  ["Instagram", "https://www.instagram.com/openclaw_org/"],
+  ["YouTube", "https://www.youtube.com/@OpenClawYT"],
+];
+if (JSON.stringify(footerSocialLinks.map((node) => [node.attribs["aria-label"], node.attribs.href])) !== JSON.stringify(expectedFooterSocials)
+  || footerSocialLinks.some((node) => node.attribs.target !== "_blank" || !node.attribs.rel?.split(" ").includes("noopener")
+    || !DomUtils.findOne((child) => child.name === "svg", node.children))) {
+  throw new Error("footer social links must match openclaw.ai with accessible icons and safe new tabs");
+}
 if (!/--code:#f2f0ec;--code-inline:#ecebe6;--code-block:#fffefc;--code-text:#26262c;--code-border:#dbd8d1;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
 }

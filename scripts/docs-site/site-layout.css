@@ -94,9 +94,10 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 .site-footer-brand { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 48px; }
 .site-footer .site-footer-logo, .site-footer .site-footer-logo:visited { color: var(--ink); font: 700 20px/1 var(--oc-font-body); }
 .site-footer-note { margin: 16px 0 0; font: 400 13px/1.6 var(--oc-font-body); color: var(--muted); }
-.site-footer-socials { display: flex; align-items: center; gap: 8px; margin: 40px 0 0; margin-inline-start: -8px; }
-.site-footer-socials a { display: grid; place-items: center; width: 36px; height: 36px; color: var(--muted); }
-.site-footer-socials .icon { width: 17px; height: 17px; }
+.site-footer-socials { display: grid; grid-template-columns: repeat(8,minmax(24px,36px)); align-items: center; gap: 2px; width: min(100%,302px); margin: 40px 0 0; margin-inline-start: -9px; }
+.site-footer-socials a { display: grid; place-items: center; width: 100%; height: 36px; color: var(--muted); }
+.site-footer-socials a:hover { color: var(--ink); }
+.site-footer-socials .icon { width: 18px; height: 18px; }
 .site-footer-links { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 10px; margin: 0; padding: 48px 24px; border-inline-start: 1px solid var(--line); }
 .site-footer-links h2 { margin: 0 0 6px; color: var(--muted); font: 600 11.52px/1.4 var(--oc-font-mono); letter-spacing: .08em; text-transform: uppercase; }
 .site-footer-links a { color: var(--text); font: 400 13.6px/1.6 var(--oc-font-body); }

@@ -40,6 +40,7 @@ try {
   await checkHomeHero();
   await checkCommunityBanner();
   await checkHeaderSurface();
+  await checkFooterSocials();
   await checkDesktop();
   await checkTocScrollspy();
   await checkCompactToc();
@@ -410,6 +411,47 @@ async function checkHeaderSurface() {
         throw new Error(`Social navigation geometry (${width}px): ${JSON.stringify(geometry)}`);
       }
       if (mobile) await page.locator("[data-nav-close]").click();
+    }
+  } finally { await page.close(); }
+}
+
+async function checkFooterSocials() {
+  const names = ["X", "GitHub", "Discord", "Reddit", "TikTok", "LinkedIn", "Instagram", "YouTube"];
+  const page = await browser.newPage({ reducedMotion: "reduce" });
+  try {
+    for (const width of [320, 390, 820, 821, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      const socials = page.locator(".site-footer-socials");
+      await socials.scrollIntoViewIfNeeded();
+      const geometry = await socials.locator("a").evaluateAll((links) => {
+        const brand = links[0].closest(".site-footer-brand").getBoundingClientRect();
+        const rects = links.map((link) => link.getBoundingClientRect());
+        return {
+          names: links.map((link) => link.getAttribute("aria-label")),
+          bounded: rects.every((rect) => rect.left >= Math.max(0, brand.left) && rect.right <= Math.min(innerWidth, brand.right) + 1),
+          targets: rects.every((rect) => rect.width >= 24 && rect.height >= 24),
+          oneRow: rects.every((rect) => Math.abs(rect.top - rects[0].top) < 1),
+        };
+      });
+      if (geometry.names.join(",") !== names.join(",") || !geometry.bounded || !geometry.targets || !geometry.oneRow) {
+        throw new Error(`Footer social links (${width}px): ${JSON.stringify(geometry)}`);
+      }
+      await socials.getByRole("link", { name: "X", exact: true }).focus();
+      for (const name of names.slice(1)) {
+        await page.keyboard.press("Tab");
+        if (await page.evaluate(() => document.activeElement.getAttribute("aria-label")) !== name) {
+          throw new Error(`Footer keyboard order (${width}px): expected ${name}`);
+        }
+      }
+      if (width === 390 || width === 1440) {
+        await page.evaluate(() => document.activeElement.blur());
+        for (const theme of ["dark", "light"]) {
+          await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
+          await page.locator(width === 1440 ? ".site-footer" : ".site-footer-brand")
+            .screenshot({ path: path.join(artifacts, `footer-${theme}-${width}.png`) });
+        }
+      }
     }
   } finally { await page.close(); }
 }
