@@ -412,6 +412,12 @@ if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
   || !/\.sidebar\.can-scroll-down\{--sidebar-fade-bottom:30px\}/.test(siteCss)) {
   throw new Error("assets: sidebar overflow affordance is missing");
 }
+if (!siteCss.includes(".docs-layout .toc.can-scroll-down")
+  || !siteCss.includes(".docs-layout .toc::-webkit-scrollbar-track")
+  || !siteCss.includes("--toc-rail-inset")
+  || !siteJs.includes("function syncTocFade()")) {
+  throw new Error("assets: desktop TOC scrolling affordances are missing");
+}
 const expectedSocialLinks = [
   ["GitHub", "https://github.com/openclaw/openclaw"],
   ["Reddit", "https://www.reddit.com/r/openclaw/"],

@@ -43,6 +43,7 @@ try {
   await checkFooterSocials();
   await checkDesktop();
   await checkTocScrollspy();
+  await checkTocRailScrolling();
   await checkCompactToc();
   await checkAmbientCodePage();
   await checkMobile();
@@ -981,6 +982,102 @@ async function scrollToTocItem(page, index) {
       scrollY,
     };
   }, expected);
+}
+
+async function checkTocRailScrolling() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  try {
+    await page.addInitScript(() => localStorage.setItem("openclaw.docs.community-invite.v2", JSON.stringify({ dismissedAtMs: 1 })));
+    await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    // Force a long outline without depending on how upstream content is split into pages.
+    await page.locator(".toc nav").evaluate(nav => {
+      for (let i = 0; i < 40; i++) {
+        const link = document.createElement("a");
+        link.href = `#scroll-fixture-${i}`;
+        link.textContent = `Scrollable section ${i + 1}`;
+        nav.append(link);
+      }
+    });
+    await page.waitForFunction(() => document.querySelector(".toc").classList.contains("can-scroll-down"));
+    await page.mouse.move(700, 300);
+    const start = await page.locator(".toc").evaluate(el => {
+      const box = el.getBoundingClientRect(), title = el.querySelector("h2").getBoundingClientRect();
+      return { top: box.top, bottom: box.bottom, titleTop: title.top, viewport: innerHeight, down: el.classList.contains("can-scroll-down"), up: el.classList.contains("can-scroll-up"), thumb: getComputedStyle(el, "::-webkit-scrollbar-thumb").backgroundColor, track: getComputedStyle(el, "::-webkit-scrollbar-track").backgroundColor };
+    });
+    if (Math.abs(start.top - start.titleTop) > 1 || Math.abs(start.bottom - start.viewport) > 1 || !start.down || start.up
+      || start.thumb !== "rgba(0, 0, 0, 0)" || start.track !== "rgba(0, 0, 0, 0)") {
+      throw new Error(`Desktop TOC must start at its heading, fill the viewport and hide the idle track/thumb: ${JSON.stringify(start)}`);
+    }
+    await page.locator(".toc h2").hover();
+    await page.waitForFunction(() => getComputedStyle(document.querySelector(".toc"), "::-webkit-scrollbar-thumb").backgroundColor !== "rgba(0, 0, 0, 0)");
+    await page.locator(".toc").evaluate(el => { el.scrollTop = el.scrollHeight; });
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".toc");
+      return !el.classList.contains("can-scroll-down") && el.classList.contains("can-scroll-up");
+    });
+    await page.keyboard.press("Tab");
+    await page.locator(".toc a").last().focus();
+    await page.waitForFunction(() => {
+      const link = document.activeElement.getBoundingClientRect(), rail = document.querySelector(".toc").getBoundingClientRect(), launcher = document.querySelector(".docs-chat-launcher").getBoundingClientRect();
+      return link.top >= rail.top && link.bottom <= launcher.top - 10;
+    });
+    const focus = await page.locator(".toc").evaluate(el => ({ mask: getComputedStyle(el).maskImage, focused: el.contains(document.activeElement) }));
+    if (focus.mask !== "none" || !focus.focused) throw new Error(`TOC keyboard focus must remain unfaded and clear of chat: ${JSON.stringify(focus)}`);
+    await page.locator(".toc nav").evaluate(nav => { nav.innerHTML = '<a href="#short-outline">Short outline</a>'; });
+    await page.mouse.move(700, 300);
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".toc");
+      return !el.classList.contains("can-scroll-up") && !el.classList.contains("can-scroll-down");
+    });
+    await page.evaluate(() => {
+      const link = document.createElement("a");
+      link.href = "/channels/telegram";
+      link.textContent = "TOC navigation fixture";
+      link.dataset.tocNavigationFixture = "true";
+      document.querySelector(".doc").prepend(link);
+    });
+    await page.locator("[data-toc-navigation-fixture]").click();
+    await page.waitForURL("**/channels/telegram");
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".toc");
+      return el.classList.contains("can-scroll-down") === (el.scrollHeight - el.clientHeight - el.scrollTop > 1);
+    });
+    await page.locator(".toc nav").evaluate(nav => {
+      for (let i = 0; i < 30; i++) {
+        const link = document.createElement("a");
+        link.href = `#scrollspy-spacer-${i}`;
+        link.textContent = `Outline spacer ${i + 1}`;
+        if (i < 20) nav.prepend(link); else nav.append(link);
+      }
+    });
+    for (const index of [Number.MAX_SAFE_INTEGER, 0]) {
+      await scrollToTocItem(page, index);
+      const active = await page.locator(".toc a.active").evaluate(el => {
+        const link = el.getBoundingClientRect(), rail = el.closest(".toc").getBoundingClientRect(), launcher = document.querySelector(".docs-chat-launcher").getBoundingClientRect();
+        return { top: link.top, bottom: link.bottom, railTop: rail.top, launcherTop: launcher.top, reachable: el.contains(document.elementFromPoint(link.x + link.width / 2, link.y + link.height / 2)) };
+      });
+      if (active.top < active.railTop + 28 || active.bottom > active.launcherTop - 10 || !active.reachable) {
+        throw new Error(`Automatic TOC scrolling must clear the fade and launcher: ${JSON.stringify(active)}`);
+      }
+    }
+    await page.locator(".docs-chat-launcher").evaluate(el => { el.hidden = true; });
+    await page.setViewportSize({ width: 1440, height: 860 });
+    await scrollToTocItem(page, Number.MAX_SAFE_INTEGER);
+    const withoutLauncher = await page.locator(".toc a.active").evaluate(el => {
+      const rail = el.closest(".toc"), style = getComputedStyle(rail);
+      return { bottom: el.getBoundingClientRect().bottom, railBottom: rail.getBoundingClientRect().bottom, fade: parseFloat(style.getPropertyValue("--toc-fade-distance")), remaining: rail.scrollHeight - rail.clientHeight - rail.scrollTop };
+    });
+    if (withoutLauncher.remaining <= 1 || withoutLauncher.bottom > withoutLauncher.railBottom - withoutLauncher.fade + 1) {
+      throw new Error(`Active TOC links must clear the full fade without a launcher: ${JSON.stringify(withoutLauncher)}`);
+    }
+    await page.setViewportSize({ width: 1024, height: 650 });
+    await page.waitForFunction(() => getComputedStyle(document.querySelector(".toc summary")).display !== "none");
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".toc");
+      return !el.open && !el.classList.contains("can-scroll-up") && !el.classList.contains("can-scroll-down") && getComputedStyle(el).maskImage === "none";
+    });
+  } finally { await page.close(); }
 }
 
 async function checkCompactToc() {

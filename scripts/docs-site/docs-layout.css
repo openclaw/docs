@@ -492,7 +492,7 @@
   .doc .home-channel:hover { color: var(--ink); border-color: color-mix(in srgb,var(--ink) 24%,transparent); background: var(--paper); }}
 @media (min-width:1281px) {
   .docs-layout:not(.docs-home-layout) .main:has(> .toc) { padding-inline-end: var(--header-padding); }
-  .docs-layout .toc { padding-block-start: 43px; background: transparent; }}
+  .docs-layout .toc { --toc-rail-inset: 43px; background: transparent; }}
 @media (max-width:1280px) {
   .docs-layout { --docs-nav: 240px; --docs-inset: 38px; }
   .docs-layout.docs-home-layout .article { padding-inline: 38px; }}
@@ -656,6 +656,33 @@
 }
 .docs-sidebar-levels .can-scroll-up { --nav-fade-top: 28px; }
 .docs-sidebar-levels .can-scroll-down { --nav-fade-bottom: 36px; }
+
+/* Match the left navigation's overflow cues without fading the native scrollbar. */
+@property --docs-toc-thumb { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@media (min-width:1281px) {
+  .docs-layout .toc { --toc-fade-distance: 36px; --toc-fade-top: 0px; --toc-fade-bottom: 0px; --docs-toc-thumb: color-mix(in srgb,var(--muted) 42%,transparent); scrollbar-width: thin; scrollbar-gutter: stable; scrollbar-color: var(--docs-toc-thumb) transparent; overscroll-behavior-y: contain; mask-image: linear-gradient(to bottom,transparent,#000 var(--toc-fade-top),#000 calc(100% - var(--toc-fade-bottom)),transparent),linear-gradient(#000,#000),linear-gradient(#000,#000); mask-size: 100% 100%,12px 100%,12px 100%; mask-position: center,left,right; mask-repeat: no-repeat; }
+  .docs-layout .toc::-webkit-scrollbar { width: 8px; background: transparent; }
+  .docs-layout .toc::-webkit-scrollbar-track, .docs-layout .toc::-webkit-scrollbar-corner { background: transparent; border: 0; box-shadow: none; }
+  .docs-layout .toc::-webkit-scrollbar-button { display: none; }
+  .docs-layout .toc::-webkit-scrollbar-thumb { background: var(--docs-toc-thumb); border: 2px solid transparent; border-radius: var(--oc-radius-round); background-clip: padding-box; }
+  .docs-layout .toc.can-scroll-up { --toc-fade-top: 28px; }
+  .docs-layout .toc.can-scroll-down { --toc-fade-bottom: var(--toc-fade-distance); }
+  .docs-layout .toc:has(:focus-visible) { mask-image: none; }
+}
+/* Opt into the custom thumb where supported; standard scrollbar properties take precedence otherwise. */
+@supports selector(::-webkit-scrollbar) {
+  @media (min-width:1281px) {
+    .docs-layout .toc { scrollbar-width: auto; scrollbar-color: auto; }
+  }
+}
+@media (min-width:1281px) and (hover:hover) and (pointer:fine) {
+  .docs-layout .toc { --docs-toc-thumb: transparent; transition: --docs-toc-thumb var(--oc-duration-ui) ease; }
+  .docs-layout .toc:hover { --docs-toc-thumb: color-mix(in srgb,var(--muted) 42%,transparent); transition-duration: var(--oc-duration-fast); }
+  .docs-layout .toc:has(:focus-visible) { --docs-toc-thumb: color-mix(in srgb,var(--muted) 42%,transparent); transition-duration: 0s; }
+}
+@media (min-width:1281px) and (forced-colors:active) {
+  .docs-layout .toc { scrollbar-color: auto; mask-image: none; }
+}
 .docs-sidebar-levels[data-level="section"] .docs-sidebar-directory,
 .docs-sidebar-levels[data-level="directory"] .docs-sidebar-context { position: absolute; inset-block-start: 0; max-height: 100%; overflow: hidden; visibility: hidden; opacity: 0; pointer-events: none; transition: opacity 180ms var(--oc-ease-out), transform 180ms var(--oc-ease-out), visibility 0s 180ms; }
 .docs-sidebar-levels[data-level="section"] .docs-sidebar-directory { transform: translateX(-12px); }
