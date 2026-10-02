@@ -105,7 +105,7 @@
 .docs-layout .language-trigger .locale-flag { font-size: 16px; line-height: 1; }
 .docs-layout .language-trigger .language-chevron { display: inline-flex; width: 12px; height: 12px; color: inherit; }
 .docs-layout .language-trigger .language-chevron .icon { width: 12px; height: 12px; stroke-width: 1.7; }
-.docs-layout .language-menu { top: calc(100% + 8px); width: min(184px,calc(100vw - 32px)); padding: 4px; border-radius: 10px; }
+.docs-layout .language-menu { top: calc(100% + 8px); right: auto; left: auto; inset-inline-end: 0; width: min(184px,calc(100vw - 32px)); padding: 4px; border-radius: 10px; }
 .docs-layout .language-option { grid-template-columns: 20px minmax(0,1fr) 14px; gap: 8px; padding: 7px 8px; font: 400 13px/1.4 var(--oc-font-body); }
 .docs-layout .language-option .locale-flag { font-size: 16px; line-height: 1; }
 .docs-layout .language-check .icon { width: 14px; height: 14px; min-width: 14px; }
@@ -422,7 +422,7 @@
 .docs-layout .site-footer-inner { max-width: 1500px; margin-inline: auto; }
 .docs-layout .site-footer-links { border: 0; }
 .docs-layout .site-footer-links h2 { text-transform: none; font: 500 12px var(--oc-font-body); letter-spacing: 0; }
-.docs-layout .site-footer-legal { padding-bottom: 26px; font: 400 11px var(--oc-font-body); }
+.docs-layout .site-footer-legal { font: 400 11px var(--oc-font-body); }
 .docs-layout .search-panel { border: 1px solid var(--docs-border); border-radius: var(--oc-radius-surface); background: var(--paper); }
 .docs-layout:not(:has([data-docs-chat])) [data-search-molty] { display: none; }
 

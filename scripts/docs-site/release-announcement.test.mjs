@@ -14,10 +14,11 @@ let browser;
 before(async () => { browser = await chromium.launch({ headless: true }); });
 after(async () => { await browser?.close(); });
 
-function releaseFixture(t, includeRelease = true, includeNavigation = true) {
+function releaseFixture(t, includeRelease = true, includeNavigation = true, includeTranslatedRelease = false) {
   const sources = {
     "guide.md": "# Guide\n\n[Home](/)\n",
     "fr/index.md": "# Accueil\n",
+    ...(includeTranslatedRelease ? { [`fr/${releaseRoute}.md`]: `# Version ${version}\n\nNotes de version.\n` } : {}),
     ...(includeRelease ? { [`${releaseRoute}.md`]: `# v${version}\n\nRelease details.\n\n[Home](/)\n` } : {}),
   };
   const f = fixture(t, [], sources, base);
@@ -26,7 +27,7 @@ function releaseFixture(t, includeRelease = true, includeNavigation = true) {
       { tab: "Get started", groups: [{ group: "Docs", pages: ["index", "guide"] }] },
       ...(includeNavigation ? [{ tab: "Releases", groups: [{ group: "Release notes", pages: [releaseRoute] }] }] : []),
     ] },
-    { language: "fr", tabs: [{ tab: "Docs", groups: [{ group: "Docs", pages: ["index"] }] }] },
+    { language: "fr", tabs: [{ tab: "Docs", groups: [{ group: "Docs", pages: ["index", ...(includeTranslatedRelease ? [releaseRoute] : [])] }] }] },
   ] } }));
   const built = f.build();
   assert.equal(built.status, 0, built.stderr);
@@ -35,14 +36,31 @@ function releaseFixture(t, includeRelease = true, includeNavigation = true) {
 
 const all = (html, predicate) => DomUtils.findAll(predicate, parseDocument(html).children);
 
-test("announcement destinations respect the site base and missing/localized pages stay unadvertised", (t) => {
+test("translated release pages get the same latest indicators with localized labels", { skip: !releaseAnnouncement && "Announcement disabled" }, (t) => {
+  const f = releaseFixture(t, true, true, true);
+  const html = fs.readFileSync(path.join(f.site, "fr/index.html"), "utf8");
+  const versions = all(html, node => node.attribs.class === "release-nav-version");
+  const badges = all(html, node => node.attribs.class === "release-entry-badge");
+  assert.equal(versions.length, 1);
+  assert.equal(badges.length, 1);
+  assert.match(DomUtils.textContent(versions[0]), /Dernière version/);
+  assert.match(DomUtils.textContent(badges[0]), /Plus récente/);
+});
+
+test("announcements respect the site base, localize their labels, and require an existing release", (t) => {
   const f = releaseFixture(t);
   const home = fs.readFileSync(path.join(f.site, "index.html"), "utf8");
   const strip = all(home, node => node.name === "a" && node.attribs.class === "release-strip");
   assert.equal(strip.length, releaseAnnouncement ? 1 : 0);
   if (releaseAnnouncement) assert.equal(strip[0].attribs.href, `${base}/${releaseRoute}`);
   const translated = fs.readFileSync(path.join(f.site, "fr/index.html"), "utf8");
-  assert.equal(all(translated, node => /^(release-strip|release-nav-version|release-entry-badge)$/.test(node.attribs.class || "")).length, 0);
+  const translatedStrip = all(translated, node => node.attribs.class === "release-strip");
+  assert.equal(translatedStrip.length, releaseAnnouncement ? 1 : 0);
+  if (releaseAnnouncement) {
+    assert.equal(translatedStrip[0].attribs.href, `${base}/${releaseRoute}`);
+    assert.match(DomUtils.textContent(translatedStrip[0]), /Nouvelle version/);
+  }
+  assert.equal(all(translated, node => /^(release-nav-version|release-entry-badge)$/.test(node.attribs.class || "")).length, 0);
   const missing = releaseFixture(t, false);
   const withoutRelease = fs.readFileSync(path.join(missing.site, "index.html"), "utf8");
   assert.equal(all(withoutRelease, node => /^(release-strip|release-nav-version|release-entry-badge)$/.test(node.attribs.class || "")).length, 0);

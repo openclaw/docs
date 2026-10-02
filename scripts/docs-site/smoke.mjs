@@ -7,6 +7,7 @@ import { DomUtils, parseDocument } from "htmlparser2";
 
 import { ignoredDocDirs, localeFlags, localeLabels, navigationLocaleToDir } from "./config.mjs";
 import { chromeStrings } from "./chrome-strings.mjs";
+import { homeStrings } from "./home-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
@@ -968,6 +969,16 @@ function assertEditSourceLinks() {
 
 function assertLocalizedChrome() {
   for (const locale of activeLocaleCodes()) {
+    if (!homeStrings[locale]) throw new Error(`homepage strings: missing locale ${locale}`);
+    const homeFile = path.join(site, locale === "en" ? "" : locale, "index.html");
+    const homeDocument = parseDocument(fs.readFileSync(homeFile, "utf8"));
+    const homeLayouts = DomUtils.findAll((node) => node.attribs?.class === "home-layout", homeDocument.children);
+    if (homeLayouts.length !== 1 || DomUtils.findOne((node) => node.attribs?.class === "docs-hero", homeDocument.children)) {
+      throw new Error(`homepage layout: ${locale} must use the shared composition`);
+    }
+    if (!DomUtils.textContent(homeLayouts[0]).includes(homeStrings[locale].tagline[0])) {
+      throw new Error(`homepage strings: ${locale} did not render its localized tagline`);
+    }
     const rel = `${locale === "en" ? "" : `${locale}/`}start/getting-started/index.html`;
     const file = path.join(site, rel);
     if (!fs.existsSync(file)) throw new Error(`chrome strings: missing rendered sample ${rel}`);

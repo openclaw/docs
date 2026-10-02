@@ -9,13 +9,13 @@ export function initSidebarLevels() {
   const directory = document.createElement('div');
   directory.className = 'docs-sidebar-directory';
   const menu = document.createElement('nav');
-  menu.setAttribute('aria-label', 'Documentation sections');
+  menu.setAttribute('aria-label', sections.dataset.sectionsLabel || 'Documentation sections');
   const context = document.createElement('div');
   context.className = 'docs-sidebar-context';
   const back = document.createElement('button');
   back.type = 'button';
   back.className = 'docs-sidebar-back';
-  back.setAttribute('aria-label', 'Back to all documentation');
+  back.setAttribute('aria-label', sections.dataset.backLabel || 'Back to all documentation');
   back.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m14 6-6 6 6 6"/></svg><span></span>';
   sections.before(levels);
   directory.append(sidebar.querySelector('.docs-quick-nav'), sidebar.querySelector('.docs-nav-label'), menu);

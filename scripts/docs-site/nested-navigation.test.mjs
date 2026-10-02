@@ -40,7 +40,7 @@ for (const base of ["", "/manual"]) {
           assert.ok(sidebar.includes(`href="${base}/${locale}${target}"`), `${locale}${slug} → ${target}`);
         }
         const document = parseDocument(sidebar);
-        const sourceNavigation = DomUtils.findOne((node) => node.name === "nav" && node.attribs["aria-label"] === "Docs sections", document.children);
+        const sourceNavigation = DomUtils.findOne((node) => node.name === "nav" && node.attribs.class === "docs-sections", document.children);
         // The fixture owns the source tree; shell quick links point outside its tiny page set.
         const links = DomUtils.findAll((node) => node.name === "a", sourceNavigation.children);
         for (const link of links) {
