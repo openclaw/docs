@@ -86,6 +86,18 @@ test("release announcements stay unchanged after visits and reloads without read
   await page.getByRole("button", { name: /Releases Latest release:/ }).click();
   await page.getByRole("link", { name: `v${version} Latest`, exact: true }).waitFor();
   assert.equal(await page.locator(".release-entry-badge i").isVisible(), true);
+  for (const theme of ["dark", "light"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, theme);
+    const colors = await page.locator(".release-nav-version,.release-entry-badge").evaluateAll(nodes => nodes.flatMap(node => [
+      getComputedStyle(node).color,
+      getComputedStyle(node.querySelector("i")).backgroundColor,
+    ]));
+    assert.ok(colors.length >= 4, "both release indicators must be present");
+    for (const color of colors) {
+      const [red, green, blue] = color.match(/[\d.]+/g).map(Number);
+      assert.ok(green > red && green > blue, `${theme} release indicator must be green: ${color}`);
+    }
+  }
   await page.getByRole("button", { name: "Back to all documentation", exact: true }).click();
   await page.locator(".release-strip").click();
   await page.waitForURL(`**/${releaseRoute}`);

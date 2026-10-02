@@ -498,9 +498,9 @@ function localeDisplayName(code) {
 function socialIconLinks() {
   return [
     ["GitHub", "https://github.com/openclaw/openclaw", "github"],
-    ["X", "https://x.com/openclaw", "x-social"],
-    ["Discord", "https://discord.com/invite/clawd", "discord"],
     ["Reddit", "https://www.reddit.com/r/openclaw/", "reddit"],
+    ["Discord", "https://discord.com/invite/clawd", "discord"],
+    ["X", "https://x.com/openclaw", "x-social"],
   ].map(([label, href, iconName]) => `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}">${icon(iconName)}</a>`).join("");
 }
 
