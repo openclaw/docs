@@ -10677,6 +10677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-plugins
 - Headings:
   - H2: What your plugin owns
+  - H2: Return to the source conversation
   - H2: Walkthrough
   - H2: File structure
   - H2: Delegated context reads
