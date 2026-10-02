@@ -458,18 +458,22 @@ ${rewriteInternalUrls(docsQuickNav(page.slug, icon, page.locale), page.locale)}
 // Start hidden to avoid flashing an invitation that the visitor already dismissed.
 function communityInvite(locale) {
   const strings = chromeStringsForLocale(locale);
+  const joinLabel = (platform) => strings.communityJoinLabel.replace("{platform}", platform);
+  const followLabel = strings.communityFollowLabel.replace("{platform}", "X");
   return `<aside class="community-invite" aria-labelledby="community-invite-title" hidden>
 <div class="community-invite__header">
-<img class="community-invite__art" src="${publicPath("/assets/community-invite.webp")}" alt="" width="768" height="320" loading="lazy" decoding="async">
+<img class="community-invite__art community-invite__art--dark" src="${publicPath("/assets/community-invite-dark.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async">
+<img class="community-invite__art community-invite__art--light" src="${publicPath("/assets/community-invite-light.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async">
+<div class="community-invite__marks" aria-hidden="true"><span dir="ltr">${icon("reddit")}${icon("discord")}${icon("x-social")}</span></div>
 <button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
 </div>
 <div class="community-invite__body">
 <h2 class="community-invite__title" id="community-invite-title">${escapeHtml(strings.communityTitle)}</h2>
 <p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
 <div class="community-invite__links" dir="ltr">
-<a class="community-invite__cta" href="https://www.reddit.com/r/openclaw/" target="_blank" rel="noopener noreferrer">${icon("reddit")}<span>Reddit</span></a>
-<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer">${icon("discord")}<span>Discord</span></a>
-<a class="community-invite__cta" href="https://x.com/openclaw" target="_blank" rel="noopener noreferrer">${icon("x-social")}<span>X</span></a>
+<a class="community-invite__cta" href="https://www.reddit.com/r/openclaw/" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(joinLabel("Reddit"))}" title="${escapeAttr(joinLabel("Reddit"))}">${icon("reddit")}<span>${escapeHtml(strings.communityJoin)}</span></a>
+<a class="community-invite__cta" href="https://discord.com/invite/clawd" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(joinLabel("Discord"))}" title="${escapeAttr(joinLabel("Discord"))}">${icon("discord")}<span>${escapeHtml(strings.communityJoin)}</span></a>
+<a class="community-invite__cta" href="https://x.com/openclaw" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(followLabel)}" title="${escapeAttr(followLabel)}">${icon("x-social")}<span>${escapeHtml(strings.communityFollow)}</span></a>
 </div>
 </div>
 </aside>`;

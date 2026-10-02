@@ -347,7 +347,7 @@ async function checkCommunityBanner() {
         }
       }
       await page.goto(`${base}/`, { waitUntil: "networkidle" });
-      const invite = page.getByRole("complementary", { name: "Find your people" });
+      const invite = page.getByRole("complementary", { name: "Pull up a chair." });
       await invite.waitFor({ state: "visible" });
       const floating = await invite.evaluate((node) => {
         const card = node.getBoundingClientRect();

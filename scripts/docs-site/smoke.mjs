@@ -437,11 +437,11 @@ if (!communityInvite
 }
 const communityLinks = DomUtils.findAll((node) => node.name === "a", communityInvite.children);
 const expectedCommunityLinks = [
-  ["Reddit", "https://www.reddit.com/r/openclaw/"],
-  ["Discord", "https://discord.com/invite/clawd"],
-  ["X", "https://x.com/openclaw"],
+  ["Join", "https://www.reddit.com/r/openclaw/", "Join the OpenClaw community on Reddit"],
+  ["Join", "https://discord.com/invite/clawd", "Join the OpenClaw community on Discord"],
+  ["Follow", "https://x.com/openclaw", "Follow OpenClaw on X"],
 ];
-if (JSON.stringify(communityLinks.map((node) => [DomUtils.textContent(node).trim(), node.attribs.href])) !== JSON.stringify(expectedCommunityLinks)
+if (JSON.stringify(communityLinks.map((node) => [DomUtils.textContent(node).trim(), node.attribs.href, node.attribs["aria-label"]])) !== JSON.stringify(expectedCommunityLinks)
   || communityLinks.some((node) => node.attribs.target !== "_blank" || !node.attribs.rel?.split(" ").includes("noopener"))) {
   throw new Error("community invitation must link to Reddit, Discord, and X in order with safe new tabs");
 }

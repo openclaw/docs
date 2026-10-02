@@ -24,9 +24,9 @@ const server = http.createServer((req, res) => {
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
 const expectedLinks = [
-  ["Reddit", "https://www.reddit.com/r/openclaw/"],
-  ["Discord", "https://discord.com/invite/clawd"],
-  ["X", "https://x.com/openclaw"],
+  ["Join", "https://www.reddit.com/r/openclaw/"],
+  ["Join", "https://discord.com/invite/clawd"],
+  ["Follow", "https://x.com/openclaw"],
 ];
 let checked = 0;
 try {
@@ -35,7 +35,7 @@ try {
     try {
       for (const theme of ["dark", "light"]) {
         for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 800 }, { width: 390, height: 844 }, { width: 320, height: 568 }, { width: 820, height: 600 }]) {
-          const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
+          const context = await browser.newContext({ viewport, reducedMotion: "reduce", hasTouch: viewport.width === 390 });
           const page = await context.newPage();
           const label = `${name}-${theme}-${viewport.width}`;
           // macOS WebKit follows Safari’s default of using Option-Tab for links.
@@ -57,15 +57,21 @@ try {
               await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 1);
               await page.waitForFunction(() => Math.abs(document.querySelector(".community-invite").getBoundingClientRect().left) < 0.01);
             }
-            const invite = page.getByRole("complementary", { name: "Find your people" });
+            const invite = page.getByRole("complementary", { name: "Pull up a chair." });
             await invite.waitFor({ state: "visible" });
-            await invite.locator("img").evaluate((image) => image.decode());
+            await invite.locator("img:visible").evaluate((image) => image.decode());
             const state = await invite.evaluate((card) => {
               const rect = card.getBoundingClientRect();
               const links = [...card.querySelectorAll("a")];
               const css = getComputedStyle(card);
+              const visibleArt = [...card.querySelectorAll("img")].filter((image) => getComputedStyle(image).display !== "none");
+              const marks = card.querySelector(".community-invite__marks");
+              const marksStyle = getComputedStyle(marks);
+              const marksRect = marks.getBoundingClientRect();
+              const titleRect = card.querySelector("h2").getBoundingClientRect();
               return {
                 links: links.map((link) => [link.textContent.trim(), link.href]),
+                accessibleNames: links.map((link) => link.getAttribute("aria-label")),
                 safeLinks: links.every((link) => link.target === "_blank" && link.relList.contains("noopener")),
                 allLinksFit: links.every((link) => {
                   const button = link.getBoundingClientRect();
@@ -75,18 +81,25 @@ try {
                 noOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
                 sidebarClear: innerWidth > 820 || document.querySelector(".sidebar").getBoundingClientRect().bottom <= rect.top + 1,
                 radius: parseFloat(css.borderTopLeftRadius),
-                art: card.querySelector("img").getAttribute("src"),
+                art: visibleArt.map((image) => image.getAttribute("src")),
+                fades: visibleArt.every((image) => getComputedStyle(image).maskImage !== "none"),
+                marksAligned: Math.abs(marksRect.left - titleRect.left) < 0.1,
+                marksWhite: marksStyle.color === "rgb(255, 255, 255)",
+                marksBottom: marksStyle.bottom,
+                targets: links.every((link) => link.getBoundingClientRect().height >= (matchMedia("(pointer: coarse)").matches ? 44 : 40)),
               };
             });
             assert.deepEqual(state.links, expectedLinks, label);
-            for (const property of ["safeLinks", "allLinksFit", "inViewport", "noOverflow", "sidebarClear"]) assert.equal(state[property], true, `${label}: ${property}`);
-            assert.match(state.art, /\/assets\/community-invite\.webp$/, label);
+            assert.deepEqual(state.accessibleNames, ["Join the OpenClaw community on Reddit", "Join the OpenClaw community on Discord", "Follow OpenClaw on X"], label);
+            for (const property of ["safeLinks", "allLinksFit", "inViewport", "noOverflow", "sidebarClear", "fades", "marksAligned", "marksWhite", "targets"]) assert.equal(state[property], true, `${label}: ${property}`);
+            assert.deepEqual(state.art, [`/assets/community-invite-${theme}.webp`], label);
+            assert.equal(state.marksBottom, "19px", label);
             assert.ok(mobile ? state.radius === 0 : state.radius > 0, `${label}: corner geometry`);
-            await invite.getByRole("link", { name: "Reddit", exact: true }).focus();
+            await invite.getByRole("link", { name: "Join the OpenClaw community on Reddit", exact: true }).focus();
             await page.keyboard.press(tabKey);
-            assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), "Discord", `${label}: keyboard order`);
+            assert.equal(await page.evaluate(() => document.activeElement.getAttribute("aria-label")), "Join the OpenClaw community on Discord", `${label}: keyboard order`);
             await page.keyboard.press(tabKey);
-            assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), "X", `${label}: keyboard order`);
+            assert.equal(await page.evaluate(() => document.activeElement.getAttribute("aria-label")), "Follow OpenClaw on X", `${label}: keyboard order`);
             if (viewport.width === 1440 || viewport.width === 390) {
               await page.locator(mobile ? ".sidebar [data-nav-close]" : ".site-header .brand").focus();
               await invite.screenshot({ path: path.join(artifacts, `${label}-card.png`) });
@@ -114,12 +127,12 @@ try {
             const peer = viewport.width === 1440 && theme === "dark" ? await context.newPage() : null;
             if (peer) {
               await peer.goto(base, { waitUntil: "networkidle" });
-              await peer.getByRole("complementary", { name: "Find your people" }).waitFor({ state: "visible" });
+              await peer.getByRole("complementary", { name: "Pull up a chair." }).waitFor({ state: "visible" });
             }
             await invite.getByRole("button", { name: "Dismiss and don't show again" }).click();
             await invite.waitFor({ state: "hidden" });
             if (peer) {
-              await peer.getByRole("complementary", { name: "Find your people" }).waitFor({ state: "hidden" });
+              await peer.getByRole("complementary", { name: "Pull up a chair." }).waitFor({ state: "hidden" });
               await peer.close();
             }
             assert.equal(await page.evaluate(() => localStorage.getItem("openclaw.docs.community-invite")), '{"dismissedAtMs":1}', `${label}: legacy preference remains untouched`);
