@@ -10878,6 +10878,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/import-paths
 - Headings:
   - H2: Import path reference
+  - H3: Removed command and channel facades
   - H3: Removed channel facade mappings
 
 ## plugins/sdk-migration/removal-timeline.md
@@ -10892,6 +10893,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Removed compatibility surfaces
   - H3: Channel, config, and infrastructure compatibility facades
+  - H3: Command, Discord, and Telegram account facades
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
   - H3: Private testing barrel
