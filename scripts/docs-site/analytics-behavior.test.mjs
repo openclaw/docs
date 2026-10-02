@@ -72,6 +72,15 @@ async function openSite(t, { privacy, clock = false, diagram = false, showConsen
   return { page, context, events, collected, googleRequests };
 }
 
+async function setSavedChoice(page, analytics) {
+  await page.evaluate(analytics => {
+    const key = "openclaw.analytics.consent", now = Date.now();
+    const value = JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics, updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() });
+    localStorage.setItem(key, value);
+    dispatchEvent(new StorageEvent("storage", { key, newValue: value }));
+  }, analytics);
+}
+
 test("acquisition, actual copy outcomes, public identifiers and feedback launch stay useful and safe", async t => {
   const { page, context, events, collected } = await openSite(t);
   const view = (await events("page_view"))[0];
@@ -156,8 +165,7 @@ test("custom search counts stable rendered results and selection, never keystrok
 test("async copy and search cannot cross a withdrawn collection interval", async t => {
   const { page, events, collected } = await openSite(t);
   const choose = async allow => {
-    await page.getByRole("button", { name: "Google Analytics choices", exact: true }).click();
-    await page.getByRole("button", { name: allow ? "Allow Google Analytics" : "Decline Google Analytics", exact: true }).click();
+    await setSavedChoice(page, allow ? "granted" : "denied");
   };
   await page.evaluate(() => {
     navigator.clipboard.writeText = () => new Promise(resolve => { window.__finishCopy = resolve; });
@@ -252,13 +260,11 @@ test("navigation performed under the private assistant hold is not replayed on c
 test("regrant after an unmeasured return to the same route starts one current view and rebinds sections", async t => {
   const { page, events } = await openSite(t);
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "section_view" && entry[2].section_id === "install"));
-  await page.getByRole("button", { name: "Google Analytics choices", exact: true }).click();
-  await page.getByRole("button", { name: "Decline Google Analytics", exact: true }).click();
+  await setSavedChoice(page, "denied");
   await page.locator('.doc a[href="/"]').click(); await page.waitForURL(`${origin}/`);
   await page.goBack(); await page.waitForURL("**/guide**");
   assert.equal((await events("page_view")).length, 1);
-  await page.getByRole("button", { name: "Google Analytics choices", exact: true }).click();
-  await page.getByRole("button", { name: "Allow Google Analytics", exact: true }).click();
+  await setSavedChoice(page, "granted");
   assert.equal((await events("page_view")).length, 2);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.waitForFunction(() => window.dataLayer.filter(entry => entry[1] === "section_view" && entry[2].section_id === "install").length === 2);
@@ -304,36 +310,17 @@ for (const privacy of ["gpc", "dnt", "optout"]) test(`${privacy} prevents Google
   assert.equal(googleRequests.length, 0);
 });
 
-test("consent choices remain readable and keyboard accessible in both themes and mobile layouts", async t => {
+test("public pages have no analytics prompts or controls on desktop and mobile", async t => {
   for (const theme of ["light", "dark"]) for (const viewport of [{ width: 1440, height: 900 }, { width: 320, height: 568 }]) {
-    const { page, googleRequests } = await openSite(t, { showConsent: true, theme, viewport });
-    const panel = page.locator("[data-analytics-consent]");
-    await panel.waitFor({ state: "visible" });
+    const { page, context, googleRequests } = await openSite(t, { showConsent: true, theme, viewport });
+    assert.equal(await page.locator("[data-analytics-consent],[data-analytics-choices],[data-analytics-allow],[data-analytics-deny]").count(), 0);
     assert.equal(googleRequests.length, 0);
-    const geometry = await panel.evaluate(panel => {
-      const rect = panel.getBoundingClientRect();
-      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, overflow: document.documentElement.scrollWidth > innerWidth };
-    });
-    assert.ok(geometry.left >= 0 && geometry.right <= viewport.width && geometry.top >= 0 && geometry.bottom <= viewport.height);
-    assert.equal(geometry.overflow, false);
-    const buttons = panel.locator("[data-analytics-allow],[data-analytics-deny]");
-    assert.deepEqual(await buttons.evaluateAll(buttons => buttons.map(button => {
-      const style = getComputedStyle(button);
-      return [style.color, style.backgroundColor, style.borderColor, style.fontWeight].join(";");
-    })), Array(2).fill(await buttons.first().evaluate(button => {
-      const style = getComputedStyle(button);
-      return [style.color, style.backgroundColor, style.borderColor, style.fontWeight].join(";");
-    })));
+    assert.equal(await page.locator(".site-footer-legal").getByRole("link", { name: "OpenClaw Foundation", exact: true }).getAttribute("href"), "https://openclaw.org");
+    assert.equal((await context.cookies()).filter(cookie => cookie.name.startsWith("_ga")).length, 0);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     if (process.env.DOCS_GA4_VISUAL_DIR) {
       fs.mkdirSync(process.env.DOCS_GA4_VISUAL_DIR, { recursive: true });
       await page.screenshot({ path: path.join(process.env.DOCS_GA4_VISUAL_DIR, `${theme}-${viewport.width}.png`) });
     }
-    await panel.getByRole("button", { name: "Close Google Analytics choices" }).click();
-    const launcher = page.getByRole("button", { name: "Google Analytics choices", exact: true });
-    await launcher.focus();
-    await page.keyboard.press("Enter");
-    assert.equal(await page.evaluate(() => document.activeElement.matches("[data-analytics-allow]")), true);
-    await page.keyboard.press("Escape");
-    assert.equal(await page.evaluate(() => document.activeElement.matches("[data-analytics-choices]")), true);
   }
 });

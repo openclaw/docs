@@ -17,7 +17,6 @@ import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
 import { webVitalsAssetName, webVitalsRuntime } from "./web-vitals-runtime.mjs";
-import { analyticsConsentHtml } from "./analytics-consent.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish, copyControlContent } from "./mdx-ish.mjs";
 import { createRenderCache } from "./render-cache.mjs";
@@ -385,7 +384,6 @@ ${pager(prev, next)}
 </div>
 ${communityInvite(page.locale)}
 ${siteFooter(analyticsEligible)}
-${analyticsEligible ? analyticsConsentHtml() : ""}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
@@ -438,7 +436,7 @@ function siteFooter(analyticsEligible = false) {
 </section>
 ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${title}"><h2>${title}</h2>${links.map(([label, href, target]) => `<a href="${escapeAttr(href)}"${target ? previewLinkAttrs(target, label) : ""}>${label}</a>`).join("")}</nav>`).join("")}
 </div>
-<div class="site-footer-legal"><p>Open-source assistant infrastructure.</p><p>© 2026</p><a href="https://openclaw.org">OpenClaw Foundation</a>${analyticsEligible ? '<button type="button" class="oc-action oc-action-ghost" data-analytics-choices aria-expanded="false">Google Analytics choices</button>' : ""}</div>
+<div class="site-footer-legal"><p>Open-source assistant infrastructure.</p><p>© 2026</p><a href="https://openclaw.org">OpenClaw Foundation</a></div>
 </footer>`;
 }
 

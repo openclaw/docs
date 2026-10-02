@@ -9,8 +9,8 @@ export function analyticsConsentHtml() {
 </aside>`;
 }
 
-// Serialized into the browser shell. Geography is supplied by our own edge;
-// language, time zone, client headers, and IP guesses never grant analytics.
+// Serialized into the browser shell. The public renderer supplies no controls;
+// keep persisted-choice validation and lifecycle handling without new grants.
 export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
   if (location.origin !== "https://docs.openclaw.ai" || !document.querySelector(".main[data-analytics-path]")) return;
   const policyVersion = "2026-10-02.v2";
@@ -18,9 +18,8 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
   const lifetime = 180 * 24 * 60 * 60 * 1000;
   const panel = document.querySelector("[data-analytics-consent]");
   const launcher = document.querySelector("[data-analytics-choices]");
-  if (!panel || !launcher) return;
-  const allow = panel.querySelector("[data-analytics-allow]");
-  const deny = panel.querySelector("[data-analytics-deny]");
+  const allow = panel?.querySelector("[data-analytics-allow]");
+  const deny = panel?.querySelector("[data-analytics-deny]");
   let region = "unknown";
   let regionReady = false;
   let storageFailure = false;
@@ -79,11 +78,12 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
   }
   function granted() {
     if (privacySignal() || storageFailure) return false;
-    if (explicit) return explicit.analytics === "granted";
-    if (incompatiblePolicy) return false;
-    return regionReady && region === "notice_opt_out" && noticeShown;
+    // No public notice or choice controls are rendered. Only an existing valid
+    // explicit grant permits collection; geography can never grant it.
+    return explicit?.analytics === "granted";
   }
   function update() {
+    if (panel && launcher) {
     const signal = privacySignal();
     const autoDefault = !signal && !storageFailure && !incompatiblePolicy && !explicit && region === "notice_opt_out";
     const notice = !preferences && autoDefault;
@@ -102,7 +102,8 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
     allow.disabled = signal || storageFailure;
     deny.disabled = storageFailure;
     launcher.setAttribute("aria-expanded", String(!panel.hidden));
-    // Show the initial notice before allowing a region-derived default.
+    }
+    // The public shell permits only a still-valid saved explicit grant.
     const allowed = granted();
     const eligibleFrom = initialDecision && allowed && explicit?.analytics === "granted" && Date.parse(explicit.updated_at) <= performance.timeOrigin ? 0 : performance.now();
     // A cached/departing document can receive a queued storage grant before
@@ -136,6 +137,7 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
       update();
     }
   }
+  if (panel && launcher) {
   launcher.addEventListener("click", () => {
     returnFocus = document.activeElement;
     preferences = true;
@@ -146,6 +148,7 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
   deny.addEventListener("click", () => choose("denied"));
   panel.querySelector("[data-analytics-consent-close]").addEventListener("click", close);
   panel.addEventListener("keydown", event => { if (event.key === "Escape") { event.stopPropagation(); close(); } });
+  }
   addEventListener("storage", event => { if (event.key === storageKey || event.key === null) { readChoice(); update(); } });
   addEventListener("focus", () => { readChoice(); update(); });
   addEventListener("pagehide", event => { if (event.isTrusted) pageHidden = true; }, true);
@@ -163,6 +166,7 @@ export function initDocsAnalyticsConsent(analytics, onChange = () => {}) {
   readChoice();
   storageFailure ||= !canStore();
   update();
+  if (!panel || !launcher) return;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3000);
   fetch("/api/analytics-consent", { credentials: "omit", cache: "no-store", signal: controller.signal })

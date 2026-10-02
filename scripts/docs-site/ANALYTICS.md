@@ -54,18 +54,21 @@ Google automatic user-provided-data collection is off. Google signals and
 ad-personalization signals are also disabled locally. The approved regional
 policy is `2026-10-02.v2`: EEA + GB + CH and AX/GF/GP/MQ/RE/YT/MF (39 codes) require opt-in; other validated countries
 use notice/opt-out; unknown geography remains off without explicit permission.
-The existing Worker classifies trusted `request.cf.country` and returns only the
+The public shell now uses the narrower existing-grant-only rule described below;
+these region classes cannot enable collection. The existing Worker classifies trusted `request.cf.country` and returns only the
 region class from uncached `/api/analytics-consent`. It never uses client-supplied
 country headers or exposes country/IP in the response.
 
-Frozen policy SHA-256: `96bb4b0abc931d856ce14aff0131320e2c8f520d0bb2632037f864fe79bd5e93`. Both client and endpoint require the v2 version. An old-version record is not absence: it stays off until a fresh explicit v2 choice, even in a notice/opt-out region. No-record visits retain regional defaults.
+Frozen policy SHA-256: `96bb4b0abc931d856ce14aff0131320e2c8f520d0bb2632037f864fe79bd5e93`. Both client and endpoint require the v2 version. An old-version record is not absence: it stays off until a fresh explicit v2 choice, even in a notice/opt-out region. Visits without a valid stored grant remain off in every region.
 
-The footer's **Google Analytics choices** control saves a versioned explicit
-choice on this origin for 180 days in `openclaw.analytics.consent`. A region
-default never creates an explicit record. DNT/GPC and explicit denial override
+The public shell no longer renders automatic analytics notices or footer on/off
+controls. Collection now requires an existing, valid explicit grant in
+`openclaw.analytics.consent`; no region can create a new grant. Existing choices
+retain their 180-day expiry and the same validation/lifecycle handling. New visitors
+and expired choices remain off, including notice/opt-out regions. No replacement
+popup or new grant flow is provided. This reduces measurement coverage. DNT/GPC and explicit denial override
 an allow; failed storage, failed/invalid region responses, expired records, and
-unknown regions fail closed. Initial notice appears before a regional default is
-enabled. Late responses cannot override an explicit choice.
+unknown regions fail closed. No automatic regional default is enabled.
 
 Basic Consent Mode holds the SDK until allowed. Global analytics/advertising
 consent starts denied; only analytics storage is granted when allowed. Denial
@@ -111,7 +114,7 @@ as native lifecycle proof.
 ## Two-stage deployment gate
 
 `DOCS_SITE_GA4_ENABLED` must equal `1` at build time to produce analytics page
-metadata or choice controls. The existing R2 workflow reads this repository
+metadata. The existing R2 workflow reads this repository
 variable with a default of `0`; CI explicitly builds an enabled artifact. No
 Actions permission, required check, deployment queue, upload scope, or router
 infrastructure changes are part of this gate.
@@ -128,6 +131,6 @@ infrastructure changes are part of this gate.
    consent/SDK request checks. Coordinate provider ingestion with the Google
    collector owner; transport alone is not ingestion proof.
 
-The browser privacy copy includes the approved withdrawal and configured
-14-month retention addenda. Retention configuration is not a claim that the
+The removed UI previously displayed the approved withdrawal and configured
+14-month retention addenda; retention configuration is unchanged. Retention configuration is not a claim that the
 provider's 24-hour change window has elapsed or that historical data was restored.
