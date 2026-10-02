@@ -12591,6 +12591,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Keep one store owner
   - H3: Incognito worker ownership (P1, inactive)
   - H3: Incognito session facts and authority (P2, inactive)
+  - H3: Incognito reports and closed-turn outbox (P4a, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
