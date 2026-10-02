@@ -1414,7 +1414,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/telegram/mini-app
 - Headings:
-  - H2: Dashboard Mini App
+  - H2: Control UI Mini App
+  - H2: Upgrading from /dashboard
+  - H2: Publish the Mini App
 
 ## channels/telegram/rich-messages.md
 
