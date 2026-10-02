@@ -16,6 +16,14 @@ paths are migration debt, not a pattern to extend. The
 [migration inventory](/reference/database-schemas/worker-access-inventory) separates
 candidate main-thread paths from SQL already executing in workers.
 
+Runtime cache-TTL, bootstrap, prompt-error, and provider replay markers append
+through the existing transcript writer worker. Custom-message appends use the
+same worker and adopt their committed view before notifying observers. Bootstrap
+continuation checks, memory accounting, and delivery-mirror tail selection use
+the existing read worker, with the original snapshot, reset, and read-fence rules.
+Shipped synchronous SDK callbacks and process-held incognito storage retain
+their current owners; durable worker failures never fall back to host SQLite.
+
 Explicit restart-tombstone recovery clones the transcript and changes both session
 identities atomically in the agent writer worker. Source preparation uses worker
 reads, while the Gateway retains current caller authority and invalidates prepared
