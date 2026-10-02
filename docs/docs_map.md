@@ -10885,6 +10885,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
+  - H2: Workspace mutation guards
   - H2: Await session transcript persistence
   - H3: Await extension session changes
   - H3: Await provider replay metadata
