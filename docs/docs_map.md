@@ -5091,6 +5091,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Exec approval policy
   - H2: Channel ownership during an update
   - H2: Sender tool policies
+  - H2: Agent roster migration
   - H2: Channel webhook listeners
   - H2: Talk realtime inheritance
   - H2: ACP agents' model precedence
@@ -12610,7 +12611,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/full-release-validation/continuation
 - Headings:
   - H2: Continue failed child jobs
-  - H3: Record a flake
   - H3: Automatic retries for declared flakes
   - H3: Read publication observations
   - H3: Post-merge continuation proof
