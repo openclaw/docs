@@ -509,7 +509,8 @@ if (!/let tocObserver=null/.test(siteJs)
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
-if (!/class="docs-sections" aria-label="Docs sections"/.test(index)
+const docsSections = DomUtils.findOne((node) => node.attribs?.class === "docs-sections", indexDocument.children);
+if (docsSections?.attribs["aria-label"] !== homeStrings.en.navigation[6]
   || !/class="docs-section current"[^>]*><summary aria-current="true">/.test(index)
   || /class="(?:tabs|mobile-tabs)"/.test(index)) {
   throw new Error("assets: complete vertical docs navigation is missing");
@@ -990,6 +991,9 @@ function assertLocalizedChrome() {
     );
     const text = (node) => DomUtils.textContent(node).trim();
     if (!byClass("home-hero")) throw new Error(`page background: missing on ${rel}`);
+    if (byClass("docs-sections")?.attribs["aria-label"] !== homeStrings[locale].navigation[6]) {
+      throw new Error(`navigation label: ${rel} did not render its locale label`);
+    }
     const toc = byClass("toc");
     const tocSummary = toc && DomUtils.findOne((node) => node.name === "summary", toc.children);
     const tocHeading = toc && DomUtils.findOne((node) => node.name === "h2", toc.children);
