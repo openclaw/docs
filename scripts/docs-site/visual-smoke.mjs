@@ -374,7 +374,7 @@ async function checkHeaderSurface() {
       await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor === "rgba(0, 0, 0, 0)");
     }
     await page.getByRole("link", { name: "Community", exact: true }).first().focus();
-    for (const name of ["GitHub", "X", "Discord", "Reddit", "Language: English", "Toggle theme"]) {
+    for (const name of ["GitHub", "Reddit", "Discord", "X", "Language: English", "Toggle theme"]) {
       await page.keyboard.press("Tab");
       const activeName = await page.evaluate(() => document.activeElement.getAttribute("aria-label"));
       if (activeName !== name) throw new Error(`Header keyboard order: expected ${name}, got ${activeName}`);
@@ -406,7 +406,7 @@ async function checkHeaderSurface() {
             rect.right <= other.left || other.right <= rect.left || rect.bottom <= other.top || other.bottom <= rect.top)),
         };
       }, mobile);
-      if (geometry.names.join(",") !== "GitHub,X,Discord,Reddit" || !geometry.targets || !geometry.bounded || !geometry.clear) {
+      if (geometry.names.join(",") !== "GitHub,Reddit,Discord,X" || !geometry.targets || !geometry.bounded || !geometry.clear) {
         throw new Error(`Social navigation geometry (${width}px): ${JSON.stringify(geometry)}`);
       }
       if (mobile) await page.locator("[data-nav-close]").click();
@@ -1294,7 +1294,7 @@ async function checkMobileKeyboardOverlays(page) {
   await page.waitForFunction(() => document.activeElement?.matches("[data-nav-close]"));
   await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar").getBoundingClientRect().left) < 0.1);
   await page.locator(".sidebar [data-theme-toggle]").focus();
-  for (const name of ["Reddit", "Discord", "X", "GitHub"]) {
+  for (const name of ["X", "Discord", "Reddit", "GitHub"]) {
     await page.keyboard.press("Shift+Tab");
     const activeName = await page.evaluate(() => document.activeElement?.closest(".sidebar-socials")
       && document.activeElement.getAttribute("aria-label"));

@@ -1,9 +1,9 @@
 .docs-layout :is(.docs-section > summary,.docs-section-trigger):has(.release-nav-version) { gap:8px; }
-.docs-layout .release-nav-version { display:inline-flex; align-items:center; gap:5px; flex:none; margin-inline-start:auto; padding:3px 5px; border-radius:5px; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--docs-muted); font:10px/1.3 var(--oc-font-mono); white-space:nowrap; }
+.docs-layout .release-nav-version { display:inline-flex; align-items:center; gap:5px; flex:none; margin-inline-start:auto; padding:3px 5px; border-radius:5px; background:var(--oc-status-success-bg); color:var(--oc-status-success-fg); font:10px/1.3 var(--oc-font-mono); white-space:nowrap; }
 .docs-layout :is(.docs-section > summary,.docs-section-trigger):has(.release-nav-version) > .icon { margin-inline-start:0; }
-.release-nav-version i, .release-entry-badge i, .release-strip-heading > i { display:inline-block; width:5px; height:5px; flex:0 0 5px; border-radius:50%; background:var(--brand); }
+.release-nav-version i, .release-entry-badge i, .release-strip-heading > i { display:inline-block; width:5px; height:5px; flex:0 0 5px; border-radius:50%; background:var(--oc-status-success-fg); }
 .docs-layout .nav-link:has(.release-entry-badge) { display:flex; align-items:center; gap:8px; }
-.release-entry-badge { display:inline-flex; align-items:center; gap:5px; padding:1px 5px; border-radius:4px; color:color-mix(in srgb,var(--brand) 70%,var(--ink)); background:color-mix(in srgb,var(--brand) 9%,transparent); font:500 10px/1.5 var(--oc-font-body); }
+.release-entry-badge { display:inline-flex; align-items:center; gap:5px; padding:1px 5px; border-radius:4px; color:var(--oc-status-success-fg); background:var(--oc-status-success-bg); font:500 10px/1.5 var(--oc-font-body); }
 /* Keep the release announcement a single compact row at every width. */
 .docs-layout .doc .release-strip { position:relative; isolation:isolate; container:release-strip / inline-size; display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:44px; margin:0 0 24px; padding:10px 16px; border:1px solid var(--docs-border); border-radius:var(--oc-radius-lg); background:var(--docs-surface); color:var(--ink); text-decoration:none; box-shadow:var(--docs-surface-shadow); }
 .release-strip-body { position:relative; z-index:1; display:flex; align-items:center; gap:20px; min-width:0; }
