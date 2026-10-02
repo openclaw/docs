@@ -1747,6 +1747,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Package Acceptance
   - H3: Jobs
+  - H3: Installed package tree budget
   - H3: Candidate sources
   - H3: Suite profiles
   - H3: Legacy compatibility windows
