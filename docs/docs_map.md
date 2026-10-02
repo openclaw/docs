@@ -10997,6 +10997,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Exclusive slots
   - H2: Memory embedding adapters
+  - H2: Provider-neutral memory runtime
+  - H3: Compatibility and host integration
+  - H3: Dreaming remains separate
   - H2: Bundled Memory Core workers
 
 ## plugins/sdk-overview/tools-and-commands.md
