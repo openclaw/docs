@@ -303,6 +303,10 @@ reports its size and applied budget. Snapshot time does not consume the separate
 runtime validation budget. Each validation process receives a fresh allowance
 that scales with measured database and plugin bytes. An explicit per-step
 timeout replaces that derived allowance.
+While retaining its own runtime, the updater reports completed file operations
+directly instead of repeatedly scanning the growing copy. If those operations
+stop completing, isolated filesystem probes still track a slow individual copy.
+This improvement applies when the installed updater contains the fix.
 Automatic and chat updates leave that runtime allowance derived from state.
 Their request and recovery watchdogs do not become update validation deadlines.
 Startup and readiness responses share their own allowance, including reading
