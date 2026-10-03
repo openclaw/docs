@@ -10885,6 +10885,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Watched-session harness context
   - H3: Harness attempt result migration
   - H3: Awaited session persistence
+  - H3: Native session generation authority
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
   - H3: Memory read missing results
