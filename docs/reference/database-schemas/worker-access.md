@@ -750,6 +750,17 @@ authorizing inverse file changes or replay. Provider shutdown joins handoff befo
 revoking the original environment. Schemas, retention, durability, and update
 behavior are unchanged.
 
+Placement transitions, drain/reconcile, and terminal-result failures also use
+that placement writer. The worker rereads the exact state, generation, environment,
+epoch, and claim before mutation; reclaim's claim-free drain remains a
+transaction-local predicate. Activation and environment demand still commit
+atomically, and their acknowledged facts publish through the existing owners
+before observers. Lifecycle barriers and terminal recovery join accepted writes.
+Unknown outcomes retain recovery custody without replaying a mutation or
+authorizing inverse filesystem effects. Native prepared-environment binding and
+placement moves remain separate work. Schemas, stored bytes, retention, durability,
+released SDK contracts, and update behavior are unchanged.
+
 Workspace reconciliation journal reads use the shared-state reader, and journal
 creation, cleanup, orphan pruning, and manifest acceptance use the existing
 shared-state writer. Callers await durable journal creation before applying files
