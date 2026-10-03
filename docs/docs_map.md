@@ -3078,6 +3078,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw update
   - H2: Usage
+  - H2: Immutable release installations
   - H2: Candidate-owned admission
   - H2: Automation and SSH
   - H2: Native service commands during updates
@@ -12557,6 +12558,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Cloud repository workspaces
   - H2: Sandbox runtime reservations
   - H2: Package-publication recovery receipt
+  - H2: Immutable installation preparation
 
 ## reference/database-schemas/personal-data.md
 
@@ -12896,6 +12898,29 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Two persistence layers
   - H2: On-disk locations
+
+## reference/team-immutable-update-design.md
+
+- Route: /reference/team-immutable-update-design
+- Headings:
+  - H1: Team immutable update design
+  - H2: Slice 1 implementation status
+  - H2: Problem and performance boundary
+  - H2: Existing owners on main
+  - H3: Installation, preparation, and activation
+  - H3: Lifecycle, migrations, recovery, and reporting
+  - H3: Controller disposition
+  - H2: Proposed contract
+  - H3: Detect and adopt an immutable installation
+  - H3: Prepare everything possible while the previous Gateway serves
+  - H3: Drain, migrate when required, and activate
+  - H3: Keep recovery independent of the database being recovered
+  - H3: Give Doctor budgets that describe the work
+  - H3: Service definition
+  - H2: Migrate the current controller without two writers
+  - H2: Proof matrix and rollout slices
+  - H3: Three proposed PRs
+  - H2: Review decisions and evidence gaps
 
 ## reference/templates/AGENTS.dev.md
 
