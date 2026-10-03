@@ -5104,6 +5104,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Channel ownership during an update
   - H2: Sender tool policies
   - H2: Agent roster migration
+  - H2: Channel private-network opt-ins
   - H2: Channel webhook listeners
   - H2: Talk realtime inheritance
   - H2: ACP agents' model precedence
