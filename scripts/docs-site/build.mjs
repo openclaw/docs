@@ -422,7 +422,7 @@ function siteFooter(analyticsEligible = false) {
   ];
   const groups = [
     ["Product", [["Install", "https://openclaw.ai/install"], ["Showcase", "https://openclaw.ai/showcase"], ["Integrations", "https://openclaw.ai/integrations"], ["Docs", pageUrl(home), home]]],
-    ["Resources", [["Blog", "https://openclaw.ai/blog"], ["Podcast", "https://openclaw.ai/podcast"], ["Press", "https://openclaw.ai/press"], ["Shoutouts", "https://openclaw.ai/shoutouts"], ["Releases", "https://github.com/openclaw/openclaw/releases"]]],
+    ["Resources", [["Blog", "https://openclaw.ai/blog"], ["Podcast", "https://openclaw.ai/podcast"], ["Press", "https://openclaw.ai/press"], ["Shoutouts", "https://openclaw.ai/shoutouts"], ["Releases", "https://github.com/openclaw/openclaw/releases"], ["Privacy policy", "https://openclaw.ai/privacy"]]],
     ["Project", [["Foundation", "https://openclaw.org"], ["Security", "https://openclaw.ai/security"], ["GitHub", "https://github.com/openclaw/openclaw"]]],
   ];
   return `<footer class="site-footer">

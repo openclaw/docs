@@ -363,6 +363,18 @@ const foundationLink = footer && DomUtils.findOne(
 if (!foundationLink) {
   throw new Error("assets: site footer with Foundation attribution is missing");
 }
+const footerResources = DomUtils.findOne(
+  (node) => node.name === "nav" && node.attribs["aria-label"] === "Resources",
+  footer.children,
+);
+const privacyPolicyLink = footerResources && DomUtils.findOne(
+  (node) => node.name === "a" && node.attribs.href === "https://openclaw.ai/privacy"
+    && DomUtils.textContent(node).trim() === "Privacy policy",
+  footerResources.children,
+);
+if (!privacyPolicyLink) {
+  throw new Error("footer Resources must link to the shared Privacy policy");
+}
 const footerSocialGroup = DomUtils.findOne((node) => node.attribs?.class === "site-footer-socials", footer.children);
 const footerSocialLinks = DomUtils.findAll((node) => node.name === "a", footerSocialGroup?.children ?? []);
 const expectedFooterSocials = [
