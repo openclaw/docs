@@ -5099,6 +5099,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Cron ownership before roster migration
   - H2: Legacy cron delivery settings
   - H2: Exec approval policy
+  - H2: Claw provenance schema
   - H2: Channel account routing during an update
   - H2: Channel ownership during an update
   - H2: Sender tool policies
