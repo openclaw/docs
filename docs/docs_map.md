@@ -11531,7 +11531,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Install plugin
   - H2: Getting started
-  - H2: Inkling
+  - H2: Default model
   - H2: Bundled fallback catalog
   - H2: Manual config
   - H2: Related
