@@ -14341,7 +14341,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/code-mode/guest-api
 - Headings:
   - H2: Guest runtime API
-  - H3: Reading paginated file data
+  - H2: Session store
+  - H2: Reading paginated file data
 
 ## tools/code-mode/internals.md
 
@@ -14352,6 +14353,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Terms
   - H2: Nested tool execution
   - H2: Run and snapshot lifecycle
+  - H3: Session-store persistence
   - H2: QuickJS-WASI runtime
   - H2: Node runtime
   - H2: TypeScript
