@@ -11019,6 +11019,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Exclusive slots
   - H2: Memory embedding adapters
+  - H2: Pre-compaction memory flush
+  - H3: Audience and flush identity
+  - H3: Completion evidence
   - H2: Provider-neutral memory runtime
   - H3: Host consumers
   - H3: Memory audience
