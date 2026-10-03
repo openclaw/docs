@@ -2463,6 +2463,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: MCP Apps
   - H2: Plugin extensions
+  - H2: Tool approvals
   - H2: Behavior and security boundaries
 
 ## cli/mcp/control-ui.md
