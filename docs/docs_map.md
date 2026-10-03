@@ -15474,6 +15474,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Markdown tables
   - H3: Mermaid diagrams
   - H2: Hosted embeds
+  - H3: YouTube videos
   - H2: Chat transcript layout
   - H2: Run transcripts
   - H2: Conversations stopped for review
