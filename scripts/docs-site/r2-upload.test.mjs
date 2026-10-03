@@ -96,9 +96,9 @@ test("prepared artifact paths preserve uploaded bytes and reuse old manifest obj
   write(f.root, "dist/docs-r2/removed.html", "old artifact");
   const prepared = f.prepare();
   assert.deepEqual(prepared.entries.map((entry) => entry.key), [
-    "assets/image.png", "guide.v2", "guide.v2/index.html", "index.html",
+    "assets/image.png", "guide.v2", "index.html",
   ]);
-  assert.equal(prepared.objectCount, 4);
+  assert.equal(prepared.objectCount, 3);
   for (const entry of prepared.entries) {
     const expected = Buffer.from(files[entry.sourceKey]);
     assert.deepEqual(fs.readFileSync(path.join(f.root, entry.file)), expected);
@@ -109,6 +109,18 @@ test("prepared artifact paths preserve uploaded bytes and reuse old manifest obj
   const alias = prepared.entries.find((entry) => entry.key === "guide.v2");
   assert.equal(alias.contentType, "text/html; charset=utf-8");
   assert.equal(alias.cacheControl, "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800");
+
+  const legacy = [...prepared.entries, { ...alias, key: alias.sourceKey }];
+  const retirement = dryUpload(f.root, prepared.entries, legacy);
+  assert.equal(retirement.status, 0, retirement.stderr);
+  assert.deepEqual(puts(retirement.stdout), [], "identical canonical objects need no rewrite");
+  assert.deepEqual([...retirement.stdout.matchAll(/^r2 dry-run delete: (\S+)$/gm)].map(match => match[1]), ["guide.v2/index.html"]);
+  assert.ok(fs.existsSync(path.join(f.root, alias.file)), "the nested preview file stays on disk");
+  const partial = dryUpload(f.root, prepared.entries, legacy, { R2_UPLOAD_SCOPE: "shell" });
+  assert.equal(partial.status, 0, partial.stderr);
+  assert.doesNotMatch(partial.stdout, /^r2 dry-run delete:/m, "partial uploads cannot retire legacy keys");
+  const partialManifest = JSON.parse(fs.readFileSync(path.join(f.root, "dist/docs-r2-manifest.shell.merged.json"), "utf8"));
+  assert.ok(partialManifest.entries.some(entry => entry.key === alias.sourceKey));
 
   // A previous publication can name different local files; only object bytes
   // and HTTP metadata determine whether an upload is necessary.
@@ -203,11 +215,11 @@ test("translation page/locale scopes own affected aliases and compatibility pref
   });
   const page = scoped("page");
   assert.equal(page.status, 0, page.stderr);
-  const expected = ["de/target", "de/target/index.html", "de/target.md"];
+  const expected = ["de/target", "de/target.md"];
   for (const prefix of ["", "docs/", "manual/"]) {
     for (const alias of ["de/old", "explicit", "de/explicit", "fr/explicit"]) {
       if (prefix === "" && alias === "de/old") continue;
-      expected.push(`${prefix}${alias}`, `${prefix}${alias}/index.html`);
+      expected.push(`${prefix}${alias}`);
     }
   }
   assert.deepEqual(puts(page.stdout), expected.sort());

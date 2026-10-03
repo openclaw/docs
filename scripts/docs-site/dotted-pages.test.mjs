@@ -33,12 +33,14 @@ async function servesHtml(p, route, method = "GET") {
   assert.equal(response.status, 200, route);
   assert.equal(response.headers.get("Content-Type"), "text/html; charset=utf-8", route);
   assert.equal(response.headers.get("Location"), null);
-  assert.equal(response.headers.get("Vary"), "Accept");
-  assert.equal(response.headers.get("X-OpenClaw-Docs-Cache"), "MISS");
   const pathname = new URL(route, "https://docs.openclaw.ai").pathname;
-  assert.equal(response.headers.get("Link"), `<${pathname}.md>; rel="alternate"; type="text/markdown"`);
+  const explicitIndex = pathname.endsWith("/index.html");
+  const canonical = explicitIndex ? pathname.slice(0, -"/index.html".length) : pathname;
+  assert.equal(response.headers.get("Vary"), explicitIndex ? null : "Accept");
+  assert.equal(response.headers.get("X-OpenClaw-Docs-Cache"), "MISS");
+  assert.equal(response.headers.get("Link"), `<${canonical}.md>; rel="alternate"; type="text/markdown"`);
   checkPolicy(response, false);
-  const entry = p.entries.get(decodeURIComponent(pathname.slice(1)));
+  const entry = p.entries.get(decodeURIComponent(canonical.slice(1)));
   assert.equal(await response.text(), method === "HEAD" ? "" : fs.readFileSync(path.join(p.root, entry.file), "utf8"));
 }
 
@@ -63,12 +65,14 @@ for (const base of ["", "/manual"]) {
         ]) {
           const route = `${prefix}${locale}${alias}`;
           routes.push([route, target]);
-          for (const suffix of ["", "/index.html"]) {
-            const entry = p.entries.get(route.slice(1) + suffix);
+          {
+            const entry = p.entries.get(route.slice(1));
             assert.equal(entry.contentType, "text/html; charset=utf-8");
             assert.equal(entry.cacheControl, "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800");
             assert.equal(entry.sourceKey, `${route.slice(1)}/index.html`);
             assert.equal(entry.customMetadata[targetField], target + (alias === "/guide.config" ? "?destination=1#part" : ""));
+            assert.equal(p.entries.has(`${route.slice(1)}/index.html`), false);
+            assert.ok(fs.existsSync(path.join(p.root, entry.file)), "physical preview source remains");
           }
         }
       }
@@ -105,7 +109,8 @@ for (const base of ["", "/manual"]) {
     assert.ok(aliasHtml.includes(`location.replace(${JSON.stringify(`${base}/release.v2?destination=1#part`)})`));
     assert.equal(p.entries.get("collision.v2").customMetadata, undefined);
     assert.equal(p.entries.get("release.v2").contentType, "text/html; charset=utf-8");
-    assert.equal(p.entries.get("release.v2/index.html").contentType, "text/html; charset=utf-8");
+    assert.equal(p.entries.has("release.v2/index.html"), false);
+    for (const method of ["GET", "HEAD"]) await servesHtml(p, "/release.v2/index.html", method);
     await servesMarkdown(p, "/de/index.md", "/de/index.md");
     assert.equal(p.entries.has("de.md"), false);
     if (base) assert.equal((await p.request(`${base}/release.v2`, { accept: "text/markdown" })).status, 404);
