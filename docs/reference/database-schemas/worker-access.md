@@ -327,8 +327,20 @@ observers, then identity and message-completion callbacks settle within the same
 physical writer FIFO. Lost replies reconcile through the existing entry-patch
 transfer and native COMMIT receipt; uncertain outcomes never replay. Opaque
 released SDK callbacks and dependent callback batches retain their synchronous
-transaction visibility, and process-held incognito retains its existing owner. Reset remains a separate
-cutover. This changes no schema, durability, retention, or update behavior.
+transaction visibility, and process-held incognito retains its existing owner.
+
+Single-entry durable resets use the same executor and receipt owner. The host
+builds the replacement once outside the SQL transaction; the worker rereads the
+selected rows, appends the reset boundary, clears generation-bound collaboration,
+and writes the entry in one synchronous transaction. Current caller grants run
+at transaction and commit admission. Committed progress and identity notifications
+precede the reset callback, and accepted callbacks settle inside the physical
+writer FIFO. Lost replies use the acknowledged candidate without repeating the
+builder or SQL; uncertain outcomes remain fenced. Bundled reply initialization
+uses a typed upsert descriptor while its projection and opaque transaction
+callbacks retain their existing owner. Native-binding settlement and incognito
+activation remain separate cutovers. These changes require no schema, durability,
+retention, configuration, or update migration.
 
 Channel setup awaits a fresh policy read after the agent-selection prompt.
 Deferred plugin migration rows are read by the shared-state worker, and setup
