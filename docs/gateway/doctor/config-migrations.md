@@ -176,6 +176,14 @@ of stripping these settings or replacing them with a backup. For an older instal
 [upgrade through `2026.9.5`](/install/updating#upgrading-very-old-versions)
 and run its Doctor migrations before installing the latest version.
 
+OAuth credential sidecars under `credentials/auth-profiles/` are retired. Their
+last writer shipped in `2026.5.16-beta.3` on May 16, 2026; `2026.5.16-beta.4`
+removed that writer. Doctor detects these files without reading credentials or
+accessing encryption keys. Upgrade through `2026.9.7` and run
+`openclaw doctor --fix` on the original host before retrying. The supported
+`auth.json`, `auth-profiles.json`, SQLite credential, and migration-recovery
+contracts remain unchanged.
+
 ## Cron ownership before roster migration
 
 Before retiring a legacy agent roster's default marker, Doctor pins ownerless
