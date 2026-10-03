@@ -6553,6 +6553,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Network-isolated local E2E
   - H3: E2E: OpenShell backend smoke
   - H3: Live (real providers + real models)
+  - H3: Advisory Bun release checks
   - H2: Which suite should I run?
   - H2: Live (network-touching) tests
   - H2: Docs sanity
