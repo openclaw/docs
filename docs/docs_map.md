@@ -5634,6 +5634,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Models and usage
   - H2: Memory
   - H2: Channels and login helpers
+  - H3: Channel DM pairing
   - H2: Plugin management
   - H3: Catalog detail and client confirmation
   - H2: Messaging and logs
@@ -5664,6 +5665,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Versioning
   - H3: Client constants
+  - H2: Local state owner routing
+  - H3: Refusals and uncertain outcomes
+  - H3: Mixed versions and retained boundaries
 
 ## gateway/remote.md
 
