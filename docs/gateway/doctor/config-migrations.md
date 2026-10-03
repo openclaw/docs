@@ -43,6 +43,13 @@ silently discard persisted data.
 Legacy normalization belongs to Doctor and migration owners, with the existing
 backup and verification flow. Runtime readers consume canonical state.
 
+Unreleased per-agent SQLite session layouts below schema 8 and their pre-landing
+transcript search caches are retired. Doctor refuses those layouts without
+repairing their tables. Shipped schema-1
+memory/auth/cache databases remain supported; see [agent schema
+history](/reference/database-schemas/agent-schema-history) for the supported
+layouts and recovery route.
+
 Old `openclaw.extension.json` npm declaration stubs are ignored by discovery and
 Doctor. They are not plugin manifests, and their files remain unchanged. Reinstall
 the package with `openclaw plugins install npm:<package>` and update any explicit
