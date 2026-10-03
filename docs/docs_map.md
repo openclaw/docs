@@ -12919,7 +12919,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/team-immutable-update-design
 - Headings:
   - H1: Team immutable update design
-  - H2: Slice 1 implementation status
+  - H2: Implementation status
   - H2: Problem and performance boundary
   - H2: Existing owners on main
   - H3: Installation, preparation, and activation
