@@ -43,6 +43,10 @@ for (const entry of entries) {
 const manifest = {
   version: 1,
   generatedAt: new Date().toISOString(),
+  // Build provenance belongs to the publication catalog, not every HTML page.
+  // A partial upload can retain older objects; their individual hashes remain
+  // authoritative. This is the commit that produced the incoming build.
+  buildCommit: /^[a-f0-9]{40}$/i.test(process.env.GITHUB_SHA ?? "") ? process.env.GITHUB_SHA : null,
   sourceDir: "dist/docs-site",
   outputDir: "dist/docs-site",
   objectCount: entries.length,

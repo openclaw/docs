@@ -164,6 +164,19 @@ enabled here: retaining an old output directory without an exact current-file
 inventory would also retain obsolete search fragments. Publication order, search
 coverage and old-object deletion remain unchanged.
 
+Content-only commits do not stamp their Git SHA into every HTML page. Analytics
+`release` is `js-<12 hex>` from the complete emitted JavaScript before its identity
+is prepended, including serialized analytics/config and hashed lazy-module paths.
+It identifies the executing runtime even when PJAX loads newer page content.
+During the first rollout, a tab still running the previous attribute-based
+runtime falls back to `local` after PJAX loads HTML without that attribute; this
+means unknown provenance, not the new runtime's identity. No reload is forced.
+The final `.openclaw-docs-r2-manifest.json` records the full incoming `buildCommit`
+(or null outside a GitHub build) and each object's hashes.
+A partial publication may retain older objects; the incoming build commit does
+not relabel those bytes. The search fallback JSON is also content-stable: it has
+no unused generation timestamp. Pagefind still rebuilds as described above.
+
 ### Router deployment
 
 1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.

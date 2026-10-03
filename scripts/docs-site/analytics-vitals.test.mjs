@@ -22,7 +22,7 @@ function harness({ delayed = false, withEvents = false } = {}) {
     loadVitals: () => { loads++; return delayed ? pending : Promise.resolve(library); },
   };
   sandbox.window = sandbox;
-  vm.runInNewContext(`globalThis.analytics=(${createDocsAnalytics.toString()})(loadVitals);`, sandbox);
+  vm.runInNewContext(`globalThis.analytics=(${createDocsAnalytics.toString()})(loadVitals, "js-0123456789ab");`, sandbox);
   if (withEvents) vm.runInNewContext(`globalThis.telemetry=(${createDocsAnalyticsEvents.toString()})(analytics);`, sandbox);
   const vitals = () => JSON.parse(JSON.stringify((sandbox.dataLayer || []).filter(entry => entry[0] === "event" && entry[1] === "web_vital").map(entry => entry[2])));
   const report = (name, id) => callbacks[name]?.({ name, id, value: name === "CLS" ? 0.04 : 100, rating: "good", navigationType: "navigate", entries: [{ startTime: 1500 }] });
@@ -35,14 +35,19 @@ test("allowed document vitals keep typed values and their original public docume
   await turn();
   h.report("LCP", "first"); h.report("LCP", "first");
   h.sandbox.location.pathname = "/next"; h.main.dataset.analyticsPath = "/next";
+  h.main.dataset.analyticsRelease = "a-newer-html-deployment";
   h.analytics.pageView();
   h.report("INP", "second"); h.report("CLS", "third");
   assert.equal(h.vitals().length, 3);
   for (const metric of h.vitals()) {
     assert.equal(metric.page_location, "https://docs.openclaw.ai/");
+    assert.equal(metric.release, "js-0123456789ab", "PJAX content cannot relabel the executing runtime");
     assert.equal(["lcp_ms", "inp_ms", "cls_score"].filter(key => Object.hasOwn(metric, key)).length, 1);
     assert.equal(metric.metric_value, undefined);
   }
+  const pageViews = h.sandbox.dataLayer.filter(entry => entry[0] === "event" && entry[1] === "page_view");
+  assert.equal(pageViews.length, 2);
+  assert.ok(pageViews.every(entry => entry[2].release === "js-0123456789ab"));
 });
 
 for (const boundary of ["private", "history", "denial"]) test(`${boundary} permanently invalidates document metrics after public recovery`, async () => {

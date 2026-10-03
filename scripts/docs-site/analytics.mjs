@@ -1,5 +1,5 @@
 // Serialized into the browser shell. All page identity comes from the renderer.
-export function createDocsAnalytics(loadVitals) {
+export function createDocsAnalytics(loadVitals, runtimeRelease = "local") {
   const origin = "https://docs.openclaw.ai";
   const measurementId = "G-3SK7X2YLSJ";
   const listeners = [];
@@ -26,7 +26,7 @@ export function createDocsAnalytics(loadVitals) {
     const main = document.querySelector(".main[data-analytics-path]");
     const path = main?.dataset.analyticsPath;
     if (!path || !main.dataset.analyticsTitle || path !== (location.pathname.replace(/\/+$/, "") || "/")) return null;
-    return { main, path, title: main.dataset.analyticsTitle, release: main.dataset.analyticsRelease || "local" };
+    return { main, path, title: main.dataset.analyticsTitle, release: runtimeRelease };
   }
   function suspend() {
     collectionEpoch++;

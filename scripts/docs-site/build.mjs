@@ -361,7 +361,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 ${siteHeader(page)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
-<div class="main"${analyticsEligible ? ` data-analytics-path="${escapeAttr(pageRoute(page))}" data-analytics-title="${escapeAttr(title)}" data-analytics-sections="${escapeAttr(JSON.stringify(toc.map(item => item.id)))}" data-analytics-release="${/^[a-f0-9]{40}$/i.test(process.env.GITHUB_SHA ?? "") ? process.env.GITHUB_SHA.slice(0, 12) : "local"}"` : ""}>
+<div class="main"${analyticsEligible ? ` data-analytics-path="${escapeAttr(pageRoute(page))}" data-analytics-title="${escapeAttr(title)}" data-analytics-sections="${escapeAttr(JSON.stringify(toc.map(item => item.id)))}"` : ""}>
 ${homeHeroArt}
 <div class="page-intro"></div>
 ${tocHtml(toc, page.locale)}

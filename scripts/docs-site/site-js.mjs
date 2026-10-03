@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import { initSidebarLevels } from "./sidebar-levels.mjs";
 import { mountHomeHero } from "./home-hero.mjs";
 import { createHomeGlimm } from "./home-glimm.mjs";
@@ -13,12 +14,12 @@ const heroRuntime = fs.readFileSync(new URL("./hero-art.mjs", import.meta.url), 
 import { resolveDocsFragment } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 
 export function siteJs() {
-  return `
+  const source = `
 ${heroRuntime}
 ${initSidebarLevels.toString()}
 ${mountHomeHero.toString()}
 ${createHomeGlimm.toString()}
-const docsAnalytics=(${createDocsAnalytics.toString()})(()=>import(withBase(${JSON.stringify("/assets/" + webVitalsAssetName)})));
+const docsAnalytics=(${createDocsAnalytics.toString()})(()=>import(withBase(${JSON.stringify("/assets/" + webVitalsAssetName)})),docsRuntimeRelease);
 const docsTelemetry=(${createDocsAnalyticsEvents.toString()})(docsAnalytics);
 docsAnalytics.pageView();
 queueMicrotask(()=>(${initDocsAnalyticsConsent.toString()})(docsAnalytics,()=>{try{if(docsAnalytics.publicPage())currentDocKey=location.pathname+location.search;syncCommunityInvite()}catch{}}));
@@ -399,4 +400,9 @@ moltySearch?.addEventListener("click",()=>askMoltyFromSearch());
 
 document.addEventListener("click",e=>{const suggestion=e.target.closest("[data-search-suggestion]");if(!suggestion||!input)return;input.value=suggestion.dataset.searchSuggestion||"";input.focus();scheduleSearch(true)});
 `;
+  // Hash the complete emitted runtime before adding its identity, avoiding a
+  // self-referential hash. Serialized analytics/config and hashed lazy module
+  // paths participate; a cached runtime keeps its own identity across PJAX.
+  const release = "js-" + createHash("sha256").update(source).digest("hex").slice(0, 12);
+  return `const docsRuntimeRelease=${JSON.stringify(release)};\n${source}`;
 }

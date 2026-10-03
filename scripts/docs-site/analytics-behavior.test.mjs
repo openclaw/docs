@@ -69,7 +69,9 @@ async function openSite(t, { privacy, clock = false, diagram = false, showConsen
   await page.goto(`${origin}/guide?utm_source=chatgpt&utm_medium=referral&utm_campaign=docs_launch#intro`, { referer: "https://chatgpt.com/c/PRIVATE_REFERRER_VALUE?key=example" });
   await page.waitForFunction(() => document.querySelector(".page-feedback")?.dataset.feedbackReady === "true");
   const events = name => page.evaluate(name => (window.dataLayer || []).filter(entry => entry[0] === "event" && (!name || entry[1] === name)).map(entry => ({ name: entry[1], ...entry[2] })), name);
-  return { page, context, events, collected, googleRequests };
+  const runtimeRelease = /const docsRuntimeRelease="(js-[a-f0-9]{12})";/.exec(fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8"))?.[1];
+  assert.ok(runtimeRelease);
+  return { page, context, events, collected, googleRequests, runtimeRelease };
 }
 
 async function setSavedChoice(page, analytics) {
@@ -82,11 +84,11 @@ async function setSavedChoice(page, analytics) {
 }
 
 test("acquisition, actual copy outcomes, public identifiers and feedback launch stay useful and safe", async t => {
-  const { page, context, events, collected } = await openSite(t);
+  const { page, context, events, collected, runtimeRelease } = await openSite(t);
   const view = (await events("page_view"))[0];
   assert.equal(view.page_location, `${origin}/guide?utm_source=chatgpt&utm_medium=referral&utm_campaign=docs_launch`);
   assert.equal(view.page_referrer, "https://chatgpt.com/");
-  assert.equal(view.release, "1234567890ab");
+  assert.equal(view.release, runtimeRelease);
   await page.locator("[data-code-copy]").click();
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "copy_action"));
   await page.evaluate(() => { window.__copyFails = true; });
@@ -262,9 +264,25 @@ test("regrant after an unmeasured return to the same route starts one current vi
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "section_view" && entry[2].section_id === "install"));
   await setSavedChoice(page, "denied");
   await page.locator('.doc a[href="/"]').click(); await page.waitForURL(`${origin}/`);
-  await page.goBack(); await page.waitForURL("**/guide**");
-  assert.equal((await events("page_view")).length, 1);
-  await setSavedChoice(page, "granted");
+  await page.locator('.main[data-analytics-path="/"]').waitFor();
+  // A history URL change precedes the asynchronous PJAX DOM commit. Hold that
+  // response to exercise the boundary instead of racing it on a fast runner.
+  let releaseReturn;
+  const heldReturn = new Promise(resolve => { releaseReturn = resolve; });
+  let returnRequested;
+  const requestStarted = new Promise(resolve => { returnRequested = resolve; });
+  await page.route(`${origin}/guide**`, async route => {
+    returnRequested(); await heldReturn; await route.fallback();
+  });
+  try {
+    await page.goBack(); await page.waitForURL("**/guide**"); await requestStarted;
+    assert.equal(await page.locator(".main").getAttribute("data-analytics-path"), "/");
+    assert.equal((await events("page_view")).length, 1);
+    await setSavedChoice(page, "granted");
+    assert.equal((await events("page_view")).length, 1, "an uncommitted URL cannot start a public view");
+  } finally { releaseReturn(); }
+  await page.locator('.main[data-analytics-path="/guide"]').waitFor();
+  await page.waitForFunction(() => window.dataLayer.filter(entry => entry[1] === "page_view").length === 2);
   assert.equal((await events("page_view")).length, 2);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.waitForFunction(() => window.dataLayer.filter(entry => entry[1] === "section_view" && entry[2].section_id === "install").length === 2);
