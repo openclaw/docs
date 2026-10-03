@@ -13480,6 +13480,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other Bug Fixes
   - H2: Maintainer and Internal Changes
 
+## releases/2026.9.8.md
+
+- Route: /releases/2026.9.8
+- Headings:
+  - H1: v2026.9.8
+  - H2: Web UI
+  - H2: Updates and Maintenance
+  - H2: Messaging
+  - H2: Skills
+  - H2: Models and Providers
+  - H2: Browser and Computer Use
+  - H2: Security and Privacy
+  - H2: Other Bug Fixes
+  - H2: Maintainer and Internal Changes
+
 ## releases/index.md
 
 - Route: /releases
