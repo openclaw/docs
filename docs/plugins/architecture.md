@@ -249,6 +249,14 @@ directory snapshot per admitted identity, preserving old binary and companion
 bytes through in-place edits. Files in this namespace are prepared at admission;
 module execution remains on demand. Registrations share admission facts without
 sharing their runtime authority.
+Managed npm plugins support capture storage on another filesystem, including a
+`tmpfs` mount, and npm roots reached through symlinks. Retained native
+directories validate the admitting plugin's OpenClaw peer against the selected
+host's canonical package root. A hoisted native dependency does not need its own
+host link, but any host it resolves must match. A mismatch names the peer path,
+resolved target, and selected host; run `openclaw doctor --fix` with that host,
+then reload the affected plugin. The loader records the failure for that plugin
+and continues loading unrelated plugins.
 Private Doctor inspections keep their native admission facts separate from the
 operator's state. Their temporary captures never become deferred writes to the
 installed index after inspection ends; ordinary deferred writes retain their
