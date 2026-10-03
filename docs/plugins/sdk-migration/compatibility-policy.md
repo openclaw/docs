@@ -260,6 +260,17 @@ sources (`ENOENT`) and values the plugin parser rejects with `null`. Other read
 errors and invalid JSON reach Doctor's detection or migration warnings; the
 source remains untouched so the operator can fix it and retry.
 
+For a format outside the [supported upgrade window](/gateway/doctor/config-migrations#retention-policy),
+use `defineRetiredPluginStateMigration({ id, label, intermediateVersion, findSources })`
+from the same facade. The plugin supplies absolute candidate paths or immediate
+directory selections `{ directory, prefix?, suffix }`; the helper checks existence
+without parsing or changing source bytes. Missing paths are ignored; other read
+errors remain failures. Doctor reports a refusal naming the intermediate release
+and retained files. Supply `recoveryInstructions` when the bridge requires an
+owner-specific step beyond Doctor. Its `assertSupportedState(input, sources?)` operation applies
+the same check at runtime admission; a caller with an already selected file may
+pass that path explicitly. Keep account and workspace discovery with the plugin.
+
 Use `phase: "after-session-repair"` when a migration needs canonical session
 ownership evidence. Ordinary Doctor detects these migrations; `--fix` applies
 them after session repair under SQLite maintenance ownership. The context
