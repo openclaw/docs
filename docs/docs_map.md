@@ -4004,6 +4004,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/qa-e2e-automation/extending-the-stack
 - Headings:
   - H2: Repo-backed seeds
+  - H3: Native tool discovery proof
   - H2: Provider mock lanes
   - H2: Transport adapters
   - H3: Adapter shutdown and failure hooks
