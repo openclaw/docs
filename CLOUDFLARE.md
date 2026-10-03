@@ -54,8 +54,9 @@ Cloudflare `request.cf.country`; browser-supplied geography headers are ignored.
 No Google credentials or visitor geography belong in site artifacts.
 
 See [the event, privacy, consent, and verification contract](scripts/docs-site/ANALYTICS.md).
-The shared regional policy governs a Basic Consent Mode gate and persistent
-Google Analytics choices. Enhanced Measurement remains enabled; automatic
+Eligible public production visits start Google Analytics automatically, subject
+to browser DNT/GPC and public-page safety. Startup does not consult old saved
+choices or the geography endpoint; no analytics choice UI is rendered. Enhanced Measurement remains enabled; automatic
 history pageviews are suppressed because the docs shell owns initial/PJAX views.
 User-provided data and advertising features stay off. Existing server traffic
 counts remain separate from these controls.
@@ -64,7 +65,7 @@ Run `node --test scripts/docs-site/analytics*.test.mjs workers/analytics-consent
 The optional `DOCS_GA4_SDK_PATH` points to a coordinator-approved public SDK file;
 fixtures intercept every request without forwarding collection. Browser transport
 is not provider ingestion. Production activation requires the coordinated release
-GO after hosting, consent, actual-SDK, and repository checks.
+GO after the exact policy/diff, focused SDK, and repository checks.
 
 ## Required Cloudflare Access
 

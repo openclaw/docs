@@ -3,7 +3,6 @@ import fs from "node:fs";
 import { before, after, test } from "node:test";
 import { chromium } from "playwright";
 import { siteJs } from "./site-js.mjs";
-import { analyticsConsentHtml } from "./analytics-consent.mjs";
 import { webVitalsAssetName, webVitalsRuntime } from "./web-vitals-runtime.mjs";
 
 const origin = "https://docs.openclaw.ai";
@@ -18,20 +17,22 @@ before(async () => {
 after(async () => { await browser?.close(); });
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function fixture(t, initialConsent = "granted") {
+async function fixture(t, { choice, privacy } = {}) {
   const context = await browser.newContext({ serviceWorkers: "block" });
   context.setDefaultTimeout(10000);
   t.after(() => context.close());
   const events = [], rejected = [];
   let sdkLoads = 0;
-  await context.addInitScript(({ initialConsent }) => {
+  await context.addInitScript(({ choice, privacy }) => {
+    window.__gpc = privacy === "gpc";
+    Object.defineProperty(navigator, "globalPrivacyControl", { get: () => window.__gpc });
     window.__lifecycle = [];
     addEventListener("pageshow", event => window.__lifecycle.push({ persisted: event.persisted, trusted: event.isTrusted }));
-    if (initialConsent && !localStorage.getItem("openclaw.analytics.consent")) {
+    if (choice && !localStorage.getItem("openclaw.analytics.consent")) {
       const time = Date.now() - 1000;
-      localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: initialConsent, updated_at: new Date(time).toISOString(), expires_at: new Date(time + 180 * 86400000).toISOString() }));
+      localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: choice, updated_at: new Date(time).toISOString(), expires_at: new Date(time + 180 * 86400000).toISOString() }));
     }
-  }, { initialConsent });
+  }, { choice, privacy });
   await context.route("**/*", async route => {
     const request = route.request(), url = new URL(request.url());
     if (url.hostname === "www.googletagmanager.com" && url.pathname === "/gtag/js") { sdkLoads++; return route.fulfill({ contentType: "text/javascript", body: sdk }); }
@@ -44,16 +45,16 @@ async function fixture(t, initialConsent = "granted") {
     if (url.pathname === "/api/analytics-consent") return route.fulfill({ contentType: "application/json", headers: { "Cache-Control": "private, no-store" }, body: JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", region_class: "opt_in" }) });
     if (url.pathname === "/assets/" + webVitalsAssetName) return route.fulfill({ contentType: "text/javascript", body: webVitalsRuntime });
     if (url.pathname !== "/") return route.fulfill({ status: 404 });
-    return route.fulfill({ contentType: "text/html", headers: { "Cache-Control": "public, max-age=600" }, body: `<!doctype html><title>Public cache fixture</title><div class="main" data-analytics-path="/" data-analytics-title="Public cache fixture"><article class="doc"><h1>Public cache fixture</h1></article></div><button data-analytics-choices>Google Analytics choices</button>${analyticsConsentHtml()}<script>${siteJs()}</script>` });
+    return route.fulfill({ contentType: "text/html", headers: { "Cache-Control": "public, max-age=600" }, body: `<!doctype html><title>Public cache fixture</title><div class="main" data-analytics-path="/" data-analytics-title="Public cache fixture"><article class="doc"><h1>Public cache fixture</h1></article></div><script>${siteJs()}</script>` });
   });
   const page = await context.newPage();
   const cdp = await context.newCDPSession(page);
   await cdp.send("Page.enable");
   cdp.on("Page.backForwardCacheNotUsed", event => rejected.push(event.notRestoredExplanations));
   await page.goto(origin);
-  if (initialConsent === "granted") await page.waitForFunction(() => window.dataLayer?.some(entry => entry[1] === "page_view"));
-  else await page.waitForFunction(() => document.querySelector("[data-analytics-consent-status]")?.textContent.length > 0);
-  if (sdk && initialConsent === "granted") for (let i = 0; i < 70 && events.filter(event => event.en === "page_view").length < 1; i++) await delay(100);
+  if (!privacy) await page.waitForFunction(() => window.dataLayer?.some(entry => entry[1] === "page_view"));
+  else await page.waitForFunction(() => document.readyState === "complete");
+  if (sdk && !privacy) for (let i = 0; i < 70 && events.filter(event => event.en === "page_view").length < 1; i++) await delay(100);
   await page.evaluate(() => {
     window.__retained = true;
     window.__afterSdkRestore = [];
@@ -61,7 +62,7 @@ async function fixture(t, initialConsent = "granted") {
       if (event.persisted) {
         const disabled = window["ga-disable-G-3SK7X2YLSJ"] === true;
         window.__afterSdkRestore.push({ disabled, trusted: event.isTrusted });
-        if (disabled) window.gtag("event", "select_content", { content_id: "DENIED_BFCACHE_MARKER" });
+        if (disabled) window.gtag?.("event", "select_content", { content_id: "DENIED_BFCACHE_MARKER" });
       }
     });
   });
@@ -108,59 +109,33 @@ test("real restored public navigation has one pageview; ordinary pageshow adds n
   }
 });
 
-test("a cached tab reads another tab's denial before native restore callbacks", { timeout: 45000 }, async t => {
-  const f = await fixture(t);
-  await f.page.goto("https://away.example/");
-  const peer = await f.context.newPage();
-  await peer.goto(origin + "/choice");
-  const setChoice = choice => peer.evaluate(choice => {
-    const now = Date.now();
-    localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: choice, updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() }));
-  }, choice);
-  await setChoice("denied");
-  const state = await f.restore();
-  verifyLifecycle(t, state, f.rejected);
-  if (state.retained) {
-    assert.equal(state.disabled, true);
-    assert.deepEqual(state.afterSdk, [{ disabled: true, trusted: true }]);
-    assert.equal(state.views, 1);
-  } else assert.equal(state.views, 0);
-  await delay(1500);
-  if (sdk) assert.equal(f.events.filter(event => event.en === "page_view").length, 1, "the denied return is not measured");
-  await setChoice("granted");
-  await delay(1800);
-  assert.doesNotMatch(JSON.stringify(f.events), /DENIED_BFCACHE_MARKER/, "denied restore work is never replayed on a later grant");
-});
-
-for (const initial of [null, "denied"]) test(`first grant while cached (${initial || "no choice"}) creates one activation view`, { timeout: 45000 }, async t => {
-  const f = await fixture(t, initial);
-  assert.equal(f.sdkLoads(), 0); assert.equal(f.events.length, 0);
+test("old same-origin choice changes while cached do not suppress or duplicate the restored view", { timeout: 45000 }, async t => {
+  const f = await fixture(t, { choice: "denied" });
+  assert.equal((await f.state()).views, 1);
   await f.page.goto("https://away.example/");
   const peer = await f.context.newPage(); await peer.goto(origin + "/choice");
-  await peer.evaluate(() => {
-    const now = Date.now(); localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: "granted", updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() }));
-  });
-  assert.equal(f.sdkLoads(), 0, "a frozen document does not start its first SDK");
+  await peer.evaluate(() => localStorage.setItem("openclaw.analytics.consent", "malformed old denial"));
   const state = await f.restore(); verifyLifecycle(t, state, f.rejected);
-  assert.equal(state.views, 1);
-  if (sdk) {
-    for (let i = 0; i < 70 && f.events.filter(event => event.en === "page_view").length < 1; i++) await delay(100);
-    await delay(1200);
-    assert.equal(f.events.filter(event => event.en === "page_view").length, 1);
-    assert.equal(f.sdkLoads(), 1);
-  }
+  assert.equal(state.views, state.retained ? 2 : 1);
+  assert.equal(state.disabled, false);
+  if (state.retained) assert.equal(f.sdkLoads(), 1);
 });
 
-test("a first grant in an ordinary background tab is not deferred like a cached document", async t => {
-  const f = await fixture(t, null);
+test("browser GPC remains off across real history restore", { timeout: 45000 }, async t => {
+  const f = await fixture(t, { choice: "granted", privacy: "gpc" });
+  assert.equal(f.sdkLoads(), 0);
+  await f.page.goto("https://away.example/");
+  const state = await f.restore(); verifyLifecycle(t, state, f.rejected);
+  assert.equal(state.views, 0); assert.equal(f.sdkLoads(), 0);
+  assert.equal(f.events.length, 0);
+});
+
+test("ordinary background tabs remain public regardless of peer choice writes", async t => {
+  const f = await fixture(t);
   const peer = await f.context.newPage(); await peer.goto(origin + "/choice"); await peer.bringToFront();
-  await peer.evaluate(() => {
-    const now = Date.now(); localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: "granted", updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() }));
-  });
-  await f.page.waitForFunction(() => window.dataLayer?.some(entry => entry[1] === "page_view"));
-  const state = await f.state();
-  assert.equal(state.views, 1);
-  assert.equal(state.lifecycle.some(event => event.persisted), false);
+  await peer.evaluate(() => localStorage.setItem("openclaw.analytics.consent", "denied"));
   await f.page.bringToFront();
-  assert.equal((await f.state()).views, 1);
+  const state = await f.state();
+  assert.equal(state.views, 1); assert.equal(state.disabled, false);
+  assert.equal(state.lifecycle.some(event => event.persisted), false);
 });
