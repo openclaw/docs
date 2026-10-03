@@ -42,7 +42,7 @@ function harness(t, initial) {
     if (!entry) return null;
     return {
       ...(method === "GET" ? { body: entry.body } : {}),
-      size: Buffer.byteLength(entry.body), httpEtag: '"fixture"',
+      size: Buffer.byteLength(entry.body), httpEtag: entry.etag ?? '"fixture"',
       httpMetadata: { contentType: entry.headers["Content-Type"] },
       customMetadata: entry.customMetadata,
       writeHttpMetadata(headers) {
@@ -71,6 +71,75 @@ function policy(response, browser, edge) {
   assert.equal(response.headers.get("CDN-Cache-Control"), edge);
   assert.equal(response.headers.get("Cloudflare-CDN-Cache-Control"), edge);
 }
+
+for (const inventory of ["dual", "mixed", "canonical", "legacy-only"]) {
+  test(`nested index URLs preserve their response contract with ${inventory} objects`, async (t) => {
+    const keys = ["guide", "de/guide", "releases/2026.10.2", "docs/guide", "ümlaut/指南"];
+    const p = harness(t, {});
+    for (const key of keys) {
+      if (inventory !== "legacy-only") p.entries.set(key, {
+        ...object("<html>Canonical</html>", htmlType, "/guide.md"), etag: '"canonical"',
+      });
+      if (inventory !== "canonical") p.entries.set(`${key}/index.html`, {
+        ...object(inventory === "dual" ? "<html>Canonical</html>" : "<html>Legacy</html>", htmlType, "/guide.md"),
+        etag: inventory === "dual" ? '"canonical"' : '"legacy"',
+      });
+      const encoded = key.split("/").map(encodeURIComponent).join("/").replaceAll(".", "%2E");
+      for (const method of ["GET", "HEAD"]) for (const accept of ["text/html", ...markdownTypes]) {
+        p.reset();
+        const route = `/${encoded}/index.html?incoming=1`;
+        p.cache.set(`https://docs.openclaw.ai${route}`, new Response("Stale", { headers: { "Content-Type": htmlType } }));
+        const response = await p.request(route, method, accept);
+        assert.equal(response.status, 200);
+        assert.equal(response.headers.get("Content-Type"), htmlType);
+        assert.equal(response.headers.get("ETag"), inventory === "legacy-only" ? '"legacy"' : '"canonical"');
+        assert.equal(response.headers.get("Vary"), "Accept-Encoding", "explicit HTML does not negotiate Markdown");
+        assert.equal(response.headers.get("Link"), `</${encoded}.md>; rel="alternate"; type="text/markdown"`);
+        assert.equal(response.headers.get("x-amz-meta-openclaw-markdown-target"), "/guide.md");
+        assert.equal(response.headers.get("Location"), null);
+        assert.equal(response.headers.get("X-OpenClaw-Docs-Cache"), "MISS");
+        policy(response, htmlBrowser, htmlEdge);
+        assert.equal(await response.text(), method === "HEAD" ? "" : inventory === "legacy-only" ? "<html>Legacy</html>" : "<html>Canonical</html>");
+        assert.deepEqual(p.calls, inventory === "legacy-only" ? [`${method} ${key}`, `${method} ${key}/index.html`] : [`${method} ${key}`]);
+        assert.deepEqual(p.puts, []);
+      }
+      const redirect = await p.request(`/${encoded}/?incoming=1`);
+      assert.equal(redirect.status, 308);
+      assert.equal(redirect.headers.get("Location"), `https://docs.openclaw.ai/${encoded}?incoming=1`);
+    }
+  });
+}
+
+test("index compatibility does not expose non-HTML collisions or hide storage errors", async (t) => {
+  const p = harness(t, {
+    guide: object("Private asset bytes", "application/json"),
+    "guide/index.html": object("<html>Legacy</html>", htmlType),
+    absent: object("Non-HTML", "application/octet-stream"),
+    broken: new Error("synthetic R2 failure"),
+    "broken/index.html": object("<html>Stale</html>", htmlType),
+    "index.html": object("<html>Root</html>", htmlType),
+  });
+  for (const method of ["GET", "HEAD"]) {
+    p.reset();
+    const legacy = await p.request("/guide/index.html", method);
+    assert.equal(legacy.status, 200);
+    assert.equal(await legacy.text(), method === "HEAD" ? "" : "<html>Legacy</html>");
+    for (const route of ["/absent/index.html", "/missing/index.html"]) {
+      const missing = await p.request(route, method);
+      assert.equal(missing.status, 404);
+      assert.equal(missing.headers.get("Content-Type"), htmlType);
+      assert.doesNotMatch(await missing.text(), /Non-HTML/);
+    }
+    await assert.rejects(p.request("/broken/index.html", method), /synthetic R2 failure/);
+    for (const route of ["/", "/index.html"]) {
+      p.reset();
+      const root = await p.request(route, method);
+      assert.equal(root.status, 200);
+      assert.equal(await root.text(), method === "HEAD" ? "" : "<html>Root</html>");
+      assert.deepEqual(p.calls, [`${method} index.html`]);
+    }
+  }
+});
 
 async function representation(response, method, type, body, alternate = null) {
   assert.equal(response.status, 200);
