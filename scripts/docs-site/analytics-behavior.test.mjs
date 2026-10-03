@@ -264,9 +264,25 @@ test("regrant after an unmeasured return to the same route starts one current vi
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "section_view" && entry[2].section_id === "install"));
   await setSavedChoice(page, "denied");
   await page.locator('.doc a[href="/"]').click(); await page.waitForURL(`${origin}/`);
-  await page.goBack(); await page.waitForURL("**/guide**");
-  assert.equal((await events("page_view")).length, 1);
-  await setSavedChoice(page, "granted");
+  await page.locator('.main[data-analytics-path="/"]').waitFor();
+  // A history URL change precedes the asynchronous PJAX DOM commit. Hold that
+  // response to exercise the boundary instead of racing it on a fast runner.
+  let releaseReturn;
+  const heldReturn = new Promise(resolve => { releaseReturn = resolve; });
+  let returnRequested;
+  const requestStarted = new Promise(resolve => { returnRequested = resolve; });
+  await page.route(`${origin}/guide**`, async route => {
+    returnRequested(); await heldReturn; await route.fallback();
+  });
+  try {
+    await page.goBack(); await page.waitForURL("**/guide**"); await requestStarted;
+    assert.equal(await page.locator(".main").getAttribute("data-analytics-path"), "/");
+    assert.equal((await events("page_view")).length, 1);
+    await setSavedChoice(page, "granted");
+    assert.equal((await events("page_view")).length, 1, "an uncommitted URL cannot start a public view");
+  } finally { releaseReturn(); }
+  await page.locator('.main[data-analytics-path="/guide"]').waitFor();
+  await page.waitForFunction(() => window.dataLayer.filter(entry => entry[1] === "page_view").length === 2);
   assert.equal((await events("page_view")).length, 2);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.waitForFunction(() => window.dataLayer.filter(entry => entry[1] === "section_view" && entry[2].section_id === "install").length === 2);
