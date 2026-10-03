@@ -31,6 +31,13 @@ reviewed overrides instead of shadowing them with worker-module entries. The
 ratchet applies the same classification rules to the base and candidate sources,
 so metadata corrections alone do not offset unrelated T1 growth.
 
+Maintenance overrides require actual boot or one-shot caller evidence. Lazy
+database admission, idle-close cleanup, restart signal/retry paths, and CLI
+commands reused inside a running Gateway remain T1 when runtime-reachable.
+Tests are excluded by path; test-only helpers in production modules have no
+separate tier and retain their conservative classification. Branch-specific
+exceptions that cannot be expressed by an operation or initializer stay T1.
+
 Canonical-repair mutations are T2 Doctor work, but its exact-row reader remains
 runtime debt through the Gateway's legacy-main agent-creation check. Claw
 provenance's counted CLI writes do not cover its raw Gateway SQL reads. Shared
@@ -54,8 +61,9 @@ Web Push reads, approval delivery operations, and current-subscription cleanup
 have exact worker-only entries; native preferences, subscription upsert/deletion,
 and their shared schema helper remain T1. Prepared-workspace list and mutation
 operations are worker-only, while the synchronous `find` compatibility query
-remains T1. Terminal approval history uses the read worker; native approval
-operations retain their existing tiers. Offline full-store reset inventory and
+remains T1. Approval history and unguarded insert, pending-list, expiry, and
+allow-once consumption have exact worker-only entries; guarded native
+compatibility operations retain their existing tiers. Offline full-store reset inventory and
 archive-reset operations are T3 CLI one-shots, including dev bootstrap; Gateway
 session reset and other archive lifecycle operations are classified separately.
 
