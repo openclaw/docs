@@ -626,9 +626,15 @@ library writes publish that revision before observers and preserve it on rollbac
 Copied durable session pins retain their existing revision access. The released
 synchronous skill-command and harness tool-surface SDKs retain their native
 metadata reader; Gateway status, embedded skill preparation, and sandbox
-synchronization use prepared reads. Import, upload, mutation, and
-authoring mutation guards remain for the next cutover. Schemas, quotas, retention,
-publication security checks, and update behavior are unchanged.
+synchronization use prepared reads. Import, upload, and mutations use typed
+shared-state writer commands. Files publish before their SQL references; failed
+SQL retains immutable unreferenced revision files, as before. Transactions reread
+revision CAS, quota, expiry, and profile ownership, with live host grants at
+transaction and commit. Native receipts publish the existing selection authority
+revision within the writer FIFO, including after lost replies; unknown outcomes
+never replay. Database close joins accepted mutations. Workspace authoring guards
+retain their existing owner. Schemas, quotas, retention, publication security checks,
+and update behavior are unchanged.
 
 ## Carry facts, publish after commit
 
