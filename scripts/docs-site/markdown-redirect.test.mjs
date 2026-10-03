@@ -112,10 +112,11 @@ for (const base of ["", "/manual"]) {
     for (const route of ["/index.md", "/collision.md", "/section.md"]) {
       for (const method of ["GET", "HEAD"]) await servesMarkdown(p, route, route, { method });
     }
-    for (const key of ["old", "old/index.html", "docs/old", "docs/old/index.html"]) {
+    for (const key of ["old", "docs/old"]) {
       assert.equal(p.entries.get(key).customMetadata["openclaw-markdown-target"], "/target.md");
+      assert.equal(p.entries.has(`${key}/index.html`), false);
     }
-    assert.equal(p.entries.get("collision/index.html").customMetadata, undefined);
+    assert.equal(p.entries.get("collision").customMetadata, undefined);
     assert.equal(p.entries.has("docs-markdown-redirects.json"), false);
     assert.equal(p.entries.has("old.md"), false);
   });

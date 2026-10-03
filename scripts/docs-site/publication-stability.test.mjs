@@ -74,7 +74,7 @@ test("commit-only builds preserve artifacts; two body edits change only their pa
   assert.equal(third.buildCommit, "c".repeat(40));
   const changed = dryUpload(second);
   assert.deepEqual(changed.filter(key => !key.startsWith("pagefind/")), [
-    "docs-search.json", "one.md", "two.md", "one", "one/index.html", "two", "two/index.html",
+    "docs-search.json", "one.md", "two.md", "one", "two",
   ]);
   assert.ok(changed.some(key => key.startsWith("pagefind/")), "the native search index reflects edited bodies");
   assert.equal(fs.readFileSync(path.join(site, "index.html"), "utf8"), home);

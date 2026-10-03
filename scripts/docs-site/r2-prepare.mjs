@@ -2,6 +2,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { omitDuplicateHtmlIndexes } from "./r2-html-aliases.mjs";
 
 const root = process.cwd();
 const sourceDir = path.join(root, "dist", "docs-site");
@@ -14,7 +15,7 @@ if (!fs.existsSync(sourceDir)) throw new Error("dist/docs-site does not exist; r
 
 // The uploader reads entry.file directly. Keep the checked build in place
 // through upload instead of copying it into another full artifact tree.
-const entries = [];
+let entries = [];
 const aliases = [];
 let physicalFiles = 0;
 for (const file of walk(sourceDir)) {
@@ -29,6 +30,8 @@ for (const file of walk(sourceDir)) {
   }
 }
 entries.push(...aliases);
+const deduplicated = omitDuplicateHtmlIndexes(entries);
+entries = deduplicated.entries;
 
 entries.sort((a, b) => a.key.localeCompare(b.key));
 
@@ -54,8 +57,7 @@ const manifest = {
 };
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
-const virtualFiles = entries.length - physicalFiles;
-console.log(`r2 prepare ok: ${physicalFiles} files, ${virtualFiles} slashless html aliases, ${entries.length} objects`);
+console.log(`r2 prepare ok: ${physicalFiles} files, ${aliases.length} slashless html aliases, ${entries.length} objects, ${deduplicated.omitted.length} duplicate nested html keys omitted`);
 
 function entryFor(key, file, sourceKey) {
   const data = fs.readFileSync(file);
