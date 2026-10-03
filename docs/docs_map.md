@@ -10611,6 +10611,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/native-inventories
 - Headings:
   - H2: Native model inventory
+  - H3: Service-tier picker policy
   - H2: Native MCP inventory
 
 ## plugins/sdk-agent-harness/registration.md
