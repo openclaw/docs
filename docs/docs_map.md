@@ -11148,6 +11148,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Config loading and writes
   - H2: Reusable runtime utilities
+  - H3: Bounded waits
   - H3: Stage timing diagnostics
 
 ## plugins/sdk-runtime/gateway-and-nodes.md
