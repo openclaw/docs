@@ -507,7 +507,21 @@ async function r2Fetch(env: Env, method: string, key: string): Promise<Response>
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
-  const object = method === "HEAD" ? await bucket.head(key) : await bucket.get(key);
+  const read = (objectKey: string) => method === "HEAD" ? bucket.head(objectKey) : bucket.get(objectKey);
+  let object;
+  if (key.endsWith("/index.html") && key.length > "/index.html".length) {
+    // Nested HTML copies can retire after this reader is deployed. Prefer the
+    // canonical slashless object, but keep serving older/partial inventories.
+    // Resolve only the storage key: URL, negotiation and cache policy stay put.
+    const canonical = await read(key.slice(0, -"/index.html".length));
+    if (canonical) {
+      const metadata = new Headers();
+      canonical.writeHttpMetadata(metadata);
+      if (/^text\/html(?:;|$)/i.test(metadata.get("Content-Type") ?? "")) object = canonical;
+      else if ("body" in canonical) await canonical.body.cancel?.();
+    }
+  }
+  object ??= await read(key);
   if (!object) {
     return new Response(method === "HEAD" ? null : "Not found\n", {
       status: 404,

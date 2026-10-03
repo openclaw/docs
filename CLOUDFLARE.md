@@ -179,6 +179,21 @@ no unused generation timestamp. Pagefind still rebuilds as described above.
 
 ### Router deployment
 
+Nested `/route/index.html` requests prefer the slashless HTML object and fall
+back to the legacy nested key if canonical HTML is unavailable. The current
+artifact still publishes both keys. Retiring duplicate objects is a two-stage
+operation: first deploy and verify this compatible Worker, then publish an
+artifact omitting the byte-identical nested copies. Record the authoritative
+Worker version ID, source commit and successful deployment run in the retirement
+receipt before the second stage; CI success alone does not establish that the
+compatible reader is served. Verify canonical and explicit index URLs, including
+GET/HEAD, locales, dotted paths, Markdown negotiation and asset responses.
+
+Retirement uses a normal full manifest publication and its normal orphan cleanup;
+a partial shell upload retains older keys. For rollback, restore the dual-key
+artifact inventory before deploying a Worker that requires those legacy keys.
+Keep the existing single-writer queue and stale-snapshot admission checks.
+
 1. On a main push that changes `workers/**` or `wrangler.toml`, `r2-pages.yml` deploys the matching Worker after any required R2 upload, provided that snapshot passed admission before the build.
 2. `pages.yml` pushes validate the Worker bundle with `wrangler deploy --dry-run`; they do not deploy it.
 3. Manual `pages.yml` dispatch with `deploy_worker=true` deploys the router using the workflow's pinned Wrangler version.
