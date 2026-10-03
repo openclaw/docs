@@ -10885,6 +10885,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway placement and publication readers
   - H3: Watched-session harness context
   - H3: Harness attempt result migration
+  - H3: Mention Inbox persistence
   - H3: Awaited session persistence
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
@@ -10903,6 +10904,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
   - H2: Workspace mutation guards
+  - H2: Await Mention Inbox operations
   - H2: Await session transcript persistence
   - H3: Await extension session changes
   - H3: Await provider replay metadata

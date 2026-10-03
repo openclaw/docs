@@ -684,6 +684,31 @@ remains deprecated compatibility; the async path never falls back to host SQL.
 Sorted rows, the twenty-row cap, title truncation, prompt bytes, and update behavior
 are unchanged.
 
+Mention Inbox snapshots and mutations use the existing shared-state workers.
+The Inbox retains policy and disposable indexes, serializes its operations, and
+prepares mutations against a detached projection. The writer rereads the current
+revision and sequence inside its transaction; a conflict returns fresh durable
+facts for preparation. Dismissed recipients remain replay tombstones. Only an
+acknowledged commit installs the prepared indexes. Unknown outcomes invalidate
+the projection for a worker read and never replay the mutation.
+RPCs recheck current caller access and publish their response synchronously after
+preparation. Delayed mention notifications prepare durable facts before their
+final live check. Scheduler shutdown rejects new Inbox work; accepted FIFO work
+retains its own async settlement scope and current database and access guards.
+The Gateway close prelude joins this work before worker teardown. The shared-state
+resource registry also joins the Inbox before closing shared pools. Unknown
+outcomes remain unreplayed and are resynchronized from durable state on reopen.
+Session involvement
+remains with the session owner, outside the shared-state transaction. Profile
+policy and the existing session-authority reads retain their current owners.
+Schemas, stored bytes, capacity, retention, and update behavior are unchanged.
+The synchronous `MentionInbox.list`, `dismiss`, `recordCommittedInput`, and
+`invalidate` methods shipped in 2026.9.8 retain native transactions as deprecated
+SDK compatibility through the next Plugin SDK major. Their kernel and transaction
+sites remain T1 inventory debt; all bundled callers use the corresponding `Async`
+methods. Native recording and invalidation finish before returning; notifications
+publish after the enclosing transaction commits and are discarded on rollback.
+
 Personal model-account success and failover-failure bookkeeping use typed reductions
 in the existing `authProfiles` shared-state worker. The host captures the physical
 store before provider probes or writer admission; the synchronous transaction
