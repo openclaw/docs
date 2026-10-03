@@ -7829,6 +7829,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Chrome extension setup
   - H3: Desktop compatibility
   - H3: Gateway selection
+  - H3: Use the bundled runtime
   - H3: Desktop sharing
   - H3: First-run setup
   - H3: Host sleep
@@ -7878,6 +7879,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Prerequisites
   - H2: 1. Install dependencies
   - H2: 2. Build and package the app
+  - H3: Shared Bun pin and repin gate
   - H2: 3. Install the CLI and Gateway
   - H2: Run native tests safely
   - H2: Troubleshooting
