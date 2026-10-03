@@ -186,7 +186,7 @@ export function createDocsAnalyticsEvents(analytics) {
       }
     }
     readingTimer = setInterval(() => {
-      if (!analytics.context() || document.visibilityState !== "visible" || document.querySelector(".search-modal.open,.docs-chat.open,[data-analytics-consent]:not([hidden])")) return;
+      if (!analytics.context() || document.visibilityState !== "visible" || document.querySelector(".search-modal.open,.docs-chat.open")) return;
       visibleSeconds++;
       for (const engagement_seconds of [30, 60]) {
         if (visibleSeconds >= engagement_seconds && !readingMilestones.has(engagement_seconds)

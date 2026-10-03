@@ -11,7 +11,7 @@ let browser;
 before(async () => { browser = await chromium.launch({ headless: true }); });
 after(async () => { await browser?.close(); });
 
-async function openSite(t, { privacy, clock = false, diagram = false, showConsent = false, theme = "dark", viewport = { width: 1440, height: 900 } } = {}) {
+async function openSite(t, { privacy, clock = false, diagram = false, theme = "dark", viewport = { width: 1440, height: 900 } } = {}) {
   const f = fixture(t, [], {
     "guide.md": '# Guide\n\n## Install\n\n```sh title="npm"\nnpm install EXAMPLE_PUBLIC_CODE\n```\n\n[Home](/)\n\n[Contributor](https://github.com/public-contributor)\n\n## Configure\n\nConfiguration guidance.\n\n## Password\n\nPublic password documentation.\n',
   });
@@ -52,18 +52,18 @@ async function openSite(t, { privacy, clock = false, diagram = false, showConsen
     const contentType = ({ ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".woff2": "font/woff2" })[path.extname(file)] || "application/octet-stream";
     return route.fulfill({ contentType, body: fs.readFileSync(file) });
   });
-  await context.addInitScript(({ privacy, showConsent, theme }) => {
-    if (privacy === "gpc") Object.defineProperty(navigator, "globalPrivacyControl", { value: true });
-    if (privacy === "dnt") Object.defineProperty(navigator, "doNotTrack", { value: "1" });
-    const now = Date.now();
-    if (!showConsent) localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: privacy === "optout" ? "denied" : "granted", updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() }));
+  await context.addInitScript(({ privacy, theme }) => {
+    window.__gpc = privacy === "gpc";
+    window.__dnt = privacy === "dnt";
+    Object.defineProperty(navigator, "globalPrivacyControl", { get: () => window.__gpc });
+    Object.defineProperty(navigator, "doNotTrack", { get: () => window.__dnt ? "1" : "0" });
     localStorage.setItem("theme", theme);
     window.__copyFails = false;
     Object.defineProperty(navigator, "clipboard", { value: { writeText: async () => { if (window.__copyFails) throw new Error("Unavailable"); } } });
     document.execCommand = () => false;
     window.__opened = [];
     window.open = (...args) => { window.__opened.push(args); return null; };
-  }, { privacy, showConsent, theme });
+  }, { privacy, theme });
   const page = await context.newPage();
   if (clock) await page.clock.install();
   await page.goto(`${origin}/guide?utm_source=chatgpt&utm_medium=referral&utm_campaign=docs_launch#intro`, { referer: "https://chatgpt.com/c/PRIVATE_REFERRER_VALUE?key=example" });
@@ -74,13 +74,11 @@ async function openSite(t, { privacy, clock = false, diagram = false, showConsen
   return { page, context, events, collected, googleRequests, runtimeRelease };
 }
 
-async function setSavedChoice(page, analytics) {
-  await page.evaluate(analytics => {
-    const key = "openclaw.analytics.consent", now = Date.now();
-    const value = JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics, updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() });
-    localStorage.setItem(key, value);
-    dispatchEvent(new StorageEvent("storage", { key, newValue: value }));
-  }, analytics);
+async function setBrowserPrivacy(page, blocked) {
+  await page.evaluate(blocked => {
+    window.__dnt = blocked;
+    dispatchEvent(new Event("focus"));
+  }, blocked);
 }
 
 test("acquisition, actual copy outcomes, public identifiers and feedback launch stay useful and safe", async t => {
@@ -167,7 +165,7 @@ test("custom search counts stable rendered results and selection, never keystrok
 test("async copy and search cannot cross a withdrawn collection interval", async t => {
   const { page, events, collected } = await openSite(t);
   const choose = async allow => {
-    await setSavedChoice(page, allow ? "granted" : "denied");
+    await setBrowserPrivacy(page, !allow);
   };
   await page.evaluate(() => {
     navigator.clipboard.writeText = () => new Promise(resolve => { window.__finishCopy = resolve; });
@@ -184,18 +182,11 @@ test("async copy and search cannot cross a withdrawn collection interval", async
     await page.locator("[data-search-open]").first().click();
     await page.locator("[data-search-input]").fill("delay guide");
     await page.waitForTimeout(350);
-    // Save preference through another same-origin tab while the search dialog
-    // stays open, then let the real storage listener update this runtime.
-    const peer = await page.context().newPage();
-    await peer.goto(origin + "/");
-    for (const analytics of startsDenied ? ["granted"] : ["denied", "granted"]) {
-      await peer.evaluate(analytics => {
-        const key = "openclaw.analytics.consent";
-        localStorage.setItem(key, JSON.stringify({ ...JSON.parse(localStorage.getItem(key)), analytics }));
-      }, analytics);
-      await page.waitForFunction(denied => window["ga-disable-G-3SK7X2YLSJ"] === denied, analytics === "denied");
+    // A browser privacy-signal change can interrupt an open search dialog.
+    for (const blocked of startsDenied ? [false] : [true, false]) {
+      await setBrowserPrivacy(page, blocked);
+      await page.waitForFunction(value => window["ga-disable-G-3SK7X2YLSJ"] === value, blocked);
     }
-    await peer.close();
     await page.evaluate(() => window.__finishSearch());
     await page.locator(".search-result").first().waitFor();
     await page.keyboard.press("Escape");
@@ -227,9 +218,14 @@ test("private assistant pauses native collection through closing, without disabl
   assert.equal((await events("page_view")).length, initialViews, "closing a private panel is not a new public page");
   await page.locator("[data-code-copy]").click();
   assert.equal((await events("copy_action")).length, 1, "public actions still work for the authenticated visitor");
-  await page.waitForTimeout(2100);
   assert.doesNotMatch(JSON.stringify(await events()), /PRIVATE_CHAT_VALUE|PRIVATE_CHAT_QUERY|PRIVATE_QUESTION_VALUE/);
-  if (sdk) assert.doesNotMatch(JSON.stringify(collected), /PRIVATE_CHAT_VALUE|PRIVATE_CHAT_QUERY|PRIVATE_QUESTION_VALUE/);
+  if (sdk) {
+    const copied = () => collected.some(request => /(?:^|[&\n])en=copy_action(?:&|$)/.test(new URL(request.url).search.slice(1) + "&" + request.body));
+    const deadline = Date.now() + 7000;
+    while (!copied() && Date.now() < deadline) await page.waitForTimeout(100);
+    assert.ok(copied(), "the native post-close public batch was actually observed");
+    assert.doesNotMatch(JSON.stringify(collected), /PRIVATE_CHAT_VALUE|PRIVATE_CHAT_QUERY|PRIVATE_QUESTION_VALUE/);
+  }
 });
 
 test("diagram popup reports actual opening and Escape dismissal", async t => {
@@ -262,7 +258,7 @@ test("navigation performed under the private assistant hold is not replayed on c
 test("regrant after an unmeasured return to the same route starts one current view and rebinds sections", async t => {
   const { page, events } = await openSite(t);
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "section_view" && entry[2].section_id === "install"));
-  await setSavedChoice(page, "denied");
+  await setBrowserPrivacy(page, true);
   await page.locator('.doc a[href="/"]').click(); await page.waitForURL(`${origin}/`);
   await page.locator('.main[data-analytics-path="/"]').waitFor();
   // A history URL change precedes the asynchronous PJAX DOM commit. Hold that
@@ -278,7 +274,7 @@ test("regrant after an unmeasured return to the same route starts one current vi
     await page.goBack(); await page.waitForURL("**/guide**"); await requestStarted;
     assert.equal(await page.locator(".main").getAttribute("data-analytics-path"), "/");
     assert.equal((await events("page_view")).length, 1);
-    await setSavedChoice(page, "granted");
+    await setBrowserPrivacy(page, false);
     assert.equal((await events("page_view")).length, 1, "an uncommitted URL cannot start a public view");
   } finally { releaseReturn(); }
   await page.locator('.main[data-analytics-path="/guide"]').waitFor();
@@ -321,7 +317,7 @@ test("reading milestones report only bounded visible time without inflating nati
   assert.ok(milestones.every(event => event.engagement_time_msec === undefined));
 });
 
-for (const privacy of ["gpc", "dnt", "optout"]) test(`${privacy} prevents Google tag loading and custom collection`, async t => {
+for (const privacy of ["gpc", "dnt"]) test(`${privacy} prevents Google tag loading and custom collection`, async t => {
   const { page, events, googleRequests } = await openSite(t, { privacy });
   await page.locator("[data-code-copy]").click();
   assert.deepEqual(await events(), []);
@@ -330,11 +326,10 @@ for (const privacy of ["gpc", "dnt", "optout"]) test(`${privacy} prevents Google
 
 test("public pages have no analytics prompts or controls on desktop and mobile", async t => {
   for (const theme of ["light", "dark"]) for (const viewport of [{ width: 1440, height: 900 }, { width: 320, height: 568 }]) {
-    const { page, context, googleRequests } = await openSite(t, { showConsent: true, theme, viewport });
+    const { page, context, googleRequests } = await openSite(t, { theme, viewport });
     assert.equal(await page.locator("[data-analytics-consent],[data-analytics-choices],[data-analytics-allow],[data-analytics-deny]").count(), 0);
-    assert.equal(googleRequests.length, 0);
+    assert.equal(googleRequests.length, 1);
     assert.equal(await page.locator(".site-footer-legal").getByRole("link", { name: "OpenClaw Foundation", exact: true }).getAttribute("href"), "https://openclaw.org");
-    assert.equal((await context.cookies()).filter(cookie => cookie.name.startsWith("_ga")).length, 0);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     if (process.env.DOCS_GA4_VISUAL_DIR) {
       fs.mkdirSync(process.env.DOCS_GA4_VISUAL_DIR, { recursive: true });

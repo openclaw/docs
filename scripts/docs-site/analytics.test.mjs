@@ -63,8 +63,6 @@ test("native GA4 owns one sanitized view per committed docs navigation", { timeo
   t.after(async () => { releasePrivate?.(); await browser.close(); });
   const context = await browser.newContext({ serviceWorkers: "block" });
   await context.addInitScript(() => {
-    const now = Date.now();
-    localStorage.setItem("openclaw.analytics.consent", JSON.stringify({ schema_version: 1, policy_version: "2026-10-02.v2", analytics: "granted", updated_at: new Date(now).toISOString(), expires_at: new Date(now + 180 * 86400000).toISOString() }));
   });
   context.setDefaultTimeout(10_000);
   const requests = [];
