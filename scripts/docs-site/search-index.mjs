@@ -48,7 +48,6 @@ entries.sort((a, b) => a.url.localeCompare(b.url));
 
 const payload = {
   version: 1,
-  generatedAt: new Date().toISOString(),
   count: entries.length,
   entries,
 };

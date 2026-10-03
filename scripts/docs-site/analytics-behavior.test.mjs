@@ -69,7 +69,9 @@ async function openSite(t, { privacy, clock = false, diagram = false, showConsen
   await page.goto(`${origin}/guide?utm_source=chatgpt&utm_medium=referral&utm_campaign=docs_launch#intro`, { referer: "https://chatgpt.com/c/PRIVATE_REFERRER_VALUE?key=example" });
   await page.waitForFunction(() => document.querySelector(".page-feedback")?.dataset.feedbackReady === "true");
   const events = name => page.evaluate(name => (window.dataLayer || []).filter(entry => entry[0] === "event" && (!name || entry[1] === name)).map(entry => ({ name: entry[1], ...entry[2] })), name);
-  return { page, context, events, collected, googleRequests };
+  const runtimeRelease = /const docsRuntimeRelease="(js-[a-f0-9]{12})";/.exec(fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8"))?.[1];
+  assert.ok(runtimeRelease);
+  return { page, context, events, collected, googleRequests, runtimeRelease };
 }
 
 async function setSavedChoice(page, analytics) {
@@ -82,11 +84,11 @@ async function setSavedChoice(page, analytics) {
 }
 
 test("acquisition, actual copy outcomes, public identifiers and feedback launch stay useful and safe", async t => {
-  const { page, context, events, collected } = await openSite(t);
+  const { page, context, events, collected, runtimeRelease } = await openSite(t);
   const view = (await events("page_view"))[0];
   assert.equal(view.page_location, `${origin}/guide?utm_source=chatgpt&utm_medium=referral&utm_campaign=docs_launch`);
   assert.equal(view.page_referrer, "https://chatgpt.com/");
-  assert.equal(view.release, "1234567890ab");
+  assert.equal(view.release, runtimeRelease);
   await page.locator("[data-code-copy]").click();
   await page.waitForFunction(() => window.dataLayer.some(entry => entry[1] === "copy_action"));
   await page.evaluate(() => { window.__copyFails = true; });
