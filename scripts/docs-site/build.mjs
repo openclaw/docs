@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import { releaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
+import { latestReleaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
 import { homeLayoutHtml } from "./home-layout.mjs";
 import { homeStringsForLocale } from "./home-strings.mjs";
 import { homeHeroArt } from "./home-hero.mjs";
@@ -94,11 +94,8 @@ if (previewMode && !localeCodes.has(previewLocale)) {
 }
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
-const announcedReleasePage = releaseAnnouncement
-  ? allPageByKey.get(pageKey("en", `releases/${releaseAnnouncement.version}`))
-  : null;
-// Never publish an announcement that leads to an absent or hidden page.
-const announcement = announcedReleasePage && !announcedReleasePage.hidden ? releaseAnnouncement : null;
+const announcement = latestReleaseAnnouncement(allPages);
+const announcedReleasePage = announcement?.page ?? null;
 let pages = allPages;
 let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
@@ -197,6 +194,7 @@ function collectPages(localeList) {
         readWhen: parsed.data.read_when ?? [],
         body: parsed.content,
         meta: {
+          hidden: parsed.data.hidden === true,
           status: parsed.data.status ?? firstStatusLine(parsed.content),
           appliesTo: parsed.data.applies_to ?? parsed.data.appliesTo,
           since: parsed.data.since,

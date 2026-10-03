@@ -4,10 +4,10 @@ import path from "node:path";
 import { before, after, test } from "node:test";
 import { chromium } from "playwright";
 import { parseDocument, DomUtils } from "htmlparser2";
-import { releaseAnnouncement } from "./release-announcement.mjs";
+import { latestReleaseAnnouncement } from "./release-announcement.mjs";
 import { fixture, write } from "./test-helpers/redirect-fixture.mjs";
 
-const version = releaseAnnouncement?.version ?? "2099.1.1";
+const version = "2099.9.8";
 const releaseRoute = `releases/${version}`;
 const base = "/manual";
 let browser;
@@ -36,7 +36,7 @@ function releaseFixture(t, includeRelease = true, includeNavigation = true, incl
 
 const all = (html, predicate) => DomUtils.findAll(predicate, parseDocument(html).children);
 
-test("translated release pages get the same latest indicators with localized labels", { skip: !releaseAnnouncement && "Announcement disabled" }, (t) => {
+test("translated release pages get the same latest indicators with localized labels", (t) => {
   const f = releaseFixture(t, true, true, true);
   const html = fs.readFileSync(path.join(f.site, "fr/index.html"), "utf8");
   const versions = all(html, node => node.attribs.class === "release-nav-version");
@@ -51,15 +51,13 @@ test("announcements respect the site base, localize their labels, and require an
   const f = releaseFixture(t);
   const home = fs.readFileSync(path.join(f.site, "index.html"), "utf8");
   const strip = all(home, node => node.name === "a" && node.attribs.class === "release-strip");
-  assert.equal(strip.length, releaseAnnouncement ? 1 : 0);
-  if (releaseAnnouncement) assert.equal(strip[0].attribs.href, `${base}/${releaseRoute}`);
+  assert.equal(strip.length, 1);
+  assert.equal(strip[0].attribs.href, `${base}/${releaseRoute}`);
   const translated = fs.readFileSync(path.join(f.site, "fr/index.html"), "utf8");
   const translatedStrip = all(translated, node => node.attribs.class === "release-strip");
-  assert.equal(translatedStrip.length, releaseAnnouncement ? 1 : 0);
-  if (releaseAnnouncement) {
-    assert.equal(translatedStrip[0].attribs.href, `${base}/${releaseRoute}`);
-    assert.match(DomUtils.textContent(translatedStrip[0]), /Nouvelle version/);
-  }
+  assert.equal(translatedStrip.length, 1);
+  assert.equal(translatedStrip[0].attribs.href, `${base}/${releaseRoute}`);
+  assert.match(DomUtils.textContent(translatedStrip[0]), /Nouvelle version/);
   assert.equal(all(translated, node => /^(release-nav-version|release-entry-badge)$/.test(node.attribs.class || "")).length, 0);
   const missing = releaseFixture(t, false);
   const withoutRelease = fs.readFileSync(path.join(missing.site, "index.html"), "utf8");
@@ -97,7 +95,7 @@ async function openFixture(t, f) {
   return page;
 }
 
-test("release announcements stay unchanged after visits and reloads without reading or writing view state", { skip: !releaseAnnouncement && "Announcement disabled" }, async t => {
+test("release announcements stay unchanged after visits and reloads without reading or writing view state", async t => {
   const f = releaseFixture(t);
   const page = await openFixture(t, f);
   await page.getByRole("link", { name: /New release.*Read release notes/ }).waitFor();
@@ -128,4 +126,39 @@ test("release announcements stay unchanged after visits and reloads without read
   await page.reload();
   await page.getByRole("link", { name: /New release.*Read release notes/ }).waitFor();
   assert.deepEqual(await page.evaluate(() => window.releaseStorageAccesses), []);
+});
+
+test("the latest stable English page drives the version and approved summary", () => {
+  const page = (version, extras = {}) => ({ locale: "en", slug: `releases/${version}`, summary: `Summary ${version}`, ...extras });
+  const latest = page("2099.10.1");
+  const pages = [page("2099.9.9"), page("2100.1.1-beta.1"), latest,
+    page("2101.1.1", { hidden: true }), page("2102.1.1", { locale: "fr" }),
+    page("2103.1.1", { meta: { status: "draft" } }), page("2104.1.1", { meta: { beta: true } }),
+    page("2099.9.20"), page("index")];
+  assert.deepEqual(latestReleaseAnnouncement(pages), { page: latest, version: "2099.10.1", summary: latest.summary });
+  assert.equal(latestReleaseAnnouncement([page("2100.1.1-beta.1")]), null);
+});
+
+test("syncing a newer release updates the home strip and sidebar without a code edit", t => {
+  const f = releaseFixture(t);
+  const newerVersion = "2099.10.1";
+  const newerRoute = `releases/${newerVersion}`;
+  write(f.root, `docs/${newerRoute}.md`, `---\nsummary: The approved newer summary.\n---\n# v${newerVersion}\n`);
+  write(f.root, "docs/releases/2100.1.1.md", "---\nhidden: true\n---\n# Hidden release\n");
+  write(f.root, "docs/releases/2101.1.1.md", "---\nstatus: draft\n---\n# Draft release\n");
+  write(f.root, "docs/releases/2102.1.1.md", "---\nbeta: true\n---\n# Beta release\n");
+  const config = JSON.parse(fs.readFileSync(path.join(f.root, "docs/docs.json"), "utf8"));
+  config.navigation.languages[0].tabs[1].groups[0].pages.unshift(newerRoute);
+  write(f.root, "docs/docs.json", JSON.stringify(config));
+  const rebuilt = f.build();
+  assert.equal(rebuilt.status, 0, rebuilt.stderr);
+  const html = fs.readFileSync(path.join(f.site, "index.html"), "utf8");
+  const strip = all(html, node => node.attribs.class === "release-strip")[0];
+  assert.equal(strip.attribs.href, `${base}/${newerRoute}`);
+  assert.match(DomUtils.textContent(strip), /v2099\.10\.1.*The approved newer summary\./);
+  const badge = all(html, node => node.attribs.class === "release-nav-version")[0];
+  assert.match(DomUtils.textContent(badge), /v2099\.10\.1/);
+  const latestLinks = all(html, node => node.name === "a" && node.attribs.class?.startsWith("nav-link")
+    && DomUtils.textContent(node).includes("Latest"));
+  assert.deepEqual(latestLinks.map(node => node.attribs.href), [`${base}/${newerRoute}`]);
 });
