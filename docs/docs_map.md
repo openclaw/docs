@@ -12632,6 +12632,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito session lifecycle (P4b, inactive)
   - H3: Incognito history (P5a, inactive)
   - H3: Incognito compute and usage (P5b, inactive)
+  - H3: Incognito Memory and Codex history (P5c, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller

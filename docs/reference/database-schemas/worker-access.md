@@ -206,7 +206,7 @@ behavior; it does not adopt durable hydration's lower-memory streaming contract.
 Actor loss returns `INCOGNITO_SESSION_ENDED` rather than empty history.
 
 Production incognito remains host-owned until P7. P5b adds usage/projection
-composition, Memory reads, and public SDK Codex history. P5a changes no schema,
+composition; P5c adds Memory reads and SDK Codex history. P5a changes no schema,
 retention, settlement owner, update behavior, or operator configuration, and
 retires no T1 sites before activation.
 
@@ -227,6 +227,27 @@ projection chunks; releasing a borrow still joins its cleanup. Actor loss return
 These routes remain inactive until P7. Production incognito stays host-owned;
 schemas, retention, durability, update behavior, and operator configuration are
 unchanged, and no T1 sites are retired. P5c adds Memory and Codex history adapters.
+
+### Incognito Memory and Codex history (P5c, inactive)
+
+Memory entry projection and reset-recall reads can use the captured actor's
+existing history FIFO. The actor selects Memory input records or reset navigation
+inside a synchronous snapshot. Memory keeps its existing text, provenance,
+redaction, and reset-cutoff projection; the caller never reopens the sentinel.
+
+The bundled Codex plugin accepts an owner-bound asynchronous context reader
+through its existing SDK subpath. Actor reads require a complete captured session
+target, validate the transcript after asynchronous consumption, and recheck live
+authority before disclosure. Full native context is materialized before crossing
+the worker boundary, so this route allocates a complete detached snapshot rather
+than preserving the native iterator's lazy payload reads. Existing evidence
+validation, ordering, and image sanitization remain plugin-owned.
+
+Both adapters retain accepted computation until settlement and preserve
+`INCOGNITO_SESSION_ENDED` on actor loss. They remain inactive until P7; the
+released synchronous SDK helper and production host routing stay unchanged.
+This stage changes no schema, retention, durability, update behavior, operator
+configuration, or memory cap and retires no T1 sites.
 
 ### Existing worker flows
 
