@@ -10912,6 +10912,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Await provider replay metadata
   - H2: Managed node workspace acquisition
   - H2: Migrate durable ingress files through Doctor
+  - H2: Agent roster config
   - H2: How to migrate
 
 ## plugins/sdk-migration/import-paths.md
