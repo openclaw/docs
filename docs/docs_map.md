@@ -12902,6 +12902,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Downgrading After The SQLite Flip
   - H2: Cron sessions and run logs
 
+## reference/session-management-compaction/resident-history.md
+
+- Route: /reference/session-management-compaction/resident-history
+- Headings:
+  - H2: Current boundary
+  - H2: Resident snapshot
+  - H2: Proposed asynchronous operations
+  - H2: Oversized entries and cleanup
+  - H2: Consumer cutover
+  - H2: SDK and incognito migration boundaries
+  - H2: First slice and completion evidence
+
 ## reference/session-management-compaction/schema.md
 
 - Route: /reference/session-management-compaction/schema

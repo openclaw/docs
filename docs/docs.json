@@ -3127,7 +3127,8 @@
                       "reference/session-management-compaction/maintenance",
                       "reference/session-management-compaction/schema",
                       "reference/session-management-compaction/compaction",
-                      "reference/session-management-compaction/housekeeping"
+                      "reference/session-management-compaction/housekeeping",
+                      "reference/session-management-compaction/resident-history"
                     ]
                   },
                   "reference/transcript-hygiene",
@@ -5175,7 +5176,8 @@
                       "zh-CN/reference/session-management-compaction/maintenance",
                       "zh-CN/reference/session-management-compaction/schema",
                       "zh-CN/reference/session-management-compaction/compaction",
-                      "zh-CN/reference/session-management-compaction/housekeeping"
+                      "zh-CN/reference/session-management-compaction/housekeeping",
+                      "zh-CN/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "zh-CN/reference/transcript-hygiene",
@@ -7223,7 +7225,8 @@
                       "zh-TW/reference/session-management-compaction/maintenance",
                       "zh-TW/reference/session-management-compaction/schema",
                       "zh-TW/reference/session-management-compaction/compaction",
-                      "zh-TW/reference/session-management-compaction/housekeeping"
+                      "zh-TW/reference/session-management-compaction/housekeeping",
+                      "zh-TW/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "zh-TW/reference/transcript-hygiene",
@@ -9271,7 +9274,8 @@
                       "ja-JP/reference/session-management-compaction/maintenance",
                       "ja-JP/reference/session-management-compaction/schema",
                       "ja-JP/reference/session-management-compaction/compaction",
-                      "ja-JP/reference/session-management-compaction/housekeeping"
+                      "ja-JP/reference/session-management-compaction/housekeeping",
+                      "ja-JP/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "ja-JP/reference/transcript-hygiene",
@@ -11319,7 +11323,8 @@
                       "es/reference/session-management-compaction/maintenance",
                       "es/reference/session-management-compaction/schema",
                       "es/reference/session-management-compaction/compaction",
-                      "es/reference/session-management-compaction/housekeeping"
+                      "es/reference/session-management-compaction/housekeeping",
+                      "es/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "es/reference/transcript-hygiene",
@@ -13367,7 +13372,8 @@
                       "pt-BR/reference/session-management-compaction/maintenance",
                       "pt-BR/reference/session-management-compaction/schema",
                       "pt-BR/reference/session-management-compaction/compaction",
-                      "pt-BR/reference/session-management-compaction/housekeeping"
+                      "pt-BR/reference/session-management-compaction/housekeeping",
+                      "pt-BR/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "pt-BR/reference/transcript-hygiene",
@@ -15415,7 +15421,8 @@
                       "ko/reference/session-management-compaction/maintenance",
                       "ko/reference/session-management-compaction/schema",
                       "ko/reference/session-management-compaction/compaction",
-                      "ko/reference/session-management-compaction/housekeeping"
+                      "ko/reference/session-management-compaction/housekeeping",
+                      "ko/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "ko/reference/transcript-hygiene",
@@ -17463,7 +17470,8 @@
                       "de/reference/session-management-compaction/maintenance",
                       "de/reference/session-management-compaction/schema",
                       "de/reference/session-management-compaction/compaction",
-                      "de/reference/session-management-compaction/housekeeping"
+                      "de/reference/session-management-compaction/housekeeping",
+                      "de/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "de/reference/transcript-hygiene",
@@ -19511,7 +19519,8 @@
                       "fr/reference/session-management-compaction/maintenance",
                       "fr/reference/session-management-compaction/schema",
                       "fr/reference/session-management-compaction/compaction",
-                      "fr/reference/session-management-compaction/housekeeping"
+                      "fr/reference/session-management-compaction/housekeeping",
+                      "fr/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "fr/reference/transcript-hygiene",
@@ -21559,7 +21568,8 @@
                       "hi/reference/session-management-compaction/maintenance",
                       "hi/reference/session-management-compaction/schema",
                       "hi/reference/session-management-compaction/compaction",
-                      "hi/reference/session-management-compaction/housekeeping"
+                      "hi/reference/session-management-compaction/housekeeping",
+                      "hi/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "hi/reference/transcript-hygiene",
@@ -23607,7 +23617,8 @@
                       "ar/reference/session-management-compaction/maintenance",
                       "ar/reference/session-management-compaction/schema",
                       "ar/reference/session-management-compaction/compaction",
-                      "ar/reference/session-management-compaction/housekeeping"
+                      "ar/reference/session-management-compaction/housekeeping",
+                      "ar/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "ar/reference/transcript-hygiene",
@@ -25655,7 +25666,8 @@
                       "it/reference/session-management-compaction/maintenance",
                       "it/reference/session-management-compaction/schema",
                       "it/reference/session-management-compaction/compaction",
-                      "it/reference/session-management-compaction/housekeeping"
+                      "it/reference/session-management-compaction/housekeeping",
+                      "it/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "it/reference/transcript-hygiene",
@@ -27703,7 +27715,8 @@
                       "vi/reference/session-management-compaction/maintenance",
                       "vi/reference/session-management-compaction/schema",
                       "vi/reference/session-management-compaction/compaction",
-                      "vi/reference/session-management-compaction/housekeeping"
+                      "vi/reference/session-management-compaction/housekeeping",
+                      "vi/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "vi/reference/transcript-hygiene",
@@ -29751,7 +29764,8 @@
                       "nl/reference/session-management-compaction/maintenance",
                       "nl/reference/session-management-compaction/schema",
                       "nl/reference/session-management-compaction/compaction",
-                      "nl/reference/session-management-compaction/housekeeping"
+                      "nl/reference/session-management-compaction/housekeeping",
+                      "nl/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "nl/reference/transcript-hygiene",
@@ -31799,7 +31813,8 @@
                       "fa/reference/session-management-compaction/maintenance",
                       "fa/reference/session-management-compaction/schema",
                       "fa/reference/session-management-compaction/compaction",
-                      "fa/reference/session-management-compaction/housekeeping"
+                      "fa/reference/session-management-compaction/housekeeping",
+                      "fa/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "fa/reference/transcript-hygiene",
@@ -33847,7 +33862,8 @@
                       "tr/reference/session-management-compaction/maintenance",
                       "tr/reference/session-management-compaction/schema",
                       "tr/reference/session-management-compaction/compaction",
-                      "tr/reference/session-management-compaction/housekeeping"
+                      "tr/reference/session-management-compaction/housekeeping",
+                      "tr/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "tr/reference/transcript-hygiene",
@@ -35895,7 +35911,8 @@
                       "uk/reference/session-management-compaction/maintenance",
                       "uk/reference/session-management-compaction/schema",
                       "uk/reference/session-management-compaction/compaction",
-                      "uk/reference/session-management-compaction/housekeeping"
+                      "uk/reference/session-management-compaction/housekeeping",
+                      "uk/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "uk/reference/transcript-hygiene",
@@ -37943,7 +37960,8 @@
                       "id/reference/session-management-compaction/maintenance",
                       "id/reference/session-management-compaction/schema",
                       "id/reference/session-management-compaction/compaction",
-                      "id/reference/session-management-compaction/housekeeping"
+                      "id/reference/session-management-compaction/housekeeping",
+                      "id/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "id/reference/transcript-hygiene",
@@ -39991,7 +40009,8 @@
                       "pl/reference/session-management-compaction/maintenance",
                       "pl/reference/session-management-compaction/schema",
                       "pl/reference/session-management-compaction/compaction",
-                      "pl/reference/session-management-compaction/housekeeping"
+                      "pl/reference/session-management-compaction/housekeeping",
+                      "pl/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "pl/reference/transcript-hygiene",
@@ -42039,7 +42058,8 @@
                       "th/reference/session-management-compaction/maintenance",
                       "th/reference/session-management-compaction/schema",
                       "th/reference/session-management-compaction/compaction",
-                      "th/reference/session-management-compaction/housekeeping"
+                      "th/reference/session-management-compaction/housekeeping",
+                      "th/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "th/reference/transcript-hygiene",
@@ -44087,7 +44107,8 @@
                       "ru/reference/session-management-compaction/maintenance",
                       "ru/reference/session-management-compaction/schema",
                       "ru/reference/session-management-compaction/compaction",
-                      "ru/reference/session-management-compaction/housekeeping"
+                      "ru/reference/session-management-compaction/housekeeping",
+                      "ru/reference/session-management-compaction/resident-history"
                     ]
                   },
                   "ru/reference/transcript-hygiene",
