@@ -12566,6 +12566,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Integrity checks
   - H3: Startup on multi-agent hosts
   - H2: btrfs and NOCOW
+  - H2: Planner statistics maintenance
   - H2: Troubleshooting
   - H3: The state database is busy
   - H3: Database paths cannot be compared
