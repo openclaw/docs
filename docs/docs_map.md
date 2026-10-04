@@ -10907,6 +10907,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Mention Inbox persistence
   - H3: Personal model-account control plane
   - H3: Awaited session persistence
+  - H3: ACP metadata binding compatibility
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
@@ -12668,6 +12669,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito compute and usage (P5b, inactive)
   - H3: Incognito Memory and Codex history (P5c, inactive)
   - H3: Incognito ACP and shared authority (P6, inactive)
+  - H3: Incognito Board and lifecycle composition (P7b, inactive)
   - H4: Remaining synchronous contracts before P7
   - H3: Incognito SessionManager composition (P7a, inactive)
   - H3: Incognito hydration and pending-input history (P7c, inactive)
