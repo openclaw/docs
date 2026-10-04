@@ -1143,13 +1143,15 @@ callers use the worker APIs. Schemas, stored bytes, retention, and update behavi
 are unchanged.
 
 Per-turn restart admission, runtime selection, and initial placement routing read
-through the existing placement projection. Each read retains the original physical
-store and revocable placement observation until its caller consumes the facts.
+through the existing placement projection. Reads retain the original physical
+store; admission and initial routing also retain a revocable placement observation
+until their caller consumes the facts.
 Chat admission reruns its session, reservation, and caller checks after preparation;
 reply admission rechecks its session and lifecycle after the worker read. Runtime
-selection remains a prepared default; the placement claim writer still authorizes
-execution. Other placement lifecycle reads remain separate migration work; the
-released synchronous placement SDK contract is unchanged. No schema, retention,
+selection is a prepared default that tolerates setup and preceding-turn publications;
+the placement claim writer still authorizes execution. Other placement lifecycle
+reads remain separate migration work; the released synchronous placement SDK
+contract is unchanged. No schema, retention,
 durability, or update change is required.
 
 Session maintenance prepares placement preservation through the shared-state
