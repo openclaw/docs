@@ -8186,6 +8186,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Files and storage
   - H3: MCP connections
   - H3: Self-hosted execution
+  - H4: One executor per session
+  - H4: 1. Prepare the execution host
+  - H4: 2. Install and configure a controller plugin
+  - H4: 3. Select the controller
+  - H4: How startup, reconnection, and cleanup work
+  - H4: Use an external controller instead
+  - H4: Check the setup and file boundaries
   - H3: Session settings and diagnostics
   - H3: Current limitations
 
@@ -10630,6 +10637,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/registration
 - Headings:
   - H2: Register a harness
+  - H3: Executor controller plugins
   - H3: Isolated completion
   - H3: Delegated execution
 
