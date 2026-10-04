@@ -441,6 +441,16 @@ separate activation prerequisites.
 
 ### Existing worker flows
 
+Remote model catalog refreshes capture the shared store before downloading and
+use its existing worker for reads, bundle replacement, and conditional HTTP 304
+metadata updates. The synchronous worker transaction rereads the current catalog
+and checks live host admission at transaction entry and commit. The update-check
+lifecycle joins accepted persistence before database teardown; download cancellation
+does not cancel an accepted write. Publication remains with the existing model
+catalog generation owner, and uncertain writes are not replayed. Synchronous reads
+remain for boot snapshot capture and offline inspection. Schemas, stored bytes,
+retention, and update behavior are unchanged.
+
 Shared-state transaction diagnostics inherit the executing worker command name
 when the store does not supply a more specific operation label. Slow holds and
 failed lock waits therefore identify the domain operation without logging its
