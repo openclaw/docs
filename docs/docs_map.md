@@ -12634,6 +12634,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Keep operations at the owning store
   - H3: Preserve the data and concurrency contracts
   - H3: Keep engine-specific capabilities owned
+  - H2: Trajectory retention covering index
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H3: Preflight an explicit agent copy
