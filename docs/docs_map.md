@@ -5111,6 +5111,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Channel private-network opt-ins
   - H2: Channel webhook listeners
   - H2: Talk realtime inheritance
+  - H2: ACP session metadata
   - H2: ACP agents' model precedence
   - H2: Missing plugins during migration
   - H2: Retired TaskFlow Webhooks plugin
