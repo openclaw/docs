@@ -568,9 +568,19 @@ reuse the binding settlement owner; a confirmed rollback restores the removed ro
 conditionally, while unknown outcomes block that generation without replay.
 Acknowledged receipts invalidate branch summaries and publish entry and identity
 facts before native subscription cleanup. Accepted work settles before Gateway
-close retires the database transports. Existing fork paths keep their current
-owners; opaque SDK callbacks retain their synchronous transaction visibility.
+close retires the database transports. Message-cut forks use the same executor
+without retiring the source native context. Repository forks compare the prepared
+source workspace against the transaction's fresh row; host commit grants use
+the repository owner's published facts. Opaque SDK callbacks retain their synchronous transaction visibility.
 There is no schema, retention, durability, configuration, or update migration.
+
+Parent forks run source selection, token decisions, transcript copying, and child
+entry changes in the existing agent executor. Same-store reads and writes share
+one transaction; cross-store forks retain their separate source snapshot and
+target commit. Bundled child-entry patches use prepared data with exact parent
+and child comparisons. Private fork commands use the existing connection-bound
+domain envelope without expanding released SDK operation unions. Opaque SDK callbacks and process-held incognito retain
+their existing owners. These cutovers require no update migration.
 
 Channel setup awaits a fresh policy read after the agent-selection prompt.
 Deferred plugin migration rows are read by the shared-state worker, and setup
