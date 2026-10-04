@@ -624,6 +624,19 @@ and child comparisons. Private fork commands use the existing connection-bound
 domain envelope without expanding released SDK operation unions. Opaque SDK callbacks and process-held incognito retain
 their existing owners. These cutovers require no update migration.
 
+Lifecycle builders run once outside SQL, while their prepared upserts, resets,
+removals, and maintenance commit together in the existing agent executor.
+Creation continues to use its existing typed replacement operation.
+
+Artifact deletion and maintenance finalization reuse the native binding
+participant owner. Only rows actually removed settle their native companions;
+stale maintenance selections retain their bindings. Exact-message and terminal
+assistant rewrites prepare pure transformations outside SQL and compare the
+selected bytes and lifecycle again in the worker transaction. Committed facts
+publish through the existing owners, and uncertain writes never replay. Opaque
+transaction callbacks, Doctor transfers, and process-held incognito retain their
+explicit native contracts. These cutovers require no update migration.
+
 Channel setup awaits a fresh policy read after the agent-selection prompt.
 Deferred plugin migration rows are read by the shared-state worker, and setup
 rechecks its config owner after the read before using the selected agent. Each
