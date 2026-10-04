@@ -5100,6 +5100,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Runtime config migration
   - H2: Retention policy
+  - H3: Deferred compaction checkpoints
   - H3: Workspace setup
   - H3: Session settings
   - H3: Retired state and config formats
