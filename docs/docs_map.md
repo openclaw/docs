@@ -10907,6 +10907,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Mention Inbox persistence
   - H3: Personal model-account control plane
   - H3: Awaited session persistence
+  - H3: Reply run-start transcript facts
   - H3: ACP metadata binding compatibility
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
