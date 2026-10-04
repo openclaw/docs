@@ -11324,6 +11324,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Owner-authorized continuations
   - H2: Return values
   - H2: Output contracts
+  - H2: Deliver the reply directly
   - H2: Configuration
   - H2: Generated metadata
   - H2: Package metadata
