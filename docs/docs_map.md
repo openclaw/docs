@@ -12503,6 +12503,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Version naming
   - H2: Release cadence
   - H2: Release validation
+  - H3: Frozen qualification identity
   - H2: Packages and apps can become available at different times
   - H2: Release notes and verification
   - H3: Downstream packaging
