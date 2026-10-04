@@ -3564,6 +3564,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Sandboxed sessions
   - H2: Choose where worktrees are stored
+  - H2: Capacity and eviction
   - H2: Filesystem acceleration
   - H2: Repository source profiles
   - H2: Layout and names
@@ -4860,6 +4861,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: worktreeRoot
   - H2: worktreeAcceleration
+  - H2: worktreeMaxCount
   - H2: Models
   - H2: Discovery
   - H3: mDNS (Bonjour)
