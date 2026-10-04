@@ -14895,7 +14895,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin hooks
   - H2: Verify the active Gateway
   - H2: Troubleshooting
-  - H3: Trusted plugin state refused
+  - H3: Plugin runtime trust refused
   - H3: Blocked plugin path ownership
   - H3: Slow plugin tool setup
   - H2: Related
