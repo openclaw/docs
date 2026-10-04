@@ -4434,6 +4434,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Config (preferred over env overrides)
   - H3: Disable automatic completion turns
   - H2: Worker environments
+  - H2: Control UI
   - H2: Child process bridging
   - H2: process tool
   - H2: Examples
