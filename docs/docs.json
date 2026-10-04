@@ -1562,7 +1562,8 @@
                       "channels/telegram/troubleshooting"
                     ]
                   },
-                  "channels/whatsapp"
+                  "channels/whatsapp",
+                  "channels/x"
                 ]
               },
               {
@@ -3645,7 +3646,8 @@
                       "zh-CN/channels/telegram/troubleshooting"
                     ]
                   },
-                  "zh-CN/channels/whatsapp"
+                  "zh-CN/channels/whatsapp",
+                  "zh-CN/channels/x"
                 ]
               },
               {
@@ -5694,7 +5696,8 @@
                       "zh-TW/channels/telegram/troubleshooting"
                     ]
                   },
-                  "zh-TW/channels/whatsapp"
+                  "zh-TW/channels/whatsapp",
+                  "zh-TW/channels/x"
                 ]
               },
               {
@@ -7743,7 +7746,8 @@
                       "ja-JP/channels/telegram/troubleshooting"
                     ]
                   },
-                  "ja-JP/channels/whatsapp"
+                  "ja-JP/channels/whatsapp",
+                  "ja-JP/channels/x"
                 ]
               },
               {
@@ -9792,7 +9796,8 @@
                       "es/channels/telegram/troubleshooting"
                     ]
                   },
-                  "es/channels/whatsapp"
+                  "es/channels/whatsapp",
+                  "es/channels/x"
                 ]
               },
               {
@@ -11841,7 +11846,8 @@
                       "pt-BR/channels/telegram/troubleshooting"
                     ]
                   },
-                  "pt-BR/channels/whatsapp"
+                  "pt-BR/channels/whatsapp",
+                  "pt-BR/channels/x"
                 ]
               },
               {
@@ -13890,7 +13896,8 @@
                       "ko/channels/telegram/troubleshooting"
                     ]
                   },
-                  "ko/channels/whatsapp"
+                  "ko/channels/whatsapp",
+                  "ko/channels/x"
                 ]
               },
               {
@@ -15939,7 +15946,8 @@
                       "de/channels/telegram/troubleshooting"
                     ]
                   },
-                  "de/channels/whatsapp"
+                  "de/channels/whatsapp",
+                  "de/channels/x"
                 ]
               },
               {
@@ -17988,7 +17996,8 @@
                       "fr/channels/telegram/troubleshooting"
                     ]
                   },
-                  "fr/channels/whatsapp"
+                  "fr/channels/whatsapp",
+                  "fr/channels/x"
                 ]
               },
               {
@@ -20037,7 +20046,8 @@
                       "hi/channels/telegram/troubleshooting"
                     ]
                   },
-                  "hi/channels/whatsapp"
+                  "hi/channels/whatsapp",
+                  "hi/channels/x"
                 ]
               },
               {
@@ -22086,7 +22096,8 @@
                       "ar/channels/telegram/troubleshooting"
                     ]
                   },
-                  "ar/channels/whatsapp"
+                  "ar/channels/whatsapp",
+                  "ar/channels/x"
                 ]
               },
               {
@@ -24135,7 +24146,8 @@
                       "it/channels/telegram/troubleshooting"
                     ]
                   },
-                  "it/channels/whatsapp"
+                  "it/channels/whatsapp",
+                  "it/channels/x"
                 ]
               },
               {
@@ -26184,7 +26196,8 @@
                       "vi/channels/telegram/troubleshooting"
                     ]
                   },
-                  "vi/channels/whatsapp"
+                  "vi/channels/whatsapp",
+                  "vi/channels/x"
                 ]
               },
               {
@@ -28233,7 +28246,8 @@
                       "nl/channels/telegram/troubleshooting"
                     ]
                   },
-                  "nl/channels/whatsapp"
+                  "nl/channels/whatsapp",
+                  "nl/channels/x"
                 ]
               },
               {
@@ -30282,7 +30296,8 @@
                       "fa/channels/telegram/troubleshooting"
                     ]
                   },
-                  "fa/channels/whatsapp"
+                  "fa/channels/whatsapp",
+                  "fa/channels/x"
                 ]
               },
               {
@@ -32331,7 +32346,8 @@
                       "tr/channels/telegram/troubleshooting"
                     ]
                   },
-                  "tr/channels/whatsapp"
+                  "tr/channels/whatsapp",
+                  "tr/channels/x"
                 ]
               },
               {
@@ -34380,7 +34396,8 @@
                       "uk/channels/telegram/troubleshooting"
                     ]
                   },
-                  "uk/channels/whatsapp"
+                  "uk/channels/whatsapp",
+                  "uk/channels/x"
                 ]
               },
               {
@@ -36429,7 +36446,8 @@
                       "id/channels/telegram/troubleshooting"
                     ]
                   },
-                  "id/channels/whatsapp"
+                  "id/channels/whatsapp",
+                  "id/channels/x"
                 ]
               },
               {
@@ -38478,7 +38496,8 @@
                       "pl/channels/telegram/troubleshooting"
                     ]
                   },
-                  "pl/channels/whatsapp"
+                  "pl/channels/whatsapp",
+                  "pl/channels/x"
                 ]
               },
               {
@@ -40527,7 +40546,8 @@
                       "th/channels/telegram/troubleshooting"
                     ]
                   },
-                  "th/channels/whatsapp"
+                  "th/channels/whatsapp",
+                  "th/channels/x"
                 ]
               },
               {
@@ -42576,7 +42596,8 @@
                       "ru/channels/telegram/troubleshooting"
                     ]
                   },
-                  "ru/channels/whatsapp"
+                  "ru/channels/whatsapp",
+                  "ru/channels/x"
                 ]
               },
               {

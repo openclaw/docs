@@ -1576,6 +1576,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration reference pointers
   - H2: Related
 
+## channels/x.md
+
+- Route: /channels/x
+- Headings:
+  - H2: Setup
+  - H2: Manage the allowlist
+  - H2: Event modes
+  - H2: Thread context and replies
+  - H2: Costs
+  - H2: Configuration reference
+  - H2: Troubleshooting
+  - H2: Related
+
 ## channels/yuanbao.md
 
 - Route: /channels/yuanbao
@@ -10523,6 +10536,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/workboard.md
 
 - Route: /plugins/reference/workboard
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/x.md
+
+- Route: /plugins/reference/x
 - Headings:
   - H2: Distribution
   - H2: Surface
