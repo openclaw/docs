@@ -1616,6 +1616,16 @@ guards reuse committed in-memory facts for process-held incognito sessions witho
 adding native SQL reads. Stored formats, schemas, retention, and update behavior
 are unchanged.
 
+Committed human mentions and personal session visibility write involvement through
+the existing collaboration worker. The profile owner prepares merge aliases before
+the agent transaction and revalidates them at admission and commit; the worker
+rereads the exact session incarnation and preserves mention source ordering.
+Acknowledged results invalidate session rows through their existing owner.
+The Inbox FIFO joins accepted involvement and Inbox persistence before shutdown
+closes either database owner. Unknown outcomes are never replayed. The deprecated
+synchronous MentionInbox SDK contract remains until the next Plugin SDK major.
+Schemas, stored bytes, retention, permissions, and update behavior are unchanged.
+
 Sharing management retains the original session and physical source before
 membership preparation yields. Member add/remove grants and list disclosure
 recompute manager access from current prepared profile, role, and sharing facts.
