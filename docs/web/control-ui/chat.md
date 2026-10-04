@@ -20,6 +20,10 @@ and outcomes available. Completed group summaries retain their operation counts.
 Tool Search calls use the called tool's name, icon, and input details in tool rows
 and activity summaries.
 
+A tool stops showing **Running** when its completion arrives, even while the
+parent turn continues. If that completion does not establish success or failure,
+the row shows **Outcome unknown**. Partial output alone does not finish a tool.
+
 When the parent turn has ended but subagents are still active, the chat shows
 **Waiting on subagents**. A single active child already loaded in the pane can
 be opened from its name beside the indicator. Elapsed time appears when the
