@@ -1813,6 +1813,27 @@ a child-process snapshot while holding the shared-state write transaction. Agent
 database admission refusals remain with their in-memory admission owner. Schemas,
 retention, configuration, and update behavior are unchanged.
 
+Cron mutations share host-owned receipt-authority custody for the physical shared
+database, across store partitions and approval writers. Runtime mutations, raw
+saves, mutable-load repairs, native grant consumption, and agent-deletion
+authority changes suspend observations before transaction admission. Native
+COMMIT receipts install canonical facts before ordinary replies and business
+notifications. Native compatibility writes publish committed invalidation and
+rebuild through the existing reader before returning. Rollback removes only its
+own barrier; it never fabricates a committed revocation. Lost replies never
+replay writes. Reconciliation requires confirmed native settlement or worker
+exit, and failed retirement retains unavailable custody.
+
+There is one live authority host per physical database. Cron writes use the
+serving Gateway; concurrent direct SQLite mutation is unsupported. Existing
+offline routing and exclusive Doctor maintenance remain unchanged. The close
+prelude seals new work before scheduler cancellation, while accepted persistence
+and receipt finalizers retain their original source through settlement and
+publication. Stored grants survive restart; process-local observations do not.
+This publication foundation preserves receipt revisions, force-run eligibility,
+schemas, retention, and update behavior. Existing final message and execution
+SQL guards remain until their separate consumer cutovers.
+
 Cron display names are prepared through the existing shared-state and history workers.
 Live resolvers retain their physical database generation; cron's mutation owner
 invalidates them on commit or uncertain settlement and publishes acknowledged
