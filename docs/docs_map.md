@@ -7564,6 +7564,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Allowlist the commands
   - H2: Point exec at the node
+  - H2: Channel and subagent context
   - H2: Invoking commands
   - H2: Codex sessions on a node
   - H2: Exec node binding
