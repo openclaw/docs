@@ -9042,6 +9042,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Top-level field reference
   - H2: Catalog categories
   - H2: JSON Schema requirements
+  - H2: Retained state checks
   - H2: Validation behavior
   - H3: Capability catalogs
   - H3: Configuration validation
