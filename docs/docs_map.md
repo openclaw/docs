@@ -6177,6 +6177,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/troubleshooting/agent-replies-and-control-ui
 - Headings:
   - H2: Agent run failed with a storage error
+  - H2: Provider rejected the request
   - H2: No replies
   - H2: Dashboard control UI connectivity
   - H3: Auth detail codes quick map
