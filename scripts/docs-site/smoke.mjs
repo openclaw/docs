@@ -768,6 +768,10 @@ assertEditSourceLinks();
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
 }
+if (!/\.docs-layout \.doc \.oc-code-group \.oc-code figcaption\s*\{\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*\}/.test(siteCss)
+  || !/\.docs-layout \.doc \.oc-code-group \.oc-code figcaption \.oc-code-label\s*\{\s*display:\s*none;\s*\}/.test(siteCss)) {
+  throw new Error("assets: grouped code must expose copy controls without repeating tab labels");
+}
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
