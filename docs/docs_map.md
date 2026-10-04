@@ -10915,6 +10915,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Published channel setup compatibility
   - H3: Channel setup input field compatibility
   - H4: Verifying readers
+  - H3: TTS preference resolution
   - H3: Media legacy projection
 
 ## plugins/sdk-migration/how-to-migrate.md
