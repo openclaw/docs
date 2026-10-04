@@ -10896,6 +10896,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: WebSocket options and constructors
   - H3: Gateway worker environment creation
   - H3: Gateway placement and publication readers
+  - H3: Channel pairing allowlists
   - H3: Watched-session harness context
   - H3: Harness attempt result migration
   - H3: Mention Inbox persistence
