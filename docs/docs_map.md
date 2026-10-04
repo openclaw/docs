@@ -10901,6 +10901,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Watched-session harness context
   - H3: Harness attempt result migration
   - H3: Mention Inbox persistence
+  - H3: Personal model-account control plane
   - H3: Awaited session persistence
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
@@ -10920,6 +10921,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
+  - H2: Await personal model-account operations
   - H2: Await session transcript persistence
   - H3: Await extension session changes
   - H3: Await provider replay metadata

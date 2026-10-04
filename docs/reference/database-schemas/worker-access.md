@@ -894,6 +894,27 @@ remains nonblocking, while maintenance close joins accepted bookkeeping. OAuth
 refresh, selection, and released SDK updater callbacks retain their existing
 owners. Schemas, credential bytes, retention, and update behavior are unchanged.
 
+Personal account inventory, reconnect preparation, connection, selection, and
+unlinking use the existing shared-state profile worker. The Gateway captures the
+physical store before yielding; provider identity comparison runs before BEGIN,
+and the worker compares the current credential and selection again inside the
+transaction. Transaction and commit grants consume current actor role rows from
+that transaction while the Gateway rechecks the original connections, operation,
+and live role policy. Control-plane replies contain only account summaries and
+links, with disclosure authority rechecked after reads. Accepted persistence
+settles before the close prelude releases workers, independently of provider I/O
+cancellation. Lost replies never replay writes. The separate live account-pin
+guard, OAuth refresh, and Doctor/merge kernels keep their existing owners.
+Schemas, credential bytes, retention, RPC envelopes, and update behavior are unchanged.
+The synchronous `modelAccountConnectService.listLinks`, `link`, `unlink`, `list`,
+`select`, `status`, and `cancel` methods shipped through the 2026.9.8 Gateway
+Plugin SDK retain their native storage kernels as deprecated compatibility
+through the next Plugin SDK major. Their synchronous SQL sites remain T1 debt;
+core and bundled callers use the corresponding `Async` methods. The
+[SDK migration guide](/plugins/sdk-migration/how-to-migrate#await-personal-model-account-operations)
+records the unchanged synchronous signatures and timing, per-plugin warnings,
+and removal gate.
+
 Message-tool-only completion records use the canonical per-agent writer. The
 host captures the original store and run facts before waiting; configured-store
 discovery uses the existing reader. First-use schema admission commits separately
