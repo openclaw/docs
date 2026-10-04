@@ -12665,6 +12665,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito Memory and Codex history (P5c, inactive)
   - H3: Incognito ACP and shared authority (P6, inactive)
   - H4: Remaining synchronous contracts before P7
+  - H3: Incognito hydration and pending-input history (P7c, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
