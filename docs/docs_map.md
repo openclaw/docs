@@ -12633,6 +12633,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Preparing for another database backend
   - H3: Keep operations at the owning store
+  - H3: Memory chunk path index retirement
   - H3: Preserve the data and concurrency contracts
   - H3: Keep engine-specific capabilities owned
   - H2: Trajectory retention covering index
