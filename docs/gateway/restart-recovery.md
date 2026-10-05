@@ -609,6 +609,10 @@ Three complementary mechanisms mark sessions whose turn did not finish:
   hard crashes and kills where no shutdown code ran. Stale transcript lock
   files are cleaned up at the same time.
 
+Agents still undergoing database startup inspection retain their recovery work.
+When admission finishes, the same startup recovery owner scans their stores with
+the original cutoff, so newly admitted turns are not mistaken for crash orphans.
+
 A failed store scan leaves that store eligible for the scheduled retry while
 other stores continue recovery. `openclaw status` and `openclaw doctor` show
 outstanding startup recovery failures from the running Gateway; the warning clears
