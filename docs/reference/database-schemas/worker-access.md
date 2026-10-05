@@ -1676,6 +1676,14 @@ stores, already executing workers, Doctor maintenance,
 and prepared native deletion rollback closures retain their synchronous kernels.
 Schemas, retained bytes, configuration, and update behavior are unchanged.
 
+Durable trajectory preparation reads the exact target mapping through the session
+reader and constructs its sink while retaining the writer FIFO and native mutation
+witness. An absent metadata row remains an uncommitted target; a conflicting row
+still refuses recording. Reader custody survives validation and cleanup, and
+callers recheck current run authority before using a prepared recorder. All callers
+await preparation, including local test helpers. Process-held incognito data retains
+its existing native owner.
+
 Durable trajectory flushes use the same agent database executor for sequence
 allocation, event insertion, and retention. The recorder captures its pending
 prefix inside the physical store's writer FIFO and retains the host metadata
