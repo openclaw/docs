@@ -4943,6 +4943,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-tools/sessions-and-subagents
 - Headings:
   - H2: tools.agentToAgent
+  - H3: Per-agent send-only access
   - H2: tools.sessions
   - H2: `tools.sessions_spawn`
   - H2: agents.defaults.subagents
