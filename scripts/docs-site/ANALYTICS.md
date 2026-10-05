@@ -12,7 +12,7 @@ The site uses native `gtag.js`; existing hosting and analytics integrations rema
 | `scroll_depth` | Actual scrolling: once per 25/50/75% threshold per view | `percent_scrolled`; native 90% remains separate. |
 | `section_view` | A build-allowlisted heading stays at least half visible for one second | `section_id`, once per view; first 24 TOC headings. |
 | `content_engagement` | 30/60 visible seconds on public documentation, excluding open search/chat panels | `engagement_seconds=30/60`, `content_type=documentation`, `content_id`. |
-| `select_content` | Public docs/site links, curated references, search results, code tabs, feedback choices | `content_type`, `content_id`, `ui_location`; code tabs may add `method`, `install_platform`. Public editorial/resource handles are allowed; visitor identifiers are not. |
+| `select_content` | Public docs/site links, curated references, search results, code tabs, feedback choices | `content_type`, `content_id`, `ui_location`; external-origin HTTP(S) anchors also add `link_url` without query/fragment and hostname `link_domain`. Same-origin and non-anchor selections omit destination fields; credential-bearing targets are excluded. Code tabs may add `method`, `install_platform`. Public editorial/resource handles are allowed; visitor identifiers are not. |
 | `popup_view`, `popup_dismiss` | Search dialog, community invitation, diagram expansion, assistant shell | `popup_id`, `ui_location`, `dismiss_method` on dismissal. Layout occlusion is not a user dismissal. |
 | `form_attempt` | Accessible feedback issue-launch button | `form_id=docs_feedback`, `ui_location=page_feedback`; no published-issue or lead claim. |
 | `copy_action` | Clipboard API or fallback has resolved | `content_type`, stable `content_id`, `action_result=success/error`, `ui_location`; optional `method`, `install_platform`. Never copied text. |
@@ -27,6 +27,39 @@ content IDs can be high-cardinality: register them only when a report needs the
 dimension. `result_count`, `lcp_ms`, `inp_ms`, and `cls_score` are metrics, not identifier dimensions. Zero results are derived only from `search_status=complete` with `result_count=0`.
 Do not combine native outbound events with content selections as one interaction
 total or sum distinct users across hosts. No docs event proves installation.
+
+### Selection placement
+
+Placement and destination share the existing `select_content` event. Native
+Enhanced Measurement `click` remains unchanged and does not receive a placement
+parameter. Cross-canonical OpenClaw links also receive selection destination
+fields; native linker decoration and original DOM destinations remain intact.
+
+| Fixed `ui_location` | Surface |
+| --- | --- |
+| `community_invite` | Docked community invitation links |
+| `footer` | Footer social, resource and project links |
+| `header` | Network navigation and header social links |
+| `article` | Documentation body links and code tabs |
+| `sidebar` | Sidebar links |
+| `page_actions` | Page action links |
+| `page_feedback` | Feedback choices and public Edit source / Raise issue links |
+| `search_results` | Search result links |
+| `table_of_contents` | In-page table of contents links |
+| `pager` | Reserved existing `.pager` selector; current `.page-nav` is not covered |
+| `docs_assistant` | Private assistant references are excluded while the panel is open |
+
+Existing content semantics stay intact: for example, all Discord placements use
+`social_link` / `discord`, while generic curated links use `public_reference` and
+a public URL. Public Edit source / Raise issue anchors use `public_reference`,
+with query/fragment removed from both content ID and destination. The separate
+feedback composer still launches through its existing button without exposing
+private text in an observed anchor.
+
+Destination fields and feedback-anchor coverage are prospective. Historical
+selection placements may exist without destination fields; historical native
+clicks have no placement. Missing values remain unknown/not applicable and cannot
+be reconstructed by joining selections, native clicks or popup events.
 
 ## Privacy and consent
 

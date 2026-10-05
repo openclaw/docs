@@ -11,10 +11,11 @@ let browser;
 before(async () => { browser = await chromium.launch({ headless: true }); });
 after(async () => { await browser?.close(); });
 
-async function openSite(t, { privacy, clock = false, diagram = false, theme = "dark", viewport = { width: 1440, height: 900 } } = {}) {
+async function openSite(t, { privacy, clock = false, diagram = false, articleLinks = "", theme = "dark", viewport = { width: 1440, height: 900 } } = {}) {
   const f = fixture(t, [], {
     "guide.md": '# Guide\n\n## Install\n\n```sh title="npm"\nnpm install EXAMPLE_PUBLIC_CODE\n```\n\n[Home](/)\n\n[Contributor](https://github.com/public-contributor)\n\n## Configure\n\nConfiguration guidance.\n\n## Password\n\nPublic password documentation.\n',
   });
+  if (articleLinks) fs.appendFileSync(path.join(f.root, "docs/guide.md"), articleLinks);
   if (diagram) {
     fs.appendFileSync(path.join(f.root, "docs/guide.md"), "\n```mermaid\nflowchart LR\n A --> B\n```\n");
     fs.symlinkSync(path.resolve("node_modules"), path.join(f.root, "node_modules"), process.platform === "win32" ? "junction" : "dir");
@@ -80,6 +81,117 @@ async function setBrowserPrivacy(page, blocked) {
     dispatchEvent(new Event("focus"));
   }, blocked);
 }
+
+function wireEvents(collected) {
+  return collected.flatMap(request => (request.body || "").split(/\r?\n/).map(line =>
+    Object.fromEntries(new URLSearchParams([new URL(request.url).search.slice(1), line].filter(Boolean).join("&")))));
+}
+
+test("selection placement and sanitized destination share one event without changing native clicks", async t => {
+  const destination = "https://discord.com/invite/clawd";
+  const { page, context, events, collected } = await openSite(t, {
+    articleLinks: `\n[Community](${destination})\n\n[External reference](https://example.org/guide?ref=docs#intro)\n\n[Product](https://openclaw.ai/install?ref=docs#intro)\n`,
+  });
+  page.setDefaultTimeout(5000);
+  // A 204 keeps same-tab external navigation on the fixture. No destination or
+  // collection request is forwarded and the actual anchor href is unchanged.
+  await context.route("**/*", route => route.request().isNavigationRequest() && new URL(route.request().url()).origin !== origin
+    ? route.fulfill({ status: 204 }) : route.fallback());
+  context.on("page", popup => popup.close().catch(() => {}));
+  const count = (name, url) => wireEvents(collected).filter(event => event.en === name && (!url || event["ep.link_url"] === url));
+  async function clickAndObserve(selector, placement, contentType, contentId, url, native = false) {
+    const link = page.locator(selector).first();
+    const href = await link.getAttribute("href");
+    const before = (await events("select_content")).length;
+    const nativeBefore = count("click", url).length;
+    const selectionBefore = count("select_content", url).length;
+    await link.click();
+    const selected = await events("select_content");
+    assert.equal(selected.length, before + 1);
+    assert.equal(selected.at(-1).ui_location, placement);
+    assert.equal(selected.at(-1).content_type, contentType);
+    assert.equal(selected.at(-1).content_id, contentId);
+    assert.equal(selected.at(-1).link_url, url);
+    assert.equal(selected.at(-1).link_domain, new URL(url).hostname);
+    const observedHref = new URL(await link.getAttribute("href"), origin);
+    const expectedHref = new URL(href, origin);
+    // Native Google linker decoration remains allowed; the application must
+    // preserve the destination's original query and fragment.
+    observedHref.searchParams.delete("_gl");
+    expectedHref.searchParams.delete("_gl");
+    assert.equal(observedHref.href, expectedHref.href);
+    if (sdk) {
+      const deadline = Date.now() + 8000;
+      while ((count("select_content", url).length === selectionBefore || (native && count("click", url).length === nativeBefore)) && Date.now() < deadline) await page.waitForTimeout(100);
+      assert.equal(count("select_content", url).length, selectionBefore + 1);
+      const selection = count("select_content", url).at(-1);
+      assert.equal(selection["ep.ui_location"], placement);
+      assert.equal(selection["ep.link_domain"], new URL(url).hostname);
+      if (native) {
+        assert.equal(count("click", url).length, nativeBefore + 1);
+        assert.equal(count("click", url).at(-1)["ep.ui_location"], undefined);
+      }
+    }
+  }
+  for (const [selector, placement] of [[".community-invite", "community_invite"], [".site-footer", "footer"], [".doc", "article"]]) {
+    await clickAndObserve(`${selector} a[href="${destination}"]`, placement, "social_link", "discord", destination, true);
+  }
+  await clickAndObserve('.doc a[href^="https://example.org/"]', "article", "public_reference", "https://example.org/guide", "https://example.org/guide");
+  await clickAndObserve('.doc a[href^="https://openclaw.ai/"]', "article", "site_link", "openclaw.ai/install", "https://openclaw.ai/install");
+  for (const label of ["Edit source", "Raise issue"]) {
+    const link = page.getByRole("link", { name: label, exact: true });
+    const url = new URL(await link.getAttribute("href"));
+    const clean = url.origin + url.pathname;
+    await clickAndObserve(`.page-feedback a[href="${await link.getAttribute("href")}"]`, "page_feedback", "public_reference", clean, clean);
+  }
+
+  const beforePrivate = (await events("select_content")).length;
+  const nativeBeforePrivate = count("click", destination).length;
+  await page.locator("[data-chat-toggle]").click();
+  await page.locator(`.site-footer a[href="${destination}"]`).click();
+  await page.waitForTimeout(1200);
+  await page.locator("[data-chat-minimize]").click();
+  await page.waitForTimeout(1200);
+  assert.equal((await events("select_content")).length, beforePrivate, "private selection is not replayed on close");
+  assert.equal(count("click", destination).length, nativeBeforePrivate, "private native click is not replayed on close");
+  await clickAndObserve(`.site-footer a[href="${destination}"]`, "footer", "social_link", "discord", destination, true);
+});
+
+test("selection destination stays absent for same-origin, non-anchor, unknown and blocked contexts", async t => {
+  const { page, events, googleRequests } = await openSite(t);
+  page.setDefaultTimeout(5000);
+  await page.locator('[data-feedback-value="yes"]').click();
+  let selected = (await events("select_content")).at(-1);
+  assert.equal(selected.content_type, "feedback_choice");
+  assert.equal(selected.link_url, undefined);
+  assert.equal(selected.link_domain, undefined);
+  await page.locator('.doc a[href="/"]').click();
+  await page.locator('.main[data-analytics-path="/"]').waitFor();
+  selected = (await events("select_content")).at(-1);
+  assert.equal(selected.content_type, "documentation");
+  assert.equal(selected.link_url, undefined);
+  assert.equal(selected.link_domain, undefined);
+  await page.evaluate(() => {
+    for (const [id, href, parent] of [["unknown-link", "https://example.org/unknown", document.body], ["credential-link", "https://example.org/guide", document.querySelector(".doc")], ["non-http-link", "mailto:fixture@example.org", document.querySelector(".doc")]]) {
+      const link = document.createElement("a"); link.id = id; link.href = href; link.textContent = id;
+      if (id === "credential-link") { link.username = "fixture"; link.password = "fixture"; }
+      link.addEventListener("click", event => event.preventDefault());
+      parent.append(link);
+    }
+  });
+  const before = (await events("select_content")).length;
+  // Exercise rejected owner inputs without navigating to credentials or
+  // launching a system mail handler from these deliberately invalid fixtures.
+  for (const id of ["unknown-link", "credential-link", "non-http-link"]) await page.locator("#" + id).dispatchEvent("click");
+  assert.equal((await events("select_content")).length, before);
+  await setBrowserPrivacy(page, true);
+  const requestsBefore = googleRequests.length;
+  await page.locator('.site-footer a[href="https://discord.com/invite/clawd"]').click();
+  await page.waitForTimeout(1200);
+  await setBrowserPrivacy(page, false);
+  assert.equal((await events("select_content")).length, before);
+  assert.equal(googleRequests.length, requestsBefore);
+});
 
 test("acquisition, actual copy outcomes, public identifiers and feedback launch stay useful and safe", async t => {
   const { page, context, events, collected, runtimeRelease } = await openSite(t);

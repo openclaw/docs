@@ -211,17 +211,20 @@ export function createDocsAnalyticsEvents(analytics) {
     const location = uiLocation(link);
     if (location === "docs_assistant") { select("assistant_link", "reference", location); return; }
     if (link.matches("[data-feedback-issue-link]")) { select("feedback_issue", "open_issue", location); return; }
-    if (!link.closest(".doc,.sidebar,.site-header,.site-footer,.page-actions,.pager,.toc,.community-invite,.search-modal")) return;
+    if (!link.closest(".doc,.sidebar,.site-header,.site-footer,.page-actions,.page-feedback,.pager,.toc,.community-invite,.search-modal")) return;
     let url;
     try { url = new URL(link.href); } catch { return; }
-    if (!/^https?:$/.test(url.protocol)) return;
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password) return;
+    // Keep placement and destination on the same selection, without changing
+    // native outbound clicks or retaining query/fragment data from the href.
+    const destination = url.origin === window.location.origin ? {} : { link_url: url.origin + url.pathname, link_domain: url.hostname };
     const artifact = artifactChoice(url);
     if (link.matches(".search-result")) flushSearch();
-    if (socialHosts[url.hostname]) select("social_link", socialHosts[url.hostname], location);
+    if (socialHosts[url.hostname]) select("social_link", socialHosts[url.hostname], location, destination);
     else if (canonicalHosts.has(url.hostname) && !/\/ask-molty\/|\/__elements/i.test(url.pathname)) {
-      select(link.matches(".search-result") ? "search_result" : artifact ? "download" : url.hostname === "docs.openclaw.ai" ? "documentation" : "site_link", url.hostname === "docs.openclaw.ai" ? url.pathname : url.hostname + url.pathname, location, artifact || {});
-    } else if (link.closest(".page-actions")) select("page_action", /chatgpt/.test(url.hostname) ? "ask_chatgpt" : /claude/.test(url.hostname) ? "ask_claude" : "view_markdown", location);
-    else if (link.closest(".doc,.site-footer,.site-header,.sidebar,.community-invite") && !url.username && !url.password) select(artifact ? "download" : "public_reference", url.origin + url.pathname, location, artifact || {});
+      select(link.matches(".search-result") ? "search_result" : artifact ? "download" : url.hostname === "docs.openclaw.ai" ? "documentation" : "site_link", url.hostname === "docs.openclaw.ai" ? url.pathname : url.hostname + url.pathname, location, { ...artifact, ...destination });
+    } else if (link.closest(".page-actions")) select("page_action", /chatgpt/.test(url.hostname) ? "ask_chatgpt" : /claude/.test(url.hostname) ? "ask_claude" : "view_markdown", location, destination);
+    else if (link.closest(".doc,.site-footer,.site-header,.sidebar,.community-invite,.page-feedback")) select(artifact ? "download" : "public_reference", url.origin + url.pathname, location, { ...artifact, ...destination });
   });
   addEventListener("error", event => {
     const tag = event.target?.tagName;
