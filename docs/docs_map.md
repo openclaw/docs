@@ -2386,6 +2386,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/gateway/service
 - Headings:
   - H2: Manage the Gateway service
+  - H3: Linux maintenance holds
   - H3: Recover an unreadable native service definition
   - H3: Lifecycle requests from Gateway chat
   - H3: Pin the service runtime
@@ -10948,6 +10949,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Inbound envelope timestamps
   - H3: Watched-session harness context
   - H3: Harness attempt result migration
+  - H3: Session observer and progress visibility
   - H3: Mention Inbox persistence
   - H3: Personal model-account control plane
   - H3: Awaited session persistence
@@ -10977,6 +10979,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await session transcript persistence
   - H3: Await extension session changes
   - H3: Await provider replay metadata
+  - H2: Await session observer and progress visibility
   - H2: Managed node workspace acquisition
   - H2: Migrate durable ingress files through Doctor
   - H2: Agent roster config
