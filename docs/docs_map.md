@@ -1587,7 +1587,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Limits and identity
   - H2: Event modes
   - H2: Thread context and replies
-  - H2: Costs
+  - H2: Costs and limits
   - H2: Configuration reference
   - H2: Troubleshooting
   - H2: Related
