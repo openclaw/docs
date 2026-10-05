@@ -108,8 +108,17 @@ retain unrelated later appends. Source-mirror tail restrictions and turn/media m
 with their existing selectors; unrelated transcript rows keep their bytes and
 sequences. Transaction and commit grants recheck current host authority. Native
 maintenance and process-held incognito keep their existing adapters. Locked mirror
-appends and feedback remain separate cutover work. Schemas, retention, durability,
+appends remain separate cutover work. Schemas, retention, durability,
 SDK signatures, and update behavior are unchanged.
+
+Channel feedback retains its selected physical session reader through event persistence
+in the existing agent writer. The synchronous transaction rereads the current session,
+appends the original event bytes, and returns an acknowledged projection receipt.
+The host checks reader authority at transaction and commit and schedules any required
+projection reconciliation only after acknowledgment. Accepted writes use the existing
+FIFO and settlement owner. Maintenance and process-held incognito retain their native
+adapter, which first-party SQLite test helpers also reuse. Schemas, stored bytes,
+retention, and update behavior are unchanged.
 
 Explicit restart-tombstone recovery clones the transcript and changes both session
 identities atomically in the agent writer worker. Source preparation uses worker
