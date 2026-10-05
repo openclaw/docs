@@ -5557,6 +5557,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: Metrics exported
+  - H3: Worktree preparation
   - H3: Catalog list stages
   - H3: Runtime identity
   - H3: Event-loop observation windows
