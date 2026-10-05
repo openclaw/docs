@@ -10917,6 +10917,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration
 - Headings:
   - H2: What changed
+  - H3: Session reset freshness
   - H3: Why
   - H2: Where each topic lives
   - H3: Migration steps
