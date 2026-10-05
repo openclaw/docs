@@ -1940,6 +1940,23 @@ permission generation, cancellation, and one-time replay consumption remain live
 checks after waits. The core run settles outside reader custody. This changes no
 schema, stored bytes, retention, durability, or update behavior.
 
+CLI harness history preparation reads the session owner, current input, and
+transcript watermark through the existing anchor reader. Its metadata patch
+rechecks the exact input identity and watermark in the existing writer's
+synchronous transaction; host grants retain current run and writer authority.
+Planning retains the original physical reader, and the accepted patch settles
+through the writer after reader custody ends.
+
+Skill Workshop reflection prepares and completes its source context through the
+same anchor reader. Later appends remain valid; reset, rewrite, replacement,
+permission changes, and revocation refuse stale evidence. The retained effect
+guard still reads natively: `@openclaw/fs-safe` requires a synchronous callback
+after awaited file preparation and immediately before mutation. The existing
+native mutation witness does not observe foreign commits, so it cannot replace
+that final guard. Removing this retained path requires an equivalent final-effect
+authority contract. These changes add no schema, cache, configuration, migration,
+or update requirements.
+
 Awaited full-transcript event reads use the same history worker's hydration stream.
 Compaction preflight, reset hooks, BTW context, exports, and the asynchronous SDK
 reader retain raw event order, read fences, and byte limits. The host captures the
