@@ -10956,6 +10956,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Reply run-start transcript facts
   - H3: ACP metadata binding compatibility
   - H3: Memory session binding compatibility
+  - H3: Session upstream-link writes
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
@@ -10976,6 +10977,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
   - H2: Await personal model-account operations
+  - H2: Await session upstream links
   - H2: Await session transcript persistence
   - H3: Await extension session changes
   - H3: Await provider replay metadata
