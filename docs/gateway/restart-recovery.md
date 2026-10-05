@@ -724,6 +724,13 @@ failure cannot start the same recovery twice. Completed Control UI turns also
 retain bounded durable idempotency tombstones, allowing a reconnecting outbox
 to retire them without re-executing the request.
 
+When a pending final has no remaining queue owner and its delivery outcome is
+uncertain, recovery records a notice for the next turn on the same route when
+the saved final has a delivery context and intent ID. Settling that turn clears
+its recovery ownership together with its delivery claim, so the next agent turn
+can proceed. The notice and terminal deduplication evidence survive another
+restart; completed work is not replayed.
+
 Message-tool-only replies use a second durable correlation. Before a terminal
 same-conversation send reaches the channel, the gateway records an unresolved
 delivery intent on the exact session and source turn. A confirmed provider
