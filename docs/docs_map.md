@@ -5668,6 +5668,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel DM pairing
   - H2: Plugin management
   - H3: Catalog detail and client confirmation
+  - H2: ClawHub catalog discovery
+  - H3: Browse and search
+  - H3: Bulk keyword discovery
+  - H3: Upstream contracts and gaps
   - H2: Messaging and logs
   - H2: Operator terminal
 
