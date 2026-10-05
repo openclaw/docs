@@ -1582,6 +1582,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Setup
   - H2: Manage the allowlist
+  - H2: Guest mode
+  - H3: Repository containment
+  - H3: Limits and identity
   - H2: Event modes
   - H2: Thread context and replies
   - H2: Costs
