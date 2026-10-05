@@ -12711,6 +12711,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Remaining synchronous contracts before P7
   - H3: Incognito SessionManager composition (P7a, inactive)
   - H3: Incognito hydration and pending-input history (P7c, inactive)
+  - H3: Incognito pending input and collaboration (P7e, inactive)
   - H3: Incognito history and manager reads (P7f1, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
