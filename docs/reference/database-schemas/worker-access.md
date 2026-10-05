@@ -571,6 +571,43 @@ adds no schema, cache, retention, durability, permission, configuration, or upda
 change, and retires no T1 sites. Queued-input withdrawal retains its existing
 incognito refusal.
 
+### Incognito domain facades and deferred lifetimes (P7i, inactive)
+
+Reaction and heartbeat facades accept the captured actor binding. The progress-card
+store has an actor composition with the same public methods and conditional revision
+semantics. These operations preserve the worker's transaction and commit grants;
+they never reopen the sentinel or fall back after actor failure.
+
+Private-row preparation retains its actor, shared metadata reader, and selected
+parent owner through synchronous consumption. Actor snapshots are captured inside
+the original FIFO read and reject intervening changes, including child creation.
+The existing shared auth owner prepares its process-stable location through its
+worker before the row presenter resolves model runtime aliases.
+Durable relatives keep their native mutation witness alongside worker FIFO
+custody, so unpublished synchronous SDK rewrites also invalidate prepared rows.
+Private rows remain transient and outside the resident roster. Deadline scheduling
+consumes committed actor facts, preserving the original 24-hour, nonrenewing expiry;
+the activation owner supplies its bound Gateway deletion operation.
+
+Closing refuses new work and joins accepted compositions, dependent cleanup, and
+publication before stopping the actor transport. Accepted persistence does not
+inherit scheduler cancellation. Read consumers require a live borrow immediately
+before disclosure; retained settlement authority does not permit new callbacks
+after release or close. Mutation responses containing stored private data use
+the same delivery fence after their writes and committed publications settle.
+Outward facades recheck captured caller authority and actor readability after
+the entire retained scope settles, including its cleanup; an earlier check
+inside the scope does not authorize later delivery.
+Admission claims retain their own policy and
+cleanup lifetime until release, independently of the original borrow.
+Caller authority remains live at grants and
+disclosure; ended actors surface `INCOGNITO_SESSION_ENDED` to Gateway clients as a
+nonretryable failure requiring a new session. Lost actors have no recovery copy.
+
+Production routing remains host-owned. Atomic activation must install these
+bindings and remove the native routes together. This stage changes no schema,
+retention, durability, configuration, or update behavior and retires no T1 sites.
+
 <a id="incognito-history-and-manager-reads-p7f1-inactive" />
 
 ### Incognito history, compute, and manager reads (P7f, inactive)
