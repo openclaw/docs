@@ -10947,6 +10947,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Awaited session persistence
   - H3: Reply run-start transcript facts
   - H3: ACP metadata binding compatibility
+  - H3: Memory session binding compatibility
   - H3: Native session generation authority
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
@@ -12719,6 +12720,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito hydration and pending-input history (P7c, inactive)
   - H3: Incognito pending input and collaboration (P7e, inactive)
   - H3: Incognito history, compute, and manager reads (P7f, inactive)
+  - H3: Incognito history and Memory wiring (P7j, inactive)
   - H3: Incognito shared binding and SDK preflight (P7h1, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
