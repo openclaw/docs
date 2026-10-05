@@ -1807,6 +1807,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/scheduled-workflows
 - Headings:
+  - H2: PR vs hourly vs release
   - H2: Hourly main CI
   - H3: Restore per-push CI
   - H3: What stays on pushes
@@ -1864,6 +1865,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/scope-and-routing/selection
 - Headings:
   - H2: Scope and routing
+  - H3: PR vs hourly vs release
   - H3: Published-driver update cell
   - H2: Process proof tier
 
