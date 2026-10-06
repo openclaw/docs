@@ -44,3 +44,9 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - Translation pending logic compares source file SHA-256 with each page's `x-i18n.source_hash`.
 - Locale workers upload artifacts; the shared finalizer pushes one aggregate i18n commit.
 - If translated MDX fails, the repair step may touch only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.
+
+## Autoreview priority
+
+Use `--max-priority P3` with the shared autoreview helper to preserve this
+repository's existing P0–P3 review gate. Follow the
+[shared skill setup](.agents/skills/autoreview/SKILL.md) before running it.
