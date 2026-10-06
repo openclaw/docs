@@ -788,6 +788,33 @@ must install it with the remaining adapters and remove native routes together.
 This prerequisite retires no T1 sites and changes no schema, retention, durability,
 expiry, configuration, or update behavior.
 
+### Incognito acquisition and authority composition (P7k, inactive)
+
+The shared binding can acquire an existing actor or explicitly create one through
+the canonical execution owner. It captures the physical state root before yielding
+and retains that incarnation through consumption and cleanup. Existing-only misses
+create nothing. A retained SessionManager or Codex reader cannot escape the borrow;
+message iterators recheck current authority on each yield and close when consumption
+ends.
+
+Entry reads, admission claims, logical candidates, combined discovery, and placement
+evidence consume the same actor. Store scans retain each actor and its snapshot until
+the consumer finishes. Sharing, delivery, presence, and completion lineage read the
+owner’s committed facts synchronously, including cross-agent facts, without querying
+the actor from a grant. Native worker transactions still produce those facts; the
+Gateway does not open the incognito database or duplicate its authority projection.
+
+Nested acquisition preserves the enclosing authority and admission signal. Combined
+discovery uses that binding’s state root and refuses a conflicting explicit root.
+Accepted creation retains its live operation authority after admission closes;
+only its exact transaction preimage can authorize it while publication is pending.
+
+Production acquisition remains host-owned. Target-based synchronous SDK refusal is
+prepared but stays inactive for unbound callers until the atomic cutover. Activation
+must install acquisition and remove native selection, bridge, topology, and DB-keyed
+facts together. This prerequisite changes no schema, retention, durability, expiry,
+configuration, or update behavior and retires no T1 sites.
+
 ### Incognito domain entry points (P7l, inactive)
 
 Domain facades consume the shared captured binding before yielding. Collaboration,
