@@ -15,7 +15,7 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - `package.json`, `package-lock.json`, `Makefile`, and `.github/workflows/{pages,r2-pages,docs-code-ci,docs-live-smoke}.yml` for website builds, checks, and publishing.
 - `AGENTS.md`, `README.md`.
 - `CLOUDFLARE.md` for repo-owned hosting and deployment guidance.
-- `.agents/skills/autoreview/**` for the repo-local canonical review skill mirror.
+- `.agents/skills/autoreview/SKILL.md` for the shared review skill entrypoint.
 - `.github/pull_request_template.md` for repo-owned contribution guidance.
 - `.github/assets/**` for repo-owned README media that must not be pruned by docs sync.
 - `.github/workflows/translate-*.yml`.
@@ -44,3 +44,9 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - Translation pending logic compares source file SHA-256 with each page's `x-i18n.source_hash`.
 - Locale workers upload artifacts; the shared finalizer pushes one aggregate i18n commit.
 - If translated MDX fails, the repair step may touch only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.
+
+## Autoreview priority
+
+Use `--max-priority P3` with the shared autoreview helper to preserve this
+repository's existing P0–P3 review gate. Follow the
+[shared skill setup](.agents/skills/autoreview/SKILL.md) before running it.
