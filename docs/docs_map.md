@@ -10986,6 +10986,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Migrate durable ingress files through Doctor
   - H2: Agent roster config
   - H2: How to migrate
+  - H2: Await strict transcript message preparation
 
 ## plugins/sdk-migration/import-paths.md
 
