@@ -4574,6 +4574,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Cloud child sessions
   - H3: Runtime support
 
+## gateway/cloud-workers/native-inference.md
+
+- Route: /gateway/cloud-workers/native-inference
+- Headings:
+  - H1: Worker-local inference
+  - H2: Deployment and credential trust contract
+  - H2: Provision the node
+  - H2: Select the placement on the Gateway
+  - H3: Create and dispatch with worker proxy authentication
+  - H2: Upgrade and downgrade
+  - H2: Behavior and limits
+  - H2: Verification
+
 ## gateway/cloud-workers/per-project-default-profiles.md
 
 - Route: /gateway/cloud-workers/per-project-default-profiles

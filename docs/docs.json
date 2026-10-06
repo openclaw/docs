@@ -2520,6 +2520,7 @@
                           "gateway/cloud-workers/session-lifecycle",
                           "gateway/cloud-workers/desktop",
                           "gateway/cloud-workers/security-model",
+                          "gateway/cloud-workers/native-inference",
                           "gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -4570,6 +4571,7 @@
                           "zh-CN/gateway/cloud-workers/session-lifecycle",
                           "zh-CN/gateway/cloud-workers/desktop",
                           "zh-CN/gateway/cloud-workers/security-model",
+                          "zh-CN/gateway/cloud-workers/native-inference",
                           "zh-CN/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -6620,6 +6622,7 @@
                           "zh-TW/gateway/cloud-workers/session-lifecycle",
                           "zh-TW/gateway/cloud-workers/desktop",
                           "zh-TW/gateway/cloud-workers/security-model",
+                          "zh-TW/gateway/cloud-workers/native-inference",
                           "zh-TW/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -8670,6 +8673,7 @@
                           "ja-JP/gateway/cloud-workers/session-lifecycle",
                           "ja-JP/gateway/cloud-workers/desktop",
                           "ja-JP/gateway/cloud-workers/security-model",
+                          "ja-JP/gateway/cloud-workers/native-inference",
                           "ja-JP/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -10720,6 +10724,7 @@
                           "es/gateway/cloud-workers/session-lifecycle",
                           "es/gateway/cloud-workers/desktop",
                           "es/gateway/cloud-workers/security-model",
+                          "es/gateway/cloud-workers/native-inference",
                           "es/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -12770,6 +12775,7 @@
                           "pt-BR/gateway/cloud-workers/session-lifecycle",
                           "pt-BR/gateway/cloud-workers/desktop",
                           "pt-BR/gateway/cloud-workers/security-model",
+                          "pt-BR/gateway/cloud-workers/native-inference",
                           "pt-BR/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -14820,6 +14826,7 @@
                           "ko/gateway/cloud-workers/session-lifecycle",
                           "ko/gateway/cloud-workers/desktop",
                           "ko/gateway/cloud-workers/security-model",
+                          "ko/gateway/cloud-workers/native-inference",
                           "ko/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -16870,6 +16877,7 @@
                           "de/gateway/cloud-workers/session-lifecycle",
                           "de/gateway/cloud-workers/desktop",
                           "de/gateway/cloud-workers/security-model",
+                          "de/gateway/cloud-workers/native-inference",
                           "de/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -18920,6 +18928,7 @@
                           "fr/gateway/cloud-workers/session-lifecycle",
                           "fr/gateway/cloud-workers/desktop",
                           "fr/gateway/cloud-workers/security-model",
+                          "fr/gateway/cloud-workers/native-inference",
                           "fr/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -20970,6 +20979,7 @@
                           "hi/gateway/cloud-workers/session-lifecycle",
                           "hi/gateway/cloud-workers/desktop",
                           "hi/gateway/cloud-workers/security-model",
+                          "hi/gateway/cloud-workers/native-inference",
                           "hi/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -23020,6 +23030,7 @@
                           "ar/gateway/cloud-workers/session-lifecycle",
                           "ar/gateway/cloud-workers/desktop",
                           "ar/gateway/cloud-workers/security-model",
+                          "ar/gateway/cloud-workers/native-inference",
                           "ar/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -25070,6 +25081,7 @@
                           "it/gateway/cloud-workers/session-lifecycle",
                           "it/gateway/cloud-workers/desktop",
                           "it/gateway/cloud-workers/security-model",
+                          "it/gateway/cloud-workers/native-inference",
                           "it/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -27120,6 +27132,7 @@
                           "vi/gateway/cloud-workers/session-lifecycle",
                           "vi/gateway/cloud-workers/desktop",
                           "vi/gateway/cloud-workers/security-model",
+                          "vi/gateway/cloud-workers/native-inference",
                           "vi/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -29170,6 +29183,7 @@
                           "nl/gateway/cloud-workers/session-lifecycle",
                           "nl/gateway/cloud-workers/desktop",
                           "nl/gateway/cloud-workers/security-model",
+                          "nl/gateway/cloud-workers/native-inference",
                           "nl/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -31220,6 +31234,7 @@
                           "fa/gateway/cloud-workers/session-lifecycle",
                           "fa/gateway/cloud-workers/desktop",
                           "fa/gateway/cloud-workers/security-model",
+                          "fa/gateway/cloud-workers/native-inference",
                           "fa/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -33270,6 +33285,7 @@
                           "tr/gateway/cloud-workers/session-lifecycle",
                           "tr/gateway/cloud-workers/desktop",
                           "tr/gateway/cloud-workers/security-model",
+                          "tr/gateway/cloud-workers/native-inference",
                           "tr/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -35320,6 +35336,7 @@
                           "uk/gateway/cloud-workers/session-lifecycle",
                           "uk/gateway/cloud-workers/desktop",
                           "uk/gateway/cloud-workers/security-model",
+                          "uk/gateway/cloud-workers/native-inference",
                           "uk/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -37370,6 +37387,7 @@
                           "id/gateway/cloud-workers/session-lifecycle",
                           "id/gateway/cloud-workers/desktop",
                           "id/gateway/cloud-workers/security-model",
+                          "id/gateway/cloud-workers/native-inference",
                           "id/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -39420,6 +39438,7 @@
                           "pl/gateway/cloud-workers/session-lifecycle",
                           "pl/gateway/cloud-workers/desktop",
                           "pl/gateway/cloud-workers/security-model",
+                          "pl/gateway/cloud-workers/native-inference",
                           "pl/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -41470,6 +41489,7 @@
                           "th/gateway/cloud-workers/session-lifecycle",
                           "th/gateway/cloud-workers/desktop",
                           "th/gateway/cloud-workers/security-model",
+                          "th/gateway/cloud-workers/native-inference",
                           "th/gateway/cloud-workers/troubleshooting"
                         ]
                       },
@@ -43520,6 +43540,7 @@
                           "ru/gateway/cloud-workers/session-lifecycle",
                           "ru/gateway/cloud-workers/desktop",
                           "ru/gateway/cloud-workers/security-model",
+                          "ru/gateway/cloud-workers/native-inference",
                           "ru/gateway/cloud-workers/troubleshooting"
                         ]
                       },
