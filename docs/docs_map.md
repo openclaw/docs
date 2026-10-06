@@ -12761,6 +12761,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito domain facades and deferred lifetimes (P7i, inactive)
   - H3: Incognito history, compute, and manager reads (P7f, inactive)
   - H3: Incognito history and Memory wiring (P7j, inactive)
+  - H3: Incognito history and compute facade composition (P7m, inactive)
   - H3: Incognito shared binding and SDK preflight (P7h1, inactive)
   - H3: Incognito creation and entry patches (P7h2, inactive)
   - H3: Incognito domain entry points (P7l, inactive)
