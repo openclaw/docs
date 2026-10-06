@@ -740,6 +740,29 @@ must install it with the remaining adapters and remove native routes together.
 This prerequisite retires no T1 sites and changes no schema, retention, durability,
 expiry, configuration, or update behavior.
 
+### Incognito domain entry points (P7l, inactive)
+
+Domain facades consume the shared captured binding before yielding. Collaboration,
+categories, suggestions, reactions, heartbeat outcomes, progress cards, reports,
+Board, pending input, ACP, and lifecycle compositions retain their existing actor
+adapters. Deferred context-engine outbox delivery retains lifecycle custody across
+the engine callback and acknowledgment without holding the writer FIFO. Reads
+recheck disclosure authority after settlement; accepted persistence is joined
+before the actor transport closes.
+
+Message-tool run outcomes use one bounded actor command backed by the existing
+durable recording transaction. The actor's canonical admission supplies the table;
+recording neither prepares host schema nor opens a second connection. Transaction
+and commit grants validate the captured session generation, and the normal actor
+receipt publishes committed facts without replaying an uncertain write.
+
+Production acquisition remains host-owned. ACP control continues to consume the
+shared session-mutation facts owner; atomic activation must compose that owner's
+actor authority with control grants. Native routing and named durable SDK/offline
+kernels remain until the single cutover. This preparation changes no schema,
+retention, durability, permissions, configuration, or update behavior and retires
+no T1 sites.
+
 ### Existing worker flows
 
 Remote model catalog refreshes capture the shared store before downloading and

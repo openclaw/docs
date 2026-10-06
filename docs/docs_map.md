@@ -12753,6 +12753,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito history and Memory wiring (P7j, inactive)
   - H3: Incognito shared binding and SDK preflight (P7h1, inactive)
   - H3: Incognito creation and entry patches (P7h2, inactive)
+  - H3: Incognito domain entry points (P7l, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
