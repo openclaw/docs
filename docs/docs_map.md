@@ -1581,6 +1581,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/x
 - Headings:
   - H2: Setup
+  - H2: Public work sessions
   - H2: Manage the allowlist
   - H2: Guest mode
   - H3: Repository containment
@@ -10791,6 +10792,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What your plugin owns
   - H2: Return to the source conversation
+  - H2: Opted-in public child sessions
   - H2: Walkthrough
   - H2: File structure
   - H2: Delegated context reads
@@ -15837,6 +15839,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Social previews
   - H3: Behind a login proxy
   - H2: Public session transcripts
+  - H3: Revocation and older links
+  - H3: Login-proxy deployment
+  - H3: Reader capacity
   - H2: Person activity URLs
   - H2: Terminal URLs
   - H2: Focus presentation routes
