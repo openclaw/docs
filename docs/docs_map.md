@@ -3174,6 +3174,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: start
   - H3: continue
   - H3: speak
+  - H3: steer
   - H3: dtmf
   - H3: end
   - H3: status
@@ -11471,6 +11472,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H3: Choose the call owner
   - H3: Config reference
+  - H3: Twilio voicemail detection tuning
   - H2: Session scope
 
 ## plugins/voice-call/realtime-and-streaming.md
@@ -11479,6 +11481,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Realtime voice conversations
   - H3: GPT-Live
+  - H3: Per-call briefs and errands
   - H3: Hangup detection
   - H3: Tool policy
   - H3: Agent voice context
