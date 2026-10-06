@@ -10948,6 +10948,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel pairing allowlists
   - H3: Inbound envelope timestamps
   - H3: Watched-session harness context
+  - H3: Reply tool authority preparation
   - H3: Harness attempt result migration
   - H3: Session observer and progress visibility
   - H3: Mention Inbox persistence
@@ -10977,6 +10978,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
   - H2: Await personal model-account operations
+  - H2: Await reply tool authority
   - H2: Await session upstream links
   - H2: Await session transcript persistence
   - H3: Await extension session changes
