@@ -805,6 +805,32 @@ Per-connection schema contracts and mutable metadata remain checked. Explicit
 maintenance and copied-file verification always check integrity, with canonical
 read-only admission performing one scan instead of two.
 
+Cold writable agent admission uses the existing agent executor before a bundled
+runtime caller receives its native handle. Concurrent acquisitions share that executor's
+physical generation. Its validation receipt carries the admitted schema facts;
+later native handles compare committed schema markers and reuse those facts
+instead of repeating canonical table, index, trigger, and integrity scans.
+Local DDL revokes the shared schema proof, including rolled-back DDL. Revoked
+facts on live handles and host-handle eviction return to the retained worker for admission and
+publication; stale proof never falls back to schema scans on the Gateway thread.
+The worker validates changed schemas before publishing replacement facts while
+retaining its native generation. File replacement and revoked integrity still
+require fresh admission. Mutable agent ownership is checked again on acquisition
+and when each connection opens.
+Cloud turns retain the admitted handle through execution and finalization, so
+their existing synchronous transcript-authority checks cannot become cold openers
+after an idle eviction.
+
+The synchronous SQLite open/borrow SDK contracts released in 2026.9.8 retain local
+admission when invoked without prepared facts. The released async SQLite helper keeps
+its native checkpoints for arbitrary synchronous SDK guards. Bundled callers
+use the same owner's runtime driver with authority that is safe inside worker
+grants; same-database row predicates stay in the worker. Creation claims carry
+only a typed witness to the worker: the host checks live authority and owns its
+cleanup through the existing executor. Doctor, maintenance, and process-held
+incognito keep their existing owners. This changes no schema, stored data,
+migration, retention, durability, or published-driver update behavior.
+
 Slow agent transaction diagnostics retain their hold and lock-wait labels and
 include prepared session identifiers and counts. History snapshots report active
 events, active messages, and the reader operation; append diagnostics distinguish
@@ -1439,6 +1465,9 @@ to recheck retained host authority during transaction validation and before comm
 Observer acceptance retains the original database generation and writer FIFO through
 its synchronous consumer. A native mutation witness rejects intervening synchronous
 SDK rewrites, and database closure revokes pending reads before disclosure.
+Background digest persistence enters the observer's own work scope outside the
+publisher's async context, so its writes acquire their own FIFO admission instead
+of borrowing the synchronous reader's permit.
 Gateway close rejects new observation work and joins accepted
 reads and digest persistence before closing database workers. Accepted persistence
 does not inherit scheduler cancellation, and failed write replies never authorize
