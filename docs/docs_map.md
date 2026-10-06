@@ -4583,6 +4583,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Provision the node
   - H2: Select the placement on the Gateway
   - H3: Create and dispatch with worker proxy authentication
+  - H2: Troubleshooting
   - H2: Upgrade and downgrade
   - H2: Behavior and limits
   - H2: Verification
