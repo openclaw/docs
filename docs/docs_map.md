@@ -10973,6 +10973,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway placement and publication readers
   - H3: Channel pairing allowlists
   - H3: Inbound envelope timestamps
+  - H3: Progress card handoff
   - H3: Watched-session harness context
   - H3: Reply tool authority preparation
   - H3: Harness attempt result migration
