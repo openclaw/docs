@@ -6568,6 +6568,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider contracts
   - H3: When to run
 
+## help/testing/control-ui-load.md
+
+- Route: /help/testing/control-ui-load
+- Headings:
+  - H1: Control UI protocol load
+  - H2: Workload contract
+  - H2: Results
+  - H2: Cache policy and proof
+
 ## help/testing/docker.md
 
 - Route: /help/testing/docker
