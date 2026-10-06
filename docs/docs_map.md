@@ -35,7 +35,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /auth-credential-semantics
 - Headings:
-  - H2: Stable probe reason codes
+  - H2: Stable check reason codes
   - H2: Token credentials
   - H3: Eligibility rules
   - H3: Resolution rules
@@ -47,7 +47,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config-only auth routes
   - H2: Explicit auth order filtering
   - H2: Model catalog discovery
-  - H2: Probe target resolution
+  - H2: Check target resolution
   - H2: External CLI credential discovery
   - H2: OAuth SecretRef Policy Guard
   - H2: Legacy-Compatible Messaging
@@ -1852,7 +1852,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/scope-and-routing/manual-dispatches
 - Headings:
   - H2: Manual dispatches
-  - H3: Windows Testbox Probe
+  - H3: Windows Testbox Check
   - H4: Installed Scheduled Task upgrades
   - H4: Exact Windows test replay
   - H4: Installed repair-worker compatibility and cleanup
@@ -2029,7 +2029,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Login and logout (interactive)
   - H2: Per-account recovery (non-destructive)
   - H2: Troubleshooting
-  - H2: Capabilities probe
+  - H2: Capabilities check
   - H2: Resolve names to IDs
   - H2: Related
 
@@ -3785,7 +3785,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Candidate chain rules
   - H3: Which errors advance fallback
   - H3: Misalignment precautions
-  - H3: Cooldown skip vs probe behavior
+  - H3: Cooldown skip vs check behavior
   - H2: Session overrides and live model switching
   - H2: User-visible fallback notices
   - H2: Observability and failure summaries
@@ -5233,7 +5233,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Deep diagnostics
   - H2: Health monitor config
   - H2: Inbound ingress health
-  - H2: HTTP probes
+  - H2: HTTP checks
   - H3: Shared-state integrity failure
   - H3: Plugin replacement recovery
   - H3: CPU pressure and event-loop delay
@@ -6235,7 +6235,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/troubleshooting/config-validation-and-probes
 - Headings:
   - H2: Gateway rejected invalid config
-  - H2: Gateway probe warnings
+  - H2: Gateway check warnings
 
 ## gateway/troubleshooting/gateway-service-and-process.md
 
@@ -6254,7 +6254,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Skill symlink skipped as path escape
   - H2: Anthropic 429 extra usage required for long context
   - H2: Upstream 403 blocked responses
-  - H2: Local OpenAI-compatible backend passes direct probes but agent runs fail
+  - H2: Local OpenAI-compatible backend passes direct checks but agent runs fail
 
 ## gateway/troubleshooting/updates-and-rollbacks.md
 
@@ -12590,7 +12590,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Web fetch tool (Firecrawl)
   - H3: Provider usage snapshots (status/health)
   - H3: Compaction safeguard summarization
-  - H3: Model scan / probe
+  - H3: Model scan / check
   - H3: Talk (speech)
   - H3: Skills (third-party APIs)
   - H2: Related
@@ -12635,7 +12635,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H3: The state database is busy
   - H3: Database paths cannot be compared
-  - H3: A mount probe times out while opening a local database
+  - H3: A mount check times out while opening a local database
   - H3: A legacy Workshop index prevents shared-state reads
   - H3: The shared-state WAL keeps growing
   - H3: Doctor reports orphan task delivery rows
@@ -12916,7 +12916,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Install footprint
   - H3: npm package size
   - H2: Kova agent turn summary
-  - H2: Source probes
+  - H2: Source checks
   - H2: Install footprint audit
   - H3: Shrinkwrap boundary
   - H2: Supply-chain interpretation
@@ -13769,7 +13769,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /security/THREAT-MODEL-ATLAS/reconnaissance
 - Headings:
   - H2: T-RECON-001: Agent endpoint discovery
-  - H2: T-RECON-002: Channel integration probing
+  - H2: T-RECON-002: Channel integration discovery
 
 ## security/formal-verification.md
 
@@ -14082,12 +14082,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Required config
   - H2: Repair existing bare-session histories
   - H2: Plugin setup for acpx backend
-  - H3: acpx runtime startup probe
+  - H3: acpx runtime startup check
   - H3: Automatic adapter download
   - H3: Plugin tools MCP bridge
   - H3: OpenClaw tools MCP bridge
   - H3: Runtime operation timeout configuration
-  - H3: Health probe agent configuration
+  - H3: Health check agent configuration
   - H2: Permission configuration
   - H3: permissionMode
   - H3: nonInteractivePermissions
