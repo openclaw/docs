@@ -8579,6 +8579,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-runtime/hooks
 - Headings:
   - H2: Hook boundaries
+  - H2: Remote native hook callbacks
 
 ## plugins/codex-harness-runtime/permissions.md
 
