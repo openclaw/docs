@@ -11601,6 +11601,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/anthropic
 - Headings:
   - H2: Choose a model route
+  - H2: Claude Haiku 5.5
   - H2: Usage and cost tracking
   - H2: Getting started
   - H2: Use Claude Opus 5.5
