@@ -7116,6 +7116,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Node requirements during an update
   - H2: Install Node
   - H2: Troubleshooting
+  - H3: Homebrew upgrades while the Gateway is running
   - H3: openclaw: command not found
   - H3: Permission errors on npm install -g (Linux)
   - H2: Related
