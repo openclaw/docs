@@ -62,6 +62,7 @@ Options: `--role <role>`, `--workspace <dir>`, `--model <id>`, `--agent-dir <dir
 - The automation flags `--workspace`, `--model`, `--agent-dir`, `--bind`, and `--non-interactive` select the non-interactive path. Non-interactive mode requires an agent name and, unless `--role` is supplied, `--workspace`.
 - `--json` alone keeps the guided wizard interactive. Prompts and status are written to stderr, and stdout contains one JSON summary after setup completes.
 - Non-interactive `--json` reports normalized agent IDs in the summary without extra stdout status messages.
+- If a requested binding belongs to another agent, non-interactive creation keeps the new agent and any non-conflicting bindings but exits with status 1. The summary names the conflicts; resolve them with `agents bind` and `agents unbind` instead of recreating the agent.
 - `main` is an ordinary agent id. Recreating it after another agent owns the installation can require `openclaw doctor --fix` to repair legacy session or shared-auth ownership first.
 - Interactive mode offers optional auth copying. When the fleet has no default agent, choose a source agent or **Skip copying auth profiles** (the default). Selecting a source still requires confirmation before copying. Only portable static credentials (`api_key` and static `token` profiles) are copied unless a credential opts out with `copyToAgents: false`; OAuth refresh-token profiles are not copied unless a provider opts in with `copyToAgents: true`. Without a copy, OAuth stays available through the shared auth base. If the source agent has its own local OAuth profile, sign in separately for the new agent.
 - An agent id whose deletion has finished can be recreated with `agents add`. Creation claims the finished deletion record when it publishes the new agent, including when the wizard copies or configures auth. An id whose deletion cleanup is still pending is refused until that deletion is retried.
@@ -216,6 +217,7 @@ If you omit `--agent` for `bind` or `unbind`, OpenClaw targets the current defau
 
 - A stored binding without `accountId` matches the literal `default` account key only.
 - `accountId: "*"` is the channel-wide fallback (all accounts) and is less specific than an explicit account binding.
+- Binding conflicts, duplicate detection, and removal compare normalized account IDs, just like message routing; account ID casing does not create a separate route.
 - If the same agent already has a matching channel binding without `accountId`, and you later bind with an explicit or resolved `accountId`, OpenClaw upgrades that existing binding in place instead of adding a duplicate.
 
 Examples:
