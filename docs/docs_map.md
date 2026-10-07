@@ -7274,6 +7274,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating/rollback-and-recovery
 - Headings:
+  - H2: Before you upgrade
   - H2: Downgrade
   - H3: Full-state recovery requires a backup
   - H3: Automatic schema-neutral rollback
