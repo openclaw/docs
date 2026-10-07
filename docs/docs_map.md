@@ -5576,6 +5576,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Metrics exported
   - H3: Worktree preparation
   - H3: Catalog list stages
+  - H3: Current sessions and work
   - H3: Runtime identity
   - H3: Event-loop observation windows
   - H3: Worker request queues
