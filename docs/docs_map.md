@@ -15655,6 +15655,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Home dock
   - H2: Plugin conversation docks
   - H2: Operator terminal
+  - H3: Terminal fonts
   - H2: Browser panel
   - H2: GitHub side panel
 
