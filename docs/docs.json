@@ -2159,6 +2159,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "concepts/models",
+                  "concepts/recommended-models",
                   "concepts/decision-models",
                   "concepts/model-providers",
                   {
@@ -4210,6 +4211,7 @@
                 "group": "模型概念",
                 "pages": [
                   "zh-CN/concepts/models",
+                  "zh-CN/concepts/recommended-models",
                   "zh-CN/concepts/decision-models",
                   "zh-CN/concepts/model-providers",
                   {
@@ -6261,6 +6263,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "zh-TW/concepts/models",
+                  "zh-TW/concepts/recommended-models",
                   "zh-TW/concepts/decision-models",
                   "zh-TW/concepts/model-providers",
                   {
@@ -8312,6 +8315,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ja-JP/concepts/models",
+                  "ja-JP/concepts/recommended-models",
                   "ja-JP/concepts/decision-models",
                   "ja-JP/concepts/model-providers",
                   {
@@ -10363,6 +10367,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "es/concepts/models",
+                  "es/concepts/recommended-models",
                   "es/concepts/decision-models",
                   "es/concepts/model-providers",
                   {
@@ -12414,6 +12419,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "pt-BR/concepts/models",
+                  "pt-BR/concepts/recommended-models",
                   "pt-BR/concepts/decision-models",
                   "pt-BR/concepts/model-providers",
                   {
@@ -14465,6 +14471,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ko/concepts/models",
+                  "ko/concepts/recommended-models",
                   "ko/concepts/decision-models",
                   "ko/concepts/model-providers",
                   {
@@ -16516,6 +16523,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "de/concepts/models",
+                  "de/concepts/recommended-models",
                   "de/concepts/decision-models",
                   "de/concepts/model-providers",
                   {
@@ -18567,6 +18575,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "fr/concepts/models",
+                  "fr/concepts/recommended-models",
                   "fr/concepts/decision-models",
                   "fr/concepts/model-providers",
                   {
@@ -20618,6 +20627,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "hi/concepts/models",
+                  "hi/concepts/recommended-models",
                   "hi/concepts/decision-models",
                   "hi/concepts/model-providers",
                   {
@@ -22669,6 +22679,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ar/concepts/models",
+                  "ar/concepts/recommended-models",
                   "ar/concepts/decision-models",
                   "ar/concepts/model-providers",
                   {
@@ -24720,6 +24731,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "it/concepts/models",
+                  "it/concepts/recommended-models",
                   "it/concepts/decision-models",
                   "it/concepts/model-providers",
                   {
@@ -26771,6 +26783,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "vi/concepts/models",
+                  "vi/concepts/recommended-models",
                   "vi/concepts/decision-models",
                   "vi/concepts/model-providers",
                   {
@@ -28822,6 +28835,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "nl/concepts/models",
+                  "nl/concepts/recommended-models",
                   "nl/concepts/decision-models",
                   "nl/concepts/model-providers",
                   {
@@ -30873,6 +30887,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "fa/concepts/models",
+                  "fa/concepts/recommended-models",
                   "fa/concepts/decision-models",
                   "fa/concepts/model-providers",
                   {
@@ -32924,6 +32939,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "tr/concepts/models",
+                  "tr/concepts/recommended-models",
                   "tr/concepts/decision-models",
                   "tr/concepts/model-providers",
                   {
@@ -34975,6 +34991,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "uk/concepts/models",
+                  "uk/concepts/recommended-models",
                   "uk/concepts/decision-models",
                   "uk/concepts/model-providers",
                   {
@@ -37026,6 +37043,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "id/concepts/models",
+                  "id/concepts/recommended-models",
                   "id/concepts/decision-models",
                   "id/concepts/model-providers",
                   {
@@ -39077,6 +39095,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "pl/concepts/models",
+                  "pl/concepts/recommended-models",
                   "pl/concepts/decision-models",
                   "pl/concepts/model-providers",
                   {
@@ -41128,6 +41147,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "th/concepts/models",
+                  "th/concepts/recommended-models",
                   "th/concepts/decision-models",
                   "th/concepts/model-providers",
                   {
@@ -43179,6 +43199,7 @@
                 "group": "Concepts and configuration",
                 "pages": [
                   "ru/concepts/models",
+                  "ru/concepts/recommended-models",
                   "ru/concepts/decision-models",
                   "ru/concepts/model-providers",
                   {

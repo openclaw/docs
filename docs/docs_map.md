@@ -4112,6 +4112,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## concepts/recommended-models.md
+
+- Route: /concepts/recommended-models
+- Headings:
+  - H1: Recommended models
+  - H2: Entry format
+  - H2: Review rules
+
 ## concepts/retry.md
 
 - Route: /concepts/retry
