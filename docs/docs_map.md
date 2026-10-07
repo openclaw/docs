@@ -12778,6 +12778,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito creation and entry patches (P7h2, inactive)
   - H3: Incognito acquisition and authority composition (P7k, inactive)
   - H3: Incognito domain entry points (P7l, inactive)
+  - H3: Incognito steering, visibility, trajectory, and project authority (P7n, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
