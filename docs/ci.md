@@ -135,6 +135,10 @@ Changed-owner Node rows use existing file/group timing evidence with a
 150-test-second admission target and the existing 130-row PR cap. Complete files,
 canonical configs, and worker policies remain intact; predicted test seconds
 are separate from measured CI wall time.
+Known indivisible-file costs remain a floor when selected subsets are priced;
+older complete-group measurements cannot cap those costs. Process-heavy worktree
+and updater suites carry explicit case-cost weights so they do not share a row
+on the default per-file estimate.
 
 Plugin-sensitive PRs select their owner tests, transitive import consumers,
 protected regressions, and policy watches. The existing Plugin Prerelease workflow retains complete
