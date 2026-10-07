@@ -9030,6 +9030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Tool call policy
   - H3: Sender-aware policy in one file
+  - H3: Tool call observation
   - H3: Exec environment hook
   - H3: Tool result persistence
 
