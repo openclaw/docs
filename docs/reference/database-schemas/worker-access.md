@@ -52,6 +52,34 @@ after native settlement; reusable writer slots retain prepared launch facts
 instead of the opening caller's options. These changes preserve FIFO admission,
 joins of pending opens, schemas, stored bytes, configuration, and update behavior.
 
+Successful session discovery transfers selected physical readers and their lexical
+aliases to the existing history reader owner before releasing temporary discovery
+custody. Cleanup preserves those exact retained paths while closing unowned siblings.
+Revocation, failed discovery, deletion, and native cleanup failure keep the existing
+retirement and settlement requirements. Retained readers continue to observe native
+mutations, foreign commits, and physical replacement through their original owner.
+
+Workers may inherit completed native SQLite capability checks and canonical schema
+comparison definitions through the existing worker launcher. Runtime facts remain
+bound to the originating process, executable, runtime, and selected library;
+comparison definitions also bind their canonical source and format. Missing or
+mismatched facts use the original admission path. Each worker still validates its
+actual database and current caller authority. Registry admission likewise reuses
+exact canonical audit definitions from admitted schema facts, retaining structural
+validation for other supported shapes. Schemas, stored bytes, retention, and update
+behavior are unchanged.
+
+Runtime canonical-session readiness carries the pending work's captured physical
+source into the existing reclamation worker. The worker rereads current rows and
+certifies them in synchronous transactions, retaining the existing FIFO, live host
+grants, and acknowledged validation publication. Startup and Doctor keep their
+native readiness probe; runtime does not reopen a caller-thread reader after a wait.
+
+Canonical index inspection reuses one complete current catalog snapshot through
+the existing table-contract reader. Fingerprint comparison, unexpected uniqueness
+rejection, integrity checks, and atomic repair retain their original contracts.
+This changes neither canonical definitions nor repair and update policy.
+
 Inventory classifications describe counted operations, not whole-module runtime
 safety. Reviewed mixed modules use named operation paths, optionally narrowed to
 a variable initializer, rather than line numbers. Initializer exceptions exclude
