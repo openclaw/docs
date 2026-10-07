@@ -16,6 +16,32 @@ paths are migration debt, not a pattern to extend. The
 [migration inventory](/reference/database-schemas/worker-access-inventory) separates
 candidate main-thread paths from SQL already executing in workers.
 
+Conversation directory registration and outbound binding predicates use the existing
+agent writer. Registration retains the selected physical store across directory
+discovery; transaction and commit grants recheck live routing authority. Delivery
+attempts initiate the concrete platform method under the existing agent writer's
+current-row grant, after asynchronous handoff preparation. Its transaction excludes
+foreign commits until initiation; transport settlement is joined outside the transaction
+and FIFO. Recovery selects the operation receipt and conversation together. Captured
+route fingerprints are comparison inputs, never authority by themselves.
+Directory grants batch native binding inspection within each synchronous phase,
+preserving exact-row and legacy-key selection. Every authority check probes the current
+foreign-commit revision. The binding owner may reuse its bounded row cohort only when
+that revision, schema and local mutation revision still match; expiry is evaluated again.
+Transactions, pinned snapshots and authorizer-controlled reads do not reuse the cohort.
+Address registration prepares one encoded batch before its synchronous write transaction.
+
+Current-conversation binding mutations and bundled session listings use the existing
+shared-state worker. Plugin ownership comparisons run against the transaction's
+current binding, and multi-session listings share one worker request per owner.
+Post-ready delivery recovery counts and cron receipt selection also use their
+existing workers. The initial post-ready recovery pass is runtime work, distinct
+from boot admission; native queue counting remains only for Doctor migration and
+preflight. Accepted writes retain the existing FIFO and settlement lifecycle.
+Schemas, stored bytes, retention, and update behavior are unchanged. Released
+synchronous binding selectors and the transport SDK's current-conversation session
+selector retain their compatibility contract, including synchronous command guards.
+
 Session target discovery and exact entry reads use the existing projection worker
 so chat authority and run admission do not queue behind unrelated transcript
 history. Ordered reads still retain the database writer FIFO and revalidate their
