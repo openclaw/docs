@@ -1727,6 +1727,9 @@ Native checkpoint work and file-size diagnostics run in the worker. Linux
 sidecar containment retains its synchronous scan at timer entry, before identity
 admission can refuse dispatch or close can clean up the original handle. Host
 admission and physical-identity checks remain on the host.
+Checkpoint-only PASSIVE ticks preserve the connection's busy timeout without
+reading or changing it: SQLite does not invoke the busy handler for PASSIVE.
+Page reclamation and blocking checkpoint modes keep their zero-timeout scope.
 Existing worker-local maintenance and synchronous offline/close checkpoints retain
 their owners; durability, schemas, retention, and update behavior are unchanged.
 
