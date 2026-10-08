@@ -123,7 +123,12 @@ Workers may inherit completed native SQLite capability checks and canonical sche
 comparison definitions through the existing worker launcher. Runtime facts remain
 bound to the originating process, executable, runtime, and selected library;
 comparison definitions also bind their canonical source and format. Missing or
-mismatched facts use the original admission path. Each worker still validates its
+mismatched facts use the original admission path. A SQLite writer returns its
+completed native capability fact with an existing successful reply, so later
+sibling workers can inherit it without another probe. The native runtime owner
+checks the same process and library identity and current WAL safety floor before
+forwarding it; invalid hints leave both write settlement and normal admission
+unchanged. Each worker still validates its
 actual database and current caller authority. Registry admission likewise reuses
 exact canonical audit definitions from admitted schema facts, retaining structural
 validation for other supported shapes. Schemas, stored bytes, retention, and update
@@ -1825,9 +1830,18 @@ message authority checks after preparation. The reader preserves account
 normalization and entry order, propagates admission failures, and joins accepted
 read cleanup before its transport closes. Missing state grants no permission and
 does not initialize a database; boot and Doctor retain initialization. The
-released synchronous SDK reader and pairing request/approval mutations retain
-their native paths, so their shared SQL sites remain T1. No schema, retention,
-durability, or update migration changes.
+released synchronous SDK reader retains only its native allowlist query.
+Channel request, pruning, approval, dismissal, and allowlist mutations use the
+existing shared-state writer and capture the physical store before yielding.
+Approval adapters prepare the selected row outside the write transaction; the
+worker rereads the exact current selection before consuming the request and
+adding an approval. Preparation uses the existing read-only admission, and the
+transaction reads both row families in one statement. Missing requests that need
+no pruning still check native write ownership and host authority before returning.
+Host authority is checked after preparation and at transaction
+and commit admission. Writes preserve account normalization and update only
+changed rows instead of replacing the whole channel snapshot. No schema,
+retention, durability, permission, or update migration changes.
 
 Durable transcript write locks retain the canonical agent writer for reads and
 callback settlement. Reads carry exact stored bytes and row sequences;
