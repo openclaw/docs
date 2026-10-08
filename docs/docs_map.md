@@ -1711,6 +1711,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Workflow lint tools
   - H2: Surface ratchets
   - H2: Local check gates and changed routing
+  - H3: Assertion inventory reports
   - H3: Config baseline count ratchet
   - H2: Testbox validation
   - H2: Related
