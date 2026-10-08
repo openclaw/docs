@@ -15621,6 +15621,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/settings
 - Headings:
   - H2: Environment identity
+  - H2: Browser tab icon
   - H2: Community invitation
   - H2: Personal identity
   - H2: Gateway host status
