@@ -160,6 +160,19 @@ exact canonical audit definitions from admitted schema facts, retaining structur
 validation for other supported shapes. Schemas, stored bytes, retention, and update
 behavior are unchanged.
 
+Completed full expected-schema descriptions are shared across bundled module
+copies and inherited by newly created workers through that same launcher. The
+Gateway prepares the canonical shared-state and agent descriptions during boot
+admission, after SQLite runtime selection and before starting database workers.
+The cache is keyed by complete canonical SQL, so same-version additive definitions
+remain distinct. Only expected definitions are transferred: every admission still
+inspects its actual database, and newer database versions remain refused. Retained
+supervisors forward the caller's current definitions when creating each worker.
+Runtime shared-state comparisons select their existing table and index view from
+the full description. They do not construct another comparison database for that
+subset. The full maintenance policy still validates present lazy objects, and
+physical schema creation and migration SQL are unchanged.
+
 Runtime canonical-session readiness carries the pending work's captured physical
 source into the existing reclamation worker. The worker rereads current rows and
 certifies them in synchronous transactions, retaining the existing FIFO, live host
