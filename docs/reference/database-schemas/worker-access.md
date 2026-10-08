@@ -3631,3 +3631,26 @@ at both shared-state write grants, with native admission completed beforehand.
 No question policy is projected when image cancellation finds no pending question;
 ordinary steering retains its own admission. Schemas, retention, durability,
 configuration, and update behavior are unchanged.
+
+OAuth peer fencing, restoration, and settlement use the existing auth reader and
+agent writer. Discovery retains each candidate's physical database identity,
+including registered custom paths. The writer compares the exact credential
+under its transaction, publishes acknowledged changes, and preserves provisional
+claim custody when a fence reply is lost. Accepted refreshes retain their auth
+work owner through provider waits and peer settlement; Gateway close rejects new
+work and joins that settlement before closing the transports.
+
+Lazy shared-auth bootstrap runs in the existing shared-state worker. An empty
+legacy source keeps its existing-file write reservation through the shared
+ownership commit; live host grants recheck source identity and ownership. The
+worker rereads ownership and pending migration cleanup before relocating an
+empty store. Unreadable or populated legacy stores remain with Doctor. The
+released synchronous `agent-runtime` auth-store save API and Doctor retain their
+native preparation; the synchronous candidate reader also serves the CLI's
+immediate shared-key replacement guard.
+
+Personal model catalog selection prepares its default links and selected
+credentials together in one auth-worker request. Catalog composition retains the
+original credential and link authority through that read and checks it before
+publication. These changes preserve schemas, stored bytes, retention, and update
+behavior.
