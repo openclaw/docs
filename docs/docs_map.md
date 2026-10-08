@@ -5117,6 +5117,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Runtime config migration
+  - H2: Command-owner target kinds
   - H2: Retention policy
   - H3: Deferred compaction checkpoints
   - H3: Workspace setup
