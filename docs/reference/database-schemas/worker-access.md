@@ -16,6 +16,33 @@ paths are migration debt, not a pattern to extend. The
 [migration inventory](/reference/database-schemas/worker-access-inventory) separates
 candidate main-thread paths from SQL already executing in workers.
 
+Exec policy edits, usage recording, socket initialization, and agent policy
+removal and restoration use the existing shared-state writer. Typed edits retain
+their physical source before yielding, and each transaction reads the current
+policy and deletion journal under live host admission. A policy edit ends the
+preceding authorization batch; later authorizations cannot join it. Cron policy
+uses are fenced before the commit grant, including uses prepared while that
+grant awaits settlement. Failed or uncertain writes cannot revive revoked uses.
+
+The final pre-spawn policy authority read remains synchronous and T1. It observes
+direct native and foreign-connection policy changes after preparation and before
+each launch or retry; published or cached policy facts cannot replace it.
+Preparation admits a live read-only connection through the existing reader pool.
+The final guard uses one indexed policy-row SELECT on that handle, without a
+freshness/schema PRAGMA or transaction envelope: it consumes current rows, not
+cached facts. Physical identity, source lifetime, integrity, and transaction
+exclusion are still checked. A retired reader requires new preparation.
+The released v2026.9.8 `prepareExecAuthorization` contract returns a synchronous
+guard for immediate use before spawn, and `plugin-sdk/exec-approvals-runtime`
+exports synchronous policy readers. Retirement requires the next Plugin SDK
+major, removal of raw synchronous writers, and complete revocation publications
+for launch adapters, preserving foreign-write freshness and unknown-launch
+settlement. Doctor retains its native migration adapter. Approval resolution with
+the released opaque SDK
+commit guard still reaches the shared MCP grant kernels, so their policy write
+and deletion-fence query remain T1. These changes introduce no schema, stored
+data, retention, durability, permission, or update migration.
+
 Gateway deleted-agent checks batch ACP metadata candidates through the shared-state
 reader only for free ACP keys whose agent is absent. When a foreign commit requires
 the content-version marker to be refreshed, the reader fetches that marker and the
