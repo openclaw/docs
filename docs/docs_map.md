@@ -2974,7 +2974,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw skills
   - H2: Commands
-  - H3: Workshop inventory and upgrades
   - H2: Release trust
   - H2: Remove a ClawHub skill
   - H2: Personal skill library
@@ -8997,7 +8996,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Registration and execution
   - H2: Hook catalog
-  - H3: Skill lifecycle and evaluation
+  - H3: Skill lifecycle
   - H3: Channel pairing requests
 
 ## plugins/hooks/tool-policy.md
@@ -11022,6 +11021,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Command, Discord, and Telegram account facades
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
+  - H3: Skill Workshop proposal hooks
   - H3: Private testing barrel
   - H3: Credential prompt builder
   - H2: Migration reference
@@ -12684,6 +12684,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: State schema history
   - H3: State schema 20
+  - H3: Skill Workshop proposal retirement (state schema 20, same version)
   - H3: State schema 19
   - H3: State schema 18
   - H3: State schema 17
@@ -14525,7 +14526,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Optional frontmatter keys
   - H3: Using {baseDir}
   - H2: Adding conditional activation
-  - H2: Propose via Skill Workshop
+  - H2: Learned skills (Skill Workshop)
   - H2: Publishing to ClawHub
   - H2: Best practices
   - H2: Related
@@ -15040,19 +15041,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/self-learning
 - Headings:
-  - H2: Immediate repair
-  - H2: Experience review
-  - H2: Mode policy
-  - H2: Why auto is safe to default
-  - H2: Runtime support
+  - H2: When a review runs
+  - H2: What a review does
+  - H2: What you see
+  - H2: Turn it on or off
   - H2: Cost and privacy
-  - H2: Review and revert learning
-  - H2: Configuration reference
   - H2: Troubleshooting
-  - H3: No capture appears
-  - H3: Doctor reports that Workshop is hidden
-  - H3: A proposal remains pending in auto mode
-  - H3: Too many low-value captures appear
+  - H3: Nothing is learned
+  - H3: Too many or unwanted changes
   - H2: Related
 
 ## tools/show-widget.md
@@ -15076,73 +15072,23 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/skill-workshop
 - Headings:
-  - H2: Where each section moved
+  - H2: How the agent learns
+  - H2: Undo
+  - H2: Unused-skill cleanup
+  - H2: /learn
+  - H2: Agent tool
+  - H2: Configuration
+  - H2: Where files live
+  - H2: Operator surfaces
+  - H2: Upgrading from earlier releases
+  - H2: Troubleshooting
   - H2: Related
-
-## tools/skill-workshop/authoring.md
-
-- Route: /tools/skill-workshop/authoring
-- Headings:
-  - H2: Chat
-  - H3: Learn from recent work
-  - H2: CLI
-
-## tools/skill-workshop/collection-review.md
-
-- Route: /tools/skill-workshop/collection-review
-- Headings:
-  - H2: Collection review
-  - H3: Changes and recovery
-  - H3: When an older backup cannot be restored automatically
-
-## tools/skill-workshop/configuration.md
-
-- Route: /tools/skill-workshop/configuration
-- Headings:
-  - H2: Self-learning
-  - H3: Scan past sessions
-  - H2: Approval and autonomy
-
-## tools/skill-workshop/how-it-works.md
-
-- Route: /tools/skill-workshop/how-it-works
-- Headings:
-  - H2: How it works
-  - H2: Review in the Control UI
-  - H2: Lifecycle
 
 ## tools/skill-workshop/personal-library.md
 
 - Route: /tools/skill-workshop/personal-library
 - Headings:
   - H2: Personal library authoring
-
-## tools/skill-workshop/proposals.md
-
-- Route: /tools/skill-workshop/proposals
-- Headings:
-  - H2: Plugin evaluation and lifecycle hooks
-  - H2: Proposal content
-  - H2: Support files
-  - H2: Agent tool
-
-## tools/skill-workshop/reference.md
-
-- Route: /tools/skill-workshop/reference
-- Headings:
-  - H2: Gateway methods
-  - H3: Workshop inventory and usage
-  - H3: Revision and history methods
-  - H2: Storage
-  - H2: Limits
-
-## tools/skill-workshop/troubleshooting.md
-
-- Route: /tools/skill-workshop/troubleshooting
-- Headings:
-  - H2: Troubleshooting
-  - H3: Legacy ownership warnings during an update
-  - H3: Tool-policy diagnostic
 
 ## tools/skills-config.md
 

@@ -859,6 +859,34 @@
       "destination": "/tools/skill-workshop"
     },
     {
+      "source": "/tools/skill-workshop/how-it-works",
+      "destination": "/tools/skill-workshop"
+    },
+    {
+      "source": "/tools/skill-workshop/collection-review",
+      "destination": "/tools/skill-workshop#unused-skill-cleanup"
+    },
+    {
+      "source": "/tools/skill-workshop/authoring",
+      "destination": "/tools/skill-workshop#learn"
+    },
+    {
+      "source": "/tools/skill-workshop/proposals",
+      "destination": "/tools/skill-workshop#upgrading-from-earlier-releases"
+    },
+    {
+      "source": "/tools/skill-workshop/configuration",
+      "destination": "/tools/skill-workshop#configuration"
+    },
+    {
+      "source": "/tools/skill-workshop/reference",
+      "destination": "/tools/skill-workshop#operator-surfaces"
+    },
+    {
+      "source": "/tools/skill-workshop/troubleshooting",
+      "destination": "/tools/skill-workshop#troubleshooting"
+    },
+    {
       "source": "/skills-config",
       "destination": "/tools/skills-config"
     },
@@ -1886,19 +1914,7 @@
                   "tools/skills",
                   "tools/custodian-skills",
                   "tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "tools/skill-workshop/personal-library",
-                      "tools/skill-workshop/how-it-works",
-                      "tools/skill-workshop/collection-review",
-                      "tools/skill-workshop/authoring",
-                      "tools/skill-workshop/proposals",
-                      "tools/skill-workshop/configuration",
-                      "tools/skill-workshop/reference",
-                      "tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "tools/skill-workshop/personal-library",
                   "tools/self-learning",
                   "tools/creating-skills",
                   "tools/skills-config",
@@ -3970,19 +3986,7 @@
                   "zh-CN/tools/skills",
                   "zh-CN/tools/custodian-skills",
                   "zh-CN/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "zh-CN/tools/skill-workshop/personal-library",
-                      "zh-CN/tools/skill-workshop/how-it-works",
-                      "zh-CN/tools/skill-workshop/collection-review",
-                      "zh-CN/tools/skill-workshop/authoring",
-                      "zh-CN/tools/skill-workshop/proposals",
-                      "zh-CN/tools/skill-workshop/configuration",
-                      "zh-CN/tools/skill-workshop/reference",
-                      "zh-CN/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "zh-CN/tools/skill-workshop/personal-library",
                   "zh-CN/tools/self-learning",
                   "zh-CN/tools/creating-skills",
                   "zh-CN/tools/skills-config",
@@ -6020,19 +6024,7 @@
                   "zh-TW/tools/skills",
                   "zh-TW/tools/custodian-skills",
                   "zh-TW/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "zh-TW/tools/skill-workshop/personal-library",
-                      "zh-TW/tools/skill-workshop/how-it-works",
-                      "zh-TW/tools/skill-workshop/collection-review",
-                      "zh-TW/tools/skill-workshop/authoring",
-                      "zh-TW/tools/skill-workshop/proposals",
-                      "zh-TW/tools/skill-workshop/configuration",
-                      "zh-TW/tools/skill-workshop/reference",
-                      "zh-TW/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "zh-TW/tools/skill-workshop/personal-library",
                   "zh-TW/tools/self-learning",
                   "zh-TW/tools/creating-skills",
                   "zh-TW/tools/skills-config",
@@ -8070,19 +8062,7 @@
                   "ja-JP/tools/skills",
                   "ja-JP/tools/custodian-skills",
                   "ja-JP/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "ja-JP/tools/skill-workshop/personal-library",
-                      "ja-JP/tools/skill-workshop/how-it-works",
-                      "ja-JP/tools/skill-workshop/collection-review",
-                      "ja-JP/tools/skill-workshop/authoring",
-                      "ja-JP/tools/skill-workshop/proposals",
-                      "ja-JP/tools/skill-workshop/configuration",
-                      "ja-JP/tools/skill-workshop/reference",
-                      "ja-JP/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "ja-JP/tools/skill-workshop/personal-library",
                   "ja-JP/tools/self-learning",
                   "ja-JP/tools/creating-skills",
                   "ja-JP/tools/skills-config",
@@ -10120,19 +10100,7 @@
                   "es/tools/skills",
                   "es/tools/custodian-skills",
                   "es/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "es/tools/skill-workshop/personal-library",
-                      "es/tools/skill-workshop/how-it-works",
-                      "es/tools/skill-workshop/collection-review",
-                      "es/tools/skill-workshop/authoring",
-                      "es/tools/skill-workshop/proposals",
-                      "es/tools/skill-workshop/configuration",
-                      "es/tools/skill-workshop/reference",
-                      "es/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "es/tools/skill-workshop/personal-library",
                   "es/tools/self-learning",
                   "es/tools/creating-skills",
                   "es/tools/skills-config",
@@ -12170,19 +12138,7 @@
                   "pt-BR/tools/skills",
                   "pt-BR/tools/custodian-skills",
                   "pt-BR/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "pt-BR/tools/skill-workshop/personal-library",
-                      "pt-BR/tools/skill-workshop/how-it-works",
-                      "pt-BR/tools/skill-workshop/collection-review",
-                      "pt-BR/tools/skill-workshop/authoring",
-                      "pt-BR/tools/skill-workshop/proposals",
-                      "pt-BR/tools/skill-workshop/configuration",
-                      "pt-BR/tools/skill-workshop/reference",
-                      "pt-BR/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "pt-BR/tools/skill-workshop/personal-library",
                   "pt-BR/tools/self-learning",
                   "pt-BR/tools/creating-skills",
                   "pt-BR/tools/skills-config",
@@ -14220,19 +14176,7 @@
                   "ko/tools/skills",
                   "ko/tools/custodian-skills",
                   "ko/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "ko/tools/skill-workshop/personal-library",
-                      "ko/tools/skill-workshop/how-it-works",
-                      "ko/tools/skill-workshop/collection-review",
-                      "ko/tools/skill-workshop/authoring",
-                      "ko/tools/skill-workshop/proposals",
-                      "ko/tools/skill-workshop/configuration",
-                      "ko/tools/skill-workshop/reference",
-                      "ko/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "ko/tools/skill-workshop/personal-library",
                   "ko/tools/self-learning",
                   "ko/tools/creating-skills",
                   "ko/tools/skills-config",
@@ -16270,19 +16214,7 @@
                   "de/tools/skills",
                   "de/tools/custodian-skills",
                   "de/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "de/tools/skill-workshop/personal-library",
-                      "de/tools/skill-workshop/how-it-works",
-                      "de/tools/skill-workshop/collection-review",
-                      "de/tools/skill-workshop/authoring",
-                      "de/tools/skill-workshop/proposals",
-                      "de/tools/skill-workshop/configuration",
-                      "de/tools/skill-workshop/reference",
-                      "de/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "de/tools/skill-workshop/personal-library",
                   "de/tools/self-learning",
                   "de/tools/creating-skills",
                   "de/tools/skills-config",
@@ -18320,19 +18252,7 @@
                   "fr/tools/skills",
                   "fr/tools/custodian-skills",
                   "fr/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "fr/tools/skill-workshop/personal-library",
-                      "fr/tools/skill-workshop/how-it-works",
-                      "fr/tools/skill-workshop/collection-review",
-                      "fr/tools/skill-workshop/authoring",
-                      "fr/tools/skill-workshop/proposals",
-                      "fr/tools/skill-workshop/configuration",
-                      "fr/tools/skill-workshop/reference",
-                      "fr/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "fr/tools/skill-workshop/personal-library",
                   "fr/tools/self-learning",
                   "fr/tools/creating-skills",
                   "fr/tools/skills-config",
@@ -20370,19 +20290,7 @@
                   "hi/tools/skills",
                   "hi/tools/custodian-skills",
                   "hi/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "hi/tools/skill-workshop/personal-library",
-                      "hi/tools/skill-workshop/how-it-works",
-                      "hi/tools/skill-workshop/collection-review",
-                      "hi/tools/skill-workshop/authoring",
-                      "hi/tools/skill-workshop/proposals",
-                      "hi/tools/skill-workshop/configuration",
-                      "hi/tools/skill-workshop/reference",
-                      "hi/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "hi/tools/skill-workshop/personal-library",
                   "hi/tools/self-learning",
                   "hi/tools/creating-skills",
                   "hi/tools/skills-config",
@@ -22420,19 +22328,7 @@
                   "ar/tools/skills",
                   "ar/tools/custodian-skills",
                   "ar/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "ar/tools/skill-workshop/personal-library",
-                      "ar/tools/skill-workshop/how-it-works",
-                      "ar/tools/skill-workshop/collection-review",
-                      "ar/tools/skill-workshop/authoring",
-                      "ar/tools/skill-workshop/proposals",
-                      "ar/tools/skill-workshop/configuration",
-                      "ar/tools/skill-workshop/reference",
-                      "ar/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "ar/tools/skill-workshop/personal-library",
                   "ar/tools/self-learning",
                   "ar/tools/creating-skills",
                   "ar/tools/skills-config",
@@ -24470,19 +24366,7 @@
                   "it/tools/skills",
                   "it/tools/custodian-skills",
                   "it/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "it/tools/skill-workshop/personal-library",
-                      "it/tools/skill-workshop/how-it-works",
-                      "it/tools/skill-workshop/collection-review",
-                      "it/tools/skill-workshop/authoring",
-                      "it/tools/skill-workshop/proposals",
-                      "it/tools/skill-workshop/configuration",
-                      "it/tools/skill-workshop/reference",
-                      "it/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "it/tools/skill-workshop/personal-library",
                   "it/tools/self-learning",
                   "it/tools/creating-skills",
                   "it/tools/skills-config",
@@ -26520,19 +26404,7 @@
                   "vi/tools/skills",
                   "vi/tools/custodian-skills",
                   "vi/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "vi/tools/skill-workshop/personal-library",
-                      "vi/tools/skill-workshop/how-it-works",
-                      "vi/tools/skill-workshop/collection-review",
-                      "vi/tools/skill-workshop/authoring",
-                      "vi/tools/skill-workshop/proposals",
-                      "vi/tools/skill-workshop/configuration",
-                      "vi/tools/skill-workshop/reference",
-                      "vi/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "vi/tools/skill-workshop/personal-library",
                   "vi/tools/self-learning",
                   "vi/tools/creating-skills",
                   "vi/tools/skills-config",
@@ -28570,19 +28442,7 @@
                   "nl/tools/skills",
                   "nl/tools/custodian-skills",
                   "nl/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "nl/tools/skill-workshop/personal-library",
-                      "nl/tools/skill-workshop/how-it-works",
-                      "nl/tools/skill-workshop/collection-review",
-                      "nl/tools/skill-workshop/authoring",
-                      "nl/tools/skill-workshop/proposals",
-                      "nl/tools/skill-workshop/configuration",
-                      "nl/tools/skill-workshop/reference",
-                      "nl/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "nl/tools/skill-workshop/personal-library",
                   "nl/tools/self-learning",
                   "nl/tools/creating-skills",
                   "nl/tools/skills-config",
@@ -30620,19 +30480,7 @@
                   "fa/tools/skills",
                   "fa/tools/custodian-skills",
                   "fa/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "fa/tools/skill-workshop/personal-library",
-                      "fa/tools/skill-workshop/how-it-works",
-                      "fa/tools/skill-workshop/collection-review",
-                      "fa/tools/skill-workshop/authoring",
-                      "fa/tools/skill-workshop/proposals",
-                      "fa/tools/skill-workshop/configuration",
-                      "fa/tools/skill-workshop/reference",
-                      "fa/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "fa/tools/skill-workshop/personal-library",
                   "fa/tools/self-learning",
                   "fa/tools/creating-skills",
                   "fa/tools/skills-config",
@@ -32670,19 +32518,7 @@
                   "tr/tools/skills",
                   "tr/tools/custodian-skills",
                   "tr/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "tr/tools/skill-workshop/personal-library",
-                      "tr/tools/skill-workshop/how-it-works",
-                      "tr/tools/skill-workshop/collection-review",
-                      "tr/tools/skill-workshop/authoring",
-                      "tr/tools/skill-workshop/proposals",
-                      "tr/tools/skill-workshop/configuration",
-                      "tr/tools/skill-workshop/reference",
-                      "tr/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "tr/tools/skill-workshop/personal-library",
                   "tr/tools/self-learning",
                   "tr/tools/creating-skills",
                   "tr/tools/skills-config",
@@ -34720,19 +34556,7 @@
                   "uk/tools/skills",
                   "uk/tools/custodian-skills",
                   "uk/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "uk/tools/skill-workshop/personal-library",
-                      "uk/tools/skill-workshop/how-it-works",
-                      "uk/tools/skill-workshop/collection-review",
-                      "uk/tools/skill-workshop/authoring",
-                      "uk/tools/skill-workshop/proposals",
-                      "uk/tools/skill-workshop/configuration",
-                      "uk/tools/skill-workshop/reference",
-                      "uk/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "uk/tools/skill-workshop/personal-library",
                   "uk/tools/self-learning",
                   "uk/tools/creating-skills",
                   "uk/tools/skills-config",
@@ -36770,19 +36594,7 @@
                   "id/tools/skills",
                   "id/tools/custodian-skills",
                   "id/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "id/tools/skill-workshop/personal-library",
-                      "id/tools/skill-workshop/how-it-works",
-                      "id/tools/skill-workshop/collection-review",
-                      "id/tools/skill-workshop/authoring",
-                      "id/tools/skill-workshop/proposals",
-                      "id/tools/skill-workshop/configuration",
-                      "id/tools/skill-workshop/reference",
-                      "id/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "id/tools/skill-workshop/personal-library",
                   "id/tools/self-learning",
                   "id/tools/creating-skills",
                   "id/tools/skills-config",
@@ -38820,19 +38632,7 @@
                   "pl/tools/skills",
                   "pl/tools/custodian-skills",
                   "pl/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "pl/tools/skill-workshop/personal-library",
-                      "pl/tools/skill-workshop/how-it-works",
-                      "pl/tools/skill-workshop/collection-review",
-                      "pl/tools/skill-workshop/authoring",
-                      "pl/tools/skill-workshop/proposals",
-                      "pl/tools/skill-workshop/configuration",
-                      "pl/tools/skill-workshop/reference",
-                      "pl/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "pl/tools/skill-workshop/personal-library",
                   "pl/tools/self-learning",
                   "pl/tools/creating-skills",
                   "pl/tools/skills-config",
@@ -40870,19 +40670,7 @@
                   "th/tools/skills",
                   "th/tools/custodian-skills",
                   "th/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "th/tools/skill-workshop/personal-library",
-                      "th/tools/skill-workshop/how-it-works",
-                      "th/tools/skill-workshop/collection-review",
-                      "th/tools/skill-workshop/authoring",
-                      "th/tools/skill-workshop/proposals",
-                      "th/tools/skill-workshop/configuration",
-                      "th/tools/skill-workshop/reference",
-                      "th/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "th/tools/skill-workshop/personal-library",
                   "th/tools/self-learning",
                   "th/tools/creating-skills",
                   "th/tools/skills-config",
@@ -42920,19 +42708,7 @@
                   "ru/tools/skills",
                   "ru/tools/custodian-skills",
                   "ru/tools/skill-workshop",
-                  {
-                    "group": "Skill Workshop",
-                    "pages": [
-                      "ru/tools/skill-workshop/personal-library",
-                      "ru/tools/skill-workshop/how-it-works",
-                      "ru/tools/skill-workshop/collection-review",
-                      "ru/tools/skill-workshop/authoring",
-                      "ru/tools/skill-workshop/proposals",
-                      "ru/tools/skill-workshop/configuration",
-                      "ru/tools/skill-workshop/reference",
-                      "ru/tools/skill-workshop/troubleshooting"
-                    ]
-                  },
+                  "ru/tools/skill-workshop/personal-library",
                   "ru/tools/self-learning",
                   "ru/tools/creating-skills",
                   "ru/tools/skills-config",
