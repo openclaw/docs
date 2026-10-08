@@ -5238,6 +5238,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start (beginner)
   - H2: Defaults
   - H2: What the heartbeat prompt is for
+  - H2: Immediate session events
   - H2: Response contract
   - H2: Config
   - H3: Scope and precedence
