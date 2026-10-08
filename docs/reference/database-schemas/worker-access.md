@@ -291,6 +291,20 @@ major. Schemas, stored bytes, retention, and update behavior are unchanged.
 
 ## Keep one store owner
 
+Manual `sessions.compact` trimming with `maxLines` runs on the existing agent
+writer. The worker plans retained transcript rows before its synchronous write
+transaction, then compares the complete transcript bytes and selected entry before
+rewriting history and clearing stale token and harness-binding metadata together.
+Host authority stays live through transaction and commit grants; foreign source
+predicates are checked again after those grants. Confirmed receipts publish entry
+facts and schedule deferred projection reconciliation on the host. Incognito and
+released opaque synchronous guards retain the same native transaction kernel.
+Final host authority reads remain synchronous where raw SDK or foreign-process
+writers can revoke authority without complete owner publication. Retire those
+guards at the next Plugin SDK major when raw synchronous writers are removed and
+revocation publications cover every writer.
+Schema, retained-history policy, durability, and update behavior are unchanged.
+
 Live Gateway clients, call authentication, public-share codecs, goal receipts,
 APNs consumers, probes, and monitor reconciliation prepare device identity through
 the existing shared-state worker. Read-only discovery never creates identity state.
