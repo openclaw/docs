@@ -10655,6 +10655,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/core-ownership
 - Headings:
   - H2: What core still owns
+  - H3: Prepared local execution environment
   - H3: Current input files for local execution
   - H3: Workspace files on the harness host
   - H3: Input attachments for a remote workspace
