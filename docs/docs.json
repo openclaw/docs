@@ -2525,8 +2525,7 @@
                           "gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "gateway/multiple-gateways",
-                      "gateway/multi-tenant-hosting"
+                      "gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -2736,7 +2735,6 @@
                     "group": "Running the service",
                     "pages": [
                       "cli/daemon",
-                      "cli/fleet",
                       "cli/gateway",
                       {
                         "group": "Gateway",
@@ -4577,8 +4575,7 @@
                           "zh-CN/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "zh-CN/gateway/multiple-gateways",
-                      "zh-CN/gateway/multi-tenant-hosting"
+                      "zh-CN/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -4788,7 +4785,6 @@
                     "group": "Running the service",
                     "pages": [
                       "zh-CN/cli/daemon",
-                      "zh-CN/cli/fleet",
                       "zh-CN/cli/gateway",
                       {
                         "group": "Gateway",
@@ -6629,8 +6625,7 @@
                           "zh-TW/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "zh-TW/gateway/multiple-gateways",
-                      "zh-TW/gateway/multi-tenant-hosting"
+                      "zh-TW/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -6840,7 +6835,6 @@
                     "group": "Running the service",
                     "pages": [
                       "zh-TW/cli/daemon",
-                      "zh-TW/cli/fleet",
                       "zh-TW/cli/gateway",
                       {
                         "group": "Gateway",
@@ -8681,8 +8675,7 @@
                           "ja-JP/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "ja-JP/gateway/multiple-gateways",
-                      "ja-JP/gateway/multi-tenant-hosting"
+                      "ja-JP/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -8892,7 +8885,6 @@
                     "group": "Running the service",
                     "pages": [
                       "ja-JP/cli/daemon",
-                      "ja-JP/cli/fleet",
                       "ja-JP/cli/gateway",
                       {
                         "group": "Gateway",
@@ -10733,8 +10725,7 @@
                           "es/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "es/gateway/multiple-gateways",
-                      "es/gateway/multi-tenant-hosting"
+                      "es/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -10944,7 +10935,6 @@
                     "group": "Running the service",
                     "pages": [
                       "es/cli/daemon",
-                      "es/cli/fleet",
                       "es/cli/gateway",
                       {
                         "group": "Gateway",
@@ -12785,8 +12775,7 @@
                           "pt-BR/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "pt-BR/gateway/multiple-gateways",
-                      "pt-BR/gateway/multi-tenant-hosting"
+                      "pt-BR/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -12996,7 +12985,6 @@
                     "group": "Running the service",
                     "pages": [
                       "pt-BR/cli/daemon",
-                      "pt-BR/cli/fleet",
                       "pt-BR/cli/gateway",
                       {
                         "group": "Gateway",
@@ -14837,8 +14825,7 @@
                           "ko/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "ko/gateway/multiple-gateways",
-                      "ko/gateway/multi-tenant-hosting"
+                      "ko/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -15048,7 +15035,6 @@
                     "group": "Running the service",
                     "pages": [
                       "ko/cli/daemon",
-                      "ko/cli/fleet",
                       "ko/cli/gateway",
                       {
                         "group": "Gateway",
@@ -16889,8 +16875,7 @@
                           "de/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "de/gateway/multiple-gateways",
-                      "de/gateway/multi-tenant-hosting"
+                      "de/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -17100,7 +17085,6 @@
                     "group": "Running the service",
                     "pages": [
                       "de/cli/daemon",
-                      "de/cli/fleet",
                       "de/cli/gateway",
                       {
                         "group": "Gateway",
@@ -18941,8 +18925,7 @@
                           "fr/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "fr/gateway/multiple-gateways",
-                      "fr/gateway/multi-tenant-hosting"
+                      "fr/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -19152,7 +19135,6 @@
                     "group": "Running the service",
                     "pages": [
                       "fr/cli/daemon",
-                      "fr/cli/fleet",
                       "fr/cli/gateway",
                       {
                         "group": "Gateway",
@@ -20993,8 +20975,7 @@
                           "hi/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "hi/gateway/multiple-gateways",
-                      "hi/gateway/multi-tenant-hosting"
+                      "hi/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -21204,7 +21185,6 @@
                     "group": "Running the service",
                     "pages": [
                       "hi/cli/daemon",
-                      "hi/cli/fleet",
                       "hi/cli/gateway",
                       {
                         "group": "Gateway",
@@ -23045,8 +23025,7 @@
                           "ar/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "ar/gateway/multiple-gateways",
-                      "ar/gateway/multi-tenant-hosting"
+                      "ar/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -23256,7 +23235,6 @@
                     "group": "Running the service",
                     "pages": [
                       "ar/cli/daemon",
-                      "ar/cli/fleet",
                       "ar/cli/gateway",
                       {
                         "group": "Gateway",
@@ -25097,8 +25075,7 @@
                           "it/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "it/gateway/multiple-gateways",
-                      "it/gateway/multi-tenant-hosting"
+                      "it/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -25308,7 +25285,6 @@
                     "group": "Running the service",
                     "pages": [
                       "it/cli/daemon",
-                      "it/cli/fleet",
                       "it/cli/gateway",
                       {
                         "group": "Gateway",
@@ -27149,8 +27125,7 @@
                           "vi/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "vi/gateway/multiple-gateways",
-                      "vi/gateway/multi-tenant-hosting"
+                      "vi/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -27360,7 +27335,6 @@
                     "group": "Running the service",
                     "pages": [
                       "vi/cli/daemon",
-                      "vi/cli/fleet",
                       "vi/cli/gateway",
                       {
                         "group": "Gateway",
@@ -29201,8 +29175,7 @@
                           "nl/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "nl/gateway/multiple-gateways",
-                      "nl/gateway/multi-tenant-hosting"
+                      "nl/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -29412,7 +29385,6 @@
                     "group": "Running the service",
                     "pages": [
                       "nl/cli/daemon",
-                      "nl/cli/fleet",
                       "nl/cli/gateway",
                       {
                         "group": "Gateway",
@@ -31253,8 +31225,7 @@
                           "fa/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "fa/gateway/multiple-gateways",
-                      "fa/gateway/multi-tenant-hosting"
+                      "fa/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -31464,7 +31435,6 @@
                     "group": "Running the service",
                     "pages": [
                       "fa/cli/daemon",
-                      "fa/cli/fleet",
                       "fa/cli/gateway",
                       {
                         "group": "Gateway",
@@ -33305,8 +33275,7 @@
                           "tr/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "tr/gateway/multiple-gateways",
-                      "tr/gateway/multi-tenant-hosting"
+                      "tr/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -33516,7 +33485,6 @@
                     "group": "Running the service",
                     "pages": [
                       "tr/cli/daemon",
-                      "tr/cli/fleet",
                       "tr/cli/gateway",
                       {
                         "group": "Gateway",
@@ -35357,8 +35325,7 @@
                           "uk/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "uk/gateway/multiple-gateways",
-                      "uk/gateway/multi-tenant-hosting"
+                      "uk/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -35568,7 +35535,6 @@
                     "group": "Running the service",
                     "pages": [
                       "uk/cli/daemon",
-                      "uk/cli/fleet",
                       "uk/cli/gateway",
                       {
                         "group": "Gateway",
@@ -37409,8 +37375,7 @@
                           "id/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "id/gateway/multiple-gateways",
-                      "id/gateway/multi-tenant-hosting"
+                      "id/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -37620,7 +37585,6 @@
                     "group": "Running the service",
                     "pages": [
                       "id/cli/daemon",
-                      "id/cli/fleet",
                       "id/cli/gateway",
                       {
                         "group": "Gateway",
@@ -39461,8 +39425,7 @@
                           "pl/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "pl/gateway/multiple-gateways",
-                      "pl/gateway/multi-tenant-hosting"
+                      "pl/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -39672,7 +39635,6 @@
                     "group": "Running the service",
                     "pages": [
                       "pl/cli/daemon",
-                      "pl/cli/fleet",
                       "pl/cli/gateway",
                       {
                         "group": "Gateway",
@@ -41513,8 +41475,7 @@
                           "th/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "th/gateway/multiple-gateways",
-                      "th/gateway/multi-tenant-hosting"
+                      "th/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -41724,7 +41685,6 @@
                     "group": "Running the service",
                     "pages": [
                       "th/cli/daemon",
-                      "th/cli/fleet",
                       "th/cli/gateway",
                       {
                         "group": "Gateway",
@@ -43565,8 +43525,7 @@
                           "ru/gateway/cloud-workers/troubleshooting"
                         ]
                       },
-                      "ru/gateway/multiple-gateways",
-                      "ru/gateway/multi-tenant-hosting"
+                      "ru/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -43776,7 +43735,6 @@
                     "group": "Running the service",
                     "pages": [
                       "ru/cli/daemon",
-                      "ru/cli/fleet",
                       "ru/cli/gateway",
                       {
                         "group": "Gateway",

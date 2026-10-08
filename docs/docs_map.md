@@ -2309,31 +2309,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Scripted and non-interactive use
   - H2: Related
 
-## cli/fleet.md
-
-- Route: /cli/fleet
-- Headings:
-  - H1: openclaw fleet
-  - H2: Quick start
-  - H2: Tenant IDs
-  - H2: fleet create
-  - H3: Create options
-  - H3: Pinning by digest
-  - H3: Disk limits
-  - H3: Egress policy
-  - H2: fleet list
-  - H2: fleet status
-  - H2: fleet logs
-  - H2: fleet start, fleet stop, and fleet restart
-  - H2: fleet upgrade
-  - H2: fleet backup and fleet restore
-  - H2: fleet doctor
-  - H2: fleet rm
-  - H2: Storage and container layout
-  - H2: Security profile
-  - H2: Token handling
-  - H2: Related
-
 ## cli/gateway.md
 
 - Route: /cli/gateway
@@ -5357,18 +5332,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Console formatting (subsystem logging)
   - H2: Related
 
-## gateway/multi-tenant-hosting.md
-
-- Route: /gateway/multi-tenant-hosting
-- Headings:
-  - H2: Why each tenant needs a cell
-  - H2: Architecture
-  - H2: Trust boundary
-  - H2: Isolation ladder
-  - H2: Quick start
-  - H2: Current scope
-  - H2: Related
-
 ## gateway/multiple-gateways.md
 
 - Route: /gateway/multiple-gateways
@@ -7255,6 +7218,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating
 - Headings:
+  - H2: Retired tenant-container management
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
   - H3: Package-publication recovery
@@ -7395,7 +7359,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: WhatsApp
   - H3: Session, memory, and state lifecycle
   - H3: Linux companion app
-  - H3: Fleet, containers, and cloud execution
+  - H3: Containers and cloud execution
   - H3: Windows App / Node
   - H3: Media understanding and media generation
   - H3: Image, video, and music generation tools
