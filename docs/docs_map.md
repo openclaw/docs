@@ -8559,6 +8559,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-runtime/queue-and-feedback
 - Headings:
   - H2: Queue steering
+  - H2: Configuration and policy warnings
   - H2: Diagnostic-log warnings
   - H2: Codex feedback upload
 
