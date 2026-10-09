@@ -4233,6 +4233,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Control UI startup status
   - H2: Block streaming (channel messages)
+  - H3: Pending text phases
   - H3: Media delivery with block streaming
   - H2: Chunking algorithm (low/high bounds)
   - H2: Coalescing (merge streamed blocks)
