@@ -2556,6 +2556,106 @@ This prerequisite changes no schema, retention, durability, or update behavior.
 
 ## Carry facts, publish after commit
 
+Talk voice admission, consult bindings, tool effects, transcript bookkeeping,
+close, and digest acknowledgments use the existing agent executor. Each operation
+retains its physical store, rereads its voice record inside the worker transaction,
+and publishes acknowledged facts before dependent work. Request and session authority
+are prepared before dispatch; session creation publishes its committed identity
+through the existing authorization owner. The committing worker checks same-store predicates;
+custom-store and incognito sources retain their native authority without opening
+readers inside a grant. Opaque synchronous `sessionMutationCommitGuard` and unclassified
+`hasCurrentClientAuthority` callbacks from the released v2026.9.8 Gateway SDK,
+including guards retained by voice replacement,
+keep native voice admission through the same FIFO and mutation kernel. These callbacks
+may read SQLite and remain live throughout native preparation and commit. Ordinary
+prepared same-store Gateway requests use the worker; process-held or foreign-store requester
+and session-source authority retain native admission. Other-store predicates use their retained connection before and after the native mutation;
+same-store predicates use that transaction's connection. This preserves event-loop
+atomicity with synchronous SDK writers without reopening source readers or
+discovering schema capabilities under the write lock. These final native authority
+checks remain until raw synchronous writers are removed at the next Plugin SDK
+major and owner publications cover revocation completely.
+Native SDK opening hands its admitted file identity to that same executor; refused
+worker preparations finish cleanup before the handoff. Fixed stores retain their
+physical schema owner independently of logical agent routing. Each create/resume
+operation checks its own current authority even when reusing a writer.
+Non-opaque native operations use the existing runtime admission owner to prepare
+cold targets in the worker. Bootstrap grants check physical custody, lifetime, and prepared requester authority;
+full native source authority is rechecked after admission and before native writes.
+Tool-call requests also prepare cold targets through that worker owner when they
+carry opaque SDK callbacks. Those callbacks run before and after preparation on
+the host, outside worker admission grants.
+Talk entry initialization uses a closed ensure operation in the existing entry
+writer. Cold admission retains the original executor and hands its acknowledged
+physical source into the entry operation. Complete selector-family inventories
+qualify originally absent suffixes; later file appearances or alias changes refuse
+the write. Already admitted sessions reuse their bound identity without a no-op
+entry transaction. Entry COMMIT, source recording, and publication remain before
+voice admission, so a later voice refusal does not roll back the created chat.
+Closed same-store entry initialization carries the sharing owner's grant into
+that entry transaction. The grant checks its current entry and membership facts
+before mutation and commit; it does not prepare separate history snapshots before
+and after the write. Talk callers recheck live authority before their next effect.
+Generic patches retain their source refresh, and each new grant still prepares
+fresh profile authority. Only rows read in the same locked transaction are reused.
+Same-store Talk creation and consult registration consume entry and membership
+facts from their voice transaction through the existing sharing grant, without a
+separate planning read.
+Creation retains its grant and borrows the admitted native handle for a fresh exact
+authority check after the worker settles, immediately before the ACK. This final
+guard checks current owner state; transaction facts and display projections cannot
+replace it. Newly created sessions pass the committing writer's physical source
+to authorization before publication instead of rediscovering it after a wait.
+Consult registration retains requester, session-source, and accepted-work authority
+through the queue and commit, then publishes its run binding before execution
+starts. Chat-backed relays use that same registration once, carrying the relay's
+live cancellation fence. Lifetime-only registrations keep the direct worker path.
+Native consults install their chat controller before awaiting voice registration,
+so status pruning cannot discard a pending run. Its exact controller and lifecycle
+generation remain current through backend preparation; failed registration releases
+that controller without removing a same-ID successor.
+Client tool calls carry their admitted physical voice source through legacy
+selection and chat dispatch. Relay registration and cancellation check the captured
+controller's identity, abort state, cleanup state, and lifecycle generation.
+The relay retains its creator's physical source through coalesced creation,
+registration, transcript queues, and close. Only that creator can publish its
+acknowledged source; later operations borrow writers from that source after
+creation settles. Accepted settlement spans those waits and provider-final
+callbacks. Known creation failures may retain the creator's admitted database,
+while unknown outcomes remain non-replayable. A queued consult replay cannot
+reinstall a retired run binding or release its replacement, but still settles
+accepted effects and re-arms the closed call's digest. Consult owner reuse also
+matches the captured physical store; explicit source descriptors retain their
+own admission and path checks, including when file aliases identify the same store.
+Browser creation likewise retains its original source through provider callbacks
+and startup cleanup. Close joins the creation's acknowledged identity and resource
+release before deciding whether to persist a logical close; provider teardown can
+start while creation settles. A replacement database never becomes the cleanup
+target. Browser consults acquire that published source after readiness and retain
+it through registration and execution. Relay registration publishes its cleanup
+handle with the run binding, before resource release can suspend, so superseding
+or failing registrations still retire their accepted binding without touching a
+successor.
+Transcript failure reservations remain durable before the
+fallible append. Same-store append and success bookkeeping commit together, then
+observers consume the acknowledged transcript and voice facts. Ambiguous custom
+selectors resolve through the existing reader before choosing the atomic append.
+An omitted transcript path resolves from the conversation agent and captured
+environment, independently of a retained voice metadata path;
+only the selected physical identity can establish a shared voice store. Gateway
+close rejects new bookkeeping and joins accepted persistence independently of
+scheduler cancellation; unknown write outcomes never authorize automatic replay.
+Voice metadata keeps its durable agent store, while incognito transcripts retain
+their native owner until the atomic incognito cutover. Existing synchronous
+tool-policy and pre-backend admission checks retain their final authority reads.
+Owner write receipts invalidate in-process state; voice guards add no foreign-commit
+freshness probes. Schemas, stored formats, retention, durability, and update behavior
+are unchanged.
+The voice lifecycle owner awaits every source and writer release. It reports
+cleanup failures after acknowledged success without discarding the committed
+result; primary failures retain their causes, including unknown write outcomes
+that must not be replayed.
+
 Transcript append receipts carry the anchor's transcript version and admitted read
 revision into turn cursor and snapshot publication. An unchanged synchronous
 transaction reuses those postimages; a later native write, foreign commit observed
