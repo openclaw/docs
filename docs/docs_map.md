@@ -12666,6 +12666,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session reactions
   - H3: Session run outcomes and liveness
   - H3: Activity session recaps
+  - H3: User-turn model prompt projections
   - H3: Transcript search row ownership
   - H3: Cold transcript archives
   - H3: Plugin state listing index
