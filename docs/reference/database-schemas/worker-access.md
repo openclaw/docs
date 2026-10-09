@@ -306,8 +306,9 @@ Tests are excluded by path; test-only helpers in production modules have no
 separate tier and retain their conservative classification. Branch-specific
 exceptions that cannot be expressed by an operation or initializer stay T1.
 
-Canonical-repair mutations are T2 Doctor work, but its exact-row reader remains
-runtime debt through the Gateway's legacy-main agent-creation check. Claw
+Canonical-repair mutations and exact-row readers retain T2 for native Doctor
+callers. Gateway legacy-main detection uses the existing session reader worker;
+full generation and artifact custody fingerprints remain Doctor-only. Claw
 provenance's counted CLI writes do not cover its raw Gateway SQL reads. Shared
 incognito category readers and native approval SDK compatibility retain their
 existing classifications. A metadata reclassification changes neither execution
@@ -385,8 +386,10 @@ Doctor/migration and relocation-retirement callers alongside worker dispatch.
 Plugin catalog repair, legacy import, and migration-receipt retirement are also
 T2; synchronous ModelRegistry loading keeps the catalog kernel T1. Preference
 read/write operations and profile email-binding, snapshot, and authority readers
-have exact worker-only entries. Native profile alias reads, admission fallbacks,
-workspace identity resolution, and explicit deletion retain their existing tiers.
+have exact worker-only entries. Native profile alias reads and admission fallbacks
+retain their existing tiers. Workspace identity resolution retains T2 for
+Doctor/migration callers; explicit workspace retirement executes in the shared-state
+worker.
 
 Runtime cache-TTL, bootstrap, prompt-error, and provider replay markers append
 through the existing transcript writer worker. Custom-message appends use the
@@ -1718,6 +1721,26 @@ and incognito retains its native owner.
 The existing cross-database crash window, schemas, retention, and update behavior
 are unchanged; no migration is required.
 
+Agent retirement uses the existing shared-state writer for its journal, provenance,
+recovery resolution, and workspace retirement. The original live deletion lease
+admits each operation; a serialized journal identifier never grants cleanup.
+The canonical agent executor carries request-local cleanup authority and holds
+the shared journal transaction through the actual agent COMMIT, preserving
+agent-to-shared lock order and native binding rollback custody. Scope closure
+joins accepted work before releasing cleanup-owned readers and writers.
+The dedicated purge selects entry-referenced generations and preserves generations
+referenced by surviving entries. It does not expand selection to all historical
+windows. Released opaque SDK callbacks and initialization rollback retain their
+native transaction guard. These changes require no schema, retention, durability,
+permission, or update migration.
+
+Legacy-main detection reads comparison facts through the existing session reader
+and the migration ledger through the shared-state reader. It retains physical
+store and logical alias identities across awaits, including initially absent
+stores. Detection compares entries and transcript content without loading the
+artifact and pending-input fingerprints needed only for Doctor deletion custody.
+Doctor continues to acquire those complete custody facts before repair.
+
 Durable rewind and branch switching run their complete scan, graph clone, index,
 collaboration cleanup, and entry rotation in that same agent executor. Preparation
 retains the original physical source, selected lifecycle, cold restoration, and
@@ -2480,8 +2503,11 @@ never reuse an inherited discovery snapshot.
 Expiry rereads current setup and attestation rows, preserving the 24-hour and
 future-timestamp protections. Native commit receipts retire the stored workspace's
 file cache even if ordinary result delivery fails; uncertain writes are never
-replayed. Explicit agent deletion and Doctor relocation retain their existing
-transaction owners. Schemas, retention, durability, and update behavior are unchanged.
+replayed. Explicit workspace retirement uses the same writer with the deletion
+owner's current journal and lease predicates. It preserves captured alias identity
+after filesystem removal, never recreates an absent state database, and retires
+file caches only after acknowledged commit. Doctor relocation retains its native
+transaction. Schemas, retention, durability, and update behavior are unchanged.
 
 Session branch summaries retain compact counts, headlines, and their append
 certificate in the host, keyed by physical database identity and the transcript
@@ -4004,6 +4030,67 @@ at both shared-state write grants, with native admission completed beforehand.
 No question policy is projected when image cancellation finds no pending question;
 ordinary steering retains its own admission. Schemas, retention, durability,
 configuration, and update behavior are unchanged.
+
+Agent lifecycle preparation for GitHub authorization and repository work reads the
+incarnation and deletion fence in one indexed statement through the existing
+shared-state read-only worker. Preparation rechecks the current roster and local
+admission refusals after awaiting. Optional provenance-table absence keeps the
+legacy identity; reads do not create it.
+
+Final OAuth device-code token polling and publication, credential subprocess,
+repository transfer, and provider consumption guards retain a synchronous current
+read because native, SDK, and foreign-process writers can revoke the agent outside
+host publication. That guard
+uses the same indexed journal/provenance projection without a transaction envelope
+or journal payload scan; it never treats prepared facts as current authority.
+Retire this native guard at the next Plugin SDK major after synchronous writers
+are removed and the lifecycle owner publishes complete revocation facts. The
+accepted GitHub config draft mutation retains its synchronous incarnation check; the preparation cutover adds no new final config-publication contract.
+Schemas, stored bytes, permissions, retention, and update behavior are unchanged.
+
+The serving Claw monitor handler prepares its deletion journal through the shared
+worker before awaiting package ownership. It rechecks the serving scheduler binding
+after preparation and retains synchronous current journal guards at quiescence,
+drainage, and acknowledgement. Cron's synchronous enqueue, wake, and execution
+handoffs likewise retain their current deletion checks immediately before the effect;
+an awaited preparation reply cannot replace these final guards.
+
+Agent retirement also retains an owner-minted synchronous final-effect guard for
+filesystem and config mutation callbacks. The original host lease lifetime is
+checked before and after one indexed current SELECT covering the deletion
+journal, lease ownership and expiry, and the expected Claw installation when
+present. The read-only connection's existing freshness admission still observes
+foreign commits; the guard opens no write transaction and sends no worker request.
+Worker transaction grants continue to use SQL-free host checks and authoritative
+worker predicates. Removing this final guard requires the next Plugin SDK major's
+removal of synchronous writers and complete lifecycle revocation publication;
+prepared worker replies cannot replace it. The GitHub identity draft mutation
+likewise keeps its single current incarnation query at its original accepted
+mutation checkpoint.
+
+Package cleanup during deletion also retains its artifact-scoped package lease
+guard before filesystem apply and rollback. It checks the live package owner and
+one indexed current lease-owner/expiry SELECT; the agent deletion lease alone
+cannot authorize those effects after a package-only takeover. Preparatory checks
+stay in memory, and worker writes retain their transaction-local lease checks.
+Retire the synchronous package guard after the next Plugin SDK major removes raw
+synchronous package writers and complete revocation publication replaces them.
+
+Doctor's reserved-session-key repair awaits its temporary history readers' cleanup
+before returning or starting another repair. A following repair can immediately
+reopen the same database; the existing journal and retry semantics remain intact.
+This changes no schema, retention, permissions, or update format.
+
+Known-source history reads skip native admission during worker preparation. Cold
+reads use the existing read-candidate owner to retain any available native handle
+before choosing their lane. The worker retains physical identity, schema,
+quarantine, and caller authority checks; cold reads still serialize with first
+creation.
+
+Worker-owned retirement cleanup borrows its retained executor instead of acquiring
+a native read candidate. The exact cleanup scope rechecks host liveness, while
+worker grants keep the durable journal and lease checks. Ordinary cold reads keep
+the native read-candidate owner and its existing release ordering.
 
 OAuth peer fencing, restoration, and settlement use the existing auth reader and
 agent writer. Discovery retains each candidate's physical database identity,
