@@ -484,6 +484,41 @@ watermark while retaining dirty notifications and fresh subsequent reads.
 Cold metadata joins initialization and turn preparation; restoration stays with
 the cold-storage owner, outside the writer FIFO and before message hooks run.
 
+## Retained final-authority guards
+
+Preparation uses the existing worker owners. A synchronous guard immediately before
+an effect still reads current SQLite rows when released native or Plugin SDK writers
+and foreign processes can revoke authority without a complete owner publication.
+Prepared facts and mutation witnesses cannot replace that final read. These guards
+reuse admitted schema facts and retain the connection owner's foreign-commit probe;
+unchanged warm reads do not add a transaction or another schema check.
+
+| Owner                     | Retained final read and preparation boundary                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skill Workshop reflection | After awaited file preparation, `fs-safe`'s synchronous `beforeWrite` checks current session permissions, lifecycle, and the accepted transcript anchor in one indexed statement. The query reuses canonical entry validation and transcript-index readiness; it does not load participants or saved prompt snapshots. Context and source preparation use the transcript worker.                               |
+| Sandbox dispatch          | The final registry generation check selects the exact container row. Direct remote-shell commands carrying the released synchronous authority callback use the existing in-process transport so the check and native launch share one call stack; unguarded commands keep the broker. Reservation completion and retirement compare the captured generation inside the existing worker transaction's row read. |
+| Worktree GC               | Shared-state commit admission still checks current agent-session authority across databases. One owner-state evaluation serves the final cleanup decision. Registry preparation uses host liveness only; cleanup reuses the worker census's captured target and refuses a changed session or worktree at consumption.                                                                                          |
+| ClickClack discussions    | Synchronous visibility and mutation guards retain current binding, revocation, and session-incarnation reads. A tool decision reads its binding once. Binding-index hydration and descriptive service reads use the existing workers; the index never authorizes a stale reverse mapping.                                                                                                                      |
+
+ClickClack reconciliation reads sibling title support only when a legacy binding
+needs title backfill. After that worker read, it rechecks the exact binding and
+revocation before changing its session attachment or remote metadata.
+
+Each retained guard is scheduled for retirement at the next Plugin SDK major, when
+raw synchronous writers can be removed and the owning workers can publish complete
+revocation facts or consume authority at the actual effect boundary. Until that
+cutover, these are documented T1 sites, not worker-only operations. Direct
+remote-shell dispatch retains in-process launch because its synchronous SDK callback
+cannot cross deferred broker preparation. A future broker path must revalidate at
+its final launch frame after queued preparation and settle accepted work through the
+broker owner. Schemas, durability, retention, permissions, and update behavior are
+unchanged.
+
+The existing plugin session runtime also provides optional `getSessionEntryAsync`
+for descriptive preparation through the session-entry worker. Released hosts without
+that capability retain their synchronous contract; a worker failure never selects
+the native fallback. Final session authority still uses the synchronous guard.
+
 ## Keep one store owner
 
 Manual `sessions.compact` trimming with `maxLines` runs on the existing agent
@@ -3098,13 +3133,16 @@ permission changes, and revocation refuse stale evidence. The retained effect
 guard still reads natively: `@openclaw/fs-safe` requires a synchronous callback
 after awaited file preparation and immediately before mutation. The existing
 native mutation witness does not observe foreign commits, so it cannot replace
-that final guard. CLI history's synchronous execution guard retains the same
+that final guard. Its session-permission, lifecycle, and anchor predicates share
+one statement; the released detached-context validators share the same read
+admission owner. CLI history's synchronous execution guard retains the same
 contract. Synchronous SDK writers bypass the FIFO, and a second connection can
 commit without changing the first connection's native mutation revision.
 As with the credential-send fence, these final checks remain explicit debt.
 A candidate replacement is a cross-connection mutation generation published by
 the writer owner after synchronous SDK writers retire at the next SDK major.
-It must cover every supported writer before replacing live authority reads.
+It must cover every supported writer before replacing live authority reads. See
+[retained final-authority guards](#retained-final-authority-guards).
 
 Raw and visible transcript deltas, watermarks, pre-reset Memory capture, and final context
 validation borrow an already-prepared agent executor when one exists for the
