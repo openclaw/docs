@@ -12243,6 +12243,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick choice
   - H3: Retired subscription model references
+  - H2: Models your API key lists
   - H2: Daybreak Blue and Red
   - H2: GPT-6 Astra
   - H3: Async tools, steering, and reasoning changes
