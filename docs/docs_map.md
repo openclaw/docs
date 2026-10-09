@@ -11199,6 +11199,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Plugin value boundary
+  - H3: Instance-bound background context
   - H3: Memory runtime replacement
   - H2: Browser meeting transport builders
   - H2: Browser meeting status ownership
