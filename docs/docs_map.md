@@ -10992,6 +10992,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await personal model-account operations
   - H2: Await placement preparation
   - H2: Await reply tool authority
+  - H2: Prepare session catalog identities
   - H2: Await session upstream links
   - H2: Await locked transcript preparation
   - H2: Await session transcript persistence
