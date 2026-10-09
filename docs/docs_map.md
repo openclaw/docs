@@ -12003,6 +12003,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Non-interactive onboarding
   - H2: Configuration
   - H3: Streaming usage compatibility
+  - H3: Gemma 4 tool-call recovery
   - H3: Thinking compatibility
   - H3: Explicit configuration
   - H3: Model instances and context
