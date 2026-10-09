@@ -4092,6 +4092,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/recommended-models
 - Headings:
   - H1: Recommended models
+  - H2: Provider featured lists
   - H2: Entry format
   - H2: Review rules
 
