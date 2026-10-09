@@ -47,9 +47,13 @@ a targeted retry never declares the parent recovered while blockers remain.
 
 `watch` resolves child runs from the parent's `Dispatched <workflow>: <url>
 (attempt N)` dispatch-job log lines and reports each attempt transition and
-failed job once, with runner labels. Transient GitHub failures retry on the next
-poll. A local state file under `$TMPDIR/openclaw-frv/` lets a restarted watch
-resume without repeating events.
+failed job once, with runner labels. Transient network failures retry on the next
+poll without repeating unchanged warnings. Rate-limited reads pause until GitHub's
+`Retry-After` or exhausted-primary reset boundary; headerless throttles wait at
+least one minute, with exponential backoff for repeated throttles. The watcher
+prints the next eligible check and resumes automatically. Permission-denied
+403 responses remain terminal. A local state file under `$TMPDIR/openclaw-frv/`
+retains the retry boundary and reported events across watcher restarts.
 
 `rerun --child` waits for one failed child, sends exactly one
 rerun-failed-jobs request, confirms the new attempt has no duplicate jobs, and
