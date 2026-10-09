@@ -98,6 +98,15 @@ Each child or parent rerun mutation is sent exactly once. If GitHub returns an
 ambiguous transient error, the controller performs read-only reconciliation
 until the newer attempt becomes visible or the bounded reconciliation deadline
 expires. It never repeats the mutation, and provenance drift fails closed.
+`frv status` leads with qualification, evidence acceptance, diagnostic drain,
+workload failures, and the next supported command. A passing GitHub badge or green
+child list is not an accepted seal: terminal successful parents are checked by the
+same strict verifier used by recovery. Missing or unreadable evidence stays
+explicitly unavailable. JSON preserves child facts and marks incomplete collection.
+The candidate's admitted context ref is read freshly to label a superseded tip;
+qualification of that frozen candidate never claims qualification of a newer tip.
+Retry suggestions are dry-run previews; mutations still perform fresh admission.
+
 After a timeout or an interrupted command, inspect `frv status` and the exact
 GitHub attempts before deciding on another retry; the local process cannot
 prove that an unobserved mutation was rejected.
