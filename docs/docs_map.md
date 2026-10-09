@@ -13017,7 +13017,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Context windows vs tracked tokens
   - H2: Compaction: what it is
-  - H3: Chunk boundaries and tool pairing
+  - H3: Summary input and tool pairing
   - H2: When auto-compaction happens
   - H2: Compaction settings
   - H2: Pluggable compaction providers
