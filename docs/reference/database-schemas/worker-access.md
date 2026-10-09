@@ -487,6 +487,21 @@ SDK or foreign writers bypass owner publication. They remain explicit migration
 debt, as do synchronous result compatibility readers and pending-result guards.
 These changes require no schema, retention, durability, or update migration.
 
+Workspace publication and move/reclaim retain synchronous final-authority guards.
+Workspace reservation keeps its existing lease acquisition order and native
+preparation path. Each authority check reads placement and pending-result or
+reconciliation presence in one indexed statement, including orphan results when
+no placement exists. Move/reclaim guards read the current placement and move in
+one statement. These queries reuse admitted schema facts and retain foreign-commit
+freshness; prepared facts never replace the final effect-time decision.
+
+Native/SDK and foreign-process writers can revoke authority outside owner
+publications. Retiring these guards requires the next Plugin SDK major to remove
+raw synchronous writers, complete revocation publications, and custody that
+excludes or observes foreign commits through effect initiation. Their current
+queries remain T1. Lease primitives, worker requests, schemas, stored bytes,
+permissions, durability, retention, and released synchronous contracts are unchanged.
+
 Node placement standing-grant preparation and retention read exact placement,
 attachment, and parent approval facts in one joined query through the approval
 reader. The Gateway retains its process-local grants and rechecks the original
