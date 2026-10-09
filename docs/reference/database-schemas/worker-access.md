@@ -405,6 +405,24 @@ Tool-authority caller preparation retains its original source-selection plan;
 the consuming phase rereads current policy through that plan instead of repeating
 discovery. These changes preserve foreign-commit freshness and final effect checks.
 
+Initial manager hydration, persisted-user replay, and bootstrap message presence
+share one fresh history cohort. After hooks or compaction, replay acquires its
+next cohort at synchronous prompt admission. Bounded model context retains its separate
+payload projection and byte limits, with synchronous acceptance under the same
+FIFO and native mutation witness. That operation's snapshot is its serialization
+point; a foreign commit overlapping its reply is observed on the next unpinned
+read. Source replacement, live authority, and local native mutations are still
+checked before synchronous acceptance. Delivery reads candidate payloads and their
+current anchors in one history snapshot before deciding receipt coverage.
+Unbounded model-context reads prepare outside the writer FIFO and retain their
+subsequent fresh validation phase.
+Terminal consumers carry immutable append anchors as historical evidence;
+the context outbox and skill-review owners still validate those anchors before
+consuming history. Activity summaries consume the patch transaction's acknowledged
+watermark while retaining dirty notifications and fresh subsequent reads.
+Cold metadata joins initialization and turn preparation; restoration stays with
+the cold-storage owner, outside the writer FIFO and before message hooks run.
+
 ## Keep one store owner
 
 Manual `sessions.compact` trimming with `maxLines` runs on the existing agent
