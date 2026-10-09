@@ -12744,6 +12744,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Committed facts and completeness
   - H2: Keep one store owner
   - H3: Incognito worker ownership (P1, inactive)
   - H3: Incognito session facts and authority (P2, inactive)
