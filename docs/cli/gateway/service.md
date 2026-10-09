@@ -28,6 +28,13 @@ not rewrite configuration. Restart preserves the installed service definition wh
 config needs repair; its health check still reports whether the Gateway came back.
 `gateway start` continues to validate configuration before starting the Gateway.
 
+`gateway status` reports service process state separately from Gateway readiness.
+When its connection check fails, inspect the service logs even if the process is
+running. Recent log errors are matching evidence from the bounded log tail, may
+belong to an earlier run, and do not establish the current process's startup phase.
+Routine startup and shutdown messages are not reported as errors. Doctor and
+onboarding use the same error selection.
+
 On Windows, Scheduled Task stop and restart first ask the verified Gateway to drain
 and exit. Older or unresponsive Gateways fall back to termination of the captured
 process tree; a replacement instance is preserved. Transient SQLite sharing errors
