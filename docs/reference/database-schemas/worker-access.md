@@ -1573,6 +1573,47 @@ This prerequisite retires no incognito T1 sites, breaks no supported SDK contrac
 and changes no schema, durability, retention, permissions, configuration, or update
 behavior.
 
+### Incognito transcript and lifecycle operations (P02, inactive)
+
+Explicitly selected actors can prepare and commit transcript turns, rewrites,
+corrections, manual trims, Goals mutations, entry replacements, message cuts,
+and lifecycle cleanup through the existing session transaction owners. Preparation
+retains the physical actor and session generation. Commits recheck exact row and
+transcript predicates plus live host authority; acknowledged facts publish before
+observers. Known commit receipts survive a lost reply, while an unknown outcome
+never authorizes replay. Accepted work settles before its consumer releases the
+actor.
+
+An explicitly selected missing actor is distinct from an unbound native target
+and a retained ended actor. Missing reads return their normal absence, mutations
+refuse missing ownership, and neither cleanup nor compaction discovers a disk
+archive or replacement owner. A newly admitted actor invalidates an outstanding
+absence scope. Retained ended handles continue to report
+`INCOGNITO_SESSION_ENDED`.
+
+For explicitly actor-bound targets, the SDK's `withSessionTranscriptWrite`
+performs an optimistic sequence: each append commits separately, and later fresh
+appends recheck the sequence's exact read version. Callback awaits do not reserve
+the actor queue. Durable targets retain the canonical worker writer across
+callback awaits; native compatibility and unbound incognito retain their native
+writer queue. These paths do not automatically fence later appends to earlier reads.
+On both paths, asynchronous message preparation runs outside the transaction,
+and a fresh insert rechecks the snapshot captured before preparation. Prepared
+actor source predicates run on the owning transaction's connection; native
+sequence writes retain the source's synchronous assertion before fresh insertion.
+The captured writer source is retained separately from fresh-message preparation:
+actor reads, replay, custody, replacement, correction, and publication all recheck
+its exact predicates, and release follows accepted settlement.
+The deprecated opaque callback and lock forms keep their durable behavior and
+warn once per plugin; incognito targets receive an actionable error naming the
+replacement. See the [SDK migration guide](/plugins/sdk-migration/how-to-migrate#await-locked-transcript-preparation).
+
+Production incognito acquisition remains host-owned. Unbound calls to the new
+contract retain native behavior and allocate no actor. This prerequisite changes
+no schema, stored bytes, durability, retention, permissions, or update migration;
+it claims no incognito T1 retirement. The production owner selection and native
+selector deletion remain a later atomic cutover.
+
 ### Existing worker flows
 
 Remote model catalog refreshes capture the shared store before downloading and
