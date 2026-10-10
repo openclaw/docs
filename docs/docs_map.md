@@ -6624,6 +6624,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Network-isolated local E2E
   - H3: E2E: OpenShell backend smoke
   - H3: Live (real providers + real models)
+  - H3: Prompt-cache regression coverage
   - H3: Advisory Bun release checks
   - H2: Which suite should I run?
   - H2: Live (network-touching) tests
@@ -12973,6 +12974,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/prompt-caching
 - Headings:
   - H2: Keep model settings stable
+  - H2: Keep replayed tool results stable
   - H2: Primary knobs
   - H3: Worker turns
   - H3: cacheRetention
