@@ -2731,6 +2731,33 @@ survives cleanup failure while the failed native owner retires. Use `run` when
 dependent commands share a binding or host publication must stay inside the
 same FIFO interval.
 
+Memory source-state reads, cache pruning, standing-intent operations, and session
+collaboration writes without a preparation callback use that single-command
+path. Memory bindings reuse the canonical connection's installed policy and
+create staging tables only for a staged transfer. Small embedding-cache writes
+carry a bounded inline batch through the same revision, tombstone, capacity, and
+commit checks; larger inputs retain fragment staging. Standing-intent setup
+consumes admitted MAIN schema facts and requests a write transaction only when
+installation is needed. Temporary tables cannot redirect its canonical schema
+installation. Cold installation commits separately from the business operation.
+A confirmed schema-only receipt permits its next dispatch with fresh grants;
+an unknown write outcome never permits replay.
+
+Ordinary human chat prepares initial skill selections and authoring presentation
+in one shared-state snapshot. Both consumers retain the original requester and
+profile/library invalidation checks. Standalone empty-seed reads reuse admitted
+table absence without opening a transaction. Pending-input staging reads each
+entry, membership set, and pending row once inside its write transaction, then
+returns the persisted row with its commit receipt. The host installs custody
+from that postimage after settlement. Preparation before external work remains
+separate from mutation, and transaction and commit grants still check live
+authority. Completion validates its retained outcome with one read.
+
+These command and read consolidations change no schema version, stored data,
+durability, retention, or permission contract. Existing installations require
+no data migration; released synchronous completion and schema entry points
+remain available.
+
 During Gateway restart grace, an accepted publication sequence retains its native
 agent lease. When the process finishes active-work drain and begins shutdown
 cleanup, publication stores release that retained lease without waiting for restart
