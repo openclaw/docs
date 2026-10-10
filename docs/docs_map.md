@@ -6605,6 +6605,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help/testing/writing-tests
 - Headings:
+  - H2: Prove behavior at the owning boundary
   - H2: Test Temp Directories
   - H2: Agent reliability evals (skills)
   - H2: Cost budget
