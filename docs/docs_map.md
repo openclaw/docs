@@ -8605,6 +8605,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/codex-harness-runtime/recovery
 - Headings:
+  - H2: Timed-out model discovery
   - H2: Recovery after a hard Gateway stop
 
 ## plugins/codex-harness-runtime/replies.md
