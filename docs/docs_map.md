@@ -12606,6 +12606,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced configuration
   - H2: Related
 
+## refactor/cron-worker-owned.md
+
+- Route: /refactor/cron-worker-owned
+- Headings:
+  - H1: Worker-owned cron
+  - H2: Current design and contract
+  - H3: Preserve observable behavior
+  - H2: Proposed ownership and flow
+  - H3: Rows and idempotency
+  - H3: Common failures, cheaply handled
+  - H2: Delete and consolidate
+  - H2: Existing data and three landable PRs
+
 ## reference/AGENTS.default.md
 
 - Route: /reference/AGENTS.default
