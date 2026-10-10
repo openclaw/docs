@@ -12727,6 +12727,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Sandbox runtime reservations
   - H2: Package-publication recovery receipt
   - H2: Immutable installation preparation
+  - H3: Immutable release-retention inventory
 
 ## reference/database-schemas/personal-data.md
 
