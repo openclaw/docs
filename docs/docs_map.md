@@ -12818,6 +12818,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Config CLI ownership
   - H2: SDK session writer migration
   - H2: Committed facts and completeness
   - H3: Managed raw handle settlement and write-set coverage

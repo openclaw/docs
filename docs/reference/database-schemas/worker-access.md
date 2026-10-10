@@ -141,6 +141,18 @@ current policy, pending canonical validation, and current-row reads remain
 with the reader. When physical admission is already known, the first canonical
 read enters its snapshot before policy reads, avoiding discarded probes.
 
+## Config CLI ownership
+
+Config set, patch, and unset commands require exclusive offline ownership. Stop
+the Gateway through its service owner before editing config with these commands.
+Basic agent creation uses the existing `agents.create` Gateway method; advanced
+agent setup holds the same exclusive offline owner.
+
+Config loading and in-process writes retain their existing worker paths. They do
+not acquire CLI ownership or route ancillary effects back through the Gateway.
+Authored config files, compare-and-set checks, rollback, audit, and metadata
+semantics are unchanged.
+
 ## SDK session writer migration
 
 Session entry SDK callers use `prepareSessionEntryPatch` for one host preparation
