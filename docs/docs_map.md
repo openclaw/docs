@@ -6206,6 +6206,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Agent run failed with a storage error
   - H2: Provider rejected the request
+  - H2: Connection to the AI service failed
   - H2: Unreadable conversation history
   - H2: No replies
   - H2: Dashboard control UI connectivity
