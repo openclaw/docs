@@ -8501,6 +8501,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/app-server-transport
 - Headings:
   - H2: App-server transport
+  - H3: Newer installed Codex
   - H2: Environment overrides
 
 ## plugins/codex-harness-reference/approval-and-sandbox.md
