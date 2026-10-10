@@ -4366,7 +4366,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Message envelopes (local by default)
   - H3: Examples
-  - H2: System prompt: temporal context
+  - H2: Runtime context: date and time zone
   - H2: System event lines (local by default)
   - H3: Configure user timezone
   - H2: Time format detection
