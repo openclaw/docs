@@ -1003,6 +1003,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/msteams/configuration
 - Headings:
+  - H2: Multiple bot accounts
   - H2: Environment variables
   - H2: History context
   - H2: Configuration
