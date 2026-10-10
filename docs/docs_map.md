@@ -3418,6 +3418,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Using a different model
   - H3: Identifier preservation
   - H3: Active transcript byte guard
+  - H3: History hydration byte limit
   - H3: Compaction notices
   - H3: Memory flush
   - H2: Provider and engine behavior
