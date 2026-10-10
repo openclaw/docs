@@ -15347,6 +15347,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/thinking
 - Headings:
   - H2: What it does
+  - H2: Custom OpenAI-compatible endpoints
   - H2: Resolution order
   - H2: Setting a model default
   - H2: Setting a session default
