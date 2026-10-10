@@ -12831,6 +12831,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito steering, visibility, trajectory, and project authority (P7n, inactive)
   - H3: Incognito retained source authority (P01, inactive)
   - H3: Incognito transcript and lifecycle operations (P02, inactive)
+  - H3: Plugin admission and Codex session preparation (P07, inactive)
   - H3: Incognito workspace consumers (P08, inactive)
   - H3: Incognito command, CLI, and harness consumers (P03, inactive)
   - H3: Incognito SDK history preparation (P04, inactive)
