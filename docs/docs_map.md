@@ -12758,6 +12758,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/worker-access
 - Headings:
   - H2: Committed facts and completeness
+  - H3: Managed raw handle settlement and write-set coverage
   - H3: Sandbox, worktree, and publication receipts
   - H3: Durable cross-store source fences
   - H3: Session authority projections
