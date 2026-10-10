@@ -12784,6 +12784,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito steering, visibility, trajectory, and project authority (P7n, inactive)
   - H3: Incognito retained source authority (P01, inactive)
   - H3: Incognito transcript and lifecycle operations (P02, inactive)
+  - H3: Incognito SDK history preparation (P04, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
