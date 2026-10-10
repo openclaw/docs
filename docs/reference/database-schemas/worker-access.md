@@ -334,6 +334,23 @@ CLI-writer ownership, and accepted-input custody retain their existing validator
 The model-context reader uses committed destructive changes to permanently refuse
 an overlapping read; it still validates its exact context at acceptance.
 
+Initial bounded hydration can also supply model context when it contains the whole
+active path. The manager retains detached, sanitized bytes and consumes them only
+under its existing source, writer FIFO, and native-mutation checks while the
+physical store's write revision remains unchanged. Truncated or changed views use
+the normal worker reader. Hydration and anchors share the projection's version
+and watermark in their existing snapshot.
+
+Turn writers carry current entry facts into source and custody checks. Publication
+can reuse a writer-certified entry postimage while its transaction revision still
+matches; side-table changes or callbacks force the normal persisted read. Transcript
+mutation statements supply their context postimages to later reads in the same
+unchanged transaction. Assistant rebase validation runs inside the append's write
+reservation. User and assistant commits, idempotency, and postcommit installation
+remain separate. Single-statement lifecycle guards need no extra read envelope;
+composite removal selection retains its snapshot. Schemas, stored bytes, retention,
+permissions, and update behavior are unchanged.
+
 | Writer family                                                                                 | Publication boundary                                                                                                                  |
 | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | Entry creation, replacement, patch, reset, and deletion                                       | Existing entry publisher, worker replacement receipts, and lifecycle tombstones.                                                      |
