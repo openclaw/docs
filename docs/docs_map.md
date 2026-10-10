@@ -15674,6 +15674,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Gateway updates and suspended tabs
   - H2: Visualizations during a connection loss
   - H2: Connection loss and reconnect
+  - H2: Reloading a session link
 
 ## web/control-ui/panels.md
 
