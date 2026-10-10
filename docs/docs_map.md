@@ -5144,6 +5144,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: ACP session metadata
   - H2: ACP agents' model precedence
   - H2: Missing plugins during migration
+  - H2: Blocked local plugins
   - H2: Retired TaskFlow Webhooks plugin
   - H2: Schema publication during a 2026.9.2 update
   - H2: Native Codex recovery after Tasks removal
