@@ -12754,6 +12754,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/worker-access
 - Headings:
   - H2: Committed facts and completeness
+  - H3: Durable cross-store source fences
   - H3: Session authority projections
   - H3: Conversation and plugin-state receipt coverage
   - H3: Foreign observation and recertification
