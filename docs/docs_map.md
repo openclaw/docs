@@ -3466,6 +3466,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tools: there are two costs
   - H2: Commands, directives, and "inline shortcuts"
   - H2: Sessions, compaction, and pruning (what persists)
+  - H3: Runtime context and provider roles
   - H2: What /context actually reports
   - H2: Related
 
