@@ -223,8 +223,9 @@ not total disk usage: embedding cache, FTS/vector tables, SQLite overhead, and
 WAL/free pages are excluded.
 
 Chunk and embedding-cache vectors use little-endian 64-bit floating-point
-BLOBs. The software search fallback reads these full-precision vectors even
-when the optional sqlite-vec accelerator is unavailable; sqlite-vec keeps its
+BLOBs. The software search fallback scores these full-precision BLOBs directly
+in a worker, without allocating a numeric array per chunk, even when the
+optional sqlite-vec accelerator is unavailable; sqlite-vec keeps its
 separate 32-bit vector index. The keyword index uses each chunk's stable integer
 identity, so edits and deletion update the corresponding FTS rows directly.
 
