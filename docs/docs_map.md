@@ -10916,6 +10916,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent workspace context
   - H2: Tool failure diagnostics
   - H2: ACP harness turns
+  - H2: Session persistence
   - H2: Stateful CLI commands
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
@@ -11037,6 +11038,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await reply tool authority
   - H2: Prepare session catalog identities
   - H2: Await session upstream links
+  - H2: Prepare session entry changes
   - H2: Await locked transcript preparation
   - H2: Await session transcript persistence
   - H3: Await extension session changes
@@ -12800,6 +12802,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: SDK session writer migration
   - H2: Committed facts and completeness
   - H3: Managed raw handle settlement and write-set coverage
   - H3: Sandbox, worktree, and publication receipts
