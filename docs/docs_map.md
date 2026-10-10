@@ -15080,6 +15080,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Limits
   - H2: Clear a card
   - H2: Where the card appears
+  - H3: Embedded composer placements
   - H2: Refresh current work status
   - H2: Gateway requests
   - H2: Pin the card to the dashboard
@@ -15613,6 +15614,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Mermaid diagrams
   - H2: Hosted embeds
   - H3: YouTube videos
+  - H2: Session Details
   - H2: Chat transcript layout
   - H2: Run transcripts
   - H2: Conversations stopped for review
