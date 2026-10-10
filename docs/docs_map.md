@@ -12764,6 +12764,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Durable cross-store source fences
   - H3: Session authority projections
   - H3: Conversation and plugin-state receipt coverage
+  - H3: Approval, placement, and workspace receipts
   - H3: Foreign observation and recertification
   - H2: Retained final-authority guards
   - H2: Keep one store owner
