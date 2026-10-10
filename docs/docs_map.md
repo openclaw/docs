@@ -15609,6 +15609,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui
 - Headings:
+  - H2: Browser requirements
   - H2: Take a photo in chat
   - H2: Watch a desktop in Picture-in-Picture
   - H2: Quick open (local)
