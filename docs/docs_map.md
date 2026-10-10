@@ -12824,6 +12824,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Incognito transcript and lifecycle operations (P02, inactive)
   - H3: Incognito command, CLI, and harness consumers (P03, inactive)
   - H3: Incognito SDK history preparation (P04, inactive)
+  - H3: Incognito Gateway controls and HTTP authority (P05, inactive)
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
