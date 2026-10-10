@@ -1583,6 +1583,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup
   - H2: Public work sessions
   - H2: Manage the allowlist
+  - H2: Verify GitHub collaborators
+  - H3: Trust model
+  - H3: Enable yourself
   - H2: Guest mode
   - H3: Repository containment
   - H3: Limits and identity
