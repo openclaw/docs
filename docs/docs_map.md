@@ -4177,6 +4177,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Managing session settings and groups
   - H2: Sessions versus conversations
   - H2: Sending cross-session messages
+  - H3: Communication preferences
   - H2: Status and orchestration helpers
   - H2: Session state changes
   - H2: Spawning sub-agents
@@ -4742,6 +4743,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/config-agents/sessions
 - Headings:
+  - H2: Communication defaults
   - H2: Session
   - H2: Cold storage
 
