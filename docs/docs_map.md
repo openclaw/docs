@@ -15288,6 +15288,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/subagents/tool-policy
 - Headings:
   - H2: Tool policy
+  - H3: Delegate tools to a coding agent
   - H3: Override via config
 
 ## tools/subagents/tool-reference.md
