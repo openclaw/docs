@@ -4572,6 +4572,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Deployment and credential trust contract
   - H2: Provision the node
   - H2: Select the placement on the Gateway
+  - H3: Make the dedicated worker mandatory
   - H3: Create and dispatch with worker proxy authentication
   - H2: Troubleshooting
   - H2: Upgrade and downgrade
@@ -4588,6 +4589,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers/placement-and-machine-selection
 - Headings:
+  - H2: A deployment-required OpenClaw destination
   - H2: Codex on a paired device
   - H2: Codex or OpenClaw on a cloud profile
   - H2: Provider identity in the picker
@@ -4833,6 +4835,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-cloud-workers
 - Headings:
   - H2: Cloud worker environments
+  - H3: Required worker profile
   - H3: Crabbox profile
   - H3: Static SSH development profile
 
