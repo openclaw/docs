@@ -4606,6 +4606,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers/session-lifecycle
 - Headings:
+  - H2: Dispatch a session
+  - H2: Update the Gateway and worker runtime
+  - H2: Synchronize workspace files
+  - H3: Deliver skills to the worker
+  - H3: Accept a completed turn
+  - H3: Retain idle workers
+  - H3: Quiescence and platform compatibility
+  - H3: Publish worker changes
+  - H3: Resolve conflicts and queued follow-ups
+  - H2: Move a session
+  - H2: Stop, reclaim, or remove a session
+  - H3: Recover a failed placement
+  - H3: Archive or delete a session
+  - H3: Reclaim through the API
+  - H2: Move through the API
+  - H2: Recover after an interruption
   - H2: What survives a dead machine
 
 ## gateway/cloud-workers/setup-and-bundle-installation.md
@@ -4838,6 +4854,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Cloud worker environments
   - H3: Required worker profile
   - H3: Crabbox profile
+  - H4: Crabbox machine catalog
   - H3: Static SSH development profile
 
 ## gateway/config-extensions.md
