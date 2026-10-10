@@ -4356,6 +4356,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Publish with your account
   - H3: Disconnect and reconnect
   - H2: Profile appearance preferences
+  - H2: Personal navigation preferences
   - H2: Write directives, not observations
   - H2: Supersede in place
   - H2: Choose the right file
@@ -15724,6 +15725,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui/sessions-and-sidebar
 - Headings:
+  - H2: Navigation rail
+  - H3: Mine and All
+  - H3: Personal navigation storage
   - H2: New session names
   - H2: New-session preferences and recents
   - H2: Systems workspace
