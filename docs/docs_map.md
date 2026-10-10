@@ -10913,6 +10913,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent workspace context
   - H2: Tool failure diagnostics
   - H2: ACP harness turns
+  - H2: Stateful CLI commands
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 
