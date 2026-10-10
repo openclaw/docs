@@ -11648,6 +11648,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Getting started
   - H2: Default model
   - H2: Bundled fallback catalog
+  - H2: Prompt caching
   - H2: Manual config
   - H2: Related
 
@@ -11681,6 +11682,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Non-interactive setup
   - H2: Discovery and pricing
   - H2: Built-in catalog
+  - H2: Prompt caching
   - H2: Manual config
   - H2: Related
 
@@ -11775,6 +11777,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config snippet
   - H2: Supported surfaces
   - H2: Available models
+  - H2: Prompt caching
   - H2: Price estimates
   - H2: Notes
   - H2: Related
@@ -11843,6 +11846,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Getting started
   - H2: Non-interactive setup
   - H2: Built-in catalog
+  - H2: Prompt caching
   - H2: Custom Fireworks model ids
   - H2: Related
 
@@ -12466,6 +12470,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Non-interactive example
   - H2: Built-in catalog
   - H2: Video generation
+  - H2: Prompt caching
   - H2: Related
 
 ## providers/venice.md
@@ -12479,6 +12484,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model discovery
   - H2: DeepSeek V4 replay behavior
   - H2: Streaming and tool support
+  - H2: Prompt caching
   - H2: Pricing
   - H2: Usage examples
   - H2: Troubleshooting
