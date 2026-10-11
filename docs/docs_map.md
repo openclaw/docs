@@ -11065,6 +11065,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent roster config
   - H2: How to migrate
   - H2: Await strict transcript message preparation
+  - H2: Await auth-profile and provider-availability operations
 
 ## plugins/sdk-migration/import-paths.md
 
