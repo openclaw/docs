@@ -4142,7 +4142,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How it works
   - H3: Direct Anthropic API-key requests
   - H3: Client-side pruning
-  - H2: Legacy image cleanup
+  - H2: Image history
   - H2: Smart defaults
   - H2: Enable or disable
   - H2: Pruning vs compaction
