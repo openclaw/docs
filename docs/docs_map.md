@@ -13458,7 +13458,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Reactions on iOS and Android
   - H3: Image paste on iPhone and iPad
   - H3: Mac automation windows
-  - H3: Android daily test delivery
   - H3: Provider models and thinking controls
   - H3: Ultrafast selection
   - H3: Background model routes
