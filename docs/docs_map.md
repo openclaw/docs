@@ -12074,6 +12074,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Disabling preload
   - H3: LAN or tailnet host
   - H2: Troubleshooting
+  - H3: Context overflow
   - H3: Model discovery failures
   - H3: LM Studio not detected
   - H3: Authentication errors (HTTP 401)
