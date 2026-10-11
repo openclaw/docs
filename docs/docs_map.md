@@ -12625,7 +12625,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Rows and idempotency
   - H3: Common failures, cheaply handled
   - H2: Delete and consolidate
-  - H2: Existing data and three landable PRs
+  - H2: Existing data and staged PRs
 
 ## reference/AGENTS.default.md
 
