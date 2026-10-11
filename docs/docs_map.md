@@ -12724,6 +12724,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: JSON predicate columns
   - H3: Canonical writer validation
   - H3: Session hot facts and snapshots
   - H3: Compact agent payload storage
@@ -12811,6 +12812,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/storage-changes
 - Headings:
+  - H2: Agent JSON predicate columns
   - H2: Canonical writer validation
   - H2: Preparing for another database backend
   - H3: Keep operations at the owning store
