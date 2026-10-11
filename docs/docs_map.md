@@ -11035,6 +11035,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
   - H2: Await plugin state and conversation bindings
+  - H2: Migrate inspection, authorization, and approval factories
   - H2: Await Gateway approval publication
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
