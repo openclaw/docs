@@ -143,6 +143,23 @@ For an intentional shared-credential override, use `openclaw node run
 Use [`openclaw node status`](/cli/node#service-background) to inspect the
 installed service.
 
+When run through `npx`, service installation first installs the selected
+OpenClaw release into `npm` under the node's state directory. The service uses
+that durable installation, not npm's temporary `_npx` cache. The installation
+output shows the package version, chosen runtime, service command, and a node
+update command:
+
+```bash
+npx -y openclaw@latest node install --force
+```
+
+Run it on the node machine with the same profile and state-directory settings.
+It promotes the selected release into the same prefix and rewrites the service,
+without redeeming another join URL. Use `openclaw@beta` or an exact version in
+place of `openclaw@latest` when needed. Reinstalling the same version also repairs
+missing package files. This targets the node even when a separate Gateway is
+installed on the machine.
+
 The service does not host worker sessions by default. To consent to full
 worker-session hosting, add `--session-host`:
 
