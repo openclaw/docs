@@ -11038,6 +11038,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
+  - H2: Await GitHub publication operations
   - H2: Replace native SQLite runtime writes
   - H2: Use worker-owned approval requests
   - H2: Await plugin state and conversation bindings
@@ -12835,6 +12836,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Managed raw handle settlement and write-set coverage
   - H3: Sandbox, worktree, and publication receipts
   - H3: Durable cross-store source fences
+  - H3: GitHub publication and personal connection authority
   - H3: Session authority projections
   - H3: Session phase actor
   - H3: Conversation and plugin-state receipt coverage
