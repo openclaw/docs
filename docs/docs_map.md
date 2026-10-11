@@ -11047,6 +11047,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
   - H2: Await personal model-account operations
+  - H2: Await skill-command discovery
   - H2: Await placement preparation
   - H2: Await reply tool authority
   - H2: Prepare session catalog identities
