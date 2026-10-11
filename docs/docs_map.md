@@ -5150,6 +5150,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Runtime config migration
+  - H2: Direct Ollama Cloud routing
   - H2: Claude CLI model routing
   - H2: Command-owner target kinds
   - H2: Retention policy
