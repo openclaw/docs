@@ -7349,6 +7349,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider request failures
   - H3: Targeted model transport diagnostics
   - H3: Trace correlation
+  - H3: Chat-send startup
   - H3: Embedded attempt preparation
   - H3: Session catalog provider waits
   - H3: Codex catalog phases
