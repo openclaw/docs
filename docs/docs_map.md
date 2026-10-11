@@ -12831,7 +12831,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Sandbox, worktree, and publication receipts
   - H3: Durable cross-store source fences
   - H3: Session authority projections
-  - H3: Session phase actor (B1, inactive)
+  - H3: Session phase actor
   - H3: Conversation and plugin-state receipt coverage
   - H3: Current reads and receipt invalidation
   - H3: Approval, placement, and workspace receipts
