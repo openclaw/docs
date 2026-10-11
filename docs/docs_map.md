@@ -8729,7 +8729,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Deployment patterns
   - H3: Basic Codex deployment
   - H3: Mixed provider deployment
-  - H3: Fail-closed Codex deployment
+  - H3: Require Codex for deployment
 
 ## plugins/codex-harness/runtime-behavior.md
 
