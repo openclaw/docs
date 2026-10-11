@@ -13401,6 +13401,110 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Historical behavior (pre-2026.1.22)
   - H2: Related
 
+## releases/2026.10.1.md
+
+- Route: /releases/2026.10.1
+- Headings:
+  - H1: OpenClaw v2026.10.1
+  - H2: New and expanded features
+  - H3: Installed-skill discovery
+  - H3: MCP Apps with conversations and files
+  - H3: Backups on external storage
+  - H3: Code Mode working values
+  - H3: Conversation snooze
+  - H3: Bundled desktop setup
+  - H3: Model discovery and live catalog updates
+  - H3: Workboard conversations and navigation
+  - H3: Bun-only installation
+  - H3: Resumable worker installation
+  - H3: Smaller npm installations
+  - H3: Browser images in workspace-only sessions
+  - H3: Conversation search and Online views
+  - H3: Chat during connection loss
+  - H3: Saved drafts and message recovery
+  - H3: Video and attachments in chat
+  - H3: Shared-chat reactions
+  - H3: Pull-request controls
+  - H3: File and HTML previews
+  - H3: Reply navigation
+  - H3: Updates from other conversations
+  - H3: Delegated-work activity
+  - H3: Return to Discord and Slack
+  - H3: Progress-card controls
+  - H3: Plugin setup information
+  - H3: Agent identity controls
+  - H3: Quiet Hours settings
+  - H3: Immutable Linux updates
+  - H3: Database space reclamation
+  - H3: Btrfs database maintenance
+  - H3: Recovery copies before repairs
+  - H3: Repairing interrupted updates
+  - H3: Startup with large databases
+  - H3: Runtime memory diagnostics
+  - H3: Stalled-message continuation
+  - H3: Channel webhook setup
+  - H3: Memory provider recall
+  - H3: Memory saves before compaction
+  - H3: Skills on paired devices
+  - H3: Codex Workshop reviews
+  - H3: Conversation organization on Mac
+  - H3: Finding and inspecting Mac conversations
+  - H3: Plugin conversations in the Mac sidebar
+  - H3: Snooze in native apps
+  - H3: Reactions on iOS and Android
+  - H3: Image paste on iPhone and iPad
+  - H3: Mac automation windows
+  - H3: Android daily test delivery
+  - H3: Provider models and thinking controls
+  - H3: Ultrafast selection
+  - H3: Background model routes
+  - H3: Agents API native tools and session access
+  - H3: Claude CLI forks and background work
+  - H3: Claude instruction updates
+  - H3: Shared workspace context in Codex
+  - H3: OpenAI conversation continuation
+  - H3: Separate model runtimes for Node integrations
+  - H3: Experimental Decision assistance
+  - H3: Automation search and run history
+  - H3: Tools for scheduled jobs
+  - H3: On-demand automation results
+  - H3: Automation failures and repair requests
+  - H3: MCP checks in scheduled scripts
+  - H3: Interactive Lobster workflows
+  - H3: Plugin conversations and side panels
+  - H3: Enterprise repositories and prepared cloud workers
+  - H3: Agents API tools and attachments
+  - H3: Existing agents in Claw management
+  - H3: Plugin state and conversation endings
+  - H3: Plugin authoring APIs
+  - H3: ClawHub release inspection
+  - H3: Roles by verified GitHub login
+  - H3: Visitor invitations and revocation
+  - H3: Hosted session network controls
+  - H3: GitHub identity in sandboxes
+  - H3: Required results and child-agent follow-ups
+  - H3: Native conversation imports
+  - H3: Shared-session assignment
+  - H3: Managed worktrees
+  - H3: Paired devices and remote workspaces
+  - H3: Heap and CPU profiles
+  - H3: Plugin traffic in monitoring
+  - H2: Fixes and refinements
+  - H3: Installation and Onboarding
+  - H3: Web UI
+  - H3: Updates and Maintenance
+  - H3: Messaging
+  - H3: Memory
+  - H3: Skills
+  - H3: Native Apps
+  - H3: Models and Providers
+  - H3: Automations and Scheduling
+  - H3: Browser and Computer Use
+  - H3: Plugins and Integrations
+  - H3: Security and Privacy
+  - H3: Quality-of-Life Improvements
+  - H3: Other Bug Fixes
+
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
