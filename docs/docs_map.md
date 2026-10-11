@@ -11268,6 +11268,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
   - H2: Decision model runtime
+  - H3: Bounded stale reads
 
 ## plugins/sdk-runtime/agent.md
 
@@ -15865,6 +15866,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: New session page
   - H3: Start a native coding CLI
   - H3: OpenClaw Chat workspace startup
+  - H3: GitHub read freshness
 
 ## web/control-ui/settings.md
 
