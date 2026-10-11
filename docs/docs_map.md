@@ -15903,6 +15903,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Settings
   - H3: Side panel keyboard shortcuts
   - H3: This device (macOS and iOS apps)
+  - H2: Speech bubbles
   - H2: Custom plugin UI
   - H2: Import assistant memory
   - H2: MCP page
