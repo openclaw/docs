@@ -9040,6 +9040,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Debug runtime hooks
   - H2: Prompt and model hooks
+  - H3: Restrict a run to local models
   - H3: Handler lifetime
   - H3: Authorized prompt enrichment
   - H3: Session extensions and next-turn injections
