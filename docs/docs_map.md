@@ -15848,7 +15848,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/sessions-and-sidebar
 - Headings:
   - H2: Navigation rail
-  - H3: Mine and All
+  - H3: Session owner filter
   - H3: Personal navigation storage
   - H2: New session names
   - H2: New-session preferences and recents
