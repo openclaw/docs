@@ -3747,6 +3747,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Streaming, chunking, and batching
   - H2: Reasoning visibility and tokens
   - H2: Prefixes, threading, and replies
+  - H2: Agent reactions to WebChat prompts
   - H2: Silent replies
   - H2: Related
 
