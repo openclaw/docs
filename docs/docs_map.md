@@ -12853,6 +12853,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Session target discovery
   - H2: Config CLI ownership
   - H3: Non-session bookkeeping
   - H2: SDK session writer migration
