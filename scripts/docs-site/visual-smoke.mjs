@@ -42,6 +42,7 @@ try {
   await checkHeaderSurface();
   await checkFooterSocials();
   await checkDesktop();
+  await checkGroupedCodeCopy();
   await checkTocScrollspy();
   await checkTocRailScrolling();
   await checkCompactToc();
@@ -53,6 +54,48 @@ try {
 } finally {
   await browser.close();
   server.close();
+}
+
+async function checkGroupedCodeCopy() {
+  for (const theme of ["light", "dark"]) {
+    const page = await browser.newPage({ viewport: { width: 390, height: 672 } });
+    try {
+      await page.addInitScript((theme) => {
+        localStorage.setItem("theme", theme);
+        window.__groupedCodeCopies = [];
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: { writeText: async (text) => window.__groupedCodeCopies.push(text) },
+        });
+      }, theme);
+      await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+      const group = page.locator(".oc-code-group").first();
+      for (const width of [390, 667, 1440]) {
+        await page.setViewportSize({ width, height: 672 });
+        const tabs = group.locator(".oc-code-tab");
+        for (let index = 0; index < await tabs.count(); index += 1) {
+          await tabs.nth(index).click();
+          const control = group.locator(".oc-code.active [data-code-copy]");
+          if (!await control.isVisible()
+            || await group.locator("[data-code-copy]:visible").count() !== 1
+            || await group.locator(".oc-code.active .oc-code-label").isVisible()) {
+            throw new Error(`grouped copy visibility failed: ${theme}, ${width}, tab ${index}`);
+          }
+          const expected = await group.locator(".oc-code.active").evaluate((block) =>
+            [...block.querySelectorAll(".code-line")].map((line) => line.textContent).join("\n"));
+          await control.focus();
+          await page.keyboard.press("Enter");
+          await page.waitForFunction(() => window.__groupedCodeCopies.length > 0);
+          const copied = await page.evaluate(() => window.__groupedCodeCopies.pop());
+          if (copied !== expected || await control.getAttribute("data-copy-state") !== "copied") {
+            throw new Error(`grouped copy content failed: ${theme}, ${width}, tab ${index}`);
+          }
+        }
+      }
+    } finally {
+      await page.close();
+    }
+  }
 }
 
 async function checkLanguageSelection() {
