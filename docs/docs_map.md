@@ -14024,8 +14024,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Ingress gating (mentions and control-command bypass)
   - H3: Routing and session-key isolation
   - H2: v1++ models: concurrency, retries, trace correctness
-  - H3: Pairing store concurrency and idempotency
-  - H3: Ingress trace correlation and idempotency
+  - H3: Pairing store concurrency and duplicate prevention
+  - H3: Ingress trace correlation and duplicate prevention
   - H3: Routing dmScope precedence and identityLinks
   - H2: Related
 
