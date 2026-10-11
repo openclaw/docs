@@ -10987,6 +10987,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration
 - Headings:
   - H2: What changed
+  - H3: Session and command preparation
   - H3: Session reset freshness
   - H3: Why
   - H2: Where each topic lives
@@ -11054,6 +11055,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await reply tool authority
   - H2: Prepare session catalog identities
   - H2: Await session upstream links
+  - H2: Await session metadata listings
   - H2: Prepare session entry changes
   - H2: Await locked transcript preparation
   - H2: Await session transcript persistence
