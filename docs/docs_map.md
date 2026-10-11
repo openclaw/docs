@@ -12876,6 +12876,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Existing worker flows
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
+  - H3: Shared-state query consolidation
 
 ## reference/device-models.md
 
