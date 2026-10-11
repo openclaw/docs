@@ -504,6 +504,8 @@ generation serving.
 
 The hosted file is published from the public
 [`openclaw/catalog`](https://github.com/openclaw/catalog) GitHub repository.
+Empty provider declarations that use refreshable or runtime discovery are omitted
+from the hosted file; their model rows come from the installation's discovery owner.
 At publish time, it also hydrates model ids and metadata from models.dev for
 providers whose owning plugin explicitly opts in with
 [`modelCatalog.modelsDev`](/plugins/manifest/models#modelcatalog-reference). Each mapping
