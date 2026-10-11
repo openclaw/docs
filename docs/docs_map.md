@@ -12622,6 +12622,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced configuration
   - H2: Related
 
+## refactor/conversation-transcript-ownership.md
+
+- Route: /refactor/conversation-transcript-ownership
+- Headings:
+  - H1: Conversation transcript ownership
+  - H2: Problem
+  - H2: Decision
+  - H3: Rule 1: the transcript matches the chat
+  - H3: Rule 2: a job runs in a chat, or in the background
+  - H3: One owner
+  - H2: Considered options
+  - H2: Status and order
+  - H2: Risks to check before step 2
+
 ## refactor/cron-worker-owned.md
 
 - Route: /refactor/cron-worker-owned
