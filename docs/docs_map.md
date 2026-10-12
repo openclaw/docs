@@ -11046,6 +11046,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Approval callback timing
   - H3: Channel pairing allowlists
   - H3: Inbound envelope timestamps
+  - H3: Combined session-store reads
   - H3: Progress card handoff
   - H3: Watched-session harness context
   - H3: Reply tool authority preparation
@@ -11083,6 +11084,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Use worker-owned approval requests
   - H2: Await plugin state and conversation bindings
   - H2: Migrate inspection, authorization, and approval factories
+  - H2: Await session-backed approval routing
   - H2: Await Gateway approval publication
   - H2: Workspace mutation guards
   - H2: Await Mention Inbox operations
@@ -11090,6 +11092,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await skill-command discovery
   - H2: Await placement preparation
   - H2: Await reply tool authority
+  - H2: Prepare harness tool surfaces
   - H2: Prepare session catalog identities
   - H2: Replace unbound native session deletion callbacks
   - H2: Await session upstream links
