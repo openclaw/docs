@@ -11202,6 +11202,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Streaming file verification
   - H3: Browser lifecycle cleanup
   - H3: SQLite write admission
+  - H3: Database engine adapters (experimental)
   - H3: Worker task admission
   - H3: SQLite worker stores
   - H3: Computation worker entrypoints
@@ -12752,6 +12753,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: License
   - H2: Related
 
+## reference/database-engines.md
+
+- Route: /reference/database-engines
+- Headings:
+  - H2: Configure PostgreSQL
+  - H2: Isolation and durability
+  - H2: Anchors and backups
+  - H2: Limits and recovery
+  - H2: Observe database work
+
 ## reference/database-schemas.md
 
 - Route: /reference/database-schemas
@@ -13205,6 +13216,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: agents
   - H4: channels
   - H4: cron
+  - H4: database
   - H4: gateway
   - H4: memory
   - H4: models

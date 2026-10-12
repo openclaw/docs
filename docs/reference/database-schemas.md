@@ -306,6 +306,7 @@ reader job. Open the page that matches your task and stay there.
 
 | Page                                                                                           | Read it when                                                                                             |
 | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [Database engines (experimental)](/reference/database-engines)                                 | Selecting PostgreSQL, understanding SQLite anchors, or observing statements and worker requests.         |
 | [Database layout](/reference/database-schemas/layout)                                          | The two database roles, their on-disk paths, and the tables behind individual features.                  |
 | [Versioning contract](/reference/database-schemas/versioning)                                  | How schema versions are recorded, when a bump is required, and how updaters cross one.                   |
 | [Per-person and companion storage](/reference/database-schemas/personal-data)                  | Personal GitHub connections, personal model accounts, and Apple companion delivery journals.             |
