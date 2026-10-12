@@ -6312,6 +6312,15 @@ postimages and tombstones as observe when every key is resident. Cold batches
 still read through the worker; expiry and committed native or worker writes
 invalidate or replace cached values. Returned JSON remains caller-owned.
 
+Namespace lists share that cache owner with a 64-namespace, 8 MiB bound. A
+committed write invalidates its namespace, unknown settlement invalidates the
+database's lists, and each read filters expired entries without another worker
+request. Returned lists and values are detached from the retained snapshot.
+
+Agent dispatch reads ACP metadata only after finding a completed subagent run
+eligible for reactivation. Ordinary turns without such a run skip that worker
+request; actual reactivation retains the ACP exclusion and live dispatch checks.
+
 Voice-wake reads and writes, configuration-write metadata, and Claw MCP/package
 adoption use the existing shared-state workers. Voice-wake writes return the
 committed timestamp without a follow-up read. Generic synchronous machine-state
