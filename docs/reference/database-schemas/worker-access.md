@@ -3851,6 +3851,12 @@ an in-process write receipt changes. Sibling handles and workers share that rece
 blocked or failed checkpoints keep retrying when a reader may have released.
 Connections without a known write receipt continue checkpointing on every tick.
 Page reclamation and blocking checkpoint modes keep their zero-timeout scope.
+While an offline maintenance scope retains a shared-state worker, its scheduled
+WAL work pauses so Doctor and update-recovery captures keep stable source bytes.
+Explicitly admitted maintenance remains available. The final maintenance client
+release resumes the same worker's normal ten-second checkpoint cadence; overlapping
+maintenance clients keep it paused until all release.
+
 The Gateway run loop retains the shared-state database cache, actor owner, and
 SQLite worker broker until the final lifecycle outcome is recorded. Orderly
 retirement then joins the writer's final checkpoint before closing the host
