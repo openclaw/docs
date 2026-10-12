@@ -2108,6 +2108,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Options
   - H2: Gateway section
   - H2: Model section
+  - H2: Memory section
   - H2: Web section
   - H2: Other notes
   - H2: Related
@@ -9085,6 +9086,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Execution backends
   - H3: Set up only local embeddings
   - H3: Use another managed GGUF
+  - H2: Managed local OCR and vision
+  - H3: Choose the image task
+  - H3: Privacy and limits
   - H2: Existing llama-server
   - H3: Authentication and endpoint replacement
   - H3: Manual configuration
@@ -14340,6 +14344,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /start/wizard
 - Headings:
+  - H2: Memory embeddings
   - H2: Locale
   - H2: Guided default
   - H2: Choose one agent or a team
