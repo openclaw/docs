@@ -1327,6 +1327,14 @@ external effect. Actor-bound acceptance does not hold a legacy writer reservatio
 around its commands. Unbound native and SDK callers retain their compatibility
 adapters, whose committed writes invalidate actor facts.
 
+Restart-safe chat transcript acceptance also records user interaction activity
+before ACK. Reply initialization reuses that committed activity for the same
+existing session instead of refreshing its timestamps again. Initialization still
+persists changed routing or metadata, retains newer in-process activity, and gives
+new or reset sessions their own timestamps. Progress-card refreshes do not record
+user interaction activity. A failure during post-ACK preparation therefore leaves
+the accepted input and its activity durable together.
+
 Input staging, transcript acceptance, and run adoption rebase once on an explicit
 stale-version refusal, including when deferred participant recording commits
 ahead of admission. They retain the original lifecycle and pending-input
