@@ -427,10 +427,16 @@ semantics are unchanged.
 
 ## SDK session writer migration
 
-Current-input read fences consume the committed admission receipt's sequence and
-message position. They validate the requested store, session key, and user role
-without rereading that receipt's identity from SQLite. Source/account authority
-still belongs to the context and writer owners at their effect boundaries.
+Current-input read fences derive sequence and message bounds from the committed
+admission receipt. Constructing a fence checks the requested store, session key,
+and user role without querying SQLite for the receipt's identity. Durable
+asynchronous model-context, full-context, and projection readers accept results
+only after comparing that receipt with the canonical active anchor returned by
+the retained worker. Owned removal or rewrite refuses acceptance; later appends
+remain valid. Bounded admitted reads use the same final acceptance check, without
+repeating it when selecting the input prefix. Source/account authority still
+belongs to the context and writer owners at their effect boundaries.
+Released synchronous SDK and native incognito readers retain their existing owners.
 Direct SQLite edits without owner publication are unsupported.
 
 Transcript search returns its read snapshot and obtains indexing readiness from
