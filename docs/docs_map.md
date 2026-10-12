@@ -6182,6 +6182,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: 2. Configure the public URL and authenticated ingress
   - H3: Set the public URL once
   - H2: 3. Bootstrap administrators and assign roles
+  - H3: Invite guests
   - H2: 4. Synchronize people with verified GitHub identities
   - H3: Use an OIDC provider without losing existing profiles
   - H3: Configure GitHub access for repository work
