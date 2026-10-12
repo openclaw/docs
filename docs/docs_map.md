@@ -4392,6 +4392,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where logs go
   - H2: Extract logs
   - H2: Notes
+  - H2: SQLite worker timing
   - H2: Related
 
 ## gateway/1password.md
