@@ -340,9 +340,15 @@ graph. A kernel is T1-compat only when every reference is a direct call from
 another proven compatibility function or an already classified worker,
 boot/maintenance, or CLI operation. Any ordinary bundled caller makes the kernel
 and its callees live again. Import aliases, namespace access, and dynamic imports
-are checked against declaration identity, not matching names. Escaped callbacks,
-returned-method families, class methods, and unproven factory receivers remain
-T1; this proof does not attempt whole-program points-to analysis.
+are checked against declaration identity, not matching names.
+
+Closed receiver families join that graph: direct returned object methods,
+function-valued properties, returned callables, and simple class instances inherit
+their factory's proof. A bundled factory call or escaped member keeps the family
+live. Classes with inheritance, fields, computed names, decorators, or static
+blocks remain unproven because construction alone does not establish ownership
+of their effects. Shared async/sync factories and unsupported returned-object
+shapes also remain T1; this proof does not attempt whole-program points-to analysis.
 
 The same check runs from the inventory generator and the worker ratchet, including
 staged-source checks. Adding a bundled caller fails even if another T1 call is
@@ -362,7 +368,7 @@ The remaining cutover work includes these live or unproven API families:
 | Auth profiles / `findPersistedAuthProfileCredential`          | Auth upsert and Codex OAuth still call it; nested auth-store implementations forwarded through host properties also remain unproven.                                                                                   |
 | Conversation bindings / `inspectSessionBindingByConversation` | Gateway, Telegram, and Matrix routing retain bundled callers.                                                                                                                                                          |
 | Upstream links / `upsertSessionUpstreamLink`                  | The returned session-initialization `link` method still references it.                                                                                                                                                 |
-| Mention Inbox, publication, placement, model accounts         | Deprecated returned methods and class/interface contracts need receiver/escape proof before their shared kernels can be separated.                                                                                     |
+| Mention Inbox, publication, placement, model accounts         | Their factories still have bundled callers or shared receivers; deprecation of individual methods does not close the receiver family.                                                                                  |
 | Skill commands, TTS, proxy capture, session-store namespaces  | Lazy runtime namespaces escape into host API objects; absence of a named direct call is insufficient.                                                                                                                  |
 
 Remove a T1-compat API and its remaining synchronous kernel in the next Plugin SDK
