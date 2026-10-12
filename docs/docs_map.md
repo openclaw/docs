@@ -7268,6 +7268,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
   - H3: Package-publication recovery
+  - H3: Recover an unfinished publication after a remount
   - H3: Recover a completed receipt with an older updater
   - H3: Unfinished publication and rollback
   - H3: Updating from 2026.9.2 across a schema bump
