@@ -1732,7 +1732,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: macOS Swift phases
   - H2: Security review checks
   - H3: Enable enforcement after deployment
-  - H2: Fail-fast order
+  - H2: Job ordering and failure reporting
   - H2: Control UI size budgets
   - H2: Related
 
