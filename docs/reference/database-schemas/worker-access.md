@@ -3542,7 +3542,11 @@ at transaction and commit admission. Committed progress and identity notificatio
 precede the reset callback, and accepted callbacks settle inside the physical
 writer FIFO. Lost replies use the acknowledged candidate without repeating the
 builder or SQL; uncertain outcomes remain fenced. Bundled reply initialization
-uses a typed upsert descriptor while its projection and opaque transaction
+uses a typed upsert descriptor and reuses the lifecycle planner's selected-row
+snapshot for ordinary commits, including declared related rows and the stored
+model parent. Parent-fork preparation and creation-authority binding retain their
+earlier snapshot before effects. The existing lifecycle commit checks its
+prepared row and preserves intervening same-session metadata. Opaque transaction
 callbacks retain their existing owner. Native-binding settlement and incognito
 activation remain separate cutovers. These changes require no schema, durability,
 retention, configuration, or update migration.
