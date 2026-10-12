@@ -61,6 +61,11 @@ live commit authority remain unchanged; no schema or update migration is needed.
 WebSocket hello prepares session membership only when the resident presence
 roster includes watched sessions. An idle roster needs no session rows; active
 watches retain the existing membership preparation and visibility filtering.
+Profile authority preparation reuses the resident catalog's role, display,
+GitHub login, and merge aliases. Committed profile writes update these facts
+before subsequent connections read them; existing authority revocation still
+applies at access boundaries. Standalone reads and requests for the full profile
+continue through the shared-state read worker.
 
 Runtime database access belongs in workers. The Gateway main thread owns live
 projections, caches, and caller authority; it awaits prepared facts and installs
