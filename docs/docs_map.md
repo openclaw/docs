@@ -12853,6 +12853,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Next four independent lanes
   - H2: Call sites by tier and owner
   - H3: T1
+  - H3: T1-compat
   - H3: T2
   - H3: T3
   - H3: W
@@ -12861,6 +12862,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Live T1 and deprecated compatibility
   - H2: Session target discovery
   - H2: Config CLI ownership
   - H3: Non-session bookkeeping
