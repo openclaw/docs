@@ -959,6 +959,15 @@ values. Writer transactions still reread authoritative rows, and live permission
 run, generation, and source assertions remain at effect boundaries. This changes
 no schema, stored bytes, durability, retention, permissions, or update behavior.
 
+Entry snapshot enrichment preserves the resident row projection, including Board
+presence and the activity-summary watermark. The entry, participant display, and
+watermark remain covered by the same committed write token. Native deletions,
+count-only participant updates, cold archive changes, and unscoped fixture writes
+invalidate those facts through the existing write receipts.
+Starting another actor command retains the preceding committed snapshot until a
+write changes its token. A reader that evicts stale facts does not cancel the
+pending command's receipt; its complete postimage can still install after commit.
+
 Typed session writers publish through the existing entry and transcript owners.
 Entry replacement and patch receipts carry the committed lifecycle, permission,
 sharing, membership, owner, and category facts. Partial owner, member, category,
@@ -979,6 +988,14 @@ worker callers install from the native commit receipt before completion. A neste
 savepoint cannot publish facts that its outer transaction may still roll back.
 Received worker facts have their own installation frame even when a native caller
 is waiting for, or already owns, a different transaction on its host handle.
+
+Row projections consume these committed facts without comparing a global
+transcript notification counter. The physical writer queue orders receipt
+installation, and each affected row's publisher refreshes or invalidates its
+facts. Presentation notifications schedule refreshes using the installed facts;
+message IDs, sequence numbers, and lifecycle hints do not certify database
+freshness. A delayed notification may schedule an unnecessary refresh, but does
+not replace the current row's watermark with notification data.
 
 The projection is not a complete list of valid anchors. Exact anchor membership,
 CLI-writer ownership, and accepted-input custody retain their existing validators.
