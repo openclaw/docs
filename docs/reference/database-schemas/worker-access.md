@@ -263,6 +263,14 @@ proves that no other descriptor for that file remains in the process.
 
 Migration and repair owners retain their checks and publish replacement facts
 after their DDL commits. Ordinary runtime consumers do not revalidate that result.
+Memory's vector worker stages an agent schema-extension receipt before replacing
+its derived virtual tables. After commit, it publishes the settled catalog,
+including SQLite extension shadow tables, while retaining the unchanged agent
+ownership, integrity, and canonical-schema proof. Unknown DDL still expires that
+proof. A failed vector transaction leaves re-admission to the worker on its next
+use. Text encoding is retained per physical admission once the catalog is
+initialized; an empty database can still choose its encoding before first DDL.
+This changes no persisted schema, migration, retention, or update behavior.
 Doctor and explicit verification keep their independent checks, and proven
 corruption still revokes admission. Writer receipts invalidate cached row facts
 without repeating format checks; active SQLite snapshots keep their existing view. Current caller authority, lease ownership, and
