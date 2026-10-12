@@ -603,7 +603,9 @@ reuses the database owner's admitted table and index facts.
 
 Durable Board writes with ordinary request callbacks use the existing worker.
 Cross-store source authority and native incognito retain their explicit native
-adapter. Board reads inside a transaction reuse its snapshot without a nested
+adapter. Cross-store writes check the captured target session identity once in
+the mutation kernel's transaction, without a second session-existence read.
+Board reads inside a transaction reuse its snapshot without a nested
 savepoint. Ambient-watch preparation uses the existing read worker; the released
 synchronous prompt adapter remains deprecated with a runtime warning.
 
