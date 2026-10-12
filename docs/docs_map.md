@@ -12896,6 +12896,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Worker ownership and caches
+  - H2: Session and ancillary worker operations
   - H2: Live T1 and deprecated compatibility
   - H2: Session target discovery
   - H2: Config CLI ownership
