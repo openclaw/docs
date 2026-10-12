@@ -3181,7 +3181,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "reference/credits",
-                  "reference/pull-request-review-flow"
+                  "reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "reference/scripts/pr-preparation",
+                      "reference/scripts/pr-tooling",
+                      "reference/scripts/remote-gates",
+                      "reference/scripts/github-transport",
+                      "reference/scripts/prior-ci",
+                      "reference/scripts/merge-admission",
+                      "reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -5221,7 +5233,19 @@
                 "group": "项目",
                 "pages": [
                   "zh-CN/reference/credits",
-                  "zh-CN/reference/pull-request-review-flow"
+                  "zh-CN/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "zh-CN/reference/scripts/pr-preparation",
+                      "zh-CN/reference/scripts/pr-tooling",
+                      "zh-CN/reference/scripts/remote-gates",
+                      "zh-CN/reference/scripts/github-transport",
+                      "zh-CN/reference/scripts/prior-ci",
+                      "zh-CN/reference/scripts/merge-admission",
+                      "zh-CN/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -7261,7 +7285,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "zh-TW/reference/credits",
-                  "zh-TW/reference/pull-request-review-flow"
+                  "zh-TW/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "zh-TW/reference/scripts/pr-preparation",
+                      "zh-TW/reference/scripts/pr-tooling",
+                      "zh-TW/reference/scripts/remote-gates",
+                      "zh-TW/reference/scripts/github-transport",
+                      "zh-TW/reference/scripts/prior-ci",
+                      "zh-TW/reference/scripts/merge-admission",
+                      "zh-TW/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -9301,7 +9337,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "ja-JP/reference/credits",
-                  "ja-JP/reference/pull-request-review-flow"
+                  "ja-JP/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "ja-JP/reference/scripts/pr-preparation",
+                      "ja-JP/reference/scripts/pr-tooling",
+                      "ja-JP/reference/scripts/remote-gates",
+                      "ja-JP/reference/scripts/github-transport",
+                      "ja-JP/reference/scripts/prior-ci",
+                      "ja-JP/reference/scripts/merge-admission",
+                      "ja-JP/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -11341,7 +11389,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "es/reference/credits",
-                  "es/reference/pull-request-review-flow"
+                  "es/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "es/reference/scripts/pr-preparation",
+                      "es/reference/scripts/pr-tooling",
+                      "es/reference/scripts/remote-gates",
+                      "es/reference/scripts/github-transport",
+                      "es/reference/scripts/prior-ci",
+                      "es/reference/scripts/merge-admission",
+                      "es/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -13381,7 +13441,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "pt-BR/reference/credits",
-                  "pt-BR/reference/pull-request-review-flow"
+                  "pt-BR/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "pt-BR/reference/scripts/pr-preparation",
+                      "pt-BR/reference/scripts/pr-tooling",
+                      "pt-BR/reference/scripts/remote-gates",
+                      "pt-BR/reference/scripts/github-transport",
+                      "pt-BR/reference/scripts/prior-ci",
+                      "pt-BR/reference/scripts/merge-admission",
+                      "pt-BR/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -15421,7 +15493,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "ko/reference/credits",
-                  "ko/reference/pull-request-review-flow"
+                  "ko/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "ko/reference/scripts/pr-preparation",
+                      "ko/reference/scripts/pr-tooling",
+                      "ko/reference/scripts/remote-gates",
+                      "ko/reference/scripts/github-transport",
+                      "ko/reference/scripts/prior-ci",
+                      "ko/reference/scripts/merge-admission",
+                      "ko/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -17461,7 +17545,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "de/reference/credits",
-                  "de/reference/pull-request-review-flow"
+                  "de/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "de/reference/scripts/pr-preparation",
+                      "de/reference/scripts/pr-tooling",
+                      "de/reference/scripts/remote-gates",
+                      "de/reference/scripts/github-transport",
+                      "de/reference/scripts/prior-ci",
+                      "de/reference/scripts/merge-admission",
+                      "de/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -19501,7 +19597,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "fr/reference/credits",
-                  "fr/reference/pull-request-review-flow"
+                  "fr/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "fr/reference/scripts/pr-preparation",
+                      "fr/reference/scripts/pr-tooling",
+                      "fr/reference/scripts/remote-gates",
+                      "fr/reference/scripts/github-transport",
+                      "fr/reference/scripts/prior-ci",
+                      "fr/reference/scripts/merge-admission",
+                      "fr/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -21541,7 +21649,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "hi/reference/credits",
-                  "hi/reference/pull-request-review-flow"
+                  "hi/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "hi/reference/scripts/pr-preparation",
+                      "hi/reference/scripts/pr-tooling",
+                      "hi/reference/scripts/remote-gates",
+                      "hi/reference/scripts/github-transport",
+                      "hi/reference/scripts/prior-ci",
+                      "hi/reference/scripts/merge-admission",
+                      "hi/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -23581,7 +23701,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "ar/reference/credits",
-                  "ar/reference/pull-request-review-flow"
+                  "ar/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "ar/reference/scripts/pr-preparation",
+                      "ar/reference/scripts/pr-tooling",
+                      "ar/reference/scripts/remote-gates",
+                      "ar/reference/scripts/github-transport",
+                      "ar/reference/scripts/prior-ci",
+                      "ar/reference/scripts/merge-admission",
+                      "ar/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -25621,7 +25753,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "it/reference/credits",
-                  "it/reference/pull-request-review-flow"
+                  "it/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "it/reference/scripts/pr-preparation",
+                      "it/reference/scripts/pr-tooling",
+                      "it/reference/scripts/remote-gates",
+                      "it/reference/scripts/github-transport",
+                      "it/reference/scripts/prior-ci",
+                      "it/reference/scripts/merge-admission",
+                      "it/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -27661,7 +27805,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "vi/reference/credits",
-                  "vi/reference/pull-request-review-flow"
+                  "vi/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "vi/reference/scripts/pr-preparation",
+                      "vi/reference/scripts/pr-tooling",
+                      "vi/reference/scripts/remote-gates",
+                      "vi/reference/scripts/github-transport",
+                      "vi/reference/scripts/prior-ci",
+                      "vi/reference/scripts/merge-admission",
+                      "vi/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -29701,7 +29857,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "nl/reference/credits",
-                  "nl/reference/pull-request-review-flow"
+                  "nl/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "nl/reference/scripts/pr-preparation",
+                      "nl/reference/scripts/pr-tooling",
+                      "nl/reference/scripts/remote-gates",
+                      "nl/reference/scripts/github-transport",
+                      "nl/reference/scripts/prior-ci",
+                      "nl/reference/scripts/merge-admission",
+                      "nl/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -31741,7 +31909,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "fa/reference/credits",
-                  "fa/reference/pull-request-review-flow"
+                  "fa/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "fa/reference/scripts/pr-preparation",
+                      "fa/reference/scripts/pr-tooling",
+                      "fa/reference/scripts/remote-gates",
+                      "fa/reference/scripts/github-transport",
+                      "fa/reference/scripts/prior-ci",
+                      "fa/reference/scripts/merge-admission",
+                      "fa/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -33781,7 +33961,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "tr/reference/credits",
-                  "tr/reference/pull-request-review-flow"
+                  "tr/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "tr/reference/scripts/pr-preparation",
+                      "tr/reference/scripts/pr-tooling",
+                      "tr/reference/scripts/remote-gates",
+                      "tr/reference/scripts/github-transport",
+                      "tr/reference/scripts/prior-ci",
+                      "tr/reference/scripts/merge-admission",
+                      "tr/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -35821,7 +36013,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "uk/reference/credits",
-                  "uk/reference/pull-request-review-flow"
+                  "uk/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "uk/reference/scripts/pr-preparation",
+                      "uk/reference/scripts/pr-tooling",
+                      "uk/reference/scripts/remote-gates",
+                      "uk/reference/scripts/github-transport",
+                      "uk/reference/scripts/prior-ci",
+                      "uk/reference/scripts/merge-admission",
+                      "uk/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -37861,7 +38065,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "id/reference/credits",
-                  "id/reference/pull-request-review-flow"
+                  "id/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "id/reference/scripts/pr-preparation",
+                      "id/reference/scripts/pr-tooling",
+                      "id/reference/scripts/remote-gates",
+                      "id/reference/scripts/github-transport",
+                      "id/reference/scripts/prior-ci",
+                      "id/reference/scripts/merge-admission",
+                      "id/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -39901,7 +40117,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "pl/reference/credits",
-                  "pl/reference/pull-request-review-flow"
+                  "pl/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "pl/reference/scripts/pr-preparation",
+                      "pl/reference/scripts/pr-tooling",
+                      "pl/reference/scripts/remote-gates",
+                      "pl/reference/scripts/github-transport",
+                      "pl/reference/scripts/prior-ci",
+                      "pl/reference/scripts/merge-admission",
+                      "pl/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -41941,7 +42169,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "th/reference/credits",
-                  "th/reference/pull-request-review-flow"
+                  "th/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "th/reference/scripts/pr-preparation",
+                      "th/reference/scripts/pr-tooling",
+                      "th/reference/scripts/remote-gates",
+                      "th/reference/scripts/github-transport",
+                      "th/reference/scripts/prior-ci",
+                      "th/reference/scripts/merge-admission",
+                      "th/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]
@@ -43981,7 +44221,19 @@
                 "group": "Project and contributing",
                 "pages": [
                   "ru/reference/credits",
-                  "ru/reference/pull-request-review-flow"
+                  "ru/reference/pull-request-review-flow",
+                  {
+                    "group": "Maintainer scripts",
+                    "pages": [
+                      "ru/reference/scripts/pr-preparation",
+                      "ru/reference/scripts/pr-tooling",
+                      "ru/reference/scripts/remote-gates",
+                      "ru/reference/scripts/github-transport",
+                      "ru/reference/scripts/prior-ci",
+                      "ru/reference/scripts/merge-admission",
+                      "ru/reference/scripts/merge-recovery"
+                    ]
+                  }
                 ]
               }
             ]

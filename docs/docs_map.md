@@ -13100,6 +13100,52 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Adapter guidelines
   - H2: Related
 
+## reference/scripts/github-transport.md
+
+- Route: /reference/scripts/github-transport
+- Headings:
+  - H1: PR GitHub transport
+  - H2: GitHub observations and publication
+  - H3: Octopool string rewrite protection
+
+## reference/scripts/merge-admission.md
+
+- Route: /reference/scripts/merge-admission
+- Headings:
+  - H1: PR merge admission
+
+## reference/scripts/merge-recovery.md
+
+- Route: /reference/scripts/merge-recovery
+- Headings:
+  - H1: PR merge recovery
+
+## reference/scripts/pr-preparation.md
+
+- Route: /reference/scripts/pr-preparation
+- Headings:
+  - H1: PR preparation
+
+## reference/scripts/pr-tooling.md
+
+- Route: /reference/scripts/pr-tooling
+- Headings:
+  - H1: PR wrapper tooling
+
+## reference/scripts/prior-ci.md
+
+- Route: /reference/scripts/prior-ci
+- Headings:
+  - H1: Prior-CI admin admission
+
+## reference/scripts/remote-gates.md
+
+- Route: /reference/scripts/remote-gates
+- Headings:
+  - H1: Remote PR gates
+  - H2: Testbox command checkout
+  - H2: Optional remote gate modes
+
 ## reference/secret-placeholder-conventions.md
 
 - Route: /reference/secret-placeholder-conventions
