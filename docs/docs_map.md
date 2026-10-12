@@ -11085,6 +11085,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Prepare session catalog identities
   - H2: Await session upstream links
   - H2: Await session metadata listings
+  - H2: Await transcript statistics
   - H2: Prepare session entry changes
   - H2: Await locked transcript preparation
   - H2: Await session transcript persistence
