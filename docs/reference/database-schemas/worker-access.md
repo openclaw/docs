@@ -3683,6 +3683,14 @@ creation, listing, cancellation, matching, and lifecycle maintenance. Schema
 preparation commits separately before the business transaction, preserving first-use
 recovery. Both transactions recheck the original caller at mutation and commit.
 Scope matching, FTS scan bounds, fire budgets, and hidden-context limits are unchanged.
+The writer retains the next expiry or rearm deadline per native connection. Calls
+before that deadline skip lifecycle SQL; create, cancel, fire, and failed
+transactions invalidate it. Reopening a connection reloads the deadline. Expiry
+comparison and fired-row numeric validation retain their existing semantics.
+Session snapshot replacement skips absent-field deletion only when the complete
+previous and next field sets prove that nothing was removed. Explicit clearing
+and entry transaction ownership are unchanged. These optimizations change no
+schemas, stored data, retention policy, or update behavior.
 Cold agent opening and lease/bootstrap control retain their existing owners; this
 cut does not claim that all agent-database work has left the host thread.
 
