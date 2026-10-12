@@ -5302,6 +5302,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: 5-minute local startup
   - H2: Runtime model
+  - H3: Module compile cache
   - H2: OpenAI-compatible endpoints
   - H3: Port and bind precedence
   - H3: Hot reload modes
