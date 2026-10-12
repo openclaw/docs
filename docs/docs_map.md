@@ -12790,6 +12790,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: The Gateway refuses to start with a newer schema version error
   - H3: A database is quarantined after integrity verification failed
   - H2: Downgrade recovery
+  - H3: Example: state schema 21 to 20
 
 ## reference/database-schemas/layout.md
 
@@ -12833,6 +12834,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 21
   - H3: State schema 20
   - H3: Skill Workshop proposal retirement (state schema 20, same version)
   - H3: State schema 19
