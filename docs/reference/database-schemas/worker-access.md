@@ -292,6 +292,19 @@ proves that no other descriptor for that file remains in the process.
 
 Migration and repair owners retain their checks and publish replacement facts
 after their DDL commits. Ordinary runtime consumers do not revalidate that result.
+
+<a id="private-worker-schema-extensions" />
+
+Bundled worker backends can use `stageOpenClawAgentDatabaseSchemaExtension` from
+`openclaw/plugin-sdk/sqlite-worker-runtime` before known derived-table DDL inside
+a managed transaction. Use it only when the operation preserves agent ownership
+metadata and canonical agent tables, indexes, and triggers. The committed receipt
+preserves those existing contracts; unclassified DDL and migrations still require
+their normal schema admission. Private databases without agent admission are
+unaffected.
+This is a private-local runtime helper; its declarations are intentionally excluded
+from the typed public Plugin SDK package.
+
 Memory's vector worker stages an agent schema-extension receipt before replacing
 its derived virtual tables. After commit, it publishes the settled catalog,
 including SQLite extension shadow tables, while retaining the unchanged agent
