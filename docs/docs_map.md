@@ -11037,6 +11037,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: WebSocket options and constructors
   - H3: Gateway worker environment creation
   - H3: Gateway placement and publication readers
+  - H3: Approval callback timing
   - H3: Channel pairing allowlists
   - H3: Inbound envelope timestamps
   - H3: Progress card handoff
