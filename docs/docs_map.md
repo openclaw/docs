@@ -11085,6 +11085,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Await placement preparation
   - H2: Await reply tool authority
   - H2: Prepare session catalog identities
+  - H2: Replace unbound native session deletion callbacks
   - H2: Await session upstream links
   - H2: Await session metadata listings
   - H2: Await transcript statistics
@@ -12946,6 +12947,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
   - H3: Shared-state query consolidation
+  - H3: Transcript accessor API cutovers
   - H3: Anchor read watermark facts
 
 ## reference/device-models.md
