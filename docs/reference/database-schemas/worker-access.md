@@ -987,6 +987,8 @@ predicates, prepared message bytes, and live authority checks. Committed and
 unknown outcomes never replay. Durable commands retain the physical writer FIFO
 across snapshot selection, command settlement, and the single rebase, so another
 queued writer cannot invalidate the refused postimage before its retry enters.
+Pending-input staging selects its initial lifecycle facts after entering that
+FIFO, so an earlier terminal write cannot make a new input stale before admission.
 Transcript appends and terminal accounting use the same command owner. Message
 preparation and external hooks remain outside this reservation; each native
 transaction still settles before another command starts.
