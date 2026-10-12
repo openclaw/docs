@@ -11014,6 +11014,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What changed
   - H3: Session and command preparation
+  - H3: Exec approval reads
   - H3: Session reset freshness
   - H3: Why
   - H2: Where each topic lives
