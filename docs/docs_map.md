@@ -12941,6 +12941,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Carry facts, publish after commit
   - H2: Migrate a caller
   - H3: Shared-state query consolidation
+  - H3: Anchor read watermark facts
 
 ## reference/device-models.md
 
