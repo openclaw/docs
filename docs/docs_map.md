@@ -12254,6 +12254,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/ollama/advanced
 - Headings:
   - H2: Advanced configuration
+  - H3: Cloud quota in /status
 
 ## providers/ollama/configuration.md
 
