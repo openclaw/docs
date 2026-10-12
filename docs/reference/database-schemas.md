@@ -110,6 +110,14 @@ Closing a connection clears its prepared statements and row caches. Final close
 also retires physical-database admission, keeping only the host's identity descriptor
 until explicit retirement can safely close it without releasing sibling POSIX locks.
 
+Canonical auth reads pass a compact projection of the live owner's schema facts
+(user version and the two auth table classifications) to the isolated child. The
+child reads current credential rows and closes its native reader before transferring
+them, without repeating schema admission on each request. It retains neither schema
+catalogs nor open handles between requests. Cold, snapshot, and artifact-preserving
+reads still admit their own database; owner DDL invalidates the next projection,
+and a replacement physical file cannot borrow the previous file's facts.
+
 Worker dispatch carries snapshots prepared by the admission owner when it publishes
 facts or writer custody. Unchanged requests reuse the registry revision without
 scanning every database or rebuilding fact maps. Shared revocation cells still
