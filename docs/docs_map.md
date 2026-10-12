@@ -11237,6 +11237,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Publish to ClawHub
   - H2: File structure
   - H2: Catalog order reference
+  - H2: Provider stream decorators
   - H2: Next steps
   - H2: Where each section moved
   - H3: Provider model catalogs
@@ -12590,6 +12591,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model discovery (implicit provider)
   - H2: Explicit configuration
   - H2: Advanced configuration
+  - H3: Prioritize interactive requests
   - H2: Troubleshooting
   - H2: Related
 
