@@ -6640,6 +6640,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: Test suites (what runs where)
+  - H3: PostgreSQL conformance
   - H3: Unit / integration (default)
   - H3: Stability (gateway)
   - H3: E2E (repo aggregate)
