@@ -5212,6 +5212,11 @@ Released synchronous SDK readers retain their compatibility kernels. These
 changes add no schema, cache, configuration, migration, or update requirements.
 
 Awaited full-transcript event reads use the same history worker's hydration stream.
+Its ordered cursor includes the first bounded byte slice of each event; only
+larger events need follow-up slice queries. The cursor and follow-up reads retain
+one SQLite snapshot across transport acknowledgments.
+Manual compaction reads entry and transcript statistics after the previous writer
+settles, then reuses them while its lifecycle owner holds admission closed.
 Compaction preflight, reset hooks, BTW context, exports, and the asynchronous SDK
 reader retain raw event order, read fences, and byte limits. The host captures the
 physical store before discovery yields and keeps its read custody through cold
