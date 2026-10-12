@@ -6576,6 +6576,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
 
+## help/testing/boundary-scenarios.md
+
+- Route: /help/testing/boundary-scenarios
+- Headings:
+  - H2: Scenario contracts
+  - H2: SecretRef registry regression contract
+
 ## help/testing/contracts.md
 
 - Route: /help/testing/contracts
@@ -6600,6 +6607,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/testing/docker
 - Headings:
   - H2: Docker runners (optional "works in Linux" checks)
+
+## help/testing/fixtures.md
+
+- Route: /help/testing/fixtures
+- Headings:
+  - H2: Test Temp Directories
+  - H2: Agent reliability evals (skills)
+  - H2: Module mocks and export completeness
+  - H2: Raw SQLite state access
+  - H2: Skills watchers
+  - H2: Compiled subprocesses and timeout helpers
 
 ## help/testing/live-workflows.md
 
@@ -6641,9 +6659,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/testing/writing-tests
 - Headings:
   - H2: Prove behavior at the owning boundary
+  - H2: Cost budget
   - H2: Test Temp Directories
   - H2: Agent reliability evals (skills)
-  - H2: Cost budget
   - H2: Module mocks and export completeness
   - H2: Raw SQLite state access
   - H2: Skills watchers
@@ -13404,6 +13422,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/test
 - Headings:
+  - H2: Local command guidance
   - H2: Where each section moved
   - H2: Related
 
