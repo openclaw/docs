@@ -11066,6 +11066,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration/how-to-migrate
 - Headings:
+  - H2: Await durable session persistence
   - H2: Await GitHub publication operations
   - H2: Replace native SQLite runtime writes
   - H2: Use worker-owned approval requests
