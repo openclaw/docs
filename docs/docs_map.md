@@ -11062,6 +11062,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Model-provider result compatibility
   - H3: Memory session inventory readers
   - H3: Memory read missing results
+  - H3: Runtime config snapshot reads
   - H3: Config record migrations
   - H3: Plugin state migration declarations
   - H3: AuthStorage SQLite migration
@@ -11103,6 +11104,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Migrate durable ingress files through Doctor
   - H2: Agent roster config
   - H2: How to migrate
+  - H2: Read prepared runtime config
   - H2: Await strict transcript message preparation
   - H2: Await auth-profile and provider-availability operations
 
