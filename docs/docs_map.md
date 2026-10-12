@@ -11031,6 +11031,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/compatibility-policy
 - Headings:
   - H2: Compatibility policy
+  - H3: Harness deletion companions
   - H3: Retained helper contracts
   - H3: Session header link helper
   - H3: Harness tool construction
