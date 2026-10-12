@@ -12874,6 +12874,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent JSON predicate columns
   - H2: Canonical writer validation
   - H2: Preparing for another database backend
+  - H3: Shared-state PostgreSQL schema generation
   - H3: Experimental PostgreSQL engine (workboard pilot)
   - H3: Keep operations at the owning store
   - H3: Memory chunk path index retirement
