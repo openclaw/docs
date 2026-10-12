@@ -12877,6 +12877,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Profile priority and current cutover status
   - H2: Next four independent lanes
   - H2: Call sites by tier and owner
+  - H3: Largest live T1 owners
   - H3: T1
   - H3: T1-compat
   - H3: T2
