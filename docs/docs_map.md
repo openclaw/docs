@@ -13078,6 +13078,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/prompt-caching
 - Headings:
   - H2: Keep model settings stable
+  - H2: Stable tools between turns
   - H2: Keep replayed tool results stable
   - H2: Primary knobs
   - H3: Worker turns
