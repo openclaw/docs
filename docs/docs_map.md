@@ -3721,7 +3721,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Supported providers
   - H2: How search works
-  - H2: Deterministic trigger recall
+  - H2: Rule-based trigger recall
   - H2: Improving search quality
   - H3: Recency decay
   - H3: MMR (diversity)
@@ -4060,7 +4060,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/qa-e2e-automation/scenario-coverage
 - Headings:
-  - H2: Canonical scenario coverage
+  - H2: Scenario coverage
 
 ## concepts/qa-e2e-automation/slack-qa.md
 
