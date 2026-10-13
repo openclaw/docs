@@ -252,8 +252,12 @@ watches retain the existing membership preparation and visibility filtering.
 Profile authority preparation reuses the resident catalog's role, display,
 GitHub login, and merge aliases. Committed profile writes update these facts
 before subsequent connections read them; existing authority revocation still
-applies at access boundaries. Standalone reads and requests for the full profile
-continue through the shared-state read worker.
+applies at access boundaries. The catalog also retains the canonical Gateway
+owner's exact local identity binding. A named owner can connect directly from
+those facts, without another ensure request or host-account lookup. Missing,
+unbound, or merged owners and blank-name adoption still use the profile writer.
+Standalone reads and requests for the full profile continue through the
+shared-state read worker.
 
 Runtime database access belongs in workers. The Gateway main thread owns live
 projections, caches, and caller authority; it awaits prepared facts and installs
@@ -431,8 +435,14 @@ and retirement, while the retrieval worker owns read-only capability probing.
 These paths add no schema, retention, or update contract.
 
 Scheduled cron runs reuse the job and receipt loaded by their queue transaction
-when claiming and activating work. Activation commits ownership and start time
-together. Isolated preparation persists skills with the pre-run metadata, and
+when claiming and activating work. The scheduler claims and activates due runs
+in one worker command using its loaded job postimages. Fresh claims persist the
+running state directly; capacity-limited runs retain their queued state and FIFO
+order. Activation commits ownership and start time together. Job mutations return
+their committed postimage without rereading the store. Finalization uses the
+conditional receipt completion write for idempotency, committing history and job
+state in the same transaction; terminal retention runs on completion, not claim.
+Isolated preparation persists skills with the pre-run metadata, and
 continuation synchronization includes its selected CLI provider in the same
 write. The first unchanged embedded candidate reuses the successfully persisted
 pre-run model and harness plus its initialized continuation; failed preparation
