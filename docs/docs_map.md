@@ -31,6 +31,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Migration notes
   - H2: See also
 
+## architecture/writer-admission-authority.md
+
+- Route: /architecture/writer-admission-authority
+- Headings:
+  - H1: Writer admission authority
+  - H2: Current owners and required transfers
+  - H2: Shared publication and retention
+  - H2: Service and typed operations
+  - H2: Incremental delivery and proof
+
 ## auth-credential-semantics.md
 
 - Route: /auth-credential-semantics
