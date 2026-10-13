@@ -27,6 +27,14 @@ Generic callbacks retain their prepare-and-compare contract, and source and
 conversation authority still apply at the mutation boundary. These operations
 change no schemas, stored formats, retention, or update behavior.
 
+Observer digests and activity recaps also use closed entry operations. Their writer
+checks the current lifecycle, digest revision, recap eligibility, and transcript
+predicate while merging the field into the current row, without a separate patch
+preparation request. Commit receipts publish accepted updates; rejected reductions
+do not publish. Observer run supersession is checked before enqueue, so a queued
+digest may briefly outlive its run until the next observation; session lifecycle
+and revision predicates still prevent overwriting a reset or newer digest.
+
 Session mutation candidates carry their final transfer frames in the existing
 commit-authority exchange. Ordinary candidates need no separate transfer
 acknowledgments; larger candidates retain bounded intermediate frames. The host
