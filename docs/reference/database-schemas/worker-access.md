@@ -94,6 +94,14 @@ actor replicas. Transcript mutations still update or invalidate their session
 facts; unknown write coverage invalidates conservatively. The shared mechanism is
 [`sqlite-database-write-receipts.ts`](https://github.com/openclaw/openclaw/blob/main/src/infra/sqlite-database-write-receipts.ts).
 
+Memory publication retains index facts under its own write scope, so session
+activity and embedding-cache writes do not trigger another facts query. The
+publication worker also retains the embedding-cache size, updates it only after
+committed inserts/deletes, and reloads after unscoped writes or schema changes.
+Pruning uses that count and one bounded oldest-row delete. Unbounded replacement
+writes may overestimate this disposable cache and evict entries early; bounded
+writes still reserve space before insertion.
+
 ## Final authority without SQL
 
 Cached data and permission are different contracts. Credentials, approvals,
