@@ -288,8 +288,10 @@ Memory retrieval workers borrow the existing agent read-only owner across query
 awaits and release each borrow before replying. The owner retains the idle reader
 and its prepared statements, with committed-write invalidation and physical-file
 replacement handled by its existing lifecycle. Vector-extension probing keeps a
-separate extension-capable connection. Search queries, ranking, result bounds,
-schemas, and update behavior are unchanged.
+separate extension-capable connection. Memory-origin and forgotten-session reads
+use the same retained reader owner instead of opening a connection per request;
+committed writes still refresh origin rows and tombstone membership. Search
+queries, ranking, result bounds, schemas, and update behavior are unchanged.
 
 Transcript readers retain bounded hot/cold facts under the existing session write
 receipts. Archive, restore, session deletion, and native writes invalidate those
