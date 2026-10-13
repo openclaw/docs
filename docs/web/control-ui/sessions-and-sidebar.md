@@ -19,8 +19,11 @@ The icon rail stays separate from the selected navigation list. **Pages** opens
 available built-in pages, dashboards, and plugin destinations, **Sessions** opens conversations,
 and **Online** shows connected people. Hover or focus an icon for its name.
 The active agent's avatar sits at the top of the rail and opens the agent menu;
-in team mode it opens the workspace menu. Command-palette search sits below the
-three view buttons.
+in team mode it opens the workspace menu. The accented **+**, labeled **New conversation**,
+sits directly below the avatar, separated from navigation by a divider. It stays in
+the same place in Pages, Sessions, and Online, even when the list is collapsed.
+It opens New session for the selected agent; in team mode, choose an agent from
+its menu first. Command-palette search sits below the three view buttons.
 Click the selected view again to collapse or expand its list, or press ⌘B on
 Mac or Ctrl+B on Windows/Linux. Selecting a different view opens its list.
 Home, Inbox, and your account controls stay together at the bottom of the rail.
@@ -54,8 +57,11 @@ Each view has one header row. In Sessions, the title is the owner-filter chip:
 **My sessions**, **Involving me**, **All owners**, or the selected person's name.
 Open the chip to choose whose sessions appear. **Involving me** also includes
 participation and mentions. The separate filter button controls the remaining
-session filters, and the row has one new-session button. In team mode that button
-opens the team new-session menu.
+session filters. New conversation stays in the rail rather than moving into this
+header. On mobile, an equivalent **+** stays in the chat header or page topbar
+while the drawer is closed. Opening the drawer moves the action back to the rail,
+without a second header button. In team mode, the header action opens the same
+agent picker as the rail. Native apps keep their native creation controls.
 
 The owner filter is the only control for this selection. Its saved value belongs
 to the current Gateway and your profile in this browser. A signed-in profile

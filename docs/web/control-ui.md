@@ -333,7 +333,7 @@ agent's avatar as the icon.
 Other sessions appear under collapsible agent headers in configured roster order,
 which stays stable as activity changes. **Home** disappears from Pages: click an agent header's avatar or name to
 open that agent's main chat. The separate collapse control only folds its sessions.
-The top **+**, labeled **New conversation**, opens an agent menu with avatars and names in
+The accented rail **+** below the workspace mark, labeled **New conversation**, opens an agent menu with avatars and names in
 the same order as the groups; choosing an agent opens New session for that agent.
 Each group's **+** does this directly, appearing on hover or keyboard focus and remaining visible on touch devices. Selecting a session switches the active
 agent for chat. Choose a named agent tile in the workspace menu to leave team
