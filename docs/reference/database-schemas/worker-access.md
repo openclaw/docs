@@ -619,8 +619,9 @@ the loaded generation, sequence, and mutation timestamp once in their write
 transaction. Compaction uses its append receipt instead of rereading the appended
 rows or version. These paths preserve stored bytes, permissions, and update behavior.
 Durable SessionManager calls from the Gateway must use the asynchronous methods.
-The deprecated synchronous SDK methods retain compatibility until the next SDK
-major; bundled transcript archive and model-context readers use workers. Skill Workshop
+The deprecated synchronous SDK methods retain compatibility during their
+deprecation period and will be removed in a later stable release; bundled
+transcript archive and model-context readers use workers. Skill Workshop
 validates source permissions, lifecycle, and the accepted anchor through the history
 worker. It reuses those facts until the Gateway's session-key or transcript write
 receipt changes. The final filesystem guard checks the retained receipt without SQL;
@@ -5899,9 +5900,10 @@ repeats selection; uncertain writes are never replayed. Startup orphan repair
 retains its native transaction so session settlement and the report remain atomic.
 Bundled session callers await this owner before dependent publication. The
 shipped synchronous SessionManager methods remain named third-party
-compatibility adapters, deprecated for removal at the next Plugin SDK major;
-each warns once per method per process. Incognito reports use the memory actor;
-its synchronous persistence methods refuse access and name the awaited replacement. Schemas, stored bytes,
+compatibility adapters, deprecated for removal in a later stable release after
+the deprecation period; each warns once per method per process. Incognito reports
+use the memory actor; synchronous persistence methods refuse access and name
+the awaited replacement. Schemas, stored bytes,
 retention, and update behavior are unchanged. See the
 [SDK migration](/plugins/sdk-migration/how-to-migrate#await-session-transcript-persistence).
 
