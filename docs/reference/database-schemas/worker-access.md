@@ -6554,7 +6554,11 @@ separate worker migration.
 Shared and per-agent auth-profile success and failure bookkeeping use the existing
 auth-profile shared-state domain and canonical agent executor. The caller captures
 the physical stores and execution authority before preparing inherited ownership
-and provider observations. Workers reread the current rows and apply the same health
+and provider observations. Overlapping health preparations remain ordered, but
+candidate stores do not reserve the database writer while read-only children load
+rows or provider probes run. Only a ready write joins its selected database FIFO;
+unrelated session writes can proceed during preparation. Workers reread the current
+rows and apply the same health
 reducers used for personal model accounts; inherited success clears health without
 changing the shared owner's last-good selection or rotation time. Committed facts
 update the existing runtime snapshot owner. Gateway close refuses new bookkeeping
