@@ -9278,6 +9278,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: channelConfigs reference
   - H3: Replacing another channel plugin
 
+## plugins/mcp-relay.md
+
+- Route: /plugins/mcp-relay
+- Headings:
+  - H1: MCP Relay
+  - H2: Set up the Gateway
+  - H2: Connect ChatGPT or Claude
+  - H3: Pair with a code
+  - H2: Connected apps
+  - H2: Show the full Control UI in ChatGPT
+  - H2: Available operations
+  - H2: Data and authority
+  - H2: Inspect, revoke, or disable
+  - H2: Related
+
 ## plugins/meeting-plugins.md
 
 - Route: /plugins/meeting-plugins
@@ -10079,6 +10094,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/mattermost.md
 
 - Route: /plugins/reference/mattermost
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/mcp-relay.md
+
+- Route: /plugins/reference/mcp-relay
 - Headings:
   - H2: Distribution
   - H2: Surface
