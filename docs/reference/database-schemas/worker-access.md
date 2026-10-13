@@ -673,8 +673,20 @@ and provenance in the synchronous transaction. Host grants retain live caller
 authority at transaction and commit; acknowledged publications and accepted-write
 settlement remain with the existing entry owner. Incognito routing is unchanged.
 Confirmed entry receipts publish exact membership and category facts instead of
-forcing a new membership read. Delivery rechecks synchronous listener writes;
-unknown outcomes, moved membership, and superseded metadata still invalidate.
+forcing a new membership read. Prepared membership guards use the entry owner's
+committed facts at the effect boundary. Authority-changing writes deny those
+guards before commit and install committed facts before releasing the denial or
+notifying observers. An unknown durable authority outcome remains denied until owner
+restart, including after a database handle closes and reopens; a fresh read or
+later successful write cannot settle it. Category and other metadata-only writes
+do not revoke membership authority. Delivery rechecks synchronous listener writes;
+moved membership and superseded metadata still invalidate.
+Process-held incognito membership retains its native transaction owner. Current
+creation stores rows in that owner's in-memory database; a worker cannot reopen
+it, and activating another actor would split the session's state. Native member
+writes stage and publish through the same sharing-facts owner before notifying
+observers. Their two forwarding entries are audited by the writer-custody guard
+and remain counted as native work until the incognito owner cutover.
 Committed entry metadata preserves an active trajectory-retention sweep through
 its existing owner. Unknown local writes still invalidate
 the sweep; rollback publishes no acknowledgment.
@@ -3886,6 +3898,8 @@ expiry pruning, and capacity check in the existing agent executor. Prepared shar
 and target predicates run in that transaction; host grants retain current caller
 authority without rereading the same database. The existing native receipt publishes
 entry facts before releasing FIFO custody, and close joins accepted persistence.
+Receipt insertion checks capacity in the same SQL statement; rejection rolls back
+the Goal and turn without evicting a still-valid retry receipt.
 Incognito, maintenance, and opaque or cross-store SDK guards retain native atomicity.
 Receipt validity, retry behavior, schemas, retention, and update behavior are unchanged.
 
