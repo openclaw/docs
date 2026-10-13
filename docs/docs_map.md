@@ -6628,7 +6628,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent reliability evals (skills)
   - H2: Module mocks and export completeness
   - H2: Raw SQLite state access
-  - H2: Skills watchers
+  - H2: Skills discovery
   - H2: Compiled subprocesses and timeout helpers
 
 ## help/testing/live-workflows.md
@@ -6677,7 +6677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent reliability evals (skills)
   - H2: Module mocks and export completeness
   - H2: Raw SQLite state access
-  - H2: Skills watchers
+  - H2: Skills discovery
   - H2: Flake triage
   - H2: Adding regressions (guidance)
 
