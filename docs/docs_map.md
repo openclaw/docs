@@ -11378,6 +11378,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Decision model runtime
   - H2: Setup secret egress
   - H3: Bounded stale reads
+  - H3: Worker provisioning status
 
 ## plugins/sdk-runtime/agent.md
 

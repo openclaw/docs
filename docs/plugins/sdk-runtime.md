@@ -710,3 +710,11 @@ passes the previous successful value (or `undefined`) to its load callback,
 including explicit refreshes. Keep HTTP validators with that value so eviction,
 clear, and failed refreshes retire the representation and its validators together.
 The loader must treat the previous value as immutable.
+
+### Worker provisioning status
+
+Worker providers can call `options.reportStartStatus` during provisioning to publish
+attempt-scoped snapshot or cold-start facts. Environment status and session
+placement expose these facts as `startStatus`; the host closes the callback when
+the attempt finishes or loses authority. Report capture progress only when capture
+is claimed. These display facts do not change allocation or enrollment ownership.
