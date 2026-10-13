@@ -2429,6 +2429,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: JSON failures
   - H2: Color palette
   - H2: Command tree
+  - H2: Database
   - H2: Chat slash commands
   - H2: Usage tracking
   - H2: Related
@@ -12877,6 +12878,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-engines
 - Headings:
   - H2: Configure PostgreSQL
+  - H2: Port existing workboard stores
   - H2: Isolation and durability
   - H2: Anchors and backups
   - H2: Updates and target compatibility
