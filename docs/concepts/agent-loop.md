@@ -43,6 +43,14 @@ The wait result also carries the run's `terminalReply` and, when available,
 reply reached the external source conversation. A2A announcements consume that
 fact instead of using display-history mirrors as delivery evidence.
 
+When a provider rejects a malformed tool call before dispatch, the built-in
+runner can continue once from the current transcript after earlier tools have
+settled. Earlier failed tools do not block this continuation when every failure
+carries host evidence that execution never started and its result already
+precedes the rejected response in the current turn. Failures that may have caused
+side effects, unfinished tools, and asynchronous work still block it; the
+continuation does not replay the original task or increase the retry budget.
+
 ## Queueing and concurrency
 
 Runs are serialized per session key (session lane) and optionally through a global lane, preventing tool/session races. Messaging channels choose a queue mode (steer/followup/collect/interrupt) that feeds this lane system; see [Command Queue](/concepts/queue).
