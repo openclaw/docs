@@ -16239,6 +16239,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Permission is granted but the browser is not subscribed
   - H3: Service worker is not ready
   - H3: Web Push asks for a Doctor migration
+  - H3: An enabled notification does not arrive
   - H3: Tests arrive but approval requests do not
   - H3: A mention is missing or produces no browser alert
   - H2: Related
