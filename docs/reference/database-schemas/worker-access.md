@@ -121,6 +121,16 @@ read-after-write certification. An owner without complete receipt coverage must
 use its canonical reader until that coverage exists. Other processes route
 writes through the Gateway or hold exclusive ownership while it is stopped.
 
+Idle maintenance uses the same ownership rule. Secret and device-setup expiry,
+GitHub OAuth inventory, ingress health, placement inventory, and cron history
+rebuild their facts on startup and invalidate them from their own writes. Empty
+inventories park until a receipt arrives; retained rows schedule their next
+deadline. Refreshes consume the dirty flag before awaiting a worker so a receipt
+received during the read remains pending. These facts schedule maintenance;
+credential, lease, and external-effect authority stays with the execution owner.
+Cron retains a memory-only clock check for future jobs so forward clock changes
+can trigger overdue work without reloading SQL every minute.
+
 Scope receipts to the data actually changed. Memory-index DML, for example,
 declares no session-row or transcript changes and preserves unrelated session
 actor replicas. Transcript mutations still update or invalidate their session
