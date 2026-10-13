@@ -4135,10 +4135,13 @@ admission can refuse dispatch or close can clean up the original handle. Host
 admission and physical-identity checks remain on the host.
 Checkpoint-only PASSIVE ticks preserve the connection's busy timeout without
 reading or changing it: SQLite does not invoke the busy handler for PASSIVE.
-After a complete tick, the WAL owner skips subsequent checkpoint-only work until
-an in-process write receipt changes. Sibling handles and workers share that receipt;
-blocked or failed checkpoints keep retrying when a reader may have released.
-Connections without a known write receipt continue checkpointing on every tick.
+After a complete tick, the WAL owner disarms its checkpoint-only timer until a
+local in-process write receipt schedules the next pass within ten seconds. Local
+sibling handles share the notification, and each native writer worker schedules
+its own maintenance. Later writes do not postpone a pending pass. Blocked or failed
+checkpoints keep retrying when a reader may have released. Connections without a
+known write receipt and explicit blocking checkpoint policies retain their timed
+cadence. Close removes the write notification along with the timer.
 Page reclamation and blocking checkpoint modes keep their zero-timeout scope.
 
 Completed checkpoint-only passes publish their write revision through the existing
