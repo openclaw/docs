@@ -596,6 +596,16 @@ claim that all shared discovery kernels are worker-only.
 
 ## Config CLI ownership
 
+Config mutation preparation reads without recording config health observations.
+Dry-runs do not acquire Gateway state ownership and can preview changes while a
+Gateway is running. An unchanged `config set` does not initialize the state
+database, although it still acquires offline ownership before preparation.
+
+Actual config writes retain exclusive offline ownership through worker cleanup.
+They still record the config audit, latest snapshot, and last-touched metadata;
+a running Gateway must release ownership before a CLI write can proceed. These
+changes require no schema migration or operator action after an update.
+
 ### Non-session bookkeeping
 
 Progress-card replacement and reset increment the stored revision in their write
