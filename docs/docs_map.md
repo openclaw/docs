@@ -9323,6 +9323,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storage
   - H2: Runtime dependencies and platform support
   - H2: Troubleshooting
+  - H3: Embedding provider cleanup failed
   - H3: Input length exceeds the context length
   - H3: Unsupported embedding model
   - H3: Plugin loads but no memories appear
