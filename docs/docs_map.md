@@ -14722,6 +14722,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser-login
 - Headings:
   - H2: Manual login (recommended)
+  - H2: Passkeys in headless browsers
   - H2: Which Chrome profile is used?
   - H2: Sandboxing: allow host browser access
   - H2: Related
