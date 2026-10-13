@@ -11281,6 +11281,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Browser lifecycle cleanup
   - H3: SQLite write admission
   - H3: Database engine adapters (experimental)
+  - H3: Owned stdio processes
   - H3: Worker task admission
   - H3: SQLite worker stores
   - H3: Computation worker entrypoints
