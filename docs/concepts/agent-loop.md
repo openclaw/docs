@@ -155,6 +155,16 @@ Prompt-segment diagnostics attribute attachment/context blocks and generated inb
 
 ## Compaction and retries
 
+In Control UI chat, recovery stays beside the working indicator rather than
+creating a message for every failed attempt. Same-model retry status includes
+its attempt count and an absolute retry time for backoff display. Model fallback
+transitions remain available when reconnecting to an active run.
+
+Once recovery ends in failure, chat shows one run-owned failure notice. Useful
+partial text and media remain separate from that notice. Failed-attempt
+diagnostics stay in the raw transcript; display history collapses them by run
+identity, not by comparing error text.
+
 When an OpenAI Responses request hits its output limit while generating a tool
 call, the built-in harness finishes already admitted tools and retries from their
 recorded results. The unfinished call never executes. Recovery uses the existing
