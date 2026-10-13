@@ -8269,7 +8269,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to create a capability
   - H2: The standard sequence
   - H2: What goes where
-  - H2: Provider and harness seams
+  - H2: Provider and harness hooks
   - H2: File checklist
   - H2: Worked example: image generation
   - H2: Embedding providers
