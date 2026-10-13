@@ -8306,6 +8306,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Work with files and tools
   - H2: Advanced configuration and reference
   - H3: Files and storage
+  - H3: Forwarding controls
   - H3: MCP connections
   - H3: Self-hosted execution
   - H4: One executor per session
