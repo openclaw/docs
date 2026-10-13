@@ -8252,14 +8252,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /platforms/windows
 - Headings:
-  - H2: Recommended desktop app: OpenClaw
-  - H3: First launch and local Gateway
-  - H3: Desktop app troubleshooting
-  - H2: Alternative: Windows Hub
+  - H2: Recommended: Windows Hub
   - H3: What Windows Hub includes
   - H3: First launch
   - H2: Windows node mode
   - H2: Local MCP mode
+  - H2: Backup: Tauri desktop app
+  - H3: First launch and local Gateway
+  - H3: Desktop app troubleshooting
   - H2: Native Windows CLI and Gateway
   - H3: Updating from 2026.9.4
   - H2: WSL2 Gateway
