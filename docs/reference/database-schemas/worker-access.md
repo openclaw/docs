@@ -467,6 +467,10 @@ and retain them with the existing entry-publication owner. Native and worker wri
 invalidate changed predicates before the next effect check, so those checks need no
 SQLite read on the Gateway. Conversation-bound checks still read the authoritative
 binding until every binding writer publishes its complete derived postimage.
+Source preparation borrows an already-retained entry predicate instead of dispatching
+another exact-entry read. Releasing a mutation's source leaves its selecting reader
+current; releasing that reader revokes every borrower. The destination worker keeps
+its transaction-local source comparison before the effect.
 
 Reply-initialization cohorts reuse those entry facts only when the selected entry
 and its parent are both covered. Cold-archive absence requires a complete actor
