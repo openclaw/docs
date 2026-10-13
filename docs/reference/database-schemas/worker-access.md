@@ -124,8 +124,14 @@ Optional session-preview backfill retains its completed transcript watermark
 across generic notifications. Canonical transcript writes advance or invalidate
 that watermark, so a notification alone does not repeat the bounded history read.
 Usage-cost refresh reads a stale rollup body and its monthly partitions in one
-worker snapshot; discovery still reads only metadata. Neither change alters
-stored formats, retention, or update behavior.
+worker snapshot; discovery still reads only metadata. Its transcript statistics
+batch carries the rewrite generation and hot/cold state alongside the bounds,
+so the subsequent scan reuses those facts without another watermark read. A
+rewrite during a background scan converges on the next receipt-driven refresh.
+Participant writers likewise reuse their committed projection-change decision:
+counter-only contributions skip the display-projection read, preserve committed
+display facts, and invalidate exact aggregate records. These changes do not alter stored
+formats, retention, or update behavior.
 
 Memory retrieval workers borrow the existing agent read-only owner across query
 awaits and release each borrow before replying. The owner retains the idle reader
@@ -633,10 +639,13 @@ category. Goal mutations and upstream-link initialization check their source onc
 inside the transaction; live host admission remains separate. Workshop append
 reuses the database owner's admitted table and index facts.
 
-Durable Board writes with ordinary request callbacks use the existing worker.
-Cross-store source authority and native incognito retain their explicit native
-adapter. Cross-store writes check the captured target session identity once in
-the mutation kernel's transaction, without a second session-existence read.
+Durable Board writes, including cross-store source authority, use the existing
+worker. Source admission reads the Gateway request owner's retained facts once,
+after asynchronous preparation. Revocation denies new admissions; a write already
+admitted may finish its target commit. Pending or unknown source publications
+remain denied by the source owner. The target session identity is checked once
+in the mutation kernel's transaction. Legacy process-held incognito retains its
+native adapter until its owning session-storage cutover.
 Board reads inside a transaction reuse its snapshot without a nested
 savepoint. Ambient-watch preparation uses the existing read worker; the released
 synchronous prompt adapter remains deprecated with a runtime warning.
@@ -3673,16 +3682,18 @@ second native mutation witness: a concurrent update after the read can return th
 snapshot, and the next read observes the committed write. Session
 presentation consumes worker-prepared Board membership through its existing row
 projection; unavailable facts stay dirty until preparation finishes. Process-held
-incognito retains its native reader. Board request authority prepares session and
-membership predicates before worker grants; the worker rereads those facts at
-transaction and commit while the host rechecks live caller authority. Released
-opaque SDK guards and cross-store assertions retain their synchronous transaction
-contract. Board publication, schemas, permissions,
-retention, and update behavior are unchanged.
+incognito retains its native reader. Board admission invokes the caller's source
+authority once immediately before dispatching the mutation. Ordinary Gateway
+requests already hold session and membership facts maintained by write receipts;
+Board neither prepares them again nor sends source predicates to the target worker.
+An admitted cross-database write may finish after source revocation. The target's
+identity and lifecycle authority remain live through commit. Legacy synchronous
+caller callbacks remain callable at admission; they do not force a native target
+transaction. Publication, schemas, retention, and update behavior are unchanged.
 
 Durable Board mutations run first-use schema preparation only in the existing
-agent worker, before the Board write transaction. Native incognito and opaque
-SDK paths retain their original preparation. Board tables are canonical from
+agent worker, before the Board write transaction. Legacy process-held incognito
+retains its original preparation. Board tables are canonical from
 agent schema 15 onward: historical missing-table databases still use the
 migration owner, and missing required tables at the current schema remain an
 admission error.
