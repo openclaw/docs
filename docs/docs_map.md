@@ -11306,6 +11306,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Model route policy
   - H2: Credential lookup cancellation
+  - H2: OAuth refresh configuration
   - H2: Hook examples
 
 ## plugins/sdk-provider-plugins/voice-and-audio.md
