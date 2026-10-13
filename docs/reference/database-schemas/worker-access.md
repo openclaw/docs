@@ -124,6 +124,10 @@ Confirmed rollback preserves the previous committed facts. A lost reply is not
 proof of rollback and must not trigger blind replay. Facts install before public
 observers, through
 [`sqlite-post-commit.ts`](https://github.com/openclaw/openclaw/blob/main/src/infra/sqlite-post-commit.ts).
+Exec allowlist usage writes retain receipt and supersession tracking without
+publishing a pending denial: recording last-used metadata cannot revoke another
+command's authorization. Policy edits and durable allow-always grants still
+publish pending denials; unknown outcomes still invalidate the policy view.
 Personal credential and GitHub publication owners are concrete examples:
 [`user-model-account-authority.ts`](https://github.com/openclaw/openclaw/blob/main/src/state/user-model-account-authority.ts)
 and [`github-publication-receipts.ts`](https://github.com/openclaw/openclaw/blob/main/src/state/github-publication-receipts.ts).

@@ -7317,6 +7317,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating
 - Headings:
+  - H2: Update implementation contract
   - H2: Retired tenant-container management
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
@@ -8139,6 +8140,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/mac/signing
 - Headings:
   - H1: mac signing (debug builds)
+  - H2: Permission evidence
   - H2: Usage
   - H3: Ad-hoc signing note
   - H2: Build metadata for About
@@ -12876,6 +12878,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/integrity-and-recovery
 - Headings:
+  - H2: Gateway database ownership
   - H2: Integrity checks
   - H3: Startup on multi-agent hosts
   - H2: btrfs and NOCOW
