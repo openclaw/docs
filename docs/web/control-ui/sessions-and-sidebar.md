@@ -56,12 +56,15 @@ is set. Only a running ring and unread dot decorate these shortcuts.
 Each view has one header row. In Sessions, the title is the owner-filter chip:
 **My sessions**, **Involving me**, **All owners**, or the selected person's name.
 Open the chip to choose whose sessions appear. **Involving me** also includes
-participation and mentions. The separate filter button controls the remaining
-session filters. New conversation stays in the rail rather than moving into this
-header. On mobile, an equivalent **+** stays in the chat header or page topbar
-while the drawer is closed. Opening the drawer moves the action back to the rail,
-without a second header button. In team mode, the header action opens the same
-agent picker as the rail. Native apps keep their native creation controls.
+participation and mentions. External catalog entries appear in **Involving me**
+only when their adopted OpenClaw conversation is in the Gateway-filtered list.
+Shared or imported catalog access alone does not establish involvement; use
+**All owners** to browse those sources. The separate filter button controls the
+remaining session filters. New conversation stays in the rail rather than moving
+into this header. On mobile, an equivalent **+** stays in the chat header or page
+topbar while the drawer is closed. Opening the drawer moves the action back to the
+rail, without a second header button. In team mode, the header action opens the
+same agent picker as the rail. Native apps keep their native creation controls.
 
 The owner filter is the only control for this selection. Its saved value belongs
 to the current Gateway and your profile in this browser. A signed-in profile
