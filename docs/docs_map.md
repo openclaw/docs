@@ -4567,6 +4567,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What runs where
   - H2: Requirements
   - H3: Crabbox provider support
+  - H2: Quick start
   - H2: Configuration
   - H2: Where each section moved
   - H2: Related
@@ -9199,6 +9200,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Retained state checks
   - H2: Validation behavior
   - H3: Capability catalogs
+  - H3: Cloud worker profile suggestions
   - H3: Configuration validation
   - H2: Notes
   - H2: Related
