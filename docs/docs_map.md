@@ -13259,6 +13259,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/pr-preparation
 - Headings:
   - H1: PR preparation
+  - H2: Signing a baseline on another host
 
 ## reference/scripts/pr-tooling.md
 
