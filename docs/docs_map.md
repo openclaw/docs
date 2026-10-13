@@ -3093,6 +3093,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage
   - H2: Immutable release installations
   - H2: Candidate-owned admission
+  - H2: Runtime retention failures
+  - H2: Gateway recovery verification failures
   - H2: Automation and SSH
   - H2: Native service commands during updates
   - H2: Options
