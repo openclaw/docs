@@ -7793,6 +7793,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /nodes/talk/realtime-sessions
 - Headings:
+  - H2: Split speech in the browser
   - H2: Choose a Talk voice from chat
 
 ## nodes/talk/session-ownership.md
@@ -16276,6 +16277,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: How it works
   - H3: Transcript and delivery model
+  - H2: Speech
   - H2: Human mention delivery
   - H2: Control UI agents tools panel
   - H2: Remote use
