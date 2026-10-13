@@ -1718,8 +1718,15 @@ or update-format change.
 Qualified Gateway entry reads request lifecycle timestamps only when a consumer
 needs reset freshness. Metadata, observer, and native model ownership reads use
 the existing single-statement entry facts without a deferred transaction.
-Restart-safe chat admission still requests lifecycle timestamps and retains the
-snapshot that joins entry facts with a legacy transcript-header fallback.
+Restart-safe chat admission still requests lifecycle timestamps. Current entry
+timestamps and runtime targets reuse receipt-backed actor facts; cold exact
+entry facts need only their single-statement snapshot. Legacy timestamp fallback
+reads the header for the captured session ID through the transcript owner's
+snapshot. An explicit concurrent transcript replacement can pair the captured
+entry with a newer header timestamp; the next read refreshes this descriptive
+metadata. Rich cohorts retain a shared snapshot for entry, parent, transcript,
+authorization, and cold-state facts. Category preparation is also a single SELECT;
+its existing write transaction rereads selected entries before applying changes.
 Schemas, stored bytes, permissions, and update behavior are unchanged.
 
 Current readers consume committed rows without a probe connection, version
