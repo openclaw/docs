@@ -477,6 +477,18 @@ another exact-entry read. Releasing a mutation's source leaves its selecting rea
 current; releasing that reader revokes every borrower. The destination worker keeps
 its transaction-local source comparison before the effect.
 
+Bundled native harnesses prepare session lineage once and retain the same entry
+predicate through terminal cleanup. Final lineage checks use published facts;
+tool policy and caller liveness still authorize each effect. Cleanup may borrow
+the lineage with its own liveness check, but cannot outlive the capture owner.
+The released synchronous authority factories remain deprecated compatibility
+entry points, separate from the prepared API.
+
+Session-list row materialization consumes prepared title fields. Its old
+synchronous transcript-title fallback is removed; bounded title probes and their
+cache live in the history worker. Deprecated SessionManager readers and SDK
+facades remain explicitly guarded compatibility paths, not physical SQL retirements.
+
 Reply-initialization cohorts reuse those entry facts only when the selected entry
 and its parent are both covered. Cold-archive absence requires a complete actor
 snapshot; entry-only facts do not prove it. Archive/restore receipts invalidate
