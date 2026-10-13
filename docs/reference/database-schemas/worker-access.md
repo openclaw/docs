@@ -4367,7 +4367,7 @@ rewrite/append watermark. Read workers validate that snapshot before extending
 it, so worker retirement does not discard the cache. Workers also adopt the host's
 live database validation receipt before canonical admission, preserving pending-row
 checks without repeating whole-store validation. Branch reads share the existing
-maintenance reader's prewarming, thirty-minute idle window, database custody, and
+maintenance reader's prewarming, five-minute idle window, database custody, and
 memory-pressure retirement. They no longer start a dedicated worker after short
 idle gaps, and foreground history retains its separate reader. Branch identity and lifecycle
 reads use metadata without loading saved prompts or diff snapshots. After a complete scan
@@ -4938,7 +4938,7 @@ foreground browser loading; main-thread handler and optional discovery preparati
 still wait for idle time. An admitted operator connection also starts detached
 prewarming when that lane is cold. Prewarming reads
 no transcripts, writes no data, and uses normal database custody and cleanup. Warm
-calls coalesce without extending the 30-minute idle retirement deadline; failures
+calls coalesce without extending the five-minute lane idle retirement deadline; failures
 are debug-only and never block startup or connection admission. Schemas, retention,
 and update behavior are unchanged.
 
