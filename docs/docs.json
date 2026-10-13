@@ -2530,6 +2530,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "gateway/cloud-workers/warm-images",
+                          "gateway/cloud-workers/environment-file",
                           "gateway/cloud-workers/per-project-default-profiles",
                           "gateway/cloud-workers/setup-and-bundle-installation",
                           "gateway/cloud-workers/verify-the-profile",
@@ -4586,6 +4587,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "zh-CN/gateway/cloud-workers/warm-images",
+                          "zh-CN/gateway/cloud-workers/environment-file",
                           "zh-CN/gateway/cloud-workers/per-project-default-profiles",
                           "zh-CN/gateway/cloud-workers/setup-and-bundle-installation",
                           "zh-CN/gateway/cloud-workers/verify-the-profile",
@@ -6642,6 +6644,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "zh-TW/gateway/cloud-workers/warm-images",
+                          "zh-TW/gateway/cloud-workers/environment-file",
                           "zh-TW/gateway/cloud-workers/per-project-default-profiles",
                           "zh-TW/gateway/cloud-workers/setup-and-bundle-installation",
                           "zh-TW/gateway/cloud-workers/verify-the-profile",
@@ -8698,6 +8701,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "ja-JP/gateway/cloud-workers/warm-images",
+                          "ja-JP/gateway/cloud-workers/environment-file",
                           "ja-JP/gateway/cloud-workers/per-project-default-profiles",
                           "ja-JP/gateway/cloud-workers/setup-and-bundle-installation",
                           "ja-JP/gateway/cloud-workers/verify-the-profile",
@@ -10754,6 +10758,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "es/gateway/cloud-workers/warm-images",
+                          "es/gateway/cloud-workers/environment-file",
                           "es/gateway/cloud-workers/per-project-default-profiles",
                           "es/gateway/cloud-workers/setup-and-bundle-installation",
                           "es/gateway/cloud-workers/verify-the-profile",
@@ -12810,6 +12815,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "pt-BR/gateway/cloud-workers/warm-images",
+                          "pt-BR/gateway/cloud-workers/environment-file",
                           "pt-BR/gateway/cloud-workers/per-project-default-profiles",
                           "pt-BR/gateway/cloud-workers/setup-and-bundle-installation",
                           "pt-BR/gateway/cloud-workers/verify-the-profile",
@@ -14866,6 +14872,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "ko/gateway/cloud-workers/warm-images",
+                          "ko/gateway/cloud-workers/environment-file",
                           "ko/gateway/cloud-workers/per-project-default-profiles",
                           "ko/gateway/cloud-workers/setup-and-bundle-installation",
                           "ko/gateway/cloud-workers/verify-the-profile",
@@ -16922,6 +16929,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "de/gateway/cloud-workers/warm-images",
+                          "de/gateway/cloud-workers/environment-file",
                           "de/gateway/cloud-workers/per-project-default-profiles",
                           "de/gateway/cloud-workers/setup-and-bundle-installation",
                           "de/gateway/cloud-workers/verify-the-profile",
@@ -18978,6 +18986,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "fr/gateway/cloud-workers/warm-images",
+                          "fr/gateway/cloud-workers/environment-file",
                           "fr/gateway/cloud-workers/per-project-default-profiles",
                           "fr/gateway/cloud-workers/setup-and-bundle-installation",
                           "fr/gateway/cloud-workers/verify-the-profile",
@@ -21034,6 +21043,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "hi/gateway/cloud-workers/warm-images",
+                          "hi/gateway/cloud-workers/environment-file",
                           "hi/gateway/cloud-workers/per-project-default-profiles",
                           "hi/gateway/cloud-workers/setup-and-bundle-installation",
                           "hi/gateway/cloud-workers/verify-the-profile",
@@ -23090,6 +23100,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "ar/gateway/cloud-workers/warm-images",
+                          "ar/gateway/cloud-workers/environment-file",
                           "ar/gateway/cloud-workers/per-project-default-profiles",
                           "ar/gateway/cloud-workers/setup-and-bundle-installation",
                           "ar/gateway/cloud-workers/verify-the-profile",
@@ -25146,6 +25157,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "it/gateway/cloud-workers/warm-images",
+                          "it/gateway/cloud-workers/environment-file",
                           "it/gateway/cloud-workers/per-project-default-profiles",
                           "it/gateway/cloud-workers/setup-and-bundle-installation",
                           "it/gateway/cloud-workers/verify-the-profile",
@@ -27202,6 +27214,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "vi/gateway/cloud-workers/warm-images",
+                          "vi/gateway/cloud-workers/environment-file",
                           "vi/gateway/cloud-workers/per-project-default-profiles",
                           "vi/gateway/cloud-workers/setup-and-bundle-installation",
                           "vi/gateway/cloud-workers/verify-the-profile",
@@ -29258,6 +29271,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "nl/gateway/cloud-workers/warm-images",
+                          "nl/gateway/cloud-workers/environment-file",
                           "nl/gateway/cloud-workers/per-project-default-profiles",
                           "nl/gateway/cloud-workers/setup-and-bundle-installation",
                           "nl/gateway/cloud-workers/verify-the-profile",
@@ -31314,6 +31328,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "fa/gateway/cloud-workers/warm-images",
+                          "fa/gateway/cloud-workers/environment-file",
                           "fa/gateway/cloud-workers/per-project-default-profiles",
                           "fa/gateway/cloud-workers/setup-and-bundle-installation",
                           "fa/gateway/cloud-workers/verify-the-profile",
@@ -33370,6 +33385,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "tr/gateway/cloud-workers/warm-images",
+                          "tr/gateway/cloud-workers/environment-file",
                           "tr/gateway/cloud-workers/per-project-default-profiles",
                           "tr/gateway/cloud-workers/setup-and-bundle-installation",
                           "tr/gateway/cloud-workers/verify-the-profile",
@@ -35426,6 +35442,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "uk/gateway/cloud-workers/warm-images",
+                          "uk/gateway/cloud-workers/environment-file",
                           "uk/gateway/cloud-workers/per-project-default-profiles",
                           "uk/gateway/cloud-workers/setup-and-bundle-installation",
                           "uk/gateway/cloud-workers/verify-the-profile",
@@ -37482,6 +37499,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "id/gateway/cloud-workers/warm-images",
+                          "id/gateway/cloud-workers/environment-file",
                           "id/gateway/cloud-workers/per-project-default-profiles",
                           "id/gateway/cloud-workers/setup-and-bundle-installation",
                           "id/gateway/cloud-workers/verify-the-profile",
@@ -39538,6 +39556,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "pl/gateway/cloud-workers/warm-images",
+                          "pl/gateway/cloud-workers/environment-file",
                           "pl/gateway/cloud-workers/per-project-default-profiles",
                           "pl/gateway/cloud-workers/setup-and-bundle-installation",
                           "pl/gateway/cloud-workers/verify-the-profile",
@@ -41594,6 +41613,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "th/gateway/cloud-workers/warm-images",
+                          "th/gateway/cloud-workers/environment-file",
                           "th/gateway/cloud-workers/per-project-default-profiles",
                           "th/gateway/cloud-workers/setup-and-bundle-installation",
                           "th/gateway/cloud-workers/verify-the-profile",
@@ -43650,6 +43670,7 @@
                         "group": "Cloud Workers",
                         "pages": [
                           "ru/gateway/cloud-workers/warm-images",
+                          "ru/gateway/cloud-workers/environment-file",
                           "ru/gateway/cloud-workers/per-project-default-profiles",
                           "ru/gateway/cloud-workers/setup-and-bundle-installation",
                           "ru/gateway/cloud-workers/verify-the-profile",

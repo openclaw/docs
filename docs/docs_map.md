@@ -4590,6 +4590,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Cloud child sessions
   - H3: Runtime support
 
+## gateway/cloud-workers/environment-file.md
+
+- Route: /gateway/cloud-workers/environment-file
+- Headings:
+  - H2: Recipe precedence
+  - H2: Lifecycle and snapshots
+  - H2: Minimal example
+  - H2: Ignored properties
+  - H2: Built-in detection
+
 ## gateway/cloud-workers/native-inference.md
 
 - Route: /gateway/cloud-workers/native-inference
