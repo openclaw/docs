@@ -694,6 +694,12 @@ and remain counted as native work until the incognito owner cutover.
 Committed entry metadata preserves an active trajectory-retention sweep through
 its existing owner. Unknown local writes still invalidate
 the sweep; rollback publishes no acknowledgment.
+Durable trajectory retention is triggered by appends, with one aggregate per
+hourly pass. Appends share a pending pass; an invalidated or failed pass waits
+until the next hourly opportunity instead of restarting on every append. The
+existing bounded deletion batches consume the pass's summary and committed
+trajectory receipts. Snapshot invalidation and run-content checks still protect
+history from deletion when concurrent writes change the retention decision.
 The v2026.9.8 `plugin-sdk/session-store-runtime` entry and last-route contracts
 retain their opaque `assertCommitAllowed` callbacks inside the native transaction.
 Released model-selection validators and synchronous Stop currentness callbacks keep
