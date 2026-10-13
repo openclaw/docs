@@ -11361,6 +11361,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What each page covers
   - H2: Runtime namespaces
+  - H3: Read-only session forks
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
   - H3: Plugin value boundary
