@@ -1795,6 +1795,7 @@
                     ]
                   },
                   "plugins/copilot",
+                  "plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -3887,6 +3888,7 @@
                     ]
                   },
                   "zh-CN/plugins/copilot",
+                  "zh-CN/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -5945,6 +5947,7 @@
                     ]
                   },
                   "zh-TW/plugins/copilot",
+                  "zh-TW/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -8003,6 +8006,7 @@
                     ]
                   },
                   "ja-JP/plugins/copilot",
+                  "ja-JP/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -10061,6 +10065,7 @@
                     ]
                   },
                   "es/plugins/copilot",
+                  "es/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -12119,6 +12124,7 @@
                     ]
                   },
                   "pt-BR/plugins/copilot",
+                  "pt-BR/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -14177,6 +14183,7 @@
                     ]
                   },
                   "ko/plugins/copilot",
+                  "ko/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -16235,6 +16242,7 @@
                     ]
                   },
                   "de/plugins/copilot",
+                  "de/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -18293,6 +18301,7 @@
                     ]
                   },
                   "fr/plugins/copilot",
+                  "fr/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -20351,6 +20360,7 @@
                     ]
                   },
                   "hi/plugins/copilot",
+                  "hi/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -22409,6 +22419,7 @@
                     ]
                   },
                   "ar/plugins/copilot",
+                  "ar/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -24467,6 +24478,7 @@
                     ]
                   },
                   "it/plugins/copilot",
+                  "it/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -26525,6 +26537,7 @@
                     ]
                   },
                   "vi/plugins/copilot",
+                  "vi/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -28583,6 +28596,7 @@
                     ]
                   },
                   "nl/plugins/copilot",
+                  "nl/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -30641,6 +30655,7 @@
                     ]
                   },
                   "fa/plugins/copilot",
+                  "fa/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -32699,6 +32714,7 @@
                     ]
                   },
                   "tr/plugins/copilot",
+                  "tr/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -34757,6 +34773,7 @@
                     ]
                   },
                   "uk/plugins/copilot",
+                  "uk/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -36815,6 +36832,7 @@
                     ]
                   },
                   "id/plugins/copilot",
+                  "id/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -38873,6 +38891,7 @@
                     ]
                   },
                   "pl/plugins/copilot",
+                  "pl/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -40931,6 +40950,7 @@
                     ]
                   },
                   "th/plugins/copilot",
+                  "th/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [
@@ -42989,6 +43009,7 @@
                     ]
                   },
                   "ru/plugins/copilot",
+                  "ru/plugins/muse",
                   {
                     "group": "Meetings and calls",
                     "pages": [

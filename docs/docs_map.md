@@ -3374,6 +3374,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Runtime ownership
   - H2: Runtime selection
   - H2: GitHub Copilot agent runtime
+  - H2: Muse Code agent runtime
   - H2: Compatibility contract
   - H2: Status labels
   - H2: Related
@@ -9387,6 +9388,23 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin author checklist
   - H2: Related docs
 
+## plugins/muse.md
+
+- Route: /plugins/muse
+- Headings:
+  - H2: Requirements
+  - H2: Install
+  - H2: Quickstart
+  - H2: Auth
+  - H2: Configuration
+  - H2: Approvals and sandbox
+  - H2: Sessions
+  - H2: Transcript
+  - H2: MCP servers
+  - H2: Limitations
+  - H2: Live tests
+  - H2: Related
+
 ## plugins/oc-path.md
 
 - Route: /plugins/oc-path
@@ -10219,6 +10237,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/msteams.md
 
 - Route: /plugins/reference/msteams
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/muse.md
+
+- Route: /plugins/reference/muse
 - Headings:
   - H2: Distribution
   - H2: Surface
@@ -12232,6 +12258,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Non-interactive setup
   - H2: Built-in catalog
   - H2: Manual config
+  - H2: Muse Code runtime
   - H2: Smoke test
   - H2: Related
 
