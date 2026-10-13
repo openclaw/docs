@@ -68,6 +68,12 @@ Replacement files also require new admission; migration and repair owners publis
 replacement facts after committed DDL. Doctor and explicit verification retain
 their checks. See [integrity admission](/reference/database-schemas/integrity-and-recovery).
 
+Retained task workers request admission facts through their existing relay when
+needed. Task messages must not copy the global admission snapshot: its session
+write receipts can grow with every session, making unrelated reads expensive to
+dispatch. Shared receipts still invalidate cached facts, and replacement files
+still require admission through the same owner.
+
 For row data, hydrate once and update or invalidate the owner's in-memory facts
 from committed write receipts. Every writer must participate. A receipt may
 supply a postimage or explicit absence; missing coverage is unknown, not absence.

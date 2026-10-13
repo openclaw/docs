@@ -119,6 +119,9 @@ summary. Those rows remain with registry recovery; the session-only orphan repai
 does not compete for their ownership. Ownership changes during a repair and failed
 ownership checks still produce warnings.
 
+Main-session restart recovery excludes sub-agent sessions before resolving their
+stores; retained child recovery stays with the sub-agent registry owner.
+
 The parent can inspect a retained child transcript and use `sessions_send` to
 continue that session, or spawn a replacement after confirming the old execution
 has stopped. Reusing a child restores its conversation context; it does not replay
