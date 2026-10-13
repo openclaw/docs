@@ -2314,6 +2314,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Legacy state migration
   - H2: Pending plugin migrations
+  - H2: Plugin migration recovery coverage
 
 ## cli/file-transfer.md
 
