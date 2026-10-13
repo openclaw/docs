@@ -11,6 +11,13 @@ title: "Database schemas"
 
 OpenClaw stores control-plane state in the shared state database and agent data in one SQLite database per agent. Schema migrations run forward when a database opens. Older OpenClaw builds refuse databases written by a newer schema.
 
+For runtime contributors, start with
+[database access in workers](/reference/database-schemas/worker-access): execution
+owners, admission once per load, scoped write receipts, memory-only final
+authority guards, and session actors. The
+[migration inventory](/reference/database-schemas/worker-access-inventory)
+records remaining main-thread call sites and the ratchet that prevents growth.
+
 PostgreSQL shared-state generation requires PostgreSQL 16+, preserves lazy feature
 fragments, and keeps engine schema versions in lockstep. See
 [shared-state schema generation](/reference/database-schemas/storage-changes#shared-state-postgresql-schema-generation)

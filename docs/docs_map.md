@@ -12950,6 +12950,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Choose the execution owner
+  - H2: Check once on load; trust the owner
+  - H2: Final authority without SQL
+  - H2: Session actor and memory indexing
+  - H2: Transactions and query shape
   - H2: Worker ownership and caches
   - H2: Session and ancillary worker operations
   - H2: Live T1 and deprecated compatibility
