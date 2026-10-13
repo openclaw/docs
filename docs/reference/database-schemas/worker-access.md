@@ -6208,6 +6208,21 @@ The existing shared schema is unchanged. Cron retains its own history operations
 on the existing storage rows; removed Task projections do not regain execution
 or delivery authority.
 
+Native child spawn joins accepted participant recording before capturing the
+controller's complete session row. That one snapshot supplies preferences, depth,
+lineage, contributor credit, and initial child metadata. Proxied completion keeps
+its separate requester identity; the final skill-selection authority check stays
+at child creation. A parent reset during preparation does not retarget the child's
+captured lineage to the replacement session.
+
+Registry mutations plan from the FIFO owner's last committed receipt. Registration
+uses the existing full registry cache, loaded once and updated by those receipts;
+ordinary writes do not reread row versions or registration cohorts in SQL. External
+writers must use the Gateway or run while it is stopped. Unknown commit outcomes
+still require canonical reconciliation. Successful delivery retains its immediate
+durable send receipt, then clears retry/fallback state in the cleanup bookkeeping
+commit. These changes do not alter schema, retention, or update behavior.
+
 Requester wake transitions and settlement use that same worker transaction and
 registry publication owner. Timers and retries retain the original database, run,
 and wake generation through acknowledgement. A known commit keeps its existing
