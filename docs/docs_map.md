@@ -5964,6 +5964,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Shared secret store
   - H2: Secret egress proxy
   - H3: Traffic allowlist
+  - H2: Job-scoped setup grants
   - H2: Model credentials for Crabbox commands
   - H3: Requirements
   - H3: Prepare and run
@@ -11373,6 +11374,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
   - H2: Decision model runtime
+  - H2: Setup secret egress
   - H3: Bounded stale reads
 
 ## plugins/sdk-runtime/agent.md
