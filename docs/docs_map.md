@@ -1894,6 +1894,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/watching-runs
 - Headings:
   - H2: Watching pull request CI
+  - H3: Fix failed tests locally
   - H3: Recover an existing PR run first
   - H2: PR context and evidence
   - H2: Related
@@ -13214,6 +13215,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/pr-tooling
 - Headings:
   - H1: PR wrapper tooling
+  - H2: Rerun failed CI tests
 
 ## reference/scripts/prior-ci.md
 
@@ -13517,7 +13519,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Routine local order
   - H2: Core commands
   - H3: Source tests and subprocess builds
-  - H2: Local PR gate
+  - H2: Full local run (only when explicitly needed)
 
 ## reference/test/performance.md
 
