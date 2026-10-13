@@ -6653,6 +6653,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/testing/suites
 - Headings:
   - H2: Quick start
+  - H2: Runner exit status
   - H2: Test suites (what runs where)
   - H3: PostgreSQL conformance
   - H3: Unit / integration (default)
