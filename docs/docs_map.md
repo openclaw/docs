@@ -13744,6 +13744,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quality-of-Life Improvements
   - H2: Other Bug Fixes
 
+## releases/2026.10.3.md
+
+- Route: /releases/2026.10.3
+- Headings:
+  - H1: v2026.10.3
+  - H2: Updates and Maintenance
+  - H2: Messaging
+  - H2: Memory
+  - H2: Native Apps
+  - H2: Models and Providers
+  - H2: Automations and Scheduling
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+  - H2: Quality-of-Life Improvements
+  - H2: Other Bug Fixes
+
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
