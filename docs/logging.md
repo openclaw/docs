@@ -438,6 +438,19 @@ events use the same durations when diagnostics are enabled.
 
 ### Embedded attempt preparation
 
+The `model-dispatch` prep summary extends `stream-ready` through history
+sanitization, provider validation, history windowing, context-engine assembly
+(including memory preparation), prompt building, prompt projection, and compaction
+preflight. It ends at the first provider invocation, including a compaction request
+when one is needed. These are elapsed checkpoints, not CPU measurements.
+
+With timeline logging enabled, `provider.request.serialized` marks completion of
+native request-body encoding, before the transport consumes those bytes. Its
+`runId` and `spanId` match `provider.request.started`; the gap isolates request
+projection, worker admission, and serialization after provider invocation.
+The mark does not assert that the socket has sent bytes. A local mock provider's
+request arrival can measure the remaining transport interval without model time.
+
 Embedded `prep stages` summaries separate two tool-preparation intervals:
 
 - `bundle-tools`: awaited MCP/LSP preparation, tool normalization and policy
