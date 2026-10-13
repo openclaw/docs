@@ -1997,6 +1997,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/backup
 - Headings:
   - H1: openclaw backup
+  - H2: PostgreSQL stores
   - H2: Notes
   - H2: Offsite archives
   - H3: Offsite retention
@@ -3094,6 +3095,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage
   - H2: Immutable release installations
   - H2: Candidate-owned admission
+  - H2: Database capture and recovery
   - H2: Runtime retention failures
   - H2: Gateway recovery verification failures
   - H2: Automation and SSH
@@ -12849,6 +12851,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configure PostgreSQL
   - H2: Isolation and durability
   - H2: Anchors and backups
+  - H2: Updates and target compatibility
   - H2: Limits and recovery
   - H2: Observe database work
 
