@@ -3014,6 +3014,7 @@
                     ]
                   },
                   "plugins/sdk-subpaths",
+                  "plugins/sdk-gateway-ingress",
                   "plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -5068,6 +5069,7 @@
                     ]
                   },
                   "zh-CN/plugins/sdk-subpaths",
+                  "zh-CN/plugins/sdk-gateway-ingress",
                   "zh-CN/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -7122,6 +7124,7 @@
                     ]
                   },
                   "zh-TW/plugins/sdk-subpaths",
+                  "zh-TW/plugins/sdk-gateway-ingress",
                   "zh-TW/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -9176,6 +9179,7 @@
                     ]
                   },
                   "ja-JP/plugins/sdk-subpaths",
+                  "ja-JP/plugins/sdk-gateway-ingress",
                   "ja-JP/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -11230,6 +11234,7 @@
                     ]
                   },
                   "es/plugins/sdk-subpaths",
+                  "es/plugins/sdk-gateway-ingress",
                   "es/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -13284,6 +13289,7 @@
                     ]
                   },
                   "pt-BR/plugins/sdk-subpaths",
+                  "pt-BR/plugins/sdk-gateway-ingress",
                   "pt-BR/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -15338,6 +15344,7 @@
                     ]
                   },
                   "ko/plugins/sdk-subpaths",
+                  "ko/plugins/sdk-gateway-ingress",
                   "ko/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -17392,6 +17399,7 @@
                     ]
                   },
                   "de/plugins/sdk-subpaths",
+                  "de/plugins/sdk-gateway-ingress",
                   "de/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -19446,6 +19454,7 @@
                     ]
                   },
                   "fr/plugins/sdk-subpaths",
+                  "fr/plugins/sdk-gateway-ingress",
                   "fr/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -21500,6 +21509,7 @@
                     ]
                   },
                   "hi/plugins/sdk-subpaths",
+                  "hi/plugins/sdk-gateway-ingress",
                   "hi/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -23554,6 +23564,7 @@
                     ]
                   },
                   "ar/plugins/sdk-subpaths",
+                  "ar/plugins/sdk-gateway-ingress",
                   "ar/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -25608,6 +25619,7 @@
                     ]
                   },
                   "it/plugins/sdk-subpaths",
+                  "it/plugins/sdk-gateway-ingress",
                   "it/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -27662,6 +27674,7 @@
                     ]
                   },
                   "vi/plugins/sdk-subpaths",
+                  "vi/plugins/sdk-gateway-ingress",
                   "vi/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -29716,6 +29729,7 @@
                     ]
                   },
                   "nl/plugins/sdk-subpaths",
+                  "nl/plugins/sdk-gateway-ingress",
                   "nl/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -31770,6 +31784,7 @@
                     ]
                   },
                   "fa/plugins/sdk-subpaths",
+                  "fa/plugins/sdk-gateway-ingress",
                   "fa/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -33824,6 +33839,7 @@
                     ]
                   },
                   "tr/plugins/sdk-subpaths",
+                  "tr/plugins/sdk-gateway-ingress",
                   "tr/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -35878,6 +35894,7 @@
                     ]
                   },
                   "uk/plugins/sdk-subpaths",
+                  "uk/plugins/sdk-gateway-ingress",
                   "uk/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -37932,6 +37949,7 @@
                     ]
                   },
                   "id/plugins/sdk-subpaths",
+                  "id/plugins/sdk-gateway-ingress",
                   "id/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -39986,6 +40004,7 @@
                     ]
                   },
                   "pl/plugins/sdk-subpaths",
+                  "pl/plugins/sdk-gateway-ingress",
                   "pl/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -42040,6 +42059,7 @@
                     ]
                   },
                   "th/plugins/sdk-subpaths",
+                  "th/plugins/sdk-gateway-ingress",
                   "th/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",
@@ -44094,6 +44114,7 @@
                     ]
                   },
                   "ru/plugins/sdk-subpaths",
+                  "ru/plugins/sdk-gateway-ingress",
                   "ru/plugins/sdk-entrypoints",
                   {
                     "group": "Plugin entry points",

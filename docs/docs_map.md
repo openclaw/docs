@@ -6052,6 +6052,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway WebSocket auth
   - H3: Tailscale Serve identity headers
   - H3: Reverse proxy configuration
+  - H3: Plugin remote Control UI ingress
   - H3: HSTS and origin notes
   - H3: Control UI over HTTP
   - H3: Insecure/dangerous flags
@@ -11028,6 +11029,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Sandbox bind parsing
   - H2: Sandbox filesystem mappings
   - H2: Directory listing metadata
+
+## plugins/sdk-gateway-ingress.md
+
+- Route: /plugins/sdk-gateway-ingress
+- Headings:
+  - H2: Open a handle
+  - H2: Principal, consent, and lifetime
+  - H2: Grant-bound Gateway RPC
+  - H2: HTTP and sockets
+  - H2: Browser device approval
+  - H2: Security boundary
 
 ## plugins/sdk-migration.md
 
