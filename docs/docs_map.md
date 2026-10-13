@@ -16093,6 +16093,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/security-model
 - Headings:
   - H2: Content security policy
+  - H2: Connection permissions
   - H2: Public transcript boundary
   - H2: Avatar route auth
   - H2: Assistant media route auth
