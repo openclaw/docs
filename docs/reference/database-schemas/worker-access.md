@@ -93,6 +93,14 @@ Replacement files also require new admission; migration and repair owners publis
 replacement facts after committed DDL. Doctor and explicit verification retain
 their checks. See [integrity admission](/reference/database-schemas/integrity-and-recovery).
 
+The SQLite worker broker also retains the canonical database and owner-lock paths
+captured at open. Ordinary operations reuse those paths while still checking live
+ownership; they do not resolve filesystem aliases again. Repointing an alias does
+not redirect an open worker handle. Closing and reopening captures the new path
+identity, and open admission still rejects replacements that collide with a live
+owner. Creation and schema-maintenance requests keep their target checks at the
+actual effect.
+
 Retained task workers request admission facts through their existing relay when
 needed. Task messages must not copy the global admission snapshot. Committed
 session deletion retires its exact receipt scopes, including windows removed by
