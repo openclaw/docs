@@ -37,6 +37,14 @@ and the agent's
 The lifecycle owner closes its read scope and drains accepted writes before
 retiring the store.
 
+Complete single-statement effects can use SQLite autocommit through
+`runSqliteSingleStatementSync`. Prepare the result, admission, and commit receipt
+before the statement, then install committed facts before notifying observers.
+Warm participant contributions and non-message audit inserts use this path;
+new participants, audit pruning, and execution bindings retain transactions.
+Each effect still commits separately. PostgreSQL writes retain their adapter's
+transaction custody.
+
 Gateway startup binds existing auth-file observers to its read-only scope and
 spawn broker, including observations retained across an in-process restart.
 New observers capture those resources when admitting a directory. File scans
