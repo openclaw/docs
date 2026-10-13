@@ -145,6 +145,12 @@ Pruning uses that count and one bounded oldest-row delete. Unbounded replacement
 writes may overestimate this disposable cache and evict entries early; bounded
 writes still reserve space before insertion.
 
+Memory managers receive schema, table-presence, and index facts from worker
+admission without opening a host reader. Bundled status callers await the same
+retrieval worker through `readMemorySearchManagerStatus`. The released synchronous
+`status()` method remains deprecated compatibility and opens its native reader
+only when explicitly called; it is not a fallback for worker failures.
+
 ## Final authority without SQL
 
 Cached data and permission are different contracts. Credentials, approvals,
@@ -404,6 +410,17 @@ updates those records in its existing transaction and publishes them on commit;
 rollback retains the previous facts. Cold, evicted, or invalidated actors use the
 canonical participant read. Participant updates remain independent of metadata CAS.
 This changes no schema, retention, stored format, or update behavior.
+
+Reply-initialization cohorts reuse those entry facts only when the selected entry
+and its parent are both covered. Cold-archive absence requires a complete actor
+snapshot; entry-only facts do not prove it. Archive/restore receipts invalidate
+that snapshot. Lifecycle planning and commit reuse the current actor entry for
+single-entry changes, while retaining the lost-update comparison and uncovered
+count, archive, and maintenance reads. Pending-input history can skip its worker
+request only when the complete actor snapshot proves no unconsumed inputs for
+the requested current window. Staging, consumption, replacement, and unknown
+writes update or invalidate these facts through existing owner receipts; restart
+and eviction return to the canonical readers.
 
 ## Session and ancillary worker operations
 
