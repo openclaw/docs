@@ -4568,12 +4568,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers
 - Headings:
+  - H2: Quick start
+  - H3: First session
+  - H3: Later sessions
+  - H3: Customize preparation and startup
+  - H2: Configuration
   - H2: What each page covers
   - H2: What runs where
   - H2: Requirements
   - H3: Crabbox provider support
-  - H2: Quick start
-  - H2: Configuration
   - H2: Where each section moved
   - H2: Related
 
@@ -4601,10 +4604,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Recipe precedence
   - H2: Lifecycle and snapshots
-  - H2: Setup secrets
   - H2: Minimal example
   - H2: Ignored properties
   - H2: Built-in detection
+  - H2: Setup secrets
 
 ## gateway/cloud-workers/native-inference.md
 
@@ -4694,6 +4697,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/cloud-workers/warm-images
 - Headings:
   - H2: Warm images
+  - H3: First session for a repository
+  - H3: Later sessions and refresh
   - H3: Retention policy
   - H3: Ready workers
   - H3: Inspect snapshots in the Control UI
@@ -4899,6 +4904,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Required worker profile
   - H3: Crabbox profile
   - H4: Crabbox machine catalog
+  - H3: Setup secrets
   - H3: Static SSH development profile
 
 ## gateway/config-extensions.md
