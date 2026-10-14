@@ -13291,6 +13291,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/merge-admission
 - Headings:
   - H1: PR merge admission
+  - H2: Complete check-suite reads
 
 ## reference/scripts/merge-recovery.md
 
