@@ -1223,6 +1223,15 @@ standing-intent, and Forget commands through that owner. Its published host
 reader is physically read-only and retires with the agent lifecycle.
 Logbook and Workboard already keep native SQL inside their worker backends.
 
+The V2 store exposes `terminalSignal`, backed by the execution owner's terminal
+notification. Worker crash, unexpected
+exit, fatal native failure, or admission revocation aborts it with the failure
+reason after accepted work settles, including unknown write outcomes. A confirmed
+commit remains acknowledged; consumers must not replay a write because the signal
+aborted. Normal idle retirement and explicit store close do not abort it. Memory
+uses this signal in its database-open fact, so its existing manager registry
+re-admits the next request instead of reusing a terminal worker.
+
 Released raw SQLite callbacks retain their named native compatibility adapters.
 Deprecated approval callbacks instead run at worker precommit, with a shared
 warning on actual legacy use and signature removal at the next Plugin SDK major.
