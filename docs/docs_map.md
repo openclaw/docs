@@ -8891,6 +8891,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/compatibility
 - Headings:
   - H2: Compatibility registry
+  - H2: Observed SDK usage
   - H2: Deprecation policy
   - H2: Current compatibility areas
   - H3: Session-store bridge retirement
