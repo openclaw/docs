@@ -11286,6 +11286,22 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Credential prompt builder
   - H2: Migration reference
 
+## plugins/sdk-migration/sqlite-async.md
+
+- Route: /plugins/sdk-migration/sqlite-async
+- Headings:
+  - H2: Session reads and inbound envelopes
+  - H2: Auth profiles and provider readiness
+  - H2: Approval routing and command authorization
+  - H2: Conversation and native session bindings
+  - H2: Keyed state
+  - H2: SessionManager, extension persistence, and replay
+  - H2: Transcript write callbacks, readers, and catalogs
+  - H2: Reply, observer, and harness preparation
+  - H2: Account services, runtime config, workspace, and TTS
+  - H2: Debug proxy capture and raw SQLite
+  - H2: Verify the migration
+
 ## plugins/sdk-migration/talk.md
 
 - Route: /plugins/sdk-migration/talk

@@ -3088,6 +3088,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "plugins/sdk-migration/how-to-migrate",
+                      "plugins/sdk-migration/sqlite-async",
                       "plugins/sdk-migration/import-paths",
                       "plugins/sdk-migration/removed-surfaces",
                       "plugins/sdk-migration/talk",
@@ -5149,6 +5150,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "zh-CN/plugins/sdk-migration/how-to-migrate",
+                      "zh-CN/plugins/sdk-migration/sqlite-async",
                       "zh-CN/plugins/sdk-migration/import-paths",
                       "zh-CN/plugins/sdk-migration/removed-surfaces",
                       "zh-CN/plugins/sdk-migration/talk",
@@ -7210,6 +7212,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "zh-TW/plugins/sdk-migration/how-to-migrate",
+                      "zh-TW/plugins/sdk-migration/sqlite-async",
                       "zh-TW/plugins/sdk-migration/import-paths",
                       "zh-TW/plugins/sdk-migration/removed-surfaces",
                       "zh-TW/plugins/sdk-migration/talk",
@@ -9271,6 +9274,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "ja-JP/plugins/sdk-migration/how-to-migrate",
+                      "ja-JP/plugins/sdk-migration/sqlite-async",
                       "ja-JP/plugins/sdk-migration/import-paths",
                       "ja-JP/plugins/sdk-migration/removed-surfaces",
                       "ja-JP/plugins/sdk-migration/talk",
@@ -11332,6 +11336,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "es/plugins/sdk-migration/how-to-migrate",
+                      "es/plugins/sdk-migration/sqlite-async",
                       "es/plugins/sdk-migration/import-paths",
                       "es/plugins/sdk-migration/removed-surfaces",
                       "es/plugins/sdk-migration/talk",
@@ -13393,6 +13398,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "pt-BR/plugins/sdk-migration/how-to-migrate",
+                      "pt-BR/plugins/sdk-migration/sqlite-async",
                       "pt-BR/plugins/sdk-migration/import-paths",
                       "pt-BR/plugins/sdk-migration/removed-surfaces",
                       "pt-BR/plugins/sdk-migration/talk",
@@ -15454,6 +15460,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "ko/plugins/sdk-migration/how-to-migrate",
+                      "ko/plugins/sdk-migration/sqlite-async",
                       "ko/plugins/sdk-migration/import-paths",
                       "ko/plugins/sdk-migration/removed-surfaces",
                       "ko/plugins/sdk-migration/talk",
@@ -17515,6 +17522,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "de/plugins/sdk-migration/how-to-migrate",
+                      "de/plugins/sdk-migration/sqlite-async",
                       "de/plugins/sdk-migration/import-paths",
                       "de/plugins/sdk-migration/removed-surfaces",
                       "de/plugins/sdk-migration/talk",
@@ -19576,6 +19584,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "fr/plugins/sdk-migration/how-to-migrate",
+                      "fr/plugins/sdk-migration/sqlite-async",
                       "fr/plugins/sdk-migration/import-paths",
                       "fr/plugins/sdk-migration/removed-surfaces",
                       "fr/plugins/sdk-migration/talk",
@@ -21637,6 +21646,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "hi/plugins/sdk-migration/how-to-migrate",
+                      "hi/plugins/sdk-migration/sqlite-async",
                       "hi/plugins/sdk-migration/import-paths",
                       "hi/plugins/sdk-migration/removed-surfaces",
                       "hi/plugins/sdk-migration/talk",
@@ -23698,6 +23708,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "ar/plugins/sdk-migration/how-to-migrate",
+                      "ar/plugins/sdk-migration/sqlite-async",
                       "ar/plugins/sdk-migration/import-paths",
                       "ar/plugins/sdk-migration/removed-surfaces",
                       "ar/plugins/sdk-migration/talk",
@@ -25759,6 +25770,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "it/plugins/sdk-migration/how-to-migrate",
+                      "it/plugins/sdk-migration/sqlite-async",
                       "it/plugins/sdk-migration/import-paths",
                       "it/plugins/sdk-migration/removed-surfaces",
                       "it/plugins/sdk-migration/talk",
@@ -27820,6 +27832,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "vi/plugins/sdk-migration/how-to-migrate",
+                      "vi/plugins/sdk-migration/sqlite-async",
                       "vi/plugins/sdk-migration/import-paths",
                       "vi/plugins/sdk-migration/removed-surfaces",
                       "vi/plugins/sdk-migration/talk",
@@ -29881,6 +29894,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "nl/plugins/sdk-migration/how-to-migrate",
+                      "nl/plugins/sdk-migration/sqlite-async",
                       "nl/plugins/sdk-migration/import-paths",
                       "nl/plugins/sdk-migration/removed-surfaces",
                       "nl/plugins/sdk-migration/talk",
@@ -31942,6 +31956,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "fa/plugins/sdk-migration/how-to-migrate",
+                      "fa/plugins/sdk-migration/sqlite-async",
                       "fa/plugins/sdk-migration/import-paths",
                       "fa/plugins/sdk-migration/removed-surfaces",
                       "fa/plugins/sdk-migration/talk",
@@ -34003,6 +34018,7 @@
                     "group": "Plugin SDK geçişi",
                     "pages": [
                       "tr/plugins/sdk-migration/how-to-migrate",
+                      "tr/plugins/sdk-migration/sqlite-async",
                       "tr/plugins/sdk-migration/import-paths",
                       "tr/plugins/sdk-migration/removed-surfaces",
                       "tr/plugins/sdk-migration/talk",
@@ -36064,6 +36080,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "uk/plugins/sdk-migration/how-to-migrate",
+                      "uk/plugins/sdk-migration/sqlite-async",
                       "uk/plugins/sdk-migration/import-paths",
                       "uk/plugins/sdk-migration/removed-surfaces",
                       "uk/plugins/sdk-migration/talk",
@@ -38125,6 +38142,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "id/plugins/sdk-migration/how-to-migrate",
+                      "id/plugins/sdk-migration/sqlite-async",
                       "id/plugins/sdk-migration/import-paths",
                       "id/plugins/sdk-migration/removed-surfaces",
                       "id/plugins/sdk-migration/talk",
@@ -40186,6 +40204,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "pl/plugins/sdk-migration/how-to-migrate",
+                      "pl/plugins/sdk-migration/sqlite-async",
                       "pl/plugins/sdk-migration/import-paths",
                       "pl/plugins/sdk-migration/removed-surfaces",
                       "pl/plugins/sdk-migration/talk",
@@ -42247,6 +42266,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "th/plugins/sdk-migration/how-to-migrate",
+                      "th/plugins/sdk-migration/sqlite-async",
                       "th/plugins/sdk-migration/import-paths",
                       "th/plugins/sdk-migration/removed-surfaces",
                       "th/plugins/sdk-migration/talk",
@@ -44308,6 +44328,7 @@
                     "group": "Plugin SDK migration",
                     "pages": [
                       "ru/plugins/sdk-migration/how-to-migrate",
+                      "ru/plugins/sdk-migration/sqlite-async",
                       "ru/plugins/sdk-migration/import-paths",
                       "ru/plugins/sdk-migration/removed-surfaces",
                       "ru/plugins/sdk-migration/talk",
