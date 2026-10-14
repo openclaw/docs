@@ -9,6 +9,16 @@ export const chromeStrings = {
     communityFollowLabel: "Follow OpenClaw on {platform}",
     onThisPage: "On this page",
   },
+  sv: {
+    communityDismissLabel: "Stäng och visa inte igen",
+    communityTitle: "Slå dig ner.",
+    communityBody: "Det finns en plats för dig i AI-framtiden. Gå med i gemenskapen på Reddit, Discord och X.",
+    communityJoin: "Gå med",
+    communityFollow: "Följ",
+    communityJoinLabel: "Gå med i OpenClaws gemenskap på {platform}",
+    communityFollowLabel: "Följ OpenClaw på {platform}",
+    onThisPage: "På den här sidan",
+  },
   "zh-CN": {
     communityDismissLabel: "关闭且不再显示",
     communityTitle: "来坐坐吧。",

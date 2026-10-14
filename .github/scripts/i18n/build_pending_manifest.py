@@ -14,7 +14,7 @@ Parameters:
 
 Environment:
   LOCALE, LOCALE_SLUG, SHARD_INDEX, SHARD_TOTAL, optional FORCE_RETRANSLATE,
-  PENDING_LIMIT, CANARY_SOURCE_PATH, and GITHUB_OUTPUT.
+  PENDING_LIMIT, CANARY_SOURCE_PATH, CANARY_PUBLISH_REQUIRED, and GITHUB_OUTPUT.
 
 Outputs:
   Writes docs-i18n-<locale_slug>-s<index>of<total>.txt under --openclaw-sync-dir.
@@ -39,6 +39,7 @@ from translation_plan import is_locale_dir
 
 SOURCE_HASH_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$", re.M)
 MODEL_METADATA_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+(?:model|provider):", re.M)
+LOCALE_ENTRY_SOURCES = ("index.md", "start/getting-started.md")
 
 
 @dataclass(frozen=True)
@@ -48,6 +49,7 @@ class PendingResult:
     pending_count: int
     pending_path: Path
     shard_files: list[Path]
+    canary_bootstrap: bool = False
 
 
 def translation_matches_source(path: Path, source_hash: str) -> bool:
@@ -104,6 +106,7 @@ def build_pending_manifest(
     pending_limit: int = 0,
     canary_source_path: str = "",
     force_retranslate: bool = False,
+    canary_publish_required: bool = False,
 ) -> PendingResult:
     locale_dirs = {path.name for path in docs_root.iterdir() if is_locale_dir(path)}
     pending_path = openclaw_sync_dir / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
@@ -131,10 +134,20 @@ def build_pending_manifest(
 
     pending_files = sorted(pending_files)
     shard_files = [file for index, file in enumerate(pending_files) if index % shard_total == shard_index]
+    canary_bootstrap = False
     if pending_limit:
         if canary_source_path:
             canary_sources: list[Path] = []
-            for source_path in parse_canary_source_paths(canary_source_path):
+            source_paths = parse_canary_source_paths(canary_source_path)
+            if canary_publish_required:
+                # Publishing a locale's first page activates it in the renderer.
+                # Include missing entry pages so its homepage and smoke sample work.
+                for entry in LOCALE_ENTRY_SOURCES:
+                    if not (docs_root / locale / entry).is_file():
+                        canary_bootstrap = True
+                        if entry not in source_paths:
+                            source_paths.append(entry)
+            for source_path in source_paths:
                 canary_source = (docs_root / source_path).resolve()
                 try:
                     canary_source.relative_to(docs_root.resolve())
@@ -145,8 +158,8 @@ def build_pending_manifest(
                 if canary_source in canary_sources:
                     raise SystemExit("configured canary sources must resolve to unique paths")
                 canary_sources.append(canary_source)
-            # A diagnostic canary may exercise a bounded explicit page set in
-            # one non-publishing job; every path still passes the normal gates.
+            # Explicit diagnostics and first-locale publication may sample a
+            # bounded page set; every path still passes the normal hash gates.
             shard_files = canary_sources
         else:
             # Routine canaries probe pending pages without publishing. Choose the
@@ -165,6 +178,7 @@ def build_pending_manifest(
         pending_count=len(shard_files),
         pending_path=pending_path,
         shard_files=shard_files,
+        canary_bootstrap=canary_bootstrap,
     )
 
 
@@ -176,6 +190,7 @@ def append_output(result: PendingResult) -> None:
         fh.write(f"all_count={result.all_count}\n")
         fh.write(f"total_pending_count={result.total_pending_count}\n")
         fh.write(f"pending_count={result.pending_count}\n")
+        fh.write(f"canary_bootstrap={str(result.canary_bootstrap).lower()}\n")
 
 
 def parse_args() -> argparse.Namespace:
@@ -209,6 +224,7 @@ def main() -> None:
         pending_limit=pending_limit,
         canary_source_path=os.environ.get("CANARY_SOURCE_PATH", ""),
         force_retranslate=os.environ.get("FORCE_RETRANSLATE", "false") == "true",
+        canary_publish_required=os.environ.get("CANARY_PUBLISH_REQUIRED", "false") == "true",
     )
     append_output(result)
 

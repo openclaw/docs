@@ -80,6 +80,8 @@ jobs:
     name: Translate ${{ inputs.locale }} shard ${{ inputs.shard_index }}/${{ inputs.shard_total }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    outputs:
+      canary_bootstrap: ${{ steps.pending.outputs.canary_bootstrap }}
     permissions:
       contents: read
     concurrency:
@@ -174,8 +176,15 @@ jobs:
           SHARD_TOTAL: ${{ inputs.shard_total }}
           PENDING_LIMIT: ${{ inputs.pending_limit }}
           CANARY_SOURCE_PATH: ${{ inputs.canary_source_path }}
+          CANARY_PUBLISH_REQUIRED: ${{ inputs.canary_publish_required }}
         run: |
           python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"
+
+      - name: Require main for locale bootstrap publication
+        if: steps.pending.outputs.canary_bootstrap == 'true' && github.ref != 'refs/heads/main'
+        run: |
+          echo "Publish a new locale from main after its source and publisher support have landed. Use diagnostic_canary_only for branch previews." >&2
+          exit 1
 
       - name: Translate changed docs into locale
         id: translate_docs
@@ -448,26 +457,26 @@ jobs:
             --expected-locales "${EXPECTED_LOCALES}"
 
       - name: Set up Node for locale validation
-        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
+        if: (inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26
           cache: npm
 
       - name: Install docs dependencies
-        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
+        if: (inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'
         run: npm ci
 
       - name: Install validation system dependencies
-        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
+        if: (inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Install Playwright browser
-        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
+        if: (inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'
         run: npx playwright install --with-deps chromium
 
       - name: Check docs before artifact finalization
-        if: inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'
+        if: (inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'
         run: npm run docs:check
 
       - name: Commit locale refresh
@@ -502,6 +511,7 @@ jobs:
           ARTIFACT_ROLE: ${{ inputs.artifact_role }}
           CANARY_LIVE_URL: https://docs.openclaw.ai/${{ inputs.locale }}/${{ inputs.canary_live_path }}
           CANARY_EXPECTED_H1: ${{ inputs.canary_expected_h1 }}
+          CANARY_BOOTSTRAP: ${{ needs.translate.outputs.canary_bootstrap }}
         run: |
           set -euo pipefail
 
@@ -509,11 +519,15 @@ jobs:
           if [ "${ARTIFACT_ROLE}" = "canary" ]; then
             args+=(
               --ref "${{ github.ref_name }}"
-              --artifact-scope page
               --locale "${{ inputs.locale }}"
-              --page-path "${{ inputs.canary_live_path }}"
               --no-force-upload
             )
+            if [ "${CANARY_BOOTSTRAP}" = "true" ]; then
+              # New locales must appear in existing pages' language menus too.
+              args+=(--artifact-scope full)
+            else
+              args+=(--artifact-scope page --page-path "${{ inputs.canary_live_path }}")
+            fi
             if [ "${{ inputs.canary_publish_required }}" = "true" ]; then
               args+=(
                 --live-url "${CANARY_LIVE_URL}"

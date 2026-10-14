@@ -27,6 +27,7 @@ English content and navigation are authored in [`openclaw/openclaw`](https://git
 - Locale outputs are uploaded as artifacts first, then committed together by the finalizer.
 - Incremental and full translation use separate concurrency lanes, so small docs edits do not cancel weekly or glossary-triggered full reconciliation.
 - The weekly scheduled run uses full reconciliation mode to repair missed or flaky locale updates.
+- To start a new locale with a bounded publish, run **Translate Full** from `main` after its source and publisher support land, with that locale and `canary_only=true`. The LINE canary also generates a missing homepage and getting-started page, validates the site, and publishes the language menus. Existing locales keep the single-page canary. Use `diagnostic_canary_only=true` for explicit non-publishing page samples.
 
 ## Editing rules
 

@@ -46,6 +46,7 @@ LOCALES: tuple[tuple[str, str], ...] = (
     ("vi", "vi"),
     ("pl", "pl"),
     ("nl", "nl"),
+    ("sv", "sv"),
     ("uk", "uk"),
     ("th", "th"),
     ("ar", "ar"),

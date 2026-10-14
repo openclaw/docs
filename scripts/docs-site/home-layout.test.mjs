@@ -14,6 +14,9 @@ const original = parseDocument(homeContentHtml(rendered));
 const result = parseDocument(homeLayoutHtml(rendered, () => ""));
 const elements = (document, predicate) => DomUtils.findAll(predicate, document.children);
 const ids = new Set(elements(result, (node) => node.attribs.id).map((node) => node.attribs.id));
+// Swedish is registered before its first generated translation. Exercise real
+// Swedish content until that artifact exists; other locale sources remain required.
+const newLocaleSources = { sv: "# Svenska\n\n## Kom igång\n\nAnvänd din egen AI-assistent.\n\n[Installera OpenClaw](/install)\n" };
 
 test("the composed homepage retains source text, links, and anchors without a disclosure gate", () => {
   const remaining = elements(result, (node) => ["p", "h1", "h2", "h3", "pre"].includes(node.name))
@@ -51,7 +54,9 @@ test("every locale supplies the same complete homepage and navigation copy", () 
 for (const locale of Object.keys(localeLabels)) {
   test(`${locale} homepage uses the shared section layout and preserves its translated source`, () => {
     const file = new URL(`../../docs/${locale === "en" ? "" : locale + "/"}index.md`, import.meta.url);
-    const html = renderMdxish(fs.readFileSync(file, "utf8"), createMarkdownRenderer());
+    const source = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : newLocaleSources[locale];
+    assert.equal(typeof source, "string", `${locale}: generated homepage or explicit onboarding fixture required`);
+    const html = renderMdxish(source, createMarkdownRenderer());
     const before = parseDocument(homeContentHtml(html));
     const after = parseDocument(homeLayoutHtml(html, () => "", null, locale));
     const root = elements(after, (node) => node.attribs.class === "home-layout")[0];

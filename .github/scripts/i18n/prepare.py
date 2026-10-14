@@ -58,6 +58,7 @@ LOCALES = {
     "pl",
     "pt-BR",
     "ru",
+    "sv",
     "th",
     "tr",
     "uk",

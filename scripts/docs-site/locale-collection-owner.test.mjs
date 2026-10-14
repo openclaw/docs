@@ -23,11 +23,13 @@ const translations = {
   "ja-JP/target.md": "# 日本語の対象\n",
   "fr/index.md": "# Français\n",
   "fr/target.mdx": "# Cible française\n",
+  "sv/index.md": "# Svenska\n",
+  "sv/target.mdx": "# Svenskt mål\n\n## Del\nSvensk text\n\n[Engelsk reservsida](/fallback)\n",
   "eo/index.md": "# Esperanto\n",
   "eo/target.mdx": "# Celo\n",
 };
 const englishRoutes = ["/", "/target", "/fallback", "/guide/de/topic", "/guide/ja/topic", "/guide/eo/topic", "/unknown/topic", "/ja/topic"];
-const localeRoutes = ["/de", "/de/target", "/de/guide/de/topic", "/ja-JP", "/ja-JP/target", "/fr", "/fr/target", "/eo", "/eo/target"];
+const localeRoutes = ["/de", "/de/target", "/de/guide/de/topic", "/ja-JP", "/ja-JP/target", "/fr", "/fr/target", "/sv", "/sv/target", "/eo", "/eo/target"];
 const nav = (language, tab, pages) => ({ language, tabs: [{ tab, groups: [{ group: tab, pages }] }] });
 
 for (const base of ["", "/manual"]) {
@@ -39,6 +41,7 @@ for (const base of ["", "/manual"]) {
         nav("en", "English navigation", ["index", "target", "fallback", "guide/de/topic"]),
         nav("de", "Deutsche Navigation", ["de/index", "de/target", "de/fallback", { group: "Nested", pages: ["de/guide/de/topic"] }]),
         nav("ja", "日本語ナビ", ["ja-JP/index", "ja-JP/target"]),
+        nav("sv", "Svensk navigering", ["sv/index", "sv/target", "sv/fallback"]),
         nav("eo", "Esperanta navigado", ["eo/index", "eo/target"]),
         nav("es", "Absent locale", ["index", "target"]),
         // French is discovered from the tree and inherits the first navigation.
@@ -51,7 +54,7 @@ for (const base of ["", "/manual"]) {
         { source: "/old-root", destination: "/" },
       ],
     }));
-    for (const prefix of ["", "de/", "eo/"]) {
+    for (const prefix of ["", "de/", "sv/", "eo/"]) {
       for (const rel of ["AGENTS.md", ".i18n/hidden.md", ".generated/hidden.mdx", "assets/hidden.md", ".hidden/page.md"]) {
         write(f.root, `docs/${prefix}${rel}`, "# Ignored source\n");
       }
@@ -61,7 +64,7 @@ for (const base of ["", "/manual"]) {
     // surviving files after duplicate HTML writes have overwritten one another.
     const built = f.build({ DOCS_SITE_ARTIFACT_MODE: "full" });
     assert.equal(built.status, 0, built.stderr);
-    assert.equal(Number(built.stdout.match(/built (\d+) pages/)?.[1]), 18, built.stdout);
+    assert.equal(Number(built.stdout.match(/built (\d+) pages/)?.[1]), 20, built.stdout);
 
     const site = path.join(f.root, "dist/docs-site");
     const read = (rel) => fs.readFileSync(path.join(site, rel), "utf8");
@@ -81,7 +84,7 @@ for (const base of ["", "/manual"]) {
       assert.ok(html(route).includes(`<html lang="${locale}"`), route);
       assert.ok(html(route).includes(`<link rel="canonical" href="${origin}${route}">`), route);
     }
-    for (const locale of ["de", "fr"]) {
+    for (const locale of ["de", "fr", "sv"]) {
       const quickNav = html(`/${locale}/target`).match(/<nav class="docs-quick-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
       assert.ok(quickNav.includes(`href="${base}/${locale}"`), `${locale}: Overview stays in the current language`);
     }
@@ -94,6 +97,16 @@ for (const base of ["", "/manual"]) {
     assert.ok(sidebar.includes(`href="${base}/de/guide/de/topic"`));
     assert.ok(!sidebar.includes("English fallback"), "untranslated entries stay out of locale navigation");
     assert.ok(html("/fr/target").includes(`class="nav-link active" href="${base}/fr/target"`));
+    const swedish = html("/sv/target");
+    assert.ok(swedish.includes("Svensk navigering"));
+    assert.ok(swedish.includes(`class="nav-link active" href="${base}/sv/target"`));
+    assert.ok(swedish.includes("Sök i dokumentationen"));
+    assert.ok(swedish.includes("På den här sidan"));
+    assert.ok(swedish.includes("Följ OpenClaw på"));
+    assert.ok(swedish.includes(`href="${base}/fallback">Engelsk reservsida</a>`));
+    assert.ok(html("/sv").includes("AI som faktiskt får saker gjorda."));
+    assert.ok(html("/").includes("Svenska"));
+    assert.ok(html("/").includes("🇸🇪"));
     assert.ok(html("/eo/target").includes("Esperanta navigado"));
     assert.ok(german.includes(`href="${base}/de/target#part">Translated</a>`));
     assert.ok(german.includes(`href="${base}/fallback">Fallback</a>`));
@@ -102,10 +115,11 @@ for (const base of ["", "/manual"]) {
     assert.ok(!german.includes("Español"), "an absent configured tree is not a published locale");
     assert.ok(german.includes(`hreflang="en" href="${origin}/target"`));
     assert.ok(german.includes(`hreflang="ja-JP" href="${origin}/ja-JP/target"`));
+    assert.ok(german.includes(`hreflang="sv" href="${origin}/sv/target"`));
     assert.ok(german.includes(`hreflang="eo" href="${origin}/eo/target"`));
     assert.match(html("/__elements"), /noindex,nofollow/);
 
-    for (const rel of ["AGENTS/index.html", "de/AGENTS/index.html", "eo/AGENTS.md", "de.md", "fr.md", "ja-JP.md", "eo.md", "es/index.html", "de/fallback/index.html", "assets/hidden/index.html", "de/.i18n/hidden.md"]) {
+    for (const rel of ["AGENTS/index.html", "de/AGENTS/index.html", "sv/AGENTS/index.html", "eo/AGENTS.md", "de.md", "fr.md", "sv.md", "ja-JP.md", "eo.md", "es/index.html", "de/fallback/index.html", "sv/fallback/index.html", "assets/hidden/index.html", "de/.i18n/hidden.md"]) {
       assert.equal(fs.existsSync(path.join(site, rel)), false, rel);
     }
     const redirects = JSON.parse(fs.readFileSync(path.join(f.root, "dist/docs-markdown-redirects.json"), "utf8"));
@@ -113,6 +127,7 @@ for (const base of ["", "/manual"]) {
       for (const [alias, destination, markdown] of [
         ["/old", "/target#part", "/target.md#part"],
         ["/de/old", "/de/target#part", "/de/target.md#part"],
+        ["/sv/old", "/sv/target#part", "/sv/target.md#part"],
         ["/eo/old", "/eo/target#part", "/eo/target.md#part"],
         ["/de/explicit", "/de/target#part", "/de/target.md#part"],
         ["/es/explicit", "/target", "/target.md"],

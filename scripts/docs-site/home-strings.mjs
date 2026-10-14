@@ -11,6 +11,16 @@ export const homeStrings = {
     controls: ["Search documentation", "Toggle theme", "Toggle navigation menu", "Close menu", "Back to all documentation"],
     release: ["New release", "Read release notes", "See what’s new in this release.", "Latest", "Latest release:"],
   },
+  sv: {
+    tagline: ["AI som faktiskt får saker gjorda.", "Alla operativsystem. Alla plattformar. På hummerns vis. 🦞"],
+    channels: ["Anslut en kanal", "Använd OpenClaw från din chattapp.", "Visa alla kanaler"],
+    guides: ["Utvalda guider", "Alla guider"],
+    guideCards: [["Schemalägg uppgifter", "Kör återkommande jobb och få resultaten i din chatt."], ["Ge din agent en webbläsare", "Konfigurera en egen webbläsare för din agent."], ["Kör flera agenter", "Håll arbetsytor, konversationer och ansvarsområden åtskilda."]],
+    community: ["Gemenskap", "Var med och bygg", "Ställ frågor, dela det du skapar eller säg bara hej.", "Gå med på Discord", "Gemenskapens forum", "Ställ frågor och dela det du har byggt.", "Läs källkoden, rapportera ett problem eller bidra.", "Följ OpenClaw för nyheter och uppdateringar om projektet."],
+    navigation: ["Kom igång", "Översikt", "Snabbstart", "Installation", "Första konfigurationen", "Konfiguration", "Dokumentation"],
+    controls: ["Sök i dokumentationen", "Växla tema", "Visa eller dölj navigeringsmenyn", "Stäng menyn", "Tillbaka till all dokumentation"],
+    release: ["Ny version", "Läs versionsinformationen", "Se vad som är nytt i den här versionen.", "Senaste", "Senaste version:"],
+  },
   de: {
     tagline: ["Die KI, die wirklich etwas tut.", "Jedes Betriebssystem. Jede Plattform. Auf Hummer-Art. 🦞"],
     channels: ["Einen Kanal verbinden", "Nutze OpenClaw in deiner Chat-App.", "Alle Kanäle ansehen"],
