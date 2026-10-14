@@ -9307,9 +9307,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: MCP Relay
   - H2: Set up the Gateway
-  - H2: Connect ChatGPT or Claude
+  - H2: Connect ChatGPT, Codex, or Claude
   - H3: Pair with a code
   - H2: Connected apps
+  - H2: Use several Gateways
+  - H3: Team Gateways
   - H2: Show the full Control UI in ChatGPT
   - H2: Available operations
   - H2: Data and authority
