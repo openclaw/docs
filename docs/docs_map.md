@@ -10839,6 +10839,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Host-only execution
   - H3: Native tool-policy enforcement
   - H3: Harness-owned auth bootstrap
+  - H3: Native setup verification
   - H3: Bound native session ownership
   - H3: Verified setup runtime artifacts
   - H3: Request-transport contract
