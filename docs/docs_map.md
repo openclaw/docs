@@ -248,6 +248,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Retired inferred commitments
   - H2: Related
 
+## automation/mcp-events.md
+
+- Route: /automation/mcp-events
+- Headings:
+  - H2: Supported profile
+  - H2: Configure the callback
+  - H2: Create an event automation
+  - H2: Subscription lifecycle
+  - H2: Receipt, execution, and recovery
+  - H3: Limits of replay
+  - H2: Disable or downgrade
+  - H2: Developer proof server
+  - H2: Related
+
 ## automation/standing-orders.md
 
 - Route: /automation/standing-orders
@@ -10168,6 +10182,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
+
+## plugins/reference/mcp-events.md
+
+- Route: /plugins/reference/mcp-events
+- Headings:
+  - H2: Distribution
+  - H2: Surface
 
 ## plugins/reference/mcp-relay.md
 

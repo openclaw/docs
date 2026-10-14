@@ -1943,6 +1943,7 @@
                     ]
                   },
                   "automation/imap",
+                  "automation/mcp-events",
                   "automation/standing-orders",
                   "automation/hooks",
                   {
@@ -4040,6 +4041,7 @@
                     ]
                   },
                   "zh-CN/automation/imap",
+                  "zh-CN/automation/mcp-events",
                   "zh-CN/automation/standing-orders",
                   "zh-CN/automation/hooks",
                   {
@@ -6103,6 +6105,7 @@
                     ]
                   },
                   "zh-TW/automation/imap",
+                  "zh-TW/automation/mcp-events",
                   "zh-TW/automation/standing-orders",
                   "zh-TW/automation/hooks",
                   {
@@ -8166,6 +8169,7 @@
                     ]
                   },
                   "ja-JP/automation/imap",
+                  "ja-JP/automation/mcp-events",
                   "ja-JP/automation/standing-orders",
                   "ja-JP/automation/hooks",
                   {
@@ -10229,6 +10233,7 @@
                     ]
                   },
                   "es/automation/imap",
+                  "es/automation/mcp-events",
                   "es/automation/standing-orders",
                   "es/automation/hooks",
                   {
@@ -12292,6 +12297,7 @@
                     ]
                   },
                   "pt-BR/automation/imap",
+                  "pt-BR/automation/mcp-events",
                   "pt-BR/automation/standing-orders",
                   "pt-BR/automation/hooks",
                   {
@@ -14355,6 +14361,7 @@
                     ]
                   },
                   "ko/automation/imap",
+                  "ko/automation/mcp-events",
                   "ko/automation/standing-orders",
                   "ko/automation/hooks",
                   {
@@ -16418,6 +16425,7 @@
                     ]
                   },
                   "de/automation/imap",
+                  "de/automation/mcp-events",
                   "de/automation/standing-orders",
                   "de/automation/hooks",
                   {
@@ -18481,6 +18489,7 @@
                     ]
                   },
                   "fr/automation/imap",
+                  "fr/automation/mcp-events",
                   "fr/automation/standing-orders",
                   "fr/automation/hooks",
                   {
@@ -20544,6 +20553,7 @@
                     ]
                   },
                   "hi/automation/imap",
+                  "hi/automation/mcp-events",
                   "hi/automation/standing-orders",
                   "hi/automation/hooks",
                   {
@@ -22607,6 +22617,7 @@
                     ]
                   },
                   "ar/automation/imap",
+                  "ar/automation/mcp-events",
                   "ar/automation/standing-orders",
                   "ar/automation/hooks",
                   {
@@ -24670,6 +24681,7 @@
                     ]
                   },
                   "it/automation/imap",
+                  "it/automation/mcp-events",
                   "it/automation/standing-orders",
                   "it/automation/hooks",
                   {
@@ -26733,6 +26745,7 @@
                     ]
                   },
                   "vi/automation/imap",
+                  "vi/automation/mcp-events",
                   "vi/automation/standing-orders",
                   "vi/automation/hooks",
                   {
@@ -28796,6 +28809,7 @@
                     ]
                   },
                   "nl/automation/imap",
+                  "nl/automation/mcp-events",
                   "nl/automation/standing-orders",
                   "nl/automation/hooks",
                   {
@@ -30859,6 +30873,7 @@
                     ]
                   },
                   "fa/automation/imap",
+                  "fa/automation/mcp-events",
                   "fa/automation/standing-orders",
                   "fa/automation/hooks",
                   {
@@ -32922,6 +32937,7 @@
                     ]
                   },
                   "tr/automation/imap",
+                  "tr/automation/mcp-events",
                   "tr/automation/standing-orders",
                   "tr/automation/hooks",
                   {
@@ -34985,6 +35001,7 @@
                     ]
                   },
                   "uk/automation/imap",
+                  "uk/automation/mcp-events",
                   "uk/automation/standing-orders",
                   "uk/automation/hooks",
                   {
@@ -37048,6 +37065,7 @@
                     ]
                   },
                   "id/automation/imap",
+                  "id/automation/mcp-events",
                   "id/automation/standing-orders",
                   "id/automation/hooks",
                   {
@@ -39111,6 +39129,7 @@
                     ]
                   },
                   "pl/automation/imap",
+                  "pl/automation/mcp-events",
                   "pl/automation/standing-orders",
                   "pl/automation/hooks",
                   {
@@ -41174,6 +41193,7 @@
                     ]
                   },
                   "th/automation/imap",
+                  "th/automation/mcp-events",
                   "th/automation/standing-orders",
                   "th/automation/hooks",
                   {
@@ -43237,6 +43257,7 @@
                     ]
                   },
                   "ru/automation/imap",
+                  "ru/automation/mcp-events",
                   "ru/automation/standing-orders",
                   "ru/automation/hooks",
                   {
@@ -45300,6 +45321,7 @@
                     ]
                   },
                   "sv/automation/imap",
+                  "sv/automation/mcp-events",
                   "sv/automation/standing-orders",
                   "sv/automation/hooks",
                   {
