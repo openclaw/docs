@@ -3062,7 +3062,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Failed update recovery
   - H2: Installation target and embedded handoff
   - H2: Manual handoff
-  - H2: Automatic failure handoff
+  - H2: Unattended failure diagnostics
   - H2: Output and exit codes
   - H2: Options
 
