@@ -22,6 +22,13 @@ maintenance and unbound SDK managers retain their existing storage admission.
 Slow direct-reservation warnings label session-manager, actor-command, and selected
 history-read callers. The `openclaw.agent-database.reservation` diagnostic channel
 publishes holder timing without paths, session identities, or message content.
+Worker reservations also report bounded operation labels and the number of explicit
+outer SQLite transactions observed in their worker replies. This counts begun
+transactions, including rollbacks and read snapshots, rather than host admission
+requests, nested savepoints, or implicit autocommit. An absent count means no broker
+counter was received, not zero transactions; reclamation-worker close uses its own
+caller label. A reservation includes worker queueing, preparation, and result
+delivery; its duration alone does not establish a slow SQL transaction.
 Schemas, stored data, live commit authority, and update behavior are unchanged.
 
 Use the existing read-only worker scope for descriptive reads and the store's
@@ -452,7 +459,10 @@ preserving the supplied mtime. A cache miss uses one existing writer command to
 read a bounded tail and store its result, including an empty result. Unavailable
 or cold projections remain incomplete and are not marked as successfully backfilled.
 Usage-cost refresh reads a stale rollup body and its monthly partitions in one
-worker snapshot; discovery still reads only metadata. Its transcript statistics
+worker snapshot; discovery still reads only metadata. Transcript statistics use
+the existing batched read directly, without registering per-session write scopes
+for a stats cache. Large inventories would otherwise repeatedly transfer a growing
+scope map while churning the bounded cache. The transcript statistics
 batch carries the rewrite generation and hot/cold state alongside the bounds,
 so the subsequent scan reuses those facts without another watermark read. A
 rewrite during a background scan converges on the next receipt-driven refresh.
