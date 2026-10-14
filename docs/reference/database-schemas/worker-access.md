@@ -4934,6 +4934,9 @@ current session authority; upstream observations compare the captured source in
 the committing transaction. Goal events and normalized child-run terminal outcomes
 share that recording command. Child completion joins recording and rechecks its
 current lifecycle or ACP actor authority at transaction and commit admission.
+New event inserts return the stored row directly from `RETURNING`; recording does
+not reread its own insert. A deduplication conflict still reads the original event
+without advancing its head or publishing another notice.
 Watch registration and consumed-notice acknowledgment use that same writer. Group
 turns keep an unchanged watch read-only; registration preserves explicit provenance
 and seeds only a new physical watcher store. Completion callers supply source-bound
