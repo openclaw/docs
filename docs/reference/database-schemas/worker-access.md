@@ -2659,7 +2659,10 @@ the consuming phase rereads current policy through that plan instead of repeatin
 discovery. These changes preserve current-row predicates and final effect checks.
 
 Initial manager hydration, persisted-user replay, and bootstrap message presence
-share one fresh history cohort. After hooks or compaction, replay acquires its
+share one fresh history cohort. A context window starting at active position zero
+has no preceding cache-TTL prefix and skips that query. A message in the bounded payload proves physical
+message presence in that snapshot; a window without messages still uses the
+physical-history probe because resets can hide retained messages. After hooks or compaction, replay acquires its
 next cohort at synchronous prompt admission. Bounded model context retains its separate
 payload projection and byte limits, with synchronous acceptance under the same
 FIFO and native mutation witness. That operation's snapshot is its serialization
@@ -2674,6 +2677,17 @@ consuming history. Activity summaries consume the patch transaction's acknowledg
 watermark while retaining dirty notifications and fresh subsequent reads.
 Cold metadata joins initialization and turn preparation; restoration stays with
 the cold-storage owner, outside the writer FIFO and before message hooks run.
+
+Ordinary reply initialization reuses its writer-locked snapshot when accepted
+activity is already recorded and neither the entry nor conversation routing
+changes. It does not run lifecycle recovery, count sessions, or schedule
+maintenance for that no-op. Creation, reset, parent forks, and routing changes
+retain the lifecycle mutation path.
+
+Exact message rewrites compare the prepared stored bytes in the update itself,
+without rereading the payload immediately before that comparison. Owner and
+active-anchor checks still precede the write. A no-op rewrite may acknowledge
+its prepared selection after another internal rewrite; it changes no bytes.
 
 ## Retained final-authority guards
 
