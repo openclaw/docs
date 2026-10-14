@@ -3090,6 +3090,7 @@
                       "plugins/sdk-migration/import-paths",
                       "plugins/sdk-migration/removed-surfaces",
                       "plugins/sdk-migration/talk",
+                      "plugins/sdk-migration/async-transcript-and-tts",
                       "plugins/sdk-migration/compatibility-policy",
                       "plugins/sdk-migration/removal-timeline"
                     ]
@@ -5149,6 +5150,7 @@
                       "zh-CN/plugins/sdk-migration/import-paths",
                       "zh-CN/plugins/sdk-migration/removed-surfaces",
                       "zh-CN/plugins/sdk-migration/talk",
+                      "zh-CN/plugins/sdk-migration/async-transcript-and-tts",
                       "zh-CN/plugins/sdk-migration/compatibility-policy",
                       "zh-CN/plugins/sdk-migration/removal-timeline"
                     ]
@@ -7208,6 +7210,7 @@
                       "zh-TW/plugins/sdk-migration/import-paths",
                       "zh-TW/plugins/sdk-migration/removed-surfaces",
                       "zh-TW/plugins/sdk-migration/talk",
+                      "zh-TW/plugins/sdk-migration/async-transcript-and-tts",
                       "zh-TW/plugins/sdk-migration/compatibility-policy",
                       "zh-TW/plugins/sdk-migration/removal-timeline"
                     ]
@@ -9267,6 +9270,7 @@
                       "ja-JP/plugins/sdk-migration/import-paths",
                       "ja-JP/plugins/sdk-migration/removed-surfaces",
                       "ja-JP/plugins/sdk-migration/talk",
+                      "ja-JP/plugins/sdk-migration/async-transcript-and-tts",
                       "ja-JP/plugins/sdk-migration/compatibility-policy",
                       "ja-JP/plugins/sdk-migration/removal-timeline"
                     ]
@@ -11326,6 +11330,7 @@
                       "es/plugins/sdk-migration/import-paths",
                       "es/plugins/sdk-migration/removed-surfaces",
                       "es/plugins/sdk-migration/talk",
+                      "es/plugins/sdk-migration/async-transcript-and-tts",
                       "es/plugins/sdk-migration/compatibility-policy",
                       "es/plugins/sdk-migration/removal-timeline"
                     ]
@@ -13385,6 +13390,7 @@
                       "pt-BR/plugins/sdk-migration/import-paths",
                       "pt-BR/plugins/sdk-migration/removed-surfaces",
                       "pt-BR/plugins/sdk-migration/talk",
+                      "pt-BR/plugins/sdk-migration/async-transcript-and-tts",
                       "pt-BR/plugins/sdk-migration/compatibility-policy",
                       "pt-BR/plugins/sdk-migration/removal-timeline"
                     ]
@@ -15444,6 +15450,7 @@
                       "ko/plugins/sdk-migration/import-paths",
                       "ko/plugins/sdk-migration/removed-surfaces",
                       "ko/plugins/sdk-migration/talk",
+                      "ko/plugins/sdk-migration/async-transcript-and-tts",
                       "ko/plugins/sdk-migration/compatibility-policy",
                       "ko/plugins/sdk-migration/removal-timeline"
                     ]
@@ -17503,6 +17510,7 @@
                       "de/plugins/sdk-migration/import-paths",
                       "de/plugins/sdk-migration/removed-surfaces",
                       "de/plugins/sdk-migration/talk",
+                      "de/plugins/sdk-migration/async-transcript-and-tts",
                       "de/plugins/sdk-migration/compatibility-policy",
                       "de/plugins/sdk-migration/removal-timeline"
                     ]
@@ -19562,6 +19570,7 @@
                       "fr/plugins/sdk-migration/import-paths",
                       "fr/plugins/sdk-migration/removed-surfaces",
                       "fr/plugins/sdk-migration/talk",
+                      "fr/plugins/sdk-migration/async-transcript-and-tts",
                       "fr/plugins/sdk-migration/compatibility-policy",
                       "fr/plugins/sdk-migration/removal-timeline"
                     ]
@@ -21621,6 +21630,7 @@
                       "hi/plugins/sdk-migration/import-paths",
                       "hi/plugins/sdk-migration/removed-surfaces",
                       "hi/plugins/sdk-migration/talk",
+                      "hi/plugins/sdk-migration/async-transcript-and-tts",
                       "hi/plugins/sdk-migration/compatibility-policy",
                       "hi/plugins/sdk-migration/removal-timeline"
                     ]
@@ -23680,6 +23690,7 @@
                       "ar/plugins/sdk-migration/import-paths",
                       "ar/plugins/sdk-migration/removed-surfaces",
                       "ar/plugins/sdk-migration/talk",
+                      "ar/plugins/sdk-migration/async-transcript-and-tts",
                       "ar/plugins/sdk-migration/compatibility-policy",
                       "ar/plugins/sdk-migration/removal-timeline"
                     ]
@@ -25739,6 +25750,7 @@
                       "it/plugins/sdk-migration/import-paths",
                       "it/plugins/sdk-migration/removed-surfaces",
                       "it/plugins/sdk-migration/talk",
+                      "it/plugins/sdk-migration/async-transcript-and-tts",
                       "it/plugins/sdk-migration/compatibility-policy",
                       "it/plugins/sdk-migration/removal-timeline"
                     ]
@@ -27798,6 +27810,7 @@
                       "vi/plugins/sdk-migration/import-paths",
                       "vi/plugins/sdk-migration/removed-surfaces",
                       "vi/plugins/sdk-migration/talk",
+                      "vi/plugins/sdk-migration/async-transcript-and-tts",
                       "vi/plugins/sdk-migration/compatibility-policy",
                       "vi/plugins/sdk-migration/removal-timeline"
                     ]
@@ -29857,6 +29870,7 @@
                       "nl/plugins/sdk-migration/import-paths",
                       "nl/plugins/sdk-migration/removed-surfaces",
                       "nl/plugins/sdk-migration/talk",
+                      "nl/plugins/sdk-migration/async-transcript-and-tts",
                       "nl/plugins/sdk-migration/compatibility-policy",
                       "nl/plugins/sdk-migration/removal-timeline"
                     ]
@@ -31916,6 +31930,7 @@
                       "fa/plugins/sdk-migration/import-paths",
                       "fa/plugins/sdk-migration/removed-surfaces",
                       "fa/plugins/sdk-migration/talk",
+                      "fa/plugins/sdk-migration/async-transcript-and-tts",
                       "fa/plugins/sdk-migration/compatibility-policy",
                       "fa/plugins/sdk-migration/removal-timeline"
                     ]
@@ -33975,6 +33990,7 @@
                       "tr/plugins/sdk-migration/import-paths",
                       "tr/plugins/sdk-migration/removed-surfaces",
                       "tr/plugins/sdk-migration/talk",
+                      "tr/plugins/sdk-migration/async-transcript-and-tts",
                       "tr/plugins/sdk-migration/compatibility-policy",
                       "tr/plugins/sdk-migration/removal-timeline"
                     ]
@@ -36034,6 +36050,7 @@
                       "uk/plugins/sdk-migration/import-paths",
                       "uk/plugins/sdk-migration/removed-surfaces",
                       "uk/plugins/sdk-migration/talk",
+                      "uk/plugins/sdk-migration/async-transcript-and-tts",
                       "uk/plugins/sdk-migration/compatibility-policy",
                       "uk/plugins/sdk-migration/removal-timeline"
                     ]
@@ -38093,6 +38110,7 @@
                       "id/plugins/sdk-migration/import-paths",
                       "id/plugins/sdk-migration/removed-surfaces",
                       "id/plugins/sdk-migration/talk",
+                      "id/plugins/sdk-migration/async-transcript-and-tts",
                       "id/plugins/sdk-migration/compatibility-policy",
                       "id/plugins/sdk-migration/removal-timeline"
                     ]
@@ -40152,6 +40170,7 @@
                       "pl/plugins/sdk-migration/import-paths",
                       "pl/plugins/sdk-migration/removed-surfaces",
                       "pl/plugins/sdk-migration/talk",
+                      "pl/plugins/sdk-migration/async-transcript-and-tts",
                       "pl/plugins/sdk-migration/compatibility-policy",
                       "pl/plugins/sdk-migration/removal-timeline"
                     ]
@@ -42211,6 +42230,7 @@
                       "th/plugins/sdk-migration/import-paths",
                       "th/plugins/sdk-migration/removed-surfaces",
                       "th/plugins/sdk-migration/talk",
+                      "th/plugins/sdk-migration/async-transcript-and-tts",
                       "th/plugins/sdk-migration/compatibility-policy",
                       "th/plugins/sdk-migration/removal-timeline"
                     ]
@@ -44270,6 +44290,7 @@
                       "ru/plugins/sdk-migration/import-paths",
                       "ru/plugins/sdk-migration/removed-surfaces",
                       "ru/plugins/sdk-migration/talk",
+                      "ru/plugins/sdk-migration/async-transcript-and-tts",
                       "ru/plugins/sdk-migration/compatibility-policy",
                       "ru/plugins/sdk-migration/removal-timeline"
                     ]

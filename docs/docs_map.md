@@ -11132,6 +11132,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Timeline
   - H2: Related
 
+## plugins/sdk-migration/async-transcript-and-tts.md
+
+- Route: /plugins/sdk-migration/async-transcript-and-tts
+- Headings:
+  - H2: Historical transcript keys
+  - H2: TTS prompts
+  - H2: Removal timing
+
 ## plugins/sdk-migration/compatibility-policy.md
 
 - Route: /plugins/sdk-migration/compatibility-policy
@@ -11169,6 +11177,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Config record migrations
   - H3: Plugin state migration declarations
   - H3: AuthStorage SQLite migration
+  - H3: Auth display-path compatibility
   - H3: Published channel setup compatibility
   - H3: Channel setup input field compatibility
   - H4: Verifying readers
@@ -11200,6 +11209,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Prepare session catalog identities
   - H2: Replace unbound native session deletion callbacks
   - H2: Await session upstream links
+  - H2: Await session and transcript readers
+  - H2: Await debug proxy capture
   - H2: Await session metadata listings
   - H2: Await transcript statistics
   - H2: Prepare session entry changes
