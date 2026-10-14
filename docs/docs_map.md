@@ -12876,6 +12876,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Current allocations
   - H2: Representation and lifecycle
   - H2: First slice and remaining work
+  - H3: Slice 2: retain the owned shared-response buffer
 
 ## reference/AGENTS.default.md
 
