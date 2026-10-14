@@ -16109,6 +16109,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Firecrawl fallback
   - H2: Custom request headers
   - H2: Trusted env proxy
+  - H2: Saved output
   - H2: Limits and safety
   - H2: Tool profiles
   - H2: Related
