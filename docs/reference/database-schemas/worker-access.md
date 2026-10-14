@@ -1893,8 +1893,14 @@ Lifetime closure joins accepted commands and phase flushes before
 releasing transport custody. Durable residency eviction drops settled snapshots,
 not stored sessions. Rehydration starts a new actor epoch and restores durable
 custody evidence without reviving a prior process's run or placement authority.
-Residency has a session-count bound and a soft byte budget; one oversized working
-set remains resident until another session displaces it.
+Worker residency retains at most 128 sessions, with an 8 MiB serialized byte
+budget for ordinary actors and one additional oversized working set. Small
+competitors do not evict that oversized actor; another oversized actor replaces
+it, and the shared least-recently-used count limit still applies. This avoids
+repeated full hydration during interleaved appends and metadata patches. The
+oversized allowance lasts until eviction or invalidation, so commits do not
+serialize that already exempt working set again merely to count its bytes. Cold
+first access and invalidated actors still hydrate under the writer reservation.
 Incognito keeps its memory-only storage and original nonrenewing 24-hour expiry.
 It has no database worker; session close, owner close, or process exit discards
 its state. Durable snapshot eviction does not evict incognito session state.
