@@ -132,6 +132,14 @@ prove worker execution. Update the generator's evidence, not its generated page.
 
 ## Check once on load; trust the owner
 
+Agent database open admits the catalog before integrity and schema preparation.
+Those stages consume its version and table-presence facts instead of probing
+the same empty store again. Fresh creation skips legacy migration detection;
+tracked DDL and rollback invalidate the catalog before subsequent reads. Schema
+preparation runs under Gateway or exclusive offline ownership, so it does not
+repeat its preflight reads inside the creation transaction. Integrity checks,
+agent ownership checks, and destructive cleanup authority remain in place.
+
 The Gateway is the single runtime owner of its databases. Load physical format,
 schema, integrity, and canonical-index facts through the shared admission owner,
 then reuse them across handles and workers while admission retains a live
