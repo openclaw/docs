@@ -16152,6 +16152,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Navigation rail
   - H3: Session owner filter
   - H3: Personal navigation storage
+  - H2: Move an existing session
   - H2: New session names
   - H2: New-session preferences and recents
   - H2: Systems workspace
