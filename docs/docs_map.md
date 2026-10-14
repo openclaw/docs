@@ -7324,6 +7324,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Missing temporary plugin captures
   - H3: Database snapshots under continuous writes
   - H3: Snapshot parse errors from 2026.9.5 and 2026.9.6
+  - H3: Snapshot cleanup could not be confirmed
   - H3: Large model-catalog temporary directories
   - H2: Reason codes
   - H2: Retained legacy session history
