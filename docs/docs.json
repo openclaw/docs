@@ -44660,6 +44660,2068 @@
             ]
           }
         ]
+      },
+      {
+        "language": "sv",
+        "tabs": [
+          {
+            "tab": "Kom igång",
+            "groups": [
+              {
+                "group": "Översikt",
+                "pages": [
+                  "sv/index",
+                  "sv/start/why-openclaw",
+                  "sv/start/why-openclaw/the-trust-boundary",
+                  "sv/start/why-openclaw/policy-as-code",
+                  "sv/start/why-openclaw/identity-and-roles",
+                  "sv/start/why-openclaw/secrets",
+                  "sv/start/why-openclaw/versioned-state-guarded-upgrades",
+                  "sv/start/why-openclaw/provenance",
+                  "sv/start/why-openclaw/openclaw-and-hermes-agent",
+                  "sv/concepts/features",
+                  "sv/start/hubs",
+                  "sv/start/docs-directory"
+                ]
+              },
+              {
+                "group": "Första stegen",
+                "pages": [
+                  "sv/start/getting-started",
+                  "sv/start/onboarding-overview",
+                  "sv/start/wizard",
+                  "sv/start/onboarding"
+                ]
+              },
+              {
+                "group": "Konfigurationsguider och referens",
+                "pages": [
+                  "sv/start/openclaw",
+                  "sv/start/teams",
+                  "sv/start/wizard-cli-reference",
+                  "sv/start/wizard-cli-automation"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Installation",
+            "groups": [
+              {
+                "group": "Installationsöversikt",
+                "pages": [
+                  "sv/install/index",
+                  "sv/install/installer"
+                ]
+              },
+              {
+                "group": "Körmiljöer",
+                "pages": [
+                  "sv/install/node",
+                  "sv/install/node-compatibility",
+                  "sv/install/bun",
+                  "sv/install/bun-compatibility",
+                  "sv/install/nix"
+                ]
+              },
+              {
+                "group": "Underhåll",
+                "pages": [
+                  "sv/install/backups",
+                  "sv/install/updating",
+                  {
+                    "group": "Uppdatering",
+                    "pages": [
+                      "sv/install/updating/update-methods",
+                      "sv/install/updating/automatic-updates",
+                      "sv/install/updating/rollback-and-recovery"
+                    ]
+                  },
+                  "sv/install/update-troubleshooting",
+                  {
+                    "group": "Migrering",
+                    "pages": [
+                      "sv/install/migrating",
+                      "sv/install/migrating-claude",
+                      "sv/install/migrating-hermes",
+                      "sv/prose"
+                    ]
+                  },
+                  "sv/install/uninstall",
+                  "sv/install/development-channels"
+                ]
+              },
+              {
+                "group": "Containrar",
+                "pages": [
+                  "sv/install/docker",
+                  {
+                    "group": "Docker",
+                    "pages": [
+                      "sv/install/docker/environment-variables",
+                      "sv/install/docker/networking-and-storage",
+                      "sv/install/docker/compose-operations",
+                      "sv/install/docker/sandbox-and-troubleshooting"
+                    ]
+                  },
+                  "sv/install/podman"
+                ]
+              },
+              {
+                "group": "Drift",
+                "pages": [
+                  "sv/vps",
+                  {
+                    "group": "Applikationsplattformar",
+                    "pages": [
+                      "sv/install/cloudflare",
+                      "sv/install/daytona",
+                      "sv/install/exe-dev",
+                      "sv/install/fly",
+                      "sv/install/northflank",
+                      "sv/install/railway",
+                      "sv/install/render",
+                      "sv/install/upstash"
+                    ]
+                  },
+                  {
+                    "group": "Molnservrar",
+                    "pages": [
+                      "sv/install/azure",
+                      "sv/install/digitalocean",
+                      "sv/install/gcp",
+                      "sv/install/hetzner",
+                      "sv/install/hostinger",
+                      "sv/install/oracle"
+                    ]
+                  },
+                  {
+                    "group": "Egen och lokal drift",
+                    "pages": [
+                      "sv/install/ansible",
+                      "sv/install/docker-vm-runtime",
+                      "sv/install/kubernetes",
+                      "sv/install/macos-vm",
+                      "sv/install/raspberry-pi"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Avancerad konfiguration",
+                "pages": [
+                  "sv/start/setup"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Kanaler",
+            "groups": [
+              {
+                "group": "Översikt",
+                "pages": [
+                  "sv/channels/index"
+                ]
+              },
+              {
+                "group": "Vanliga meddelandeplattformar",
+                "pages": [
+                  {
+                    "group": "Discord",
+                    "pages": [
+                      "sv/channels/discord",
+                      "sv/channels/discord/setup",
+                      "sv/channels/discord/access-control",
+                      "sv/channels/discord/messaging",
+                      "sv/channels/discord/threads-and-sessions",
+                      "sv/channels/discord/rich-messages",
+                      "sv/channels/discord/events",
+                      "sv/channels/discord/voice-channels",
+                      "sv/channels/discord/voice-transcripts",
+                      "sv/channels/discord/voice-follow",
+                      "sv/channels/discord/troubleshooting",
+                      "sv/channels/discord-activities"
+                    ]
+                  },
+                  "sv/channels/googlechat",
+                  {
+                    "group": "iMessage",
+                    "pages": [
+                      "sv/channels/imessage",
+                      "sv/channels/imessage/setup",
+                      "sv/channels/imessage/private-api",
+                      "sv/channels/imessage/access-control",
+                      "sv/channels/imessage/deployment",
+                      "sv/channels/imessage/media",
+                      "sv/channels/imessage/rich-messages",
+                      "sv/channels/imessage/messaging",
+                      "sv/channels/imessage/troubleshooting",
+                      "sv/channels/imessage-from-bluebubbles",
+                      "sv/announcements/bluebubbles-imessage"
+                    ]
+                  },
+                  {
+                    "group": "Matrix",
+                    "pages": [
+                      "sv/channels/matrix",
+                      "sv/channels/matrix/setup",
+                      "sv/channels/matrix/access-control",
+                      "sv/channels/matrix/messaging",
+                      "sv/channels/matrix/rich-messages",
+                      "sv/channels/matrix/encryption",
+                      "sv/channels/matrix/threads-and-sessions",
+                      "sv/channels/matrix/accounts-and-homeservers",
+                      "sv/channels/matrix-migration",
+                      "sv/channels/matrix-presentation",
+                      "sv/channels/matrix-push-rules"
+                    ]
+                  },
+                  {
+                    "group": "Microsoft Teams",
+                    "pages": [
+                      "sv/channels/msteams",
+                      "sv/channels/msteams/setup",
+                      "sv/channels/msteams/access-control",
+                      "sv/channels/msteams/authentication",
+                      "sv/channels/msteams/manifest-and-permissions",
+                      "sv/channels/msteams/configuration",
+                      "sv/channels/msteams/messaging",
+                      "sv/channels/msteams/cards-and-actions",
+                      "sv/channels/msteams/troubleshooting"
+                    ]
+                  },
+                  "sv/channels/signal",
+                  {
+                    "group": "Slack",
+                    "pages": [
+                      "sv/channels/slack",
+                      "sv/channels/slack/setup",
+                      "sv/channels/slack/transports",
+                      "sv/channels/slack/enterprise-grid",
+                      "sv/channels/slack/manifest-and-scopes",
+                      "sv/channels/slack/access-control",
+                      "sv/channels/slack/threads-and-sessions",
+                      "sv/channels/slack/messaging",
+                      "sv/channels/slack/media",
+                      "sv/channels/slack/rich-messages",
+                      "sv/channels/slack/events",
+                      "sv/channels/slack/troubleshooting"
+                    ]
+                  },
+                  "sv/channels/sms",
+                  {
+                    "group": "Telegram",
+                    "pages": [
+                      "sv/channels/telegram",
+                      "sv/channels/telegram/setup",
+                      "sv/channels/telegram/access-control",
+                      "sv/channels/telegram/messaging",
+                      "sv/channels/telegram/threads-and-sessions",
+                      "sv/channels/telegram/rich-messages",
+                      "sv/channels/telegram/media",
+                      "sv/channels/telegram/events",
+                      "sv/channels/telegram/transports",
+                      "sv/channels/telegram/mini-app",
+                      "sv/channels/telegram/troubleshooting"
+                    ]
+                  },
+                  "sv/channels/whatsapp",
+                  "sv/channels/x"
+                ]
+              },
+              {
+                "group": "Utveckling och egen drift",
+                "pages": [
+                  "sv/channels/a2a",
+                  "sv/channels/buzz",
+                  "sv/channels/clickclack",
+                  "sv/channels/irc",
+                  "sv/channels/mattermost",
+                  "sv/channels/nextcloud-talk",
+                  "sv/channels/nostr",
+                  "sv/channels/raft",
+                  "sv/channels/reef",
+                  "sv/channels/synology-chat",
+                  "sv/channels/tlon",
+                  "sv/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regionala plattformar",
+                "pages": [
+                  {
+                    "group": "Feishu",
+                    "pages": [
+                      "sv/channels/feishu",
+                      "sv/channels/feishu/setup",
+                      "sv/channels/feishu/access-control",
+                      "sv/channels/feishu/advanced-configuration",
+                      "sv/channels/feishu/dynamic-agents",
+                      "sv/channels/feishu/messaging",
+                      "sv/channels/feishu/configuration-reference",
+                      "sv/channels/feishu/troubleshooting"
+                    ]
+                  },
+                  "sv/channels/line",
+                  "sv/channels/qqbot",
+                  "sv/channels/wechat",
+                  "sv/channels/wecom",
+                  "sv/channels/yuanbao",
+                  "sv/channels/zalo",
+                  "sv/channels/zaloclawbot",
+                  "sv/channels/zalouser"
+                ]
+              },
+              {
+                "group": "Konfiguration",
+                "pages": [
+                  "sv/channels/pairing",
+                  "sv/channels/access-groups",
+                  "sv/channels/bot-loop-protection",
+                  "sv/channels/groups",
+                  "sv/channels/group-messages",
+                  "sv/channels/ambient-room-events",
+                  "sv/channels/broadcast-groups",
+                  "sv/channels/channel-routing",
+                  "sv/channels/location",
+                  "sv/channels/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Agenter",
+            "groups": [
+              {
+                "group": "Agentens körmiljö",
+                "pages": [
+                  "sv/concepts/architecture",
+                  "sv/concepts/agent",
+                  "sv/concepts/agent-loop",
+                  "sv/concepts/agent-runtimes",
+                  "sv/concepts/system-prompt",
+                  "sv/concepts/context",
+                  "sv/concepts/context-engine",
+                  "sv/concepts/soul"
+                ]
+              },
+              {
+                "group": "Agentens arbetsyta",
+                "pages": [
+                  "sv/concepts/agent-workspace",
+                  "sv/concepts/managed-worktrees",
+                  "sv/concepts/storage-locations",
+                  "sv/concepts/oauth",
+                  "sv/start/bootstrapping",
+                  "sv/concepts/experimental-features"
+                ]
+              },
+              {
+                "group": "Sessioner och minne",
+                "pages": [
+                  "sv/concepts/main-session",
+                  "sv/concepts/multi-user",
+                  "sv/concepts/session",
+                  "sv/concepts/session-attachment",
+                  "sv/concepts/session-search",
+                  "sv/concepts/session-pruning",
+                  "sv/concepts/session-state",
+                  "sv/concepts/session-tool",
+                  {
+                    "group": "Minne",
+                    "pages": [
+                      "sv/concepts/memory",
+                      "sv/concepts/memory-architecture",
+                      "sv/concepts/memory-provenance",
+                      "sv/concepts/user-model",
+                      "sv/concepts/standing-intents",
+                      "sv/concepts/memory-builtin",
+                      "sv/concepts/memory-honcho",
+                      "sv/concepts/memory-search",
+                      "sv/concepts/active-memory",
+                      {
+                        "group": "Active Memory",
+                        "pages": [
+                          "sv/concepts/active-memory/enabling",
+                          "sv/concepts/active-memory/how-it-works",
+                          "sv/concepts/active-memory/session-controls",
+                          "sv/concepts/active-memory/tuning",
+                          "sv/concepts/active-memory/memory-tools",
+                          "sv/concepts/active-memory/advanced-options",
+                          "sv/concepts/active-memory/configuration",
+                          "sv/concepts/active-memory/recommended-setup",
+                          "sv/concepts/active-memory/troubleshooting"
+                        ]
+                      },
+                      "sv/concepts/dreaming"
+                    ]
+                  },
+                  "sv/concepts/compaction"
+                ]
+              },
+              {
+                "group": "Flera agenter",
+                "pages": [
+                  "sv/concepts/multi-agent",
+                  "sv/concepts/agent-bindings",
+                  "sv/concepts/parallel-specialist-lanes",
+                  "sv/concepts/presence",
+                  "sv/concepts/delegate-architecture"
+                ]
+              },
+              {
+                "group": "Meddelanden och leverans",
+                "pages": [
+                  "sv/concepts/messages",
+                  "sv/concepts/streaming",
+                  "sv/concepts/typing-indicators",
+                  "sv/concepts/progress-drafts",
+                  "sv/concepts/retry",
+                  "sv/concepts/queue",
+                  "sv/concepts/queue-steering"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Funktioner",
+            "groups": [
+              {
+                "group": "Översikt",
+                "pages": [
+                  "sv/tools/index"
+                ]
+              },
+              {
+                "group": "Pluginer",
+                "pages": [
+                  "sv/tools/plugin",
+                  "sv/plugins/manage-plugins",
+                  "sv/plugins/community",
+                  "sv/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Pluginguider",
+                "pages": [
+                  "sv/plugins/agentsapi",
+                  {
+                    "group": "Codex",
+                    "pages": [
+                      "sv/plugins/codex-computer-use",
+                      "sv/plugins/codex-harness",
+                      {
+                        "group": "Codex harness",
+                        "pages": [
+                          "sv/plugins/codex-harness/placement",
+                          "sv/plugins/codex-harness/routing",
+                          "sv/plugins/codex-harness/configuration",
+                          "sv/plugins/codex-harness/app-server",
+                          "sv/plugins/codex-harness/config-fields",
+                          "sv/plugins/codex-harness/commands",
+                          "sv/plugins/codex-harness/runtime-behavior",
+                          "sv/plugins/codex-harness/native-features",
+                          "sv/plugins/codex-harness/troubleshooting"
+                        ]
+                      },
+                      "sv/plugins/codex-native-plugins",
+                      "sv/plugins/codex-supervision",
+                      "sv/specs/codex-supervision"
+                    ]
+                  },
+                  "sv/plugins/copilot",
+                  "sv/plugins/muse",
+                  {
+                    "group": "Möten och samtal",
+                    "pages": [
+                      "sv/plugins/meeting-plugins",
+                      "sv/plugins/facetime",
+                      "sv/plugins/facetime-recovery",
+                      "sv/plugins/google-meet",
+                      {
+                        "group": "Google Meet",
+                        "pages": [
+                          "sv/plugins/google-meet/transports",
+                          "sv/plugins/google-meet/oauth-and-artifacts",
+                          "sv/plugins/google-meet/config",
+                          "sv/plugins/google-meet/tool-and-modes",
+                          "sv/plugins/google-meet/troubleshooting"
+                        ]
+                      },
+                      "sv/plugins/teams-meetings",
+                      "sv/plugins/slack-huddles",
+                      "sv/plugins/voice-call",
+                      {
+                        "group": "Röstsamtal",
+                        "pages": [
+                          "sv/plugins/voice-call/configuration",
+                          "sv/plugins/voice-call/realtime-and-streaming",
+                          "sv/plugins/voice-call/tts-and-inbound-calls",
+                          "sv/plugins/voice-call/security-and-interfaces",
+                          "sv/plugins/voice-call/troubleshooting"
+                        ]
+                      },
+                      "sv/plugins/zoom-meetings"
+                    ]
+                  },
+                  {
+                    "group": "Modeller och minne",
+                    "pages": [
+                      "sv/plugins/apple-fm",
+                      "sv/plugins/llama-cpp",
+                      "sv/plugins/memory-lancedb",
+                      "sv/plugins/memory-wiki",
+                      "sv/plugins/onnx",
+                      "sv/plugins/typesafe"
+                    ]
+                  },
+                  {
+                    "group": "Hemligheter och valv",
+                    "pages": [
+                      "sv/plugins/onepassword",
+                      "sv/plugins/vault"
+                    ]
+                  },
+                  {
+                    "group": "Automatisering och integrationer",
+                    "pages": [
+                      "sv/plugins/admin-http-rpc",
+                      "sv/plugins/beam",
+                      "sv/plugins/cloudflare",
+                      "sv/plugins/geolocation",
+                      "sv/plugins/logbook",
+                      "sv/plugins/mcp-relay",
+                      "sv/plugins/oc-path",
+                      "sv/plugins/session-share",
+                      "sv/plugins/workboard",
+                      "sv/plugins/zalouser"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Bygga pluginer",
+                "pages": [
+                  "sv/plugins/building-plugins",
+                  "sv/plugins/feature-plugins",
+                  "sv/plugins/tool-plugins",
+                  "sv/plugins/sdk-channel-plugins",
+                  {
+                    "group": "Kanalpluginer",
+                    "pages": [
+                      "sv/plugins/sdk-channel-plugins/message-adapter",
+                      "sv/plugins/sdk-channel-plugins/durable-ingress",
+                      "sv/plugins/sdk-channel-plugins/status-and-media",
+                      "sv/plugins/sdk-channel-plugins/sessions-and-bindings",
+                      "sv/plugins/sdk-channel-plugins/approvals",
+                      "sv/plugins/sdk-channel-plugins/setup-and-config",
+                      "sv/plugins/sdk-channel-plugins/mention-policy"
+                    ]
+                  },
+                  "sv/plugins/sdk-provider-plugins",
+                  {
+                    "group": "Leverantörspluginer",
+                    "pages": [
+                      "sv/plugins/sdk-provider-plugins/model-catalogs",
+                      "sv/plugins/sdk-provider-plugins/hook-families",
+                      "sv/plugins/sdk-provider-plugins/runtime-hooks",
+                      "sv/plugins/sdk-provider-plugins/voice-and-audio",
+                      "sv/plugins/sdk-provider-plugins/media-and-search"
+                    ]
+                  },
+                  "sv/plugins/cli-backend-plugins",
+                  "sv/plugins/hooks",
+                  {
+                    "group": "Pluginhändelser",
+                    "pages": [
+                      "sv/plugins/hooks/reference",
+                      "sv/plugins/hooks/tool-policy",
+                      "sv/plugins/hooks/prompt-and-session",
+                      "sv/plugins/hooks/messages",
+                      "sv/plugins/hooks/lifecycle"
+                    ]
+                  },
+                  "sv/plugins/plugin-permission-requests",
+                  "sv/plugins/adding-capabilities"
+                ]
+              },
+              {
+                "group": "Skills",
+                "pages": [
+                  "sv/tools/skills",
+                  "sv/tools/custodian-skills",
+                  "sv/tools/skill-workshop",
+                  "sv/tools/skill-workshop/personal-library",
+                  "sv/tools/self-learning",
+                  "sv/tools/creating-skills",
+                  "sv/tools/skills-config",
+                  "sv/tools/slash-commands"
+                ]
+              },
+              {
+                "group": "Automatisering",
+                "pages": [
+                  "sv/automation/index",
+                  "sv/gateway/heartbeat",
+                  "sv/automation/cron-jobs",
+                  {
+                    "group": "Automatiseringar",
+                    "pages": [
+                      "sv/automation/cron-jobs/how-it-works",
+                      "sv/automation/cron-jobs/schedules",
+                      "sv/automation/cron-jobs/payloads",
+                      "sv/automation/cron-jobs/delivery",
+                      "sv/automation/cron-jobs/managing-jobs",
+                      "sv/automation/cron-jobs/webhooks",
+                      "sv/automation/cron-jobs/gmail",
+                      "sv/automation/cron-jobs/troubleshooting"
+                    ]
+                  },
+                  "sv/automation/imap",
+                  "sv/automation/standing-orders",
+                  "sv/automation/hooks",
+                  {
+                    "group": "Händelsekrokar",
+                    "pages": [
+                      "sv/automation/hooks/writing-hooks",
+                      "sv/automation/hooks/configuration",
+                      "sv/automation/hooks/bundled-hooks",
+                      "sv/automation/hooks/event-types",
+                      "sv/automation/hooks/troubleshooting"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Verktyg",
+                "pages": [
+                  {
+                    "group": "Kodkörning och godkännanden",
+                    "pages": [
+                      "sv/tools/apply-patch",
+                      "sv/tools/code-execution",
+                      "sv/tools/diffs",
+                      "sv/tools/elevated",
+                      "sv/tools/exec",
+                      "sv/tools/exec-approvals",
+                      "sv/tools/exec-approvals-advanced",
+                      "sv/tools/permission-modes",
+                      "sv/tools/secrets"
+                    ]
+                  },
+                  {
+                    "group": "Medier och dokument",
+                    "pages": [
+                      "sv/tools/media-overview",
+                      "sv/tools/image-generation",
+                      "sv/tools/music-generation",
+                      "sv/tools/pdf",
+                      "sv/tools/tts",
+                      {
+                        "group": "Text till tal",
+                        "pages": [
+                          "sv/tools/tts/quickstart",
+                          "sv/tools/tts/configuration",
+                          "sv/tools/tts/personas",
+                          "sv/tools/tts/commands",
+                          "sv/tools/tts/output",
+                          "sv/tools/tts/field-reference",
+                          "sv/tools/tts/api"
+                        ]
+                      },
+                      "sv/tools/video-generation"
+                    ]
+                  },
+                  {
+                    "group": "Verktygskataloger och arbetsflöden",
+                    "pages": [
+                      "sv/tools/code-mode",
+                      {
+                        "group": "Code Mode",
+                        "pages": [
+                          "sv/tools/code-mode/quickstart",
+                          "sv/tools/code-mode/executors",
+                          "sv/tools/code-mode/configuration",
+                          "sv/tools/code-mode/tool-surface",
+                          "sv/tools/code-mode/guest-api",
+                          "sv/tools/code-mode/output",
+                          "sv/tools/code-mode/internals",
+                          "sv/tools/code-mode/troubleshooting",
+                          "sv/tools/code-mode/maintainers"
+                        ]
+                      },
+                      "sv/tools/llm-task",
+                      "sv/tools/lobster",
+                      "sv/tools/mcp",
+                      "sv/tools/tool-search"
+                    ]
+                  },
+                  {
+                    "group": "Kontext och resonemang",
+                    "pages": [
+                      "sv/tools/loop-detection",
+                      "sv/tools/thinking",
+                      "sv/tools/tokenjuice",
+                      "sv/tools/trajectory"
+                    ]
+                  },
+                  {
+                    "group": "Chatt- och gränssnittsverktyg",
+                    "pages": [
+                      "sv/tools/ask-user",
+                      "sv/tools/btw",
+                      "sv/tools/progress-card",
+                      "sv/tools/reactions",
+                      "sv/tools/screen",
+                      "sv/tools/show-widget",
+                      "sv/tools/theme"
+                    ]
+                  },
+                  {
+                    "group": "Surfa och hämta sidor",
+                    "pages": [
+                      "sv/tools/browser",
+                      {
+                        "group": "Webbläsare",
+                        "pages": [
+                          "sv/tools/browser/setup",
+                          "sv/tools/browser/profiles",
+                          "sv/tools/browser/existing-session",
+                          "sv/tools/browser/configuration",
+                          "sv/tools/browser/remote",
+                          "sv/tools/browser/lightweight",
+                          "sv/tools/browser/security",
+                          "sv/tools/browser/isolation",
+                          "sv/tools/browser/agent-tools",
+                          "sv/tools/browser/troubleshooting"
+                        ]
+                      },
+                      "sv/tools/browser-control",
+                      "sv/tools/browser-linux-troubleshooting",
+                      "sv/tools/browser-login",
+                      "sv/tools/browser-wsl2-windows-remote-cdp-troubleshooting",
+                      "sv/tools/chrome-extension",
+                      "sv/tools/firecrawl",
+                      "sv/tools/web-fetch"
+                    ]
+                  },
+                  {
+                    "group": "Webbsökning",
+                    "pages": [
+                      "sv/tools/web",
+                      "sv/tools/brave-search",
+                      "sv/tools/duckduckgo-search",
+                      "sv/tools/exa-search",
+                      "sv/tools/gemini-search",
+                      "sv/tools/grok-search",
+                      "sv/tools/kimi-search",
+                      "sv/tools/minimax-search",
+                      "sv/tools/ollama-search",
+                      "sv/tools/parallel-search",
+                      "sv/tools/perplexity-search",
+                      "sv/tools/searxng-search",
+                      "sv/tools/tavily"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Agentsamordning",
+                "pages": [
+                  "sv/tools/agent-send",
+                  "sv/tools/goal",
+                  "sv/tools/steer",
+                  "sv/tools/subagents",
+                  {
+                    "group": "Underagenter",
+                    "pages": [
+                      "sv/tools/subagents/slash-command",
+                      "sv/tools/subagents/tool-reference",
+                      "sv/tools/subagents/thread-bound-sessions",
+                      "sv/tools/subagents/nesting",
+                      "sv/tools/subagents/announce",
+                      "sv/tools/subagents/tool-policy",
+                      "sv/tools/subagents/operations"
+                    ]
+                  },
+                  "sv/tools/swarm",
+                  "sv/tools/acp-agents",
+                  {
+                    "group": "ACP-agenter",
+                    "pages": [
+                      "sv/tools/acp-agents/quickstart",
+                      "sv/tools/acp-agents/runbook",
+                      "sv/tools/acp-agents/bindings",
+                      "sv/tools/acp-agents/sessions",
+                      "sv/tools/acp-agents/delivery",
+                      "sv/tools/acp-agents/controls",
+                      "sv/tools/acp-agents/troubleshooting"
+                    ]
+                  },
+                  "sv/tools/acp-agents-setup",
+                  "sv/tools/multi-agent-sandbox-tools"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Modeller",
+            "groups": [
+              {
+                "group": "Översikt",
+                "pages": [
+                  "sv/providers/index",
+                  "sv/providers/models"
+                ]
+              },
+              {
+                "group": "Begrepp och konfiguration",
+                "pages": [
+                  "sv/concepts/models",
+                  "sv/concepts/recommended-models",
+                  "sv/concepts/decision-models",
+                  "sv/concepts/model-providers",
+                  {
+                    "group": "Modellleverantörer",
+                    "pages": [
+                      "sv/concepts/model-providers/quick-rules",
+                      "sv/concepts/model-providers/control-ui-and-keys",
+                      "sv/concepts/model-providers/official-provider-plugins",
+                      "sv/concepts/model-providers/custom-providers"
+                    ]
+                  },
+                  "sv/concepts/model-failover"
+                ]
+              },
+              {
+                "group": "Leverantörer",
+                "pages": [
+                  {
+                    "group": "Chatt- och kodmodeller",
+                    "pages": [
+                      "sv/providers/alibaba",
+                      "sv/providers/anthropic",
+                      "sv/plugins/reference/anthropic-vertex",
+                      "sv/providers/arcee",
+                      "sv/providers/baseten",
+                      "sv/providers/bedrock",
+                      "sv/providers/bedrock-mantle",
+                      "sv/providers/cerebras",
+                      "sv/providers/chutes",
+                      "sv/providers/cohere",
+                      "sv/providers/deepinfra",
+                      "sv/providers/deepseek",
+                      "sv/providers/featherless",
+                      "sv/providers/fireworks",
+                      "sv/providers/github-copilot",
+                      "sv/providers/gmi",
+                      "sv/providers/google",
+                      "sv/providers/groq",
+                      "sv/providers/huggingface",
+                      "sv/providers/longcat",
+                      "sv/providers/meta",
+                      "sv/providers/minimax",
+                      "sv/providers/mistral",
+                      "sv/providers/moonshot",
+                      "sv/providers/novita",
+                      "sv/providers/nvidia",
+                      "sv/providers/ollama-cloud",
+                      "sv/providers/openai",
+                      {
+                        "group": "OpenAI",
+                        "pages": [
+                          "sv/providers/openai/setup",
+                          "sv/providers/openai/authentication",
+                          "sv/providers/openai/models",
+                          "sv/providers/openai/runtimes",
+                          "sv/providers/openai/coverage-and-cost",
+                          "sv/providers/openai/image-and-video",
+                          "sv/providers/openai/voice-and-speech",
+                          "sv/providers/openai/azure",
+                          "sv/providers/openai/advanced"
+                        ]
+                      },
+                      "sv/providers/opencode",
+                      "sv/providers/opencode-go",
+                      "sv/providers/perplexity-provider",
+                      "sv/providers/qianfan",
+                      "sv/providers/qwen",
+                      "sv/providers/radius",
+                      "sv/providers/stepfun",
+                      "sv/providers/synthetic",
+                      "sv/providers/telnyx",
+                      "sv/providers/tencent",
+                      "sv/providers/together",
+                      "sv/providers/venice",
+                      "sv/providers/volcengine",
+                      "sv/providers/xai",
+                      "sv/providers/xiaomi",
+                      "sv/providers/zai"
+                    ]
+                  },
+                  {
+                    "group": "Tal och ljud",
+                    "pages": [
+                      "sv/providers/azure-speech",
+                      "sv/providers/deepgram",
+                      "sv/providers/elevenlabs",
+                      "sv/providers/fish-audio",
+                      "sv/providers/gradium",
+                      "sv/providers/inworld",
+                      "sv/providers/senseaudio"
+                    ]
+                  },
+                  {
+                    "group": "Bild, video och musik",
+                    "pages": [
+                      "sv/providers/comfy",
+                      "sv/providers/fal",
+                      "sv/providers/kie",
+                      "sv/providers/pixverse",
+                      "sv/providers/runway",
+                      "sv/providers/vydra"
+                    ]
+                  },
+                  {
+                    "group": "Gateways och routrar",
+                    "pages": [
+                      "sv/providers/claude-max-api-proxy",
+                      "sv/providers/clawrouter",
+                      "sv/providers/cloudflare-ai-gateway",
+                      "sv/providers/kilocode",
+                      "sv/providers/litellm",
+                      "sv/providers/neon",
+                      "sv/providers/openrouter",
+                      "sv/providers/vercel-ai-gateway"
+                    ]
+                  },
+                  {
+                    "group": "Lokala körmiljöer",
+                    "pages": [
+                      "sv/providers/ds4",
+                      "sv/providers/llmman",
+                      "sv/providers/lmstudio",
+                      "sv/providers/ollama",
+                      {
+                        "group": "Ollama",
+                        "pages": [
+                          "sv/providers/ollama/setup",
+                          "sv/providers/ollama/model-discovery",
+                          "sv/providers/ollama/node-local-inference",
+                          "sv/providers/ollama/vision",
+                          "sv/providers/ollama/configuration",
+                          "sv/providers/ollama/recipes",
+                          "sv/providers/ollama/web-search",
+                          "sv/providers/ollama/advanced",
+                          "sv/providers/ollama/troubleshooting"
+                        ]
+                      },
+                      "sv/providers/sglang",
+                      "sv/providers/vllm"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Plattformar",
+            "groups": [
+              {
+                "group": "Plattformsöversikt",
+                "pages": [
+                  "sv/platforms/index",
+                  "sv/platforms/macos",
+                  "sv/platforms/linux",
+                  "sv/platforms/omarchy",
+                  "sv/platforms/windows",
+                  "sv/platforms/android",
+                  "sv/platforms/chromeos",
+                  "sv/platforms/ios",
+                  "sv/platforms/ios-healthkit",
+                  "sv/platforms/easyrunner"
+                ]
+              },
+              {
+                "group": "macOS-kompanjonapp",
+                "pages": [
+                  {
+                    "group": "Konfiguration",
+                    "pages": [
+                      "sv/platforms/mac/dev-setup",
+                      "sv/platforms/mac/menu-bar",
+                      "sv/platforms/mac/icon",
+                      "sv/platforms/mac/permissions",
+                      "sv/platforms/mac/signing",
+                      "sv/platforms/mac/remote",
+                      "sv/reference/device-models"
+                    ]
+                  },
+                  {
+                    "group": "Körmiljö",
+                    "pages": [
+                      "sv/platforms/mac/bundled-gateway",
+                      "sv/platforms/mac/health",
+                      "sv/platforms/mac/logging",
+                      "sv/platforms/mac/xpc"
+                    ]
+                  },
+                  {
+                    "group": "Funktioner",
+                    "pages": [
+                      "sv/platforms/mac/voicewake",
+                      "sv/platforms/mac/voice-overlay",
+                      "sv/platforms/mac/webchat",
+                      "sv/platforms/mac/canvas",
+                      "sv/platforms/mac/skills",
+                      "sv/platforms/mac/peekaboo"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Gateway och drift",
+            "groups": [
+              {
+                "group": "Gateway",
+                "pages": [
+                  "sv/gateway/index",
+                  {
+                    "group": "Konfiguration",
+                    "pages": [
+                      "sv/gateway/configuration",
+                      {
+                        "group": "Konfiguration",
+                        "pages": [
+                          "sv/gateway/configuration/common-tasks",
+                          "sv/gateway/configuration/hot-reload",
+                          "sv/gateway/configuration/config-rpc",
+                          "sv/gateway/configuration/environment-variables"
+                        ]
+                      },
+                      "sv/gateway/configuration-reference",
+                      "sv/gateway/config-agents",
+                      {
+                        "group": "Agenter",
+                        "pages": [
+                          "sv/gateway/config-agents/workspace-and-bootstrap",
+                          "sv/gateway/config-agents/models",
+                          "sv/gateway/config-agents/runtime-and-cli-backends",
+                          "sv/gateway/config-agents/heartbeat-compaction-and-streaming",
+                          "sv/gateway/config-agents/sandbox",
+                          "sv/gateway/config-agents/entries-and-multi-agent",
+                          "sv/gateway/config-agents/sessions",
+                          "sv/gateway/config-agents/messages-and-talk"
+                        ]
+                      },
+                      "sv/gateway/config-automation",
+                      "sv/gateway/config-browser-ui-desktop",
+                      "sv/gateway/config-channels",
+                      {
+                        "group": "Kanaler",
+                        "pages": [
+                          "sv/gateway/config-channels/shared-policies",
+                          "sv/gateway/config-channels/personal-messaging",
+                          "sv/gateway/config-channels/workplace-chat",
+                          "sv/gateway/config-channels/community-chat",
+                          "sv/gateway/config-channels/mention-gating-and-history",
+                          "sv/gateway/config-channels/commands"
+                        ]
+                      },
+                      "sv/gateway/config-cloud-workers",
+                      "sv/gateway/config-extensions",
+                      "sv/gateway/config-gateway",
+                      "sv/gateway/config-hooks",
+                      "sv/gateway/config-observability",
+                      "sv/gateway/config-runtime",
+                      "sv/gateway/config-secrets-env",
+                      "sv/gateway/config-tools",
+                      {
+                        "group": "Verktyg",
+                        "pages": [
+                          "sv/gateway/config-tools/tool-policy",
+                          "sv/gateway/config-tools/github-identity",
+                          "sv/gateway/config-tools/built-in-tools",
+                          "sv/gateway/config-tools/sessions-and-subagents",
+                          "sv/gateway/config-tools/custom-providers",
+                          "sv/gateway/config-tools/provider-examples"
+                        ]
+                      },
+                      "sv/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Autentisering och hemligheter",
+                    "pages": [
+                      "sv/gateway/authentication",
+                      "sv/auth-credential-semantics",
+                      "sv/gateway/secrets",
+                      {
+                        "group": "Hantering av hemligheter",
+                        "pages": [
+                          "sv/gateway/secrets/runtime-model",
+                          "sv/gateway/secrets/secretref-contract",
+                          "sv/gateway/secrets/secret-store-and-egress",
+                          "sv/gateway/secrets/integration-examples",
+                          "sv/gateway/secrets/operations"
+                        ]
+                      },
+                      "sv/gateway/1password",
+                      "sv/gateway/secrets-plan-contract",
+                      "sv/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Hälsa och diagnostik",
+                    "pages": [
+                      "sv/gateway/health",
+                      "sv/gateway/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "sv/gateway/doctor/running",
+                          "sv/gateway/doctor/checks",
+                          "sv/gateway/doctor/config-migrations",
+                          "sv/gateway/doctor/provider-repairs",
+                          "sv/gateway/doctor/state-and-sessions",
+                          "sv/gateway/doctor/gateway-and-services",
+                          "sv/gateway/doctor/workspace-and-dreams"
+                        ]
+                      },
+                      "sv/gateway/audit",
+                      "sv/gateway/telemetry",
+                      "sv/logging",
+                      "sv/gateway/opentelemetry",
+                      {
+                        "group": "OpenTelemetry",
+                        "pages": [
+                          "sv/gateway/opentelemetry/setup",
+                          "sv/gateway/opentelemetry/configuration",
+                          "sv/gateway/opentelemetry/privacy-and-trace-context",
+                          "sv/gateway/opentelemetry/model-calls-and-metrics",
+                          "sv/gateway/opentelemetry/spans-and-events"
+                        ]
+                      },
+                      "sv/gateway/prometheus",
+                      "sv/gateway/logging",
+                      "sv/gateway/diagnostics",
+                      "sv/gateway/troubleshooting",
+                      {
+                        "group": "Felsökning",
+                        "pages": [
+                          "sv/gateway/troubleshooting/updates-and-rollbacks",
+                          "sv/gateway/troubleshooting/skills-and-model-providers",
+                          "sv/gateway/troubleshooting/agent-replies-and-control-ui",
+                          "sv/gateway/troubleshooting/gateway-service-and-process",
+                          "sv/gateway/troubleshooting/config-validation-and-probes",
+                          "sv/gateway/troubleshooting/channel-delivery-and-tools"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Skalning och drift",
+                    "pages": [
+                      "sv/gateway/gateway-lock",
+                      "sv/gateway/background-process",
+                      "sv/gateway/restart-recovery",
+                      "sv/gateway/cloud-sessions",
+                      "sv/gateway/cloud-workers",
+                      {
+                        "group": "Cloud Workers",
+                        "pages": [
+                          "sv/gateway/cloud-workers/warm-images",
+                          "sv/gateway/cloud-workers/environment-file",
+                          "sv/gateway/cloud-workers/per-project-default-profiles",
+                          "sv/gateway/cloud-workers/setup-and-bundle-installation",
+                          "sv/gateway/cloud-workers/verify-the-profile",
+                          "sv/gateway/cloud-workers/dispatching-a-session",
+                          "sv/gateway/cloud-workers/placement-and-machine-selection",
+                          "sv/gateway/cloud-workers/session-lifecycle",
+                          "sv/gateway/cloud-workers/desktop",
+                          "sv/gateway/cloud-workers/security-model",
+                          "sv/gateway/cloud-workers/native-inference",
+                          "sv/gateway/cloud-workers/troubleshooting"
+                        ]
+                      },
+                      "sv/gateway/multiple-gateways"
+                    ]
+                  },
+                  {
+                    "group": "Säkerhet och sandlådor",
+                    "pages": [
+                      "sv/gateway/security/index",
+                      "sv/gateway/security/trust-model",
+                      "sv/gateway/security/running-the-audit",
+                      "sv/gateway/security/audit-checks",
+                      "sv/gateway/security/hardened-baseline",
+                      "sv/gateway/security/access-control",
+                      "sv/gateway/security/prompt-injection",
+                      "sv/gateway/security/tool-permissions",
+                      "sv/gateway/security/browser-control",
+                      "sv/gateway/security/network-exposure",
+                      "sv/gateway/security/secrets-and-storage",
+                      "sv/gateway/security/exposure-runbook",
+                      "sv/gateway/security/rate-limiting",
+                      "sv/gateway/security/operator-incident-response",
+                      "sv/gateway/security/secure-file-operations",
+                      "sv/gateway/operator-scopes",
+                      "sv/gateway/sandboxing",
+                      {
+                        "group": "Sandlådor",
+                        "pages": [
+                          "sv/gateway/sandboxing/what-gets-sandboxed",
+                          "sv/gateway/sandboxing/modes-scope-and-backend",
+                          "sv/gateway/sandboxing/supported-capability-matrix",
+                          "sv/gateway/sandboxing/docker-backend",
+                          "sv/gateway/sandboxing/podman-backend",
+                          "sv/gateway/sandboxing/ssh-backend",
+                          "sv/gateway/sandboxing/openshell-backend",
+                          "sv/gateway/sandboxing/crabbox-backend",
+                          "sv/gateway/sandboxing/workspace-access",
+                          "sv/gateway/sandboxing/multiple-folders-for-one-agent",
+                          "sv/gateway/sandboxing/images-and-setup",
+                          "sv/gateway/sandboxing/setup-command"
+                        ]
+                      },
+                      "sv/gateway/openshell",
+                      "sv/gateway/sandbox-vs-tool-policy-vs-elevated",
+                      "sv/gateway/permission-modes"
+                    ]
+                  },
+                  {
+                    "group": "Protokoll och API:er",
+                    "pages": [
+                      "sv/gateway/clients",
+                      "sv/gateway/external-apps",
+                      "sv/gateway/protocol",
+                      {
+                        "group": "Gateway-protokoll",
+                        "pages": [
+                          "sv/gateway/protocol/transport",
+                          "sv/gateway/protocol/handshake",
+                          "sv/gateway/protocol/presence",
+                          "sv/gateway/protocol/rpc-methods",
+                          "sv/gateway/protocol/rpc-system-and-channels",
+                          "sv/gateway/protocol/rpc-talk-config-and-agents",
+                          "sv/gateway/protocol/rpc-session-control",
+                          "sv/gateway/protocol/rpc-devices-nodes-and-approvals",
+                          "sv/gateway/protocol/rpc-bootstrap-and-events",
+                          "sv/gateway/protocol/ledgers",
+                          "sv/gateway/protocol/operator-methods",
+                          "sv/gateway/protocol/versioning",
+                          "sv/gateway/protocol/auth"
+                        ]
+                      },
+                      "sv/gateway/embedding",
+                      "sv/gateway/openai-http-api",
+                      "sv/gateway/openresponses-http-api",
+                      "sv/gateway/tools-invoke-http-api"
+                    ]
+                  },
+                  {
+                    "group": "Modeller och lokala leverantörer",
+                    "pages": [
+                      "sv/gateway/cli-backends",
+                      "sv/gateway/local-models",
+                      "sv/gateway/local-model-services"
+                    ]
+                  },
+                  {
+                    "group": "Nätverk och identifiering",
+                    "pages": [
+                      "sv/network",
+                      "sv/gateway/pairing",
+                      "sv/gateway/discovery",
+                      "sv/gateway/bonjour"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Fjärråtkomst",
+                "pages": [
+                  "sv/gateway/remote",
+                  "sv/gateway/stable-https-url",
+                  "sv/gateway/tailscale",
+                  "sv/gateway/cloudflare-access",
+                  "sv/gateway/team-server"
+                ]
+              },
+              {
+                "group": "Säkerhet",
+                "pages": [
+                  "sv/security/network-proxy",
+                  "sv/security/formal-verification",
+                  "sv/security/incident-response",
+                  "sv/security/THREAT-MODEL-ATLAS",
+                  "sv/security/THREAT-MODEL-ATLAS/reconnaissance",
+                  "sv/security/THREAT-MODEL-ATLAS/initial-access",
+                  "sv/security/THREAT-MODEL-ATLAS/execution",
+                  "sv/security/THREAT-MODEL-ATLAS/persistence",
+                  "sv/security/THREAT-MODEL-ATLAS/defense-evasion",
+                  "sv/security/THREAT-MODEL-ATLAS/discovery",
+                  "sv/security/THREAT-MODEL-ATLAS/collection-and-exfiltration",
+                  "sv/security/THREAT-MODEL-ATLAS/impact",
+                  "sv/security/CONTRIBUTING-THREAT-MODEL"
+                ]
+              },
+              {
+                "group": "Noder och medier",
+                "pages": [
+                  "sv/nodes/index",
+                  "sv/nodes/pairing-and-status",
+                  "sv/nodes/node-host",
+                  "sv/nodes/node-exec",
+                  "sv/nodes/mcp-and-skills",
+                  "sv/nodes/session-hosting",
+                  "sv/nodes/session-catalogs",
+                  "sv/nodes/file-transfers",
+                  "sv/nodes/command-policy",
+                  "sv/nodes/device-commands",
+                  "sv/nodes/presence",
+                  "sv/nodes/troubleshooting",
+                  {
+                    "group": "Mediefunktioner",
+                    "pages": [
+                      "sv/nodes/media-understanding",
+                      "sv/nodes/media-playback",
+                      "sv/nodes/images",
+                      "sv/nodes/audio",
+                      "sv/nodes/camera"
+                    ]
+                  },
+                  {
+                    "group": "Nodfunktioner",
+                    "pages": [
+                      "sv/nodes/computer-use",
+                      "sv/nodes/talk",
+                      {
+                        "group": "Samtalsläge",
+                        "pages": [
+                          "sv/nodes/talk/realtime-sessions",
+                          "sv/nodes/talk/session-ownership",
+                          "sv/nodes/talk/macos-relay",
+                          "sv/nodes/talk/client-ui"
+                        ]
+                      },
+                      "sv/nodes/voicewake",
+                      "sv/nodes/location-command"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Webbgränssnitt",
+                "pages": [
+                  "sv/web/index",
+                  "sv/web/control-ui",
+                  {
+                    "group": "Kontrollgränssnitt",
+                    "pages": [
+                      "sv/web/control-ui/connect-and-pair",
+                      "sv/web/control-ui/sessions-and-sidebar",
+                      "sv/web/control-ui/chat",
+                      "sv/web/control-ui/panels",
+                      "sv/web/control-ui/settings",
+                      "sv/web/control-ui/feature-reference",
+                      "sv/web/control-ui/offline-and-reconnect",
+                      "sv/web/control-ui/security-model",
+                      "sv/web/control-ui/development"
+                    ]
+                  },
+                  "sv/gateway/portals",
+                  "sv/web/notifications",
+                  "sv/web/dashboard",
+                  "sv/web/dashboards",
+                  "sv/web/dashboard-architecture",
+                  "sv/web/urls",
+                  "sv/web/webchat",
+                  "sv/web/tui",
+                  "sv/web/lobster"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Referens",
+            "groups": [
+              {
+                "group": "CLI-kommandon",
+                "pages": [
+                  "sv/cli/index",
+                  {
+                    "group": "Köra tjänsten",
+                    "pages": [
+                      "sv/cli/daemon",
+                      "sv/cli/gateway",
+                      {
+                        "group": "Gateway",
+                        "pages": [
+                          "sv/cli/gateway/running",
+                          "sv/cli/gateway/restart-and-supervision",
+                          "sv/cli/gateway/query",
+                          "sv/cli/gateway/service",
+                          "sv/cli/gateway/discovery"
+                        ]
+                      },
+                      "sv/cli/health",
+                      "sv/cli/logs",
+                      "sv/cli/status"
+                    ]
+                  },
+                  {
+                    "group": "Konfiguration och underhåll",
+                    "pages": [
+                      "sv/cli/backup",
+                      "sv/cli/migrate",
+                      "sv/cli/onboard",
+                      "sv/cli/openclaw",
+                      "sv/cli/reset",
+                      "sv/cli/setup",
+                      "sv/cli/storage",
+                      "sv/cli/uninstall",
+                      "sv/cli/update",
+                      {
+                        "group": "Uppdatering",
+                        "pages": [
+                          "sv/cli/update/status-and-history",
+                          "sv/cli/update/repair-and-recovery",
+                          "sv/cli/update/how-updates-run"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Diagnostik och säkerhet",
+                    "pages": [
+                      "sv/cli/doctor",
+                      {
+                        "group": "Doctor",
+                        "pages": [
+                          "sv/cli/doctor/running",
+                          "sv/cli/doctor/recovery",
+                          "sv/cli/doctor/lint",
+                          "sv/cli/doctor/health-contract",
+                          "sv/cli/doctor/state-migrations",
+                          "sv/cli/doctor/sqlite-maintenance",
+                          "sv/cli/doctor/checks"
+                        ]
+                      },
+                      "sv/cli/secrets",
+                      "sv/cli/security",
+                      "sv/cli/triage"
+                    ]
+                  },
+                  {
+                    "group": "Agenter, modeller och sessioner",
+                    "pages": [
+                      "sv/cli/agent",
+                      "sv/cli/agents",
+                      "sv/cli/claws",
+                      "sv/cli/infer",
+                      "sv/cli/memory",
+                      "sv/cli/models",
+                      "sv/cli/promos",
+                      "sv/cli/sessions",
+                      "sv/cli/transcripts",
+                      "sv/cli/wiki"
+                    ]
+                  },
+                  {
+                    "group": "Händelser och granskningsposter",
+                    "pages": [
+                      "sv/cli/audit",
+                      "sv/cli/hooks",
+                      "sv/cli/message",
+                      "sv/cli/system"
+                    ]
+                  },
+                  {
+                    "group": "Kanaler och meddelanden",
+                    "pages": [
+                      "sv/cli/channels",
+                      "sv/cli/directory",
+                      "sv/cli/pairing",
+                      "sv/cli/qr",
+                      "sv/cli/users",
+                      "sv/cli/voicecall"
+                    ]
+                  },
+                  {
+                    "group": "Verktyg och körning",
+                    "pages": [
+                      "sv/cli/approvals",
+                      "sv/cli/browser",
+                      "sv/cli/cron",
+                      "sv/cli/connect",
+                      "sv/cli/devices",
+                      "sv/cli/node",
+                      "sv/cli/nodes",
+                      "sv/cli/sandbox",
+                      "sv/cli/worker"
+                    ]
+                  },
+                  {
+                    "group": "Konfiguration",
+                    "pages": [
+                      "sv/cli/config",
+                      "sv/cli/configure",
+                      "sv/cli/webhooks"
+                    ]
+                  },
+                  {
+                    "group": "Pluginer och Skills",
+                    "pages": [
+                      "sv/cli/plugins",
+                      {
+                        "group": "CLI för pluginer",
+                        "pages": [
+                          "sv/cli/plugins/authoring",
+                          "sv/cli/plugins/install",
+                          "sv/cli/plugins/list",
+                          "sv/cli/plugins/uninstall-and-update",
+                          "sv/cli/plugins/inspect-and-diagnose",
+                          "sv/cli/plugins/marketplace"
+                        ]
+                      },
+                      "sv/cli/file-transfer",
+                      "sv/cli/path",
+                      "sv/cli/policy",
+                      {
+                        "group": "Policy",
+                        "pages": [
+                          "sv/cli/policy/authoring",
+                          "sv/cli/policy/rules",
+                          "sv/cli/policy/scopes",
+                          "sv/cli/policy/running-checks",
+                          "sv/cli/policy/attestation",
+                          "sv/cli/policy/findings"
+                        ]
+                      },
+                      "sv/cli/skills",
+                      "sv/cli/workboard"
+                    ]
+                  },
+                  {
+                    "group": "Gränssnitt",
+                    "pages": [
+                      "sv/cli/attach",
+                      "sv/cli/dashboard",
+                      "sv/cli/resume",
+                      "sv/cli/tui"
+                    ]
+                  },
+                  {
+                    "group": "Hjälpverktyg",
+                    "pages": [
+                      "sv/cli/acp",
+                      "sv/cli/clawbot",
+                      "sv/cli/completion",
+                      "sv/cli/dns",
+                      "sv/cli/docs",
+                      "sv/cli/mcp",
+                      {
+                        "group": "MCP",
+                        "pages": [
+                          "sv/cli/mcp/serve",
+                          "sv/cli/mcp/registry",
+                          "sv/cli/mcp/json-output",
+                          "sv/cli/mcp/transports",
+                          "sv/cli/mcp/control-ui",
+                          "sv/cli/mcp/apps"
+                        ]
+                      },
+                      "sv/cli/proxy"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "RPC och API",
+                "pages": [
+                  "sv/reference/rpc"
+                ]
+              },
+              {
+                "group": "Referens för Codex körmiljö",
+                "pages": [
+                  "sv/plugins/codex-harness-reference",
+                  {
+                    "group": "Referens för Codex harness",
+                    "pages": [
+                      "sv/plugins/codex-harness-reference/supervision",
+                      "sv/plugins/codex-harness-reference/app-server-transport",
+                      "sv/plugins/codex-harness-reference/approval-and-sandbox",
+                      "sv/plugins/codex-harness-reference/auth",
+                      "sv/plugins/codex-harness-reference/dynamic-tools",
+                      "sv/plugins/codex-harness-reference/timeouts",
+                      "sv/plugins/codex-harness-reference/model-discovery",
+                      "sv/plugins/codex-harness-reference/restricted-turns",
+                      "sv/plugins/codex-harness-reference/workspace-bootstrap-files"
+                    ]
+                  },
+                  "sv/plugins/codex-harness-runtime",
+                  {
+                    "group": "Körmiljö för Codex harness",
+                    "pages": [
+                      "sv/plugins/codex-harness-runtime/recovery",
+                      "sv/plugins/codex-harness-runtime/threads",
+                      "sv/plugins/codex-harness-runtime/replies",
+                      "sv/plugins/codex-harness-runtime/hooks",
+                      "sv/plugins/codex-harness-runtime/sandbox-streaming",
+                      "sv/plugins/codex-harness-runtime/v1-support-contract",
+                      "sv/plugins/codex-harness-runtime/permissions",
+                      "sv/plugins/codex-harness-runtime/queue-and-feedback",
+                      "sv/plugins/codex-harness-runtime/compaction"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Pluginreferens",
+                "pages": [
+                  "sv/plugins/plugin-inventory",
+                  "sv/plugins/reference",
+                  "sv/plugins/dependency-resolution"
+                ]
+              },
+              {
+                "group": "Referens för Plugin SDK",
+                "pages": [
+                  "sv/plugins/sdk-overview",
+                  {
+                    "group": "Översikt över Plugin SDK",
+                    "pages": [
+                      "sv/plugins/sdk-overview/imports",
+                      "sv/plugins/sdk-overview/capabilities",
+                      "sv/plugins/sdk-overview/tools-and-commands",
+                      "sv/plugins/sdk-overview/infrastructure",
+                      "sv/plugins/sdk-overview/host-hooks",
+                      "sv/plugins/sdk-overview/cli-and-discovery",
+                      "sv/plugins/sdk-overview/memory-and-context",
+                      "sv/plugins/sdk-overview/events-and-hooks"
+                    ]
+                  },
+                  "sv/plugins/manifest",
+                  {
+                    "group": "Pluginmanifest",
+                    "pages": [
+                      "sv/plugins/manifest/models",
+                      "sv/plugins/manifest/providers",
+                      "sv/plugins/manifest/setup-and-auth",
+                      "sv/plugins/manifest/capabilities",
+                      "sv/plugins/manifest/surfaces",
+                      "sv/plugins/manifest/config-and-secrets",
+                      "sv/plugins/manifest/package-json"
+                    ]
+                  },
+                  "sv/plugins/sdk-subpaths",
+                  "sv/plugins/sdk-gateway-ingress",
+                  "sv/plugins/sdk-entrypoints",
+                  {
+                    "group": "Pluginernas startpunkter",
+                    "pages": [
+                      "sv/plugins/sdk-entrypoints/tool-policy-and-sandbox",
+                      "sv/plugins/sdk-entrypoints/package-entries",
+                      "sv/plugins/sdk-entrypoints/define-tool-plugin",
+                      "sv/plugins/sdk-entrypoints/define-plugin-entry",
+                      "sv/plugins/sdk-entrypoints/native-providers",
+                      "sv/plugins/sdk-entrypoints/define-channel-plugin-entry",
+                      "sv/plugins/sdk-entrypoints/define-setup-plugin-entry",
+                      "sv/plugins/sdk-entrypoints/registration-mode"
+                    ]
+                  },
+                  "sv/plugins/sdk-runtime",
+                  {
+                    "group": "Hjälpfunktioner för pluginernas körmiljö",
+                    "pages": [
+                      "sv/plugins/sdk-runtime/config-and-utilities",
+                      "sv/plugins/sdk-runtime/agent",
+                      "sv/plugins/sdk-runtime/models",
+                      "sv/plugins/sdk-runtime/background-work",
+                      "sv/plugins/sdk-runtime/gateway-and-nodes",
+                      "sv/plugins/sdk-runtime/media",
+                      "sv/plugins/sdk-runtime/state-and-system",
+                      "sv/plugins/sdk-runtime/channel"
+                    ]
+                  },
+                  "sv/plugins/sdk-agent-harness",
+                  {
+                    "group": "Pluginer för agentharness",
+                    "pages": [
+                      "sv/plugins/sdk-agent-harness/core-ownership",
+                      "sv/plugins/sdk-agent-harness/registration",
+                      "sv/plugins/sdk-agent-harness/selection-policy",
+                      "sv/plugins/sdk-agent-harness/attempt-runtime",
+                      "sv/plugins/sdk-agent-harness/user-input-and-execution",
+                      "sv/plugins/sdk-agent-harness/native-inventories",
+                      "sv/plugins/sdk-agent-harness/runtime-config",
+                      "sv/plugins/sdk-agent-harness/sessions-and-results"
+                    ]
+                  },
+                  "sv/plugins/sdk-setup",
+                  "sv/plugins/sdk-testing"
+                ]
+              },
+              {
+                "group": "Pluginernas interna struktur",
+                "pages": [
+                  "sv/plugins/architecture",
+                  "sv/plugins/architecture-internals",
+                  {
+                    "group": "Pluginarkitekturens interna struktur",
+                    "pages": [
+                      "sv/plugins/architecture-internals/load-pipeline",
+                      "sv/plugins/architecture-internals/provider-hooks",
+                      "sv/plugins/architecture-internals/runtime-helpers",
+                      "sv/plugins/architecture-internals/gateway-routes",
+                      "sv/plugins/architecture-internals/channel-surfaces",
+                      "sv/plugins/architecture-internals/packaging",
+                      "sv/plugins/architecture-internals/context-engines",
+                      "sv/plugins/architecture-internals/new-capability"
+                    ]
+                  },
+                  "sv/plugins/sdk-migration",
+                  {
+                    "group": "Migrering av Plugin SDK",
+                    "pages": [
+                      "sv/plugins/sdk-migration/how-to-migrate",
+                      "sv/plugins/sdk-migration/sqlite-async",
+                      "sv/plugins/sdk-migration/import-paths",
+                      "sv/plugins/sdk-migration/removed-surfaces",
+                      "sv/plugins/sdk-migration/talk",
+                      "sv/plugins/sdk-migration/async-transcript-and-tts",
+                      "sv/plugins/sdk-migration/compatibility-policy",
+                      "sv/plugins/sdk-migration/removal-timeline"
+                    ]
+                  },
+                  "sv/plugins/compatibility",
+                  "sv/plugins/install-overrides",
+                  "sv/plugins/sdk-channel-outbound",
+                  "sv/plugins/sdk-channel-inbound",
+                  "sv/plugins/sdk-channel-ingress",
+                  "sv/plugins/message-presentation"
+                ]
+              },
+              {
+                "group": "Mallar",
+                "pages": [
+                  "sv/reference/AGENTS.default",
+                  "sv/reference/templates/AGENTS",
+                  "sv/reference/templates/BOOT",
+                  "sv/reference/templates/BOOTSTRAP",
+                  "sv/reference/templates/IDENTITY",
+                  "sv/reference/templates/SOUL",
+                  "sv/reference/templates/USER",
+                  {
+                    "group": "Agentmallar för utveckling",
+                    "pages": [
+                      "sv/reference/templates/AGENTS.dev",
+                      "sv/reference/templates/IDENTITY.dev",
+                      "sv/reference/templates/SOUL.dev",
+                      "sv/reference/templates/USER.dev"
+                    ]
+                  },
+                  {
+                    "group": "Avvecklade arbetsytefiler",
+                    "pages": [
+                      "sv/reference/templates/HEARTBEAT",
+                      "sv/reference/templates/TOOLS"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Teknisk referens",
+                "pages": [
+                  "sv/agent-runtime-architecture",
+                  "sv/openclaw-agent-runtime",
+                  "sv/reference/openclaw-ai",
+                  "sv/reference/token-use",
+                  "sv/reference/api-usage-costs",
+                  "sv/concepts/usage-tracking",
+                  "sv/reference/prompt-caching",
+                  "sv/reference/session-management-compaction",
+                  {
+                    "group": "Fördjupning i sessionshantering",
+                    "pages": [
+                      "sv/reference/session-management-compaction/store",
+                      "sv/reference/session-management-compaction/maintenance",
+                      "sv/reference/session-management-compaction/schema",
+                      "sv/reference/session-management-compaction/compaction",
+                      "sv/reference/session-management-compaction/housekeeping",
+                      "sv/reference/session-management-compaction/resident-history"
+                    ]
+                  },
+                  "sv/reference/transcript-hygiene",
+                  "sv/reference/memory-config",
+                  "sv/reference/database-engines",
+                  "sv/reference/database-schemas",
+                  {
+                    "group": "Databasscheman",
+                    "pages": [
+                      "sv/reference/database-schemas/layout",
+                      "sv/reference/database-schemas/versioning",
+                      "sv/reference/database-schemas/personal-data",
+                      "sv/reference/database-schemas/storage-changes",
+                      "sv/reference/database-schemas/agent-schema-history",
+                      "sv/reference/database-schemas/state-schema-history",
+                      "sv/reference/database-schemas/integrity-and-recovery"
+                    ]
+                  },
+                  "sv/reference/rich-output-protocol",
+                  "sv/reference/secretref-credential-surface",
+                  "sv/reference/secret-placeholder-conventions",
+                  "sv/date-time",
+                  "sv/concepts/timezone"
+                ]
+              },
+              {
+                "group": "Scheman och formatering",
+                "pages": [
+                  "sv/concepts/typebox",
+                  "sv/concepts/markdown-formatting"
+                ]
+              },
+              {
+                "group": "Projekt och bidrag",
+                "pages": [
+                  "sv/reference/credits",
+                  "sv/reference/pull-request-review-flow",
+                  {
+                    "group": "Underhållsskript",
+                    "pages": [
+                      "sv/reference/scripts/pr-preparation",
+                      "sv/reference/scripts/pr-tooling",
+                      "sv/reference/scripts/remote-gates",
+                      "sv/reference/scripts/github-transport",
+                      "sv/reference/scripts/prior-ci",
+                      "sv/reference/scripts/merge-admission",
+                      "sv/reference/scripts/merge-recovery"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Utgåvor",
+            "groups": [
+              {
+                "group": "Versionsinformation",
+                "pages": [
+                  "sv/releases/index",
+                  "sv/releases/2026.10.3",
+                  "sv/releases/2026.10.2",
+                  "sv/releases/2026.10.1",
+                  "sv/releases/2026.9.9",
+                  "sv/releases/2026.9.8",
+                  "sv/releases/2026.9.7",
+                  "sv/releases/2026.9.6",
+                  "sv/releases/2026.9.5",
+                  "sv/releases/2026.9.4",
+                  "sv/releases/2026.9.3",
+                  "sv/releases/2026.9.2",
+                  "sv/releases/2026.9.1",
+                  "sv/releases/2026.8.2",
+                  "sv/releases/2026.8.1",
+                  "sv/releases/2026.7.1",
+                  "sv/releases/2026.6.11"
+                ]
+              },
+              {
+                "group": "Utgivningsprocess",
+                "pages": [
+                  "sv/reference/RELEASING",
+                  "sv/reference/full-release-validation",
+                  {
+                    "group": "Fullständig utgåvevalidering",
+                    "pages": [
+                      "sv/reference/full-release-validation/dispatch",
+                      "sv/reference/full-release-validation/continuation",
+                      "sv/reference/full-release-validation/extended-stable",
+                      "sv/reference/full-release-validation/stages",
+                      "sv/reference/full-release-validation/release-checks",
+                      "sv/reference/full-release-validation/profiles",
+                      "sv/reference/full-release-validation/evidence"
+                    ]
+                  },
+                  "sv/reference/release-performance-sweep",
+                  "sv/gateway/security/dependency-locking"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Bidra",
+            "groups": [
+              {
+                "group": "Mognad",
+                "pages": [
+                  "sv/maturity/scorecard",
+                  "sv/maturity/taxonomy"
+                ]
+              },
+              {
+                "group": "Testning och CI",
+                "pages": [
+                  "sv/reference/test",
+                  {
+                    "group": "Tester",
+                    "pages": [
+                      "sv/reference/test/local",
+                      "sv/reference/test/lanes",
+                      "sv/reference/test/docker",
+                      "sv/reference/test/performance",
+                      "sv/reference/test/runner-internals",
+                      "sv/reference/test/remote-proof"
+                    ]
+                  },
+                  "sv/ci",
+                  {
+                    "group": "CI",
+                    "pages": [
+                      "sv/ci/pipeline",
+                      "sv/ci/watching-runs",
+                      "sv/ci/checkout",
+                      "sv/ci/scope-and-routing",
+                      {
+                        "group": "Omfattning och routning",
+                        "pages": [
+                          "sv/ci/scope-and-routing/selection",
+                          "sv/ci/scope-and-routing/node-test-lanes",
+                          "sv/ci/scope-and-routing/job-budgets",
+                          "sv/ci/scope-and-routing/manual-dispatches"
+                        ]
+                      },
+                      "sv/ci/runners",
+                      "sv/ci/capacity",
+                      "sv/ci/release-validation",
+                      {
+                        "group": "Utgåvevalidering",
+                        "pages": [
+                          "sv/ci/release-validation/full-release-validation",
+                          "sv/ci/release-validation/live-and-e2e-shards",
+                          "sv/ci/release-validation/package-acceptance",
+                          "sv/ci/release-validation/install-smoke-and-docker-e2e",
+                          "sv/ci/release-validation/plugin-prerelease"
+                        ]
+                      },
+                      "sv/ci/scheduled-workflows",
+                      "sv/ci/local-proof"
+                    ]
+                  },
+                  "sv/help/scripts",
+                  "sv/concepts/qa-e2e-automation",
+                  {
+                    "group": "QA-verktyg",
+                    "pages": [
+                      "sv/concepts/qa-e2e-automation/command-surface",
+                      "sv/concepts/qa-e2e-automation/operator-flow",
+                      "sv/concepts/qa-e2e-automation/scenario-coverage",
+                      "sv/concepts/qa-e2e-automation/channel-qa-reference",
+                      "sv/concepts/qa-e2e-automation/slack-qa",
+                      "sv/concepts/qa-e2e-automation/whatsapp-and-credentials",
+                      "sv/concepts/qa-e2e-automation/extending-the-stack",
+                      "sv/concepts/qa-e2e-automation/qa-reporting"
+                    ]
+                  },
+                  "sv/concepts/personal-agent-benchmark-pack",
+                  "sv/help/testing",
+                  {
+                    "group": "Testguide",
+                    "pages": [
+                      "sv/help/testing/suites",
+                      "sv/help/testing/live-workflows",
+                      "sv/help/testing/docker",
+                      "sv/help/testing/qa-runners",
+                      "sv/help/testing/contracts",
+                      "sv/help/testing/writing-tests"
+                    ]
+                  },
+                  "sv/help/testing-updates-plugins",
+                  "sv/help/testing-live",
+                  {
+                    "group": "Guide för livetester",
+                    "pages": [
+                      "sv/help/testing-live/quick-smokes",
+                      "sv/help/testing-live/model-smoke",
+                      "sv/help/testing-live/cli-backends",
+                      "sv/help/testing-live/acp-and-codex",
+                      "sv/help/testing-live/long-context-and-matrix",
+                      "sv/help/testing-live/media-providers"
+                    ]
+                  },
+                  "sv/concepts/mantis",
+                  "sv/concepts/mantis-slack-desktop-runbook"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Hjälp",
+            "groups": [
+              {
+                "group": "Börja här",
+                "pages": [
+                  "sv/help/index",
+                  "sv/help/troubleshooting",
+                  "sv/help/debugging"
+                ]
+              },
+              {
+                "group": "Vanliga frågor",
+                "pages": [
+                  "sv/help/faq",
+                  {
+                    "group": "Ämnen för vanliga frågor",
+                    "pages": [
+                      "sv/help/faq/what-is-openclaw",
+                      "sv/help/faq/skills-and-automation",
+                      "sv/help/faq/sandboxing-and-memory",
+                      "sv/help/faq/where-things-live-on-disk",
+                      "sv/help/faq/config-basics",
+                      "sv/help/faq/remote-gateways-and-nodes",
+                      "sv/help/faq/env-vars",
+                      "sv/help/faq/sessions-and-chats",
+                      "sv/help/faq/gateway-ports-and-remote-mode",
+                      "sv/help/faq/logging-and-debugging",
+                      "sv/help/faq/media-and-attachments",
+                      "sv/help/faq/security-and-access-control",
+                      "sv/help/faq/chat-commands-and-stopping"
+                    ]
+                  },
+                  "sv/help/faq-first-run",
+                  {
+                    "group": "Vanliga frågor vid första körningen",
+                    "pages": [
+                      "sv/help/faq-first-run/quick-start",
+                      "sv/help/faq-first-run/providers-and-hosting"
+                    ]
+                  },
+                  "sv/help/faq-models"
+                ]
+              },
+              {
+                "group": "Diagnostik",
+                "pages": [
+                  "sv/help/environment",
+                  "sv/diagnostics/flags"
+                ]
+              },
+              {
+                "group": "Gemenskap och projektinformation",
+                "pages": [
+                  "sv/start/lore"
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
