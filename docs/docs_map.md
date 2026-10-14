@@ -7065,6 +7065,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Local prefix installer (install-cli.sh)
   - H3: npm, pnpm, or bun
   - H3: From source
+  - H3: Standalone builds
   - H3: Install from the GitHub main checkout
   - H3: Containers and package managers
   - H2: Verify the install
@@ -7312,6 +7313,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Data loss after redeploy
   - H3: Health check failures
   - H2: Next steps
+
+## install/standalone.md
+
+- Route: /install/standalone
+- Headings:
+  - H2: Build the default JIT executable
+  - H2: Choose a compilation mode
+  - H2: Read the manifest
+  - H3: macOS signing
+  - H2: Update the complete artifact
+  - H2: Runtime contents and limits
+  - H2: Qualify an artifact before packaging
 
 ## install/uninstall.md
 
