@@ -3585,6 +3585,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/managed-worktrees
 - Headings:
+  - H2: Existing folders on devices
   - H2: Sandboxed sessions
   - H2: Choose where worktrees are stored
   - H2: Capacity and eviction
@@ -5720,6 +5721,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/rpc-session-control
 - Headings:
   - H2: Session control
+  - H3: Existing folders on paired devices
 
 ## gateway/protocol/rpc-system-and-channels.md
 
@@ -7727,6 +7729,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: System commands (node host / mac node)
   - H2: Headless node host (cross-platform)
   - H2: Mac node mode
+  - H2: Existing-folder session consent
 
 ## nodes/pairing-and-status.md
 
@@ -7762,6 +7765,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /nodes/session-hosting
 - Headings:
   - H2: Host OpenClaw sessions
+  - H3: Work in an existing device folder
   - H3: Isolate hosted worker sessions in containers
 
 ## nodes/talk.md
