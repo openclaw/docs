@@ -4617,16 +4617,20 @@ that projection instead of opening a synchronous placement read during model
 fallback preparation; it retains current environment and execution-policy checks.
 Reads retain the original physical store; admission and initial routing also
 retain a revocable placement observation
-until their caller consumes the facts.
-Read preparation fails closed. If a same-session placement publication other than
-tool authority commits while the projection read runs, or is still pending when
+until their caller consumes the facts. Reply admission instead retains current
+placement facts and joins the existing writer when a preceding turn's claim
+publication is pending. Claim acquisition and release for the same destination
+do not reject a follow-up; a changed destination, session, source, lifecycle, or
+placement service still does. The later execution claim remains authoritative.
+Strict snapshot read preparation fails closed. If a same-session placement
+publication other than tool authority commits while the projection read runs, or is still pending when
 it returns, the owner releases the observation and rejects with
 `Session <id> placement authority changed`; it neither waits for settlement nor
 repeats the read. A preceding turn finishing or setup advancing at that moment
 can therefore reject the next turn, which fails visibly and is not retried
 automatically. This is an accepted best-effort tradeoff: the window is a single
-worker read, and admission, file reads, and sandbox preparation recheck the same
-observation while consuming it, so repeating only the read would not remove the
+worker read, and initial execution routing, file reads, and sandbox preparation
+recheck the same observation while consuming it, so repeating only the read would not remove the
 race. Unknown publication outcomes, cancellation, and store replacement also
 refuse the read, and an observation already handed to its consumer remains
 revocable.
