@@ -13013,6 +13013,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Context-engine outbox FIFO sequence
   - H3: JSON predicate columns
   - H3: Canonical writer validation
   - H3: Session hot facts and snapshots
