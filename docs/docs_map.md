@@ -12642,6 +12642,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced configuration
   - H2: Related
 
+## providers/poolside.md
+
+- Route: /providers/poolside
+- Headings:
+  - H2: Laguna model provider
+  - H2: Poolside Agent over ACP
+
 ## providers/qianfan.md
 
 - Route: /providers/qianfan
