@@ -105,7 +105,14 @@ test("selection placement and sanitized destination share one event without chan
     const before = (await events("select_content")).length;
     const nativeBefore = count("click", url).length;
     const selectionBefore = count("select_content", url).length;
-    await link.click();
+    // The fixture returns 204 for external navigation, so no document loads.
+    // Observe that response directly while keeping click actionability checks.
+    const navigation = await link.getAttribute("target") === "_blank" ? null : page.waitForResponse(response => {
+      const destination = new URL(response.url());
+      return response.request().isNavigationRequest() && destination.origin + destination.pathname === url;
+    });
+    await link.click({ noWaitAfter: true });
+    if (navigation) assert.equal((await navigation).status(), 204);
     const selected = await events("select_content");
     assert.equal(selected.length, before + 1);
     assert.equal(selected.at(-1).ui_location, placement);
