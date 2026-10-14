@@ -14889,6 +14889,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Browserless Docker on the same host
   - H2: Direct WebSocket CDP providers
   - H3: Browserbase
+  - H3: Browser Use
   - H3: Notte
 
 ## tools/browser/security.md
