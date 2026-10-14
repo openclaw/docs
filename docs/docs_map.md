@@ -12837,6 +12837,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Delete and consolidate
   - H2: Existing data and staged PRs
 
+## refactor/transcript-event-bytes.md
+
+- Route: /refactor/transcript-event-bytes
+- Headings:
+  - H1: Transcript event bytes
+  - H2: Current allocations
+  - H2: Representation and lifecycle
+  - H2: First slice and remaining work
+
 ## reference/AGENTS.default.md
 
 - Route: /reference/AGENTS.default
