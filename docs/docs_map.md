@@ -4601,6 +4601,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Recipe precedence
   - H2: Lifecycle and snapshots
+  - H2: Setup secrets
   - H2: Minimal example
   - H2: Ignored properties
   - H2: Built-in detection
@@ -4670,6 +4671,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Automatic Linux Node toolchains
   - H2: The setup command
+  - H3: Protected setup secrets
   - H3: Native Windows prerequisites
   - H2: Bundle installation
   - H3: Reuse a node runtime archive after Gateway restart
@@ -5185,6 +5187,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor/config-migrations
 - Headings:
+  - H2: Cloud setup secret migration
   - H2: Runtime config migration
   - H2: Direct Ollama Cloud routing
   - H2: Claude CLI model routing
