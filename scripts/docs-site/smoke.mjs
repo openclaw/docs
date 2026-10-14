@@ -453,6 +453,11 @@ if (!communityInvite
     DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes("home-community"), indexDocument.children)?.children ?? [])) {
   throw new Error("community invitation, dismissal control, or homepage Discord link is missing");
 }
+const communityArt = DomUtils.findAll((node) => node.name === "img", communityInvite.children);
+if (communityArt.length !== 2
+  || communityArt.some((node) => node.attribs.nopin !== "nopin" || node.attribs["data-pin-nopin"] !== "true")) {
+  throw new Error("community invitation artwork must opt out of Pinterest saves in both themes");
+}
 const communityLinks = DomUtils.findAll((node) => node.name === "a", communityInvite.children);
 const expectedCommunityLinks = [
   ["Join", "https://www.reddit.com/r/openclaw/", "Join the OpenClaw community on Reddit"],

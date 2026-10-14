@@ -463,8 +463,8 @@ function communityInvite(locale) {
   const followLabel = strings.communityFollowLabel.replace("{platform}", "X");
   return `<aside class="community-invite" aria-labelledby="community-invite-title" hidden>
 <div class="community-invite__header">
-<img class="community-invite__art community-invite__art--dark" src="${publicPath("/assets/community-invite-dark.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async">
-<img class="community-invite__art community-invite__art--light" src="${publicPath("/assets/community-invite-light.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async">
+<img class="community-invite__art community-invite__art--dark" src="${publicPath("/assets/community-invite-dark.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async" nopin="nopin" data-pin-nopin="true">
+<img class="community-invite__art community-invite__art--light" src="${publicPath("/assets/community-invite-light.webp")}" alt="" width="1024" height="512" loading="lazy" decoding="async" nopin="nopin" data-pin-nopin="true">
 <div class="community-invite__marks" aria-hidden="true"><span dir="ltr">${icon("reddit")}${icon("discord")}${icon("x-social")}</span></div>
 <button class="community-invite__close" type="button" data-community-invite-dismiss aria-label="${escapeAttr(strings.communityDismissLabel)}">${icon("x")}</button>
 </div>
