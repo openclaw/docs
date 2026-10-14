@@ -12599,6 +12599,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config example
   - H2: Provider catalogs
   - H3: Zen
+  - H4: Kimi K3 thinking
   - H3: Go
   - H2: Advanced configuration
   - H2: Related
