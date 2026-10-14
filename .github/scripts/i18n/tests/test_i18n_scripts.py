@@ -247,6 +247,11 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("schedule:", text)
         self.assertIn("workflow_dispatch:", text)
         self.assertIn("target_locale:", text)
+        options = re.search(r"target_locale:.*?options:\n((?:          - [^\n]*\n)+)", text, re.S).group(1)
+        self.assertEqual(
+            {"all", *(locale.locale_slug for locale in translation_plan.all_locales())},
+            set(re.findall(r"- (\S+)", options)),
+        )
         self.assertIn("resume_run_id:", text)
         self.assertIn("canary_only:", text)
         self.assertRegex(text, r"force_retranslate:[\s\S]*?default: false")
@@ -298,7 +303,11 @@ class I18NScriptTests(unittest.TestCase):
             reusable,
         )
         self.assertNotIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
-        self.assertIn("inputs.artifact_role != 'canary' && steps.apply.outputs.changed_count != '0'", reusable)
+        self.assertEqual(5, reusable.count("(inputs.artifact_role != 'canary' || needs.translate.outputs.canary_bootstrap == 'true') && steps.apply.outputs.changed_count != '0'"))
+        self.assertIn("canary_bootstrap: ${{ steps.pending.outputs.canary_bootstrap }}", reusable)
+        self.assertIn("CANARY_PUBLISH_REQUIRED: ${{ inputs.canary_publish_required }}", reusable)
+        self.assertIn("if: steps.pending.outputs.canary_bootstrap == 'true' && github.ref != 'refs/heads/main'", reusable)
+        self.assertLess(reusable.index("Require main for locale bootstrap publication"), reusable.index("Translate changed docs into locale"))
         self.assertIn("inputs.commit_locale && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("Fail uncommitted locale refresh", reusable)
         self.assertIn(
@@ -578,9 +587,13 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotIn('thinking_effort: "max"', incremental)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
+        self.assertEqual(translation_plan.LOCALE_NAMES, prepare.LOCALES)
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
         self.assertTrue(prepare.is_translatable_doc_path("docs/reference/test.md"))
         self.assertFalse(prepare.is_translatable_doc_path("docs/fr/guide/setup.mdx"))
+        for locale in translation_plan.all_locales():
+            with self.subTest(locale=locale.locale):
+                self.assertFalse(prepare.is_translatable_doc_path(f"docs/{locale.locale}/guide/setup.mdx"))
         self.assertFalse(prepare.is_translatable_doc_path("docs/.i18n/glossary.fr.json"))
         self.assertFalse(prepare.is_translatable_doc_path("docs/.generated/api.md"))
         self.assertEqual("3600", prepare.default_cooldown("incremental", "push", "", "3600"))
@@ -905,11 +918,11 @@ class I18NScriptTests(unittest.TestCase):
     def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
         result = plan_full.plan_full("all", 4, FIXTURES / "pending-docs" / "docs")
         self.assertEqual("es", result["canary"]["locale"])
-        self.assertEqual(5, len(result["batches"]))
+        self.assertEqual(6, len(result["batches"]))
         self.assertEqual(1, result["shard_total"])
-        self.assertEqual(20, len(result["expected_locales"].split()))
+        self.assertEqual(21, len(result["expected_locales"].split()))
         self.assertLessEqual(max(len(batch) for batch in result["batches"]), 4)
-        self.assertEqual(20, sum(len(batch) for batch in result["batches"]))
+        self.assertEqual(21, sum(len(batch) for batch in result["batches"]))
 
     def test_translation_plan_shared_shard_policy(self) -> None:
         self.assertEqual(1, translation_plan.shard_total_for_doc_count(0, 250, 4))
@@ -1111,10 +1124,10 @@ class I18NScriptTests(unittest.TestCase):
     def test_incremental_plan_reuses_shared_locale_and_shard_policy(self) -> None:
         result = plan_incremental.plan_incremental(FIXTURES / "pending-docs" / "docs", target_docs_per_shard=1, max_shards=4)
 
-        self.assertEqual(20, result["locale_count"])
+        self.assertEqual(21, result["locale_count"])
         self.assertEqual(2, result["source_doc_count"])
         self.assertEqual(2, result["shard_total"])
-        self.assertEqual(40, len(result["matrix"]["include"]))
+        self.assertEqual(42, len(result["matrix"]["include"]))
         self.assertEqual(
             [
                 {"locale": "es", "locale_slug": "es", "shard_index": "0", "shard_total": "2"},
@@ -1139,6 +1152,7 @@ class I18NScriptTests(unittest.TestCase):
                 "vi",
                 "pl",
                 "nl",
+                "sv",
                 "uk",
                 "th",
                 "ar",
@@ -1162,12 +1176,14 @@ class I18NScriptTests(unittest.TestCase):
 
             self.assertEqual(1, result["source_doc_count"])
             self.assertEqual(1, result["shard_total"])
-            self.assertEqual(20, len(result["matrix"]["include"]))
+            self.assertEqual(21, len(result["matrix"]["include"]))
 
     def test_full_plan_manual_single_locale_only_selects_target(self) -> None:
-        result = plan_full.plan_full("fr", 3, FIXTURES / "pending-docs" / "docs")
-        self.assertEqual({"locale": "fr", "locale_slug": "fr"}, result["canary"])
-        self.assertEqual([[{"locale": "fr", "locale_slug": "fr", "shard_index": "0", "shard_total": "1"}]], result["batches"])
+        for locale in ("fr", "sv"):
+            with self.subTest(locale=locale):
+                result = plan_full.plan_full(locale, 3, FIXTURES / "pending-docs" / "docs")
+                self.assertEqual({"locale": locale, "locale_slug": locale}, result["canary"])
+                self.assertEqual([[{"locale": locale, "locale_slug": locale, "shard_index": "0", "shard_total": "1"}]], result["batches"])
         with self.assertRaises(SystemExit):
             plan_full.plan_full("xx", 3, FIXTURES / "pending-docs" / "docs")
 
@@ -1455,6 +1471,81 @@ class I18NScriptTests(unittest.TestCase):
                 ["guide/setup.mdx", "index.md"],
                 [file.relative_to((tmp_path / "docs").resolve()).as_posix() for file in result.shard_files],
             )
+
+    def test_publishing_canary_bootstraps_only_missing_locale_entry_pages(self) -> None:
+        for present, expected, bootstrap in (
+            ((), ["channels/line.md", "index.md", "start/getting-started.md"], True),
+            (("index.md",), ["channels/line.md", "start/getting-started.md"], True),
+            (("index.md", "start/getting-started.md"), ["channels/line.md"], False),
+        ):
+            with self.subTest(present=present), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp).resolve()
+                docs = root / "docs"
+                for relative in ("channels/line.md", *pending.LOCALE_ENTRY_SOURCES, "unrelated.md"):
+                    source = docs / relative
+                    source.parent.mkdir(parents=True, exist_ok=True)
+                    source.write_text(f"# {relative}\n")
+                for relative in present:
+                    translated = docs / "sv" / relative
+                    translated.parent.mkdir(parents=True, exist_ok=True)
+                    translated.write_text(self._translated_page(docs / relative, "# Befintlig sida\n"))
+                result = pending.build_pending_manifest(
+                    docs, root / ".openclaw-sync", "sv", "sv", 0, 1,
+                    pending_limit=1, canary_source_path="channels/line.md",
+                    force_retranslate=True, canary_publish_required=True,
+                )
+                self.assertEqual(expected, [file.relative_to(docs).as_posix() for file in result.shard_files])
+                self.assertEqual(bootstrap, result.canary_bootstrap)
+                self.assertEqual(4, result.total_pending_count)
+                output = root / "output"
+                with env({"GITHUB_OUTPUT": str(output)}):
+                    pending.append_output(result)
+                self.assertIn(f"canary_bootstrap={str(bootstrap).lower()}\n", output.read_text())
+                allowed = package_artifact.read_pending_allowed(root, "sv", "sv", 0, 1)
+                self.assertEqual({f"docs/sv/{page}" for page in expected} | {"docs/.i18n/sv.tm.jsonl"}, allowed)
+                for source in result.shard_files:
+                    relative = source.relative_to(docs)
+                    translated = root / "translated.md"
+                    translated.write_text(self._translated_page(source, "# Svensk sida\n"))
+                    with chdir(root):
+                        self.assertEqual((True, ""), apply_artifacts.should_apply_changed(True, "sv", f"docs/sv/{relative.as_posix()}", translated))
+                        source.write_text(source.read_text() + "Changed source\n")
+                        self.assertFalse(apply_artifacts.should_apply_changed(True, "sv", f"docs/sv/{relative.as_posix()}", translated)[0])
+
+    def test_publishing_canary_requires_bootstrap_sources_and_diagnostics_do_not_expand(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            (docs / "channels").mkdir(parents=True)
+            (docs / "channels/line.md").write_text("# LINE\n")
+            args = dict(docs_root=docs, openclaw_sync_dir=root / ".openclaw-sync", locale="sv", locale_slug="sv", shard_index=0, shard_total=1, pending_limit=1, canary_source_path="channels/line.md")
+            diagnostic = pending.build_pending_manifest(**args)
+            self.assertEqual(1, diagnostic.pending_count)
+            self.assertFalse(diagnostic.canary_bootstrap)
+            with self.assertRaisesRegex(SystemExit, "not pending in this shard: index.md"):
+                pending.build_pending_manifest(**args, canary_publish_required=True)
+
+    def test_publishing_canary_deploy_scope_refreshes_new_locale_menus(self) -> None:
+        workflow = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text()
+        block = workflow.split("      - name: Dispatch locale docs deploy\n", 1)[1].split("      - name:", 1)[0]
+        script = "\n".join(line[10:] for line in block.split("        run: |\n", 1)[1].splitlines())
+        values = {"github.ref_name": "main", "inputs.locale": "sv", "inputs.canary_live_path": "channels/line", "inputs.canary_publish_required": "true"}
+        script = workflow_shell_check.GITHUB_EXPRESSION_RE.sub(lambda match: values[match.group()[3:-2].strip()], script)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "python").symlink_to(sys.executable)
+            (root / "dispatch_r2_pages.py").write_text("import json, os, sys\nfrom pathlib import Path\nPath(os.environ['CAPTURE']).write_text(json.dumps(sys.argv[1:]))\n")
+            for bootstrap, scope in (("false", "page"), ("true", "full")):
+                with self.subTest(bootstrap=bootstrap):
+                    process_env = {**os.environ, "PATH": f"{root}{os.pathsep}{os.environ['PATH']}", "I18N_SCRIPT_DIR": str(root), "CAPTURE": str(root / "args.json"), "CANARY_BOOTSTRAP": bootstrap, "ARTIFACT_ROLE": "canary", "CANARY_LIVE_URL": "https://docs.openclaw.ai/sv/channels/line", "CANARY_EXPECTED_H1": "LINE"}
+                    result = subprocess.run(["/bin/bash", "-eu", "-c", script], env=process_env, text=True, capture_output=True)
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    args = json.loads((root / "args.json").read_text())
+                    self.assertEqual(scope, args[args.index("--artifact-scope") + 1])
+                    self.assertEqual("sv", args[args.index("--locale") + 1])
+                    self.assertEqual(scope == "page", "--page-path" in args)
+                    self.assertEqual("https://docs.openclaw.ai/sv/channels/line", args[args.index("--live-url") + 1])
+                    self.assertNotIn("--no-wait", args)
 
     def test_pending_manifest_canary_rejects_duplicate_configured_source_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

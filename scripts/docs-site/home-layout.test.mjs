@@ -14,6 +14,25 @@ const original = parseDocument(homeContentHtml(rendered));
 const result = parseDocument(homeLayoutHtml(rendered, () => ""));
 const elements = (document, predicate) => DomUtils.findAll(predicate, document.children);
 const ids = new Set(elements(result, (node) => node.attribs.id).map((node) => node.attribs.id));
+// Before the first Swedish translation, use a synthetic Swedish-heading fixture
+// with the complete source structure. Generated locale sources take precedence.
+const swedishHeadings = {
+  "Browse docs": "Bläddra i dokumentationen",
+  "What is OpenClaw?": "Vad är OpenClaw?",
+  "How it works": "Så fungerar det",
+  "Key capabilities": "Viktiga funktioner",
+  "Quick start": "Snabbstart",
+  Dashboard: "Kontrollpanel",
+  "Configuration (optional)": "Konfiguration (valfritt)",
+  "Start here": "Börja här",
+  "Learn more": "Läs mer",
+};
+const newLocaleSources = {
+  sv: source.replace(/^## (.+)$/gm, (_, heading) => {
+    assert.ok(swedishHeadings[heading], `Swedish fixture heading required: ${heading}`);
+    return `## ${swedishHeadings[heading]}`;
+  }),
+};
 
 test("the composed homepage retains source text, links, and anchors without a disclosure gate", () => {
   const remaining = elements(result, (node) => ["p", "h1", "h2", "h3", "pre"].includes(node.name))
@@ -51,7 +70,9 @@ test("every locale supplies the same complete homepage and navigation copy", () 
 for (const locale of Object.keys(localeLabels)) {
   test(`${locale} homepage uses the shared section layout and preserves its translated source`, () => {
     const file = new URL(`../../docs/${locale === "en" ? "" : locale + "/"}index.md`, import.meta.url);
-    const html = renderMdxish(fs.readFileSync(file, "utf8"), createMarkdownRenderer());
+    const source = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : newLocaleSources[locale];
+    assert.equal(typeof source, "string", `${locale}: generated homepage or explicit onboarding fixture required`);
+    const html = renderMdxish(source, createMarkdownRenderer());
     const before = parseDocument(homeContentHtml(html));
     const after = parseDocument(homeLayoutHtml(html, () => "", null, locale));
     const root = elements(after, (node) => node.attribs.class === "home-layout")[0];

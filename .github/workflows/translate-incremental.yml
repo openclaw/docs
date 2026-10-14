@@ -20,6 +20,7 @@ on:
       - "!docs/pl/**"
       - "!docs/pt-BR/**"
       - "!docs/ru/**"
+      - "!docs/sv/**"
       - "!docs/th/**"
       - "!docs/tr/**"
       - "!docs/uk/**"
