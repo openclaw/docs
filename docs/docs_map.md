@@ -8335,6 +8335,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Set up Agents API
   - H3: 1. Sign in with an API key
   - H3: 2. Enable the plugin and choose your model
+  - H3: Shared model tuning
   - H3: 3. Start a conversation and try a task
   - H2: Continue a task
   - H2: Work with files and tools
