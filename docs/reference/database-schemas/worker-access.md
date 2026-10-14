@@ -3113,7 +3113,8 @@ later native handles check physical file identity and reuse those facts without
 schema-marker queries or canonical table, index, trigger, and integrity scans.
 Session generation and transcript-index trackers declare their fixed connection-local
 tables, indexes, and triggers to the schema owner, which checks existing TEMP names
-and shapes once at installation. Installing those declared TEMP tracking objects
+and shapes once at installation. That snapshot also skips drops for absent
+triggers on a fresh connection. Installing those declared TEMP tracking objects
 does not cause another validation of the physical database. The migration or repair owner publishes
 replacement facts for committed local DDL; rollback cannot publish uncommitted
 facts. Host-handle eviction preserves process admission and never falls back to
