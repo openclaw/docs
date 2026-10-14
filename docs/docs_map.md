@@ -15304,6 +15304,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Token budgets
   - H2: Model tools
   - H2: Goal context on every turn
+  - H2: Automatic continuation
   - H2: Control UI
   - H3: Gateway requests and retries
   - H2: TUI
