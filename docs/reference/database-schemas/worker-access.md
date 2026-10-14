@@ -6278,6 +6278,15 @@ requests. Fingerprint, selected-profile, and validated pending-refresh checks
 remain at their existing boundaries; a persisted credential without retained
 authority is refused rather than recovered from a prepared snapshot.
 
+Personal OAuth acceptance also consumes the owner's published credential after
+provider preparation. It compares that credential once, without a database
+transaction or worker request. Refresh writes still compare the expected stored
+profile before replacing it, and the final fetch guard still checks live authority.
+OAuth resolution reuses a prepared personal owner's current credential rather
+than loading the same account again. Session model selection prepares auth-pin
+provider metadata asynchronously; its released synchronous SDK fallback remains
+available through December 31, 2026.
+
 Credential writers begin publication synchronously before the durable effect.
 Worker admission denies the host guard before commit, and committed postimages
 or deletions reach the owner before settlement releases that denial. Native
