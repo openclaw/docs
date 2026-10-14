@@ -12407,6 +12407,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Live model catalog
   - H2: Nemotron 3.5 Lightning
   - H2: Nemotron 3 Ultra
+  - H2: Nemotron 3.5 Super VL
   - H2: Bundled fallback catalog
   - H2: Advanced configuration
   - H2: Related
