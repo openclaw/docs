@@ -5156,6 +5156,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Sampling heap profile
   - H2: Useful options
   - H2: Disable diagnostics
+  - H2: Garbage collection metrics
   - H2: RPC response size and heap changes
   - H2: Related
 
