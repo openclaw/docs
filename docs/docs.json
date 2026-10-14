@@ -3788,7 +3788,7 @@
                   "zh-CN/concepts/session-state",
                   "zh-CN/concepts/session-tool",
                   {
-                    "group": "Memory",
+                    "group": "记忆",
                     "pages": [
                       "zh-CN/concepts/memory",
                       "zh-CN/concepts/memory-architecture",
@@ -4610,7 +4610,7 @@
                     ]
                   },
                   {
-                    "group": "Security and sandboxing",
+                    "group": "安全与沙箱",
                     "pages": [
                       "zh-CN/gateway/security/index",
                       "zh-CN/gateway/security/trust-model",
@@ -4690,7 +4690,7 @@
                     ]
                   },
                   {
-                    "group": "Networking and discovery",
+                    "group": "网络与发现",
                     "pages": [
                       "zh-CN/network",
                       "zh-CN/gateway/pairing",
@@ -32278,10 +32278,10 @@
         "language": "tr",
         "tabs": [
           {
-            "tab": "Baslangic",
+            "tab": "Başlangıç",
             "groups": [
               {
-                "group": "Genel bakis",
+                "group": "Genel bakış",
                 "pages": [
                   "tr/index",
                   "tr/start/why-openclaw",
@@ -32298,7 +32298,7 @@
                 ]
               },
               {
-                "group": "Ilk adimlar",
+                "group": "İlk adımlar",
                 "pages": [
                   "tr/start/getting-started",
                   "tr/start/onboarding-overview",
@@ -32307,7 +32307,7 @@
                 ]
               },
               {
-                "group": "Setup guides and reference",
+                "group": "Kurulum kılavuzları ve başvuru",
                 "pages": [
                   "tr/start/openclaw",
                   "tr/start/teams",
@@ -32318,17 +32318,17 @@
             ]
           },
           {
-            "tab": "Install",
+            "tab": "Kurulum",
             "groups": [
               {
-                "group": "Install overview",
+                "group": "Kurulum genel bakışı",
                 "pages": [
                   "tr/install/index",
                   "tr/install/installer"
                 ]
               },
               {
-                "group": "Runtimes",
+                "group": "Çalışma zamanları",
                 "pages": [
                   "tr/install/node",
                   "tr/install/node-compatibility",
@@ -32338,12 +32338,12 @@
                 ]
               },
               {
-                "group": "Maintenance",
+                "group": "Bakım",
                 "pages": [
                   "tr/install/backups",
                   "tr/install/updating",
                   {
-                    "group": "Updating",
+                    "group": "Güncelleme",
                     "pages": [
                       "tr/install/updating/update-methods",
                       "tr/install/updating/automatic-updates",
@@ -32352,7 +32352,7 @@
                   },
                   "tr/install/update-troubleshooting",
                   {
-                    "group": "Migrating",
+                    "group": "Geçiş",
                     "pages": [
                       "tr/install/migrating",
                       "tr/install/migrating-claude",
@@ -32365,7 +32365,7 @@
                 ]
               },
               {
-                "group": "Containers",
+                "group": "Kapsayıcılar",
                 "pages": [
                   "tr/install/docker",
                   {
@@ -32381,11 +32381,11 @@
                 ]
               },
               {
-                "group": "Hosting",
+                "group": "Barındırma",
                 "pages": [
                   "tr/vps",
                   {
-                    "group": "App platforms",
+                    "group": "Uygulama platformları",
                     "pages": [
                       "tr/install/cloudflare",
                       "tr/install/daytona",
@@ -32398,7 +32398,7 @@
                     ]
                   },
                   {
-                    "group": "Cloud servers",
+                    "group": "Bulut sunucuları",
                     "pages": [
                       "tr/install/azure",
                       "tr/install/digitalocean",
@@ -32409,7 +32409,7 @@
                     ]
                   },
                   {
-                    "group": "Self-hosted and local",
+                    "group": "Kendi sunucunuzda ve yerel barındırma",
                     "pages": [
                       "tr/install/ansible",
                       "tr/install/docker-vm-runtime",
@@ -32421,7 +32421,7 @@
                 ]
               },
               {
-                "group": "Advanced setup",
+                "group": "Gelişmiş kurulum",
                 "pages": [
                   "tr/start/setup"
                 ]
@@ -32429,16 +32429,16 @@
             ]
           },
           {
-            "tab": "Channels",
+            "tab": "Kanallar",
             "groups": [
               {
-                "group": "Overview",
+                "group": "Genel bakış",
                 "pages": [
                   "tr/channels/index"
                 ]
               },
               {
-                "group": "Mainstream messaging",
+                "group": "Yaygın mesajlaşma",
                 "pages": [
                   {
                     "group": "Discord",
@@ -32544,7 +32544,7 @@
                 ]
               },
               {
-                "group": "Developer and self-hosted",
+                "group": "Geliştirici ve öz barındırma",
                 "pages": [
                   "tr/channels/a2a",
                   "tr/channels/buzz",
@@ -32561,7 +32561,7 @@
                 ]
               },
               {
-                "group": "Regional platforms",
+                "group": "Bölgesel platformlar",
                 "pages": [
                   {
                     "group": "Feishu",
@@ -32587,7 +32587,7 @@
                 ]
               },
               {
-                "group": "Configuration",
+                "group": "Yapılandırma",
                 "pages": [
                   "tr/channels/pairing",
                   "tr/channels/access-groups",
@@ -32604,10 +32604,10 @@
             ]
           },
           {
-            "tab": "Agents",
+            "tab": "Ajanlar",
             "groups": [
               {
-                "group": "Agent runtime",
+                "group": "Ajan çalışma zamanı",
                 "pages": [
                   "tr/concepts/architecture",
                   "tr/concepts/agent",
@@ -32620,7 +32620,7 @@
                 ]
               },
               {
-                "group": "Agent workspace",
+                "group": "Ajan çalışma alanı",
                 "pages": [
                   "tr/concepts/agent-workspace",
                   "tr/concepts/managed-worktrees",
@@ -32631,7 +32631,7 @@
                 ]
               },
               {
-                "group": "Sessions and memory",
+                "group": "Oturumlar ve bellek",
                 "pages": [
                   "tr/concepts/main-session",
                   "tr/concepts/multi-user",
@@ -32642,7 +32642,7 @@
                   "tr/concepts/session-state",
                   "tr/concepts/session-tool",
                   {
-                    "group": "Memory",
+                    "group": "Bellek",
                     "pages": [
                       "tr/concepts/memory",
                       "tr/concepts/memory-architecture",
@@ -32654,7 +32654,7 @@
                       "tr/concepts/memory-search",
                       "tr/concepts/active-memory",
                       {
-                        "group": "Active memory",
+                        "group": "Active Memory",
                         "pages": [
                           "tr/concepts/active-memory/enabling",
                           "tr/concepts/active-memory/how-it-works",
@@ -32674,7 +32674,7 @@
                 ]
               },
               {
-                "group": "Multi-agent",
+                "group": "Çoklu ajan",
                 "pages": [
                   "tr/concepts/multi-agent",
                   "tr/concepts/agent-bindings",
@@ -32684,7 +32684,7 @@
                 ]
               },
               {
-                "group": "Messages and delivery",
+                "group": "Mesajlar ve teslimat",
                 "pages": [
                   "tr/concepts/messages",
                   "tr/concepts/streaming",
@@ -32698,16 +32698,16 @@
             ]
           },
           {
-            "tab": "Capabilities",
+            "tab": "Yetenekler",
             "groups": [
               {
-                "group": "Overview",
+                "group": "Genel bakış",
                 "pages": [
                   "tr/tools/index"
                 ]
               },
               {
-                "group": "Plugins",
+                "group": "Pluginler",
                 "pages": [
                   "tr/tools/plugin",
                   "tr/plugins/manage-plugins",
@@ -32716,7 +32716,7 @@
                 ]
               },
               {
-                "group": "Plugin guides",
+                "group": "Plugin kılavuzları",
                 "pages": [
                   "tr/plugins/agentsapi",
                   {
@@ -32746,7 +32746,7 @@
                   "tr/plugins/copilot",
                   "tr/plugins/muse",
                   {
-                    "group": "Meetings and calls",
+                    "group": "Toplantılar ve aramalar",
                     "pages": [
                       "tr/plugins/meeting-plugins",
                       "tr/plugins/facetime",
@@ -32766,7 +32766,7 @@
                       "tr/plugins/slack-huddles",
                       "tr/plugins/voice-call",
                       {
-                        "group": "Voice call",
+                        "group": "Sesli arama",
                         "pages": [
                           "tr/plugins/voice-call/configuration",
                           "tr/plugins/voice-call/realtime-and-streaming",
@@ -32779,7 +32779,7 @@
                     ]
                   },
                   {
-                    "group": "Models and memory",
+                    "group": "Modeller ve bellek",
                     "pages": [
                       "tr/plugins/apple-fm",
                       "tr/plugins/llama-cpp",
@@ -32790,14 +32790,14 @@
                     ]
                   },
                   {
-                    "group": "Secrets and vaults",
+                    "group": "Gizli bilgiler ve kasalar",
                     "pages": [
                       "tr/plugins/onepassword",
                       "tr/plugins/vault"
                     ]
                   },
                   {
-                    "group": "Automation and integrations",
+                    "group": "Otomasyon ve entegrasyonlar",
                     "pages": [
                       "tr/plugins/admin-http-rpc",
                       "tr/plugins/beam",
@@ -32814,14 +32814,14 @@
                 ]
               },
               {
-                "group": "Building plugins",
+                "group": "Plugin oluşturma",
                 "pages": [
                   "tr/plugins/building-plugins",
                   "tr/plugins/feature-plugins",
                   "tr/plugins/tool-plugins",
                   "tr/plugins/sdk-channel-plugins",
                   {
-                    "group": "Channel plugins",
+                    "group": "Kanal pluginleri",
                     "pages": [
                       "tr/plugins/sdk-channel-plugins/message-adapter",
                       "tr/plugins/sdk-channel-plugins/durable-ingress",
@@ -32834,7 +32834,7 @@
                   },
                   "tr/plugins/sdk-provider-plugins",
                   {
-                    "group": "Provider plugins",
+                    "group": "Sağlayıcı pluginleri",
                     "pages": [
                       "tr/plugins/sdk-provider-plugins/model-catalogs",
                       "tr/plugins/sdk-provider-plugins/hook-families",
@@ -32846,7 +32846,7 @@
                   "tr/plugins/cli-backend-plugins",
                   "tr/plugins/hooks",
                   {
-                    "group": "Plugin hooks",
+                    "group": "Plugin kancaları",
                     "pages": [
                       "tr/plugins/hooks/reference",
                       "tr/plugins/hooks/tool-policy",
@@ -32873,13 +32873,13 @@
                 ]
               },
               {
-                "group": "Automation",
+                "group": "Otomasyon",
                 "pages": [
                   "tr/automation/index",
                   "tr/gateway/heartbeat",
                   "tr/automation/cron-jobs",
                   {
-                    "group": "Automations",
+                    "group": "Otomasyonlar",
                     "pages": [
                       "tr/automation/cron-jobs/how-it-works",
                       "tr/automation/cron-jobs/schedules",
@@ -32895,7 +32895,7 @@
                   "tr/automation/standing-orders",
                   "tr/automation/hooks",
                   {
-                    "group": "Hooks",
+                    "group": "Kancalar",
                     "pages": [
                       "tr/automation/hooks/writing-hooks",
                       "tr/automation/hooks/configuration",
@@ -32907,10 +32907,10 @@
                 ]
               },
               {
-                "group": "Tools",
+                "group": "Araçlar",
                 "pages": [
                   {
-                    "group": "Running code and approvals",
+                    "group": "Kod çalıştırma ve onaylar",
                     "pages": [
                       "tr/tools/apply-patch",
                       "tr/tools/code-execution",
@@ -32924,7 +32924,7 @@
                     ]
                   },
                   {
-                    "group": "Media and documents",
+                    "group": "Medya ve belgeler",
                     "pages": [
                       "tr/tools/media-overview",
                       "tr/tools/image-generation",
@@ -32932,7 +32932,7 @@
                       "tr/tools/pdf",
                       "tr/tools/tts",
                       {
-                        "group": "Text to speech",
+                        "group": "Metinden konuşmaya",
                         "pages": [
                           "tr/tools/tts/quickstart",
                           "tr/tools/tts/configuration",
@@ -32947,7 +32947,7 @@
                     ]
                   },
                   {
-                    "group": "Tool catalogs and workflows",
+                    "group": "Araç katalogları ve iş akışları",
                     "pages": [
                       "tr/tools/code-mode",
                       {
@@ -32971,7 +32971,7 @@
                     ]
                   },
                   {
-                    "group": "Context and reasoning",
+                    "group": "Bağlam ve akıl yürütme",
                     "pages": [
                       "tr/tools/loop-detection",
                       "tr/tools/thinking",
@@ -32980,7 +32980,7 @@
                     ]
                   },
                   {
-                    "group": "Chat and UI tools",
+                    "group": "Sohbet ve arayüz araçları",
                     "pages": [
                       "tr/tools/ask-user",
                       "tr/tools/btw",
@@ -32992,11 +32992,11 @@
                     ]
                   },
                   {
-                    "group": "Browsing and fetching pages",
+                    "group": "Sayfalara göz atma ve sayfa alma",
                     "pages": [
                       "tr/tools/browser",
                       {
-                        "group": "Browser",
+                        "group": "Tarayıcı",
                         "pages": [
                           "tr/tools/browser/setup",
                           "tr/tools/browser/profiles",
@@ -33020,7 +33020,7 @@
                     ]
                   },
                   {
-                    "group": "Web search",
+                    "group": "Web araması",
                     "pages": [
                       "tr/tools/web",
                       "tr/tools/brave-search",
@@ -33040,14 +33040,14 @@
                 ]
               },
               {
-                "group": "Agent coordination",
+                "group": "Ajan koordinasyonu",
                 "pages": [
                   "tr/tools/agent-send",
                   "tr/tools/goal",
                   "tr/tools/steer",
                   "tr/tools/subagents",
                   {
-                    "group": "Sub-agents",
+                    "group": "Alt ajanlar",
                     "pages": [
                       "tr/tools/subagents/slash-command",
                       "tr/tools/subagents/tool-reference",
@@ -33061,7 +33061,7 @@
                   "tr/tools/swarm",
                   "tr/tools/acp-agents",
                   {
-                    "group": "ACP agents",
+                    "group": "ACP ajanları",
                     "pages": [
                       "tr/tools/acp-agents/quickstart",
                       "tr/tools/acp-agents/runbook",
@@ -33079,24 +33079,24 @@
             ]
           },
           {
-            "tab": "Models",
+            "tab": "Modeller",
             "groups": [
               {
-                "group": "Overview",
+                "group": "Genel bakış",
                 "pages": [
                   "tr/providers/index",
                   "tr/providers/models"
                 ]
               },
               {
-                "group": "Concepts and configuration",
+                "group": "Kavramlar ve yapılandırma",
                 "pages": [
                   "tr/concepts/models",
                   "tr/concepts/recommended-models",
                   "tr/concepts/decision-models",
                   "tr/concepts/model-providers",
                   {
-                    "group": "Model providers",
+                    "group": "Model sağlayıcıları",
                     "pages": [
                       "tr/concepts/model-providers/quick-rules",
                       "tr/concepts/model-providers/control-ui-and-keys",
@@ -33108,10 +33108,10 @@
                 ]
               },
               {
-                "group": "Providers",
+                "group": "Sağlayıcılar",
                 "pages": [
                   {
-                    "group": "Chat and coding models",
+                    "group": "Sohbet ve kodlama modelleri",
                     "pages": [
                       "tr/providers/alibaba",
                       "tr/providers/anthropic",
@@ -33174,7 +33174,7 @@
                     ]
                   },
                   {
-                    "group": "Speech and audio",
+                    "group": "Konuşma ve ses",
                     "pages": [
                       "tr/providers/azure-speech",
                       "tr/providers/deepgram",
@@ -33186,7 +33186,7 @@
                     ]
                   },
                   {
-                    "group": "Image, video, and music",
+                    "group": "Görsel, video ve müzik",
                     "pages": [
                       "tr/providers/comfy",
                       "tr/providers/fal",
@@ -33197,7 +33197,7 @@
                     ]
                   },
                   {
-                    "group": "Gateways and routers",
+                    "group": "Ağ geçitleri ve yönlendiriciler",
                     "pages": [
                       "tr/providers/claude-max-api-proxy",
                       "tr/providers/clawrouter",
@@ -33210,7 +33210,7 @@
                     ]
                   },
                   {
-                    "group": "Local runtimes",
+                    "group": "Yerel çalışma zamanları",
                     "pages": [
                       "tr/providers/ds4",
                       "tr/providers/llmman",
@@ -33239,10 +33239,10 @@
             ]
           },
           {
-            "tab": "Platforms",
+            "tab": "Platformlar",
             "groups": [
               {
-                "group": "Platforms overview",
+                "group": "Platformlara genel bakış",
                 "pages": [
                   "tr/platforms/index",
                   "tr/platforms/macos",
@@ -33257,10 +33257,10 @@
                 ]
               },
               {
-                "group": "macOS companion app",
+                "group": "macOS eşlikçi uygulaması",
                 "pages": [
                   {
-                    "group": "Setup",
+                    "group": "Kurulum",
                     "pages": [
                       "tr/platforms/mac/dev-setup",
                       "tr/platforms/mac/menu-bar",
@@ -33272,7 +33272,7 @@
                     ]
                   },
                   {
-                    "group": "Runtime",
+                    "group": "Çalışma zamanı",
                     "pages": [
                       "tr/platforms/mac/bundled-gateway",
                       "tr/platforms/mac/health",
@@ -33281,7 +33281,7 @@
                     ]
                   },
                   {
-                    "group": "Features",
+                    "group": "Özellikler",
                     "pages": [
                       "tr/platforms/mac/voicewake",
                       "tr/platforms/mac/voice-overlay",
@@ -33296,18 +33296,18 @@
             ]
           },
           {
-            "tab": "Gateway & Ops",
+            "tab": "Gateway ve operasyonlar",
             "groups": [
               {
                 "group": "Gateway",
                 "pages": [
                   "tr/gateway/index",
                   {
-                    "group": "Configuration",
+                    "group": "Yapılandırma",
                     "pages": [
                       "tr/gateway/configuration",
                       {
-                        "group": "Configuration",
+                        "group": "Yapılandırma",
                         "pages": [
                           "tr/gateway/configuration/common-tasks",
                           "tr/gateway/configuration/hot-reload",
@@ -33318,7 +33318,7 @@
                       "tr/gateway/configuration-reference",
                       "tr/gateway/config-agents",
                       {
-                        "group": "Agents",
+                        "group": "Ajanlar",
                         "pages": [
                           "tr/gateway/config-agents/workspace-and-bootstrap",
                           "tr/gateway/config-agents/models",
@@ -33334,7 +33334,7 @@
                       "tr/gateway/config-browser-ui-desktop",
                       "tr/gateway/config-channels",
                       {
-                        "group": "Channels",
+                        "group": "Kanallar",
                         "pages": [
                           "tr/gateway/config-channels/shared-policies",
                           "tr/gateway/config-channels/personal-messaging",
@@ -33353,7 +33353,7 @@
                       "tr/gateway/config-secrets-env",
                       "tr/gateway/config-tools",
                       {
-                        "group": "Tools",
+                        "group": "Araçlar",
                         "pages": [
                           "tr/gateway/config-tools/tool-policy",
                           "tr/gateway/config-tools/github-identity",
@@ -33367,13 +33367,13 @@
                     ]
                   },
                   {
-                    "group": "Authentication and secrets",
+                    "group": "Kimlik doğrulama ve gizli bilgiler",
                     "pages": [
                       "tr/gateway/authentication",
                       "tr/auth-credential-semantics",
                       "tr/gateway/secrets",
                       {
-                        "group": "Secrets management",
+                        "group": "Gizli bilgi yönetimi",
                         "pages": [
                           "tr/gateway/secrets/runtime-model",
                           "tr/gateway/secrets/secretref-contract",
@@ -33388,7 +33388,7 @@
                     ]
                   },
                   {
-                    "group": "Health and diagnostics",
+                    "group": "Sağlık ve tanılama",
                     "pages": [
                       "tr/gateway/health",
                       "tr/gateway/doctor",
@@ -33423,7 +33423,7 @@
                       "tr/gateway/diagnostics",
                       "tr/gateway/troubleshooting",
                       {
-                        "group": "Troubleshooting",
+                        "group": "Sorun giderme",
                         "pages": [
                           "tr/gateway/troubleshooting/updates-and-rollbacks",
                           "tr/gateway/troubleshooting/skills-and-model-providers",
@@ -33436,7 +33436,7 @@
                     ]
                   },
                   {
-                    "group": "Scaling and operations",
+                    "group": "Ölçeklendirme ve operasyonlar",
                     "pages": [
                       "tr/gateway/gateway-lock",
                       "tr/gateway/background-process",
@@ -33464,7 +33464,7 @@
                     ]
                   },
                   {
-                    "group": "Security and sandboxing",
+                    "group": "Güvenlik ve korumalı alanda çalıştırma",
                     "pages": [
                       "tr/gateway/security/index",
                       "tr/gateway/security/trust-model",
@@ -33484,7 +33484,7 @@
                       "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
                       {
-                        "group": "Sandboxing",
+                        "group": "Korumalı alanda çalıştırma",
                         "pages": [
                           "tr/gateway/sandboxing/what-gets-sandboxed",
                           "tr/gateway/sandboxing/modes-scope-and-backend",
@@ -33506,13 +33506,13 @@
                     ]
                   },
                   {
-                    "group": "Protocols and APIs",
+                    "group": "Protokoller ve API'ler",
                     "pages": [
                       "tr/gateway/clients",
                       "tr/gateway/external-apps",
                       "tr/gateway/protocol",
                       {
-                        "group": "Gateway protocol",
+                        "group": "Gateway protokolü",
                         "pages": [
                           "tr/gateway/protocol/transport",
                           "tr/gateway/protocol/handshake",
@@ -33536,7 +33536,7 @@
                     ]
                   },
                   {
-                    "group": "Models and local providers",
+                    "group": "Modeller ve yerel sağlayıcılar",
                     "pages": [
                       "tr/gateway/cli-backends",
                       "tr/gateway/local-models",
@@ -33544,7 +33544,7 @@
                     ]
                   },
                   {
-                    "group": "Networking and discovery",
+                    "group": "Ağ ve keşif",
                     "pages": [
                       "tr/network",
                       "tr/gateway/pairing",
@@ -33555,7 +33555,7 @@
                 ]
               },
               {
-                "group": "Remote access",
+                "group": "Uzaktan erişim",
                 "pages": [
                   "tr/gateway/remote",
                   "tr/gateway/stable-https-url",
@@ -33565,7 +33565,7 @@
                 ]
               },
               {
-                "group": "Security",
+                "group": "Güvenlik",
                 "pages": [
                   "tr/security/network-proxy",
                   "tr/security/formal-verification",
@@ -33583,7 +33583,7 @@
                 ]
               },
               {
-                "group": "Nodes and media",
+                "group": "Node'lar ve medya",
                 "pages": [
                   "tr/nodes/index",
                   "tr/nodes/pairing-and-status",
@@ -33598,7 +33598,7 @@
                   "tr/nodes/presence",
                   "tr/nodes/troubleshooting",
                   {
-                    "group": "Media capabilities",
+                    "group": "Medya yetenekleri",
                     "pages": [
                       "tr/nodes/media-understanding",
                       "tr/nodes/media-playback",
@@ -33608,12 +33608,12 @@
                     ]
                   },
                   {
-                    "group": "Node features",
+                    "group": "Node özellikleri",
                     "pages": [
                       "tr/nodes/computer-use",
                       "tr/nodes/talk",
                       {
-                        "group": "Talk mode",
+                        "group": "Konuşma modu",
                         "pages": [
                           "tr/nodes/talk/realtime-sessions",
                           "tr/nodes/talk/session-ownership",
@@ -33628,12 +33628,12 @@
                 ]
               },
               {
-                "group": "Web interfaces",
+                "group": "Web arayüzleri",
                 "pages": [
                   "tr/web/index",
                   "tr/web/control-ui",
                   {
-                    "group": "Control UI",
+                    "group": "Kontrol Arayüzü",
                     "pages": [
                       "tr/web/control-ui/connect-and-pair",
                       "tr/web/control-ui/sessions-and-sidebar",
@@ -33660,14 +33660,14 @@
             ]
           },
           {
-            "tab": "Reference",
+            "tab": "Başvuru",
             "groups": [
               {
-                "group": "CLI commands",
+                "group": "CLI komutları",
                 "pages": [
                   "tr/cli/index",
                   {
-                    "group": "Running the service",
+                    "group": "Hizmeti çalıştırma",
                     "pages": [
                       "tr/cli/daemon",
                       "tr/cli/gateway",
@@ -33687,7 +33687,7 @@
                     ]
                   },
                   {
-                    "group": "Setup and maintenance",
+                    "group": "Kurulum ve bakım",
                     "pages": [
                       "tr/cli/backup",
                       "tr/cli/migrate",
@@ -33699,7 +33699,7 @@
                       "tr/cli/uninstall",
                       "tr/cli/update",
                       {
-                        "group": "Update",
+                        "group": "Güncelleme",
                         "pages": [
                           "tr/cli/update/status-and-history",
                           "tr/cli/update/repair-and-recovery",
@@ -33709,7 +33709,7 @@
                     ]
                   },
                   {
-                    "group": "Diagnostics and security",
+                    "group": "Tanılama ve güvenlik",
                     "pages": [
                       "tr/cli/doctor",
                       {
@@ -33730,7 +33730,7 @@
                     ]
                   },
                   {
-                    "group": "Agents, models, and sessions",
+                    "group": "Ajanlar, modeller ve oturumlar",
                     "pages": [
                       "tr/cli/agent",
                       "tr/cli/agents",
@@ -33745,7 +33745,7 @@
                     ]
                   },
                   {
-                    "group": "Events and audit records",
+                    "group": "Olaylar ve denetim kayıtları",
                     "pages": [
                       "tr/cli/audit",
                       "tr/cli/hooks",
@@ -33754,7 +33754,7 @@
                     ]
                   },
                   {
-                    "group": "Channels and messaging",
+                    "group": "Kanallar ve mesajlaşma",
                     "pages": [
                       "tr/cli/channels",
                       "tr/cli/directory",
@@ -33765,7 +33765,7 @@
                     ]
                   },
                   {
-                    "group": "Tools and execution",
+                    "group": "Araçlar ve yürütme",
                     "pages": [
                       "tr/cli/approvals",
                       "tr/cli/browser",
@@ -33779,7 +33779,7 @@
                     ]
                   },
                   {
-                    "group": "Configuration",
+                    "group": "Yapılandırma",
                     "pages": [
                       "tr/cli/config",
                       "tr/cli/configure",
@@ -33787,11 +33787,11 @@
                     ]
                   },
                   {
-                    "group": "Plugins and skills",
+                    "group": "Pluginler ve Skills",
                     "pages": [
                       "tr/cli/plugins",
                       {
-                        "group": "Plugins CLI",
+                        "group": "Plugin CLI",
                         "pages": [
                           "tr/cli/plugins/authoring",
                           "tr/cli/plugins/install",
@@ -33805,7 +33805,7 @@
                       "tr/cli/path",
                       "tr/cli/policy",
                       {
-                        "group": "Policy",
+                        "group": "İlke",
                         "pages": [
                           "tr/cli/policy/authoring",
                           "tr/cli/policy/rules",
@@ -33820,7 +33820,7 @@
                     ]
                   },
                   {
-                    "group": "Interfaces",
+                    "group": "Arayüzler",
                     "pages": [
                       "tr/cli/attach",
                       "tr/cli/dashboard",
@@ -33829,7 +33829,7 @@
                     ]
                   },
                   {
-                    "group": "Utility",
+                    "group": "Yardımcı araçlar",
                     "pages": [
                       "tr/cli/acp",
                       "tr/cli/clawbot",
@@ -33854,17 +33854,17 @@
                 ]
               },
               {
-                "group": "RPC and API",
+                "group": "RPC ve API",
                 "pages": [
                   "tr/reference/rpc"
                 ]
               },
               {
-                "group": "Codex runtime reference",
+                "group": "Codex çalışma zamanı başvurusu",
                 "pages": [
                   "tr/plugins/codex-harness-reference",
                   {
-                    "group": "Codex harness reference",
+                    "group": "Codex harness başvurusu",
                     "pages": [
                       "tr/plugins/codex-harness-reference/supervision",
                       "tr/plugins/codex-harness-reference/app-server-transport",
@@ -33879,7 +33879,7 @@
                   },
                   "tr/plugins/codex-harness-runtime",
                   {
-                    "group": "Codex harness runtime",
+                    "group": "Codex harness çalışma zamanı",
                     "pages": [
                       "tr/plugins/codex-harness-runtime/recovery",
                       "tr/plugins/codex-harness-runtime/threads",
@@ -33895,7 +33895,7 @@
                 ]
               },
               {
-                "group": "Plugin reference",
+                "group": "Plugin başvurusu",
                 "pages": [
                   "tr/plugins/plugin-inventory",
                   "tr/plugins/reference",
@@ -33903,11 +33903,11 @@
                 ]
               },
               {
-                "group": "Plugin SDK reference",
+                "group": "Plugin SDK başvurusu",
                 "pages": [
                   "tr/plugins/sdk-overview",
                   {
-                    "group": "Plugin SDK overview",
+                    "group": "Plugin SDK genel bakışı",
                     "pages": [
                       "tr/plugins/sdk-overview/imports",
                       "tr/plugins/sdk-overview/capabilities",
@@ -33921,7 +33921,7 @@
                   },
                   "tr/plugins/manifest",
                   {
-                    "group": "Plugin manifest",
+                    "group": "Plugin bildirimi",
                     "pages": [
                       "tr/plugins/manifest/models",
                       "tr/plugins/manifest/providers",
@@ -33936,7 +33936,7 @@
                   "tr/plugins/sdk-gateway-ingress",
                   "tr/plugins/sdk-entrypoints",
                   {
-                    "group": "Plugin entry points",
+                    "group": "Plugin giriş noktaları",
                     "pages": [
                       "tr/plugins/sdk-entrypoints/tool-policy-and-sandbox",
                       "tr/plugins/sdk-entrypoints/package-entries",
@@ -33950,7 +33950,7 @@
                   },
                   "tr/plugins/sdk-runtime",
                   {
-                    "group": "Plugin runtime helpers",
+                    "group": "Plugin çalışma zamanı yardımcıları",
                     "pages": [
                       "tr/plugins/sdk-runtime/config-and-utilities",
                       "tr/plugins/sdk-runtime/agent",
@@ -33964,7 +33964,7 @@
                   },
                   "tr/plugins/sdk-agent-harness",
                   {
-                    "group": "Agent harness plugins",
+                    "group": "Ajan harness pluginleri",
                     "pages": [
                       "tr/plugins/sdk-agent-harness/core-ownership",
                       "tr/plugins/sdk-agent-harness/registration",
@@ -33981,12 +33981,12 @@
                 ]
               },
               {
-                "group": "Plugin internals",
+                "group": "Plugin iç yapısı",
                 "pages": [
                   "tr/plugins/architecture",
                   "tr/plugins/architecture-internals",
                   {
-                    "group": "Plugin architecture internals",
+                    "group": "Plugin mimarisinin iç yapısı",
                     "pages": [
                       "tr/plugins/architecture-internals/load-pipeline",
                       "tr/plugins/architecture-internals/provider-hooks",
@@ -34000,7 +34000,7 @@
                   },
                   "tr/plugins/sdk-migration",
                   {
-                    "group": "Plugin SDK migration",
+                    "group": "Plugin SDK geçişi",
                     "pages": [
                       "tr/plugins/sdk-migration/how-to-migrate",
                       "tr/plugins/sdk-migration/import-paths",
@@ -34020,7 +34020,7 @@
                 ]
               },
               {
-                "group": "Templates",
+                "group": "Şablonlar",
                 "pages": [
                   "tr/reference/AGENTS.default",
                   "tr/reference/templates/AGENTS",
@@ -34030,7 +34030,7 @@
                   "tr/reference/templates/SOUL",
                   "tr/reference/templates/USER",
                   {
-                    "group": "Dev agent templates",
+                    "group": "Geliştirme ajanı şablonları",
                     "pages": [
                       "tr/reference/templates/AGENTS.dev",
                       "tr/reference/templates/IDENTITY.dev",
@@ -34039,7 +34039,7 @@
                     ]
                   },
                   {
-                    "group": "Retired workspace files",
+                    "group": "Kullanımdan kaldırılan çalışma alanı dosyaları",
                     "pages": [
                       "tr/reference/templates/HEARTBEAT",
                       "tr/reference/templates/TOOLS"
@@ -34048,7 +34048,7 @@
                 ]
               },
               {
-                "group": "Technical reference",
+                "group": "Teknik başvuru",
                 "pages": [
                   "tr/agent-runtime-architecture",
                   "tr/openclaw-agent-runtime",
@@ -34059,7 +34059,7 @@
                   "tr/reference/prompt-caching",
                   "tr/reference/session-management-compaction",
                   {
-                    "group": "Session management deep dive",
+                    "group": "Oturum yönetiminin ayrıntıları",
                     "pages": [
                       "tr/reference/session-management-compaction/store",
                       "tr/reference/session-management-compaction/maintenance",
@@ -34074,7 +34074,7 @@
                   "tr/reference/database-engines",
                   "tr/reference/database-schemas",
                   {
-                    "group": "Database schemas",
+                    "group": "Veritabanı şemaları",
                     "pages": [
                       "tr/reference/database-schemas/layout",
                       "tr/reference/database-schemas/versioning",
@@ -34093,19 +34093,19 @@
                 ]
               },
               {
-                "group": "Schemas and formatting",
+                "group": "Şemalar ve biçimlendirme",
                 "pages": [
                   "tr/concepts/typebox",
                   "tr/concepts/markdown-formatting"
                 ]
               },
               {
-                "group": "Project and contributing",
+                "group": "Proje ve katkıda bulunma",
                 "pages": [
                   "tr/reference/credits",
                   "tr/reference/pull-request-review-flow",
                   {
-                    "group": "Maintainer scripts",
+                    "group": "Proje bakım betikleri",
                     "pages": [
                       "tr/reference/scripts/pr-preparation",
                       "tr/reference/scripts/pr-tooling",
@@ -34121,10 +34121,10 @@
             ]
           },
           {
-            "tab": "Releases",
+            "tab": "Sürümler",
             "groups": [
               {
-                "group": "Release notes",
+                "group": "Sürüm notları",
                 "pages": [
                   "tr/releases/index",
                   "tr/releases/2026.10.3",
@@ -34146,12 +34146,12 @@
                 ]
               },
               {
-                "group": "Release process",
+                "group": "Sürüm süreci",
                 "pages": [
                   "tr/reference/RELEASING",
                   "tr/reference/full-release-validation",
                   {
-                    "group": "Full release validation",
+                    "group": "Tam sürüm doğrulaması",
                     "pages": [
                       "tr/reference/full-release-validation/dispatch",
                       "tr/reference/full-release-validation/continuation",
@@ -34169,21 +34169,21 @@
             ]
           },
           {
-            "tab": "Contributing",
+            "tab": "Katkıda bulunma",
             "groups": [
               {
-                "group": "Maturity",
+                "group": "Olgunluk",
                 "pages": [
                   "tr/maturity/scorecard",
                   "tr/maturity/taxonomy"
                 ]
               },
               {
-                "group": "Testing and CI",
+                "group": "Test ve CI",
                 "pages": [
                   "tr/reference/test",
                   {
-                    "group": "Tests",
+                    "group": "Testler",
                     "pages": [
                       "tr/reference/test/local",
                       "tr/reference/test/lanes",
@@ -34202,7 +34202,7 @@
                       "tr/ci/checkout",
                       "tr/ci/scope-and-routing",
                       {
-                        "group": "Scope and routing",
+                        "group": "Kapsam ve yönlendirme",
                         "pages": [
                           "tr/ci/scope-and-routing/selection",
                           "tr/ci/scope-and-routing/node-test-lanes",
@@ -34214,7 +34214,7 @@
                       "tr/ci/capacity",
                       "tr/ci/release-validation",
                       {
-                        "group": "Release validation",
+                        "group": "Sürüm doğrulaması",
                         "pages": [
                           "tr/ci/release-validation/full-release-validation",
                           "tr/ci/release-validation/live-and-e2e-shards",
@@ -34230,7 +34230,7 @@
                   "tr/help/scripts",
                   "tr/concepts/qa-e2e-automation",
                   {
-                    "group": "QA stack",
+                    "group": "Kalite güvence araçları",
                     "pages": [
                       "tr/concepts/qa-e2e-automation/command-surface",
                       "tr/concepts/qa-e2e-automation/operator-flow",
@@ -34245,7 +34245,7 @@
                   "tr/concepts/personal-agent-benchmark-pack",
                   "tr/help/testing",
                   {
-                    "group": "Testing guide",
+                    "group": "Test kılavuzu",
                     "pages": [
                       "tr/help/testing/suites",
                       "tr/help/testing/live-workflows",
@@ -34258,7 +34258,7 @@
                   "tr/help/testing-updates-plugins",
                   "tr/help/testing-live",
                   {
-                    "group": "Live testing guide",
+                    "group": "Canlı test kılavuzu",
                     "pages": [
                       "tr/help/testing-live/quick-smokes",
                       "tr/help/testing-live/model-smoke",
@@ -34275,10 +34275,10 @@
             ]
           },
           {
-            "tab": "Help",
+            "tab": "Yardım",
             "groups": [
               {
-                "group": "Start here",
+                "group": "Buradan başlayın",
                 "pages": [
                   "tr/help/index",
                   "tr/help/troubleshooting",
@@ -34286,11 +34286,11 @@
                 ]
               },
               {
-                "group": "FAQ",
+                "group": "SSS",
                 "pages": [
                   "tr/help/faq",
                   {
-                    "group": "FAQ topics",
+                    "group": "SSS konuları",
                     "pages": [
                       "tr/help/faq/what-is-openclaw",
                       "tr/help/faq/skills-and-automation",
@@ -34309,7 +34309,7 @@
                   },
                   "tr/help/faq-first-run",
                   {
-                    "group": "First-run FAQ",
+                    "group": "İlk çalıştırma SSS",
                     "pages": [
                       "tr/help/faq-first-run/quick-start",
                       "tr/help/faq-first-run/providers-and-hosting"
@@ -34319,14 +34319,14 @@
                 ]
               },
               {
-                "group": "Diagnostics",
+                "group": "Tanılama",
                 "pages": [
                   "tr/help/environment",
                   "tr/diagnostics/flags"
                 ]
               },
               {
-                "group": "Community and meta",
+                "group": "Topluluk ve meta",
                 "pages": [
                   "tr/start/lore"
                 ]
