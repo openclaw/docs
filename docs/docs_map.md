@@ -11174,6 +11174,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Verifying readers
   - H3: TTS preference resolution
   - H3: Media legacy projection
+  - H3: Cron store path resolution
+  - H3: Session transcript search views
+  - H3: Web search provider lists
 
 ## plugins/sdk-migration/how-to-migrate.md
 
