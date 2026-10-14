@@ -12131,6 +12131,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/google
 - Headings:
   - H2: Getting started
+  - H2: Gemini 4 Argon
   - H2: Capabilities
   - H2: Web search
   - H2: Image generation
