@@ -14,9 +14,25 @@ const original = parseDocument(homeContentHtml(rendered));
 const result = parseDocument(homeLayoutHtml(rendered, () => ""));
 const elements = (document, predicate) => DomUtils.findAll(predicate, document.children);
 const ids = new Set(elements(result, (node) => node.attribs.id).map((node) => node.attribs.id));
-// Swedish is registered before its first generated translation. Exercise real
-// Swedish content until that artifact exists; other locale sources remain required.
-const newLocaleSources = { sv: "# Svenska\n\n## Kom igång\n\nAnvänd din egen AI-assistent.\n\n[Installera OpenClaw](/install)\n" };
+// Before the first Swedish translation, use a synthetic Swedish-heading fixture
+// with the complete source structure. Generated locale sources take precedence.
+const swedishHeadings = {
+  "Browse docs": "Bläddra i dokumentationen",
+  "What is OpenClaw?": "Vad är OpenClaw?",
+  "How it works": "Så fungerar det",
+  "Key capabilities": "Viktiga funktioner",
+  "Quick start": "Snabbstart",
+  Dashboard: "Kontrollpanel",
+  "Configuration (optional)": "Konfiguration (valfritt)",
+  "Start here": "Börja här",
+  "Learn more": "Läs mer",
+};
+const newLocaleSources = {
+  sv: source.replace(/^## (.+)$/gm, (_, heading) => {
+    assert.ok(swedishHeadings[heading], `Swedish fixture heading required: ${heading}`);
+    return `## ${swedishHeadings[heading]}`;
+  }),
+};
 
 test("the composed homepage retains source text, links, and anchors without a disclosure gate", () => {
   const remaining = elements(result, (node) => ["p", "h1", "h2", "h3", "pre"].includes(node.name))
