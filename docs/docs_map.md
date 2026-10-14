@@ -15333,7 +15333,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Setup
   - H2: Config
-  - H2: Grounding requirement
+  - H2: Search results
   - H2: Tool parameters
   - H2: Related
 
