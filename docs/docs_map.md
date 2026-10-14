@@ -3557,6 +3557,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Decision assistance
   - H3: Core consumer contract
   - H3: Conversational tool filtering
+  - H2: Advisor
   - H2: Local model lean mode
   - H2: Experimental does not mean hidden
   - H2: Related
@@ -9527,6 +9528,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
+
+## plugins/reference/advisor.md
+
+- Route: /plugins/reference/advisor
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Review instructions
 
 ## plugins/reference/agentsapi.md
 
