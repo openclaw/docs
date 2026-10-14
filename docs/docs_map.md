@@ -13017,11 +13017,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent schema history
   - H3: Context-engine outbox FIFO sequence
   - H3: JSON predicate columns
-  - H3: Canonical writer validation
+  - H3: Session writer validation
   - H3: Session hot facts and snapshots
   - H3: Compact agent payload storage
   - H3: Transcript FTS row ownership
-  - H3: Incremental canonical-session validation
+  - H3: Incremental stored-session validation
   - H3: Cold transcript storage
   - H3: Creator namespace migration
   - H3: Participant identity migration
@@ -13109,7 +13109,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/storage-changes
 - Headings:
   - H2: Agent JSON predicate columns
-  - H2: Canonical writer validation
+  - H2: Session writer validation
   - H2: Preparing for another database backend
   - H3: Shared-state PostgreSQL schema generation
   - H3: Experimental PostgreSQL engine (workboard pilot)
@@ -14469,7 +14469,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Ownership
   - H2: Catalog flow
   - H2: Operator CLI boundary
-  - H2: Canonical message forks
+  - H2: OpenClaw message forks
   - H2: Local continuation
   - H2: Archive behavior
   - H2: Active thread safety
