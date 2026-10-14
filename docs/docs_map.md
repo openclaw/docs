@@ -12346,6 +12346,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced configuration
   - H2: Related
 
+## providers/neon.md
+
+- Route: /providers/neon
+- Headings:
+  - H2: Quick start
+  - H2: Configuration
+  - H3: Cost and output limits
+  - H3: OpenClaw does not ask Neon for streamed token usage
+  - H2: Models
+  - H2: Advanced
+  - H2: Related
+
 ## providers/novita.md
 
 - Route: /providers/novita

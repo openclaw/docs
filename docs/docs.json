@@ -2289,6 +2289,7 @@
                       "providers/cloudflare-ai-gateway",
                       "providers/kilocode",
                       "providers/litellm",
+                      "providers/neon",
                       "providers/openrouter",
                       "providers/vercel-ai-gateway"
                     ]
@@ -4349,6 +4350,7 @@
                       "zh-CN/providers/cloudflare-ai-gateway",
                       "zh-CN/providers/kilocode",
                       "zh-CN/providers/litellm",
+                      "zh-CN/providers/neon",
                       "zh-CN/providers/openrouter",
                       "zh-CN/providers/vercel-ai-gateway"
                     ]
@@ -6409,6 +6411,7 @@
                       "zh-TW/providers/cloudflare-ai-gateway",
                       "zh-TW/providers/kilocode",
                       "zh-TW/providers/litellm",
+                      "zh-TW/providers/neon",
                       "zh-TW/providers/openrouter",
                       "zh-TW/providers/vercel-ai-gateway"
                     ]
@@ -8469,6 +8472,7 @@
                       "ja-JP/providers/cloudflare-ai-gateway",
                       "ja-JP/providers/kilocode",
                       "ja-JP/providers/litellm",
+                      "ja-JP/providers/neon",
                       "ja-JP/providers/openrouter",
                       "ja-JP/providers/vercel-ai-gateway"
                     ]
@@ -10529,6 +10533,7 @@
                       "es/providers/cloudflare-ai-gateway",
                       "es/providers/kilocode",
                       "es/providers/litellm",
+                      "es/providers/neon",
                       "es/providers/openrouter",
                       "es/providers/vercel-ai-gateway"
                     ]
@@ -12589,6 +12594,7 @@
                       "pt-BR/providers/cloudflare-ai-gateway",
                       "pt-BR/providers/kilocode",
                       "pt-BR/providers/litellm",
+                      "pt-BR/providers/neon",
                       "pt-BR/providers/openrouter",
                       "pt-BR/providers/vercel-ai-gateway"
                     ]
@@ -14649,6 +14655,7 @@
                       "ko/providers/cloudflare-ai-gateway",
                       "ko/providers/kilocode",
                       "ko/providers/litellm",
+                      "ko/providers/neon",
                       "ko/providers/openrouter",
                       "ko/providers/vercel-ai-gateway"
                     ]
@@ -16709,6 +16716,7 @@
                       "de/providers/cloudflare-ai-gateway",
                       "de/providers/kilocode",
                       "de/providers/litellm",
+                      "de/providers/neon",
                       "de/providers/openrouter",
                       "de/providers/vercel-ai-gateway"
                     ]
@@ -18769,6 +18777,7 @@
                       "fr/providers/cloudflare-ai-gateway",
                       "fr/providers/kilocode",
                       "fr/providers/litellm",
+                      "fr/providers/neon",
                       "fr/providers/openrouter",
                       "fr/providers/vercel-ai-gateway"
                     ]
@@ -20829,6 +20838,7 @@
                       "hi/providers/cloudflare-ai-gateway",
                       "hi/providers/kilocode",
                       "hi/providers/litellm",
+                      "hi/providers/neon",
                       "hi/providers/openrouter",
                       "hi/providers/vercel-ai-gateway"
                     ]
@@ -22889,6 +22899,7 @@
                       "ar/providers/cloudflare-ai-gateway",
                       "ar/providers/kilocode",
                       "ar/providers/litellm",
+                      "ar/providers/neon",
                       "ar/providers/openrouter",
                       "ar/providers/vercel-ai-gateway"
                     ]
@@ -24949,6 +24960,7 @@
                       "it/providers/cloudflare-ai-gateway",
                       "it/providers/kilocode",
                       "it/providers/litellm",
+                      "it/providers/neon",
                       "it/providers/openrouter",
                       "it/providers/vercel-ai-gateway"
                     ]
@@ -27009,6 +27021,7 @@
                       "vi/providers/cloudflare-ai-gateway",
                       "vi/providers/kilocode",
                       "vi/providers/litellm",
+                      "vi/providers/neon",
                       "vi/providers/openrouter",
                       "vi/providers/vercel-ai-gateway"
                     ]
@@ -29069,6 +29082,7 @@
                       "nl/providers/cloudflare-ai-gateway",
                       "nl/providers/kilocode",
                       "nl/providers/litellm",
+                      "nl/providers/neon",
                       "nl/providers/openrouter",
                       "nl/providers/vercel-ai-gateway"
                     ]
@@ -31129,6 +31143,7 @@
                       "fa/providers/cloudflare-ai-gateway",
                       "fa/providers/kilocode",
                       "fa/providers/litellm",
+                      "fa/providers/neon",
                       "fa/providers/openrouter",
                       "fa/providers/vercel-ai-gateway"
                     ]
@@ -33189,6 +33204,7 @@
                       "tr/providers/cloudflare-ai-gateway",
                       "tr/providers/kilocode",
                       "tr/providers/litellm",
+                      "tr/providers/neon",
                       "tr/providers/openrouter",
                       "tr/providers/vercel-ai-gateway"
                     ]
@@ -35249,6 +35265,7 @@
                       "uk/providers/cloudflare-ai-gateway",
                       "uk/providers/kilocode",
                       "uk/providers/litellm",
+                      "uk/providers/neon",
                       "uk/providers/openrouter",
                       "uk/providers/vercel-ai-gateway"
                     ]
@@ -37309,6 +37326,7 @@
                       "id/providers/cloudflare-ai-gateway",
                       "id/providers/kilocode",
                       "id/providers/litellm",
+                      "id/providers/neon",
                       "id/providers/openrouter",
                       "id/providers/vercel-ai-gateway"
                     ]
@@ -39369,6 +39387,7 @@
                       "pl/providers/cloudflare-ai-gateway",
                       "pl/providers/kilocode",
                       "pl/providers/litellm",
+                      "pl/providers/neon",
                       "pl/providers/openrouter",
                       "pl/providers/vercel-ai-gateway"
                     ]
@@ -41429,6 +41448,7 @@
                       "th/providers/cloudflare-ai-gateway",
                       "th/providers/kilocode",
                       "th/providers/litellm",
+                      "th/providers/neon",
                       "th/providers/openrouter",
                       "th/providers/vercel-ai-gateway"
                     ]
@@ -43489,6 +43509,7 @@
                       "ru/providers/cloudflare-ai-gateway",
                       "ru/providers/kilocode",
                       "ru/providers/litellm",
+                      "ru/providers/neon",
                       "ru/providers/openrouter",
                       "ru/providers/vercel-ai-gateway"
                     ]
