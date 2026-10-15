@@ -6,6 +6,18 @@ routes = [
   { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
 ]
 
+[observability]
+redact_query_string = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+# Keep failure logs without storing an invocation record for every request.
+invocation_logs = false
+
+[observability.traces]
+enabled = false
+
 [[r2_buckets]]
 binding = "DOCS_BUCKET"
 bucket_name = "openclaw-docs"
