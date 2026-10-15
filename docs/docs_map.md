@@ -124,6 +124,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Payloads
   - H3: Agent-turn options
+  - H3: Inference account continuity
   - H3: Command payloads
   - H3: Script payloads
   - H2: Authoring recurring jobs
