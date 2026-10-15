@@ -16182,6 +16182,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui/chat
 - Headings:
+  - H2: Image viewing
   - H2: Collaborator drafts
   - H2: Reactions
   - H2: Session rail and side chat
