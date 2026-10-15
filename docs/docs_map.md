@@ -4592,6 +4592,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What runs where
   - H2: Requirements
   - H3: Crabbox provider support
+  - H3: Lease lifetime
   - H2: Where each section moved
   - H2: Related
 
@@ -4714,6 +4715,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Warm images
   - H3: First session for a repository
   - H3: Later sessions and refresh
+  - H3: Capture lifetime
   - H3: Retention policy
   - H3: Ready workers
   - H3: Inspect snapshots in the Control UI
