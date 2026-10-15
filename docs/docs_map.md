@@ -2081,15 +2081,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/claws
 - Headings:
   - H1: openclaw claws
-  - H2: Bundled role Claws
-  - H2: Create a Claw package
   - H2: Author locally
-  - H2: Inspect and preview
-  - H2: Inspect installed state
-  - H2: Migrate an existing agent
-  - H2: Update an installed Claw
-  - H2: Remove an installed Claw
-  - H2: Export an installed agent
+  - H2: Inspect and Add
+  - H2: Remove the agent
   - H2: Command reference
   - H2: See also
 
@@ -16313,6 +16307,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Settings
   - H3: Side panel keyboard shortcuts
   - H3: This device (macOS and iOS apps)
+  - H2: Claws (Labs)
   - H2: Speech bubbles
   - H2: Custom plugin UI
   - H2: Import assistant memory
