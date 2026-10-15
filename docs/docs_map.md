@@ -12969,6 +12969,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Version naming
   - H2: Release cadence
   - H2: Release validation
+  - H3: Operator capabilities
   - H3: Plugin SDK evidence transport
   - H3: Frozen qualification identity
   - H2: Packages and apps can become available at different times
