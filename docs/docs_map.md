@@ -9046,6 +9046,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Upgrading with an existing plugin allowlist
   - H2: Read an item beside chat
   - H2: Ask the agent to read an item
+  - H2: Ask the agent to find issues or pull requests
   - H2: Enable or disable the plugin
   - H2: Limits and unavailable content
   - H2: Plugin author integration
