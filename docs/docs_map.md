@@ -12843,6 +12843,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Model discovery (implicit provider)
+  - H3: Serving context limits
   - H2: Explicit configuration
   - H2: Advanced configuration
   - H3: Prioritize interactive requests
