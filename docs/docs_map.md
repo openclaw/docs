@@ -11518,6 +11518,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser meeting status ownership
   - H2: Browser meeting participation
   - H2: Worker provider allocation authority
+  - H2: Harness execution identity
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
