@@ -11747,6 +11747,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Local System One server
   - H3: Run Kev
   - H3: Connect OpenClaw
+  - H2: Custom endpoint and provider request settings
   - H2: Decision contract
   - H2: Agent evaluation tool
   - H2: Existing external installation
