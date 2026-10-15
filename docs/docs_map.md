@@ -13015,7 +13015,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-engines
 - Headings:
   - H2: Configure PostgreSQL
-  - H2: Port existing workboard stores
+  - H2: Port existing stores
   - H2: Isolation and durability
   - H2: Anchors and backups
   - H2: Updates and target compatibility
