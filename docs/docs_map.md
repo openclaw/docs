@@ -12166,7 +12166,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Hosted S2.1
   - H3: Hosted models
   - H3: Expressive speech
-  - H3: Drama 3 preview
+  - H3: Drama 3
   - H3: Voice selection and cloning
   - H2: Local S2 Pro on macOS
   - H3: Local reference voice
