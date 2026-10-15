@@ -4213,6 +4213,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/session-tool
 - Headings:
   - H2: Available tools
+  - H2: Creating an independent session
   - H2: Listing and reading sessions
   - H2: Managing session settings and groups
   - H2: Sessions versus conversations
@@ -15069,6 +15070,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/code-mode
 - Headings:
   - H2: What it does
+  - H2: Creating sessions from Code Mode
   - H2: Why use it
   - H2: Technical tour
   - H2: Where each section moved
