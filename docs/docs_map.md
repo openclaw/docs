@@ -3759,6 +3759,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What goes where
   - H2: Import from coding assistants
   - H2: Action-sensitive memories
+  - H2: PostgreSQL memory search
   - H2: Memory tools
   - H2: Memory search
   - H2: Memory engines
