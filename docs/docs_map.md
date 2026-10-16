@@ -9071,6 +9071,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable or disable the plugin
   - H2: Limits and unavailable content
   - H2: Plugin author integration
+  - H2: Session-bound Enterprise previews
 
 ## plugins/google-meet.md
 
