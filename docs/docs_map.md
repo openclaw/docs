@@ -5407,6 +5407,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Regional hosting / data routing
   - H2: Other OpenAI-compatible local proxies
   - H2: Smaller or stricter backends
+  - H2: Output budgets and repetition stops
   - H2: Troubleshooting
   - H3: Local model lean mode
   - H4: Why these tools
