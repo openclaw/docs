@@ -12537,6 +12537,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
   - H2: Decision models
+  - H3: Harness and authentication
 
 ## providers/openai/advanced.md
 
