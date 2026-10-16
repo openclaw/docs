@@ -2075,11 +2075,14 @@ post-writer lifecycle checks. Retention rules, cap buffering, forced cleanup,
 and active-work, ancestor, and lifecycle protection remain unchanged. No schema
 or migration change is required.
 
-After archive preparation, session deletion rereads its target before admitting
-the final reclamation worker. A missing or changed target returns the existing
-entry-mismatch result without starting that worker, while preserving archives
-already committed by the deletion. Admitted workers still recheck the target
-and current authority inside their deletion transaction.
+Session deletion checks its target and current authority inside the deletion
+transaction. A missing or changed target returns the existing entry-mismatch
+result while preserving archives already committed by the deletion. Exact
+metadata-only deletion with an expected entry uses the admitted session writer,
+without a separate planning read or archive worker. Cron run alias cleanup uses
+that path and keeps the stable session's transcript. Native-session participants,
+pending-delivery protection, and lease-loss refusal remain in the lifecycle owner.
+The transaction passes its validated rows to deletion instead of reading them again.
 
 Prepared session-store updates, entry replacements, and lifecycle upserts use
 the same admission for cold snapshot reads and actual commits, retaining their
