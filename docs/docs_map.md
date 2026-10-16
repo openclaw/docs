@@ -5030,6 +5030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/config-tools/github-identity
 - Headings:
+  - H2: Session GitHub App reader
   - H2: tools.github
   - H2: Sandbox opt-in
 
@@ -13551,6 +13552,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: plugins
   - H4: skills
   - H4: talk
+  - H4: tools
   - H4: tts
   - H3: SQLite auth-profile targets (secrets configure + secrets apply + secrets audit)
   - H3: Node-host connection targets
