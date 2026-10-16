@@ -2789,7 +2789,7 @@ yielding between batches. Cache writes wait outside the agent writer FIFO until
 foreground work drains, then commit one session at a time. Report reads use their
 separate worker lane and return partial or stale totals during backfill. Restart
 rediscovers unfinished sessions from their committed checkpoints.
-Expected refresh cancellation during shutdown logs at debug level; refresh or cleanup failures still warn.
+Refresh or cleanup failures still warn.
 After in-process DDL, worker admission publishes its validated schema even if a
 retained reader adopted another wrapper of the previous shared receipt while it
 was pending. The received schema and physical database proof must remain valid;
