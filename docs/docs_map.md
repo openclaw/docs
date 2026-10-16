@@ -13073,6 +13073,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/layout
 - Headings:
   - H2: Database layout
+  - H3: Local daemon service intent
   - H3: Linux database page cache
   - H3: Session reactions
   - H3: Session run outcomes and liveness
