@@ -229,7 +229,12 @@ The host retains the request until physical provider cleanup settles, even when
 cancellation or plugin reload has already revoked dispatch authority. It validates
 and snapshots accepted output before returning it. Auth facts, headers and
 transport overrides do not enter public results. Cost recording is a separate
-consumer of accepted outcomes; missing provider costs remain missing.
+consumer of accepted outcomes. V2 SDK calls record validated usage only after
+provider and caller lifetime checks pass; rejected, retired or cancelled results
+produce no usage event. Accounting uses the selected provider/model, excluding
+auth profile suffixes, and the host-owned calling plugin identity. Reported USD
+costs, including zero, win over prepared token rates. Unknown route pricing stays
+unknown. Estimates enter accounting only; returned usage keeps provider facts.
 
 V1 and V2 callers can use either provider version when the pure SDK codecs can
 represent the entire batch and result without loss. Native abstention, images,
