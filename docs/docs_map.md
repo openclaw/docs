@@ -11494,6 +11494,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Import an existing credential during sign-in
   - H2: Loopback OAuth callbacks
+  - H2: Declare physical credential ownership
   - H2: Handle model access after sign-in
   - H3: Defer the choice to a later reply
   - H3: Keep hosted writes authorized
