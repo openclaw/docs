@@ -312,8 +312,10 @@ Provider limits differ:
 | TypeSafe AI | 2–255               | 2–10         | Subject to the host's batch limits and the vendor input contract                   |
 
 The host bounds requests to one MiB, 20,000 JSON nodes, depth 32, and 256 questions. It admits at most four
-requests per provider and caps each deadline at 30 seconds. Provider-specific
-limits can be tighter. Unsupported input is rejected instead of silently truncated.
+requests per provider and caps each deadline at 30 seconds. Optional assistance
+leaves the fourth slot for requested evaluations; under contention, the tool
+prefilter skips evaluation and retains tools. Provider-specific limits can be
+tighter. Unsupported input is rejected instead of silently truncated.
 
 An `unavailable` outcome includes a reason such as `disabled`, `not-configured`,
 `unsupported-input`, `overloaded`, or `deadline`. The consumer decides whether to

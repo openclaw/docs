@@ -262,7 +262,7 @@ agent tools. Declare the ID in manifest `contracts.decisionProviders`; duplicate
 IDs are rejected. Registration and optional `isReady()` must be local, synchronous,
 and network-free. Import types from `openclaw/plugin-sdk/decisions`.
 
-Consumers call `api.runtime.decisions.evaluate(batch, { agentId?, purpose, rubricVersion,
+Consumers call `api.runtime.decisions.evaluate(batch, { agentId?, purpose, priority?, rubricVersion,
 timeoutMs, signal })`. State and rubric entries are finite JSON. Use plain objects
 and arrays; custom prototypes, serialization hooks, and getters are rejected on
 both request and response boundaries. Choices preserve
@@ -386,7 +386,11 @@ No credential is returned to the consumer. Provider setup and refresh use the
 same prepared-secret path whether the caller is built-in or third-party.
 
 The host admits at most four requests, with no queue and a 30-second maximum.
-Consumers can request shorter deadlines and choose their own fallback policy.
+`priority` defaults to `"requested"`. Set `"optional"` for opportunistic assistance:
+it returns `overloaded` when three requests are already in flight, leaving the
+fourth slot for requested evaluations. Purpose strings do not determine priority.
+All requests retain their slots until the provider physically settles, including
+after cancellation. Consumers can request shorter deadlines and choose their own fallback policy.
 Three transport, rate-limit, or invalid-response failures open a ten-second circuit;
 recovery admits one trial. Retry-After is bounded to one minute. Authentication
 failures return to the caller without opening the shared provider circuit: another
@@ -416,7 +420,8 @@ means the provider's local `isReady()` confirmed prepared credentials. `false`
 means readiness is unconfirmed or unavailable, not necessarily that credentials
 are missing. V2 omits `credentialReady` because credentials are selected for each
 agent/profile during preparation. Omitting V1 `isReady()` leaves evaluation eligible; returning `false`
-blocks it. `callable` separately reports current admission, not guaranteed success.
+blocks it. `callable` separately reports current admission for requested evaluations,
+not guaranteed success.
 Counts are instance-local diagnostics, not durable audit records or write authority.
 
 For discovery, declare decision capabilities in the model's canonical
