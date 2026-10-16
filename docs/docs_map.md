@@ -13112,6 +13112,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Agent schema 28
   - H3: Context-engine outbox FIFO sequence
   - H3: JSON predicate columns
   - H3: Session writer validation
@@ -13189,6 +13190,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 26
   - H3: State schema 25
   - H3: State schema 24
   - H3: State schema 23

@@ -100,7 +100,8 @@ The supported PostgreSQL families are:
   tombstones remain intact. Duplicate-key voice JSON refuses the port with a hashed
   row locator. Cold archive references are retained; user backups embed their blobs.
   PostgreSQL agent schemas support current-version
-  bootstrap only and reject schema drift before exposing the store.
+  bootstrap and the schema 27 to 28 forward migration, and reject schema drift
+  before exposing the store.
 - **Workboard:** runtime storage, bidirectional database ports, and matched backups.
 - **Logbook:** runtime frames, batches, observations, cards, and standups;
   bidirectional database ports; and matched backups. Frame images remain local
