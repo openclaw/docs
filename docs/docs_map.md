@@ -11335,6 +11335,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel, config, and infrastructure compatibility facades
   - H3: Command, Discord, and Telegram account facades
   - H3: Retroactively recorded shipped exports
+  - H3: Reply silence parsing
   - H3: Tool argument redaction
   - H3: Process-global API-provider publication
   - H3: Deactivate hook alias
