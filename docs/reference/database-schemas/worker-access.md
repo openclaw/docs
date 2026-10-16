@@ -1318,6 +1318,12 @@ Released synchronous SDK readers retain their existing owners; incognito reads
 use the memory actor.
 Direct SQLite edits without owner publication are unsupported.
 
+Embedded history expands child entries through the same asynchronous reader for
+durable and incognito parents. The memory owner supplies private children; retained
+registry hints for durable children go through the entry worker. The Gateway trusts
+the child owner's selection without repeating its parent checks. A reparenting
+after the read appears on the next lookup. There is no synchronous batch fallback.
+
 Transcript search returns its read snapshot and obtains indexing readiness from
 the projection owner. It does not reread a connection revision after awaiting
 readiness; an intervening append appears on the next search. Projection rebuilds
