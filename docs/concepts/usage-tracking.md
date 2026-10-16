@@ -110,6 +110,12 @@ Subscription quota and API billing are different provider surfaces:
 
 Admin credentials take precedence because they provide actual organization billing. OpenClaw does not combine these provider-reported totals with its local session estimates; the two sections intentionally answer different questions.
 
+OpenAI Admin token totals include text, audio, and images. The input breakdown
+separates uncached input, cache reads, and cache writes; both 30-minute and
+12-hour cache writes appear in the cache-write category. Audio and other
+modality breakdowns are already included in the totals and are not added again.
+See the [OpenAI Completions Usage API](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/completions).
+
 ## Default usage footer mode
 
 `/usage off|tokens|full` sets the footer for a session and is remembered for that
