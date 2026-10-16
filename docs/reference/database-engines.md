@@ -65,6 +65,10 @@ the resolved selection explicitly; they never resolve the connection again. A
 different selection in the same process is refused. Restart the process after
 changing the connection or engine.
 
+Offline port commands scope their source and target selections to each worker
+task, including resource cleanup, so reusing an idle worker does not change the
+Gateway's process selection.
+
 Stores without PostgreSQL support still use SQLite. Incognito storage remains memory-only.
 The supported PostgreSQL families are:
 
