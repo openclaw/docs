@@ -11415,6 +11415,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Storage providers
   - H3: Worker providers
   - H2: Versioned decision data
+  - H2: Prepared decision execution (contract version 2)
   - H2: Decision models (contract version 1)
   - H3: Calling from a third-party plugin
 

@@ -172,9 +172,9 @@ cannot preserve input ordering across a larger source-wide job.
 The focused `openclaw/plugin-sdk/decisions` entrypoint provides additive V2 data
 types and pure validation/conversion helpers for adapters and saved decision fixtures.
 These helpers do not run a provider, collect evidence, choose a model, or issue host
-authority. The existing V1 `api.runtime.decisions.evaluate` and
-`registerDecisionProvider` contracts remain unchanged. V2 execution is a separate
-integration; importing V2 data types does not make a V2 runtime available.
+authority. The existing V1 `api.runtime.decisions.evaluate` contract remains
+available. V2 execution uses `api.runtime.decisions.evaluateV2` and a versioned
+provider registration; importing data types alone does not authorize execution.
 
 `DecisionContentV2` distinguishes text, JSON, image data, and stable-ID lists.
 Answers preserve explicit Boolean decisions separately from P(true), nullable
@@ -199,6 +199,44 @@ For example, an explicit V2 JSON string cannot become V1 text without losing its
 evidence kind. Rich answers, abstention, or accounting that V1 cannot represent
 also cannot be silently downgraded. Compatible conversions may share readonly
 input data; they do not promise an independent deep copy.
+
+## Prepared decision execution (contract version 2)
+
+Register `DecisionProviderV2` with `contractVersion: 2` and the provider ID declared
+in `contracts.decisionProviders`. Supply its normal provider definition in the
+registration's `provider` field, or register that provider first from the same
+plugin. A different plugin cannot attach an executor to that provider ID.
+
+Declare decision capabilities under `modelCatalog.providers.<id>.models[].inference`.
+Set `chat: false` for typed-only models. They appear in the decision catalog and
+stay out of conversational model pickers; no chat context window or token cost
+needs to be invented. The documented V1 `decisionModels` manifest input is
+normalized into this catalog. An explicit canonical row owns its whole contract.
+
+Consumers call `api.runtime.decisions.evaluateV2(batch, options)` with the same
+purpose, rubric version, deadline, signal and explicit decision-model selection
+as V1. Optional `reasoning` must match the selected model's declared modes.
+The prepared runtime resolves that exact model, normal provider credentials and
+route. An explicit `@profile` selection is locked; it cannot fall through to
+another account. Credentials resolve for the selected agent/profile during preparation;
+provider status makes no global V2 credential-readiness claim.
+V2 providers receive private prepared model/auth facts and a
+required `isAdmissible()` predicate. Check it immediately before physical I/O,
+including after DNS or a worker queue wait. False closes the request; do not
+swallow an authority assertion to continue inference.
+
+The host retains the request until physical provider cleanup settles, even when
+cancellation or plugin reload has already revoked dispatch authority. It validates
+and snapshots accepted output before returning it. Auth facts, headers and
+transport overrides do not enter public results. Cost recording is a separate
+consumer of accepted outcomes; missing provider costs remain missing.
+
+V1 and V2 callers can use either provider version when the pure SDK codecs can
+represent the entire batch and result without loss. Native abstention, images,
+sort/tag questions or other unrepresentable data return `unsupported-input`
+across the V1 boundary. They never become fabricated probabilities or labels.
+Existing V1 providers retain their documented execution contract. External
+plugins adopt V2 only after a host release exports the required V2 SDK surface.
 
 ## Decision models (contract version 1)
 
@@ -361,10 +399,11 @@ previous value across reload. Refresh with `secrets.reload`; capability failure
 does not retain an old key.
 
 `plugins.inspect` reports configuration, credential readiness, current callability,
-last success, usage, latency, and bounded unavailable counts. `credentialReady: true`
+last success, usage, latency, and bounded unavailable counts. For V1, `credentialReady: true`
 means the provider's local `isReady()` confirmed prepared credentials. `false`
 means readiness is unconfirmed or unavailable, not necessarily that credentials
-are missing. Omitting `isReady()` leaves evaluation eligible; returning `false`
+are missing. V2 omits `credentialReady` because credentials are selected for each
+agent/profile during preparation. Omitting V1 `isReady()` leaves evaluation eligible; returning `false`
 blocks it. `callable` separately reports current admission, not guaranteed success.
 Counts are instance-local diagnostics, not durable audit records or write authority.
 

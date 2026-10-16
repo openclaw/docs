@@ -340,7 +340,11 @@ its [setup instructions](/plugins/typesafe#enable-and-configure).
 
 ## Provide models from a plugin
 
-A provider plugin implements `DecisionProviderV1` from
+New providers should use the [prepared V2 execution contract](/plugins/sdk-overview/capabilities#prepared-decision-execution-contract-version-2)
+with normal provider catalog and auth ownership. V1 remains supported through
+lossless codecs; native V2 features require a V2 caller and provider.
+
+A V1 provider plugin implements `DecisionProviderV1` from
 `openclaw/plugin-sdk/decisions` and registers it with
 `api.registerDecisionProvider(provider)`. Its `id` and `contractVersion: 1`
 identify the contract; `evaluate(batch, context)` returns validated typed answers
