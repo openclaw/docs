@@ -1113,6 +1113,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Moving existing webhook endpoints to the Gateway
   - H2: Access control (DMs)
   - H2: Rooms (groups)
+  - H2: Inbound file shares
+  - H2: Release qualification for attachment support
   - H2: Capabilities
   - H2: Configuration reference (Nextcloud Talk)
   - H2: Related
