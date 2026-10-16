@@ -219,7 +219,8 @@ function mermaidOptions(){
   const node=color("--docs-diagram-node")||color("--paper");
   const border=color("--docs-diagram-border")||color("--line-strong");
   const line=color("--docs-diagram-line")||color("--muted");
-  return {startOnLoad:false,securityLevel:"strict",theme:"base",fontFamily,
+  // Keep the docs appearance stable when Mermaid changes its diagram defaults.
+  return {startOnLoad:false,securityLevel:"strict",theme:"base",layout:"dagre",look:"classic",fontFamily,
     sequence:{width:128,height:48,actorMargin:64,messageMargin:44,actorFontSize:14,actorFontWeight:600,messageFontSize:13,noteFontSize:13},
     themeVariables:{darkMode:root.dataset.theme!=="light",fontFamily,fontSize:"14px",background:color("--paper"),primaryColor:node,primaryTextColor:color("--ink"),primaryBorderColor:border,secondaryColor:node,tertiaryColor:color("--paper"),mainBkg:node,lineColor:line,textColor:color("--text"),nodeBorder:border,clusterBkg:color("--paper"),clusterBorder:border,edgeLabelBackground:color("--paper"),actorBorder:border,actorBkg:node,actorTextColor:color("--ink"),actorLineColor:border,signalColor:color("--brand"),signalTextColor:color("--text"),labelBoxBkgColor:node,labelBoxBorderColor:border,labelTextColor:color("--ink"),noteBkgColor:node,noteBorderColor:border,noteTextColor:color("--text")}}
 }

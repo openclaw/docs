@@ -2,11 +2,14 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 const accordionOnly = process.argv.includes("--accordion-only");
-if (process.argv.slice(2).some((arg) => arg !== "--accordion-only")) {
-  throw new Error("usage: visual-smoke.mjs [--accordion-only]");
+const mermaidOnly = process.argv.includes("--mermaid-only");
+const useWebkit = process.argv.includes("--webkit");
+if (process.argv.slice(2).some((arg) => !["--accordion-only", "--mermaid-only", "--webkit"].includes(arg))
+  || (accordionOnly && mermaidOnly) || (useWebkit && !mermaidOnly)) {
+  throw new Error("usage: visual-smoke.mjs [--accordion-only | --mermaid-only [--webkit]]");
 }
 
 const root = process.cwd();
@@ -36,10 +39,10 @@ const server = http.createServer((req, res) => {
 
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true });
+const browser = await (useWebkit ? webkit : chromium).launch({ headless: true });
 
 try {
-  const checks = accordionOnly ? [checkAccordionNavigation] : [
+  const checks = accordionOnly ? [checkAccordionNavigation] : mermaidOnly ? [checkMermaid] : [
     checkLanguageSelection,
     checkAccordionNavigation,
     checkLandingNavigation,
@@ -48,6 +51,7 @@ try {
     checkHeaderSurface,
     checkFooterSocials,
     checkDesktop,
+    checkMermaid,
     checkTocScrollspy,
     checkTocRailScrolling,
     checkCompactToc,
@@ -57,7 +61,7 @@ try {
     checkLightMode,
   ];
   for (const check of checks) await check();
-  console.log(`docs ${accordionOnly ? "accordion" : "visual"} smoke ok: screenshots in ${path.relative(root, artifacts)}`);
+  console.log(`docs ${accordionOnly ? "accordion" : mermaidOnly ? "mermaid" : "visual"} smoke ok: screenshots in ${path.relative(root, artifacts)}`);
 } finally {
   await browser.close();
   server.close();
@@ -529,42 +533,80 @@ async function checkFooterSocials() {
   } finally { await page.close(); }
 }
 
-async function checkDesktop() {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
-  await page.screenshot({ path: path.join(artifacts, "elements-desktop-dark.png"), fullPage: true });
-  await page.evaluate(() => scrollTo(0, 760));
-  await page.screenshot({ path: path.join(artifacts, "elements-desktop-scrolled.png"), fullPage: false });
-
-  const overlap = await page.evaluate(() => {
-    const header = document.querySelector(".site-header")?.getBoundingClientRect();
-    const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
-    const toc = document.querySelector(".toc")?.getBoundingClientRect();
-    return {
-      headerTop: header?.top,
-      sidebarClear: header && sidebar ? sidebar.top >= header.bottom - 1 : false,
-      tocClear: header && toc ? toc.top >= header.bottom - 1 : false,
-    };
-  });
-  if (overlap.headerTop !== 0 || !overlap.sidebarClear || !overlap.tocClear) {
-    throw new Error(`desktop sticky shell overlap: ${JSON.stringify(overlap)}`);
+async function expectMermaidDiagrams(page) {
+  for (const [source, label] of [
+    ["sequenceDiagram", "healthy"],
+    ["flowchart LR", "Rendered"],
+    ["stateDiagram-v2", "Complete"],
+  ]) {
+    const svg = page.locator('.oc-mermaid.is-rendered[data-mermaid*="' + source + '"] svg').first();
+    await svg.waitFor({ state: "visible", timeout: 10000 });
+    if (!(await svg.textContent()).includes(label)) {
+      throw new Error(source + " rendered without its expected labels");
+    }
   }
+}
 
-  await expectVisible(page, ".oc-code [data-code-copy]", "code copy button");
-  await expectVisible(page, ".page-status .page-status-beta", "page status badge");
-  await expectVisible(page, ".oc-code.has-line-numbers .code-line.is-highlighted", "line-highlighted code");
-  await expectVisible(page, ".oc-badge.oc-badge-orange", "badge");
-  await expectVisible(page, ".oc-panel", "panel");
-  await expectVisible(page, ".oc-prompt [data-prompt-copy]", "prompt copy");
-  await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
+async function navigateMermaidPage(page, route) {
+  await page.evaluate((href) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = "Mermaid navigation target";
+    document.querySelector(".doc").prepend(link);
+  }, route);
+  await page.getByRole("link", { name: "Mermaid navigation target", exact: true }).click();
+  await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === route.replace(/\/$/, ""));
+  if (!await page.evaluate(() => window.__mermaidNavigationProbe === true)) {
+    throw new Error("Mermaid navigation fell back to a full page load");
+  }
+}
+
+async function checkMermaid() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  try {
+    await page.goto(base + "/__elements", { waitUntil: "networkidle" });
+    await checkMermaidContent(page);
+    const before = await page.locator(".oc-mermaid.is-rendered svg").evaluateAll((svgs) => svgs.map((svg) => svg.id));
+    const theme = await page.locator("html").getAttribute("data-theme");
+    await page.locator(".header-row [data-theme-toggle]").click();
+    await page.waitForFunction(({ ids, previousTheme }) => {
+      const svgs = [...document.querySelectorAll(".oc-mermaid.is-rendered svg")];
+      return document.documentElement.dataset.theme !== previousTheme
+        && svgs.length === ids.length && svgs.every((svg, i) => svg.id !== ids[i]);
+    }, { ids: before, previousTheme: theme });
+    await expectMermaidDiagrams(page);
+    await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
+    await page.evaluate(() => { window.__mermaidNavigationProbe = true; });
+    await page.locator("[data-mermaid-expand]").first().click();
+    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    // Use the normal link handler so the cached module and overlay lifecycle survive PJAX.
+    await page.keyboard.press("Escape");
+    await navigateMermaidPage(page, "/");
+    if (await page.locator("[data-mermaid-overlay].open").count()
+      || await page.locator("body.has-mermaid-overlay").count()) {
+      throw new Error("Mermaid overlay state leaked across page navigation");
+    }
+    await navigateMermaidPage(page, "/__elements");
+    await expectMermaidDiagrams(page);
+    await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
+    await page.locator("[data-mermaid-expand]").first().click();
+    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    await page.keyboard.press("Escape");
+  } finally {
+    await page.close();
+  }
+}
+
+async function checkMermaidContent(page) {
   await expectVisible(page, ".oc-mermaid", "mermaid block");
-  await page.locator(".oc-mermaid.is-rendered svg").first().waitFor({ state: "visible", timeout: 10000 });
+  await expectMermaidDiagrams(page);
   await page.waitForFunction(() =>
     [...document.querySelectorAll(".oc-mermaid.is-rendered")]
       .some((block) => block.getAttribute("data-mermaid")?.includes("<br>") && block.querySelector("svg"))
   );
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
   await page.keyboard.press("Tab");
   const mermaidOverlayFocus = await page.evaluate(() => ({
     activeInOverlay: Boolean(document.querySelector("[data-mermaid-overlay].open")?.contains(document.activeElement)),
@@ -621,6 +663,36 @@ async function checkDesktop() {
   if (mermaidErrorLeak.bodyText || mermaidErrorLeak.leakedSvg) {
     throw new Error(`mermaid error artifact leaked into shell: ${JSON.stringify(mermaidErrorLeak)}`);
   }
+}
+
+async function checkDesktop() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+  await page.screenshot({ path: path.join(artifacts, "elements-desktop-dark.png"), fullPage: true });
+  await page.evaluate(() => scrollTo(0, 760));
+  await page.screenshot({ path: path.join(artifacts, "elements-desktop-scrolled.png"), fullPage: false });
+
+  const overlap = await page.evaluate(() => {
+    const header = document.querySelector(".site-header")?.getBoundingClientRect();
+    const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
+    const toc = document.querySelector(".toc")?.getBoundingClientRect();
+    return {
+      headerTop: header?.top,
+      sidebarClear: header && sidebar ? sidebar.top >= header.bottom - 1 : false,
+      tocClear: header && toc ? toc.top >= header.bottom - 1 : false,
+    };
+  });
+  if (overlap.headerTop !== 0 || !overlap.sidebarClear || !overlap.tocClear) {
+    throw new Error(`desktop sticky shell overlap: ${JSON.stringify(overlap)}`);
+  }
+
+  await expectVisible(page, ".oc-code [data-code-copy]", "code copy button");
+  await expectVisible(page, ".page-status .page-status-beta", "page status badge");
+  await expectVisible(page, ".oc-code.has-line-numbers .code-line.is-highlighted", "line-highlighted code");
+  await expectVisible(page, ".oc-badge.oc-badge-orange", "badge");
+  await expectVisible(page, ".oc-panel", "panel");
+  await expectVisible(page, ".oc-prompt [data-prompt-copy]", "prompt copy");
+  await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
   const componentSkin = await page.evaluate(() => {
     const code = getComputedStyle(document.querySelector(".oc-code"));
     const pre = getComputedStyle(document.querySelector(".oc-code pre"));
