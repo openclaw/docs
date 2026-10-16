@@ -539,7 +539,8 @@ async function expectMermaidDiagrams(page) {
     ["flowchart LR", "Rendered"],
     ["stateDiagram-v2", "Complete"],
   ]) {
-    const svg = page.locator('.oc-mermaid.is-rendered[data-mermaid*="' + source + '"] svg').first();
+    // Expand controls contain SVG icons too; the direct child is the rendered diagram.
+    const svg = page.locator('.oc-mermaid.is-rendered[data-mermaid*="' + source + '"] > svg').first();
     await svg.waitFor({ state: "visible", timeout: 10000 });
     if (!(await svg.textContent()).includes(label)) {
       throw new Error(source + " rendered without its expected labels");
@@ -566,11 +567,11 @@ async function checkMermaid() {
   try {
     await page.goto(base + "/__elements", { waitUntil: "networkidle" });
     await checkMermaidContent(page);
-    const before = await page.locator(".oc-mermaid.is-rendered svg").evaluateAll((svgs) => svgs.map((svg) => svg.id));
+    const before = await page.locator(".oc-mermaid.is-rendered > svg").evaluateAll((svgs) => svgs.map((svg) => svg.id));
     const theme = await page.locator("html").getAttribute("data-theme");
     await page.locator(".header-row [data-theme-toggle]").click();
     await page.waitForFunction(({ ids, previousTheme }) => {
-      const svgs = [...document.querySelectorAll(".oc-mermaid.is-rendered svg")];
+      const svgs = [...document.querySelectorAll(".oc-mermaid.is-rendered > svg")];
       return document.documentElement.dataset.theme !== previousTheme
         && svgs.length === ids.length && svgs.every((svg, i) => svg.id !== ids[i]);
     }, { ids: before, previousTheme: theme });
@@ -627,6 +628,7 @@ async function checkMermaidContent(page) {
   }
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
   await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
   await page.goBack();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
@@ -642,6 +644,7 @@ async function checkMermaidContent(page) {
   }
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
   await page.keyboard.press("Meta+K");
   if (await page.locator(".search-modal.open").count()) {
     throw new Error("mermaid overlay allowed the search shortcut");
@@ -655,10 +658,12 @@ async function checkMermaidContent(page) {
     throw new Error(`mermaid overlay did not close on Escape: ${JSON.stringify(mermaidOverlayClose)}`);
   }
   await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
+  // Mermaid 12 reports the parser error; render IDs detect artifacts independent of that wording.
   const mermaidErrorLeak = await page.evaluate(() => ({
     bodyText: document.body.innerText.includes("Syntax error in text"),
     leakedSvg: [...document.querySelectorAll("svg")]
-      .some((svg) => !svg.closest("[data-mermaid]") && svg.textContent?.includes("Syntax error in text")),
+      .some((svg) => !svg.closest("[data-mermaid]")
+        && (svg.id.startsWith("oc_mermaid_") || svg.textContent?.includes("Syntax error in text"))),
   }));
   if (mermaidErrorLeak.bodyText || mermaidErrorLeak.leakedSvg) {
     throw new Error(`mermaid error artifact leaked into shell: ${JSON.stringify(mermaidErrorLeak)}`);
