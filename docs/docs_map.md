@@ -8357,6 +8357,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## plugins/agent-guidance.md
+
+- Route: /plugins/agent-guidance
+- Headings:
+  - H1: Agent Guidance
+  - H2: When to use it
+  - H2: Example: two agents, one shared file
+  - H2: Configure
+  - H2: Files And Placement
+  - H2: Update And Disable
+  - H2: Failure Behavior
+
 ## plugins/agentsapi.md
 
 - Route: /plugins/agentsapi
@@ -9567,6 +9579,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Review instructions
+
+## plugins/reference/agent-guidance.md
+
+- Route: /plugins/reference/agent-guidance
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
 
 ## plugins/reference/agentsapi.md
 

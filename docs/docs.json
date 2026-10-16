@@ -1770,6 +1770,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "plugins/agent-guidance",
                   "plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -3869,6 +3870,7 @@
               {
                 "group": "扩展",
                 "pages": [
+                  "zh-CN/plugins/agent-guidance",
                   "zh-CN/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -5934,6 +5936,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "zh-TW/plugins/agent-guidance",
                   "zh-TW/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -7999,6 +8002,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "ja-JP/plugins/agent-guidance",
                   "ja-JP/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -10064,6 +10068,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "es/plugins/agent-guidance",
                   "es/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -12129,6 +12134,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "pt-BR/plugins/agent-guidance",
                   "pt-BR/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -14194,6 +14200,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "ko/plugins/agent-guidance",
                   "ko/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -16259,6 +16266,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "de/plugins/agent-guidance",
                   "de/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -18324,6 +18332,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "fr/plugins/agent-guidance",
                   "fr/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -20389,6 +20398,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "hi/plugins/agent-guidance",
                   "hi/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -22454,6 +22464,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "ar/plugins/agent-guidance",
                   "ar/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -24519,6 +24530,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "it/plugins/agent-guidance",
                   "it/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -26584,6 +26596,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "vi/plugins/agent-guidance",
                   "vi/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -28649,6 +28662,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "nl/plugins/agent-guidance",
                   "nl/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -30714,6 +30728,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "fa/plugins/agent-guidance",
                   "fa/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -32779,6 +32794,7 @@
               {
                 "group": "Plugin kılavuzları",
                 "pages": [
+                  "tr/plugins/agent-guidance",
                   "tr/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -34844,6 +34860,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "uk/plugins/agent-guidance",
                   "uk/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -36909,6 +36926,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "id/plugins/agent-guidance",
                   "id/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -38974,6 +38992,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "pl/plugins/agent-guidance",
                   "pl/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -41039,6 +41058,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "th/plugins/agent-guidance",
                   "th/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -43104,6 +43124,7 @@
               {
                 "group": "Plugin guides",
                 "pages": [
+                  "ru/plugins/agent-guidance",
                   "ru/plugins/agentsapi",
                   {
                     "group": "Codex",
@@ -45169,6 +45190,7 @@
               {
                 "group": "Pluginguider",
                 "pages": [
+                  "sv/plugins/agent-guidance",
                   "sv/plugins/agentsapi",
                   {
                     "group": "Codex",
