@@ -15162,6 +15162,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/browser/troubleshooting
 - Headings:
+  - H2: Slow first browser request
   - H2: Inspection times out but screenshots work
   - H2: Output directory errors
   - H2: CDP startup failure vs navigation SSRF block
