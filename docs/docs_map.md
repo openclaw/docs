@@ -1239,7 +1239,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Lifecycle status reactions
   - H2: Reactions (message tool)
   - H2: Approval reactions
-  - H2: Question reactions
+  - H2: Agent questions
   - H2: Delivery targets (CLI/cron)
   - H2: Aliases
   - H2: Troubleshooting
@@ -1582,7 +1582,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Runtime model
   - H2: Call the current requester with MeowCaller (experimental)
   - H2: Approval prompts
-  - H2: Question reactions
+  - H2: Agent questions
   - H2: Plugin hooks and privacy
   - H2: Access control
   - H3: Access control and activation
