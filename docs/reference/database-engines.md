@@ -154,6 +154,8 @@ those stores still use SQLite. The port preflight refuses pending declared
 legacy migrations and names the repairs required before retrying the port.
 This includes native Codex task assignments, Matrix inbound dedupe, and legacy
 memory index sidecars.
+Fresh Matrix account roots without legacy inbound-dedupe rows do not need a
+migration completion receipt before porting.
 
 These migrations are SQLite-only. On PostgreSQL, Doctor records that they are
 not applicable instead of opening the local engine anchor as an application
