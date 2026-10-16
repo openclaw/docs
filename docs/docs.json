@@ -2529,6 +2529,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "gateway/postgresql",
                       "gateway/gateway-lock",
                       "gateway/background-process",
                       "gateway/restart-recovery",
@@ -4598,6 +4599,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "zh-CN/gateway/postgresql",
                       "zh-CN/gateway/gateway-lock",
                       "zh-CN/gateway/background-process",
                       "zh-CN/gateway/restart-recovery",
@@ -6667,6 +6669,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "zh-TW/gateway/postgresql",
                       "zh-TW/gateway/gateway-lock",
                       "zh-TW/gateway/background-process",
                       "zh-TW/gateway/restart-recovery",
@@ -8736,6 +8739,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "ja-JP/gateway/postgresql",
                       "ja-JP/gateway/gateway-lock",
                       "ja-JP/gateway/background-process",
                       "ja-JP/gateway/restart-recovery",
@@ -10805,6 +10809,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "es/gateway/postgresql",
                       "es/gateway/gateway-lock",
                       "es/gateway/background-process",
                       "es/gateway/restart-recovery",
@@ -12874,6 +12879,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "pt-BR/gateway/postgresql",
                       "pt-BR/gateway/gateway-lock",
                       "pt-BR/gateway/background-process",
                       "pt-BR/gateway/restart-recovery",
@@ -14943,6 +14949,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "ko/gateway/postgresql",
                       "ko/gateway/gateway-lock",
                       "ko/gateway/background-process",
                       "ko/gateway/restart-recovery",
@@ -17012,6 +17019,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "de/gateway/postgresql",
                       "de/gateway/gateway-lock",
                       "de/gateway/background-process",
                       "de/gateway/restart-recovery",
@@ -19081,6 +19089,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "fr/gateway/postgresql",
                       "fr/gateway/gateway-lock",
                       "fr/gateway/background-process",
                       "fr/gateway/restart-recovery",
@@ -21150,6 +21159,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "hi/gateway/postgresql",
                       "hi/gateway/gateway-lock",
                       "hi/gateway/background-process",
                       "hi/gateway/restart-recovery",
@@ -23219,6 +23229,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "ar/gateway/postgresql",
                       "ar/gateway/gateway-lock",
                       "ar/gateway/background-process",
                       "ar/gateway/restart-recovery",
@@ -25288,6 +25299,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "it/gateway/postgresql",
                       "it/gateway/gateway-lock",
                       "it/gateway/background-process",
                       "it/gateway/restart-recovery",
@@ -27357,6 +27369,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "vi/gateway/postgresql",
                       "vi/gateway/gateway-lock",
                       "vi/gateway/background-process",
                       "vi/gateway/restart-recovery",
@@ -29426,6 +29439,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "nl/gateway/postgresql",
                       "nl/gateway/gateway-lock",
                       "nl/gateway/background-process",
                       "nl/gateway/restart-recovery",
@@ -31495,6 +31509,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "fa/gateway/postgresql",
                       "fa/gateway/gateway-lock",
                       "fa/gateway/background-process",
                       "fa/gateway/restart-recovery",
@@ -33564,6 +33579,7 @@
                   {
                     "group": "Ölçeklendirme ve operasyonlar",
                     "pages": [
+                      "tr/gateway/postgresql",
                       "tr/gateway/gateway-lock",
                       "tr/gateway/background-process",
                       "tr/gateway/restart-recovery",
@@ -35633,6 +35649,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "uk/gateway/postgresql",
                       "uk/gateway/gateway-lock",
                       "uk/gateway/background-process",
                       "uk/gateway/restart-recovery",
@@ -37702,6 +37719,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "id/gateway/postgresql",
                       "id/gateway/gateway-lock",
                       "id/gateway/background-process",
                       "id/gateway/restart-recovery",
@@ -39771,6 +39789,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "pl/gateway/postgresql",
                       "pl/gateway/gateway-lock",
                       "pl/gateway/background-process",
                       "pl/gateway/restart-recovery",
@@ -41840,6 +41859,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "th/gateway/postgresql",
                       "th/gateway/gateway-lock",
                       "th/gateway/background-process",
                       "th/gateway/restart-recovery",
@@ -43909,6 +43929,7 @@
                   {
                     "group": "Scaling and operations",
                     "pages": [
+                      "ru/gateway/postgresql",
                       "ru/gateway/gateway-lock",
                       "ru/gateway/background-process",
                       "ru/gateway/restart-recovery",
@@ -45978,6 +45999,7 @@
                   {
                     "group": "Skalning och drift",
                     "pages": [
+                      "sv/gateway/postgresql",
                       "sv/gateway/gateway-lock",
                       "sv/gateway/background-process",
                       "sv/gateway/restart-recovery",

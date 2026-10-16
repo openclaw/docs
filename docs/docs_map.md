@@ -5646,6 +5646,31 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: The portal is not reachable from this browser
   - H3: Close a portal
 
+## gateway/postgresql.md
+
+- Route: /gateway/postgresql
+- Headings:
+  - H1: PostgreSQL operator guide
+  - H2: When to use PostgreSQL
+  - H2: Requirements
+  - H3: Provision a database and runtime role
+  - H3: Supply the connection securely
+  - H2: Set up a fresh installation
+  - H2: Run independent Gateways on one server
+  - H2: Mixed engines (experimental)
+  - H2: Migrate an existing installation
+  - H3: Prepare and port to PostgreSQL
+  - H3: Recover an interrupted port
+  - H3: Understand refusals
+  - H2: Backup and restore
+  - H3: Capture both server data and local state
+  - H3: Current restore limits
+  - H3: Disaster recovery for shared state and agents
+  - H2: Updates and schema migrations
+  - H2: Search on PostgreSQL
+  - H2: Monitoring and troubleshooting
+  - H2: Roll back to SQLite
+
 ## gateway/prometheus.md
 
 - Route: /gateway/prometheus
