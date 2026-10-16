@@ -1850,6 +1850,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Hourly main CI
   - H3: Restore per-push CI
   - H3: What stays on pushes
+  - H2: Weekly mobile store releases
   - H2: Nightly Full Release Validation
   - H2: OpenClaw Performance
   - H3: Gateway concurrency benchmark
@@ -9656,6 +9657,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/autoreview.md
+
+- Route: /plugins/reference/autoreview
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+
 ## plugins/reference/azure-speech.md
 
 - Route: /plugins/reference/azure-speech
@@ -14905,6 +14913,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tool schema
   - H2: Model guidance
   - H2: Related
+
+## tools/autoreview.md
+
+- Route: /tools/autoreview
+- Headings:
+  - H2: Enable
+  - H2: Inputs and results
 
 ## tools/brave-search.md
 
