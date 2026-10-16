@@ -9040,6 +9040,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Dock a conversation
   - H2: Build and reload
   - H3: Solid views
+  - H3: Packaged Settings presentations
   - H3: Bundle boundaries
   - H2: Approve an agent-built artifact
 
