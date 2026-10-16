@@ -11236,6 +11236,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Harness deletion companions
   - H3: Retained helper contracts
   - H3: Session header link helper
+  - H3: Private runtime facade exports
   - H3: Harness tool construction
   - H3: WebSocket options and constructors
   - H3: Gateway worker environment creation
