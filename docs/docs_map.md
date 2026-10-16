@@ -5270,6 +5270,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor/state-and-sessions
 - Headings:
+  - H2: Legacy data and PostgreSQL
   - H2: Checks 3-7b
 
 ## gateway/doctor/workspace-and-dreams.md
@@ -13080,6 +13081,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-engines
 - Headings:
   - H2: Configure PostgreSQL
+  - H3: Legacy data and PostgreSQL
   - H3: Mixed engines (experimental)
   - H2: Search on PostgreSQL
   - H2: Port existing stores
