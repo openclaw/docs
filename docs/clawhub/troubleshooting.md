@@ -135,12 +135,17 @@ clawhub update @openclaw/demo --force
 
 ## A plugin install fails in OpenClaw
 
-- Use an explicit ClawHub source:
+- Use the explicit ClawHub source on released OpenClaw versions through
+  `2026.10.4`. This form also works on updated builds:
 
 ```bash
 openclaw plugins install clawhub:<package>
 ```
 
+- Prefix-free commands require an updated main/dev build with ClawHub-default
+  support. On older versions, a bare package name can select npm instead.
+- If the plugin is only available on npm, use
+  `openclaw plugins install npm:<package>`.
 - Check the package detail page for scan status and compatibility metadata.
 - Confirm your OpenClaw version satisfies the package's advertised
   compatibility range.
