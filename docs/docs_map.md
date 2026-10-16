@@ -8442,6 +8442,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/architecture-internals/context-engines
 - Headings:
   - H2: Context engine plugins
+  - H3: Compaction progress
 
 ## plugins/architecture-internals/gateway-routes.md
 
