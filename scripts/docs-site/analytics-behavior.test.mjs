@@ -93,10 +93,15 @@ test("selection placement and sanitized destination share one event without chan
     articleLinks: `\n[Community](${destination})\n\n[External reference](https://example.org/guide?ref=docs#intro)\n\n[Product](https://openclaw.ai/install?ref=docs#intro)\n`,
   });
   page.setDefaultTimeout(5000);
-  // A 204 keeps same-tab external navigation on the fixture. No destination or
-  // collection request is forwarded and the actual anchor href is unchanged.
-  await context.route("**/*", route => route.request().isNavigationRequest() && new URL(route.request().url()).origin !== origin
-    ? route.fulfill({ status: 204 }) : route.fallback());
+  // Abort only after observing native navigation so the fixture stays loaded.
+  // A 204 response leaves Playwright 1.64's Chromium navigation waiter pending.
+  const navigations = [];
+  await page.route("**/*", route => {
+    const request = route.request();
+    if (!request.isNavigationRequest() || new URL(request.url()).origin === origin) return route.fallback();
+    navigations.push(request.url());
+    return route.abort("aborted");
+  });
   context.on("page", popup => popup.close().catch(() => {}));
   const count = (name, url) => wireEvents(collected).filter(event => event.en === name && (!url || event["ep.link_url"] === url));
   async function clickAndObserve(selector, placement, contentType, contentId, url, native = false) {
@@ -105,7 +110,21 @@ test("selection placement and sanitized destination share one event without chan
     const before = (await events("select_content")).length;
     const nativeBefore = count("click", url).length;
     const selectionBefore = count("select_content", url).length;
+    const sameTab = ["", "_self"].includes(await link.getAttribute("target") || "");
+    const navigationBefore = navigations.length;
+    const pageUrl = page.url();
     await link.click();
+    if (sameTab) {
+      assert.equal(navigations.length, navigationBefore + 1, "native same-tab navigation is observed before cancellation");
+      const requested = new URL(navigations.at(-1));
+      const expected = new URL(href, origin);
+      for (const destination of [requested, expected]) {
+        destination.searchParams.delete("_gl");
+        destination.hash = "";
+      }
+      assert.equal(requested.href, expected.href);
+      assert.equal(page.url(), pageUrl, "cancelled navigation leaves the fixture loaded");
+    }
     const selected = await events("select_content");
     assert.equal(selected.length, before + 1);
     assert.equal(selected.at(-1).ui_location, placement);

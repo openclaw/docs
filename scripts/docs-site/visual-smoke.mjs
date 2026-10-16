@@ -4,6 +4,11 @@ import http from "node:http";
 import path from "node:path";
 import { chromium } from "playwright";
 
+const accordionOnly = process.argv.includes("--accordion-only");
+if (process.argv.slice(2).some((arg) => arg !== "--accordion-only")) {
+  throw new Error("usage: visual-smoke.mjs [--accordion-only]");
+}
+
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
 const artifacts = process.env.DOCS_VISUAL_ARTIFACT_DIR || path.join(root, ".cache", "docs-visual");
@@ -34,22 +39,25 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 
 try {
-  await checkLanguageSelection();
-  await checkAccordionNavigation();
-  await checkLandingNavigation();
-  await checkPageBackground();
-  await checkCommunityBanner();
-  await checkHeaderSurface();
-  await checkFooterSocials();
-  await checkDesktop();
-  await checkTocScrollspy();
-  await checkTocRailScrolling();
-  await checkCompactToc();
-  await checkAmbientCodePage();
-  await checkMobile();
-  await checkRtlNavigationResize();
-  await checkLightMode();
-  console.log(`docs visual smoke ok: screenshots in ${path.relative(root, artifacts)}`);
+  const checks = accordionOnly ? [checkAccordionNavigation] : [
+    checkLanguageSelection,
+    checkAccordionNavigation,
+    checkLandingNavigation,
+    checkPageBackground,
+    checkCommunityBanner,
+    checkHeaderSurface,
+    checkFooterSocials,
+    checkDesktop,
+    checkTocScrollspy,
+    checkTocRailScrolling,
+    checkCompactToc,
+    checkAmbientCodePage,
+    checkMobile,
+    checkRtlNavigationResize,
+    checkLightMode,
+  ];
+  for (const check of checks) await check();
+  console.log(`docs ${accordionOnly ? "accordion" : "visual"} smoke ok: screenshots in ${path.relative(root, artifacts)}`);
 } finally {
   await browser.close();
   server.close();
@@ -111,6 +119,20 @@ async function checkAccordionNavigation() {
   for (const reducedMotion of ["no-preference", "reduce"]) {
     for (const hash of ["#nested-disclosure-target", "#release-source-target"]) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion });
+    let phase = "toc navigation";
+    await page.addInitScript(() => {
+      const events = window.__accordionEvents = [];
+      const record = (event) => {
+        if (event.type !== "scroll" && !event.target?.closest?.(".release-source-toggle")) return;
+        const source = document.querySelector(".release-source-toggle");
+        events.push({ type: event.type, key: event.key, code: event.code,
+          open: source?.open, focus: document.activeElement?.tagName, scrollY });
+        if (events.length > 32) events.shift();
+      };
+      for (const type of ["keydown", "keypress", "keyup", "click", "toggle", "scroll"]) {
+        document.addEventListener(type, record, { capture: true, passive: true });
+      }
+    });
     const assertTargetVisible = async () => {
       await page.waitForFunction((hash) => {
         const target = document.getElementById(hash.slice(1));
@@ -128,10 +150,12 @@ async function checkAccordionNavigation() {
       await page.locator(`.toc a[href="${hash}"]`).click();
       await assertTargetVisible();
 
+      phase = "direct fragment navigation";
       await page.goto("about:blank");
       await page.goto(`${base}/__elements${hash}`, { waitUntil: "networkidle" });
       await assertTargetVisible();
 
+      phase = "PJAX fragment navigation";
       await page.goto(`${base}/`, { waitUntil: "networkidle" });
       await page.evaluate((hash) => {
         const link = document.createElement("a");
@@ -144,6 +168,11 @@ async function checkAccordionNavigation() {
       await assertTargetVisible();
       if (hash === "#release-source-target") {
         const summary = page.locator(".release-source-toggle > summary");
+        phase = "pointer close and reopen";
+        // Fragment navigation leaves this summary under the sticky header. Keep the control and
+        // body in view before interacting; click auto-scrolling can align only the summary.
+        await summary.evaluate((element) => element.scrollIntoView({ block: "center", behavior: "instant" }));
+        await assertTargetVisible();
         // Interrupt closing with another pointer click, then check the nested body is not clipped.
         await summary.click();
         await summary.click();
@@ -152,12 +181,39 @@ async function checkAccordionNavigation() {
           const body = source.querySelector(".release-source-content");
           return source.open && body.getBoundingClientRect().bottom <= source.getBoundingClientRect().bottom + 1;
         });
+        await assertTargetVisible();
+        phase = "keyboard close";
         await summary.focus();
         await page.keyboard.press("Enter");
         if (await page.locator(".release-source-toggle").getAttribute("open") !== null) throw new Error("Sources must close with the keyboard");
+        phase = "keyboard reopen";
         await page.keyboard.press("Space");
         await assertTargetVisible();
       }
+      console.log(`accordion navigation ok: ${JSON.stringify({ browser: browser.version(), reducedMotion, hash })}`);
+    } catch (error) {
+      const state = await page.evaluate((hash) => {
+        const target = document.getElementById(hash.slice(1));
+        const ancestors = [];
+        for (let node = target?.parentElement; node && ancestors.length < 8; node = node.parentElement) {
+          if (node.tagName !== "DETAILS") continue;
+          const content = node.querySelector(":scope>.oc-accordion-content,:scope>.release-source-content");
+          const style = getComputedStyle(node, "::details-content");
+          ancestors.push({ className: node.className, open: node.open,
+            rect: node.getBoundingClientRect().toJSON(), content: content?.getBoundingClientRect().toJSON(),
+            measuredHeight: node.style.getPropertyValue("--accordion-content-height"),
+            height: style.height, contentVisibility: style.contentVisibility, overflow: style.overflow });
+        }
+        const summary = document.querySelector(".release-source-toggle > summary");
+        return { url: location.href, scrollY, viewport: [innerWidth, innerHeight],
+          reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+          target: target?.getBoundingClientRect().toJSON(), header: document.querySelector(".site-header")?.getBoundingClientRect().toJSON(),
+          summary: summary?.getBoundingClientRect().toJSON(), summaryFocused: document.activeElement === summary,
+          focusVisible: summary?.matches(":focus-visible"), ancestors, events: window.__accordionEvents };
+      }, hash).catch((diagnosticError) => ({ diagnosticError: diagnosticError.message }));
+      console.error(`accordion navigation failed: ${JSON.stringify({ browser: browser.version(), reducedMotion, hash, phase, state })}`);
+      await page.screenshot({ path: path.join(artifacts, `accordion-${reducedMotion}-${hash.slice(1)}.png`) }).catch(() => {});
+      throw error;
     } finally {
       await page.close();
     }
