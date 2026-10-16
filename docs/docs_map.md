@@ -11597,6 +11597,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/background-work
 - Headings:
   - H2: Background work namespaces
+  - H2: Native harness continuation retry settings
   - H2: Native harness completion delivery
 
 ## plugins/sdk-runtime/channel.md
