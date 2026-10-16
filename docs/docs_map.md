@@ -13051,6 +13051,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-engines
 - Headings:
   - H2: Configure PostgreSQL
+  - H3: Mixed engines (experimental)
   - H2: Search on PostgreSQL
   - H2: Port existing stores
   - H2: Several Gateways on one PostgreSQL server
