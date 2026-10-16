@@ -7322,6 +7322,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Build the default JIT executable
   - H2: Choose a compilation mode
+  - H2: Select embedded plugins
   - H2: Read the manifest
   - H3: macOS signing
   - H2: Update the complete artifact
