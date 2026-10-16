@@ -207,6 +207,10 @@
 @media (prefers-reduced-motion:reduce) {
   .docs-layout .doc .release-source-toggle > summary::before { transition: none; }}
 .docs-layout .doc .release-source-toggle > summary:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 2px; }
+/* Patch lists keep their detail control in the sentence's inline flow. */
+.docs-layout .doc li:has(> .release-source-inline) > p:first-child { display: inline; margin: 0; }
+.docs-layout .doc .release-source-inline { display: inline; }
+.docs-layout .doc .release-source-inline > summary { display: inline-flex; vertical-align: baseline; margin-inline-start: .35em; }
 @media (hover:hover) and (pointer:fine) {
   .docs-layout .doc .release-source-toggle > summary:hover::before { color: var(--ink); }}
 .docs-layout .doc > :is(p,ul,ol,blockquote) { max-inline-size: var(--docs-prose-measure); margin-block: 0 var(--docs-paragraph-gap); }
