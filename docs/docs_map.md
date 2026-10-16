@@ -9311,6 +9311,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: modelSupport reference
   - H2: modelCatalog reference
+  - H3: Task-specific inference metadata
   - H2: modelIdNormalization reference
   - H2: modelPricing reference
   - H3: OpenClaw Provider Index
