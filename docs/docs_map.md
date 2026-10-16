@@ -5215,6 +5215,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor/config-migrations
 - Headings:
+  - H2: Group allowlist fallback
   - H2: Cloud setup secret migration
   - H2: Runtime config migration
   - H2: Direct Ollama Cloud routing
