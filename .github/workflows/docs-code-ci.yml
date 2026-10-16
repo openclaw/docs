@@ -85,5 +85,8 @@ jobs:
       - name: Visual smoke
         run: npm run docs:visual
 
+      - name: Mermaid in WebKit
+        run: npm run docs:visual -- --mermaid-only --webkit
+
       - name: Community invitation in Chromium and WebKit
         run: npm run docs:visual:community

@@ -413,6 +413,13 @@ flowchart LR
 \`\`\`
 
 <Mermaid>
+stateDiagram-v2
+  [*] --> Ready
+  Ready --> Complete
+  Complete --> [*]
+</Mermaid>
+
+<Mermaid>
 flowchart LR
   Broken -->
 </Mermaid>

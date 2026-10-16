@@ -2,11 +2,14 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 const accordionOnly = process.argv.includes("--accordion-only");
-if (process.argv.slice(2).some((arg) => arg !== "--accordion-only")) {
-  throw new Error("usage: visual-smoke.mjs [--accordion-only]");
+const mermaidOnly = process.argv.includes("--mermaid-only");
+const useWebkit = process.argv.includes("--webkit");
+if (process.argv.slice(2).some((arg) => !["--accordion-only", "--mermaid-only", "--webkit"].includes(arg))
+  || (accordionOnly && mermaidOnly) || (useWebkit && !mermaidOnly)) {
+  throw new Error("usage: visual-smoke.mjs [--accordion-only | --mermaid-only [--webkit]]");
 }
 
 const root = process.cwd();
@@ -36,10 +39,10 @@ const server = http.createServer((req, res) => {
 
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true });
+const browser = await (useWebkit ? webkit : chromium).launch({ headless: true });
 
 try {
-  const checks = accordionOnly ? [checkAccordionNavigation] : [
+  const checks = accordionOnly ? [checkAccordionNavigation] : mermaidOnly ? [checkMermaid] : [
     checkLanguageSelection,
     checkAccordionNavigation,
     checkLandingNavigation,
@@ -48,6 +51,7 @@ try {
     checkHeaderSurface,
     checkFooterSocials,
     checkDesktop,
+    checkMermaid,
     checkTocScrollspy,
     checkTocRailScrolling,
     checkCompactToc,
@@ -57,7 +61,7 @@ try {
     checkLightMode,
   ];
   for (const check of checks) await check();
-  console.log(`docs ${accordionOnly ? "accordion" : "visual"} smoke ok: screenshots in ${path.relative(root, artifacts)}`);
+  console.log(`docs ${accordionOnly ? "accordion" : mermaidOnly ? "mermaid" : "visual"} smoke ok: screenshots in ${path.relative(root, artifacts)}`);
 } finally {
   await browser.close();
   server.close();
@@ -529,6 +533,143 @@ async function checkFooterSocials() {
   } finally { await page.close(); }
 }
 
+async function expectMermaidDiagrams(page) {
+  for (const [source, label] of [
+    ["sequenceDiagram", "healthy"],
+    ["flowchart LR", "Rendered"],
+    ["stateDiagram-v2", "Complete"],
+  ]) {
+    // Expand controls contain SVG icons too; the direct child is the rendered diagram.
+    const svg = page.locator('.oc-mermaid.is-rendered[data-mermaid*="' + source + '"] > svg').first();
+    await svg.waitFor({ state: "visible", timeout: 10000 });
+    if (!(await svg.textContent()).includes(label)) {
+      throw new Error(source + " rendered without its expected labels");
+    }
+  }
+}
+
+async function navigateMermaidPage(page, route) {
+  await page.evaluate((href) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = "Mermaid navigation target";
+    document.querySelector(".doc").prepend(link);
+  }, route);
+  await page.getByRole("link", { name: "Mermaid navigation target", exact: true }).click();
+  await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === route.replace(/\/$/, ""));
+  if (!await page.evaluate(() => window.__mermaidNavigationProbe === true)) {
+    throw new Error("Mermaid navigation fell back to a full page load");
+  }
+}
+
+async function checkMermaid() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  try {
+    await page.goto(base + "/__elements", { waitUntil: "networkidle" });
+    await checkMermaidContent(page);
+    const before = await page.locator(".oc-mermaid.is-rendered > svg").evaluateAll((svgs) => svgs.map((svg) => svg.id));
+    const theme = await page.locator("html").getAttribute("data-theme");
+    await page.locator(".header-row [data-theme-toggle]").click();
+    await page.waitForFunction(({ ids, previousTheme }) => {
+      const svgs = [...document.querySelectorAll(".oc-mermaid.is-rendered > svg")];
+      return document.documentElement.dataset.theme !== previousTheme
+        && svgs.length === ids.length && svgs.every((svg, i) => svg.id !== ids[i]);
+    }, { ids: before, previousTheme: theme });
+    await expectMermaidDiagrams(page);
+    await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
+    await page.evaluate(() => { window.__mermaidNavigationProbe = true; });
+    await page.locator("[data-mermaid-expand]").first().click();
+    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    // Use the normal link handler so the cached module and overlay lifecycle survive PJAX.
+    await page.keyboard.press("Escape");
+    await navigateMermaidPage(page, "/");
+    if (await page.locator("[data-mermaid-overlay].open").count()
+      || await page.locator("body.has-mermaid-overlay").count()) {
+      throw new Error("Mermaid overlay state leaked across page navigation");
+    }
+    await navigateMermaidPage(page, "/__elements");
+    await expectMermaidDiagrams(page);
+    await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
+    await page.locator("[data-mermaid-expand]").first().click();
+    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    await page.keyboard.press("Escape");
+  } finally {
+    await page.close();
+  }
+}
+
+async function checkMermaidContent(page) {
+  await expectVisible(page, ".oc-mermaid", "mermaid block");
+  await expectMermaidDiagrams(page);
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll(".oc-mermaid.is-rendered")]
+      .some((block) => block.getAttribute("data-mermaid")?.includes("<br>") && block.querySelector("svg"))
+  );
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.keyboard.press("Tab");
+  const mermaidOverlayFocus = await page.evaluate(() => ({
+    activeInOverlay: Boolean(document.querySelector("[data-mermaid-overlay].open")?.contains(document.activeElement)),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (!mermaidOverlayFocus.activeInOverlay || !mermaidOverlayFocus.bodyLocked) {
+    throw new Error(`mermaid overlay focus trap failed: ${JSON.stringify(mermaidOverlayFocus)}`);
+  }
+  await page.locator("[data-mermaid-overlay-canvas]").click({ position: { x: 8, y: 8 } });
+  if (!await page.locator("[data-mermaid-overlay].open").count()) {
+    throw new Error("clicking inside the diagram dismissed it");
+  }
+  await page.locator(".oc-mermaid-overlay-head").click({ position: { x: 8, y: 8 } });
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
+  if (!await page.evaluate(() => document.activeElement?.matches("[data-mermaid-expand]")
+    && !document.body.classList.contains("has-mermaid-overlay"))) {
+    throw new Error("backdrop dismissal did not restore focus and scrolling");
+  }
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
+  await page.goBack();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
+  const sameDocumentOverlayClose = await page.evaluate(() => ({
+    pathname: location.pathname,
+    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (sameDocumentOverlayClose.pathname !== "/__elements"
+    || sameDocumentOverlayClose.overlayOpen
+    || sameDocumentOverlayClose.bodyLocked) {
+    throw new Error(`same-document history left mermaid overlay open: ${JSON.stringify(sameDocumentOverlayClose)}`);
+  }
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.keyboard.press("Meta+K");
+  if (await page.locator(".search-modal.open").count()) {
+    throw new Error("mermaid overlay allowed the search shortcut");
+  }
+  await page.keyboard.press("Escape");
+  const mermaidOverlayClose = await page.evaluate(() => ({
+    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (mermaidOverlayClose.overlayOpen || mermaidOverlayClose.bodyLocked) {
+    throw new Error(`mermaid overlay did not close on Escape: ${JSON.stringify(mermaidOverlayClose)}`);
+  }
+  await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
+  // Mermaid 12 reports the parser error; render IDs detect artifacts independent of that wording.
+  const mermaidErrorLeak = await page.evaluate(() => ({
+    bodyText: document.body.innerText.includes("Syntax error in text"),
+    leakedSvg: [...document.querySelectorAll("svg")]
+      .some((svg) => !svg.closest("[data-mermaid]")
+        && (svg.id.startsWith("oc_mermaid_") || svg.textContent?.includes("Syntax error in text"))),
+  }));
+  if (mermaidErrorLeak.bodyText || mermaidErrorLeak.leakedSvg) {
+    throw new Error(`mermaid error artifact leaked into shell: ${JSON.stringify(mermaidErrorLeak)}`);
+  }
+}
+
 async function checkDesktop() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
@@ -557,70 +698,6 @@ async function checkDesktop() {
   await expectVisible(page, ".oc-panel", "panel");
   await expectVisible(page, ".oc-prompt [data-prompt-copy]", "prompt copy");
   await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
-  await expectVisible(page, ".oc-mermaid", "mermaid block");
-  await page.locator(".oc-mermaid.is-rendered svg").first().waitFor({ state: "visible", timeout: 10000 });
-  await page.waitForFunction(() =>
-    [...document.querySelectorAll(".oc-mermaid.is-rendered")]
-      .some((block) => block.getAttribute("data-mermaid")?.includes("<br>") && block.querySelector("svg"))
-  );
-  await page.locator("[data-mermaid-expand]").first().click();
-  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.keyboard.press("Tab");
-  const mermaidOverlayFocus = await page.evaluate(() => ({
-    activeInOverlay: Boolean(document.querySelector("[data-mermaid-overlay].open")?.contains(document.activeElement)),
-    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
-  }));
-  if (!mermaidOverlayFocus.activeInOverlay || !mermaidOverlayFocus.bodyLocked) {
-    throw new Error(`mermaid overlay focus trap failed: ${JSON.stringify(mermaidOverlayFocus)}`);
-  }
-  await page.locator("[data-mermaid-overlay-canvas]").click({ position: { x: 8, y: 8 } });
-  if (!await page.locator("[data-mermaid-overlay].open").count()) {
-    throw new Error("clicking inside the diagram dismissed it");
-  }
-  await page.locator(".oc-mermaid-overlay-head").click({ position: { x: 8, y: 8 } });
-  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
-  if (!await page.evaluate(() => document.activeElement?.matches("[data-mermaid-expand]")
-    && !document.body.classList.contains("has-mermaid-overlay"))) {
-    throw new Error("backdrop dismissal did not restore focus and scrolling");
-  }
-  await page.locator("[data-mermaid-expand]").first().click();
-  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
-  await page.goBack();
-  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
-  const sameDocumentOverlayClose = await page.evaluate(() => ({
-    pathname: location.pathname,
-    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
-    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
-  }));
-  if (sameDocumentOverlayClose.pathname !== "/__elements"
-    || sameDocumentOverlayClose.overlayOpen
-    || sameDocumentOverlayClose.bodyLocked) {
-    throw new Error(`same-document history left mermaid overlay open: ${JSON.stringify(sameDocumentOverlayClose)}`);
-  }
-  await page.locator("[data-mermaid-expand]").first().click();
-  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.keyboard.press("Meta+K");
-  if (await page.locator(".search-modal.open").count()) {
-    throw new Error("mermaid overlay allowed the search shortcut");
-  }
-  await page.keyboard.press("Escape");
-  const mermaidOverlayClose = await page.evaluate(() => ({
-    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
-    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
-  }));
-  if (mermaidOverlayClose.overlayOpen || mermaidOverlayClose.bodyLocked) {
-    throw new Error(`mermaid overlay did not close on Escape: ${JSON.stringify(mermaidOverlayClose)}`);
-  }
-  await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
-  const mermaidErrorLeak = await page.evaluate(() => ({
-    bodyText: document.body.innerText.includes("Syntax error in text"),
-    leakedSvg: [...document.querySelectorAll("svg")]
-      .some((svg) => !svg.closest("[data-mermaid]") && svg.textContent?.includes("Syntax error in text")),
-  }));
-  if (mermaidErrorLeak.bodyText || mermaidErrorLeak.leakedSvg) {
-    throw new Error(`mermaid error artifact leaked into shell: ${JSON.stringify(mermaidErrorLeak)}`);
-  }
   const componentSkin = await page.evaluate(() => {
     const code = getComputedStyle(document.querySelector(".oc-code"));
     const pre = getComputedStyle(document.querySelector(".oc-code pre"));
