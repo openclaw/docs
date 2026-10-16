@@ -7401,6 +7401,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/updating
 - Headings:
   - H2: Update implementation contract
+  - H3: Migration integrity checks
   - H2: Retired tenant-container management
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
