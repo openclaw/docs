@@ -10405,6 +10405,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/omlx.md
+
+- Route: /plugins/reference/omlx
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/onepassword.md
 
 - Route: /plugins/reference/onepassword
@@ -12567,6 +12575,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/ollama/web-search
 - Headings:
   - H2: Ollama Web Search
+
+## providers/omlx.md
+
+- Route: /providers/omlx
+- Headings:
+  - H2: Quick start
+  - H3: Install and start oMLX
+  - H3: Connect OpenClaw
+  - H2: Memory embeddings
+  - H2: Server URL and authentication
+  - H2: Non-interactive onboarding
+  - H2: Troubleshooting
+  - H2: Related
 
 ## providers/openai.md
 

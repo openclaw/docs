@@ -2320,6 +2320,7 @@
                           "providers/ollama/troubleshooting"
                         ]
                       },
+                      "providers/omlx",
                       "providers/sglang",
                       "providers/vllm"
                     ]
@@ -4388,6 +4389,7 @@
                           "zh-CN/providers/ollama/troubleshooting"
                         ]
                       },
+                      "zh-CN/providers/omlx",
                       "zh-CN/providers/sglang",
                       "zh-CN/providers/vllm"
                     ]
@@ -6456,6 +6458,7 @@
                           "zh-TW/providers/ollama/troubleshooting"
                         ]
                       },
+                      "zh-TW/providers/omlx",
                       "zh-TW/providers/sglang",
                       "zh-TW/providers/vllm"
                     ]
@@ -8524,6 +8527,7 @@
                           "ja-JP/providers/ollama/troubleshooting"
                         ]
                       },
+                      "ja-JP/providers/omlx",
                       "ja-JP/providers/sglang",
                       "ja-JP/providers/vllm"
                     ]
@@ -10592,6 +10596,7 @@
                           "es/providers/ollama/troubleshooting"
                         ]
                       },
+                      "es/providers/omlx",
                       "es/providers/sglang",
                       "es/providers/vllm"
                     ]
@@ -12660,6 +12665,7 @@
                           "pt-BR/providers/ollama/troubleshooting"
                         ]
                       },
+                      "pt-BR/providers/omlx",
                       "pt-BR/providers/sglang",
                       "pt-BR/providers/vllm"
                     ]
@@ -14728,6 +14734,7 @@
                           "ko/providers/ollama/troubleshooting"
                         ]
                       },
+                      "ko/providers/omlx",
                       "ko/providers/sglang",
                       "ko/providers/vllm"
                     ]
@@ -16796,6 +16803,7 @@
                           "de/providers/ollama/troubleshooting"
                         ]
                       },
+                      "de/providers/omlx",
                       "de/providers/sglang",
                       "de/providers/vllm"
                     ]
@@ -18864,6 +18872,7 @@
                           "fr/providers/ollama/troubleshooting"
                         ]
                       },
+                      "fr/providers/omlx",
                       "fr/providers/sglang",
                       "fr/providers/vllm"
                     ]
@@ -20932,6 +20941,7 @@
                           "hi/providers/ollama/troubleshooting"
                         ]
                       },
+                      "hi/providers/omlx",
                       "hi/providers/sglang",
                       "hi/providers/vllm"
                     ]
@@ -23000,6 +23010,7 @@
                           "ar/providers/ollama/troubleshooting"
                         ]
                       },
+                      "ar/providers/omlx",
                       "ar/providers/sglang",
                       "ar/providers/vllm"
                     ]
@@ -25068,6 +25079,7 @@
                           "it/providers/ollama/troubleshooting"
                         ]
                       },
+                      "it/providers/omlx",
                       "it/providers/sglang",
                       "it/providers/vllm"
                     ]
@@ -27136,6 +27148,7 @@
                           "vi/providers/ollama/troubleshooting"
                         ]
                       },
+                      "vi/providers/omlx",
                       "vi/providers/sglang",
                       "vi/providers/vllm"
                     ]
@@ -29204,6 +29217,7 @@
                           "nl/providers/ollama/troubleshooting"
                         ]
                       },
+                      "nl/providers/omlx",
                       "nl/providers/sglang",
                       "nl/providers/vllm"
                     ]
@@ -31272,6 +31286,7 @@
                           "fa/providers/ollama/troubleshooting"
                         ]
                       },
+                      "fa/providers/omlx",
                       "fa/providers/sglang",
                       "fa/providers/vllm"
                     ]
@@ -33340,6 +33355,7 @@
                           "tr/providers/ollama/troubleshooting"
                         ]
                       },
+                      "tr/providers/omlx",
                       "tr/providers/sglang",
                       "tr/providers/vllm"
                     ]
@@ -35408,6 +35424,7 @@
                           "uk/providers/ollama/troubleshooting"
                         ]
                       },
+                      "uk/providers/omlx",
                       "uk/providers/sglang",
                       "uk/providers/vllm"
                     ]
@@ -37476,6 +37493,7 @@
                           "id/providers/ollama/troubleshooting"
                         ]
                       },
+                      "id/providers/omlx",
                       "id/providers/sglang",
                       "id/providers/vllm"
                     ]
@@ -39544,6 +39562,7 @@
                           "pl/providers/ollama/troubleshooting"
                         ]
                       },
+                      "pl/providers/omlx",
                       "pl/providers/sglang",
                       "pl/providers/vllm"
                     ]
@@ -41612,6 +41631,7 @@
                           "th/providers/ollama/troubleshooting"
                         ]
                       },
+                      "th/providers/omlx",
                       "th/providers/sglang",
                       "th/providers/vllm"
                     ]
@@ -43680,6 +43700,7 @@
                           "ru/providers/ollama/troubleshooting"
                         ]
                       },
+                      "ru/providers/omlx",
                       "ru/providers/sglang",
                       "ru/providers/vllm"
                     ]
@@ -45748,6 +45769,7 @@
                           "sv/providers/ollama/troubleshooting"
                         ]
                       },
+                      "sv/providers/omlx",
                       "sv/providers/sglang",
                       "sv/providers/vllm"
                     ]
