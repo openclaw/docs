@@ -1612,6 +1612,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Public work sessions
   - H2: Work sessions and replies
   - H2: Reply outcomes and failures
+  - H2: Native proof attachments
   - H2: Manage the allowlist
   - H2: Verify GitHub collaborators
   - H3: Trust model
