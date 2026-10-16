@@ -342,6 +342,14 @@ bodies for turn appends). This count excludes optional initialization headers.
 The reported `phases.sqlMs` includes synchronous JavaScript work inside the
 transaction; it is not a sum of SQLite statement timings.
 
+The model-context reader retains the latest transcript's navigation and exact model
+byte costs on its admitted connection. Appends extend the canonical branch scanner
+from the committed sequence; same-generation metadata rewrites invalidate only the
+affected 512-row pages through writer receipts. Replacement and destructive rewrites
+discard the cached generation. Payloads remain in SQL until context selection, and
+the connection releases navigation on disposal. This trades retained navigation
+metadata for bounded warm reads without changing prompt bytes or window selection.
+
 Cold input preparation uses the turn planner instead of fetching a full actor
 replica first. The planner carries its recovery expectation into the input
 command; prepared, explicit, and warm replica expectations remain fixed across
