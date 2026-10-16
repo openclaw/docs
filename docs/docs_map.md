@@ -13467,6 +13467,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/pr-tooling
 - Headings:
   - H1: PR wrapper tooling
+  - H2: Captured baseline evidence hashes
   - H2: Rerun failed CI tests
 
 ## reference/scripts/prior-ci.md
