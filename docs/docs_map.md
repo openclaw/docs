@@ -124,6 +124,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Payloads
   - H3: Agent-turn options
+  - H3: Inference account continuity
   - H3: Command payloads
   - H3: Script payloads
   - H2: Authoring recurring jobs
@@ -4212,6 +4213,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/session-tool
 - Headings:
   - H2: Available tools
+  - H2: Creating an independent session
   - H2: Listing and reading sessions
   - H2: Managing session settings and groups
   - H2: Sessions versus conversations
@@ -7065,6 +7067,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Local prefix installer (install-cli.sh)
   - H3: npm, pnpm, or bun
   - H3: From source
+  - H3: Standalone builds
   - H3: Install from the GitHub main checkout
   - H3: Containers and package managers
   - H2: Verify the install
@@ -7312,6 +7315,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Data loss after redeploy
   - H3: Health check failures
   - H2: Next steps
+
+## install/standalone.md
+
+- Route: /install/standalone
+- Headings:
+  - H2: Build the default JIT executable
+  - H2: Choose a compilation mode
+  - H2: Read the manifest
+  - H3: macOS signing
+  - H2: Update the complete artifact
+  - H2: Runtime contents and limits
+  - H2: Qualify an artifact before packaging
 
 ## install/uninstall.md
 
@@ -9030,6 +9045,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: GitHub
   - H2: Upgrading with an existing plugin allowlist
   - H2: Read an item beside chat
+  - H2: Ask the agent to read an item
+  - H2: Ask the agent to find issues or pull requests
   - H2: Enable or disable the plugin
   - H2: Limits and unavailable content
   - H2: Plugin author integration
@@ -11501,6 +11518,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser meeting status ownership
   - H2: Browser meeting participation
   - H2: Worker provider allocation authority
+  - H2: Harness execution identity
   - H2: Other top-level api fields
   - H2: Where each section moved
   - H2: Related
@@ -11729,6 +11747,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Local System One server
   - H3: Run Kev
   - H3: Connect OpenClaw
+  - H2: Custom endpoint and provider request settings
   - H2: Decision contract
   - H2: Agent evaluation tool
   - H2: Existing external installation
@@ -12148,7 +12167,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Hosted S2.1
   - H3: Hosted models
   - H3: Expressive speech
-  - H3: Drama 3 preview
+  - H3: Drama 3
   - H3: Voice selection and cloning
   - H2: Local S2 Pro on macOS
   - H3: Local reference voice
@@ -12825,6 +12844,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Model discovery (implicit provider)
+  - H3: Serving context limits
   - H2: Explicit configuration
   - H2: Advanced configuration
   - H3: Prioritize interactive requests
@@ -12955,6 +12975,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Version naming
   - H2: Release cadence
   - H2: Release validation
+  - H3: Operator capabilities
   - H3: Plugin SDK evidence transport
   - H3: Frozen qualification identity
   - H2: Packages and apps can become available at different times
@@ -12996,7 +13017,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-engines
 - Headings:
   - H2: Configure PostgreSQL
-  - H2: Port existing workboard stores
+  - H2: Port existing stores
   - H2: Isolation and durability
   - H2: Anchors and backups
   - H2: Updates and target compatibility
@@ -13017,11 +13038,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Agent schema history
   - H3: Context-engine outbox FIFO sequence
   - H3: JSON predicate columns
-  - H3: Canonical writer validation
+  - H3: Session writer validation
   - H3: Session hot facts and snapshots
   - H3: Compact agent payload storage
   - H3: Transcript FTS row ownership
-  - H3: Incremental canonical-session validation
+  - H3: Incremental stored-session validation
   - H3: Cold transcript storage
   - H3: Creator namespace migration
   - H3: Participant identity migration
@@ -13091,6 +13112,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 24
+  - H3: State schema 23
   - H3: State schema 22
   - H3: State schema 21
   - H3: State schema 20
@@ -13109,7 +13132,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/storage-changes
 - Headings:
   - H2: Agent JSON predicate columns
-  - H2: Canonical writer validation
+  - H2: Session writer validation
   - H2: Preparing for another database backend
   - H3: Shared-state PostgreSQL schema generation
   - H3: Experimental PostgreSQL engine (workboard pilot)
@@ -13730,6 +13753,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test/remote-proof
 - Headings:
   - H2: Remote proof policy for agents
+  - H2: Focused Android proof
   - H2: Testbox runner sizing
   - H2: Crabbox repository setup
 
@@ -14469,7 +14493,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Ownership
   - H2: Catalog flow
   - H2: Operator CLI boundary
-  - H2: Canonical message forks
+  - H2: OpenClaw message forks
   - H2: Local continuation
   - H2: Archive behavior
   - H2: Active thread safety
@@ -15054,6 +15078,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/code-mode
 - Headings:
   - H2: What it does
+  - H2: Creating sessions from Code Mode
   - H2: Why use it
   - H2: Technical tour
   - H2: Where each section moved
@@ -16096,6 +16121,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Firecrawl fallback
   - H2: Custom request headers
   - H2: Trusted env proxy
+  - H2: Saved output
   - H2: Limits and safety
   - H2: Tool profiles
   - H2: Related
@@ -16143,6 +16169,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui
 - Headings:
   - H2: Browser requirements
+  - H2: Download files
   - H2: Take a photo in chat
   - H2: Watch a desktop in Picture-in-Picture
   - H2: Quick open (local)
@@ -16155,11 +16182,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui/chat
 - Headings:
+  - H2: Image viewing
   - H2: Collaborator drafts
   - H2: Reactions
   - H2: Session rail and side chat
   - H2: Session links in messages
   - H2: Suggested tasks
+  - H2: Composer predictions
   - H2: Composer capability menu
   - H2: Emoji shortcodes
   - H2: JSON in chat

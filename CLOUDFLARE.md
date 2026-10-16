@@ -319,5 +319,12 @@ Expected results:
 
 ## Recovery
 
+The router retains custom logs and uncaught exceptions at full sampling. Routine
+per-request invocation logs and tracing are disabled, and request URL query strings
+are redacted. This preserves failure evidence without a log for every successful
+asset request. The configuration takes effect after Worker deployment and cannot
+recover errors from periods when logging was disabled. Inspect Worker logs alongside
+HTTP response-status analytics; an explicit HTTP 5xx response need not throw an exception.
+
 For a router regression, use Cloudflare's deployment history to roll back to the
 prior Worker version, then rerun live smoke. Routine deployment does not change DNS.

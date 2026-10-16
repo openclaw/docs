@@ -1385,6 +1385,7 @@
                   "install/node-compatibility",
                   "install/bun",
                   "install/bun-compatibility",
+                  "install/standalone",
                   "install/nix"
                 ]
               },
@@ -3483,6 +3484,7 @@
                   "zh-CN/install/node-compatibility",
                   "zh-CN/install/bun",
                   "zh-CN/install/bun-compatibility",
+                  "zh-CN/install/standalone",
                   "zh-CN/install/nix"
                 ]
               },
@@ -5547,6 +5549,7 @@
                   "zh-TW/install/node-compatibility",
                   "zh-TW/install/bun",
                   "zh-TW/install/bun-compatibility",
+                  "zh-TW/install/standalone",
                   "zh-TW/install/nix"
                 ]
               },
@@ -7611,6 +7614,7 @@
                   "ja-JP/install/node-compatibility",
                   "ja-JP/install/bun",
                   "ja-JP/install/bun-compatibility",
+                  "ja-JP/install/standalone",
                   "ja-JP/install/nix"
                 ]
               },
@@ -9675,6 +9679,7 @@
                   "es/install/node-compatibility",
                   "es/install/bun",
                   "es/install/bun-compatibility",
+                  "es/install/standalone",
                   "es/install/nix"
                 ]
               },
@@ -11739,6 +11744,7 @@
                   "pt-BR/install/node-compatibility",
                   "pt-BR/install/bun",
                   "pt-BR/install/bun-compatibility",
+                  "pt-BR/install/standalone",
                   "pt-BR/install/nix"
                 ]
               },
@@ -13803,6 +13809,7 @@
                   "ko/install/node-compatibility",
                   "ko/install/bun",
                   "ko/install/bun-compatibility",
+                  "ko/install/standalone",
                   "ko/install/nix"
                 ]
               },
@@ -15867,6 +15874,7 @@
                   "de/install/node-compatibility",
                   "de/install/bun",
                   "de/install/bun-compatibility",
+                  "de/install/standalone",
                   "de/install/nix"
                 ]
               },
@@ -17931,6 +17939,7 @@
                   "fr/install/node-compatibility",
                   "fr/install/bun",
                   "fr/install/bun-compatibility",
+                  "fr/install/standalone",
                   "fr/install/nix"
                 ]
               },
@@ -19995,6 +20004,7 @@
                   "hi/install/node-compatibility",
                   "hi/install/bun",
                   "hi/install/bun-compatibility",
+                  "hi/install/standalone",
                   "hi/install/nix"
                 ]
               },
@@ -22059,6 +22069,7 @@
                   "ar/install/node-compatibility",
                   "ar/install/bun",
                   "ar/install/bun-compatibility",
+                  "ar/install/standalone",
                   "ar/install/nix"
                 ]
               },
@@ -24123,6 +24134,7 @@
                   "it/install/node-compatibility",
                   "it/install/bun",
                   "it/install/bun-compatibility",
+                  "it/install/standalone",
                   "it/install/nix"
                 ]
               },
@@ -26187,6 +26199,7 @@
                   "vi/install/node-compatibility",
                   "vi/install/bun",
                   "vi/install/bun-compatibility",
+                  "vi/install/standalone",
                   "vi/install/nix"
                 ]
               },
@@ -28251,6 +28264,7 @@
                   "nl/install/node-compatibility",
                   "nl/install/bun",
                   "nl/install/bun-compatibility",
+                  "nl/install/standalone",
                   "nl/install/nix"
                 ]
               },
@@ -30315,6 +30329,7 @@
                   "fa/install/node-compatibility",
                   "fa/install/bun",
                   "fa/install/bun-compatibility",
+                  "fa/install/standalone",
                   "fa/install/nix"
                 ]
               },
@@ -32379,6 +32394,7 @@
                   "tr/install/node-compatibility",
                   "tr/install/bun",
                   "tr/install/bun-compatibility",
+                  "tr/install/standalone",
                   "tr/install/nix"
                 ]
               },
@@ -34443,6 +34459,7 @@
                   "uk/install/node-compatibility",
                   "uk/install/bun",
                   "uk/install/bun-compatibility",
+                  "uk/install/standalone",
                   "uk/install/nix"
                 ]
               },
@@ -36507,6 +36524,7 @@
                   "id/install/node-compatibility",
                   "id/install/bun",
                   "id/install/bun-compatibility",
+                  "id/install/standalone",
                   "id/install/nix"
                 ]
               },
@@ -38571,6 +38589,7 @@
                   "pl/install/node-compatibility",
                   "pl/install/bun",
                   "pl/install/bun-compatibility",
+                  "pl/install/standalone",
                   "pl/install/nix"
                 ]
               },
@@ -40635,6 +40654,7 @@
                   "th/install/node-compatibility",
                   "th/install/bun",
                   "th/install/bun-compatibility",
+                  "th/install/standalone",
                   "th/install/nix"
                 ]
               },
@@ -42699,6 +42719,7 @@
                   "ru/install/node-compatibility",
                   "ru/install/bun",
                   "ru/install/bun-compatibility",
+                  "ru/install/standalone",
                   "ru/install/nix"
                 ]
               },
@@ -44763,6 +44784,7 @@
                   "sv/install/node-compatibility",
                   "sv/install/bun",
                   "sv/install/bun-compatibility",
+                  "sv/install/standalone",
                   "sv/install/nix"
                 ]
               },
