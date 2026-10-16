@@ -13227,6 +13227,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/versioning
 - Headings:
   - H2: Versioning contract
+  - H3: Local credential-store preparation
   - H3: Schema bumps and older updaters
   - H3: Profile-owned skill library
   - H2: Declared migration backup scopes
