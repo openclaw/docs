@@ -12718,6 +12718,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Getting started
   - H2: Config example
   - H2: Model references
+  - H2: Typed decisions with Jev
   - H2: Image generation
   - H2: Video generation
   - H2: Music generation
