@@ -236,6 +236,13 @@ auth profile suffixes, and the host-owned calling plugin identity. Reported USD
 costs, including zero, win over prepared token rates. Unknown route pricing stays
 unknown. Estimates enter accounting only; returned usage keeps provider facts.
 
+The core `decision_evaluate` tool also uses V2 execution while retaining its bounded
+Boolean/Choice/Score input shape. It exposes accepted native answers, abstention,
+per-question errors, metadata and usage without V1 result narrowing. Existing V1
+providers continue through the lossless input/result bridge. Automatic consumers
+that still use V1 retain their own fallback behavior when a native result cannot
+be represented without loss.
+
 V1 and V2 callers can use either provider version when the pure SDK codecs can
 represent the entire batch and result without loss. Native abstention, images,
 sort/tag questions or other unrepresentable data return `unsupported-input`
@@ -412,16 +419,18 @@ agent/profile during preparation. Omitting V1 `isReady()` leaves evaluation elig
 blocks it. `callable` separately reports current admission, not guaranteed success.
 Counts are instance-local diagnostics, not durable audit records or write authority.
 
-For discovery, declare static `decisionModels` entries in the provider manifest
-with `provider`, `id`, and `name`. Each provider must be owned by
-`contracts.decisionProviders`. The Control UI Decision picker reads this metadata
-through a separate `models.list.decisionModels` projection; no provider runtime
-or credential check runs to populate the picker. These entries never enter the
-chat, primary, fallback, or utility model catalogs.
+For discovery, declare decision capabilities in the model's canonical
+`modelCatalog.providers.<id>.models[].inference.decision` metadata. Each provider
+must be owned by `contracts.decisionProviders`. The Control UI Decision picker
+reads a separate `models.list.decisionModels` projection; no provider runtime or
+credential check runs to populate the picker. Models with `inference.chat: false`
+stay out of conversational pickers. Existing V1 `decisionModels` declarations
+normalize into this catalog at manifest loading.
 
-Optional model `capabilities` describe supported question types, input limits and
-their accounting scope, Boolean criteria requirements, and confidence semantics.
-The core `decision_evaluate` tool uses these same manifest facts for guidance;
-provider readiness does not change its definition. See the
+Decision metadata describes supported question types, input limits and their
+accounting scope, Boolean criteria requirements, and confidence semantics.
+The core `decision_evaluate` tool uses the prepared catalog when available,
+otherwise the canonical manifest catalog; provider readiness does not change its
+definition. See the
 [manifest reference](/plugins/manifest/capabilities#decision-models-reference)
 for the bounded descriptor fields.
