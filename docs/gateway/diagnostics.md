@@ -867,6 +867,26 @@ bytes to the same dimensions plus `rows_outcome` (`unchanged`, `delta`,
 stale or evicted bases and the rare case where every row changed. Attribution
 uses the request and existing response fields without changing the protocol payload.
 
+`openclaw_sessions_list_baseline_retirements_total{cause}` counts one event per
+view-cache clear or eviction that retires sidebar rows or history, not rows or
+views removed. Selection-only and non-sidebar views do not count; an empty
+sidebar row list is still a baseline. Its bounded
+causes are `projection-revision`, `config`, `identity`, `selection-reset`,
+`view-evicted`, and `history-evicted`. View and history limits are both 32.
+For invalidations observed together on a read, config wins over identity, then
+projection revision; selection resets count where they clear the cache.
+
+`openclaw_sessions_list_base_misses_total{reason}` separates successful
+`full-with-base` sidebar replies into `unknown-base` (no eligible base in history)
+and `all-rows-changed` (base found, delta not smaller, including an empty list).
+Unknown bases can follow a restart, eviction, or a non-delta revision token;
+correlate them with retirement counters and `openclaw_gateway_build_info` rather
+than treating every miss as a restart. The reason is carried out-of-band through
+shared responses, without adding wire fields or inspecting rows again. Both
+counters use the existing bounded asynchronous diagnostics path. OpenTelemetry
+names are `openclaw.sessions.list.baseline_retirements` and
+`openclaw.sessions.list.base_misses`, with the same labels.
+
 `openclaw_chat_history_requests_total` and
 `openclaw_chat_history_response_bytes_total` attribute successful `chat.history`
 responses by `client_kind`, `source`, `shape`, `limit_bucket`, and `outcome`.
