@@ -5521,10 +5521,12 @@ including unchanged projection revisions, and returns only matching messages.
 Cold archive decoding and restoration retain the existing archive worker and
 host generation/commit authorization; transcript read fences still bind the
 subsequent read. No validation cache or new restoration owner is introduced.
-The archive FIFO can hand its idle worker between scopes using the same captured
-state directory. Each request closes its native handles before handoff; the new
-scope supplies its own authority. Different state directories and retiring workers
-still require native exit before replacement. Schema and update behavior are unchanged.
+The archive FIFO retains one idle worker after successful scopes and can hand it
+to the next scope using the same captured state directory. Each request closes
+its native handles before handoff; the new scope supplies its own authority.
+Released scopes refuse further work, and the idle worker does not keep the process
+alive. Failures, database shutdown, different state directories, and retiring
+workers still require native exit before replacement. Schema and update behavior are unchanged.
 
 Single-message lookups and display-message counts use that same history worker.
 Session-message broadcasts await the stored content and sequence in their existing
