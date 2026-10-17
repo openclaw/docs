@@ -267,8 +267,11 @@ credential, lease, and external-effect authority stays with the execution owner.
 Cron retains a memory-only clock check for future jobs so forward clock changes
 can trigger overdue work without reloading SQL every minute.
 
-Cron history reads selection metadata in bounded keyset batches using the
-`created_at, task_id` indexes. Completion-time ordering, exact totals, search,
+Cron history streams selection metadata through one SQLite statement using the
+`created_at, task_id` indexes; that statement owns the read snapshot. The
+PostgreSQL bridge buffers query results, so its reader retains bounded keyset
+batches within one snapshot. Both readers retain only selection metadata after
+matching. Completion-time ordering, exact totals, search,
 and live session visibility still select the response page; only that page's
 response fields are hydrated. Summary pages exclude diagnostics and delivery
 traces in SQL, and neither view loads trigger or script recovery state.
