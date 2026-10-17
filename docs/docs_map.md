@@ -13147,6 +13147,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Trajectory payload storage
   - H3: Agent schema 29
   - H3: Agent schema 28
   - H3: Context-engine outbox FIFO sequence
@@ -13257,6 +13258,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Memory chunk path index retirement
   - H3: Preserve the data and concurrency contracts
   - H3: Keep engine-specific capabilities owned
+  - H2: Trajectory payload compression
   - H2: Trajectory retention covering index
   - H2: Talk voice-session lookup indexes
   - H2: Session usage overview projection
