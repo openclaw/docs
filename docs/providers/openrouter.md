@@ -428,7 +428,7 @@ provider and to custom provider ids whose `baseUrl` points at OpenRouter:
 
 <Warning>
 If you repoint the OpenRouter provider at some other proxy or base URL, OpenClaw
-does **not** inject those OpenRouter-specific headers or Anthropic cache markers.
+does **not** inject those OpenRouter-specific headers or prompt-cache markers.
 </Warning>
 
 ## Advanced configuration
@@ -463,7 +463,7 @@ does **not** inject those OpenRouter-specific headers or Anthropic cache markers
     TTL values are truncated and clamped to 1–86400 seconds; non-finite values are ignored.
 
     This is separate from provider prompt caching and from OpenRouter's
-    Anthropic `cache_control` markers. It only applies on verified
+    `cache_control` prompt-cache markers. It only applies on verified
     `openrouter.ai` routes, not custom proxy base URLs.
 
   </Accordion>
@@ -519,6 +519,15 @@ does **not** inject those OpenRouter-specific headers or Anthropic cache markers
     Gemini-backed OpenRouter refs stay on the proxy-Gemini path: OpenClaw keeps
     Gemini thought-signature sanitation there, but does not enable native
     Gemini replay validation or bootstrap rewrites.
+
+    On verified OpenRouter routes, `google/gemini*` refs (including `~google/`
+    aliases and `:variant` suffixes) receive one `cache_control: { type:
+    "ephemeral" }` marker on the stable system/developer prompt prefix. Gemini
+    uses only the last breakpoint, so OpenClaw does not mark tools or history.
+    `cacheRetention: "none"` disables it; `"short"` and `"long"` keep the
+    provider's default cache window. The model's minimum cacheable prompt size
+    still applies. See [Prompt caching](/reference/prompt-caching#openrouter).
+
   </Accordion>
 
   <Accordion title="Provider routing metadata">
