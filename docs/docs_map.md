@@ -5762,6 +5762,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session list bootstrap
   - H2: Session message subscriptions and narration
   - H2: Common event families
+  - H2: Session event row deltas
   - H2: Node helper methods
   - H2: Node exec lifecycle events
 
