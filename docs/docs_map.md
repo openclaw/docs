@@ -12215,6 +12215,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Live testing
   - H2: Config example
   - H2: Related
+  - H2: Web search
+  - H3: Queries and results
 
 ## providers/ds4.md
 
