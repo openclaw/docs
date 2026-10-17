@@ -13196,6 +13196,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: btrfs and NOCOW
   - H2: Planner statistics maintenance
   - H2: Troubleshooting
+  - H3: A migrated agent remains unavailable with a serialization error
   - H3: The state database is busy
   - H3: Database paths cannot be compared
   - H3: A mount check times out while opening a local database
