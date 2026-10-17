@@ -5647,6 +5647,8 @@ compressed-payload bound, before streaming 64 KiB frames; oversized identity tex
 keeps native slice queries. Large compressed-event frame buffers transfer ownership to the host. The
 cursor and follow-up reads retain one SQLite snapshot across transport
 acknowledgments.
+SQLite streams the ordered cursor through a native iterator; PostgreSQL uses
+16-row keyset batches because its bridge buffers results.
 Manual compaction reads entry and transcript statistics after the previous writer
 settles, then reuses them while its lifecycle owner holds admission closed.
 The initial canonical lookup supplies session identity without an unchanged-entry
