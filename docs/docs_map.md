@@ -11642,6 +11642,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel delivery mirrors
   - H2: Bounded model context
   - H2: Scoped session visibility
+  - H2: Context engine transcript cursor
+  - H3: Reset reasons
+  - H3: Reset-window start
+  - H3: Current-turn fence
+  - H3: Entries
   - H2: Agent and session namespaces
 
 ## plugins/sdk-runtime/background-work.md
