@@ -5202,6 +5202,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor
 - Headings:
+  - H2: Database store diagnostics
   - H2: Doctor pages
   - H2: Where each section moved
   - H2: Related
@@ -5671,6 +5672,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Updates and schema migrations
   - H2: Search on PostgreSQL
   - H2: Monitoring and troubleshooting
+  - H3: Read the Doctor and status store report
   - H2: Roll back to SQLite
 
 ## gateway/prometheus.md
