@@ -3472,6 +3472,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start
   - H2: How it works
+  - H3: Provider compaction ownership
   - H3: Subagent lifecycle (optional)
   - H3: System prompt addition
   - H2: The legacy engine
