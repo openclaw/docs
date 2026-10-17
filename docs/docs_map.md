@@ -11515,6 +11515,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Memory audience
   - H3: Compatibility and host integration
   - H3: Dreaming remains separate
+  - H2: Memory host event diagnostics
   - H2: Bundled Memory Core workers
 
 ## plugins/sdk-overview/tools-and-commands.md
