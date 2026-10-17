@@ -5549,6 +5549,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Claude Code CLI model-call fidelity
   - H2: Exported metrics
   - H3: Gateway RPC
+  - H3: Session-list retention
   - H3: Gateway WebSocket events
   - H3: Model usage
   - H3: Message flow
