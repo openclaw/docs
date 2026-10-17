@@ -13162,6 +13162,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Agent schema 31
   - H3: Trajectory payload storage
   - H3: Agent schema 29
   - H3: Agent schema 28
@@ -13278,6 +13279,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Talk voice-session lookup indexes
   - H2: Session usage overview projection
   - H2: Background exec notification obligations
+  - H2: Memory index batch revisions
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H3: Preflight an explicit agent copy
