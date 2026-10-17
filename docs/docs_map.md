@@ -5750,6 +5750,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/presence
 - Headings:
   - H2: Presence
+  - H3: Opt-in presence deltas
   - H3: Node host stats
   - H3: Node background alive event
   - H2: Broadcast event scoping
