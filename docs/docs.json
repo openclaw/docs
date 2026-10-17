@@ -2482,6 +2482,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "gateway/health",
+                      "gateway/postgresql",
                       "gateway/doctor",
                       {
                         "group": "Doctor",
@@ -4552,6 +4553,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "zh-CN/gateway/health",
+                      "zh-CN/gateway/postgresql",
                       "zh-CN/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -6622,6 +6624,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "zh-TW/gateway/health",
+                      "zh-TW/gateway/postgresql",
                       "zh-TW/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -8692,6 +8695,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ja-JP/gateway/health",
+                      "ja-JP/gateway/postgresql",
                       "ja-JP/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -10762,6 +10766,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "es/gateway/health",
+                      "es/gateway/postgresql",
                       "es/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -12832,6 +12837,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pt-BR/gateway/health",
+                      "pt-BR/gateway/postgresql",
                       "pt-BR/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -14902,6 +14908,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ko/gateway/health",
+                      "ko/gateway/postgresql",
                       "ko/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -16972,6 +16979,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "de/gateway/health",
+                      "de/gateway/postgresql",
                       "de/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -19042,6 +19050,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "fr/gateway/health",
+                      "fr/gateway/postgresql",
                       "fr/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -21112,6 +21121,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "hi/gateway/health",
+                      "hi/gateway/postgresql",
                       "hi/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -23182,6 +23192,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ar/gateway/health",
+                      "ar/gateway/postgresql",
                       "ar/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -25252,6 +25263,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "it/gateway/health",
+                      "it/gateway/postgresql",
                       "it/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -27322,6 +27334,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "vi/gateway/health",
+                      "vi/gateway/postgresql",
                       "vi/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -29392,6 +29405,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "nl/gateway/health",
+                      "nl/gateway/postgresql",
                       "nl/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -31462,6 +31476,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "fa/gateway/health",
+                      "fa/gateway/postgresql",
                       "fa/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -33532,6 +33547,7 @@
                     "group": "Sağlık ve tanılama",
                     "pages": [
                       "tr/gateway/health",
+                      "tr/gateway/postgresql",
                       "tr/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -35602,6 +35618,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "uk/gateway/health",
+                      "uk/gateway/postgresql",
                       "uk/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -37672,6 +37689,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "id/gateway/health",
+                      "id/gateway/postgresql",
                       "id/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -39742,6 +39760,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pl/gateway/health",
+                      "pl/gateway/postgresql",
                       "pl/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -41812,6 +41831,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "th/gateway/health",
+                      "th/gateway/postgresql",
                       "th/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -43882,6 +43902,7 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ru/gateway/health",
+                      "ru/gateway/postgresql",
                       "ru/gateway/doctor",
                       {
                         "group": "Doctor",
@@ -45952,6 +45973,7 @@
                     "group": "Hälsa och diagnostik",
                     "pages": [
                       "sv/gateway/health",
+                      "sv/gateway/postgresql",
                       "sv/gateway/doctor",
                       {
                         "group": "Doctor",

@@ -5667,8 +5667,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Understand refusals
   - H2: Backup and restore
   - H3: Capture both server data and local state
-  - H3: Current restore limits
-  - H3: Disaster recovery for shared state and agents
+  - H3: Restore all PostgreSQL stores
+  - H3: Disaster recovery from Git
   - H2: Updates and schema migrations
   - H2: Search on PostgreSQL
   - H2: Monitoring and troubleshooting
