@@ -57,6 +57,15 @@ and the agent's
 The lifecycle owner closes its read scope and drains accepted writes before
 retiring the store.
 
+Manual legacy compaction prepares its transcript, current session entry, persisted
+window owner, and primary conversation in one worker snapshot. The held session
+lifecycle carries those facts through execution. Its existing compaction-boundary
+command commits the transcript and same-key accounting together, with live authority
+checked before commit. Aliases that share a transcript retain their own accounting
+row; a changed final token estimate updates accounting without counting compaction
+twice. Shared-state events follow the agent-store commit, and memory indexing keeps
+its existing post-compaction policy.
+
 Public GitHub coauthor attribution reads merge aliases, verified accounts, and
 credit preferences in one worker-owned snapshot statement. Enterprise attribution
 keeps a read transaction for its additional verified-email binding lookup. Both
