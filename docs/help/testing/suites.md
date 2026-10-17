@@ -118,7 +118,7 @@ no additional job or service is started.
 CI's **PostgreSQL conformance** matrix runs both shards in parallel, each with a
 fresh PostgreSQL 17 service using the pinned `pgvector/pgvector:pg17` image and
 the `unaccent`, `pg_trgm`, and `vector` extensions. It runs
-on scheduled main CI and PRs touching `src/infra/database-engine/**`,
+on scheduled main CI, manual CI validations, and PRs touching `src/infra/database-engine/**`,
 `src/infra/postgres-sync/**`, `src/infra/sql-connection.ts`,
 `src/infra/sql-query-compiler.ts`, `src/infra/kysely-sync*.ts`,
 `src/infra/sqlite-transaction.ts`, `extensions/workboard/**`,

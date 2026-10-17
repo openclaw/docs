@@ -43,7 +43,7 @@ import graph.
 This page is an index. CI is documented on nine pages, one per reader
 job. Open the page that matches your task.
 
-Storage-engine PRs and scheduled main runs include two hosted PostgreSQL 17
+Storage-engine PRs, scheduled main runs, and manual CI validations include two hosted PostgreSQL 17
 [conformance shards](/help/testing/suites#postgresql-conformance), required by the CI gate when selected.
 The infrastructure/state and integration groups run in parallel with separate
 databases and 30-minute budgets. Their combined inventory matches the local full
