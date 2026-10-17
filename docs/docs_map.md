@@ -9522,6 +9522,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Install
   - H2: Quickstart
+  - H3: Model identities and names
   - H2: Auth
   - H2: Configuration
   - H2: Approvals and sandbox
