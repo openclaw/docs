@@ -5179,6 +5179,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Useful options
   - H2: Disable diagnostics
   - H2: Garbage collection metrics
+  - H2: Outbound WebSocket event traffic
   - H2: RPC response size and heap changes
   - H2: Related
 
@@ -5548,6 +5549,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Claude Code CLI model-call fidelity
   - H2: Exported metrics
   - H3: Gateway RPC
+  - H3: Gateway WebSocket events
   - H3: Model usage
   - H3: Message flow
   - H3: Talk
