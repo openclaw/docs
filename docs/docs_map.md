@@ -5502,6 +5502,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Examples
   - H2: Related
 
+## gateway/openshell-workers.md
+
+- Route: /gateway/openshell-workers
+- Headings:
+  - H1: OpenShell worker inference
+  - H2: Compatibility and rollback
+  - H2: Prerequisites
+  - H2: Configure the plugin
+  - H2: Bind one agent's canonical files (optional)
+  - H2: Create, enroll, and select
+  - H2: Restart, rotate, and retire
+  - H2: Trust and qualification
+
 ## gateway/openshell.md
 
 - Route: /gateway/openshell
