@@ -6622,6 +6622,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/scripts
 - Headings:
   - H2: Conventions
+  - H2: Formatting and linting
   - H2: Auth monitoring scripts
   - H2: GitHub read helper
   - H2: When adding scripts
@@ -13908,6 +13909,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Routine local order
   - H2: Core commands
+  - H3: OpenClaw Bun fork
   - H3: Source tests and subprocess builds
   - H2: Full local run (only when explicitly needed)
 
