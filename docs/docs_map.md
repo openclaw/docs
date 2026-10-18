@@ -4174,6 +4174,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Failure taxonomy
   - H2: Related pages
 
+## concepts/session-controller.md
+
+- Route: /concepts/session-controller
+- Headings:
+  - H2: Implementation owners
+  - H2: Identity and ownership
+  - H2: Statechart
+  - H2: Inputs and custody
+  - H2: Queue policy
+  - H2: Stop semantics
+  - H2: Lifecycle mutations
+  - H2: Liveness and restart
+  - H2: Invariants and verification
+
 ## concepts/session-pruning.md
 
 - Route: /concepts/session-pruning
@@ -11286,6 +11300,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration
 - Headings:
   - H2: What changed
+  - H3: Session-keyed harness registration
+  - H3: Gateway session control
+  - H3: Agent turn start observation
   - H3: Session and command preparation
   - H3: Native session lineage
   - H3: Exec approval reads
@@ -11313,6 +11330,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/compatibility-policy
 - Headings:
   - H2: Compatibility policy
+  - H3: Session-controller cutover exception
   - H3: Harness deletion companions
   - H3: Retained helper contracts
   - H3: Session header link helper
@@ -11683,6 +11701,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Service scheduling
   - H2: Gateway and node namespaces
+  - H3: Session control
   - H3: Session resource methods
   - H3: Person access lifetimes
   - H3: Durable person access grants
