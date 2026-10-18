@@ -4076,6 +4076,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Reporting
   - H3: Scheduled instances and retained observations
   - H3: Explicit proof requirements
+  - H3: Scorecard gap report
   - H3: Evidence previews
   - H3: Character and style evaluation
 
