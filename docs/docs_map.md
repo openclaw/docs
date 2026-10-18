@@ -13325,6 +13325,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas/worker-access
 - Headings:
+  - H2: Rules for code changes
   - H2: Choose the execution owner
   - H2: Check once on load; trust the owner
   - H2: Final authority without SQL
