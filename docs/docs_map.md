@@ -5852,6 +5852,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: npm packages
   - H2: Transport and framing
+  - H3: Compression threshold
   - H3: Profile binding
   - H2: Connection keepalives
   - H2: Gateway-controlled WebRTC Talk
