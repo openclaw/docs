@@ -4128,6 +4128,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Steer and streaming
   - H2: Answering a pending question
   - H2: Precedence
+  - H2: One-message followup
   - H2: Per-session overrides
   - H2: Queued-turn cancellation
   - H2: Input durability
@@ -5235,6 +5236,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Group allowlist fallback
+  - H2: Collaborative steering default
   - H2: Cloud setup secret migration
   - H2: Runtime config migration
   - H2: Direct Ollama Cloud routing
@@ -11343,6 +11345,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Compatibility policy
   - H3: Session-controller cutover exception
+  - H3: Channel prepared tool policy
   - H3: Harness deletion companions
   - H3: Retained helper contracts
   - H3: Session header link helper
@@ -16048,6 +16051,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/steer
 - Headings:
   - H2: Current session
+  - H2: One message as a new turn
   - H2: Steer vs queue
   - H2: Sub-agents
   - H2: ACP sessions
