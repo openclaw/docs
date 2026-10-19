@@ -3026,6 +3026,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session and model resolution
   - H2: Usage and quota
   - H2: Overview and update status
+  - H2: Plugin health
   - H2: Plugin reload
   - H2: Secrets
   - H2: Memory
