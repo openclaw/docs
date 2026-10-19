@@ -919,6 +919,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /channels/matrix/messaging
 - Headings:
+  - H2: Inbound delivery across restarts
   - H2: Streaming previews
   - H2: Voice messages
   - H2: Reactions
