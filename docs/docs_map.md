@@ -10712,6 +10712,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/subq.md
+
+- Route: /plugins/reference/subq
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/synology-chat.md
 
 - Route: /plugins/reference/synology-chat
@@ -11819,6 +11827,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Handle manual actions
   - H2: Limits
   - H2: Related
+
+## plugins/subq.md
+
+- Route: /plugins/subq
+- Headings:
+  - H1: SubQ
+  - H2: Install and configure
+  - H2: Use
+  - H2: API and limits
+  - H2: Sources and verification
 
 ## plugins/team-reports.md
 

@@ -1840,6 +1840,7 @@
                       "plugins/memory-lancedb",
                       "plugins/memory-wiki",
                       "plugins/onnx",
+                      "plugins/subq",
                       "plugins/typesafe"
                     ]
                   },
@@ -3946,6 +3947,7 @@
                       "zh-CN/plugins/memory-lancedb",
                       "zh-CN/plugins/memory-wiki",
                       "zh-CN/plugins/onnx",
+                      "zh-CN/plugins/subq",
                       "zh-CN/plugins/typesafe"
                     ]
                   },
@@ -6018,6 +6020,7 @@
                       "zh-TW/plugins/memory-lancedb",
                       "zh-TW/plugins/memory-wiki",
                       "zh-TW/plugins/onnx",
+                      "zh-TW/plugins/subq",
                       "zh-TW/plugins/typesafe"
                     ]
                   },
@@ -8090,6 +8093,7 @@
                       "ja-JP/plugins/memory-lancedb",
                       "ja-JP/plugins/memory-wiki",
                       "ja-JP/plugins/onnx",
+                      "ja-JP/plugins/subq",
                       "ja-JP/plugins/typesafe"
                     ]
                   },
@@ -10162,6 +10166,7 @@
                       "es/plugins/memory-lancedb",
                       "es/plugins/memory-wiki",
                       "es/plugins/onnx",
+                      "es/plugins/subq",
                       "es/plugins/typesafe"
                     ]
                   },
@@ -12234,6 +12239,7 @@
                       "pt-BR/plugins/memory-lancedb",
                       "pt-BR/plugins/memory-wiki",
                       "pt-BR/plugins/onnx",
+                      "pt-BR/plugins/subq",
                       "pt-BR/plugins/typesafe"
                     ]
                   },
@@ -14306,6 +14312,7 @@
                       "ko/plugins/memory-lancedb",
                       "ko/plugins/memory-wiki",
                       "ko/plugins/onnx",
+                      "ko/plugins/subq",
                       "ko/plugins/typesafe"
                     ]
                   },
@@ -16378,6 +16385,7 @@
                       "de/plugins/memory-lancedb",
                       "de/plugins/memory-wiki",
                       "de/plugins/onnx",
+                      "de/plugins/subq",
                       "de/plugins/typesafe"
                     ]
                   },
@@ -18450,6 +18458,7 @@
                       "fr/plugins/memory-lancedb",
                       "fr/plugins/memory-wiki",
                       "fr/plugins/onnx",
+                      "fr/plugins/subq",
                       "fr/plugins/typesafe"
                     ]
                   },
@@ -20522,6 +20531,7 @@
                       "hi/plugins/memory-lancedb",
                       "hi/plugins/memory-wiki",
                       "hi/plugins/onnx",
+                      "hi/plugins/subq",
                       "hi/plugins/typesafe"
                     ]
                   },
@@ -22594,6 +22604,7 @@
                       "ar/plugins/memory-lancedb",
                       "ar/plugins/memory-wiki",
                       "ar/plugins/onnx",
+                      "ar/plugins/subq",
                       "ar/plugins/typesafe"
                     ]
                   },
@@ -24666,6 +24677,7 @@
                       "it/plugins/memory-lancedb",
                       "it/plugins/memory-wiki",
                       "it/plugins/onnx",
+                      "it/plugins/subq",
                       "it/plugins/typesafe"
                     ]
                   },
@@ -26738,6 +26750,7 @@
                       "vi/plugins/memory-lancedb",
                       "vi/plugins/memory-wiki",
                       "vi/plugins/onnx",
+                      "vi/plugins/subq",
                       "vi/plugins/typesafe"
                     ]
                   },
@@ -28810,6 +28823,7 @@
                       "nl/plugins/memory-lancedb",
                       "nl/plugins/memory-wiki",
                       "nl/plugins/onnx",
+                      "nl/plugins/subq",
                       "nl/plugins/typesafe"
                     ]
                   },
@@ -30882,6 +30896,7 @@
                       "fa/plugins/memory-lancedb",
                       "fa/plugins/memory-wiki",
                       "fa/plugins/onnx",
+                      "fa/plugins/subq",
                       "fa/plugins/typesafe"
                     ]
                   },
@@ -32954,6 +32969,7 @@
                       "tr/plugins/memory-lancedb",
                       "tr/plugins/memory-wiki",
                       "tr/plugins/onnx",
+                      "tr/plugins/subq",
                       "tr/plugins/typesafe"
                     ]
                   },
@@ -35026,6 +35042,7 @@
                       "uk/plugins/memory-lancedb",
                       "uk/plugins/memory-wiki",
                       "uk/plugins/onnx",
+                      "uk/plugins/subq",
                       "uk/plugins/typesafe"
                     ]
                   },
@@ -37098,6 +37115,7 @@
                       "id/plugins/memory-lancedb",
                       "id/plugins/memory-wiki",
                       "id/plugins/onnx",
+                      "id/plugins/subq",
                       "id/plugins/typesafe"
                     ]
                   },
@@ -39170,6 +39188,7 @@
                       "pl/plugins/memory-lancedb",
                       "pl/plugins/memory-wiki",
                       "pl/plugins/onnx",
+                      "pl/plugins/subq",
                       "pl/plugins/typesafe"
                     ]
                   },
@@ -41242,6 +41261,7 @@
                       "th/plugins/memory-lancedb",
                       "th/plugins/memory-wiki",
                       "th/plugins/onnx",
+                      "th/plugins/subq",
                       "th/plugins/typesafe"
                     ]
                   },
@@ -43314,6 +43334,7 @@
                       "ru/plugins/memory-lancedb",
                       "ru/plugins/memory-wiki",
                       "ru/plugins/onnx",
+                      "ru/plugins/subq",
                       "ru/plugins/typesafe"
                     ]
                   },
@@ -45386,6 +45407,7 @@
                       "sv/plugins/memory-lancedb",
                       "sv/plugins/memory-wiki",
                       "sv/plugins/onnx",
+                      "sv/plugins/subq",
                       "sv/plugins/typesafe"
                     ]
                   },
