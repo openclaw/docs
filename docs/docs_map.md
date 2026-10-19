@@ -11600,6 +11600,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-provider-plugins
 - Headings:
   - H2: Import an existing credential during sign-in
+  - H2: Read a selected personal account
   - H2: Loopback OAuth callbacks
   - H2: Declare physical credential ownership
   - H2: Handle model access after sign-in
