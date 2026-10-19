@@ -61,6 +61,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: External CLI credential discovery
   - H2: OAuth SecretRef Policy Guard
   - H2: Legacy-Compatible Messaging
+  - H2: Client identities and paired tokens
   - H2: Related
 
 ## automation/cron-jobs.md
@@ -13277,6 +13278,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: The Gateway refuses to start with a newer schema version error
   - H3: A database is quarantined after integrity verification failed
   - H2: Downgrade recovery
+  - H3: Client credential cutover rollback
   - H3: Example: state schema 21 to 20
 
 ## reference/database-schemas/layout.md
@@ -13322,6 +13324,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 29
   - H3: State schema 28
   - H3: State schema 27
   - H3: State schema 26
@@ -13369,7 +13372,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/versioning
 - Headings:
   - H2: Versioning contract
-  - H3: Local credential-store preparation
+  - H3: Local client credentials
   - H3: Schema bumps and older updaters
   - H3: Profile-owned skill library
   - H2: Declared migration backup scopes
