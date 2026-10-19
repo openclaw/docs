@@ -10225,6 +10225,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/levanto.md
+
+- Route: /plugins/reference/levanto
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/line.md
 
 - Route: /plugins/reference/line
@@ -12447,6 +12455,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config example
   - H2: Behavior notes
   - H2: Related
+
+## providers/levanto.md
+
+- Route: /providers/levanto
+- Headings:
+  - H2: Connect and select
+  - H2: Native operations
+  - H2: Results, usage and limitations
 
 ## providers/litellm.md
 
