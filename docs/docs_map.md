@@ -16393,6 +16393,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui
 - Headings:
+  - H2: Temporary disconnections
   - H2: Browser requirements
   - H2: Download files
   - H2: Take a photo in chat
