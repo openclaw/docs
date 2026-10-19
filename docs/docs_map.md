@@ -5719,6 +5719,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Metrics exported
   - H3: HTTP cancellations
   - H3: Worktree preparation
+  - H3: Session diff stages
   - H3: Catalog list stages
   - H3: Current sessions and work
   - H3: Runtime identity
