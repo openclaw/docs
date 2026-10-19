@@ -14171,6 +14171,25 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quality-of-Life Improvements
   - H2: Other Bug Fixes
 
+## releases/2026.10.5.md
+
+- Route: /releases/2026.10.5
+- Headings:
+  - H1: v2026.10.5
+  - H2: Sidebar
+  - H2: Skill Workshop 2.0
+  - H2: Public conversation links
+  - H2: Conversations and workspaces
+  - H2: Memory and learning
+  - H2: Models and local runtimes
+  - H2: Channels and calls
+  - H2: Skills and integrations
+  - H2: Web and native apps
+  - H2: Browser and computer use
+  - H2: Automations
+  - H2: Installation and maintenance
+  - H2: Security and privacy
+
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
