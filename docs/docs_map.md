@@ -16504,6 +16504,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui/offline-and-reconnect
 - Headings:
+  - H2: Queued session changes
   - H2: Busy initial connection
   - H2: Warm reload
   - H3: Upgrading existing browser data
