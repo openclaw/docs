@@ -9917,6 +9917,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Configure
+  - H2: Conversation tool feedback
 
 ## plugins/reference/cua-computer.md
 
