@@ -11301,6 +11301,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration
 - Headings:
+  - H2: MCP result compatibility window
   - H2: What changed
   - H3: Session-keyed harness registration
   - H3: Gateway session control
