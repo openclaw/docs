@@ -5911,6 +5911,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Safety valves and observability
   - H2: Verify recovery after an update
   - H2: What is not resumed
+  - H2: Automatic peer results
 
 ## gateway/sandbox-vs-tool-policy-vs-elevated.md
 
