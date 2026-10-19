@@ -348,6 +348,15 @@ results before repeating them.
 
 ### Targeted model transport diagnostics
 
+OpenAI Responses transport failures retain structured status, code, type, and
+error/cause names. When the active request signal was aborted, `abortReason`
+identifies OpenClaw-owned causes with fixed labels: `idle_timeout`, `no_progress`,
+`first_event_timeout`, `request_deadline`, `session_watchdog`, `restart`,
+`superseded`, or `caller_abort`. Unclassified caller cancellation uses
+`caller_abort`. Provider error messages and arbitrary abort-reason text are never
+logged because they can contain prompt or tool content. Headers and request or
+response bodies are also omitted.
+
 Prompt-cache history warnings identify the first changed message and bounded
 field paths, such as `content[0].thinkingSignature` or `content[0].arguments`.
 They report no message content, argument values, or signature bytes. Unknown
