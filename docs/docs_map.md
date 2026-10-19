@@ -13652,6 +13652,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/pr-tooling
 - Headings:
   - H1: PR wrapper tooling
+  - H2: Keep the admitted workflow across commands
   - H2: Recover a retained dependency projection
   - H2: Captured baseline evidence hashes
   - H2: Rerun failed CI tests
