@@ -444,10 +444,16 @@ async function checkHeaderSurface() {
       await page.waitForFunction(() => getComputedStyle(document.querySelector(".site-header")).backgroundColor === "rgba(0, 0, 0, 0)");
     }
     await page.getByRole("link", { name: "Community", exact: true }).first().focus();
-    for (const name of ["GitHub", "Reddit", "Discord", "X", "Language: English", "Toggle theme"]) {
+    for (const name of ["Support", "GitHub", "Reddit", "Discord", "X", "Language: English", "Toggle theme"]) {
       await page.keyboard.press("Tab");
-      const activeName = await page.evaluate(() => document.activeElement.getAttribute("aria-label"));
-      if (activeName !== name) throw new Error(`Header keyboard order: expected ${name}, got ${activeName}`);
+      const active = await page.evaluate(() => ({
+        name: document.activeElement.getAttribute("aria-label") ?? document.activeElement.textContent.trim(),
+        href: document.activeElement.getAttribute("href"),
+      }));
+      if (active.name !== name) throw new Error(`Header keyboard order: expected ${name}, got ${active.name}`);
+      if (name === "Support" && active.href !== "https://community.openclaw.ai/") {
+        throw new Error(`Header Support destination: expected official support, got ${active.href}`);
+      }
     }
     for (const width of [320, 390, 820, 821, 1024, 1120, 1121, 1440]) {
       await page.setViewportSize({ width, height: 900 });
