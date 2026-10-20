@@ -5697,6 +5697,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H3: Provision a database and runtime role
   - H3: Supply the connection securely
+  - H3: TLS and exec connection qualification
   - H2: Set up a fresh installation
   - H2: Run independent Gateways on one server
   - H2: Mixed engines
