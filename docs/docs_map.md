@@ -8077,6 +8077,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/ios
 - Headings:
   - H2: What it does
+  - H2: Chat text size
   - H2: Model sign-in
   - H2: Settings
   - H2: Cloudflare Access sign-in
