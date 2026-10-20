@@ -5692,13 +5692,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/postgresql
 - Headings:
   - H1: PostgreSQL operator guide
+  - H2: Support matrix
   - H2: When to use PostgreSQL
   - H2: Requirements
   - H3: Provision a database and runtime role
   - H3: Supply the connection securely
   - H2: Set up a fresh installation
   - H2: Run independent Gateways on one server
-  - H2: Mixed engines (experimental)
+  - H2: Mixed engines
   - H2: Migrate an existing installation
   - H3: Prepare and port to PostgreSQL
   - H3: Recover an interrupted port
@@ -5709,6 +5710,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Disaster recovery from Git
   - H2: Updates and schema migrations
   - H2: Search on PostgreSQL
+  - H2: Performance evidence
   - H2: Monitoring and troubleshooting
   - H3: Read the Doctor and status store report
   - H2: Roll back to SQLite
@@ -13219,7 +13221,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Configure PostgreSQL
   - H3: Legacy data and PostgreSQL
-  - H3: Mixed engines (experimental)
+  - H3: Mixed engines
   - H2: Search on PostgreSQL
   - H2: Port existing stores
   - H2: Several Gateways on one PostgreSQL server
@@ -13354,7 +13356,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session writer validation
   - H2: Preparing for another database backend
   - H3: Shared-state PostgreSQL schema generation
-  - H3: Experimental PostgreSQL engine (workboard pilot)
+  - H3: PostgreSQL engine
   - H3: Keep operations at the owning store
   - H3: Memory chunk path index retirement
   - H3: Preserve the data and concurrency contracts
