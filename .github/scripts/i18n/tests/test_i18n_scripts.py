@@ -157,6 +157,8 @@ class I18NScriptTests(unittest.TestCase):
             "docs/.i18n/translation-ci-temporary-todo.md",
             # STORY-06 canary operations manual (repo-owned control-plane doc).
             "docs/.i18n/mdx-repair-canary-operations.md",
+            # Portable handoff for the unmerged control-plane implementation.
+            "docs/.i18n/mdx-repair-handoff.md",
         }
         allowed_openclaw_sync_paths = {".openclaw-sync/docs-mdx-repair.md"}
         generated_docs = [

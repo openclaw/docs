@@ -7,7 +7,7 @@ import { runFixture } from "./index.mjs";
 import { buildRepairPrompt, ROUND_INSTRUCTION } from "./action.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const FIXTURE_ROOT = path.join(ROOT, "plans/i18n-codex-mdx-fallback/agent/evidence/story01-real-fixtures-2026-09-01");
+const FIXTURE_ROOT = path.join(ROOT, ".github/scripts/i18n/tests/fixtures/mdx-relay");
 const manifest = JSON.parse(await fs.readFile(path.join(FIXTURE_ROOT, "fixture-manifest.json"), "utf8"));
 const taxonomy = manifest.fixtures.find((f) => f.id.includes("taxonomy"));
 const anthropic = manifest.fixtures.find((f) => f.id.includes("plugin-html"));

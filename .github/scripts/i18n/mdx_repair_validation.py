@@ -71,9 +71,9 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parents[2]
-FIXTURE_EVIDENCE = REPO_ROOT / "plans/i18n-codex-mdx-fallback/agent/evidence/story01-real-fixtures-2026-09-01"
+FIXTURE_EVIDENCE = REPO_ROOT / ".github/scripts/i18n/tests/fixtures/mdx-relay"
 REPAIR_EVIDENCE_ARTIFACTS = (
-    REPO_ROOT / "plans/i18n-codex-mdx-fallback/agent/evidence/story03-local-loop-2026-09-01/real-opt-in/artifacts"
+    REPO_ROOT / ".github/scripts/i18n/tests/fixtures/mdx-relay/repaired-references"
 )
 SINGLE_ENTRY_ACTION = "uses: openai/codex-action@v1"
 RELAY_PROMPT_FILE = "prompt-file: .openclaw-sync/docs-mdx-repair.md"

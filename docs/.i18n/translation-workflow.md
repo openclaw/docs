@@ -47,7 +47,22 @@ Normal runs translate only:
 
 Internal files under `docs/.i18n/**` are not translation inputs. Push-triggered runs that only change internal i18n files skip before the locale matrix.
 
-If a locale job fails, its artifact is marked failed and carries no payload. The finalizer still commits successful locales. The failed locale remains stale and is picked up by the next incremental run because its source hashes still do not match.
+If an infrastructure or translation failure invalidates a shard, its artifact is marked failed and carries no payload. This branch can salvage passing pages when individual pages fail validation, recording excluded pages in metadata. The finalizer still commits usable results; excluded pages remain stale and are selected again because their source hashes do not match.
+
+## Translation engine boundary
+
+The publish repository owns orchestration, checks, artifacts and finalization.
+The translator belongs to `openclaw/openclaw/scripts/docs-i18n`. The locale
+worker checks out the source revision and invokes document mode (`--mode doc`).
+Document mode masks protected literals and sends bounded text chunks to
+one-shot Codex translation calls. Those chunks are operational retry boundaries,
+not MDX syntax boundaries; strict parsing must run on the assembled page.
+Translation calls are separate from the workspace-writing Codex repair action.
+
+This branch contains an unmerged repair-relay implementation. Its local and
+runner acceptance records do not mean it is deployed. See the
+[handoff and remaining work](mdx-repair-handoff.md) for decisions, reproducible
+fixtures, historical evidence and the integration checklist.
 
 ## Artifact contract
 
@@ -71,12 +86,32 @@ payload/docs/.i18n/<locale>.tm.jsonl
 
 ### MDX repair chain
 
-The packaging path currently contains two deterministic repair stages:
+This branch enhances the existing Codex action with bounded repair rounds,
+checker feedback, path enforcement and external MDX rechecks. The branch
+budget is 600 seconds per round and at most four rounds. A failed page can be
+excluded while passing pages from the shard remain packageable; infrastructure
+failures still fail the shard.
 
-1. Syntax repair (`repair_mdx_syntax.mjs`): if a page no longer passes the repair chain's MDX parse, the parser is re-run in a bounded loop and each reported diagnostic is patched minimally — fabricated elements absent from the source are removed, missing or stray closing tags are resynced, void elements are self-closed, unquoted attribute values are quoted, and unterminated comments are closed. Markdown comments and prose less-than tokens are accepted untouched (the chain's tolerant parser already allows them), so translated prose is preserved. Unresolvable damage still fails the shard with a parser-backed reason.
-2. Protected-attribute repair (`repair_mdx_protected_attributes.mjs`): re-syncs protected attributes (`className`, `id`, `path`, `type`, `default`, `aria-hidden`, `target`, `rel`) byte-for-byte from the source page.
+The enhanced path is gated by `mdx_repair_enabled`, locale/path canary selection
+and validation. The switch defaults to false, and existing callers do not
+activate it automatically. Merging the code alone does not enable the relay.
 
-Both stages only rewrite markup tokens; the final `check-docs-mdx` gate still validates every packaged page.
+The strict `@mdx-js/mdx` compiler is the syntax oracle. The lightweight content
+check catches empty output and catastrophic deletion, rather than proving prose
+equivalence. Path and protected-attribute checks remain separate requirements.
+A model's successful exit is insufficient without the external checks.
+
+The branch retains historical deterministic syntax and protected-attribute
+repair code. Its pre-merge version of syntax recovery differs from the version
+that ultimately landed in PR #153; reconcile those changes with current main
+before enabling this branch. Formatter probes did not justify adding Prettier
+or another formatter as a default repair dependency.
+
+The executable baseline and successful historical repair outputs are tracked
+under `.github/scripts/i18n/tests/fixtures/mdx-relay/`. Tests and independent
+validation use those files without requiring the ignored local planning tree.
+The [handoff](mdx-repair-handoff.md) distinguishes measured outcomes from
+unverified production behavior.
 
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 

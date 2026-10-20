@@ -8,8 +8,7 @@ import { mockRepair, runRealCodex, buildRepairPrompt, ROUND_INSTRUCTION } from "
 export const REQUIRED_ORDER = ["完整页面组装", "严格 @mdx-js/mdx parser/oracle 产生完整诊断", "可选辅助（none、固定版 Prettier 或 PR #153；仅在显式实验臂启用时运行）", "增强后的现有 Codex repair action（唯一 Agent 执行器）", "轻量 checker、scope 和 protected-attribute 检查；拒绝时把具体错误回传同一会话并消耗有界尝试", "外部严格 MDX recheck 与 artifact 门禁；仍失败则显式 per-file/per-shard failure"];
 const STAGE_ORDER = ["parser", "auxiliary", "codex", "checker", "scope", "protected_attribute", "recheck", "artifact"];
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const FIXTURE_ROOT = path.join(ROOT, "plans/i18n-codex-mdx-fallback/agent/evidence/story01-real-fixtures-2026-09-01");
-const MAP = path.join(ROOT, "plans/i18n-codex-mdx-fallback/agent/evidence/story02-contract-2026-09-01/fixture-map.json");
+const FIXTURE_ROOT = path.join(ROOT, ".github/scripts/i18n/tests/fixtures/mdx-relay");
 
 function envConfig() {
   let checker = null;
@@ -73,10 +72,9 @@ export async function runFixture(fixture, { arm = "enhanced_existing_codex_actio
 
 async function main() {
   const cfg = envConfig();
-  const map = JSON.parse(await fs.readFile(MAP, "utf8"));
   const manifest = JSON.parse(await fs.readFile(path.join(FIXTURE_ROOT, "fixture-manifest.json"), "utf8"));
-  const fixtures = manifest.fixtures.filter((item) => map.entries.some((entry) => entry.id === item.id));
-  const evidence = process.env.MDX_LAB_EVIDENCE || path.join(ROOT, "plans/i18n-codex-mdx-fallback/agent/evidence/story03-local-loop-2026-09-01");
+  const fixtures = manifest.fixtures;
+  const evidence = process.env.MDX_LAB_EVIDENCE || path.join(ROOT, ".local/mdx-fallback-evidence");
   await fs.mkdir(path.join(evidence, "artifacts"), { recursive: true });
   const records = [];
   for (const fixture of fixtures) {

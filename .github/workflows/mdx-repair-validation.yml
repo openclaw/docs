@@ -198,7 +198,7 @@ jobs:
       - name: Stage frozen fixture workspace
         if: steps.preflight.outputs.provider_preflight == 'ok'
         env:
-          FIXTURE_ROOT: plans/i18n-codex-mdx-fallback/agent/evidence/story01-real-fixtures-2026-09-01
+          FIXTURE_ROOT: .github/scripts/i18n/tests/fixtures/mdx-relay
           EVIDENCE_DIR: ${{ runner.temp }}/mdx-repair-validation
         run: |
           set -euo pipefail
