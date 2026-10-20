@@ -11925,6 +11925,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: TypeSafe AI
   - H2: Install
   - H2: Enable and configure
+  - H3: Hosted model facts
   - H2: Local System One server
   - H3: Run Kev
   - H3: Connect OpenClaw
