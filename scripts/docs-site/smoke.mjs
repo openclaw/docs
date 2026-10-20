@@ -355,6 +355,13 @@ if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
 const footer = DomUtils.findOne((node) => node.name === "footer", indexDocument.children);
+for (const className of ["network-nav", "sidebar-support", "site-footer", "page-support"]) {
+  const scope = DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes(className), indexDocument.children);
+  const supportLink = scope && DomUtils.findOne((node) => node.name === "a"
+    && node.attribs.href === "https://community.openclaw.ai/"
+    && ["Support", "Get support"].includes(DomUtils.textContent(node).trim()), scope.children);
+  if (!supportLink) throw new Error(`${className}: official support destination is missing`);
+}
 const foundationLink = footer && DomUtils.findOne(
   (node) => node.name === "a" && node.attribs.href === "https://openclaw.org"
     && DomUtils.textContent(node).trim() === "OpenClaw Foundation",

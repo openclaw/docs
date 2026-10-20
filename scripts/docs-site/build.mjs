@@ -52,6 +52,7 @@ const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
 const feedbackIssueRepository = normalizeRepository(process.env.DOCS_FEEDBACK_ISSUE_REPO ?? "openclaw/openclaw");
+const supportUrl = "https://community.openclaw.ai/";
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
@@ -375,6 +376,7 @@ ${pageStatus(page)}
 </header>
 ${pageSearchMetadata(page, nav)}
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
+${page.hidden ? "" : `<aside class="page-support" aria-label="Official OpenClaw support" data-pagefind-ignore><p>For official OpenClaw support, visit our support forum.</p><a href="${supportUrl}">Get support</a></aside>`}
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
 </main>
@@ -395,7 +397,7 @@ function assetUrl(file) {
 
 function siteHeader(page) {
   const controls = homeStringsForLocale(page.locale).controls;
-  const network = [["Product", "https://openclaw.ai/"], ["Install", "https://openclaw.ai/install"], ["Ecosystem", "https://openclaw.ai/ecosystem"], ["Integrations", "https://openclaw.ai/integrations"], ["Blog", "https://openclaw.ai/blog"], ["Community", "https://community.openclaw.ai/"]];
+  const network = [["Product", "https://openclaw.ai/"], ["Install", "https://openclaw.ai/install"], ["Ecosystem", "https://openclaw.ai/ecosystem"], ["Integrations", "https://openclaw.ai/integrations"], ["Blog", "https://openclaw.ai/blog"], ["Community", "https://community.openclaw.ai/"], ["Support", supportUrl]];
   return `<header class="site-header">
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}"${previewLinkAttrs(allPageByKey.get(pageKey(page.locale, "index")) ?? page, "OpenClaw Docs")}><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a></div>
@@ -422,7 +424,7 @@ function siteFooter(analyticsEligible = false) {
   ];
   const groups = [
     ["Product", [["Install", "https://openclaw.ai/install"], ["Showcase", "https://openclaw.ai/showcase"], ["Integrations", "https://openclaw.ai/integrations"], ["Docs", pageUrl(home), home]]],
-    ["Resources", [["Blog", "https://openclaw.ai/blog"], ["Podcast", "https://openclaw.ai/podcast"], ["Press", "https://openclaw.ai/press"], ["Shoutouts", "https://openclaw.ai/shoutouts"], ["Releases", "https://github.com/openclaw/openclaw/releases"], ["Privacy policy", "https://openclaw.ai/privacy"]]],
+    ["Resources", [["Support", supportUrl], ["Blog", "https://openclaw.ai/blog"], ["Podcast", "https://openclaw.ai/podcast"], ["Press", "https://openclaw.ai/press"], ["Shoutouts", "https://openclaw.ai/shoutouts"], ["Releases", "https://github.com/openclaw/openclaw/releases"], ["Privacy policy", "https://openclaw.ai/privacy"]]],
     ["Project", [["Foundation", "https://openclaw.org"], ["Security", "https://openclaw.ai/security"], ["GitHub", "https://github.com/openclaw/openclaw"]]],
   ];
   return `<footer class="site-footer">
@@ -442,6 +444,7 @@ function sidebar(page, nav, activeTab) {
   const copy = homeStringsForLocale(page.locale);
   return `<aside class="sidebar">
 <div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="${escapeAttr(copy.controls[3])}">${icon("x")}</button></div>
+<nav class="sidebar-support" aria-label="Official OpenClaw support"><a href="${supportUrl}">Support</a></nav>
 ${rewriteInternalUrls(docsQuickNav(page.slug, icon, page.locale), page.locale)}
 <nav class="docs-sections" aria-label="${escapeAttr(copy.navigation[6])}" data-back-label="${escapeAttr(copy.controls[4])}" data-sections-label="${escapeAttr(copy.navigation[6])}">${nav.map((tab) => {
     const current = tab.title === activeTab;

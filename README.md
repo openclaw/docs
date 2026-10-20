@@ -7,6 +7,10 @@ Website UI, translations, and publishing for the OpenClaw docs site.
 
 English content and navigation are authored in [`openclaw/openclaw`](https://github.com/openclaw/openclaw), under `docs/`, and synced here. This repository owns the current website renderer, design, search, and hosting.
 
+## Support
+
+For official OpenClaw support, visit [community.openclaw.ai](https://community.openclaw.ai/). Use this repository's issues for reproducible problems with the docs website, renderer, translations, or publishing. Report security vulnerabilities through the project's private security reporting process, not the public support forum.
+
 ## How it works
 
 1. English docs are authored in `openclaw/openclaw`.

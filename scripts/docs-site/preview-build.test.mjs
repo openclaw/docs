@@ -38,6 +38,17 @@ test("requested pages outside navigation fit inside the 30-page preview, includi
   }
   const html = fs.readFileSync(path.join(f.site, "target/index.html"), "utf8");
   assert.match(html, /Requested page/);
+  const supportUrl = 'https://community.openclaw.ai/';
+  for (const scope of [
+    html.match(/<nav class="network-nav"[\s\S]*?<\/nav>/)[0],
+    html.match(/<aside class="sidebar">[\s\S]*?<\/aside>/)[0],
+    html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0],
+  ]) {
+    assert.ok(scope.includes(`href="${supportUrl}">Support</a>`), 'persistent official support link');
+  }
+  assert.match(html, /<aside class="page-support"[^>]*>.*official OpenClaw support.*href="https:\/\/community\.openclaw\.ai\/">Get support<\/a>/);
+  assert.match(html, /Page source and issue[\s\S]*?Raise issue/);
+  assert.match(html, /https:\/\/discord\.com\/invite\/clawd/);
   const sidebar = html.match(/<aside class="sidebar">([\s\S]*?)<\/aside>/)[1];
   assert.equal([...sidebar.slice(sidebar.indexOf('<nav class="docs-sections"')).matchAll(/class="nav-link/g)].length, 35);
   assert.match(sidebar, /href="\/guide\/page-0"/);
