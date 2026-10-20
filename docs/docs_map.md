@@ -1116,6 +1116,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Access control (DMs)
   - H2: Rooms (groups)
   - H2: Inbound file shares
+  - H2: Outbound attachments
   - H2: Release qualification for attachment support
   - H2: Capabilities
   - H2: Configuration reference (Nextcloud Talk)
