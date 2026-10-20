@@ -12912,6 +12912,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Install plugin
   - H2: Getting started
+  - H2: Memory embeddings
   - H2: Built-in catalog
   - H2: Config example
   - H2: Related
