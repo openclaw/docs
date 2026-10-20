@@ -1,0 +1,20 @@
+{
+  "fixture_id": "real-27629404260-zhcn-plugin-html-comment",
+  "payload": "---\nread_when:\n    - 你正在安装、配置或审计 anthropic-vertex 插件\nsummary: OpenClaw Anthropic Vertex 提供商插件，用于 Google Vertex AI 上的 Claude 模型。\ntitle: Anthropic Vertex 插件\nx-i18n:\n    generated_at: \"2026-06-27T02:46:05Z\"\n    model: gpt-5.5\n    postprocess_version: locale-links-v1\n    provider: openai\n    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7\n    source_path: plugins/reference/anthropic-vertex.md\n    workflow: 16\n---\n\n# Anthropic Vertex 插件\n\n用于 Google Vertex AI 上 Claude 模型的 OpenClaw Anthropic Vertex 提供商插件。\n\n## 分发\n\n- 包：`@openclaw/anthropic-vertex-provider`\n- 安装路径：npm；ClawHub\n\n## 接口面\n\nproviders: anthropic-vertex\n\n{/* openclaw-plugin-reference:manual-start */}\n\n## Claude Fable 5\n\n在你的 Google Cloud 区域中该模型可用时，使用 `anthropic-vertex/claude-fable-5`。\nFable 5 始终使用自适应思考，并默认使用 `high` 强度。`/think off` 和\n`/think minimal` 使用 `low` 强度，因为该模型不支持禁用思考。\n\n{/* openclaw-plugin-reference:manual-end */}\n",
+  "metadata": {
+    "final_outcome": "success",
+    "parser_outcome": "compile_success",
+    "checker_result": "pass",
+    "content_check": "pass",
+    "rounds": 1,
+    "repair_attempts": 1,
+    "elapsed_ms": 70743,
+    "duration_ms": 70743,
+    "exit_code": 0,
+    "codex_model": "gpt-5.6-sol",
+    "codex_reasoning_effort": "high",
+    "changed_paths": [
+      "docs/zh-CN/plugins-reference/anthropic-vertex.md"
+    ]
+  }
+}

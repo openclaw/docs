@@ -1,0 +1,118 @@
+{
+  "fixtures": [
+    {
+      "id": "real-27629404260-zhcn-plugin-html-comment",
+      "path": "fixtures/zh-CN/plugins-reference/anthropic-vertex.md",
+      "failure_class": "mdx_syntax_html_comment",
+      "provenance": {
+        "run": "27629404260",
+        "translation_commit": "fe5cb011ff0996b6bf007ba1e8f26377f10e541a",
+        "translation_commit_date": "2026-06-27T03:42:57Z",
+        "source_path": "plugins/reference/anthropic-vertex.md",
+        "source_commit": "66585786970c03edf33d70b795076bca4d711b36",
+        "source_commit_date": "2026-06-11T11:46:21Z",
+        "source_hash_from_x_i18n": "f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7",
+        "reconstruction": "Extracted the exact file from the historical translation commit because run artifact body was unavailable; strict-scanned all 696 zh-CN Markdown/MDX files from that commit and retained this parser failure.",
+        "redaction": "No secrets or personal data were present; fixture is an exact historical public-doc file."
+      },
+      "oracle": {
+        "compiler": "@mdx-js/mdx@3.1.1",
+        "call": "compile(source, {jsx:true})",
+        "outcome": "compile_failure",
+        "source": "micromark-extension-mdx-jsx",
+        "reason_prefix": "Unexpected character `!` (U+0021) before name",
+        "line": 29,
+        "column": 2,
+        "offset": 641
+      },
+      "content_retention": {
+        "bytes": 1128,
+        "lines": 37,
+        "sha256": "9eea41f0f9c50b9d4096a0d2773bb9468a535c90a0af660eeb14ad2fbee77d20",
+        "must_preserve": [
+          "frontmatter x-i18n.source_path",
+          "title: Anthropic Vertex 插件",
+          "@openclaw/anthropic-vertex-provider",
+          "openclaw-plugin-reference:manual-start",
+          "openclaw-plugin-reference:manual-end",
+          "Claude Fable 5"
+        ],
+        "rule": "A repair may replace the invalid HTML comment delimiters only; headings, code tokens, frontmatter keys, and marker ordering must remain present."
+      },
+      "expected_log_fields": [
+        "fixture_id",
+        "run_id",
+        "locale",
+        "source_path",
+        "parser",
+        "parser_outcome",
+        "error_source",
+        "error_line",
+        "error_column",
+        "repair_mode",
+        "repair_attempts",
+        "content_check",
+        "duration_ms",
+        "exit_code"
+      ]
+    },
+    {
+      "id": "real-27629404260-zhcn-taxonomy-stray-close",
+      "path": "fixtures/zh-CN/maturity/taxonomy.md",
+      "failure_class": "mdx_syntax_mismatched_closing_tag",
+      "provenance": {
+        "run": "27629404260",
+        "translation_commit": "fe5cb011ff0996b6bf007ba1e8f26377f10e541a",
+        "translation_commit_date": "2026-06-27T03:42:57Z",
+        "source_path": "maturity/taxonomy.md",
+        "source_commit": "730fd3c06fcd8d56b37369e81f3de641242d059f",
+        "source_commit_date": "2026-06-24T22:00:13Z",
+        "source_hash_from_x_i18n": "2a51eb22fb31d1c7d94a183d3515c7ddc54a754f6f68e502d17b95593a648db5",
+        "reconstruction": "Extracted the exact file from the historical translation commit because run artifact body was unavailable; strict-scanned all 696 zh-CN Markdown/MDX files from that commit and retained this parser failure.",
+        "redaction": "No secrets or personal data were present; fixture is an exact historical public-doc file."
+      },
+      "oracle": {
+        "compiler": "@mdx-js/mdx@3.1.1",
+        "call": "compile(source, {jsx:true})",
+        "outcome": "compile_failure",
+        "source": "mdast-util-mdx-jsx",
+        "reason_prefix": "Unexpected closing tag `</div>`, expected corresponding closing tag for `<Accordion>`",
+        "line": 1075,
+        "column": 5,
+        "end_column": 11,
+        "offset": 114137,
+        "opening_tag_line": 975
+      },
+      "content_retention": {
+        "bytes": 446554,
+        "lines": 3790,
+        "sha256": "1f4e4c8f604f0e957e61edf48077d304ad01a4e40fec8a5c11c07af95a2ca6b6",
+        "must_preserve": [
+          "title: 成熟度分类法",
+          "<Accordion title=\"插件 - M3 Beta - 9 个领域\">",
+          "<div className=\"maturity-category-list\">",
+          "<div> at line 1075 is the observed stray close",
+          "later Accordion sections after the failure point"
+        ],
+        "rule": "A repair may remove or replace only the diagnosed stray closing token; all maturity sections, score values, links, and frontmatter must remain byte/line stable outside the edit span."
+      },
+      "expected_log_fields": [
+        "fixture_id",
+        "run_id",
+        "locale",
+        "source_path",
+        "parser",
+        "parser_outcome",
+        "error_source",
+        "error_line",
+        "error_column",
+        "opening_tag_line",
+        "repair_mode",
+        "repair_attempts",
+        "content_check",
+        "duration_ms",
+        "exit_code"
+      ]
+    }
+  ]
+}
