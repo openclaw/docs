@@ -9788,6 +9788,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/bifrost.md
+
+- Route: /plugins/reference/bifrost
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/bonjour.md
 
 - Route: /plugins/reference/bonjour
@@ -12171,6 +12179,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick setup (AWS path)
   - H2: Advanced configuration
   - H2: Related
+
+## providers/bifrost.md
+
+- Route: /providers/bifrost
+- Headings:
+  - H2: Setup
+  - H2: Endpoint and model IDs
+  - H2: Authentication
 
 ## providers/cerebras.md
 

@@ -2292,6 +2292,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "providers/bifrost",
                       "providers/claude-max-api-proxy",
                       "providers/clawrouter",
                       "providers/cloudflare-ai-gateway",
@@ -4367,6 +4368,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "zh-CN/providers/bifrost",
                       "zh-CN/providers/claude-max-api-proxy",
                       "zh-CN/providers/clawrouter",
                       "zh-CN/providers/cloudflare-ai-gateway",
@@ -6442,6 +6444,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "zh-TW/providers/bifrost",
                       "zh-TW/providers/claude-max-api-proxy",
                       "zh-TW/providers/clawrouter",
                       "zh-TW/providers/cloudflare-ai-gateway",
@@ -8517,6 +8520,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "ja-JP/providers/bifrost",
                       "ja-JP/providers/claude-max-api-proxy",
                       "ja-JP/providers/clawrouter",
                       "ja-JP/providers/cloudflare-ai-gateway",
@@ -10592,6 +10596,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "es/providers/bifrost",
                       "es/providers/claude-max-api-proxy",
                       "es/providers/clawrouter",
                       "es/providers/cloudflare-ai-gateway",
@@ -12667,6 +12672,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "pt-BR/providers/bifrost",
                       "pt-BR/providers/claude-max-api-proxy",
                       "pt-BR/providers/clawrouter",
                       "pt-BR/providers/cloudflare-ai-gateway",
@@ -14742,6 +14748,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "ko/providers/bifrost",
                       "ko/providers/claude-max-api-proxy",
                       "ko/providers/clawrouter",
                       "ko/providers/cloudflare-ai-gateway",
@@ -16817,6 +16824,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "de/providers/bifrost",
                       "de/providers/claude-max-api-proxy",
                       "de/providers/clawrouter",
                       "de/providers/cloudflare-ai-gateway",
@@ -18892,6 +18900,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "fr/providers/bifrost",
                       "fr/providers/claude-max-api-proxy",
                       "fr/providers/clawrouter",
                       "fr/providers/cloudflare-ai-gateway",
@@ -20967,6 +20976,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "hi/providers/bifrost",
                       "hi/providers/claude-max-api-proxy",
                       "hi/providers/clawrouter",
                       "hi/providers/cloudflare-ai-gateway",
@@ -23042,6 +23052,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "ar/providers/bifrost",
                       "ar/providers/claude-max-api-proxy",
                       "ar/providers/clawrouter",
                       "ar/providers/cloudflare-ai-gateway",
@@ -25117,6 +25128,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "it/providers/bifrost",
                       "it/providers/claude-max-api-proxy",
                       "it/providers/clawrouter",
                       "it/providers/cloudflare-ai-gateway",
@@ -27192,6 +27204,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "vi/providers/bifrost",
                       "vi/providers/claude-max-api-proxy",
                       "vi/providers/clawrouter",
                       "vi/providers/cloudflare-ai-gateway",
@@ -29267,6 +29280,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "nl/providers/bifrost",
                       "nl/providers/claude-max-api-proxy",
                       "nl/providers/clawrouter",
                       "nl/providers/cloudflare-ai-gateway",
@@ -31342,6 +31356,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "fa/providers/bifrost",
                       "fa/providers/claude-max-api-proxy",
                       "fa/providers/clawrouter",
                       "fa/providers/cloudflare-ai-gateway",
@@ -33417,6 +33432,7 @@
                   {
                     "group": "Ağ geçitleri ve yönlendiriciler",
                     "pages": [
+                      "tr/providers/bifrost",
                       "tr/providers/claude-max-api-proxy",
                       "tr/providers/clawrouter",
                       "tr/providers/cloudflare-ai-gateway",
@@ -35492,6 +35508,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "uk/providers/bifrost",
                       "uk/providers/claude-max-api-proxy",
                       "uk/providers/clawrouter",
                       "uk/providers/cloudflare-ai-gateway",
@@ -37567,6 +37584,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "id/providers/bifrost",
                       "id/providers/claude-max-api-proxy",
                       "id/providers/clawrouter",
                       "id/providers/cloudflare-ai-gateway",
@@ -39642,6 +39660,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "pl/providers/bifrost",
                       "pl/providers/claude-max-api-proxy",
                       "pl/providers/clawrouter",
                       "pl/providers/cloudflare-ai-gateway",
@@ -41717,6 +41736,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "th/providers/bifrost",
                       "th/providers/claude-max-api-proxy",
                       "th/providers/clawrouter",
                       "th/providers/cloudflare-ai-gateway",
@@ -43792,6 +43812,7 @@
                   {
                     "group": "Gateways and routers",
                     "pages": [
+                      "ru/providers/bifrost",
                       "ru/providers/claude-max-api-proxy",
                       "ru/providers/clawrouter",
                       "ru/providers/cloudflare-ai-gateway",
@@ -45867,6 +45888,7 @@
                   {
                     "group": "Gateways och routrar",
                     "pages": [
+                      "sv/providers/bifrost",
                       "sv/providers/claude-max-api-proxy",
                       "sv/providers/clawrouter",
                       "sv/providers/cloudflare-ai-gateway",
