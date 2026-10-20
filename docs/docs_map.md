@@ -3458,8 +3458,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How it works
   - H2: Auto-compaction
-  - H2: Model-requested compaction
-  - H2: Before cache expiry
   - H2: Manual compaction
   - H2: Configuration
   - H3: Using a different model
@@ -10685,13 +10683,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
-## plugins/reference/session-compaction.md
-
-- Route: /plugins/reference/session-compaction
-- Headings:
-  - H2: Distribution
-  - H2: Surface
-
 ## plugins/reference/session-share.md
 
 - Route: /plugins/reference/session-share
@@ -13567,7 +13558,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: cacheRetention
   - H3: contextPruning.mode: "cache-ttl"
   - H3: Heartbeat keep-warm
-  - H2: Pre-expiry compaction
   - H2: Provider behavior
   - H3: Anthropic (direct API and Vertex AI)
   - H3: DeepInfra
