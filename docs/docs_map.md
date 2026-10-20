@@ -139,6 +139,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Schedule types
   - H3: Heartbeat task migration
   - H3: Stream sources
+  - H4: Sandboxed streams
   - H3: Dynamic cadence (pacing)
   - H3: /loop chat shortcut
   - H3: Day-of-month and day-of-week use OR logic
