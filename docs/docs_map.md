@@ -2089,6 +2089,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/claws
 - Headings:
   - H1: openclaw claws
+  - H2: Create with an agent
   - H2: Author locally
   - H2: Inspect and Add
   - H2: Remove the agent
