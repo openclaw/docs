@@ -42,7 +42,7 @@ html { scroll-padding-top: calc(var(--sticky-header-h, 102px) + 28px); }
 .nav-link { border-left: 0; border-inline-start: 2px solid transparent; padding: 7px 10px; border-radius: 0; font-size: 13px; line-height: 1.5; }
 .nav-link.active { border-inline-start-color: var(--brand); box-shadow: none; background: color-mix(in srgb, var(--brand) 7%, transparent); }
 .article { width: 100%; min-width: 0; padding: 40px var(--docs-inset) 64px; border-inline: 1px solid var(--line); }
-.article > :is(.article-header, .doc, .page-feedback, .page-nav) { max-width: var(--docs-reading-width); margin-inline: auto; }
+.article > :is(.article-header, .doc, .page-support, .page-feedback, .page-nav) { max-width: var(--docs-reading-width); margin-inline: auto; }
 .article-header { margin-bottom: 36px; }
 .article-meta-row { gap: 12px; margin-bottom: 28px; }
 .article h1 { font-size: clamp(32px, 3vw, 42px); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; }
