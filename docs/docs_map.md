@@ -5738,6 +5738,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Main-thread stall attribution
   - H3: Worker request queues
   - H3: Memory and process churn
+  - H4: Heap headroom and a sustained-pressure alert
+  - H4: Memory samples and worker coverage
   - H3: Garbage collection duration
   - H2: Label policy
   - H2: PromQL recipes
