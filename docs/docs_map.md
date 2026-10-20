@@ -4563,7 +4563,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Images
   - H2: Inputs and outputs
   - H2: Plugin-owned defaults
-  - H2: Text transform overlays
+  - H2: Backend text transforms
   - H2: Native compaction ownership
   - H2: Bundle MCP overlays
   - H2: Reseed history cap
@@ -8481,10 +8481,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Self-hosted execution
   - H4: One executor per session
   - H4: 1. Prepare the execution host
-  - H4: 2. Install and configure a controller plugin
-  - H4: 3. Select the controller
-  - H4: How startup, reconnection, and cleanup work
-  - H4: Use an external controller instead
+  - H4: 2. Configure external executor management
+  - H4: 3. Select self-hosted execution
+  - H4: Upgrading from a controller plugin
   - H4: Check the setup and file boundaries
   - H3: Session settings and diagnostics
   - H3: Current limitations
@@ -11067,7 +11066,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/registration
 - Headings:
   - H2: Register a harness
-  - H3: Executor controller plugins
+  - H3: Hosted workspaces and executor lifecycle
   - H3: Isolated completion
   - H3: Delegated execution
 
@@ -11472,6 +11471,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Removed compatibility surfaces
   - H3: Channel, config, and infrastructure compatibility facades
   - H3: Command, Discord, and Telegram account facades
+  - H3: Codex app-server extension factories
+  - H3: Hosted media, global transforms, and executor controllers
   - H3: Retroactively recorded shipped exports
   - H3: Reply silence parsing
   - H3: Tool argument redaction
