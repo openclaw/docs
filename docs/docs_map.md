@@ -5693,6 +5693,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: PostgreSQL operator guide
   - H2: Support matrix
+  - H2: Server-major qualification
   - H2: When to use PostgreSQL
   - H2: Requirements
   - H3: Provision a database and runtime role
@@ -5709,6 +5710,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Capture both server data and local state
   - H3: Restore all PostgreSQL stores
   - H3: Disaster recovery from Git
+  - H2: Published-stable upgrade qualification
   - H2: Updates and schema migrations
   - H2: Search on PostgreSQL
   - H2: Performance evidence
