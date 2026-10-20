@@ -5086,6 +5086,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: MCP and plugin tools inside sandbox tool policy
   - H2: tools.codeMode
   - H2: tools.allow / tools.deny
+  - H2: tools.gatewayPolicy
   - H2: tools.byProvider
   - H2: tools.toolsBySender
   - H2: tools.elevated
