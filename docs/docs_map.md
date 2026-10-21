@@ -1322,6 +1322,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Scope (messages.ackReactionScope)
   - H2: Text streaming
   - H2: Typing reaction fallback
+  - H2: Question buttons
   - H2: Commands and slash behavior
 
 ## channels/slack/rich-messages.md
