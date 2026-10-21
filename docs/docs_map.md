@@ -11130,6 +11130,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-channel-inbound
 - Headings:
   - H2: Core helpers
+  - H2: Debouncing
   - H2: Platform-selected history windows
   - H2: Agent group dispatch
   - H2: Internal turn sources
