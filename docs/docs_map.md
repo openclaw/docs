@@ -7446,6 +7446,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Node and global install permissions
   - H3: System-scope systemd services
   - H2: Debug logging blocks the update handoff
+  - H2: Extended-stable 2026.9.33 to development builds
   - H2: Candidate migration rehearsal timeouts
   - H2: Published 2026.9.4 on large agent fleets
   - H2: Headless nodes waiting on 2026.9.6
