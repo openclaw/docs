@@ -85,6 +85,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /automation/cron-jobs/delivery
 - Headings:
   - H2: Delivery and output
+  - H3: Owner delivery and direct messages
   - H3: Failure notifications
   - H4: Owner-conversation repair
   - H3: Output language
@@ -126,6 +127,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Payloads
   - H3: Agent-turn options
   - H3: Inference account continuity
+  - H3: Job scratch and quiet results
   - H3: Command payloads
   - H3: Script payloads
   - H2: Authoring recurring jobs
@@ -138,6 +140,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Schedule types
   - H3: Heartbeat task migration
+  - H3: Monitoring policies
   - H3: Stream sources
   - H4: Sandboxed streams
   - H3: Dynamic cadence (pacing)
@@ -240,7 +243,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /automation
 - Headings:
   - H2: Quick decision guide
-  - H3: Automations vs Heartbeat
+  - H3: Periodic monitoring
   - H2: Core concepts
   - H3: Automations
   - H3: Background execution and workflows
@@ -2168,9 +2171,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw automations
   - H2: Create jobs quickly
   - H2: Schedule types
+  - H3: Monitoring policies
   - H2: Sessions
   - H2: Delivery
   - H3: Delivery ownership
+  - H3: Owner targets and direct-message policy
   - H3: Failure delivery
   - H2: Scheduling
   - H3: One-shot jobs
@@ -4933,7 +4938,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: DM and group access
   - H2: Channel model overrides
-  - H2: Channel defaults and heartbeat
+  - H2: Channel defaults
   - H2: Multi-account (all channels)
 
 ## gateway/config-channels/workplace-chat.md
@@ -5104,6 +5109,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Expanded example (major options)
   - H3: Symlinked sibling skill repo
   - H2: Common patterns
+  - H3: Periodic monitoring
   - H3: Shared skill baseline with one override
   - H3: Multi-platform setup
   - H3: Trusted node network auto-approval
@@ -5251,6 +5257,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Collaborative steering default
   - H2: Cloud setup secret migration
   - H2: Runtime config migration
+  - H3: Heartbeat to ordinary automations
+  - H3: Provider configuration
   - H2: Direct Ollama Cloud routing
   - H2: Claude CLI model routing
   - H2: Command-owner target kinds
@@ -5373,29 +5381,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/heartbeat
 - Headings:
-  - H2: Quick start (beginner)
-  - H2: Defaults
-  - H2: What the heartbeat prompt is for
-  - H2: Immediate session events
-  - H2: Response contract
-  - H2: Config
-  - H3: Scope and precedence
-  - H3: Per-agent heartbeats
-  - H3: Active hours example
-  - H3: 24/7 setup
-  - H3: Multi-account example
-  - H3: Field notes
-  - H2: Delivery behavior
-  - H2: Visibility controls
-  - H3: What each flag does
-  - H3: Per-channel vs per-account examples
-  - H3: Common patterns
-  - H2: Monitor scratch (optional)
-  - H3: Schedule recurring checks with automations
-  - H3: Can the agent update its scratch?
-  - H2: Manual wake (on-demand)
-  - H2: Cost awareness
-  - H2: Context overflow after heartbeat
+  - H2: Upgrade an existing monitor
+  - H2: First setup
+  - H2: Configure scheduled checks
+  - H2: Monitor scratch
+  - H2: Quiet results and run history
+  - H2: Immediate follow-ups
   - H2: Related
 
 ## gateway/index.md
@@ -6404,7 +6395,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/troubleshooting/channel-delivery-and-tools
 - Headings:
   - H2: Channel connected, messages not flowing
-  - H2: Cron and heartbeat delivery
+  - H2: Automation delivery
   - H2: Node paired, tool fails
   - H2: Browser tool fails
 
@@ -13369,6 +13360,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 30
   - H3: State schema 29
   - H3: State schema 28
   - H3: State schema 27
@@ -13589,7 +13581,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Worker turns
   - H3: cacheRetention
   - H3: contextPruning.mode: "cache-ttl"
-  - H3: Heartbeat keep-warm
+  - H3: Scheduled cache reuse
   - H2: Provider behavior
   - H3: Anthropic (direct API and Vertex AI)
   - H3: DeepInfra
@@ -14047,7 +14039,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How to see current token usage
   - H2: Cost estimation (when shown)
   - H2: Cache TTL and pruning impact
-  - H3: Example: keep 1h cache warm with heartbeat
+  - H3: Example: reuse a one-hour cache
   - H3: Example: mixed traffic with per-agent cache strategy
   - H3: Anthropic 1M context
   - H2: Tips for reducing token pressure
@@ -14917,7 +14909,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Give the agent a workspace (AGENTS)
   - H2: The config that turns it into "an assistant"
   - H2: Sessions and memory
-  - H2: Heartbeats (proactive mode)
+  - H2: Proactive automations
   - H2: Media in and out
   - H2: Operations checklist
   - H2: Next steps
