@@ -15817,6 +15817,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Interactive apps and plugin extensions
   - H2: Approvals
   - H2: Troubleshooting
+  - H3: A tool returns an error
   - H3: The server appears in Settings but exposes no tools
   - H3: A stdio server does not start
   - H3: An HTTP server needs authorization
