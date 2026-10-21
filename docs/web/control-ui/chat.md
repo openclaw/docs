@@ -519,7 +519,9 @@ The naming model is asked for a plain-text label of that message, not of injecte
 harness or project instructions, and not a copy of the input's JSON wrapper.
 They are generated separately from the agent's work, so a title is not a completion
 status or a report of tool access. Existing titles and manual names are left
-unchanged; click a title to rename it.
+unchanged; click a title to rename it. A connected conversation without a saved
+session record keeps its ordinary title. Renaming requires that record and the
+appropriate access.
 
 Worktree creation waits up to 30 seconds for a title, then proceeds while naming
 finishes in the background. A late title still updates the session without
