@@ -12240,6 +12240,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Readiness and live proof
   - H2: Model discovery
   - H2: Protocol and provider plugins
+  - H2: Image generation
   - H2: Quotas and usage
   - H2: Pool dashboard
   - H2: Troubleshooting
