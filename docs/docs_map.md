@@ -1237,6 +1237,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup path A: link existing Signal account (QR)
   - H2: Setup path B: register dedicated bot number (SMS, Linux)
   - H2: External native daemon mode
+  - H2: Managed daemon environment
   - H2: Container mode (bbernhard/signal-cli-rest-api)
   - H2: Opt-in private UNIX socket
   - H2: Access control (DMs + groups)
