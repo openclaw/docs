@@ -13409,6 +13409,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H3: Preflight an explicit agent copy
+  - H2: Files from before PR workspace adoption
 
 ## reference/database-schemas/versioning.md
 
