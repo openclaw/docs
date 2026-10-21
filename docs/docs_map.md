@@ -1738,6 +1738,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/checkout
 - Headings:
   - H2: Checkout ownership
+  - H2: Preflight materialization
   - H2: Related
 
 ## ci/local-proof.md
