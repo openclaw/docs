@@ -973,6 +973,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Install
   - H2: Quick setup
+  - H2: Inbound batching
   - H2: Native slash commands
   - H2: Environment variables (default account)
   - H2: Chat modes
