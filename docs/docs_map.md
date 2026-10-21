@@ -2560,7 +2560,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Stdio transport
   - H2: SSE / HTTP transport
   - H2: OAuth workflow
-  - H2: Enterprise-managed authorization
   - H2: Streamable HTTP transport
 
 ## cli/memory.md
