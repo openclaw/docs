@@ -11282,6 +11282,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: ACP harness turns
   - H2: Session persistence
   - H2: Stateful CLI commands
+  - H2: OpenAI-compatible Decisions runtime
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 
@@ -12233,6 +12234,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/clawrouter
 - Headings:
   - H2: Getting started
+  - H2: Decision models
   - H2: Managed non-interactive deployment
   - H2: Readiness and live proof
   - H2: Model discovery
