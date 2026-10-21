@@ -4257,6 +4257,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/session
 - Headings:
   - H2: How messages are routed
+  - H2: Creators and assigned owners
   - H2: Automatic session names
   - H2: DM isolation
   - H2: Retired channel docking
