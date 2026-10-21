@@ -13585,6 +13585,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: DeepInfra
   - H3: Model Studio / DashScope (Qwen)
   - H3: OpenAI (direct API)
+  - H3: OpenAI 12-hour cache lifetime
   - H3: Amazon Bedrock
   - H3: OpenRouter
   - H3: Google Gemini (direct API)
