@@ -41,7 +41,9 @@ the same place in Pages, Sessions, and Users, even when the list is collapsed.
 It opens New session for the selected agent; in team mode, choose an agent from
 its menu first. Command-palette search sits below the three view buttons.
 Click the selected Pages or Sessions view again to collapse its list, or press ⌘B on
-Mac or Ctrl+B on Windows/Linux. While the list is hidden, none of the three view
+Mac or Ctrl+B on Windows/Linux. Clicks use the normal sidebar animation; the
+keyboard shortcut opens or closes navigation immediately. Reduced-motion preferences
+also keep clicks immediate. While the list is hidden, none of the three view
 buttons is selected; click any view to open its list. Selecting a different view
 while the list is open switches directly to that view. Clicking Users again keeps
 its list open; use the collapse button or keyboard shortcut to hide it.
