@@ -206,7 +206,7 @@ jobs:
         if: steps.current-main.outputs.stale == 'false' && (steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1')
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 26
+          node-version: 26.12.1
           cache: npm
 
       - name: Install
