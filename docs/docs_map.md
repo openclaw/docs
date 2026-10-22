@@ -11504,6 +11504,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Channel, config, and infrastructure compatibility facades
   - H3: Command, Discord, and Telegram account facades
   - H3: Codex app-server extension factories
+  - H3: Heartbeat executor and wake helpers
   - H3: Hosted media, global transforms, and executor controllers
   - H3: Retroactively recorded shipped exports
   - H3: Reply silence parsing
