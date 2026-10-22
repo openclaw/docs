@@ -11793,6 +11793,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime/models
 - Headings:
+  - H2: Requester-admitted model catalog
   - H2: Protected model egress for standalone commands
   - H2: Prepared simple completions
   - H2: Low-level completions
