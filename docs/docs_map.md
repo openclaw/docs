@@ -53,6 +53,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup replacements
   - H2: Agent copy portability
   - H2: Plugin SDK OAuth validation
+  - H2: Provider-boundary OAuth outcomes
+  - H3: Non-model and externally owned routes
+  - H3: Recovering an interrupted rotating refresh
   - H2: Personal model accounts
   - H2: Config-only auth routes
   - H2: Explicit auth order filtering
