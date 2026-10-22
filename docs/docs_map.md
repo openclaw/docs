@@ -2226,6 +2226,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/devices
 - Headings:
   - H1: openclaw devices
+  - H2: Doctor pairing findings
   - H2: Common options
   - H2: Commands
   - H3: openclaw devices list
@@ -2290,6 +2291,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/doctor/checks
 - Headings:
   - H2: Modes and prompting
+  - H2: Choosing which findings to address
   - H2: Config writes and backups
   - H2: Gateway and service repairs
   - H2: Session state and cron
@@ -2330,6 +2332,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Postures
   - H2: Examples
   - H2: Options
+  - H2: Understanding findings
+  - H3: Auth and browser findings
+  - H3: Auth migration recovery
 
 ## cli/doctor/sqlite-maintenance.md
 
@@ -2349,6 +2354,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Legacy state migration
   - H2: Pending plugin migrations
   - H2: Plugin migration recovery coverage
+  - H3: Older updater recovery copies
 
 ## cli/file-transfer.md
 
@@ -2787,6 +2793,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Inspect
   - H2: Doctor
+  - H3: Doctor priorities and repair steps
   - H2: Registry
 
 ## cli/plugins/install.md
