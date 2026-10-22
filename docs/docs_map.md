@@ -13386,6 +13386,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 31
   - H3: State schema 30
   - H3: State schema 29
   - H3: State schema 28
