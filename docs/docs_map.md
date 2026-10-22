@@ -14695,6 +14695,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /releases
 - Headings:
   - H2: Releases
+  - H3: October 2026
+  - H3: September 2026
+  - H3: Earlier releases
   - H2: Changelog
 
 ## security/CONTRIBUTING-THREAT-MODEL.md
