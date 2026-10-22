@@ -11750,6 +11750,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/background-work
 - Headings:
   - H2: Requester-bound native children
+  - H2: Recover plugin-owned native children
   - H2: Command-scoped native children
   - H2: Background work namespaces
   - H2: Native harness continuation retry settings
