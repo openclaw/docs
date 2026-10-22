@@ -30,6 +30,7 @@ The standalone CI watcher and Crabbox entrypoint resolve missing third-party
 packages from the same tooling root when their checkout has no `node_modules`,
 with the same explicit-root identity checks and exact package versions. They
 never link an installation or resolve workspace packages from another checkout.
+The line-cap ratchet uses this same no-link, third-party-only admission and runs the package-owned oxlint CLI with the same Node executable.
 The wrapper still selects and verifies code against the existing trust anchor.
 Installed package versions must exactly match the anchor manifest. On mismatch,
 an explicitly selected, separate, clean `main` checkout is fetched, fast-forwarded,
