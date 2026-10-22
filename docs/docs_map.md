@@ -8665,6 +8665,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Hook packs
   - H4: Embedded OpenClaw settings
   - H4: Embedded OpenClaw LSP
+  - H4: LSP server environment
   - H3: Detected but not executed
   - H2: MCP for embedded OpenClaw
   - H3: Transports
