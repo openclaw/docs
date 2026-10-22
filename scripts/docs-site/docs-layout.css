@@ -217,7 +217,14 @@
 /* Patch lists keep their detail control in the sentence's inline flow. */
 .docs-layout .doc li:has(> .release-source-inline) > p:first-child { display: inline; margin: 0; }
 .docs-layout .doc .release-source-inline { display: inline; }
-.docs-layout .doc .release-source-inline > summary { display: inline-flex; vertical-align: baseline; margin-inline-start: .35em; }
+.docs-layout .doc .release-source-inline > summary { display: inline-flex; vertical-align: middle; min-block-size: 0; inline-size: 20px; block-size: 20px; justify-content: center; margin-inline-start: .2em; padding: 0; border-radius: 4px; color: var(--muted); font-size: 0; line-height: 0; position: relative; }
+/* Inline patch-release details: a small chevron only; the label stays for assistive tech. */
+.docs-layout .doc .release-source-inline > summary::before { flex-basis: 11px; inline-size: 11px; block-size: 11px; opacity: .55; }
+.docs-layout .doc .release-source-inline > summary::after { content: ""; position: absolute; inset: -12px; }
+.docs-layout .doc .release-source-inline[open] > summary::before { opacity: .9; }
+.docs-layout .doc .release-source-inline > .release-source-content,
+.docs-layout .doc .release-source-inline > :not(summary) { display: block; margin: .3em 0 .2em; font-size: .86em; line-height: 1.55; color: var(--muted); }
+.docs-layout .doc .release-source-inline > :not(summary) a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
 @media (hover:hover) and (pointer:fine) {
   .docs-layout .doc .release-source-toggle > summary:hover::before { color: var(--ink); }}
 .docs-layout .doc > :is(p,ul,ol,blockquote) { max-inline-size: var(--docs-prose-measure); margin-block: 0 var(--docs-paragraph-gap); }
