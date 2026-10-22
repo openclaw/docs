@@ -13104,6 +13104,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Non-interactive example
+  - H2: Token Pass
   - H2: Model ID shorthand
   - H2: Advanced configuration
   - H2: Related
