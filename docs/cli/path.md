@@ -527,6 +527,10 @@ openclaw path emit ./gateway.jsonc --json
 stdout is piped or redirected. `--json` and `--human` override the
 auto-detection.
 
+Path/file parse errors and refused patterns in JSON mode write one error object to stdout, with `ok: false`
+and an `error` containing `type: "cli_error"`, the domain `code`, and `message`.
+Human-mode diagnostics remain on stderr. Refusals still return a nonzero exit code.
+
 ## Notes
 
 - `set` refuses string leaf values containing `__OPENCLAW_REDACTED__`
