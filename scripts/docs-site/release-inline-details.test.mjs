@@ -33,10 +33,16 @@ test("patch details follow the fix inline and retain native keyboard access", as
           range.setEnd(paragraph.lastChild, paragraph.lastChild.textContent.length);
           const end = range.getBoundingClientRect();
           const control = element.getBoundingClientRect();
-          return { end: { left: end.left, right: end.right, top: end.top, bottom: end.bottom }, control: { left: control.left, top: control.top, bottom: control.bottom, height: control.height }, overflow: document.documentElement.scrollWidth > innerWidth, paragraphDisplay: getComputedStyle(paragraph).display };
+          // The visible chevron is compact; its pointer area extends past the box.
+          const centerX = control.left + control.width / 2;
+          const centerY = control.top + control.height / 2;
+          const hits = (x, y) => element.contains(document.elementFromPoint(x, y));
+          const pointerArea = [-21, 21].every((dy) => hits(centerX, centerY + dy)) && [-21, 21].every((dx) => hits(centerX + dx, centerY));
+          return { end: { left: end.left, right: end.right, top: end.top, bottom: end.bottom }, control: { left: control.left, top: control.top, bottom: control.bottom, height: control.height }, pointerArea, lineHeight: paragraph.getBoundingClientRect().height, overflow: document.documentElement.scrollWidth > innerWidth, paragraphDisplay: getComputedStyle(paragraph).display };
         });
         assert.equal(layout.paragraphDisplay, "inline");
-        assert.ok(layout.control.height >= 44, "retain the existing touch target");
+        assert.ok(layout.control.height <= 24, "keep the visible control compact");
+        assert.equal(layout.pointerArea, true, "retain a 44px pointer target around the control");
         assert.equal(layout.overflow, false, "narrow view must not scroll horizontally");
         if (width === 1200) {
           assert.ok(layout.control.left >= layout.end.right, "control follows the final character");
