@@ -3381,6 +3381,7 @@
                 "group": "Start here",
                 "pages": [
                   "help/index",
+                  "help/support",
                   "help/troubleshooting",
                   "help/debugging"
                 ]
@@ -5457,6 +5458,7 @@
                 "group": "帮助",
                 "pages": [
                   "zh-CN/help/index",
+                  "zh-CN/help/support",
                   "zh-CN/help/troubleshooting",
                   "zh-CN/help/debugging"
                 ]
@@ -7533,6 +7535,7 @@
                 "group": "Start here",
                 "pages": [
                   "zh-TW/help/index",
+                  "zh-TW/help/support",
                   "zh-TW/help/troubleshooting",
                   "zh-TW/help/debugging"
                 ]
@@ -9609,6 +9612,7 @@
                 "group": "Start here",
                 "pages": [
                   "ja-JP/help/index",
+                  "ja-JP/help/support",
                   "ja-JP/help/troubleshooting",
                   "ja-JP/help/debugging"
                 ]
@@ -11685,6 +11689,7 @@
                 "group": "Start here",
                 "pages": [
                   "es/help/index",
+                  "es/help/support",
                   "es/help/troubleshooting",
                   "es/help/debugging"
                 ]
@@ -13761,6 +13766,7 @@
                 "group": "Start here",
                 "pages": [
                   "pt-BR/help/index",
+                  "pt-BR/help/support",
                   "pt-BR/help/troubleshooting",
                   "pt-BR/help/debugging"
                 ]
@@ -15837,6 +15843,7 @@
                 "group": "Start here",
                 "pages": [
                   "ko/help/index",
+                  "ko/help/support",
                   "ko/help/troubleshooting",
                   "ko/help/debugging"
                 ]
@@ -17913,6 +17920,7 @@
                 "group": "Start here",
                 "pages": [
                   "de/help/index",
+                  "de/help/support",
                   "de/help/troubleshooting",
                   "de/help/debugging"
                 ]
@@ -19989,6 +19997,7 @@
                 "group": "Start here",
                 "pages": [
                   "fr/help/index",
+                  "fr/help/support",
                   "fr/help/troubleshooting",
                   "fr/help/debugging"
                 ]
@@ -22065,6 +22074,7 @@
                 "group": "Start here",
                 "pages": [
                   "hi/help/index",
+                  "hi/help/support",
                   "hi/help/troubleshooting",
                   "hi/help/debugging"
                 ]
@@ -24141,6 +24151,7 @@
                 "group": "Start here",
                 "pages": [
                   "ar/help/index",
+                  "ar/help/support",
                   "ar/help/troubleshooting",
                   "ar/help/debugging"
                 ]
@@ -26217,6 +26228,7 @@
                 "group": "Start here",
                 "pages": [
                   "it/help/index",
+                  "it/help/support",
                   "it/help/troubleshooting",
                   "it/help/debugging"
                 ]
@@ -28293,6 +28305,7 @@
                 "group": "Start here",
                 "pages": [
                   "vi/help/index",
+                  "vi/help/support",
                   "vi/help/troubleshooting",
                   "vi/help/debugging"
                 ]
@@ -30369,6 +30382,7 @@
                 "group": "Start here",
                 "pages": [
                   "nl/help/index",
+                  "nl/help/support",
                   "nl/help/troubleshooting",
                   "nl/help/debugging"
                 ]
@@ -32445,6 +32459,7 @@
                 "group": "Start here",
                 "pages": [
                   "fa/help/index",
+                  "fa/help/support",
                   "fa/help/troubleshooting",
                   "fa/help/debugging"
                 ]
@@ -34521,6 +34536,7 @@
                 "group": "Buradan başlayın",
                 "pages": [
                   "tr/help/index",
+                  "tr/help/support",
                   "tr/help/troubleshooting",
                   "tr/help/debugging"
                 ]
@@ -36597,6 +36613,7 @@
                 "group": "Start here",
                 "pages": [
                   "uk/help/index",
+                  "uk/help/support",
                   "uk/help/troubleshooting",
                   "uk/help/debugging"
                 ]
@@ -38673,6 +38690,7 @@
                 "group": "Start here",
                 "pages": [
                   "id/help/index",
+                  "id/help/support",
                   "id/help/troubleshooting",
                   "id/help/debugging"
                 ]
@@ -40749,6 +40767,7 @@
                 "group": "Start here",
                 "pages": [
                   "pl/help/index",
+                  "pl/help/support",
                   "pl/help/troubleshooting",
                   "pl/help/debugging"
                 ]
@@ -42825,6 +42844,7 @@
                 "group": "Start here",
                 "pages": [
                   "th/help/index",
+                  "th/help/support",
                   "th/help/troubleshooting",
                   "th/help/debugging"
                 ]
@@ -44901,6 +44921,7 @@
                 "group": "Start here",
                 "pages": [
                   "ru/help/index",
+                  "ru/help/support",
                   "ru/help/troubleshooting",
                   "ru/help/debugging"
                 ]
@@ -46977,6 +46998,7 @@
                 "group": "Börja här",
                 "pages": [
                   "sv/help/index",
+                  "sv/help/support",
                   "sv/help/troubleshooting",
                   "sv/help/debugging"
                 ]

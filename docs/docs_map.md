@@ -6633,6 +6633,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /help
 - Headings:
+  - H2: Support
   - H2: FAQ
   - H2: Diagnostics
   - H2: Testing
@@ -6648,6 +6649,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: GitHub read helper
   - H2: When adding scripts
   - H2: Related
+
+## help/support.md
+
+- Route: /help/support
+- Headings:
+  - H2: Start with self-service help
+  - H2: What to include
+  - H2: Bugs and security reports
 
 ## help/testing-live.md
 
