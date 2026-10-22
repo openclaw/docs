@@ -8872,7 +8872,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/codex-harness-runtime/replies
 - Headings:
-  - H2: Visible replies and heartbeats
+  - H2: Visible replies and scheduled turns
   - H2: Attachments in a remote workspace
   - H2: Final answers after settled tool work
 
