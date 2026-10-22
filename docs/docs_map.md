@@ -4437,6 +4437,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Personal USER files on a shared Gateway
   - H2: Gateway profile and GitHub credit
+  - H3: Member and administrator controls
   - H2: Merging duplicate profiles
   - H2: Channel identity links
   - H3: Assign to me from a channel
