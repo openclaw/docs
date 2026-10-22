@@ -4461,7 +4461,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: System event lines (local by default)
   - H3: Configure user timezone
   - H2: Time format detection
-  - H2: Tool payloads + connectors (raw provider time + normalized fields)
+  - H2: Tool payloads + channel plugins (raw provider time + normalized fields)
   - H2: Related docs
 
 ## diagnostics/flags.md
