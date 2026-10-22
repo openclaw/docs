@@ -11752,6 +11752,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requester-bound native children
   - H2: Recover plugin-owned native children
   - H2: Command-scoped native children
+  - H2: Requester-admitted scheduled commands
   - H2: Background work namespaces
   - H2: Native harness continuation retry settings
   - H2: Native harness completion delivery
