@@ -9266,6 +9266,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H3: Permissions and scope
   - H3: Choose a hook
+  - H3: Before durable channel ingress
   - H2: Troubleshooting
   - H2: Upcoming deprecations
   - H2: Where each section moved
