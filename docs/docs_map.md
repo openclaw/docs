@@ -11317,6 +11317,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-entrypoints/define-tool-plugin
 - Headings:
   - H2: defineToolPlugin
+  - H2: Dictionary schemas and preparation validation
   - H2: Input-dependent output schemas
 
 ## plugins/sdk-entrypoints/native-providers.md
@@ -11929,6 +11930,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Requirements
   - H2: Quickstart
   - H2: Write a tool
+  - H2: Provider-portable dictionaries and validation
   - H2: Optional and factory tools
   - H3: Owner-authorized continuations
   - H2: Return values
