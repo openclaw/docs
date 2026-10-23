@@ -16370,6 +16370,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How a turn runs
   - H2: Modes
+  - H2: Select which tools to defer
   - H2: Why this exists
   - H2: Structured controls
   - H3: Search
