@@ -39,6 +39,6 @@
     "yaml": "2.9.1"
   },
   "dependencies": {
-    "@openclaw/carapace": "git+https://github.com/openclaw/carapace.git#v0.6.2"
+    "@openclaw/carapace": "git+https://github.com/openclaw/carapace.git#v0.6.3"
   }
 }
