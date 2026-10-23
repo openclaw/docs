@@ -9442,6 +9442,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: modelSupport reference
   - H2: modelCatalog reference
+  - H3: Model family
   - H3: Task-specific inference metadata
   - H2: modelIdNormalization reference
   - H2: modelPricing reference
@@ -16601,6 +16602,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Mobile composer
   - H2: Composer predictions
   - H2: Composer capability menu
+  - H2: Video preparation compatibility
+  - H3: Output and input boundaries
+  - H3: Evidence baseline
+  - H3: Qualification outcomes
+  - H3: Proposed successful-conversion minimum
+  - H3: Evidence record and runbook
+  - H3: Outstanding compatibility decisions
   - H2: Emoji shortcodes
   - H2: JSON in chat
   - H2: Chat behavior
