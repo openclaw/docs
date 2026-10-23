@@ -10709,6 +10709,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/requesty.md
+
+- Route: /plugins/reference/requesty
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/runway.md
 
 - Route: /plugins/reference/runway
@@ -13013,6 +13021,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Organization API key
   - H2: Choose a model
   - H2: Scope and troubleshooting
+
+## providers/requesty.md
+
+- Route: /providers/requesty
+- Headings:
+  - H2: Setup
+  - H2: Non-interactive example
+  - H2: Default model and catalog
+  - H2: Config example
+  - H2: Behavior notes
+  - H2: Related
 
 ## providers/runway.md
 

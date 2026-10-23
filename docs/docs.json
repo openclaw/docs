@@ -2300,6 +2300,7 @@
                       "providers/litellm",
                       "providers/neon",
                       "providers/openrouter",
+                      "providers/requesty",
                       "providers/vercel-ai-gateway"
                     ]
                   },
@@ -4378,6 +4379,7 @@
                       "zh-CN/providers/litellm",
                       "zh-CN/providers/neon",
                       "zh-CN/providers/openrouter",
+                      "zh-CN/providers/requesty",
                       "zh-CN/providers/vercel-ai-gateway"
                     ]
                   },
@@ -6456,6 +6458,7 @@
                       "zh-TW/providers/litellm",
                       "zh-TW/providers/neon",
                       "zh-TW/providers/openrouter",
+                      "zh-TW/providers/requesty",
                       "zh-TW/providers/vercel-ai-gateway"
                     ]
                   },
@@ -8534,6 +8537,7 @@
                       "ja-JP/providers/litellm",
                       "ja-JP/providers/neon",
                       "ja-JP/providers/openrouter",
+                      "ja-JP/providers/requesty",
                       "ja-JP/providers/vercel-ai-gateway"
                     ]
                   },
@@ -10612,6 +10616,7 @@
                       "es/providers/litellm",
                       "es/providers/neon",
                       "es/providers/openrouter",
+                      "es/providers/requesty",
                       "es/providers/vercel-ai-gateway"
                     ]
                   },
@@ -12690,6 +12695,7 @@
                       "pt-BR/providers/litellm",
                       "pt-BR/providers/neon",
                       "pt-BR/providers/openrouter",
+                      "pt-BR/providers/requesty",
                       "pt-BR/providers/vercel-ai-gateway"
                     ]
                   },
@@ -14768,6 +14774,7 @@
                       "ko/providers/litellm",
                       "ko/providers/neon",
                       "ko/providers/openrouter",
+                      "ko/providers/requesty",
                       "ko/providers/vercel-ai-gateway"
                     ]
                   },
@@ -16846,6 +16853,7 @@
                       "de/providers/litellm",
                       "de/providers/neon",
                       "de/providers/openrouter",
+                      "de/providers/requesty",
                       "de/providers/vercel-ai-gateway"
                     ]
                   },
@@ -18924,6 +18932,7 @@
                       "fr/providers/litellm",
                       "fr/providers/neon",
                       "fr/providers/openrouter",
+                      "fr/providers/requesty",
                       "fr/providers/vercel-ai-gateway"
                     ]
                   },
@@ -21002,6 +21011,7 @@
                       "hi/providers/litellm",
                       "hi/providers/neon",
                       "hi/providers/openrouter",
+                      "hi/providers/requesty",
                       "hi/providers/vercel-ai-gateway"
                     ]
                   },
@@ -23080,6 +23090,7 @@
                       "ar/providers/litellm",
                       "ar/providers/neon",
                       "ar/providers/openrouter",
+                      "ar/providers/requesty",
                       "ar/providers/vercel-ai-gateway"
                     ]
                   },
@@ -25158,6 +25169,7 @@
                       "it/providers/litellm",
                       "it/providers/neon",
                       "it/providers/openrouter",
+                      "it/providers/requesty",
                       "it/providers/vercel-ai-gateway"
                     ]
                   },
@@ -27236,6 +27248,7 @@
                       "vi/providers/litellm",
                       "vi/providers/neon",
                       "vi/providers/openrouter",
+                      "vi/providers/requesty",
                       "vi/providers/vercel-ai-gateway"
                     ]
                   },
@@ -29314,6 +29327,7 @@
                       "nl/providers/litellm",
                       "nl/providers/neon",
                       "nl/providers/openrouter",
+                      "nl/providers/requesty",
                       "nl/providers/vercel-ai-gateway"
                     ]
                   },
@@ -31392,6 +31406,7 @@
                       "fa/providers/litellm",
                       "fa/providers/neon",
                       "fa/providers/openrouter",
+                      "fa/providers/requesty",
                       "fa/providers/vercel-ai-gateway"
                     ]
                   },
@@ -33470,6 +33485,7 @@
                       "tr/providers/litellm",
                       "tr/providers/neon",
                       "tr/providers/openrouter",
+                      "tr/providers/requesty",
                       "tr/providers/vercel-ai-gateway"
                     ]
                   },
@@ -35548,6 +35564,7 @@
                       "uk/providers/litellm",
                       "uk/providers/neon",
                       "uk/providers/openrouter",
+                      "uk/providers/requesty",
                       "uk/providers/vercel-ai-gateway"
                     ]
                   },
@@ -37626,6 +37643,7 @@
                       "id/providers/litellm",
                       "id/providers/neon",
                       "id/providers/openrouter",
+                      "id/providers/requesty",
                       "id/providers/vercel-ai-gateway"
                     ]
                   },
@@ -39704,6 +39722,7 @@
                       "pl/providers/litellm",
                       "pl/providers/neon",
                       "pl/providers/openrouter",
+                      "pl/providers/requesty",
                       "pl/providers/vercel-ai-gateway"
                     ]
                   },
@@ -41782,6 +41801,7 @@
                       "th/providers/litellm",
                       "th/providers/neon",
                       "th/providers/openrouter",
+                      "th/providers/requesty",
                       "th/providers/vercel-ai-gateway"
                     ]
                   },
@@ -43860,6 +43880,7 @@
                       "ru/providers/litellm",
                       "ru/providers/neon",
                       "ru/providers/openrouter",
+                      "ru/providers/requesty",
                       "ru/providers/vercel-ai-gateway"
                     ]
                   },
@@ -45938,6 +45959,7 @@
                       "sv/providers/litellm",
                       "sv/providers/neon",
                       "sv/providers/openrouter",
+                      "sv/providers/requesty",
                       "sv/providers/vercel-ai-gateway"
                     ]
                   },
