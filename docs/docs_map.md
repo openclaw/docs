@@ -13549,6 +13549,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/full-release-validation/evidence
 - Headings:
   - H2: Evidence to keep
+  - H2: Release-tooling waivers
   - H2: Workflow files
 
 ## reference/full-release-validation/extended-stable.md
