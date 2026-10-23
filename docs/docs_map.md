@@ -12378,6 +12378,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Authentication
   - H2: Text-to-speech
   - H2: Speech-to-text
+  - H3: Provider options
   - H2: Streaming STT
   - H2: Related
 
