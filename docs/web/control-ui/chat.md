@@ -976,7 +976,8 @@ The dedicated card recognizes YouTube video URLs independently of
 iframes in `show_widget`. With `gateway.controlUi.embedSandbox: "strict"`, the card
 offers the watch link without loading a player. Other chat surfaces should use a
 regular YouTube link; the card is a Control UI feature, separate from native inline
-widgets.
+widgets. [Public conversation links](/web/urls#public-session-transcripts) show the
+video as a plain link without loading the player or thumbnail.
 
 Thumbnails load from `i.ytimg.com`, which contacts Google before playback. After
 activation, the player loads from `www.youtube-nocookie.com`. Its frame sends only
