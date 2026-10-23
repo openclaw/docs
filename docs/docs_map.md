@@ -3514,6 +3514,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Failure isolation
   - H3: ownsCompaction
   - H2: Configuration reference
+  - H3: Plugin and engine IDs
   - H2: Relationship to compaction and memory
   - H2: Tips
   - H2: Related
@@ -5298,6 +5299,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: ACP session metadata
   - H2: ACP agents' model precedence
   - H2: Missing plugins during migration
+  - H2: Context engine plugin-ID selectors
   - H2: Blocked local plugins
   - H2: Retired TaskFlow Webhooks plugin
   - H2: Schema publication during a 2026.9.2 update
