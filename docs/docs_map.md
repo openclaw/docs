@@ -3049,6 +3049,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /cli/status
 - Headings:
+  - H2: Recovery-copy disk usage
   - H2: Status timing
   - H2: Skills diagnosis
   - H2: Session and model resolution
@@ -3188,6 +3189,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: update repair
   - H3: Skipped legacy audit recovery
   - H2: update cleanup
+  - H3: Explicitly retire an unmanifested original
 
 ## cli/update/status-and-history.md
 
