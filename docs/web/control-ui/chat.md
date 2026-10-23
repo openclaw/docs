@@ -418,6 +418,8 @@ In **Plugins**, administrators can select **Add MCP server…** and choose a sco
 
 **Tool access** lists an MCP server's tools once a run has discovered them. Before that, it explains why the list is empty rather than reporting zero tools: a newly added server has not connected yet, a connected server has not finished listing its tools, or the runtime catalog predates a config change. Sessions that run on the Codex harness keep their MCP connections inside Codex, so their tools do not appear here.
 
+If **Tool access** is already open, it refreshes when the current session's run finishes; you do not need to close and reopen it to see newly discovered tools.
+
 Capability toggles stay disabled until the Gateway, session, and runtime config are loaded, and read-only operators cannot change them. Adding a server requires administrator access. See [Connect MCP servers](/tools/mcp) for the Settings, CLI, and config paths.
 
 Switching capability views focuses the first menu item after the new view renders, while preserving any newer focus choice you make.
