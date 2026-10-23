@@ -2959,6 +2959,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Commands
   - H3: openclaw sandbox list
   - H3: openclaw sandbox recreate
+  - H3: openclaw sandbox recover
   - H3: openclaw sandbox explain
   - H2: Why recreate is needed
   - H2: Common triggers
