@@ -13327,6 +13327,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Agent schema 32
   - H3: Agent schema 31
   - H3: Trajectory payload storage
   - H3: Agent schema 29
