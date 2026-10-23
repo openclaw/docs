@@ -165,7 +165,24 @@ with a warning and directs you to `openclaw update repair`. A verified update
 stays installed; this process-inspection failure does not trigger rollback.
 Inherited control-plane and managed-helper runs retain their existing capture
 behavior. Standalone `doctor --fix` preserves a separate pre-repair copy; that
-copy does not replace an earlier update's originals. Standalone `doctor --fix`
+copy does not replace an earlier update's originals. Before allocating another
+standalone copy, Doctor can reuse its newest sealed standalone capture after
+verifying every retained file and comparing the complete current config/includes,
+database ownership and discovery, declared plugin resources, directory contents,
+links, missing paths, permissions, and file digests. Timestamps alone never prove
+that the source is unchanged. SQLite reuse requires exact consolidated bytes and
+no nonempty WAL or rollback journal. Doctor uses the same private snapshot producer
+as fresh capture and compares each image's complete digest, including normalized
+WAL-mode headers; it never ignores header fields or compares only rows. The temporary
+images are removed after comparison. PostgreSQL, unknown plugin coverage, incomplete
+inventories, and failed comparisons fall back to the existing fresh-capture path.
+Large payloads are streamed with a size-aware comparison allowance; an exhausted
+comparison budget is not an update failure. `--full-integrity-check` takes a fresh
+capture rather than substituting prior integrity evidence.
+
+The capture boundary still precedes repair discovery. A run with no reported
+repairs can still create a capture, because discovery and repair bookkeeping can
+change persisted state. When a fresh copy is needed, standalone `doctor --fix`
 snapshots databases under its own maintenance custody with a single isolated backup worker.
 Shared database families larger than 64 MiB keep discovery copies in an isolated process
 so a slow copy does not block Doctor's main thread from processing cancellation.
