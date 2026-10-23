@@ -13571,6 +13571,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/full-release-validation/release-checks
 - Headings:
   - H2: Release checks stages
+  - H2: Windows-node candidate lanes
   - H2: Docker release-path chunks
 
 ## reference/full-release-validation/stages.md
