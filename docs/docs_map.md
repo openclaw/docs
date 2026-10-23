@@ -1886,6 +1886,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Duplicate PRs After Merge
   - H3: Update Migration
   - H2: ClawSweeper activity forwarding
+  - H3: Barnacle inactivity lifecycle
   - H2: Related
 
 ## ci/scope-and-routing.md
