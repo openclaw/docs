@@ -11134,6 +11134,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-agent-harness/sessions-and-results
 - Headings:
   - H2: Native sessions and transcript mirror
+  - H3: Native child observations
   - H3: Fresh native thread seeds
   - H2: Shared native binding lifecycle
   - H2: Tool and media results
