@@ -15381,6 +15381,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Native Linux and macOS
   - H2: Configure an opt-in profile
   - H2: Session and capability limits
+  - H2: Lightpanda 1.0.2 compatibility
   - H2: Verification and benchmarks
   - H3: Chromium headless shell baseline
   - H3: Native engine comparison
