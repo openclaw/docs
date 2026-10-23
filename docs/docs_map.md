@@ -14878,6 +14878,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Acceptance tests
   - H2: Related
 
+## specs/native-local-personal-identity.md
+
+- Route: /specs/native-local-personal-identity
+- Headings:
+  - H1: Native local personal identity proposal
+  - H2: User problem and intended outcome
+  - H2: Existing ownership and related work
+  - H2: Proposed journey
+  - H2: Trust and security requirements
+  - H2: Decisions requested from Core
+  - H2: Proposed implementation PR sequence
+  - H2: Acceptance evidence required
+  - H2: Alternatives and guidance
+
 ## start/bootstrapping.md
 
 - Route: /start/bootstrapping
