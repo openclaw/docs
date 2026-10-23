@@ -9155,6 +9155,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Contribute and replace views
   - H3: Host capabilities
   - H3: Dock a conversation
+  - H2: Inline views from tools
+  - H3: Persistence and transfer
+  - H3: Inline plugin author responsibilities
   - H2: Build and reload
   - H3: Solid views
   - H3: Packaged Settings presentations
