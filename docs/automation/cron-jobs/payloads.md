@@ -206,6 +206,10 @@ from an explicit user profile pin. Token refresh within the same authorization i
 allowed; deleting, replacing, or revoking that authorization stops the job rather
 than falling back to another account. Model and route compatibility still apply.
 
+At creation, account capture follows scheduled-model selection, including an
+allowed `model@profile` value in per-agent or global `subagents.model`. A disallowed
+scheduled model falls back without retaining that model's account.
+
 To change an account deliberately, update the job with a model/profile selection,
 for example `--model "openai/gpt-4.1@work"`. This captures a fresh authorization.
 For legacy jobs without a recorded inference owner, `openclaw doctor --fix` records
