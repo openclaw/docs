@@ -50,6 +50,8 @@ An accepted child continuation, including a child created with `sessions_spawn`
 or an interrupted child resumed with `sessions_send`,
 keeps the restored operator's current identity and permission checks independently
 of the parent's recovery claim. Completing the parent does not cancel that child.
+Provider retries reuse the child's retained authority, including when session tools
+are prepared again after a transient provider error.
 Explicitly stopping the parent still cancels its children. Revoking the operator,
 replacing the source session, or stopping the Gateway still invalidates the child's
 authority.
