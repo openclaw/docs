@@ -5273,6 +5273,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/doctor/config-migrations
 - Headings:
+  - H2: Retired A2UI widgets
   - H2: Group allowlist fallback
   - H2: Collaborative steering default
   - H2: Cloud setup secret migration
@@ -8187,7 +8188,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Panel behavior
   - H2: Agent path
   - H2: Node commands
-  - H2: A2UI belongs on session dashboards
   - H2: Migrating documents from a custom root
   - H2: Related
 
@@ -16816,7 +16816,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session writer access
   - H2: What widgets are allowed to do
   - H2: MCP apps on the board
-  - H2: A2UI widgets
+  - H2: Retired widget formats
   - H2: Retired Workspaces
   - H2: Good to know
 
