@@ -258,16 +258,13 @@ runtime-store slots. Non-bundled instances also own a captured source artifact.
 Package plugins capture their package inputs when the instance is created.
 Standalone files capture their entry and statically known inputs
 without copying the surrounding workspace. Bundled runtime and setup modules,
-including TypeScript source entries, share the host's code identity during ordinary
-inventory loading; each inventory owns its registered callbacks and cleanup.
-Explicit reload captures the selected plugin's code and plugin-only build chunks
-while retaining canonical host and SDK modules. Captured Workers reach shared
-host modules through links in their captured namespace, so their native imports
-preserve the same host selection without inheriting the parent's resolver hooks.
-If the filesystem denies file symlinks, ordinary parent resolution remains
-available; captured Workers that need these shared imports retain that limitation.
-Rebuild before reload when the
-installation loads compiled output. Changes to host or SDK code require a Gateway restart.
+including TypeScript source entries, share the host's code identity; each inventory
+owns its registered callbacks and cleanup. Explicit bundled reload refreshes those
+registrations and reports `restartRequired: true`. Restart the Gateway to load
+updated bundled, host, or SDK code, and
+rebuild first when the installation loads compiled output. Embedded executable code
+changes require a newly built executable. External on-disk plugins continue to
+capture updated source and dependencies on explicit reload.
 
 WebAssembly libraries remain ordinary captured assets even when they use a `.so`
 filename. Directory asset references reuse an active capture walk; filesystem
