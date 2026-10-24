@@ -4196,6 +4196,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Durable outbound delivery
   - H2: Related
 
+## concepts/runtime-profiles.md
+
+- Route: /concepts/runtime-profiles
+- Headings:
+  - H2: Profiles
+  - H2: Features that execute code
+  - H2: Plugins fetched after the build
+  - H2: String-codegen hardening
+
 ## concepts/session-attachment.md
 
 - Route: /concepts/session-attachment
@@ -11819,6 +11828,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Config loading and writes
   - H2: Reusable runtime utilities
+  - H3: Runtime execution profile
+  - H3: Process and network utilities
   - H3: Bounded waits
   - H3: Stage timing diagnostics
   - H2: Darwin process inspection
