@@ -13374,7 +13374,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Existing behavior and proposed change
   - H2: Identity and revalidation
   - H2: Privacy, bounds, and failure behavior
-  - H2: Decision and proof
+  - H2: Implementation and proof
+  - H3: Measurement contract
+  - H3: October 24 measurements
 
 ## reference/credits.md
 
