@@ -15755,6 +15755,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/exec
 - Headings:
+  - H2: Host memory protection
   - H2: Parameters
   - H2: Config
   - H3: Modes
