@@ -11797,6 +11797,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Setup secret egress
   - H3: Bounded stale reads
   - H3: Worker provisioning status
+  - H2: Runtime schema validation
 
 ## plugins/sdk-runtime/agent.md
 
