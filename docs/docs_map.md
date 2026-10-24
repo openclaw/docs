@@ -12215,6 +12215,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Getting started
   - H2: Default model
   - H2: Bundled fallback catalog
+  - H2: Decision models
   - H2: Prompt caching
   - H2: Manual config
   - H2: Related
