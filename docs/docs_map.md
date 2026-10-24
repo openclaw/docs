@@ -6176,6 +6176,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Check dependency advisories
   - H3: Interpret coverage
   - H2: Published package behavior
+  - H3: Archive compression
   - H2: Validate npm dependency graphs
   - H2: Inspect a plugin tarball
   - H2: Related
