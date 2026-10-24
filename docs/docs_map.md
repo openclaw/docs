@@ -15491,7 +15491,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## tools/browser/security.md
 
 - Route: /tools/browser/security
-- Headings: none
+- Headings:
+  - H2: Local preview access
 
 ## tools/browser/setup.md
 
