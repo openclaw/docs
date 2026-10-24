@@ -9562,6 +9562,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Ollama embeddings
   - H2: Recall and capture limits
   - H2: Commands
+  - H3: Compact a local table
+  - H3: Query memories
   - H2: Storage
   - H2: Runtime dependencies and platform support
   - H2: Troubleshooting
