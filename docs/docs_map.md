@@ -13674,6 +13674,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Custom provider ids
   - H3: API key resolution
   - H2: Remote endpoint config
+  - H2: Query instructions
   - H2: Provider-specific config
   - H2: Indexing behavior
   - H3: File-watcher pressure
