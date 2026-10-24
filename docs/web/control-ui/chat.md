@@ -174,24 +174,29 @@ also retain desktop behavior; touch and window size alone cannot distinguish the
 
 ## Context breakdown
 
-Open **Details → Context** to see the current usage and an estimated breakdown
-of messages and other context, workspace memory, tool schemas, skills, and the
-remaining system prompt. Expand memory, tools, or skills to inspect individual
-contributors. The report loads only while this section is open; **Refresh**
-reloads the saved report without starting an agent turn.
+Open the context ring beside the composer's model picker to see current usage and
+an estimated breakdown of messages and other context, workspace memory, tool schemas,
+skills, and the remaining system prompt. The popover also shows latest-run tokens
+and provider plan limits, or estimated cost for API-billed sessions. Select
+**View context** to open one native Context panel. Workspace files, tool schemas, and skills appear in flat sections
+with a single scroll area. The report loads only while its surface is visible;
+**Refresh** reloads the saved report without starting an agent turn.
 
 Contributor sizes use character-based token estimates from the last matching
 run report, not the provider's tokenizer. Workspace memory and skills are
 subtracted from the system prompt so they are not counted twice. **Messages &
 other** is the estimated remainder, including context the report does not track
 separately. Unverified injection sizes stay unknown rather than showing zero.
-MCP and deferred tools are not separate categories in this report.
+MCP tools remain grouped by source. The secondary **On-demand tools** section
+shows potential schema sizes for catalog tools outside the direct tool surface,
+not current usage; it does not add those sizes to the breakdown.
 
-When a matching last-run prompt budget is available, the section shows the
-remaining budget and the reserve outside it. These are estimates, not a promise
+When a matching last-run prompt budget is available, the Context panel shows
+remaining space and the reserve outside the budget. These are estimates, not a promise
 of the exact auto-compaction point. **Compact session** uses the existing
 compaction command and appears only with the required permissions; it is
-disabled while a run is active. It preserves the composer draft.
+disabled while a run is active. Latest input/output token counts appear in the
+same panel. Compaction preserves the composer draft.
 
 ## Image viewing
 
