@@ -16927,6 +16927,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Stability contract
   - H3: Native catalog links
   - H2: Social previews
+  - H3: Animated cards and platform support
   - H3: Behind a login proxy
   - H2: Public session transcripts
   - H3: Revocation and older links
