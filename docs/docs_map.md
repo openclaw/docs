@@ -1623,6 +1623,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/x
 - Headings:
   - H2: Setup
+  - H2: Requester identity and credit
   - H2: Public work sessions
   - H2: Work sessions and replies
   - H2: Reply outcomes and failures
@@ -4443,6 +4444,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Personal USER files on a shared Gateway
   - H2: Gateway profile and GitHub credit
   - H3: Member and administrator controls
+  - H2: Optional OpenClaw pull request attribution
   - H2: Merging duplicate profiles
   - H2: Channel identity links
   - H3: Assign to me from a channel
