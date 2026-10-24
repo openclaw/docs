@@ -5291,6 +5291,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Cloud setup secret migration
   - H2: Runtime config migration
   - H3: Heartbeat to ordinary automations
+  - H3: Memory flush model selection
   - H3: Provider configuration
   - H2: Direct Ollama Cloud routing
   - H2: Claude CLI model routing
@@ -11423,6 +11424,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-migration
 - Headings:
+  - H2: Memory flush model selection
   - H2: Prompt hook history is read-only
   - H2: MCP result compatibility window
   - H2: What changed
