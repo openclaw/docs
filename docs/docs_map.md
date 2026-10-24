@@ -13363,6 +13363,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Skills (third-party APIs)
   - H2: Related
 
+## reference/control-ui-warm-transcript-design.md
+
+- Route: /reference/control-ui-warm-transcript-design
+- Headings:
+  - H1: Earlier warm transcript display
+  - H2: Existing behavior and proposed change
+  - H2: Identity and revalidation
+  - H2: Privacy, bounds, and failure behavior
+  - H2: Decision and proof
+
 ## reference/credits.md
 
 - Route: /reference/credits
@@ -16720,6 +16730,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/development
 - Headings:
   - H2: Build and develop the UI
+  - H3: First paint
   - H3: Measure cold HTTP delivery
   - H2: Chat input ownership
   - H2: Chat render scheduling
