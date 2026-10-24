@@ -11090,6 +11090,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/runtime-compatibility.md
+
+- Route: /plugins/runtime-compatibility
+- Headings:
+  - H2: What the warnings mean
+  - H2: Warnings and host qualification
+
 ## plugins/sdk-agent-harness.md
 
 - Route: /plugins/sdk-agent-harness
