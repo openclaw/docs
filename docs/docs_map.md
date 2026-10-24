@@ -5230,6 +5230,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: WebSocket disconnect logs
   - H2: Command-lane diagnostics
   - H2: Stability recorder
+  - H2: Runtime capabilities
   - H2: CPU profile
   - H2: Full heap snapshot
   - H2: Sampling heap profile
