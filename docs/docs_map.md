@@ -11771,6 +11771,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime
 - Headings:
+  - H2: Module loading and host identity
   - H2: What each page covers
   - H2: Runtime namespaces
   - H3: Read-only session forks
