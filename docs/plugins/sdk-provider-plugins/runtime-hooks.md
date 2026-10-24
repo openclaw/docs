@@ -124,6 +124,13 @@ Existing one-argument hooks remain compatible, and direct callers can omit confi
     },
     ```
 
+    Runtime model and stream-option headers accept `string | null`. Preserve
+    `null` when merging headers: it removes a default header in the OpenAI SDK
+    and is omitted when materializing headers for raw HTTP transports. Saved
+    provider configuration and catalog headers remain string-only. For direct HTTP
+    clients, use `omitNullRequestHeaders` from
+    `openclaw/plugin-sdk/provider-request-headers` after the final header merge.
+
     Existing wrappers may still pass the deprecated `maxRetries` stream option,
     including `0`. Built-in text transports ignore it: the embedded runner owns
     retry budgeting, and SDK-internal retries stay disabled. New wrappers should
