@@ -191,6 +191,10 @@ updaters. Positive handoff descendants, OpenClaw identities, and retained-runtim
 path holders also block repair. This does not relax Doctor's artifact-custody
 checks or remove retained recovery data.
 
+Authenticated readiness probes recheck the update's live ownership before opening
+their transport and sending RPC frames, including deferred authentication and
+startup retries. Losing ownership stops those probes.
+
 If the retained verifier cannot authenticate to the restarted Gateway, it stops
 retrying that rejection. Local HTTP readiness and runtime version/build identity
 can verify activation instead, with an RPC authentication warning recorded in
