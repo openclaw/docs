@@ -2204,6 +2204,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "providers/abliteration",
                       "providers/alibaba",
                       "providers/anthropic",
                       "plugins/reference/anthropic-vertex",
@@ -4283,6 +4284,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "zh-CN/providers/abliteration",
                       "zh-CN/providers/alibaba",
                       "zh-CN/providers/anthropic",
                       "zh-CN/plugins/reference/anthropic-vertex",
@@ -6362,6 +6364,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "zh-TW/providers/abliteration",
                       "zh-TW/providers/alibaba",
                       "zh-TW/providers/anthropic",
                       "zh-TW/plugins/reference/anthropic-vertex",
@@ -8441,6 +8444,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "ja-JP/providers/abliteration",
                       "ja-JP/providers/alibaba",
                       "ja-JP/providers/anthropic",
                       "ja-JP/plugins/reference/anthropic-vertex",
@@ -10520,6 +10524,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "es/providers/abliteration",
                       "es/providers/alibaba",
                       "es/providers/anthropic",
                       "es/plugins/reference/anthropic-vertex",
@@ -12599,6 +12604,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "pt-BR/providers/abliteration",
                       "pt-BR/providers/alibaba",
                       "pt-BR/providers/anthropic",
                       "pt-BR/plugins/reference/anthropic-vertex",
@@ -14678,6 +14684,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "ko/providers/abliteration",
                       "ko/providers/alibaba",
                       "ko/providers/anthropic",
                       "ko/plugins/reference/anthropic-vertex",
@@ -16757,6 +16764,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "de/providers/abliteration",
                       "de/providers/alibaba",
                       "de/providers/anthropic",
                       "de/plugins/reference/anthropic-vertex",
@@ -18836,6 +18844,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "fr/providers/abliteration",
                       "fr/providers/alibaba",
                       "fr/providers/anthropic",
                       "fr/plugins/reference/anthropic-vertex",
@@ -20915,6 +20924,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "hi/providers/abliteration",
                       "hi/providers/alibaba",
                       "hi/providers/anthropic",
                       "hi/plugins/reference/anthropic-vertex",
@@ -22994,6 +23004,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "ar/providers/abliteration",
                       "ar/providers/alibaba",
                       "ar/providers/anthropic",
                       "ar/plugins/reference/anthropic-vertex",
@@ -25073,6 +25084,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "it/providers/abliteration",
                       "it/providers/alibaba",
                       "it/providers/anthropic",
                       "it/plugins/reference/anthropic-vertex",
@@ -27152,6 +27164,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "vi/providers/abliteration",
                       "vi/providers/alibaba",
                       "vi/providers/anthropic",
                       "vi/plugins/reference/anthropic-vertex",
@@ -29231,6 +29244,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "nl/providers/abliteration",
                       "nl/providers/alibaba",
                       "nl/providers/anthropic",
                       "nl/plugins/reference/anthropic-vertex",
@@ -31310,6 +31324,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "fa/providers/abliteration",
                       "fa/providers/alibaba",
                       "fa/providers/anthropic",
                       "fa/plugins/reference/anthropic-vertex",
@@ -33389,6 +33404,7 @@
                   {
                     "group": "Sohbet ve kodlama modelleri",
                     "pages": [
+                      "tr/providers/abliteration",
                       "tr/providers/alibaba",
                       "tr/providers/anthropic",
                       "tr/plugins/reference/anthropic-vertex",
@@ -35468,6 +35484,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "uk/providers/abliteration",
                       "uk/providers/alibaba",
                       "uk/providers/anthropic",
                       "uk/plugins/reference/anthropic-vertex",
@@ -37547,6 +37564,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "id/providers/abliteration",
                       "id/providers/alibaba",
                       "id/providers/anthropic",
                       "id/plugins/reference/anthropic-vertex",
@@ -39626,6 +39644,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "pl/providers/abliteration",
                       "pl/providers/alibaba",
                       "pl/providers/anthropic",
                       "pl/plugins/reference/anthropic-vertex",
@@ -41705,6 +41724,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "th/providers/abliteration",
                       "th/providers/alibaba",
                       "th/providers/anthropic",
                       "th/plugins/reference/anthropic-vertex",
@@ -43784,6 +43804,7 @@
                   {
                     "group": "Chat and coding models",
                     "pages": [
+                      "ru/providers/abliteration",
                       "ru/providers/alibaba",
                       "ru/providers/anthropic",
                       "ru/plugins/reference/anthropic-vertex",
@@ -45863,6 +45884,7 @@
                   {
                     "group": "Chatt- och kodmodeller",
                     "pages": [
+                      "sv/providers/abliteration",
                       "sv/providers/alibaba",
                       "sv/providers/anthropic",
                       "sv/plugins/reference/anthropic-vertex",

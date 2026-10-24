@@ -9691,6 +9691,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/reference/abliteration.md
+
+- Route: /plugins/reference/abliteration
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/acpx.md
 
 - Route: /plugins/reference/acpx
@@ -12149,6 +12157,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /prose
 - Headings:
   - H2: Migrate
+  - H2: Related
+
+## providers/abliteration.md
+
+- Route: /providers/abliteration
+- Headings:
+  - H2: Setup
+  - H2: Models
+  - H2: Thinking levels
+  - H2: Prompt caching
+  - H2: Images and tools
+  - H2: Troubleshooting
   - H2: Related
 
 ## providers/alibaba.md
