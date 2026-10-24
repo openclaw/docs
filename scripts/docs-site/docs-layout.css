@@ -116,10 +116,7 @@
   .docs-layout .search-button:hover { background: var(--paper); border-color: color-mix(in srgb,var(--ink) 22%,transparent); }}
 
 .sidebar-tools { display: none; }
-.sidebar-support { flex-shrink: 0; margin-block-end: 12px; }
-.sidebar-support a { display: flex; align-items: center; min-height: 40px; padding: 8px 12px; border: 1px solid var(--docs-border); color: var(--ink); font: 500 13px/1.5 var(--oc-font-body); text-decoration: none; }
-.sidebar-support a:hover { background: var(--paper); }
-.sidebar-support a:focus-visible, .page-support a:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
+.page-support a:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 3px; }
 .docs-layout .page-support { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-block: 32px 0; padding: 16px; border: 1px solid var(--docs-border); color: var(--docs-muted); font: 400 14px/1.5 var(--oc-font-body); }
 .page-support p { margin: 0; }
 .page-support a { flex-shrink: 0; color: var(--ink); font-weight: 500; text-underline-offset: 4px; }

@@ -355,7 +355,10 @@ if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
 const footer = DomUtils.findOne((node) => node.name === "footer", indexDocument.children);
-for (const className of ["network-nav", "sidebar-support", "site-footer", "page-support"]) {
+if (DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes("sidebar-support"), indexDocument.children)) {
+  throw new Error("sidebar: duplicate support button must not be rendered");
+}
+for (const className of ["network-nav", "site-footer", "page-support"]) {
   const scope = DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes(className), indexDocument.children);
   const supportLink = scope && DomUtils.findOne((node) => node.name === "a"
     && node.attribs.href === "https://community.openclaw.ai/"

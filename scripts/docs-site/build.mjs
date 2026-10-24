@@ -444,7 +444,6 @@ function sidebar(page, nav, activeTab) {
   const copy = homeStringsForLocale(page.locale);
   return `<aside class="sidebar">
 <div class="sidebar-head"><a class="brand sidebar-brand" href="${pageUrl(allPageByKey.get(pageKey(page.locale, "index")) ?? page)}" aria-label="OpenClaw Docs"><img src="${publicPath("/assets/openclaw.svg")}" alt=""><span class="brand-name">OpenClaw</span><span class="brand-tag">Docs</span></a><button class="sidebar-close" type="button" data-nav-close aria-label="${escapeAttr(copy.controls[3])}">${icon("x")}</button></div>
-<nav class="sidebar-support" aria-label="Official OpenClaw support"><a href="${supportUrl}">Support</a></nav>
 ${rewriteInternalUrls(docsQuickNav(page.slug, icon, page.locale), page.locale)}
 <nav class="docs-sections" aria-label="${escapeAttr(copy.navigation[6])}" data-back-label="${escapeAttr(copy.controls[4])}" data-sections-label="${escapeAttr(copy.navigation[6])}">${nav.map((tab) => {
     const current = tab.title === activeTab;
