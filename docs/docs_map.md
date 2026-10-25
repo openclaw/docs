@@ -2183,6 +2183,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Schedule types
   - H3: Monitoring policies
   - H2: Sessions
+  - H3: Binding older jobs to their conversation
   - H2: Delivery
   - H3: Delivery ownership
   - H3: Owner targets and direct-message policy
