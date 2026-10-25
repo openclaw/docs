@@ -12632,6 +12632,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Native operations
   - H2: Results, usage and limitations
 
+## providers/liquid-inference.md
+
+- Route: /providers/liquid-inference
+- Headings:
+  - H2: Quick start
+  - H2: Models
+  - H2: Request headers and spending
+  - H2: Errors and fallback models
+
 ## providers/litellm.md
 
 - Route: /providers/litellm
