@@ -3839,6 +3839,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session stickiness (cache-friendly)
   - H3: OpenAI Codex subscription plus API-key backup
   - H2: Cooldowns
+  - H3: Rate-limit fallback stickiness
   - H2: Auth failure skip cache
   - H2: Billing disables
   - H2: Model fallback
