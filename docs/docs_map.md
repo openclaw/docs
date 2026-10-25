@@ -11679,6 +11679,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-overview/infrastructure
 - Headings:
   - H2: Infrastructure
+  - H3: Bounded directory inventories
   - H3: File-watch capacity errors
   - H3: Filesystem observation and worker notifications
   - H3: Streaming file verification
