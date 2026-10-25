@@ -5750,6 +5750,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Search on PostgreSQL
   - H2: Performance evidence
   - H2: Monitoring and troubleshooting
+  - H3: Recover missing local client credentials
   - H3: Read the Doctor and status store report
   - H2: Roll back to SQLite
 
