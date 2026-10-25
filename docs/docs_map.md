@@ -5731,6 +5731,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: PostgreSQL operator guide
   - H2: Support matrix
   - H2: Server-major qualification
+  - H2: Native Windows qualification
   - H2: When to use PostgreSQL
   - H2: Requirements
   - H3: Provision a database and runtime role
