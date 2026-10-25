@@ -15417,6 +15417,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: OpenClaw tools MCP bridge
   - H3: Runtime operation timeout configuration
   - H3: Health check agent configuration
+  - H3: Agent process environment
   - H2: Permission configuration
   - H3: permissionMode
   - H3: nonInteractivePermissions
