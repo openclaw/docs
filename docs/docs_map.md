@@ -7451,6 +7451,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Health check failures
   - H2: Next steps
 
+## install/standalone-aot-actions.md
+
+- Route: /install/standalone-aot-actions
+- Headings: none
+
 ## install/standalone.md
 
 - Route: /install/standalone
