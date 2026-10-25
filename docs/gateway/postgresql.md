@@ -790,6 +790,10 @@ work. Measure network latency, concurrency and server load for your deployment.
 
 ## Monitoring and troubleshooting
 
+Startup rejects invalid configuration before readiness and reports the fields that
+need repair. For retired settings such as `agents.defaults.heartbeat`, run
+`openclaw doctor --fix` before starting the Gateway again.
+
 ### Read the Doctor and status store report
 
 `openclaw doctor` enumerates physical stores through the same family and plugin
