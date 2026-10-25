@@ -1836,6 +1836,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "plugins/apple-fm",
+                      "plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "plugins/knowledge/stores-and-access",
+                          "plugins/knowledge/memory-provider",
+                          "plugins/knowledge/tools",
+                          "plugins/knowledge/records-and-ontology",
+                          "plugins/knowledge/retrieval",
+                          "plugins/knowledge/evidence",
+                          "plugins/knowledge/ingestion",
+                          "plugins/knowledge/corrections",
+                          "plugins/knowledge/local-history",
+                          "plugins/knowledge/maintenance",
+                          "plugins/knowledge/control-ui"
+                        ]
+                      },
                       "plugins/llama-cpp",
                       "plugins/memory-lancedb",
                       "plugins/memory-wiki",
@@ -3952,6 +3969,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "zh-CN/plugins/apple-fm",
+                      "zh-CN/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "zh-CN/plugins/knowledge/stores-and-access",
+                          "zh-CN/plugins/knowledge/memory-provider",
+                          "zh-CN/plugins/knowledge/tools",
+                          "zh-CN/plugins/knowledge/records-and-ontology",
+                          "zh-CN/plugins/knowledge/retrieval",
+                          "zh-CN/plugins/knowledge/evidence",
+                          "zh-CN/plugins/knowledge/ingestion",
+                          "zh-CN/plugins/knowledge/corrections",
+                          "zh-CN/plugins/knowledge/local-history",
+                          "zh-CN/plugins/knowledge/maintenance",
+                          "zh-CN/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "zh-CN/plugins/llama-cpp",
                       "zh-CN/plugins/memory-lancedb",
                       "zh-CN/plugins/memory-wiki",
@@ -6034,6 +6068,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "zh-TW/plugins/apple-fm",
+                      "zh-TW/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "zh-TW/plugins/knowledge/stores-and-access",
+                          "zh-TW/plugins/knowledge/memory-provider",
+                          "zh-TW/plugins/knowledge/tools",
+                          "zh-TW/plugins/knowledge/records-and-ontology",
+                          "zh-TW/plugins/knowledge/retrieval",
+                          "zh-TW/plugins/knowledge/evidence",
+                          "zh-TW/plugins/knowledge/ingestion",
+                          "zh-TW/plugins/knowledge/corrections",
+                          "zh-TW/plugins/knowledge/local-history",
+                          "zh-TW/plugins/knowledge/maintenance",
+                          "zh-TW/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "zh-TW/plugins/llama-cpp",
                       "zh-TW/plugins/memory-lancedb",
                       "zh-TW/plugins/memory-wiki",
@@ -8116,6 +8167,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "ja-JP/plugins/apple-fm",
+                      "ja-JP/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "ja-JP/plugins/knowledge/stores-and-access",
+                          "ja-JP/plugins/knowledge/memory-provider",
+                          "ja-JP/plugins/knowledge/tools",
+                          "ja-JP/plugins/knowledge/records-and-ontology",
+                          "ja-JP/plugins/knowledge/retrieval",
+                          "ja-JP/plugins/knowledge/evidence",
+                          "ja-JP/plugins/knowledge/ingestion",
+                          "ja-JP/plugins/knowledge/corrections",
+                          "ja-JP/plugins/knowledge/local-history",
+                          "ja-JP/plugins/knowledge/maintenance",
+                          "ja-JP/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "ja-JP/plugins/llama-cpp",
                       "ja-JP/plugins/memory-lancedb",
                       "ja-JP/plugins/memory-wiki",
@@ -10198,6 +10266,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "es/plugins/apple-fm",
+                      "es/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "es/plugins/knowledge/stores-and-access",
+                          "es/plugins/knowledge/memory-provider",
+                          "es/plugins/knowledge/tools",
+                          "es/plugins/knowledge/records-and-ontology",
+                          "es/plugins/knowledge/retrieval",
+                          "es/plugins/knowledge/evidence",
+                          "es/plugins/knowledge/ingestion",
+                          "es/plugins/knowledge/corrections",
+                          "es/plugins/knowledge/local-history",
+                          "es/plugins/knowledge/maintenance",
+                          "es/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "es/plugins/llama-cpp",
                       "es/plugins/memory-lancedb",
                       "es/plugins/memory-wiki",
@@ -12280,6 +12365,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "pt-BR/plugins/apple-fm",
+                      "pt-BR/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "pt-BR/plugins/knowledge/stores-and-access",
+                          "pt-BR/plugins/knowledge/memory-provider",
+                          "pt-BR/plugins/knowledge/tools",
+                          "pt-BR/plugins/knowledge/records-and-ontology",
+                          "pt-BR/plugins/knowledge/retrieval",
+                          "pt-BR/plugins/knowledge/evidence",
+                          "pt-BR/plugins/knowledge/ingestion",
+                          "pt-BR/plugins/knowledge/corrections",
+                          "pt-BR/plugins/knowledge/local-history",
+                          "pt-BR/plugins/knowledge/maintenance",
+                          "pt-BR/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "pt-BR/plugins/llama-cpp",
                       "pt-BR/plugins/memory-lancedb",
                       "pt-BR/plugins/memory-wiki",
@@ -14362,6 +14464,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "ko/plugins/apple-fm",
+                      "ko/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "ko/plugins/knowledge/stores-and-access",
+                          "ko/plugins/knowledge/memory-provider",
+                          "ko/plugins/knowledge/tools",
+                          "ko/plugins/knowledge/records-and-ontology",
+                          "ko/plugins/knowledge/retrieval",
+                          "ko/plugins/knowledge/evidence",
+                          "ko/plugins/knowledge/ingestion",
+                          "ko/plugins/knowledge/corrections",
+                          "ko/plugins/knowledge/local-history",
+                          "ko/plugins/knowledge/maintenance",
+                          "ko/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "ko/plugins/llama-cpp",
                       "ko/plugins/memory-lancedb",
                       "ko/plugins/memory-wiki",
@@ -16444,6 +16563,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "de/plugins/apple-fm",
+                      "de/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "de/plugins/knowledge/stores-and-access",
+                          "de/plugins/knowledge/memory-provider",
+                          "de/plugins/knowledge/tools",
+                          "de/plugins/knowledge/records-and-ontology",
+                          "de/plugins/knowledge/retrieval",
+                          "de/plugins/knowledge/evidence",
+                          "de/plugins/knowledge/ingestion",
+                          "de/plugins/knowledge/corrections",
+                          "de/plugins/knowledge/local-history",
+                          "de/plugins/knowledge/maintenance",
+                          "de/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "de/plugins/llama-cpp",
                       "de/plugins/memory-lancedb",
                       "de/plugins/memory-wiki",
@@ -18526,6 +18662,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "fr/plugins/apple-fm",
+                      "fr/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "fr/plugins/knowledge/stores-and-access",
+                          "fr/plugins/knowledge/memory-provider",
+                          "fr/plugins/knowledge/tools",
+                          "fr/plugins/knowledge/records-and-ontology",
+                          "fr/plugins/knowledge/retrieval",
+                          "fr/plugins/knowledge/evidence",
+                          "fr/plugins/knowledge/ingestion",
+                          "fr/plugins/knowledge/corrections",
+                          "fr/plugins/knowledge/local-history",
+                          "fr/plugins/knowledge/maintenance",
+                          "fr/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "fr/plugins/llama-cpp",
                       "fr/plugins/memory-lancedb",
                       "fr/plugins/memory-wiki",
@@ -20608,6 +20761,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "hi/plugins/apple-fm",
+                      "hi/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "hi/plugins/knowledge/stores-and-access",
+                          "hi/plugins/knowledge/memory-provider",
+                          "hi/plugins/knowledge/tools",
+                          "hi/plugins/knowledge/records-and-ontology",
+                          "hi/plugins/knowledge/retrieval",
+                          "hi/plugins/knowledge/evidence",
+                          "hi/plugins/knowledge/ingestion",
+                          "hi/plugins/knowledge/corrections",
+                          "hi/plugins/knowledge/local-history",
+                          "hi/plugins/knowledge/maintenance",
+                          "hi/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "hi/plugins/llama-cpp",
                       "hi/plugins/memory-lancedb",
                       "hi/plugins/memory-wiki",
@@ -22690,6 +22860,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "ar/plugins/apple-fm",
+                      "ar/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "ar/plugins/knowledge/stores-and-access",
+                          "ar/plugins/knowledge/memory-provider",
+                          "ar/plugins/knowledge/tools",
+                          "ar/plugins/knowledge/records-and-ontology",
+                          "ar/plugins/knowledge/retrieval",
+                          "ar/plugins/knowledge/evidence",
+                          "ar/plugins/knowledge/ingestion",
+                          "ar/plugins/knowledge/corrections",
+                          "ar/plugins/knowledge/local-history",
+                          "ar/plugins/knowledge/maintenance",
+                          "ar/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "ar/plugins/llama-cpp",
                       "ar/plugins/memory-lancedb",
                       "ar/plugins/memory-wiki",
@@ -24772,6 +24959,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "it/plugins/apple-fm",
+                      "it/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "it/plugins/knowledge/stores-and-access",
+                          "it/plugins/knowledge/memory-provider",
+                          "it/plugins/knowledge/tools",
+                          "it/plugins/knowledge/records-and-ontology",
+                          "it/plugins/knowledge/retrieval",
+                          "it/plugins/knowledge/evidence",
+                          "it/plugins/knowledge/ingestion",
+                          "it/plugins/knowledge/corrections",
+                          "it/plugins/knowledge/local-history",
+                          "it/plugins/knowledge/maintenance",
+                          "it/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "it/plugins/llama-cpp",
                       "it/plugins/memory-lancedb",
                       "it/plugins/memory-wiki",
@@ -26854,6 +27058,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "vi/plugins/apple-fm",
+                      "vi/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "vi/plugins/knowledge/stores-and-access",
+                          "vi/plugins/knowledge/memory-provider",
+                          "vi/plugins/knowledge/tools",
+                          "vi/plugins/knowledge/records-and-ontology",
+                          "vi/plugins/knowledge/retrieval",
+                          "vi/plugins/knowledge/evidence",
+                          "vi/plugins/knowledge/ingestion",
+                          "vi/plugins/knowledge/corrections",
+                          "vi/plugins/knowledge/local-history",
+                          "vi/plugins/knowledge/maintenance",
+                          "vi/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "vi/plugins/llama-cpp",
                       "vi/plugins/memory-lancedb",
                       "vi/plugins/memory-wiki",
@@ -28936,6 +29157,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "nl/plugins/apple-fm",
+                      "nl/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "nl/plugins/knowledge/stores-and-access",
+                          "nl/plugins/knowledge/memory-provider",
+                          "nl/plugins/knowledge/tools",
+                          "nl/plugins/knowledge/records-and-ontology",
+                          "nl/plugins/knowledge/retrieval",
+                          "nl/plugins/knowledge/evidence",
+                          "nl/plugins/knowledge/ingestion",
+                          "nl/plugins/knowledge/corrections",
+                          "nl/plugins/knowledge/local-history",
+                          "nl/plugins/knowledge/maintenance",
+                          "nl/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "nl/plugins/llama-cpp",
                       "nl/plugins/memory-lancedb",
                       "nl/plugins/memory-wiki",
@@ -31018,6 +31256,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "fa/plugins/apple-fm",
+                      "fa/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "fa/plugins/knowledge/stores-and-access",
+                          "fa/plugins/knowledge/memory-provider",
+                          "fa/plugins/knowledge/tools",
+                          "fa/plugins/knowledge/records-and-ontology",
+                          "fa/plugins/knowledge/retrieval",
+                          "fa/plugins/knowledge/evidence",
+                          "fa/plugins/knowledge/ingestion",
+                          "fa/plugins/knowledge/corrections",
+                          "fa/plugins/knowledge/local-history",
+                          "fa/plugins/knowledge/maintenance",
+                          "fa/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "fa/plugins/llama-cpp",
                       "fa/plugins/memory-lancedb",
                       "fa/plugins/memory-wiki",
@@ -33100,6 +33355,23 @@
                     "group": "Modeller ve bellek",
                     "pages": [
                       "tr/plugins/apple-fm",
+                      "tr/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "tr/plugins/knowledge/stores-and-access",
+                          "tr/plugins/knowledge/memory-provider",
+                          "tr/plugins/knowledge/tools",
+                          "tr/plugins/knowledge/records-and-ontology",
+                          "tr/plugins/knowledge/retrieval",
+                          "tr/plugins/knowledge/evidence",
+                          "tr/plugins/knowledge/ingestion",
+                          "tr/plugins/knowledge/corrections",
+                          "tr/plugins/knowledge/local-history",
+                          "tr/plugins/knowledge/maintenance",
+                          "tr/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "tr/plugins/llama-cpp",
                       "tr/plugins/memory-lancedb",
                       "tr/plugins/memory-wiki",
@@ -35182,6 +35454,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "uk/plugins/apple-fm",
+                      "uk/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "uk/plugins/knowledge/stores-and-access",
+                          "uk/plugins/knowledge/memory-provider",
+                          "uk/plugins/knowledge/tools",
+                          "uk/plugins/knowledge/records-and-ontology",
+                          "uk/plugins/knowledge/retrieval",
+                          "uk/plugins/knowledge/evidence",
+                          "uk/plugins/knowledge/ingestion",
+                          "uk/plugins/knowledge/corrections",
+                          "uk/plugins/knowledge/local-history",
+                          "uk/plugins/knowledge/maintenance",
+                          "uk/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "uk/plugins/llama-cpp",
                       "uk/plugins/memory-lancedb",
                       "uk/plugins/memory-wiki",
@@ -37264,6 +37553,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "id/plugins/apple-fm",
+                      "id/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "id/plugins/knowledge/stores-and-access",
+                          "id/plugins/knowledge/memory-provider",
+                          "id/plugins/knowledge/tools",
+                          "id/plugins/knowledge/records-and-ontology",
+                          "id/plugins/knowledge/retrieval",
+                          "id/plugins/knowledge/evidence",
+                          "id/plugins/knowledge/ingestion",
+                          "id/plugins/knowledge/corrections",
+                          "id/plugins/knowledge/local-history",
+                          "id/plugins/knowledge/maintenance",
+                          "id/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "id/plugins/llama-cpp",
                       "id/plugins/memory-lancedb",
                       "id/plugins/memory-wiki",
@@ -39346,6 +39652,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "pl/plugins/apple-fm",
+                      "pl/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "pl/plugins/knowledge/stores-and-access",
+                          "pl/plugins/knowledge/memory-provider",
+                          "pl/plugins/knowledge/tools",
+                          "pl/plugins/knowledge/records-and-ontology",
+                          "pl/plugins/knowledge/retrieval",
+                          "pl/plugins/knowledge/evidence",
+                          "pl/plugins/knowledge/ingestion",
+                          "pl/plugins/knowledge/corrections",
+                          "pl/plugins/knowledge/local-history",
+                          "pl/plugins/knowledge/maintenance",
+                          "pl/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "pl/plugins/llama-cpp",
                       "pl/plugins/memory-lancedb",
                       "pl/plugins/memory-wiki",
@@ -41428,6 +41751,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "th/plugins/apple-fm",
+                      "th/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "th/plugins/knowledge/stores-and-access",
+                          "th/plugins/knowledge/memory-provider",
+                          "th/plugins/knowledge/tools",
+                          "th/plugins/knowledge/records-and-ontology",
+                          "th/plugins/knowledge/retrieval",
+                          "th/plugins/knowledge/evidence",
+                          "th/plugins/knowledge/ingestion",
+                          "th/plugins/knowledge/corrections",
+                          "th/plugins/knowledge/local-history",
+                          "th/plugins/knowledge/maintenance",
+                          "th/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "th/plugins/llama-cpp",
                       "th/plugins/memory-lancedb",
                       "th/plugins/memory-wiki",
@@ -43510,6 +43850,23 @@
                     "group": "Models and memory",
                     "pages": [
                       "ru/plugins/apple-fm",
+                      "ru/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "ru/plugins/knowledge/stores-and-access",
+                          "ru/plugins/knowledge/memory-provider",
+                          "ru/plugins/knowledge/tools",
+                          "ru/plugins/knowledge/records-and-ontology",
+                          "ru/plugins/knowledge/retrieval",
+                          "ru/plugins/knowledge/evidence",
+                          "ru/plugins/knowledge/ingestion",
+                          "ru/plugins/knowledge/corrections",
+                          "ru/plugins/knowledge/local-history",
+                          "ru/plugins/knowledge/maintenance",
+                          "ru/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "ru/plugins/llama-cpp",
                       "ru/plugins/memory-lancedb",
                       "ru/plugins/memory-wiki",
@@ -45592,6 +45949,23 @@
                     "group": "Modeller och minne",
                     "pages": [
                       "sv/plugins/apple-fm",
+                      "sv/plugins/knowledge",
+                      {
+                        "group": "Knowledge",
+                        "pages": [
+                          "sv/plugins/knowledge/stores-and-access",
+                          "sv/plugins/knowledge/memory-provider",
+                          "sv/plugins/knowledge/tools",
+                          "sv/plugins/knowledge/records-and-ontology",
+                          "sv/plugins/knowledge/retrieval",
+                          "sv/plugins/knowledge/evidence",
+                          "sv/plugins/knowledge/ingestion",
+                          "sv/plugins/knowledge/corrections",
+                          "sv/plugins/knowledge/local-history",
+                          "sv/plugins/knowledge/maintenance",
+                          "sv/plugins/knowledge/control-ui"
+                        ]
+                      },
                       "sv/plugins/llama-cpp",
                       "sv/plugins/memory-lancedb",
                       "sv/plugins/memory-wiki",

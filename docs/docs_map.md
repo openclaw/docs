@@ -9369,6 +9369,152 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Behavior
   - H2: Package E2E
 
+## plugins/knowledge.md
+
+- Route: /plugins/knowledge
+- Headings:
+  - H2: How it relates to other memory plugins
+  - H2: Enable Knowledge
+  - H2: Configuration
+  - H2: Stores and agent membership
+  - H2: Where Knowledge keeps data
+  - H2: Writes and authority
+  - H2: Tools
+  - H2: Bundled skills
+  - H2: Control UI
+  - H2: Local Git history
+  - H2: Scheduled maintenance
+  - H2: Capabilities and limits
+  - H2: Moving from a linked or path install
+  - H2: Related
+
+## plugins/knowledge/control-ui.md
+
+- Route: /plugins/knowledge/control-ui
+- Headings:
+  - H2: Knowledge page
+  - H2: Page addresses
+  - H2: Links in chat
+  - H2: Session activity panel
+
+## plugins/knowledge/corrections.md
+
+- Route: /plugins/knowledge/corrections
+- Headings:
+  - H2: Correct a claim or relationship
+  - H2: Withdraw a record
+  - H2: Impact and visibility
+  - H2: Recovery and safeguards
+  - H2: Merge duplicate pages
+
+## plugins/knowledge/evidence.md
+
+- Route: /plugins/knowledge/evidence
+- Headings:
+  - H2: Upload and download
+  - H2: Source identity
+  - H2: Git and large files
+  - H2: Reconcile or migrate page evidence
+
+## plugins/knowledge/ingestion.md
+
+- Route: /plugins/knowledge/ingestion
+- Headings:
+  - H2: Bundled skills
+  - H3: Workflow rules
+  - H3: Scheduled ingestion
+  - H3: Enumerable sources
+  - H2: Batch publication
+  - H3: Source-change checks
+  - H2: Structural verification
+
+## plugins/knowledge/local-history.md
+
+- Route: /plugins/knowledge/local-history
+- Headings:
+  - H2: Policy
+  - H2: Publication and checkpoints
+  - H2: What gets committed
+  - H2: Failures and recovery
+
+## plugins/knowledge/maintenance.md
+
+- Route: /plugins/knowledge/maintenance
+- Headings:
+  - H2: Relink
+  - H3: Run it on demand
+  - H2: Schedule
+  - H2: Status
+  - H2: Agent review
+
+## plugins/knowledge/memory-provider.md
+
+- Route: /plugins/knowledge/memory-provider
+- Headings:
+  - H2: Ownership and activation
+  - H2: Shared memory reads
+  - H2: Memory prompt
+  - H2: Knowledge index
+  - H2: Automatic recall
+  - H2: Pre-compaction memory flush
+  - H2: What Knowledge does not replace
+
+## plugins/knowledge/records-and-ontology.md
+
+- Route: /plugins/knowledge/records-and-ontology
+- Headings:
+  - H2: Records
+  - H3: Pages
+  - H3: Claims
+  - H3: Relationships
+  - H3: Optional assertion fields
+  - H3: Lifecycle and merge metadata
+  - H3: Automatic recall block
+  - H3: Displayed author
+  - H2: Ontology
+  - H3: Composition rules
+  - H3: Default vocabulary
+  - H3: Fingerprints
+  - H2: Filenames and links
+
+## plugins/knowledge/retrieval.md
+
+- Route: /plugins/knowledge/retrieval
+- Headings:
+  - H2: Query contract
+  - H2: Results and citations
+  - H2: Index behavior
+  - H3: What is rebuildable
+  - H2: Dates and Chronicle
+
+## plugins/knowledge/stores-and-access.md
+
+- Route: /plugins/knowledge/stores-and-access
+- Headings:
+  - H2: Stores
+  - H3: Manage stores from the Control UI
+  - H2: Storage layout
+  - H2: Partitions
+  - H2: Caller authority
+  - H2: Runtime
+  - H2: Limits
+
+## plugins/knowledge/tools.md
+
+- Route: /plugins/knowledge/tools
+- Headings:
+  - H2: Ontology
+  - H2: Reading records
+  - H2: Listing and connections
+  - H2: Search and lookup
+  - H2: Remembering claims
+  - H2: Pages and body edits
+  - H2: Claims and relationships
+  - H2: Attachments
+  - H2: Receipts, history, and recovery
+  - H2: Ingestion and dates
+  - H2: Live state
+
 ## plugins/llama-cpp.md
 
 - Route: /plugins/llama-cpp
@@ -10326,6 +10472,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/kimi.md
 
 - Route: /plugins/reference/kimi
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/knowledge.md
+
+- Route: /plugins/reference/knowledge
 - Headings:
   - H2: Distribution
   - H2: Surface
