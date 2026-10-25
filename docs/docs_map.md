@@ -16705,6 +16705,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
 
+## web/control-ui/asset-delivery.md
+
+- Route: /web/control-ui/asset-delivery
+- Headings:
+  - H2: Current delivery owners
+  - H2: Compression measurement
+  - H2: Route delivery hints
+  - H2: Service-worker navigation
+  - H2: HTTP multiplexing
+  - H3: Direct HTTP/2 design boundary
+  - H2: Fonts
+
 ## web/control-ui/chat.md
 
 - Route: /web/control-ui/chat
