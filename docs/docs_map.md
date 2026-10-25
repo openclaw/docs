@@ -13119,7 +13119,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick choice
   - H3: Retired subscription model references
   - H2: Models your API key lists
-  - H2: Daybreak Blue and Red
+  - H2: Daybreak alias retirement
+  - H3: Chat Access control
+  - H3: Responses access program and speed
   - H2: GPT-6 Astra
   - H3: Async tools, steering, and reasoning changes
   - H2: GPT-6.1 Sol
