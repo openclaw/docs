@@ -5757,6 +5757,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Monitoring and troubleshooting
   - H3: Recover missing local client credentials
   - H3: Read the Doctor and status store report
+  - H3: Outcome unknown after a connection loss
+  - H3: Slow first search after a bulk import
   - H2: Roll back to SQLite
 
 ## gateway/prometheus.md
@@ -13599,6 +13601,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Agent schema history
   - H3: Agent schema 36
+  - H3: Agent schemas 34 and 35
   - H3: Agent schema 33
   - H3: Agent schema 32
   - H3: Agent schema 31
@@ -13684,6 +13687,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schemas 32 and 33
   - H3: State schema 31
   - H3: State schema 30
   - H3: State schema 29
@@ -13714,6 +13718,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session writer validation
   - H2: Preparing for another database backend
   - H3: Shared-state PostgreSQL schema generation
+  - H3: PostgreSQL index ordering migrations
   - H3: PostgreSQL engine
   - H3: Keep operations at the owning store
   - H3: Memory chunk path index retirement
