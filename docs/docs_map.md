@@ -4598,6 +4598,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Using it as a fallback
   - H2: Configuration
   - H2: How it works
+  - H3: Keeping Claude Code orchestration tools on managed turns
   - H2: Timeouts and long-running work
   - H3: Claude CLI specifics
   - H3: Native Bash and the exec allowlist
