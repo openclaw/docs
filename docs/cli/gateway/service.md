@@ -60,6 +60,8 @@ and exit. Older or unresponsive Gateways fall back to termination of the capture
 process tree; a replacement instance is preserved. Transient SQLite sharing errors
 after confirmed process exit are retried; if inspection remains unavailable, the
 command warns and checks that the Gateway port is free before continuing with restart.
+The 15-second SQLite retry budget measures elapsed time, so system-clock corrections
+do not shorten or extend it.
 
 Port confirmation shares the five-second settlement budget across the configured
 addresses, allowing slow Windows LAN connection refusals to confirm shutdown. If
