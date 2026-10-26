@@ -112,9 +112,10 @@ while leaving unrelated work running.
 For managed background work on a paired device, enable [session hosting](/nodes/session-hosting) and select that device for an OpenClaw session. Use the worker's local `exec` with `background: true` and its `process` tool when permitted by the session's tool and exec policy. This runs the session on the device instead of sending individual remote `host=node` commands.
 
 On a paired-node or node-backed cloud worker, background processes belong to the
-session's environment. Finishing or cancelling a turn leaves already-backgrounded
-commands running. A later turn in the same environment can use `process` to poll,
-send input, or stop them; foreground commands still stop when their turn is cancelled.
+session's environment. Finishing a turn leaves already-backgrounded commands running.
+A later turn in the same environment can use `process` to poll, send input, or stop
+them. Cancelling an active worker turn also stops its retained background commands
+and releases the worker after process cleanup completes.
 
 The retained worker occupies one node worker slot. Reusing it needs no additional
 slot. If a command finishes between turns, its retained output remains available
