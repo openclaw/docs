@@ -92,6 +92,11 @@ writer broker for mutations. Keep multi-statement snapshot reads together; use
 the writer's ordered operation when a read must follow its accepted writes.
 Do not open a second main-thread connection or add a synchronous fallback.
 
+Long-lived Gateway and local TUI processes reuse the shared-state reader pool for
+early awaited configuration and plugin metadata reads. Standalone CLI inspection
+keeps its one-shot reader retirement; failed reads and native cleanup still retire
+their workers. The existing two-reader limit and database authority checks remain.
+
 Agent creation and workspace mutations keep their recovery-hold recheck inside
 the existing synchronous engine admission; filesystem effects remain outside it.
 PostgreSQL cron-owner and schema inspection use the existing cron read worker,
