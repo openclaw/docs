@@ -5855,6 +5855,8 @@ workers still require native exit before replacement. Schema and update behavior
 Cold-storage maintenance preparation uses this same idle worker, including empty
 sweeps. Each preparation closes its scoped read-only handles before replying;
 selection, configuration checks, and commit authority remain per request.
+Preparation loads its read-only selection and archive encoding helpers without
+initializing the writable database lifecycle or transcript restoration machinery.
 
 Single-message lookups and display-message counts use that same history worker.
 Session-message broadcasts await the stored content and sequence in their existing
