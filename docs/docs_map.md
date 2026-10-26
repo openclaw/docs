@@ -2311,6 +2311,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/doctor/health-contract
 - Headings:
   - H2: Structured health checks
+  - H3: Model-reference retirement inventory
 
 ## cli/doctor/lint.md
 
@@ -2340,6 +2341,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Understanding findings
   - H3: Auth and browser findings
   - H3: Auth migration recovery
+  - H2: Daybreak alias migration
 
 ## cli/doctor/sqlite-maintenance.md
 
