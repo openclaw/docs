@@ -15,6 +15,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Runtime Layout
   - H2: Boundaries
+  - H2: Streaming update ownership
   - H2: Manifests
   - H2: Runtime Selection
   - H2: Model Runtime Generations
