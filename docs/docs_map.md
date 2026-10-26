@@ -52,6 +52,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Manual API keys
   - H2: Setup replacements
   - H2: Agent copy portability
+  - H2: Long-running custom transport requests
   - H2: Plugin SDK OAuth validation
   - H2: Provider-boundary OAuth outcomes
   - H3: Non-model and externally owned routes
@@ -11901,6 +11902,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Publish to ClawHub
   - H2: File structure
   - H2: Catalog order reference
+  - H2: Per-request credentials in custom transports
   - H2: Provider stream decorators
   - H2: Next steps
   - H2: Where each section moved
