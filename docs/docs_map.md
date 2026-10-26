@@ -9148,6 +9148,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: git installs
   - H2: Local plugins
   - H2: Startup and reload
+  - H3: Nested dependency missing under preserve-symlinks
   - H2: Bundled plugins
   - H3: Native imports from a standalone source build
   - H2: Legacy cleanup

@@ -1074,6 +1074,15 @@ can settle `prepared`, `publishing`, `publication-complete`, and superseded oper
 when the journal's inodes still match under a consistent device-number mapping.
 Ordinary update admission stays strict.
 
+This settlement first shipped in 2026.10.5. Earlier releases, including the
+2026.9 extended-stable line, refuse with `Package publication journal does not
+match its installation` and cannot settle the change themselves; starting with
+2026.10.7, the message also names the changed bindings. From an earlier
+release, install 2026.10.5 or newer with the
+[manual npm procedure](/install/updating/update-methods#alternative-manual-npm-pnpm-or-bun),
+then run `openclaw update repair --yes` from the new installation. See
+[#170031](https://github.com/openclaw/openclaw/issues/170031).
+
 If the installed updater cannot read the journal, a separately installed OpenClaw
 version containing this fix provides the same settlement-only path:
 
@@ -1086,6 +1095,12 @@ node /path/to/recovery-openclaw/dist/package-update-activation-recovery.mjs \
 Use the original anchor and operation ID with a supported external Node or Bun
 runtime. Keep other updaters and package managers stopped. Ordinary `status` and
 update admission remain strict for unfinished identity-mismatched journals.
+
+The helper can refuse when retained launcher evidence is missing. In one
+report, the 2026.10.5 helper refused a 2026.9.33 `publication-complete` journal
+whose anchor held only `previous`, with `ENOENT` on
+`<anchor>/launchers`. No supported procedure covers that layout yet. Preserve
+the journal, anchor, and retained generation, and report the exact output.
 
 If publication never started and the previous package is still installed, repair
 verifies its full tree fingerprint and unchanged launchers under the same device
