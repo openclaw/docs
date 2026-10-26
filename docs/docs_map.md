@@ -11994,6 +11994,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-runtime/background-work
 - Headings:
   - H2: Requester-bound native children
+  - H2: Blind native children
   - H2: Plugin-local subagent profiles
   - H2: Recover plugin-owned native children
   - H2: Command-scoped native children
