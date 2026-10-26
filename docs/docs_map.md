@@ -12229,6 +12229,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Connect OpenClaw
   - H2: Custom endpoint and provider request settings
   - H2: Decision contract
+  - H2: Experimental image decisions
   - H2: Agent evaluation tool
   - H2: Existing external installation
 
