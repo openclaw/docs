@@ -6403,6 +6403,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Optional anonymous feature statistics
   - H3: What is not sent or stored
   - H2: Turn anonymous feature statistics on or off
+  - H2: Update outcomes
   - H2: Automated environments
   - H2: Disable every automatic update request
 
