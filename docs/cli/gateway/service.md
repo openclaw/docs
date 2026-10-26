@@ -20,6 +20,9 @@ openclaw gateway restart
 openclaw gateway uninstall
 ```
 
+Queued native service commands use elapsed-time deadlines, so system-clock
+corrections do not prematurely expire or extend their admission budgets.
+
 `gateway stop`, `gateway uninstall`, and `gateway restart` remain available when
 configuration is invalid or needs Doctor migration, including configuration written
 by a newer OpenClaw version. They control the recorded service and report config
