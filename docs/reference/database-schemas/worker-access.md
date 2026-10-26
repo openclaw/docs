@@ -526,6 +526,9 @@ Inside the durable worker, hot state and its stored entry row share one owned
 decoded entry. Mutations replace that entry instead of editing it in place;
 transaction forks retain the previous entry for rollback. Incoming postimages
 and outgoing public reads remain detached from the resident state.
+Internal hot-state projections also retain the actor's replace-only target,
+version, participants, and members. Read replies and committed receipt capture
+own detachment before those facts leave the worker.
 
 Replica lookups resolve configured path spellings through the existing admission
 registry: SQLite uses the admitted physical identity and birthtime; PostgreSQL
