@@ -763,14 +763,21 @@ openclaw worktrees gc --job <id>
 
 For partial clones, `openclaw worktrees gc --retry-deferred` also checks the
 objects needed by all Git-registered worktree indexes and current HEAD trees
-before attempting cleanup.
+during repository maintenance.
 It fetches missing objects from the existing promisor remote in bounded batches,
 preserving staged and working files. Historical commits remain filtered, and
 ordinary background maintenance does not fetch. Repair has a five-minute budget
-and a 4,096-object limit per pass; completed fetches survive interruption. If
-repair cannot finish, maintenance logs a warning. Restore remote access and run
-the command again to resume from the remaining missing objects. Locally created
-objects unavailable from the remote still require recovery from another copy.
+and a 4,096-object limit per pass; completed fetches survive interruption.
+Each checkout is inspected separately. The shared state database records the
+last attempted checkout, so the next explicit retry starts with its successor
+even after a Gateway restart. A slow or unreadable checkout cannot keep later
+linked indexes from being repaired. This position only schedules work; it never
+certifies object availability or permits checkout removal. Failed checkouts are
+revisited on later sweeps, and a completed sweep clears the position.
+If repair cannot finish, maintenance logs a warning. Restore remote access and
+run the command again to continue. A checkout whose own inventory exceeds the
+budget still needs repository repair; locally created objects unavailable from
+the remote require recovery from another copy.
 
 Gateway Git inspections also use only locally available objects. In partial
 clones, missing objects can leave optional checkout, branch, or diff facts
