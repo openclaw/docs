@@ -19,10 +19,18 @@ the Gateway rejects the write; rerun the command. A failure after the request wa
 sent is reported as an uncertain outcome and is never retried locally; check the
 path with `openclaw config get` before retrying.
 
-Two kinds of change still need the Gateway stopped: `database.*` settings, which
-select the state database the Gateway holds open, and changes a merge patch
-cannot express (for example an authored `null`). Stop the Gateway through its
-service owner, wait for it to exit, then rerun the command. `--dry-run` never
+Some changes still need the Gateway stopped: `database.*` settings, which
+select the state database the Gateway holds open, changes a merge patch
+cannot express (for example an authored `null`), and changes the Gateway would
+save differently because it cannot see which paths the command set. The last
+group includes activating an escaped `$${VAR}` literal as a `${VAR}` reference,
+and setting `agents.defaults.authInheritance` or
+`agents.defaults.sessionStore.agentId` in the same command that changes the
+agent roster or `session.store`. Run the owner change as a separate command
+after the roster or store change. Otherwise, stop the Gateway through its
+service owner, wait for it to exit, then rerun the command. When a routed
+`session.store` change clears a copied session-store owner, the CLI reports it
+as the offline command does. `--dry-run` never
 contacts the Gateway. See [Config RPC](/gateway/configuration/config-rpc) for the
 underlying methods.
 
