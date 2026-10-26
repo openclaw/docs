@@ -122,11 +122,9 @@ admitted turn, not an already-running model call.
 
 The OpenClaw runtime sends the program to its official Responses endpoint. Native
 Codex uses its supported turn-scoped access-program parameter. This OpenClaw
-integration currently supports explicit native programs only with ChatGPT
-subscription authentication and rejects API-key selections before submission.
-Upstream Codex can forward programs when its separate API-key feature is enabled;
-this integration does not support that mode. Reset Access to the model default or
-use the OpenClaw runtime with an explicit model parameter for Platform API-key requests.
+integration supports explicit native programs with ChatGPT subscription and
+Platform API-key authentication. The managed Codex runtime enables API-key access
+programs by default; an explicitly disabled native feature remains authoritative.
 Native Codex checks its authenticated `model/list` access-program metadata before
 submitting a Daybreak turn. A stale saved selection fails visibly before submission.
 
@@ -137,8 +135,9 @@ alone is not entitlement. For Platform API keys, OpenClaw reads explicit program
 metadata from the same authenticated Codex model endpoint used by the official
 Codex client. The public `/v1/models` response remains the model-availability
 authority: a capability row cannot add an unlisted model. The same API key scopes
-both reads to its organization and project; custom endpoints and request-header
-overrides do not inherit these grants.
+both reads to its organization and project. Configured API keys and environment
+credentials use their own discovery result, never another saved account's grants;
+custom endpoints and request-header overrides do not inherit these grants.
 
 This discovery uses read-only requests, not billable Responses probes. Successful
 Platform and ChatGPT HTTP observations are cached for up to 60 seconds by
