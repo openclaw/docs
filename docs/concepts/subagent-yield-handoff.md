@@ -265,7 +265,11 @@ owner, so callbacks from the closed Gateway cannot settle the recovered wake.
   an observed terminal delivery outcome, the registry settles that outcome
   without resending an ambiguously committed result. If persistence fails, it
   retains the observed receipt and retries bookkeeping, not the send. The
-  outbound durable delivery queue keeps its own transport retry policy.
+  same rule covers private parent completions resumed by restart recovery:
+  their captured successful result settles the original input, including a
+  silent result, without starting another requester turn. Failed or missing
+  recovery evidence does not establish successful consumption.
+  The outbound durable delivery queue keeps its own transport retry policy.
   Delivery bookkeeping for executions that ended before the current batch's
   earliest child was created cannot block its continuation.
   A private handoff's observation timeout does not cancel the underlying Gateway
