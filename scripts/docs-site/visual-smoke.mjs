@@ -573,14 +573,21 @@ async function checkMermaid() {
   try {
     await page.goto(base + "/__elements", { waitUntil: "networkidle" });
     await checkMermaidContent(page);
-    const before = await page.locator(".oc-mermaid.is-rendered > svg").evaluateAll((svgs) => svgs.map((svg) => svg.id));
+    const before = await page.locator(".oc-mermaid.is-rendered > svg").evaluateAll((svgs) => {
+      window.__diagramNodes = svgs;
+      return svgs.map((svg) => getComputedStyle(svg).color);
+    });
     const theme = await page.locator("html").getAttribute("data-theme");
     await page.locator(".header-row [data-theme-toggle]").click();
-    await page.waitForFunction(({ ids, previousTheme }) => {
+    await page.waitForFunction(({ colors, previousTheme }) => {
       const svgs = [...document.querySelectorAll(".oc-mermaid.is-rendered > svg")];
       return document.documentElement.dataset.theme !== previousTheme
-        && svgs.length === ids.length && svgs.every((svg, i) => svg.id !== ids[i]);
-    }, { ids: before, previousTheme: theme });
+        && svgs.length === colors.length && svgs.every((svg, i) => getComputedStyle(svg).color !== colors[i]);
+    }, { colors: before, previousTheme: theme });
+    if (!await page.locator(".oc-mermaid.is-rendered > svg").evaluateAll((svgs) =>
+      svgs.every((svg, i) => svg === window.__diagramNodes[i]))) {
+      throw new Error("Theme change replaced diagrams instead of updating CSS colors");
+    }
     await expectMermaidDiagrams(page);
     await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
     await page.evaluate(() => { window.__mermaidNavigationProbe = true; });
@@ -664,7 +671,7 @@ async function checkMermaidContent(page) {
     throw new Error(`mermaid overlay did not close on Escape: ${JSON.stringify(mermaidOverlayClose)}`);
   }
   await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
-  // Mermaid 12 reports the parser error; render IDs detect artifacts independent of that wording.
+  // A malformed diagram must leave only the escaped source fallback, not shell artifacts.
   const mermaidErrorLeak = await page.evaluate(() => ({
     bodyText: document.body.innerText.includes("Syntax error in text"),
     leakedSvg: [...document.querySelectorAll("svg")]
