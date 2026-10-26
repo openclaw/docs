@@ -11619,6 +11619,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session and command preparation
   - H3: Native session lineage
   - H3: Exec approval reads
+  - H3: Durable-send destination history
   - H3: Session reset freshness
   - H3: Why
   - H2: Where each topic lives
@@ -13473,7 +13474,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: One owner
   - H2: Considered options
   - H2: Status and order
-  - H2: Risks to check before step 2
+  - H2: Limits and risks
 
 ## refactor/cron-worker-owned.md
 
