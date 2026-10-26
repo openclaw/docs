@@ -5852,6 +5852,9 @@ its native handles before handoff; the new scope supplies its own authority.
 Released scopes refuse further work, and the idle worker does not keep the process
 alive. Failures, database shutdown, different state directories, and retiring
 workers still require native exit before replacement. Schema and update behavior are unchanged.
+Cold-storage maintenance preparation uses this same idle worker, including empty
+sweeps. Each preparation closes its scoped read-only handles before replying;
+selection, configuration checks, and commit authority remain per request.
 
 Single-message lookups and display-message counts use that same history worker.
 Session-message broadcasts await the stored content and sequence in their existing
