@@ -14157,6 +14157,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Two persistence layers
   - H2: On-disk locations
 
+## reference/session-start-measurement.md
+
+- Route: /reference/session-start-measurement
+- Headings: none
+
 ## reference/team-immutable-update-design.md
 
 - Route: /reference/team-immutable-update-design
