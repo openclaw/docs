@@ -10521,6 +10521,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
 
+## plugins/reference/liquid-ai.md
+
+- Route: /plugins/reference/liquid-ai
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/litellm.md
 
 - Route: /plugins/reference/litellm
@@ -12807,6 +12815,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Connect and select
   - H2: Native operations
   - H2: Results, usage and limitations
+
+## providers/liquid-ai.md
+
+- Route: /providers/liquid-ai
+- Headings:
+  - H1: Liquid AI
+  - H2: Set up the provider
+  - H2: Evaluate a decision
+  - H2: Limits and routing
 
 ## providers/liquid-inference.md
 
