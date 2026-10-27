@@ -302,7 +302,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/5e326dc738cacd9b5efe44492975dc29820daa9d/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/91400edc0c6e749023634671e1793034deae93ea/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -726,6 +726,13 @@ clawhub publisher create opik --display-name "Opik"
 - Code-plugin folders are packed into a ClawPack npm tarball before upload so
   OpenClaw installs can verify the exact artifact. Bundle-plugin folders still
   use the extracted-file publish path.
+- Bundles need exactly one supported bundle marker with a non-empty `name`, not
+  an added `openclaw.plugin.json` envelope. The name determines the canonical
+  bundle runtime identity. `--bundle-format` must match the marker's `codex`,
+  `claude`, or `cursor` format. Multiple bundle markers are rejected. Explicit
+  native entrypoints take precedence during family detection; use the matching
+  family rather than rewriting a manifest. All original files remain uploaded
+  and inspected, including companion skill and native manifests.
 - For GitHub sources, source attribution is auto-populated from the repo, resolved commit, ref, and subpath.
 - For local folders, source attribution is auto-detected from local git when the origin remote points at GitHub.
 - External code plugins must declare `openclaw.compat.pluginApi` and
@@ -827,7 +834,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/5e326dc738cacd9b5efe44492975dc29820daa9d/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/91400edc0c6e749023634671e1793034deae93ea/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
