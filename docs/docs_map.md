@@ -13982,6 +13982,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/pull-request-review-flow
 - Headings:
+  - H2: Local review before a PR
+  - H3: Set up a local reviewer
+  - H3: Report the actual review
   - H2: Barnacle
   - H2: ClawSweeper
   - H2: Improve a PR during review
