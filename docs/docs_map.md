@@ -5112,6 +5112,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-tools/provider-examples
 - Headings:
   - H2: Provider examples
+  - H2: Route interactive and background requests to different URLs
 
 ## gateway/config-tools/sessions-and-subagents.md
 
