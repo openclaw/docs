@@ -9398,6 +9398,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Control UI
   - H2: Local Git history
   - H2: Scheduled maintenance
+  - H2: Scribes
   - H2: Capabilities and limits
   - H2: Moving from a linked or path install
   - H2: Related
@@ -9500,6 +9501,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Index behavior
   - H3: What is rebuildable
   - H2: Dates and Chronicle
+
+## plugins/knowledge/scribes.md
+
+- Route: /plugins/knowledge/scribes
+- Headings:
+  - H2: The scribes
+  - H2: Start a scribe
+  - H2: States
+  - H2: Controls
+  - H2: Limits
+  - H2: Related
 
 ## plugins/knowledge/stores-and-access.md
 

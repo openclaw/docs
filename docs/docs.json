@@ -1850,6 +1850,7 @@
                           "plugins/knowledge/corrections",
                           "plugins/knowledge/local-history",
                           "plugins/knowledge/maintenance",
+                          "plugins/knowledge/scribes",
                           "plugins/knowledge/control-ui"
                         ]
                       },
@@ -3990,6 +3991,7 @@
                           "zh-CN/plugins/knowledge/corrections",
                           "zh-CN/plugins/knowledge/local-history",
                           "zh-CN/plugins/knowledge/maintenance",
+                          "zh-CN/plugins/knowledge/scribes",
                           "zh-CN/plugins/knowledge/control-ui"
                         ]
                       },
@@ -6096,6 +6098,7 @@
                           "zh-TW/plugins/knowledge/corrections",
                           "zh-TW/plugins/knowledge/local-history",
                           "zh-TW/plugins/knowledge/maintenance",
+                          "zh-TW/plugins/knowledge/scribes",
                           "zh-TW/plugins/knowledge/control-ui"
                         ]
                       },
@@ -8202,6 +8205,7 @@
                           "ja-JP/plugins/knowledge/corrections",
                           "ja-JP/plugins/knowledge/local-history",
                           "ja-JP/plugins/knowledge/maintenance",
+                          "ja-JP/plugins/knowledge/scribes",
                           "ja-JP/plugins/knowledge/control-ui"
                         ]
                       },
@@ -10308,6 +10312,7 @@
                           "es/plugins/knowledge/corrections",
                           "es/plugins/knowledge/local-history",
                           "es/plugins/knowledge/maintenance",
+                          "es/plugins/knowledge/scribes",
                           "es/plugins/knowledge/control-ui"
                         ]
                       },
@@ -12414,6 +12419,7 @@
                           "pt-BR/plugins/knowledge/corrections",
                           "pt-BR/plugins/knowledge/local-history",
                           "pt-BR/plugins/knowledge/maintenance",
+                          "pt-BR/plugins/knowledge/scribes",
                           "pt-BR/plugins/knowledge/control-ui"
                         ]
                       },
@@ -14520,6 +14526,7 @@
                           "ko/plugins/knowledge/corrections",
                           "ko/plugins/knowledge/local-history",
                           "ko/plugins/knowledge/maintenance",
+                          "ko/plugins/knowledge/scribes",
                           "ko/plugins/knowledge/control-ui"
                         ]
                       },
@@ -16626,6 +16633,7 @@
                           "de/plugins/knowledge/corrections",
                           "de/plugins/knowledge/local-history",
                           "de/plugins/knowledge/maintenance",
+                          "de/plugins/knowledge/scribes",
                           "de/plugins/knowledge/control-ui"
                         ]
                       },
@@ -18732,6 +18740,7 @@
                           "fr/plugins/knowledge/corrections",
                           "fr/plugins/knowledge/local-history",
                           "fr/plugins/knowledge/maintenance",
+                          "fr/plugins/knowledge/scribes",
                           "fr/plugins/knowledge/control-ui"
                         ]
                       },
@@ -20838,6 +20847,7 @@
                           "hi/plugins/knowledge/corrections",
                           "hi/plugins/knowledge/local-history",
                           "hi/plugins/knowledge/maintenance",
+                          "hi/plugins/knowledge/scribes",
                           "hi/plugins/knowledge/control-ui"
                         ]
                       },
@@ -22944,6 +22954,7 @@
                           "ar/plugins/knowledge/corrections",
                           "ar/plugins/knowledge/local-history",
                           "ar/plugins/knowledge/maintenance",
+                          "ar/plugins/knowledge/scribes",
                           "ar/plugins/knowledge/control-ui"
                         ]
                       },
@@ -25050,6 +25061,7 @@
                           "it/plugins/knowledge/corrections",
                           "it/plugins/knowledge/local-history",
                           "it/plugins/knowledge/maintenance",
+                          "it/plugins/knowledge/scribes",
                           "it/plugins/knowledge/control-ui"
                         ]
                       },
@@ -27156,6 +27168,7 @@
                           "vi/plugins/knowledge/corrections",
                           "vi/plugins/knowledge/local-history",
                           "vi/plugins/knowledge/maintenance",
+                          "vi/plugins/knowledge/scribes",
                           "vi/plugins/knowledge/control-ui"
                         ]
                       },
@@ -29262,6 +29275,7 @@
                           "nl/plugins/knowledge/corrections",
                           "nl/plugins/knowledge/local-history",
                           "nl/plugins/knowledge/maintenance",
+                          "nl/plugins/knowledge/scribes",
                           "nl/plugins/knowledge/control-ui"
                         ]
                       },
@@ -31368,6 +31382,7 @@
                           "fa/plugins/knowledge/corrections",
                           "fa/plugins/knowledge/local-history",
                           "fa/plugins/knowledge/maintenance",
+                          "fa/plugins/knowledge/scribes",
                           "fa/plugins/knowledge/control-ui"
                         ]
                       },
@@ -33474,6 +33489,7 @@
                           "tr/plugins/knowledge/corrections",
                           "tr/plugins/knowledge/local-history",
                           "tr/plugins/knowledge/maintenance",
+                          "tr/plugins/knowledge/scribes",
                           "tr/plugins/knowledge/control-ui"
                         ]
                       },
@@ -35580,6 +35596,7 @@
                           "uk/plugins/knowledge/corrections",
                           "uk/plugins/knowledge/local-history",
                           "uk/plugins/knowledge/maintenance",
+                          "uk/plugins/knowledge/scribes",
                           "uk/plugins/knowledge/control-ui"
                         ]
                       },
@@ -37686,6 +37703,7 @@
                           "id/plugins/knowledge/corrections",
                           "id/plugins/knowledge/local-history",
                           "id/plugins/knowledge/maintenance",
+                          "id/plugins/knowledge/scribes",
                           "id/plugins/knowledge/control-ui"
                         ]
                       },
@@ -39792,6 +39810,7 @@
                           "pl/plugins/knowledge/corrections",
                           "pl/plugins/knowledge/local-history",
                           "pl/plugins/knowledge/maintenance",
+                          "pl/plugins/knowledge/scribes",
                           "pl/plugins/knowledge/control-ui"
                         ]
                       },
@@ -41898,6 +41917,7 @@
                           "th/plugins/knowledge/corrections",
                           "th/plugins/knowledge/local-history",
                           "th/plugins/knowledge/maintenance",
+                          "th/plugins/knowledge/scribes",
                           "th/plugins/knowledge/control-ui"
                         ]
                       },
@@ -44004,6 +44024,7 @@
                           "ru/plugins/knowledge/corrections",
                           "ru/plugins/knowledge/local-history",
                           "ru/plugins/knowledge/maintenance",
+                          "ru/plugins/knowledge/scribes",
                           "ru/plugins/knowledge/control-ui"
                         ]
                       },
@@ -46110,6 +46131,7 @@
                           "sv/plugins/knowledge/corrections",
                           "sv/plugins/knowledge/local-history",
                           "sv/plugins/knowledge/maintenance",
+                          "sv/plugins/knowledge/scribes",
                           "sv/plugins/knowledge/control-ui"
                         ]
                       },
