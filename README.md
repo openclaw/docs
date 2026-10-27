@@ -55,6 +55,7 @@ For official OpenClaw support, visit [community.openclaw.ai](https://community.o
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - Source indexing writes completion metadata and reports success only after the output stream finishes and its file closes successfully; write or close errors fail the build before those completion signals.
+- Mermaid fences and `<Mermaid>` blocks render in the browser with Pele 1.6.0, using the docs theme tokens without re-rendering on theme changes. Source Markdown and the expanded-diagram controls are unchanged; diagram links and images stay disabled. Layout follows Pele rather than Mermaid.
 - The generated site includes the language picker and static full-text search via Pagefind.
 - Navigation groups can nest recursively; sidebar links, section metadata, and desktop/mobile tab targets resolve to descendant pages at every depth.
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.

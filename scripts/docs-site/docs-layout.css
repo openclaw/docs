@@ -420,10 +420,19 @@
 .docs-layout .oc-mermaid-expand .icon { width: 16px; min-width: 16px; max-width: 16px; height: 16px; stroke-width: 1.5; }
 .docs-layout :is(.oc-mermaid-expand,.oc-mermaid-overlay-close):hover { border-color: var(--docs-border); background: color-mix(in srgb,var(--ink) 6%,var(--paper)); color: var(--ink); }
 .docs-layout :is(.oc-mermaid-expand,.oc-mermaid-overlay-close):focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 2px; }
-.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg rect.actor { rx: 10px; ry: 10px; }
-.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg .node rect { rx: 8px; ry: 8px; }
-.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg .actor-line { stroke-width: 1px; stroke-dasharray: 4 5; }
-.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) svg :is(.messageLine0,.messageLine1) { stroke-width: 1.25px; }
+.docs-layout :is(.oc-mermaid,.oc-mermaid-overlay-canvas) {
+  --pele-bg: var(--paper);
+  --pele-fg: var(--text);
+  --pele-muted: var(--muted);
+  --pele-line: var(--docs-diagram-line);
+  --pele-surface: var(--docs-diagram-node);
+  --pele-surface-alt: var(--soft);
+  --pele-border: var(--docs-diagram-border);
+  --pele-accent: var(--brand);
+  --pele-font: var(--oc-font-body);
+  --pele-font-mono: var(--oc-font-mono);
+  --pele-radius: 8px;
+}
 .docs-layout .oc-mermaid-overlay-canvas { border-color: var(--docs-border); background: var(--paper); box-shadow: none; padding: 32px; }
 .docs-layout .doc .oc-mermaid.is-error { padding: 18px 20px; border-color: var(--docs-border); }
 .docs-layout .oc-mermaid-error { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--muted); font: 400 12px/1.5 var(--oc-font-body); }
