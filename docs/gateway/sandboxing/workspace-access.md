@@ -80,6 +80,11 @@ workspace owner before container allocation, while the skill mounts remain
 read-only. This also keeps normal retention cleanup independent of container
 user-namespace ownership.
 
+Git metadata at the checkout root or in nested repositories (`.git` path
+components) stays local to its runtime and is excluded from synchronization and
+recovery, including previously retained inputs. Similarly named source files
+such as `.gitignore`, `.gitmodules`, and `.git-notes` still reconcile normally.
+
 At the checkout root, `.cache/vitest/`, `.cache/bun-transpiler/`, `.cache/openclaw/bun/`,
 `.cache/ms-playwright/`, and `.local/share/pnpm/store/` caches stay with the runtime
 that produced them, along with `.artifacts/vitest-workers/` compiler outputs,
