@@ -13660,6 +13660,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Agent schema 38
   - H3: Agent schema 37
   - H3: Agent schema 36
   - H3: Agent schemas 34 and 35
