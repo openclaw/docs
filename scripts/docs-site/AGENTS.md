@@ -2,6 +2,7 @@
 
 Scope: docs shell generator, hidden visual fixtures, local smoke checks, and R2 artifact preparation.
 
+- For OpenClaw and OpenClaw Foundation logos in the docs shell or site artwork, see the [brand kit](https://github.com/openclaw/carapace/tree/main/brand-kit).
 - Do not edit generated `dist/docs-site/**`; rebuild it.
 - Keep authored docs under `docs/**` out of this subtree. Use virtual fixtures or generator code here when testing shell UI.
 - The hidden component fixture is generated at `/__elements`; keep it `noindex` and out of `sitemap.xml` and `llms.txt`.
