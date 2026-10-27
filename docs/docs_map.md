@@ -6383,6 +6383,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How we build OpenClaw with OpenClaw
   - H2: Before you begin
+  - H2: Optimal setup
   - H2: 1. Install under one service account
   - H2: 2. Configure the public URL and authenticated ingress
   - H3: Set the public URL once
