@@ -302,9 +302,11 @@ cancellation or a Gateway restart interrupts that wait,
 the message stays readable with its recorded disposition and is never resent
 automatically. Stopped messages stay at their original time in the conversation,
 before messages sent later; only inputs still waiting to run stay at the live edge.
-Copy a stopped message into the composer to start a new attempt. **Show earlier
-messages** pages through messages that are still waiting or were stopped before
-processing; **Show latest messages** returns to the newest page. Incoming activity
+Copy a stopped message into the composer to start a new attempt. When there are
+more of these messages than fit on one page, **Show earlier unsent messages**
+appears at the top of the conversation once all earlier history has loaded; it
+pages through messages that are still waiting or were stopped before processing,
+and **Show latest unsent messages** returns to the newest page. Incoming activity
 refreshes the page you are reading without changing your selection. A long message
 uses the normal full-message reader without becoming a transcript reply, fork,
 or rewind target.
