@@ -426,6 +426,10 @@ if (!fs.existsSync(path.join(site, "assets/pele-1.6.0.js"))
   || !fs.existsSync(path.join(site, "assets/pele-LICENSE.txt"))) {
   throw new Error("assets: Pele runtime and license were not copied");
 }
+if (!siteJs.includes("pele.enableZoom(canvas") || !siteCss.includes("container-type:size")
+  || siteCss.includes("min-width:min(1040px,100%)")) {
+  throw new Error("assets: expanded diagrams must fit the viewport and retain zoom controls");
+}
 if (!/\.sidebar\{[^}]*padding:0 6px var\(--oc-space-8\) 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
 }

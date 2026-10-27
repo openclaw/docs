@@ -592,7 +592,7 @@ async function checkMermaid() {
     await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
     await page.evaluate(() => { window.__mermaidNavigationProbe = true; });
     await page.locator("[data-mermaid-expand]").first().click();
-    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    await page.locator("[data-mermaid-overlay-canvas] > svg").waitFor({ state: "visible", timeout: 10000 });
     // Use the normal link handler so the cached module and overlay lifecycle survive PJAX.
     await page.keyboard.press("Escape");
     await navigateMermaidPage(page, "/");
@@ -604,7 +604,7 @@ async function checkMermaid() {
     await expectMermaidDiagrams(page);
     await page.locator(".oc-mermaid.is-error pre code").waitFor({ state: "visible", timeout: 10000 });
     await page.locator("[data-mermaid-expand]").first().click();
-    await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+    await page.locator("[data-mermaid-overlay-canvas] > svg").waitFor({ state: "visible", timeout: 10000 });
     await page.keyboard.press("Escape");
   } finally {
     await page.close();
@@ -620,7 +620,7 @@ async function checkMermaidContent(page) {
   );
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.locator("[data-mermaid-overlay-canvas] > svg").waitFor({ state: "visible", timeout: 10000 });
   await page.keyboard.press("Tab");
   const mermaidOverlayFocus = await page.evaluate(() => ({
     activeInOverlay: Boolean(document.querySelector("[data-mermaid-overlay].open")?.contains(document.activeElement)),
@@ -641,7 +641,7 @@ async function checkMermaidContent(page) {
   }
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.locator("[data-mermaid-overlay-canvas] > svg").waitFor({ state: "visible", timeout: 10000 });
   await page.evaluate(() => history.pushState({ docs: true }, "", `${location.pathname}#fixture-components`));
   await page.goBack();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
@@ -657,7 +657,7 @@ async function checkMermaidContent(page) {
   }
   await page.locator("[data-mermaid-expand]").first().click();
   await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
-  await page.locator("[data-mermaid-overlay-canvas] svg").waitFor({ state: "visible", timeout: 10000 });
+  await page.locator("[data-mermaid-overlay-canvas] > svg").waitFor({ state: "visible", timeout: 10000 });
   await page.keyboard.press("Meta+K");
   if (await page.locator(".search-modal.open").count()) {
     throw new Error("mermaid overlay allowed the search shortcut");
