@@ -28,17 +28,17 @@
     "glimm": "0.3.1",
     "highlight.js": "11.12.0",
     "htmlparser2": "12.0.0",
-    "lucide": "1.56.0",
-    "markdown-it": "15.0.2",
+    "lucide": "1.61.0",
+    "markdown-it": "15.0.3",
     "markdown-it-anchor": "10.0.0",
     "pagefind": "1.5.2",
-    "pele": "1.6.0",
-    "playwright": "^1.64.0",
+    "pele": "1.10.0",
+    "playwright": "^1.64.1",
     "tsx": "4.23.15",
     "web-vitals": "6.2.3",
     "yaml": "2.9.1"
   },
   "dependencies": {
-    "@openclaw/carapace": "git+https://github.com/openclaw/carapace.git#v0.6.2"
+    "@openclaw/carapace": "git+https://github.com/openclaw/carapace.git#v0.6.3"
   }
 }
