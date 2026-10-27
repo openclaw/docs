@@ -2,6 +2,7 @@
 
 Scope: docs shell generator, hidden visual fixtures, local smoke checks, and R2 artifact preparation.
 
+- Before selecting or creating shell, favicon, hero, or OG artwork, follow the root [live brand-source preflight](../../AGENTS.md#design-and-artwork); existing site SVGs and hero art are consumer references, not canonical identity, and do not override composition or semantic UI contracts.
 - Do not edit generated `dist/docs-site/**`; rebuild it.
 - Keep authored docs under `docs/**` out of this subtree. Use virtual fixtures or generator code here when testing shell UI.
 - The hidden component fixture is generated at `/__elements`; keep it `noindex` and out of `sitemap.xml` and `llms.txt`.
