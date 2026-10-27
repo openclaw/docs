@@ -192,9 +192,11 @@ html{scroll-padding-top:calc(var(--sticky-header-h) + 54px)}
 .oc-mermaid-overlay-close{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line-strong);border-radius:var(--oc-radius-control);background:color-mix(in srgb,var(--paper) 90%,transparent);color:var(--muted);cursor:pointer}
 .oc-mermaid-overlay-close:hover,.oc-mermaid-overlay-close:focus-visible{outline:0;border-color:color-mix(in srgb,var(--brand) 46%,var(--line-strong));background:color-mix(in srgb,var(--soft) 64%,var(--paper) 36%);color:var(--ink)}
 .oc-mermaid-overlay-close .icon{width:18px;height:18px;min-width:18px;max-width:18px}
-.oc-mermaid-overlay-canvas{min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid var(--line-strong);border-radius:var(--oc-radius-surface);background:color-mix(in srgb,var(--paper) 94%,transparent);padding:var(--oc-space-5);box-shadow:var(--shadow)}
-.oc-mermaid-overlay-canvas svg{display:block;width:max-content;min-width:min(1040px,100%);max-width:none;height:auto;margin:auto}
-.oc-mermaid-overlay-canvas pre{margin:0;white-space:pre;min-width:max-content}
+.oc-mermaid-overlay-canvas{position:relative;container-type:size;display:grid;place-items:center;min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid var(--line-strong);border-radius:var(--oc-radius-surface);background:color-mix(in srgb,var(--paper) 94%,transparent);padding:var(--oc-space-5);box-shadow:var(--shadow)}
+.oc-mermaid-overlay-canvas>svg{display:block;min-width:0;max-width:none;height:auto;margin:auto}
+.oc-mermaid-overlay-canvas .pele-zoom{flex-direction:row!important;--pele-zoom-top:auto;--pele-zoom-bottom:10px;--pele-zoom-right:10px}
+.oc-mermaid-overlay-canvas .pele-zoom button{min-width:44px;min-height:44px}
+.oc-mermaid-overlay-canvas pre{align-self:start;justify-self:start;margin:0;white-space:pre;min-width:max-content}
 .has-mermaid-overlay{overflow:hidden}
 .language-menu{top:calc(100% + 8px);width:min(270px,calc(100vw - 32px));max-height:min(62vh,430px);padding:6px;border-radius:var(--oc-radius-surface);scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--brand) 58%,transparent) transparent;box-shadow:var(--oc-shadow-lg)}
 .language-menu::-webkit-scrollbar{width:8px}

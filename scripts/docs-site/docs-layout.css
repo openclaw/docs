@@ -433,13 +433,16 @@
   --pele-font-mono: var(--oc-font-mono);
   --pele-radius: 8px;
 }
-.docs-layout .oc-mermaid-overlay-canvas { border-color: var(--docs-border); background: var(--paper); box-shadow: none; padding: 32px; }
+.docs-layout .oc-mermaid-overlay-canvas { border-color: var(--docs-border); background: var(--paper); box-shadow: none; padding: 32px 32px 72px; }
 .docs-layout .doc .oc-mermaid.is-error { padding: 18px 20px; border-color: var(--docs-border); }
 .docs-layout .oc-mermaid-error { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--muted); font: 400 12px/1.5 var(--oc-font-body); }
 .docs-layout .oc-mermaid-error svg { flex: 0 0 16px; color: var(--oc-status-warning-fg); }
 .docs-layout .doc .oc-mermaid.is-error pre { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--text); font-size: 12px; line-height: 1.65; }
 @media (max-width: 520px) {
-  .docs-layout .oc-mermaid { padding: 44px 16px 20px; }}
+  .docs-layout .oc-mermaid { padding: 44px 16px 20px; }
+  .docs-layout .oc-mermaid-overlay { padding: 12px; }
+  .docs-layout .oc-mermaid-overlay-canvas { padding: 16px 16px 64px; }
+}
 /* A section title belongs to its first block, regardless of that block's default margin. */
 .docs-layout .article .doc > :is(h2,h3,h4,h5,h6) + :where(p,ul,ol,blockquote,figure,aside,details,div,section) { margin-block-start: 0; }
 .docs-layout .site-footer { margin-top: 0; border-bottom: 0; background: var(--bg); }
@@ -777,6 +780,3 @@
 @media (min-width:821px) {
   .docs-layout:dir(rtl) :is(.docs-sidebar-directory, .docs-sidebar-context > .docs-sections) { padding-block-end: 88px; }
 }
-
-/* Renderers put responsive max-width inline; expansion must stay readable and scroll. */
-.docs-layout .oc-mermaid-overlay-canvas > svg { max-width: none !important; }
