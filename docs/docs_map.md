@@ -8845,6 +8845,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/dynamic-tools
 - Headings:
   - H2: Dynamic tools
+  - H2: Protected conversation continuity
 
 ## plugins/codex-harness-reference/model-discovery.md
 
