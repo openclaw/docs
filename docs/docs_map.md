@@ -6869,6 +6869,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Live (network-touching) tests
   - H2: Docs sanity
   - H2: Offline regression (CI-safe)
+  - H2: Opt-in Gateway restart stress
 
 ## help/testing/writing-tests.md
 
