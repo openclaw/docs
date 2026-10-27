@@ -6005,6 +6005,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Managed GitHub identity
   - H2: Minimal enable example
   - H2: Related
+  - H3: Inaccessible generated-skills mountpoint
 
 ## gateway/sandboxing/crabbox-backend.md
 
