@@ -34,16 +34,9 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - `.openclaw-sync/source.json`; generated sync metadata.
 - `.openclaw-sync/check-docs-mdx.mjs` and `.openclaw-sync/docs-mdx-repair.md`; copied from `openclaw/openclaw`.
 
-## Design and artwork
-
-Route design work through [OpenClaw Design](.agents/skills/openclaw-design/SKILL.md); renderer and site-asset implementation belongs under `scripts/docs-site/**`.
-
-Before selecting or creating OpenClaw or OpenClaw Foundation artwork in each task, check the live [Carapace brand kit](https://github.com/openclaw/carapace/tree/main/brand-kit), resolve upstream `main` afresh, and read its current README, inventory, and relevant linked usage/rights guidance. Record the observed commit and selected paths/hashes in task evidence, then download and use the appropriate current assets from that commit within the requested scope. Local SVGs, hero art, vendored skills, old ZIPs, and prior outputs are consumer references or caches, not canonical identity. Report a failed live check or missing/conflicting guidance rather than silently falling back; recheck after a long pause or before delivery when the source may have changed.
-
-Preserve supplied artwork proportions, outlined lettering, colors, and transparency. Keep page composition, semantic UI tokens, release-pinned runtime CSS, portraits, subbrands, and rights/publication approvals separate; historical reproductions must be explicitly requested, labeled, and pinned. Use reviewed repository-local assets, not mutable-main production hotlinks or an automatic global rebrand. Update vendored Carapace skills through their upstream source and supported updater, not hand-edited copies.
-
 ## Workflow
 
+- For OpenClaw and OpenClaw Foundation logos, see the [brand kit](https://github.com/openclaw/carapace/tree/main/brand-kit).
 - For a local page preview, run `npm run docs:build:preview -- --page <route>` (repeat `--page` for more pages). It builds at most 30 pages in English, including the requested pages. Use this for screenshots; do not run translation or full publishing builds just for a preview. See `scripts/docs-site/AGENTS.md` for fixture and validation options.
 - Source sync starts in `openclaw/openclaw/.github/workflows/docs-sync-publish.yml`.
 - Sync mirrors `openclaw/openclaw/docs/**` into this repo and updates `.openclaw-sync/source.json`.
