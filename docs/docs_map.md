@@ -46,6 +46,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /auth-credential-semantics
 - Headings:
+  - H2: Account status in Models
   - H2: Stable check reason codes
   - H2: Token credentials
   - H3: Eligibility rules
