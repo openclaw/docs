@@ -768,3 +768,6 @@
 @media (min-width:821px) {
   .docs-layout:dir(rtl) :is(.docs-sidebar-directory, .docs-sidebar-context > .docs-sections) { padding-block-end: 88px; }
 }
+
+/* Renderers put responsive max-width inline; expansion must stay readable and scroll. */
+.docs-layout .oc-mermaid-overlay-canvas > svg { max-width: none !important; }
