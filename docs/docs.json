@@ -2593,6 +2593,7 @@
                     "pages": [
                       "gateway/security/index",
                       "gateway/security/trust-model",
+                      "gateway/security/presets",
                       "gateway/security/running-the-audit",
                       "gateway/security/audit-checks",
                       "gateway/security/hardened-baseline",
@@ -4701,6 +4702,7 @@
                     "pages": [
                       "zh-CN/gateway/security/index",
                       "zh-CN/gateway/security/trust-model",
+                      "zh-CN/gateway/security/presets",
                       "zh-CN/gateway/security/running-the-audit",
                       "zh-CN/gateway/security/audit-checks",
                       "zh-CN/gateway/security/hardened-baseline",
@@ -6809,6 +6811,7 @@
                     "pages": [
                       "zh-TW/gateway/security/index",
                       "zh-TW/gateway/security/trust-model",
+                      "zh-TW/gateway/security/presets",
                       "zh-TW/gateway/security/running-the-audit",
                       "zh-TW/gateway/security/audit-checks",
                       "zh-TW/gateway/security/hardened-baseline",
@@ -8917,6 +8920,7 @@
                     "pages": [
                       "ja-JP/gateway/security/index",
                       "ja-JP/gateway/security/trust-model",
+                      "ja-JP/gateway/security/presets",
                       "ja-JP/gateway/security/running-the-audit",
                       "ja-JP/gateway/security/audit-checks",
                       "ja-JP/gateway/security/hardened-baseline",
@@ -11025,6 +11029,7 @@
                     "pages": [
                       "es/gateway/security/index",
                       "es/gateway/security/trust-model",
+                      "es/gateway/security/presets",
                       "es/gateway/security/running-the-audit",
                       "es/gateway/security/audit-checks",
                       "es/gateway/security/hardened-baseline",
@@ -13133,6 +13138,7 @@
                     "pages": [
                       "pt-BR/gateway/security/index",
                       "pt-BR/gateway/security/trust-model",
+                      "pt-BR/gateway/security/presets",
                       "pt-BR/gateway/security/running-the-audit",
                       "pt-BR/gateway/security/audit-checks",
                       "pt-BR/gateway/security/hardened-baseline",
@@ -15241,6 +15247,7 @@
                     "pages": [
                       "ko/gateway/security/index",
                       "ko/gateway/security/trust-model",
+                      "ko/gateway/security/presets",
                       "ko/gateway/security/running-the-audit",
                       "ko/gateway/security/audit-checks",
                       "ko/gateway/security/hardened-baseline",
@@ -17349,6 +17356,7 @@
                     "pages": [
                       "de/gateway/security/index",
                       "de/gateway/security/trust-model",
+                      "de/gateway/security/presets",
                       "de/gateway/security/running-the-audit",
                       "de/gateway/security/audit-checks",
                       "de/gateway/security/hardened-baseline",
@@ -19457,6 +19465,7 @@
                     "pages": [
                       "fr/gateway/security/index",
                       "fr/gateway/security/trust-model",
+                      "fr/gateway/security/presets",
                       "fr/gateway/security/running-the-audit",
                       "fr/gateway/security/audit-checks",
                       "fr/gateway/security/hardened-baseline",
@@ -21565,6 +21574,7 @@
                     "pages": [
                       "hi/gateway/security/index",
                       "hi/gateway/security/trust-model",
+                      "hi/gateway/security/presets",
                       "hi/gateway/security/running-the-audit",
                       "hi/gateway/security/audit-checks",
                       "hi/gateway/security/hardened-baseline",
@@ -23673,6 +23683,7 @@
                     "pages": [
                       "ar/gateway/security/index",
                       "ar/gateway/security/trust-model",
+                      "ar/gateway/security/presets",
                       "ar/gateway/security/running-the-audit",
                       "ar/gateway/security/audit-checks",
                       "ar/gateway/security/hardened-baseline",
@@ -25781,6 +25792,7 @@
                     "pages": [
                       "it/gateway/security/index",
                       "it/gateway/security/trust-model",
+                      "it/gateway/security/presets",
                       "it/gateway/security/running-the-audit",
                       "it/gateway/security/audit-checks",
                       "it/gateway/security/hardened-baseline",
@@ -27889,6 +27901,7 @@
                     "pages": [
                       "vi/gateway/security/index",
                       "vi/gateway/security/trust-model",
+                      "vi/gateway/security/presets",
                       "vi/gateway/security/running-the-audit",
                       "vi/gateway/security/audit-checks",
                       "vi/gateway/security/hardened-baseline",
@@ -29997,6 +30010,7 @@
                     "pages": [
                       "nl/gateway/security/index",
                       "nl/gateway/security/trust-model",
+                      "nl/gateway/security/presets",
                       "nl/gateway/security/running-the-audit",
                       "nl/gateway/security/audit-checks",
                       "nl/gateway/security/hardened-baseline",
@@ -32105,6 +32119,7 @@
                     "pages": [
                       "fa/gateway/security/index",
                       "fa/gateway/security/trust-model",
+                      "fa/gateway/security/presets",
                       "fa/gateway/security/running-the-audit",
                       "fa/gateway/security/audit-checks",
                       "fa/gateway/security/hardened-baseline",
@@ -34213,6 +34228,7 @@
                     "pages": [
                       "tr/gateway/security/index",
                       "tr/gateway/security/trust-model",
+                      "tr/gateway/security/presets",
                       "tr/gateway/security/running-the-audit",
                       "tr/gateway/security/audit-checks",
                       "tr/gateway/security/hardened-baseline",
@@ -36321,6 +36337,7 @@
                     "pages": [
                       "uk/gateway/security/index",
                       "uk/gateway/security/trust-model",
+                      "uk/gateway/security/presets",
                       "uk/gateway/security/running-the-audit",
                       "uk/gateway/security/audit-checks",
                       "uk/gateway/security/hardened-baseline",
@@ -38429,6 +38446,7 @@
                     "pages": [
                       "id/gateway/security/index",
                       "id/gateway/security/trust-model",
+                      "id/gateway/security/presets",
                       "id/gateway/security/running-the-audit",
                       "id/gateway/security/audit-checks",
                       "id/gateway/security/hardened-baseline",
@@ -40537,6 +40555,7 @@
                     "pages": [
                       "pl/gateway/security/index",
                       "pl/gateway/security/trust-model",
+                      "pl/gateway/security/presets",
                       "pl/gateway/security/running-the-audit",
                       "pl/gateway/security/audit-checks",
                       "pl/gateway/security/hardened-baseline",
@@ -42645,6 +42664,7 @@
                     "pages": [
                       "th/gateway/security/index",
                       "th/gateway/security/trust-model",
+                      "th/gateway/security/presets",
                       "th/gateway/security/running-the-audit",
                       "th/gateway/security/audit-checks",
                       "th/gateway/security/hardened-baseline",
@@ -44753,6 +44773,7 @@
                     "pages": [
                       "ru/gateway/security/index",
                       "ru/gateway/security/trust-model",
+                      "ru/gateway/security/presets",
                       "ru/gateway/security/running-the-audit",
                       "ru/gateway/security/audit-checks",
                       "ru/gateway/security/hardened-baseline",
@@ -46861,6 +46882,7 @@
                     "pages": [
                       "sv/gateway/security/index",
                       "sv/gateway/security/trust-model",
+                      "sv/gateway/security/presets",
                       "sv/gateway/security/running-the-audit",
                       "sv/gateway/security/audit-checks",
                       "sv/gateway/security/hardened-baseline",

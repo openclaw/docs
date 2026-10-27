@@ -5297,7 +5297,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Retired A2UI widgets
   - H2: Group allowlist fallback
-  - H2: Collaborative steering default
+  - H2: Collaborative steering defaults
   - H2: Cloud setup secret migration
   - H2: Runtime config migration
   - H3: Heartbeat to ordinary automations
@@ -6255,6 +6255,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Rotate (assume compromise if secrets leaked)
   - H3: Audit
   - H3: Collect for a report
+
+## gateway/security/presets.md
+
+- Route: /gateway/security/presets
+- Headings:
+  - H2: What the presets select
+  - H2: Precedence and explicit overrides
+  - H2: Steering authority is execution-bound
+  - H2: Existing installations and changes
+  - H2: Comparison with other agent products
 
 ## gateway/security/prompt-injection.md
 
