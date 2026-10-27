@@ -873,13 +873,11 @@ function writeStaticAssets() {
   const glimmDir = path.dirname(glimmEntry);
   fs.writeFileSync(path.join(assetsDir, glimmAssetName), glimmRuntime, "utf8");
   fs.copyFileSync(path.join(glimmDir, "..", "LICENSE"), path.join(assetsDir, "glimm-LICENSE.txt"));
-  const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
-  const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
-  if (fs.existsSync(mermaidEntry)) {
-    fs.copyFileSync(mermaidEntry, path.join(assetsDir, "mermaid.esm.min.mjs"));
-    copyDir(path.join(mermaidDist, "chunks", "mermaid.esm.min"), path.join(assetsDir, "chunks", "mermaid.esm.min"), {
-      filter: (source) => !source.endsWith(".map"),
-    });
+  const peleDir = path.join(root, "node_modules", "pele");
+  const peleEntry = path.join(peleDir, "dist", "pele.js");
+  if (fs.existsSync(peleEntry)) {
+    fs.copyFileSync(peleEntry, path.join(assetsDir, "pele-1.6.0.js"));
+    fs.copyFileSync(path.join(peleDir, "LICENSE"), path.join(assetsDir, "pele-LICENSE.txt"));
   }
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   fs.writeFileSync(path.join(outDir, "og-card.png"), defaultOgPng);
