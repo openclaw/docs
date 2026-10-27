@@ -11961,6 +11961,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Read-only session forks
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
+  - H3: Reload-safe plugins
   - H3: Plugin value boundary
   - H3: Handle native client errors
   - H3: Instance-bound background context
