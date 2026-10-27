@@ -7487,6 +7487,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Read the manifest
   - H3: macOS signing
   - H2: Update the complete artifact
+  - H3: Desktop app artifacts
   - H3: Managed Gateway service
   - H3: Artifact replacement
   - H2: Runtime contents and limits
