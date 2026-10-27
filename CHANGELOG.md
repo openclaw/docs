@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix two Markdown parser denial-of-service advisories with markdown-it 15.0.3 and refresh Carapace, icons, animation, and browser-test tooling within the two-day dependency cooldown. Thanks @dependabot! (#283, #291)
+
 - Reduce translation token use by reconciling only missing or changed pages at high effort; keep full retranslation as explicit recovery and preserve completed work across retries and resumes.
 
 **Highlights:** Stable section links and reliable source indexing and translated docs, with bounded publishing requests and workflow jobs.
