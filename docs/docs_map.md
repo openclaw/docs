@@ -7967,6 +7967,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Codex sessions and transcripts
   - H2: Claude sessions and transcripts
   - H2: OpenCode and Pi sessions
+  - H2: Activity probe failures
   - H2: OpenClaw sessions and transcripts
 
 ## nodes/session-hosting.md
