@@ -16459,6 +16459,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How the agent learns
   - H2: Undo
+  - H2: Drafts
   - H2: Unused-skill cleanup
   - H2: /learn
   - H2: Agent tool
