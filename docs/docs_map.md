@@ -15936,6 +15936,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Implementation layout
   - H2: Validation checklist
   - H2: E2E test plan
+  - H2: Engine performance qualification
 
 ## tools/code-mode/output.md
 
