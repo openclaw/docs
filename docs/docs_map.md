@@ -9557,6 +9557,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Search and lookup
   - H2: Remembering claims
   - H2: Pages and body edits
+  - H2: Page budgets
+  - H3: Extract a section
   - H2: Claims and relationships
   - H2: Attachments
   - H2: Receipts, history, and recovery
