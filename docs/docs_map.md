@@ -9763,6 +9763,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Installation
   - H2: Quick start
+  - H2: Host memory status and search
   - H2: Embedding config
   - H3: Dimensions
   - H2: Ollama embeddings
