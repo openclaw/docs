@@ -143,6 +143,14 @@ See [CLI login](/clawhub/auth#cli-login) for the approval steps and expiry guida
 - `--file <path>`: fetch raw file bytes (10MB limit).
 - `--json`: machine-readable output; `--file` includes exact bytes as base64 and UTF-8 text when available.
 
+While logged in as the owner, `clawhub inspect @owner/slug --version 2.0.0`
+also reports a retained version's publication status when the public version is
+unavailable. It distinguishes failed checks from missing evidence and identifies
+an older public release separately. Output includes stored-report and support
+guidance; it does not retry checks or release the upload. JSON places the status
+in `publication` and recovery guidance in `nextSteps`. Held content is not returned
+by `--file` or `--files`; these requests exit unsuccessfully after showing status.
+
 ### `install @owner/slug`
 
 - Resolves latest version for the named owner and skill.
@@ -302,7 +310,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/19aaf59306b6b65b7d5b1b2f60b6f729f87f4cd7/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/5f3b6e9855c2f8378245c35e3b4d4183893f4fb1/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -834,7 +842,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/19aaf59306b6b65b7d5b1b2f60b6f729f87f4cd7/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/5f3b6e9855c2f8378245c35e3b4d4183893f4fb1/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
