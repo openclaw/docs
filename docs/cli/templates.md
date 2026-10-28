@@ -1,42 +1,42 @@
 ---
-summary: "Author, inspect, and add Claw bundles as ordinary agents"
+summary: "Author, inspect, and add Template bundles as ordinary agents"
 read_when:
   - You are authoring or validating a CLAW.md manifest
-  - You want to add a new agent from a Claw
+  - You want to add a new agent from a Template
   - You need to understand what remains after deleting that agent
-title: "Claws"
+title: "Templates"
 ---
 
-# `openclaw claws`
+# `openclaw templates`
 
-A Claw is a portable setup for a new OpenClaw agent. It can include agent
+A Template is a portable setup for a new OpenClaw agent. It can include agent
 instructions, workspace files, skills, plugins, MCP servers, and automations.
 **Add is a one-way action:** it creates an ordinary agent and installs its
-requirements. It does not create an installed Claw to manage. Adding the same
-Claw again creates another agent.
+requirements. It does not create an installed Template to manage. Adding the same
+Template again creates another agent.
 
 After Add, manage the agent with [agent commands](/cli/agents), its automations
 with [cron commands](/automation/cron-jobs), and shared dependencies with their
-ordinary plugin or MCP controls. There are no Claw status, update, remove, or
+ordinary plugin or MCP controls. There are no Template status, update, remove, or
 export commands. To use a newer release, Add it as another agent.
 
-Enable **Claws** in **Settings → Labs** before adding one. On a headless installation, set
-`gateway.controlUi.experimental.claws` to `true` in OpenClaw config.
-Authoring and inspecting local Claw packages do not require the Labs toggle.
+Enable **Templates** in **Settings → Labs** before adding one. On a headless installation, set
+`gateway.controlUi.experimental.templates` to `true` in OpenClaw config.
+Authoring and inspecting local Template packages do not require the Labs toggle.
 
 The CLI accepts a local package directory, `CLAW.md`, or grouped JSON manifest.
 JSON manifests, `package.json`, and OpenClaw YAML profiles must contain valid UTF-8.
 If inspection reports an encoding error, re-encode the source file as UTF-8 and retry;
 Add refuses it before creating an agent or workspace.
-Publishing and searching Claws through ClawHub use the separate registry
-surface. The Control UI can browse official and community Claws from **Pages → Claws** at `/claws`
-when **Claws** is enabled in **Settings → Labs**.
+Publishing and searching Templates through ClawHub use the separate registry
+surface. The Control UI can browse official and community Templates from **Pages → Templates** at `/templates`
+when **Templates** is enabled in **Settings → Labs**.
 
 ## Create with an agent
 
-With Claws enabled in Labs, choose **Create Claw** from the agent's left-sidebar
+With Templates enabled in Labs, choose **Create Template** from the agent's left-sidebar
 row menu. Pinned agents keep this action in a focused row menu. The action sends
-the bundled `$create-claw` skill invocation into that agent's existing main
+the bundled `$create-template` skill invocation into that agent's existing main
 chat. The agent proposes portable behavior with an input, job, output, and
 authority boundary, then writes its private draft in that conversation. When
 the draft is ready, the Control UI opens a review modal; the agent does not
@@ -46,7 +46,7 @@ a workspace on the Gateway host.
 The review modal shows the exact archive files and
 declared skill, plugin, MCP, and automation requirements. The Name field is
 the new agent's display name, defaulted to readable title case; it does not
-change the package slug used as the Claw's registry identity. Change the name
+change the package slug used as the Template's registry identity. Change the name
 or description and uncheck any optional workspace file or requirement before
 publishing. **Ask for changes** returns to the same chat; review the rebuilt
 package after the agent revises the draft. The package includes only newly
@@ -60,7 +60,7 @@ requires another review. The editable Name is the agent display name; the
 ClawHub package slug and authenticated publisher are separate identities. An
 agent turn cannot authorize publication. After submission, a dismissing
 notification confirms that publication is pending security review and links
-to the Claw's ClawHub page.
+to the Template's ClawHub page.
 After ClawHub makes it public, others can discover it and Add it as an ordinary agent.
 
 ## Author locally
@@ -69,10 +69,10 @@ Create a minimal project, validate its inputs, preview it without mutation,
 and build an immutable package artifact:
 
 ```bash
-openclaw claws create ./incident-triage
-openclaw claws validate ./incident-triage
-openclaw claws dev ./incident-triage
-openclaw claws build ./incident-triage --out ./incident-triage-1.0.0.tgz
+openclaw templates create ./incident-triage
+openclaw templates validate ./incident-triage
+openclaw templates dev ./incident-triage
+openclaw templates build ./incident-triage --out ./incident-triage-1.0.0.tgz
 ```
 
 A package contains `package.json`, `CLAW.md`, and any files selected by its
@@ -88,10 +88,10 @@ A minimal `package.json` identifies the package and its manifest:
 
 ```json
 {
-  "name": "@acme/incident-triage-claw",
+  "name": "@acme/incident-triage-template",
   "version": "1.0.0",
   "type": "module",
-  "openclaw": { "claw": "CLAW.md" }
+  "openclaw": { "template": "CLAW.md" }
 }
 ```
 
@@ -219,13 +219,13 @@ review them for secrets before building or publishing.
 Inspect a source before using it:
 
 ```bash
-openclaw claws inspect ./incident-triage
+openclaw templates inspect ./incident-triage
 ```
 
 Add it to create a new ordinary agent:
 
 ```bash
-openclaw claws add ./incident-triage
+openclaw templates add ./incident-triage
 ```
 
 Each Add chooses an unused agent ID. The CLI reports that ID so you can open
@@ -249,7 +249,7 @@ where safe, while resources that existed before Add are left alone.
 
 ## Remove the agent
 
-Deleting an agent added from a Claw is the same as deleting any other agent:
+Deleting an agent added from a Template is the same as deleting any other agent:
 
 ```bash
 openclaw agents delete incident-triage
@@ -260,18 +260,18 @@ including its local instructions and skills, and automations assigned to that
 agent. It also removes files or automations the user added later to that agent.
 Shared plugins, MCP servers, and other host-level integrations remain installed;
 remove them separately through their ordinary controls when no longer needed.
-There is no Claw ownership record or reverse-install operation.
+There is no Template ownership record or reverse-install operation.
 
 ## Command reference
 
-| Command                          | Purpose                                          |
-| -------------------------------- | ------------------------------------------------ |
-| `claws create [path]`            | Create a minimal local Claw project.             |
-| `claws validate [path]`          | Validate project inputs and package contents.    |
-| `claws dev [path]`               | Build and preview locally without mutation.      |
-| `claws build [path] --out <tgz>` | Build a deterministic package artifact.          |
-| `claws inspect <source>`         | Inspect a package or grouped manifest.           |
-| `claws add <source>`             | Create a new agent and install its requirements. |
+| Command                              | Purpose                                          |
+| ------------------------------------ | ------------------------------------------------ |
+| `templates create [path]`            | Create a minimal local Template project.         |
+| `templates validate [path]`          | Validate project inputs and package contents.    |
+| `templates dev [path]`               | Build and preview locally without mutation.      |
+| `templates build [path] --out <tgz>` | Build a deterministic package artifact.          |
+| `templates inspect <source>`         | Inspect a package or grouped manifest.           |
+| `templates add <source>`             | Create a new agent and install its requirements. |
 
 Use `--json` for experimental machine-readable output. Validation errors,
 blocked requirements, and failed additions exit `1`.

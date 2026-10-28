@@ -2103,18 +2103,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Migration
   - H2: Related
 
-## cli/claws.md
-
-- Route: /cli/claws
-- Headings:
-  - H1: openclaw claws
-  - H2: Create with an agent
-  - H2: Author locally
-  - H2: Inspect and Add
-  - H2: Remove the agent
-  - H2: Command reference
-  - H2: See also
-
 ## cli/completion.md
 
 - Route: /cli/completion
@@ -3090,6 +3078,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: system presence
   - H2: Notes
   - H2: Related
+
+## cli/templates.md
+
+- Route: /cli/templates
+- Headings:
+  - H1: openclaw templates
+  - H2: Create with an agent
+  - H2: Author locally
+  - H2: Inspect and Add
+  - H2: Remove the agent
+  - H2: Command reference
+  - H2: See also
 
 ## cli/transcripts.md
 
@@ -5315,7 +5315,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Cron ownership before roster migration
   - H2: Legacy cron delivery settings
   - H2: Exec approval policy
-  - H2: Claw provenance schema
+  - H2: Template provenance schema
   - H2: Channel account routing during an update
   - H2: Channel ownership during an update
   - H2: Sender tool policies
@@ -13757,6 +13757,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 36
   - H3: State schema 34
   - H3: State schema 35
   - H3: State schemas 32 and 33
@@ -16987,7 +16988,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Take a photo in chat
   - H2: Watch a desktop in Picture-in-Picture
   - H2: Quick open (local)
-  - H2: Agents and Claws
+  - H2: Agents and Templates
   - H2: What each page covers
   - H2: Where each section moved
   - H2: Related
@@ -17152,7 +17153,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Settings
   - H3: Side panel keyboard shortcuts
   - H3: This device (macOS and iOS apps)
-  - H2: Claws (Labs)
+  - H2: Templates (Labs)
   - H2: Speech bubbles
   - H2: Custom plugin UI
   - H2: Import assistant memory
