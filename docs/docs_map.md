@@ -12057,6 +12057,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime/channel
 - Headings:
+  - H2: Queued source replies
   - H2: Channel namespaces
   - H2: Awaited conversation binding mutations
 
