@@ -986,6 +986,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Threading and sessions
   - H2: Access control (DMs)
   - H2: Channels (groups)
+  - H2: Posts from other bots
   - H2: Targets for outbound delivery
   - H2: DM channel retry
   - H2: Preview streaming
