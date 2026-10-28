@@ -6417,6 +6417,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Inspect what is sent
   - H2: Daily update check
+  - H2: Identifier-free installation counting
   - H2: Approximate location
   - H2: Optional anonymous feature statistics
   - H3: What is not sent or stored
