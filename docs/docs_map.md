@@ -9533,6 +9533,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Stores
   - H3: Manage stores from the Control UI
+  - H2: Conversation access
   - H2: Storage layout
   - H2: Partitions
   - H2: Caller authority
