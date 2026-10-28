@@ -9438,6 +9438,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Correct a claim or relationship
   - H2: Withdraw a record
+  - H2: Supersede claims by an existing claim
   - H2: Impact and visibility
   - H2: Recovery and safeguards
   - H2: Merge duplicate pages
