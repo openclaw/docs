@@ -7834,6 +7834,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Terminal file uploads
   - H2: Agent file transfers
   - H3: Gateway workspace files
+  - H3: Split-storage setup
+  - H4: Prepare and pair the node
+  - H4: Configure the Gateway
+  - H4: Select execution separately
+  - H4: Verify the setup
   - H3: Workspace Skill installation
   - H3: Binary transfers for services
   - H3: Transferred files
