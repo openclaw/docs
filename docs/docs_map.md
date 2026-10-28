@@ -12568,6 +12568,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/clawrouter
 - Headings:
   - H2: Getting started
+  - H2: Utility model
   - H2: Decision models
   - H2: Text embeddings for memory
   - H2: Managed non-interactive deployment
