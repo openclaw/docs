@@ -226,6 +226,8 @@ iOS screenshot capture, release qualification, Store Release, and its screenshot
 
 iOS Store Release and daily TestFlight check out the exact selected commit at depth one, then fetch its complete ancestry without unrelated branches, tags, or historical file contents. Release-note reads fetch their recorded baseline refs and hydrate historical contents as needed. Source identity and main-ancestry checks remain unchanged.
 
+Both release destinations share a separate Watch RTC device-library cache, populated only by successful trusted `main` release runs. It retains both `arm64` and `arm64_32` device slices without sharing the simulator cache. The existing build phase verifies each slice's input fingerprint and checksum before reuse; a miss runs the locked Cargo build. Cache transfer failures do not block a release.
+
 Release qualification disables Spotlight indexing on the disposable runner's Data volume before checkout. After Simulator boot, it requires ten seconds of at least 30% idle host CPU within five minutes before issuing the pairing credential. This keeps first-launch background work out of the Gateway and XCTest deadlines. Local qualification uses the same CPU readiness check and leaves host indexing settings to the operator.
 
 Android screenshot-input PRs and ordinary full manual CI run the existing phone
