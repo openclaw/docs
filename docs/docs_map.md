@@ -4468,6 +4468,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Channel identity links
   - H3: Assign to me from a channel
   - H2: GitHub connections
+  - H3: Inspect publication readiness
   - H3: Publish with your account
   - H3: Disconnect and reconnect
   - H2: Profile appearance preferences
