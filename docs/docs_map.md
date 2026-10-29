@@ -6767,6 +6767,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Live: model smoke (profile keys)
   - H3: Layer 1: Direct model completion (no gateway)
   - H3: Layer 2: Gateway + dev agent smoke (what "@openclaw" actually does)
+  - H3: Thinking probe (what a route accepts per level)
 
 ## help/testing-live/quick-smokes.md
 
