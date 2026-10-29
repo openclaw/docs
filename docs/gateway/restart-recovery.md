@@ -49,6 +49,20 @@ no schema migration.
 There are no restart checkpoints written per turn or tool call, startup orphan
 scans, or crash-time execution reconstruction.
 
+Startup recovers ready session stores immediately. If a store is still undergoing
+inspection and preparation, its existing startup owner discovers retained work
+before admitting fresh inputs. Recovery runs after database preparation ends,
+under the session's current authority. An unrelated store's inspection does not
+hold up ready agents. Refused databases keep their normal admission safeguards,
+and shutdown cancels pending recovery without consuming its markers.
+
+The initial recovery pass keeps the existing external-input fence until its
+retained inputs own their ordinary queue slots. A store prepared later keeps its
+own input readiness pending until its retained inputs are admitted. This also
+applies when several logical agents share the same physical store. Database
+reads and writes retain their normal admission rules; recovery does not borrow
+startup's temporary database access or wait for model executions to finish.
+
 <a id="graceful-restarts-drain-first" />
 
 ## Graceful shutdown
