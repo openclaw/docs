@@ -596,3 +596,21 @@ Every section heading from the previous single-page version keeps its anchor her
 - [Release channels](/install/development-channels)
 
 Ordinary PR iOS smoke keeps app and test-bundle compilation while selecting its two simulator groups by source owner. With neither group selected, simulator preparation is skipped. `OPENCLAW_CI_IOS_SIMULATOR_FULL=true` restores full PR execution; [selection and routing](/ci/scope-and-routing/selection) documents the owners and full hourly/release coverage.
+
+Android's existing `android-access-native` emulator rows retain their packaged
+Access-crypto proof and exercise Gateway WebSocket and widget HTTPS clients on
+Android Conscrypt. Each client must pass matching leaf-pin and platform-root
+controls, reject a wrong pin and wrong hostname before an origin request, and
+reject the verified incident OV G3C intermediate in both trust modes. The report
+reducer requires all twelve TLS class/method identities exactly once, separately
+from the existing Access case and packaged-library checks.
+
+These secretless, disposable emulators temporarily import a synthetic localhost
+root and the verified incident root into copied APEX CA stores in the zygote
+mount namespaces before launching the test app. Stock roots and SELinux remain
+intact. Cleanup stops/uninstalls the task app, unmounts the copied stores, verifies
+the full original-store manifests and SELinux state, and always disposes the
+emulator and deletes its AVD without a snapshot. Failed restoration is preserved as contaminated
+runner evidence; that emulator must never be reused. Reports include fixture
+identities, before/after manifests and cleanup/disposal receipts. This adds no
+jobs, runner tiers or fanout and never changes host trust.
