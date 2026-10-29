@@ -1858,6 +1858,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Testbox spending limits
   - H3: CI runner routing
   - H3: Windows dependency-cache experiment
+  - H3: Android release runner
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
   - H3: RunsOn qualification
