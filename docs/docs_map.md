@@ -16550,6 +16550,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Undo
   - H2: Drafts
   - H2: Unused-skill cleanup
+  - H2: Skill diet
   - H2: /learn
   - H2: Agent tool
   - H2: Configuration
