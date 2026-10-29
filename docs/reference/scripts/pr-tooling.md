@@ -312,11 +312,12 @@ ambiguous directories remain preserved; recovery never deletes their seed branch
 
 ## Captured baseline evidence hashes
 
-Read-only baseline evidence hashes pass the already-captured bytes to the selected
-Git executable through a complete, private temporary file. The writer closes before
-a fresh read-only descriptor is opened at offset zero; on the supported POSIX
-host the pathname and directory are removed before Git starts. Write hashes,
-signatures, authority checks, and operation supervision are unchanged.
+Baseline evidence hashes and reconstructed blobs pass the already-captured bytes
+to the selected Git executable through a complete, private temporary file. The
+writer closes before a fresh read-only descriptor is opened at offset zero; on
+the supported POSIX host the pathname and directory are removed before Git starts.
+Reconstructed blobs still use Git's `-w` object write; signatures, authority checks,
+and operation supervision are unchanged.
 
 Temporary storage must accommodate the largest individual captured file. Ordinary
 write, spawn, and Git failures fail closed and clean up owned resources. Unlinking
