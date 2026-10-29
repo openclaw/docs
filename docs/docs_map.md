@@ -9070,6 +9070,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness/troubleshooting
 - Headings:
   - H2: Troubleshooting
+  - H3: Image-heavy conversations exceed the request-size limit
 
 ## plugins/codex-native-plugins.md
 
