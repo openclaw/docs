@@ -14717,6 +14717,20 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Security and Privacy
   - H2: Other Bug Fixes
 
+## releases/2026.10.9.md
+
+- Route: /releases/2026.10.9
+- Headings:
+  - H1: v2026.10.9
+  - H2: Installation and Onboarding
+  - H2: Updates and Maintenance
+  - H2: Skills
+  - H2: Native Apps
+  - H2: Models and Providers
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+  - H2: Quality-of-Life Improvements
+
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
