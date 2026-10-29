@@ -11938,6 +11938,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-provider-plugins
 - Headings:
+  - H2: Checklist before you open a provider PR
   - H2: Import an existing credential during sign-in
   - H2: Read a selected personal account
   - H2: Loopback OAuth callbacks
