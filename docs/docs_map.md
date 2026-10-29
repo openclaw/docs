@@ -9527,6 +9527,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/knowledge/scribes
 - Headings:
   - H2: The scribes
+  - H3: The Granola plugin
   - H2: Start a scribe
   - H3: Example prompt
   - H2: States
