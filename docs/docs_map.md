@@ -14112,6 +14112,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/prior-ci
 - Headings:
   - H1: Prior-CI admin admission
+  - H2: Artifact-build failure with successful primary CI
   - H2: Requalification on a busy main
 
 ## reference/scripts/remote-gates.md

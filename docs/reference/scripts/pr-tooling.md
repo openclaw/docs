@@ -177,6 +177,15 @@ and completion-only commands do not provision a worktree for this acquisition.
 `prepare-push --resume-crabbox-run` requires the existing authenticated tracking
 anchor and refuses cold acquisition before any fetch.
 
+Confirmed prior-CI admin first admission may explicitly select current official
+main with `merge-run --current-workflow --admin-evidence <file>
+--confirmed-operator-admin` when no outcome or unresolved capture exists.
+The native selection descriptor and locked source verification preserve the exact
+original binding. Additive `workflowAdmission` provenance retains both sources
+through outcome ancestry, including successors written by older bound tooling.
+This is per-invocation selection, not a permanent rebind; see
+[artifact-build admission](/reference/scripts/prior-ci#artifact-build-failure-with-successful-primary-ci).
+
 Only verified native merge completion retires the exact workflow binding.
 Failures and pending completion preserve it. Repeating completion reconciles
 the merge outcome without repeating publication, comments, or cleanup.
