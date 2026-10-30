@@ -10880,6 +10880,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
 
+## plugins/reference/particle.md
+
+- Route: /plugins/reference/particle
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/perplexity.md
 
 - Route: /plugins/reference/perplexity
@@ -13270,6 +13278,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Authentication and headers
   - H2: Advanced configuration
   - H2: Related
+
+## providers/particle.md
+
+- Route: /providers/particle
+- Headings:
+  - H2: Setup
+  - H2: Particle-1
+  - H2: Reasoning and caching
+  - H2: Supported API surface
 
 ## providers/perplexity-provider.md
 
