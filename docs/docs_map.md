@@ -5052,6 +5052,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-runtime
 - Headings:
   - H2: worktreeRoot
+  - H2: repositoryBranchPrefix
   - H2: worktreeAcceleration
   - H2: worktreeMaxCount
   - H2: Models
