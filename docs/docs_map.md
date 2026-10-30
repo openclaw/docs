@@ -8225,6 +8225,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Install
   - H2: Gateway service (systemd)
   - H2: Memory pressure and OOM kills
+  - H3: Agent exec resource isolation
+  - H3: Child-first OOM policy
   - H2: Related
 
 ## platforms/mac/bundled-gateway.md
