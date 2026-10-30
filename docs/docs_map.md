@@ -6871,6 +6871,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: E2E (gateway smoke)
   - H3: E2E (Control UI mocked browser)
   - H3: Network-isolated local E2E
+  - H3: E2E: native Codex command and gateway OAuth
   - H3: E2E: OpenShell backend smoke
   - H3: Live (real providers + real models)
   - H3: Prompt-cache regression coverage
@@ -8840,6 +8841,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/auth
 - Headings:
   - H2: Auth and environment isolation
+  - H2: Custom providers with native command auth
   - H2: Upgrading from 2026.9.4 with Codex sign-in
 
 ## plugins/codex-harness-reference/dynamic-tools.md
