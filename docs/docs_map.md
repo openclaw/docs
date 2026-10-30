@@ -11677,6 +11677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Tool policy vocabulary
   - H2: Runtime tool allowlists
+  - H2: Exec policy layering
   - H2: Sandbox bind parsing
   - H2: Sandbox filesystem mappings
   - H2: Directory listing metadata
