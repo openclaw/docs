@@ -9649,6 +9649,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Manifest and package.json fields
   - H2: Minimal example
   - H2: Rich example
+  - H2: Generation overlap
   - H2: Top-level field reference
   - H2: Catalog categories
   - H2: JSON Schema requirements
