@@ -1469,6 +1469,7 @@
                     "pages": [
                       "install/ansible",
                       "install/docker-vm-runtime",
+                      "install/jetson",
                       "install/kubernetes",
                       "install/macos-vm",
                       "install/raspberry-pi"
@@ -3614,6 +3615,7 @@
                     "pages": [
                       "zh-CN/install/ansible",
                       "zh-CN/install/docker-vm-runtime",
+                      "zh-CN/install/jetson",
                       "zh-CN/install/kubernetes",
                       "zh-CN/install/macos-vm",
                       "zh-CN/install/raspberry-pi"
@@ -5725,6 +5727,7 @@
                     "pages": [
                       "zh-TW/install/ansible",
                       "zh-TW/install/docker-vm-runtime",
+                      "zh-TW/install/jetson",
                       "zh-TW/install/kubernetes",
                       "zh-TW/install/macos-vm",
                       "zh-TW/install/raspberry-pi"
@@ -7836,6 +7839,7 @@
                     "pages": [
                       "ja-JP/install/ansible",
                       "ja-JP/install/docker-vm-runtime",
+                      "ja-JP/install/jetson",
                       "ja-JP/install/kubernetes",
                       "ja-JP/install/macos-vm",
                       "ja-JP/install/raspberry-pi"
@@ -9947,6 +9951,7 @@
                     "pages": [
                       "es/install/ansible",
                       "es/install/docker-vm-runtime",
+                      "es/install/jetson",
                       "es/install/kubernetes",
                       "es/install/macos-vm",
                       "es/install/raspberry-pi"
@@ -12058,6 +12063,7 @@
                     "pages": [
                       "pt-BR/install/ansible",
                       "pt-BR/install/docker-vm-runtime",
+                      "pt-BR/install/jetson",
                       "pt-BR/install/kubernetes",
                       "pt-BR/install/macos-vm",
                       "pt-BR/install/raspberry-pi"
@@ -14169,6 +14175,7 @@
                     "pages": [
                       "ko/install/ansible",
                       "ko/install/docker-vm-runtime",
+                      "ko/install/jetson",
                       "ko/install/kubernetes",
                       "ko/install/macos-vm",
                       "ko/install/raspberry-pi"
@@ -16280,6 +16287,7 @@
                     "pages": [
                       "de/install/ansible",
                       "de/install/docker-vm-runtime",
+                      "de/install/jetson",
                       "de/install/kubernetes",
                       "de/install/macos-vm",
                       "de/install/raspberry-pi"
@@ -18391,6 +18399,7 @@
                     "pages": [
                       "fr/install/ansible",
                       "fr/install/docker-vm-runtime",
+                      "fr/install/jetson",
                       "fr/install/kubernetes",
                       "fr/install/macos-vm",
                       "fr/install/raspberry-pi"
@@ -20502,6 +20511,7 @@
                     "pages": [
                       "hi/install/ansible",
                       "hi/install/docker-vm-runtime",
+                      "hi/install/jetson",
                       "hi/install/kubernetes",
                       "hi/install/macos-vm",
                       "hi/install/raspberry-pi"
@@ -22613,6 +22623,7 @@
                     "pages": [
                       "ar/install/ansible",
                       "ar/install/docker-vm-runtime",
+                      "ar/install/jetson",
                       "ar/install/kubernetes",
                       "ar/install/macos-vm",
                       "ar/install/raspberry-pi"
@@ -24724,6 +24735,7 @@
                     "pages": [
                       "it/install/ansible",
                       "it/install/docker-vm-runtime",
+                      "it/install/jetson",
                       "it/install/kubernetes",
                       "it/install/macos-vm",
                       "it/install/raspberry-pi"
@@ -26835,6 +26847,7 @@
                     "pages": [
                       "vi/install/ansible",
                       "vi/install/docker-vm-runtime",
+                      "vi/install/jetson",
                       "vi/install/kubernetes",
                       "vi/install/macos-vm",
                       "vi/install/raspberry-pi"
@@ -28946,6 +28959,7 @@
                     "pages": [
                       "nl/install/ansible",
                       "nl/install/docker-vm-runtime",
+                      "nl/install/jetson",
                       "nl/install/kubernetes",
                       "nl/install/macos-vm",
                       "nl/install/raspberry-pi"
@@ -31057,6 +31071,7 @@
                     "pages": [
                       "fa/install/ansible",
                       "fa/install/docker-vm-runtime",
+                      "fa/install/jetson",
                       "fa/install/kubernetes",
                       "fa/install/macos-vm",
                       "fa/install/raspberry-pi"
@@ -33168,6 +33183,7 @@
                     "pages": [
                       "tr/install/ansible",
                       "tr/install/docker-vm-runtime",
+                      "tr/install/jetson",
                       "tr/install/kubernetes",
                       "tr/install/macos-vm",
                       "tr/install/raspberry-pi"
@@ -35279,6 +35295,7 @@
                     "pages": [
                       "uk/install/ansible",
                       "uk/install/docker-vm-runtime",
+                      "uk/install/jetson",
                       "uk/install/kubernetes",
                       "uk/install/macos-vm",
                       "uk/install/raspberry-pi"
@@ -37390,6 +37407,7 @@
                     "pages": [
                       "id/install/ansible",
                       "id/install/docker-vm-runtime",
+                      "id/install/jetson",
                       "id/install/kubernetes",
                       "id/install/macos-vm",
                       "id/install/raspberry-pi"
@@ -39501,6 +39519,7 @@
                     "pages": [
                       "pl/install/ansible",
                       "pl/install/docker-vm-runtime",
+                      "pl/install/jetson",
                       "pl/install/kubernetes",
                       "pl/install/macos-vm",
                       "pl/install/raspberry-pi"
@@ -41612,6 +41631,7 @@
                     "pages": [
                       "th/install/ansible",
                       "th/install/docker-vm-runtime",
+                      "th/install/jetson",
                       "th/install/kubernetes",
                       "th/install/macos-vm",
                       "th/install/raspberry-pi"
@@ -43723,6 +43743,7 @@
                     "pages": [
                       "ru/install/ansible",
                       "ru/install/docker-vm-runtime",
+                      "ru/install/jetson",
                       "ru/install/kubernetes",
                       "ru/install/macos-vm",
                       "ru/install/raspberry-pi"
@@ -45834,6 +45855,7 @@
                     "pages": [
                       "sv/install/ansible",
                       "sv/install/docker-vm-runtime",
+                      "sv/install/jetson",
                       "sv/install/kubernetes",
                       "sv/install/macos-vm",
                       "sv/install/raspberry-pi"

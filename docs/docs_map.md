@@ -7268,6 +7268,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## install/jetson.md
+
+- Route: /install/jetson
+- Headings:
+  - H2: Prepare the Jetson
+  - H2: Install and connect
+  - H2: Jetson diagnostics
+  - H2: Next steps
+
 ## install/kubernetes.md
 
 - Route: /install/kubernetes
