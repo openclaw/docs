@@ -5751,6 +5751,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: When to use PostgreSQL
   - H2: Requirements
   - H3: Provision a database and runtime role
+  - H3: Connection poolers
   - H3: Supply the connection securely
   - H3: TLS and exec connection qualification
   - H2: Set up a fresh installation
@@ -13676,6 +13677,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configure PostgreSQL
   - H3: Legacy data and PostgreSQL
   - H3: Mixed engines
+  - H2: Workflow support and qualification
   - H2: Search on PostgreSQL
   - H2: Port existing stores
   - H2: Several Gateways on one PostgreSQL server
