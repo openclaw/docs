@@ -3607,6 +3607,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: CLI workflow
   - H2: Key defaults
   - H2: Dreams UI
+  - H2: LanceDB and dreaming
   - H2: Related
 
 ## concepts/experimental-features.md
