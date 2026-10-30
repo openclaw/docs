@@ -3193,6 +3193,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recover a failed update
   - H3: Original state captures
   - H4: Inspect migration preservation
+  - H3: Interrupted state restore
   - H3: Retained updater runtime
   - H2: Candidate Doctor stack overflow
   - H2: Docker image-layer package updates
