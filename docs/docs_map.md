@@ -7110,6 +7110,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Health checks
   - H2: Detailed topics
   - H2: Related
+  - H2: Build from an offline installed runtime
 
 ## install/docker/compose-operations.md
 
