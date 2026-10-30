@@ -12387,6 +12387,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Starting work from a card
   - H2: Agent tools
   - H2: Dispatch
+  - H3: Dependency promotion
   - H3: Worker selection
   - H3: Entry points
   - H2: CLI and slash command
