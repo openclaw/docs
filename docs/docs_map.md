@@ -5762,6 +5762,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Backup and restore
   - H3: Capture both server data and local state
   - H3: Restore all PostgreSQL stores
+  - H3: Recover a retained agent store
   - H3: Disaster recovery from Git
   - H2: Published-stable upgrade qualification
   - H2: Updates and schema migrations
