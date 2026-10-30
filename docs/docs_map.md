@@ -3444,6 +3444,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/agent-workspace
 - Headings:
   - H2: Default location
+  - H2: Sharing generated memory files
   - H2: Extra workspace folders
   - H2: Workspace file map
   - H2: What is NOT in the workspace
@@ -4897,6 +4898,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-agents/workspace-and-bootstrap
 - Headings:
   - H2: agents.defaults.workspace
+  - H2: agents.defaults.workspaceFileMode
   - H2: agents.defaults.cwd
   - H2: agents.defaults.repoRoot
   - H2: agents.defaults.skills
