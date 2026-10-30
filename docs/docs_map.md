@@ -12785,6 +12785,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Troubleshooting
   - H2: Related
 
+## providers/google-vertex.md
+
+- Route: /providers/google-vertex
+- Headings:
+  - H2: Prerequisites
+  - H2: Authenticate
+  - H2: Configure the Gateway
+  - H3: Environment variables
+  - H2: Verify and chat
+  - H2: Troubleshooting
+  - H2: Related
+
 ## providers/google.md
 
 - Route: /providers/google
