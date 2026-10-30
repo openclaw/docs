@@ -1083,6 +1083,39 @@ previews have no session folder and do not load relative assets.
 Loaded classic scripts with `defer` run after parsing, in document order with
 non-async module scripts, while retaining classic script globals.
 
+Documents with an authored Content Security Policy use a separate, conservative
+relative-resource preview path. Supported documents have one CSP meta element in
+an explicit HTML head, before scripts and resource references, with these declarations:
+
+```text
+default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'
+```
+
+`img-src` and `media-src` may additionally be `'none'`, `'self'`, or `'self' data:`.
+The authored policy is preserved, and **Source** and **Download** retain the
+original file bytes. The existing isolated sandbox loads permitted classic
+scripts and stylesheets as unchanged external resources, retaining native
+`defer` ordering. Its opaque origin still prevents
+access to Control UI data and browser storage such as `localStorage`; an app that
+requires that storage must use its original downloaded files.
+
+This path admits at most 64 distinct relative resources, including the single
+stylesheet resource round, under the same file-read and byte limits above.
+Resource URLs belong to the issuing connection and selected preview, expire,
+and stop serving bytes when the preview is closed or replaced, the source loses
+read authority, or the resource content changes. Reopen Preview if a later load
+needs a fresh URL. They provide no general filesystem or network access.
+
+Modules, `crossorigin` or integrity-bearing resources, CSS imports and fonts,
+authored base URLs, multiple or ambiguous policies, and other CSP directives or
+source expressions are outside this first supported subset. Such documents keep
+an explicit preview limitation and their original **Source** and **Download**
+recovery; their relative assets are not silently converted to inline content.
+The browser enforces CSP at the generated preview URLs. Apps whose behavior or
+later policies depend on their original URL or origin should use the downloaded
+files. Ordinary documents without an authored CSP retain their existing preview
+behavior.
+
 Authored in-page HTML links such as `href="#section"` scroll within the preview, including
 in `strict` mode. This leaves the original file and **Source** unchanged; authored
 base URLs, links targeting another window, and download links keep their behavior.
