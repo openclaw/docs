@@ -9076,6 +9076,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Troubleshooting
   - H3: Image-heavy conversations exceed the request-size limit
+  - H2: Worker-hosted app-server
 
 ## plugins/codex-native-plugins.md
 
@@ -11602,6 +11603,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Stateful CLI commands
   - H2: OpenAI-compatible Decisions runtime
   - H2: Runtime request headers
+  - H3: Node workspace process environment
 
 ## plugins/sdk-entrypoints/define-channel-plugin-entry.md
 
