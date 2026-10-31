@@ -104,6 +104,11 @@ Resumed invocations keep the verified backup: the existing backup owner does not
 persist a verifiable association between a previous snapshot and this migration
 crossing, so finding an old backup directory alone is insufficient to reuse it.
 
+Backfill writes navigation directly without recompressing archived event bodies.
+Its maintenance connection reuses bounded prepared statements. Older archives
+with incomplete indexes still rebuild those indexes from their verified bodies
+within the same archive transaction.
+
 Retained navigation increases the working database's storage cost. Headers and
 exceptional imported envelopes whose native interpretation cannot be represented
 by bounded navigation keep their original inline bytes. Restoration still serves
