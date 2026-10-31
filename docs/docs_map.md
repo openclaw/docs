@@ -5768,6 +5768,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Run independent Gateways on one server
   - H2: Mixed engines
   - H2: Migrate an existing installation
+  - H3: Move an exact stopped source between disposable hosts
   - H3: Prepare and port to PostgreSQL
   - H3: Recover an interrupted port
   - H3: Understand refusals
