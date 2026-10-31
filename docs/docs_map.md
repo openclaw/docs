@@ -2044,6 +2044,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw backup
   - H2: PostgreSQL stores
+  - H2: Local companion checkpoints
   - H2: Notes
   - H2: Offsite archives
   - H3: Offsite retention
