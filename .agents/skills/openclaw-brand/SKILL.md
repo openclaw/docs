@@ -1,15 +1,19 @@
 ---
 name: openclaw-brand
-description: Apply OpenClaw visual identity to logos, typography, imagery, voice, documents, presentations, social graphics, and launch materials. Use when the task changes brand identity rather than ordinary product UI or public-page composition.
+description: Apply OpenClaw visual identity to typography, imagery, voice, documents, presentations, social graphics, and launch materials. Use when the task changes brand identity rather than ordinary product UI or public-page composition.
 ---
 
 # OpenClaw Brand
 
 Use the canonical identity without turning every surface into a marketing page.
 
+For OpenClaw and OpenClaw Foundation logo selection and usage, use the
+[brand kit README](https://github.com/openclaw/carapace/tree/main/brand-kit)
+directly. The workflow below is for other brand work.
+
 ## Workflow
 
-1. Read [identity.md](references/identity.md) for palette, typography, logo, and voice.
+1. Read [identity.md](references/identity.md) for palette, typography, and voice.
 2. Read [asset-rights.md](references/asset-rights.md) before copying or redistributing assets.
 3. Identify the artifact's audience and whether it is product, documentation, or marketing.
 4. Use semantic design tokens when the artifact is code.
