@@ -9828,6 +9828,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browsing the wiki in the Control UI
   - H2: Prompt and context behavior
   - H2: Configuration
+  - H3: Bridge page visibility in a shared vault
   - H3: Per-agent vaults
   - H3: Example: builtin memory + bridge mode
   - H2: CLI
