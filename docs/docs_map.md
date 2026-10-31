@@ -8239,6 +8239,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: First-run setup
   - H3: Host sleep
   - H3: Media codecs
+  - H3: Raspberry Pi and low-memory desktops
   - H3: Quick Chat
   - H2: CLI and SSH alternative
   - H2: Node capabilities
