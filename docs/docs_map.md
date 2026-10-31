@@ -4769,6 +4769,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Move through the API
   - H2: Recover after an interruption
   - H2: What survives a dead machine
+  - H2: Exact provider-resource receipts
 
 ## gateway/cloud-workers/setup-and-bundle-installation.md
 
@@ -12010,6 +12011,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider voice capabilities
   - H3: Provider media and search
   - H2: Related
+  - H2: Worker resource receipts
 
 ## plugins/sdk-provider-plugins/hook-families.md
 
@@ -13833,6 +13835,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 37
   - H3: State schema 36
   - H3: State schema 34
   - H3: State schema 35
