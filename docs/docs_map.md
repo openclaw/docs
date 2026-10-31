@@ -1956,6 +1956,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How to use this
   - H2: Selecting agents
   - H2: Use from acpx (Codex, Claude, other ACP clients)
+  - H2: T3 Code compatibility
   - H2: Zed editor setup
   - H2: Session mapping
   - H2: Options
