@@ -3567,6 +3567,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Interpret scores and probabilities
   - H2: Limits and unavailable results
   - H2: Provide models from a plugin
+  - H2: Contract ownership
 
 ## concepts/delegate-architecture.md
 
