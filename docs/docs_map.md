@@ -11179,6 +11179,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Distribution
   - H2: Surface
+  - H2: Compaction scope
   - H2: Related docs
 
 ## plugins/reference/tts-local-cli.md
