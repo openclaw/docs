@@ -16003,6 +16003,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/code-mode/guest-api
 - Headings:
   - H2: Guest runtime API
+  - H2: Reading skill companions
   - H2: Session store
   - H2: Reading paginated file data
 
