@@ -11894,6 +11894,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Capability registration
   - H3: Storage providers
+  - H3: Repository preparation integrations
   - H3: Worker providers
   - H2: Versioned decision data
   - H2: Prepared decision execution (contract version 2)
