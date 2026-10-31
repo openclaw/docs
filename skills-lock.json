@@ -5,7 +5,7 @@
       "source": "openclaw/carapace",
       "sourceType": "github",
       "skillPath": "openclaw-brand/SKILL.md",
-      "computedHash": "d4bf50bb9d512dbfbcd4abde7a75d8399b0187ca9486dd7854844aab0cd02e6a"
+      "computedHash": "b1128d51972a2279b90d02a647176b1a543a9cf12768c91fd4a999cca639f30c"
     },
     "openclaw-carapace": {
       "source": "openclaw/carapace",
@@ -17,7 +17,7 @@
       "source": "openclaw/carapace",
       "sourceType": "github",
       "skillPath": "openclaw-design/SKILL.md",
-      "computedHash": "4a9004e762b08f6c9fc836de7b4db26fc27e7b9a90342884047bbffa51c21732"
+      "computedHash": "fc1001251371d848ae44d334ab6130601e6a510f6221d67835e8efd4a9a0a36b"
     },
     "openclaw-design-audit": {
       "source": "openclaw/carapace",

@@ -5,19 +5,21 @@ description: Route OpenClaw design work to canonical brand, Carapace product-int
 
 # OpenClaw Design
 
-Choose one focused branch before changing an interface. Load multiple branches
-only when the task genuinely crosses them.
+For OpenClaw and OpenClaw Foundation logo-only tasks, use the
+[brand kit README](https://github.com/openclaw/carapace/tree/main/brand-kit) directly.
+For other design work, choose one focused branch before changing an interface.
+Load multiple branches only when the task genuinely crosses them.
 
 | Skill | Use for |
 | --- | --- |
-| `openclaw-brand` | Identity decisions, typography, logos, imagery, voice, and non-product brand artifacts |
+| `openclaw-brand` | Identity decisions, typography, imagery, voice, and non-product brand artifacts |
 | `openclaw-carapace` | Application UI, semantic tokens, themes, component reuse, and framework adapters |
 | `openclaw-design-system` | Compatibility alias for projects upgrading an existing skill lock |
 | `openclaw-marketing-pages` | Public-page composition, landing/content pages, navigation, SEO, and responsive layout |
 | `openclaw-design-audit` | Design drift, token misuse, component substitution, accessibility, and recurring audits |
 
 For a public website change, start with `openclaw-marketing-pages` and add
-`openclaw-brand` only when the task changes identity, logo, imagery, typography,
+`openclaw-brand` only when the task changes identity, imagery, typography,
 or voice. For a product application, start with `openclaw-carapace` when it is
 installed. Projects upgrading an existing lock may use
 `openclaw-design-system` as the `v0.1.x` compatibility alias.
