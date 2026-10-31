@@ -11614,6 +11614,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Plugin shapes
   - H2: Related
+  - H2: Offline worker runtime artifacts
   - H2: Code Mode executor runtime
   - H2: Native MCP App adapters
   - H2: MCP subprocess runtime
