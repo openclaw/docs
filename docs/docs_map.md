@@ -12366,6 +12366,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H3: Choose the call owner
   - H3: Config reference
+  - H3: Twilio call recording
   - H3: Twilio voicemail detection tuning
   - H2: Session scope
 
