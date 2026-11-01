@@ -7,6 +7,7 @@ import { glimmAssetName } from "./glimm-runtime.mjs";
 import { createDocsAnalytics } from "./analytics.mjs";
 import { createDocsAnalyticsEvents } from "./analytics-events.mjs";
 import { webVitalsAssetName } from "./web-vitals-runtime.mjs";
+import { peleAssetName } from "./pele-runtime.mjs";
 import { initDocsAnalyticsConsent } from "./analytics-consent.mjs";
 // The emitted runtime also supports the classic-script navigation harness.
 const heroRuntime = fs.readFileSync(new URL("./hero-art.mjs", import.meta.url), "utf8").replace(/^export /gm, "");
@@ -210,7 +211,7 @@ const mermaidCloseIcon='<svg class="icon icon-x" width="18" height="18" viewBox=
 let mermaidReady;let lastMermaidTrigger=null;let mermaidOverlayRender=0;let mermaidZoom;
 function resetMermaidBlock(block,source){block.dataset.mermaidReady="";block.classList.remove("is-rendered","is-error");block.innerHTML="<pre><code>"+escapeHtml(source)+"</code></pre>"}
 async function renderMermaidSvg(source,renderId){
-  const pele=await (mermaidReady??=import(withBase("/assets/pele-1.6.0.js")));
+  const pele=await (mermaidReady??=import(withBase(${JSON.stringify("/assets/" + peleAssetName)})));
   const styles=getComputedStyle(document.querySelector(".docs-layout")||root);
   const fontFamily=styles.getPropertyValue("--oc-font-body").trim()||"sans-serif";
   const fontFamilyMono=styles.getPropertyValue("--oc-font-mono").trim()||"monospace";
