@@ -17,6 +17,7 @@ import { walkDocs } from "./document-files.mjs";
 import { siteCss } from "./site-css.mjs";
 import { siteJs } from "./site-js.mjs";
 import { webVitalsAssetName, webVitalsRuntime } from "./web-vitals-runtime.mjs";
+import { peleAssetName, peleEntry, peleRuntime } from "./pele-runtime.mjs";
 import { chromeStringsForLocale } from "./chrome-strings.mjs";
 import { createMarkdownRenderer, renderMdxish, copyControlContent } from "./mdx-ish.mjs";
 import { createRenderCache } from "./render-cache.mjs";
@@ -873,12 +874,8 @@ function writeStaticAssets() {
   const glimmDir = path.dirname(glimmEntry);
   fs.writeFileSync(path.join(assetsDir, glimmAssetName), glimmRuntime, "utf8");
   fs.copyFileSync(path.join(glimmDir, "..", "LICENSE"), path.join(assetsDir, "glimm-LICENSE.txt"));
-  const peleDir = path.join(root, "node_modules", "pele");
-  const peleEntry = path.join(peleDir, "dist", "pele.js");
-  if (fs.existsSync(peleEntry)) {
-    fs.copyFileSync(peleEntry, path.join(assetsDir, "pele-1.6.0.js"));
-    fs.copyFileSync(path.join(peleDir, "LICENSE"), path.join(assetsDir, "pele-LICENSE.txt"));
-  }
+  fs.writeFileSync(path.join(assetsDir, peleAssetName), peleRuntime, "utf8");
+  fs.copyFileSync(path.join(path.dirname(peleEntry), "..", "LICENSE"), path.join(assetsDir, "pele-LICENSE.txt"));
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   fs.writeFileSync(path.join(outDir, "og-card.png"), defaultOgPng);
   fs.writeFileSync(path.join(outDir, "og-card.svg"), defaultOgSvg);

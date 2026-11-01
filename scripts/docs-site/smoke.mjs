@@ -7,6 +7,7 @@ import { DomUtils, parseDocument } from "htmlparser2";
 
 import { ignoredDocDirs, localeFlags, localeLabels, navigationLocaleToDir } from "./config.mjs";
 import { chromeStrings } from "./chrome-strings.mjs";
+import { peleAssetName } from "./pele-runtime.mjs";
 import { homeStrings } from "./home-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
@@ -422,7 +423,7 @@ if (!/\.doc pre \.tok-comment,\.doc pre \.hljs-comment/.test(siteCss)
   || !/\.doc pre \.tok-key,\.doc pre \.hljs-attr/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
 }
-if (!fs.existsSync(path.join(site, "assets/pele-1.6.0.js"))
+if (!fs.existsSync(path.join(site, "assets", peleAssetName))
   || !fs.existsSync(path.join(site, "assets/pele-LICENSE.txt"))) {
   throw new Error("assets: Pele runtime and license were not copied");
 }
