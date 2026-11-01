@@ -4772,6 +4772,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recover after an interruption
   - H2: What survives a dead machine
   - H2: Exact provider-resource receipts
+  - H3: Explicit current-disk consumers (not activated)
 
 ## gateway/cloud-workers/setup-and-bundle-installation.md
 
