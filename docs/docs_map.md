@@ -5315,6 +5315,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Retired A2UI widgets
   - H2: Skill Workshop plugin policy
   - H2: Group allowlist fallback
+  - H2: Copied model allowlists
   - H2: Collaborative steering default
   - H2: Removed security presets
   - H2: Cloud setup secret migration
