@@ -7397,6 +7397,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Supported versions
   - H2: How the gate decides
   - H2: Why the floors exist
+  - H2: Completed SQLite iterators
   - H2: V8 compiler settings
   - H2: Platform consequences
   - H2: What the installer provisions
