@@ -34,6 +34,9 @@
   --docs-muted: color-mix(in srgb, var(--ink) 67%, var(--bg));
   --docs-surface: var(--paper);
   --docs-surface-shadow: none;
+  /* One quiet selection treatment for sidebar, drawer, and TOC links. */
+  --docs-nav-hover-bg: color-mix(in srgb, var(--ink) 3.5%, transparent);
+  --docs-nav-active-bg: color-mix(in srgb, var(--ink) 6%, transparent);
   /* Keep rasterization native; forced grayscale can thin small text on macOS. */
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
@@ -55,7 +58,7 @@
   ) { corner-shape: superellipse(1.5); }}
 
 :root[data-theme="dark"] .docs-layout { --bg: color-mix(in srgb,#141516 60%,#000); --paper: color-mix(in srgb,#1a1c1e 74%,#000); --ink: #f0f1f2; --text: #c4c7cb; --muted: #989da4; --brand: #ef674c; --code-block: color-mix(in srgb,#181a1c 74%,#000); --code-inline: color-mix(in srgb,#272a2e 74%,#000); }
-:root[data-theme="light"] .docs-layout { --bg: #fafbfc; --paper: #ffffff; --ink: #252a30; --text: #4f5964; --muted: #66717e; --brand: #ef674c; }
+:root[data-theme="light"] .docs-layout { --bg: #fafbfc; --paper: #ffffff; --ink: #252a30; --text: #4f5964; --muted: #66717e; --brand: #ef674c; --docs-nav-hover-bg: color-mix(in srgb, var(--ink) 3%, transparent); --docs-nav-active-bg: color-mix(in srgb, var(--ink) 4.5%, transparent); }
 :root[data-theme="light"] .docs-layout {
   --code-block: #f2f4f6;
   --tok-comment: #5d6672;
@@ -163,10 +166,10 @@
 .docs-quick-nav h2, .docs-nav-label { margin: 0 0 12px; padding-inline: 10px; font: 400 12px/18px var(--oc-font-body); color: var(--docs-muted); }
 .docs-layout .docs-quick-nav .nav-link { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-radius: var(--oc-radius-control); color: var(--docs-muted); min-height: 38px; font-size: 14px; line-height: 22px; }
 .docs-quick-nav .icon { width: 16px; height: 16px; stroke-width: 1.5; }
-.docs-layout .docs-quick-nav .nav-link.active { color: var(--brand); background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); }
+.docs-layout :is(.docs-quick-nav, .docs-section-pages) .nav-link.active { color: var(--ink); background: var(--docs-nav-active-bg); box-shadow: none; font-weight: 500; }
+.docs-layout .docs-quick-nav .nav-link.active .icon { color: var(--brand); }
 .docs-nav-label { padding-block: 0; border: 0; }
 .docs-layout .docs-section > summary { min-height: 37px; padding: 8px 10px; border-radius: var(--oc-radius-control); font-size: 13px; }
-.docs-layout .docs-section-pages .nav-link.active { color: var(--brand); background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); }
 .docs-layout .docs-section.current > summary { background: transparent; box-shadow: none; color: var(--ink); font-weight: 500; }
 .docs-layout .docs-section-pages { margin: 4px 0 14px 10px; padding: 5px 0 0; border: 0; }
 .docs-layout .nav-nested { margin: 0; padding: 0; border: 0; }
@@ -304,9 +307,9 @@
 .docs-layout .toc-label { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; }
 .docs-layout .toc :is(h2,.toc-label) > .icon { width: 14px; height: 14px; min-width: 14px; flex: 0 0 14px; stroke-width: 1.75; }
 .docs-layout .toc a { color: var(--docs-muted); font-size: 13px; line-height: 1.5; }
-.docs-layout .toc a.active { color: var(--ink); background: color-mix(in srgb,var(--ink) 5%,transparent); font-weight: 500; }
+.docs-layout .toc a.active { color: var(--ink); background: var(--docs-nav-active-bg); font-weight: 500; }
 @media (hover:hover) and (pointer:fine) {
-  .docs-layout .toc a:not(.active):hover { color: var(--ink); background: color-mix(in srgb,var(--ink) 3%,transparent); }}
+  .docs-layout .toc a:not(.active):hover { color: var(--ink); background: var(--docs-nav-hover-bg); }}
 @media (max-width:1280px) {
   .docs-layout { --compact-toc-inset: var(--docs-nav); }
   .docs-layout .toc { isolation: isolate; background: transparent; border: 0; }
@@ -513,7 +516,7 @@
 .home-channel > .icon { width: 12px; height: 12px; margin-inline-start: auto; color: var(--muted); opacity: .35; }
 .home-channel-more > .icon { opacity: 1; }
 @media (hover:hover) {
-  .docs-layout .docs-quick-nav .nav-link:hover:not(.active) { background: var(--paper); color: var(--ink); }
+  .docs-layout :is(.docs-quick-nav, .docs-section-pages) .nav-link:hover:not(.active) { background: var(--docs-nav-hover-bg); color: var(--ink); }
   .docs-layout .doc .oc-card:hover { background: color-mix(in srgb,var(--ink) 3%,var(--docs-surface)); border-color: color-mix(in srgb,var(--ink) 20%,transparent); transform: none; }
   .home-channel:hover > .icon { opacity: 1; }
   .doc .home-channel:hover { color: var(--ink); border-color: color-mix(in srgb,var(--ink) 24%,transparent); background: var(--paper); }}
@@ -721,7 +724,7 @@
 .docs-section-trigger { min-height: 38px; padding-block: 8px; font-size: 14px; line-height: 22px; }
 .docs-section-trigger .icon { width: 12px; min-width: 12px; height: 12px; flex: 0 0 12px; margin-inline-start: auto; transform: rotate(-90deg); color: var(--muted); opacity: .42; stroke-width: 1.5; }
 :root[dir="rtl"] .docs-section-trigger .icon { transform: rotate(90deg); }
-.docs-section-trigger[aria-current="true"] { color: var(--ink); font-weight: 600; }
+.docs-section-trigger[aria-current="true"] { color: var(--ink); font-weight: 500; }
 .docs-sidebar-back { flex-shrink: 0; width: calc(100% - var(--docs-sidebar-inset-end)); margin-block: 16px; background: var(--docs-surface); box-shadow: var(--docs-surface-shadow); color: var(--ink); font-size: 14px; font-weight: 600; }
 :root[data-theme="light"] .docs-layout .docs-sidebar-back { border: 1px solid var(--docs-border); }
 .docs-sidebar-back svg { width: 16px; height: 16px; flex: 0 0 16px; }
@@ -732,11 +735,11 @@
 .docs-layout .docs-sidebar-levels .docs-section-pages .nav-section + .nav-section { margin-block-start: 28px; }
 .docs-layout .docs-sidebar-levels .docs-section-pages .nav-link { margin-block: 0; padding: 7px 10px; min-height: 36px; font-size: 14px; line-height: 22px; }
 .docs-layout .docs-sidebar-levels .docs-section-pages .nav-section > .nav-link { margin-inline: 0; }
-.docs-layout .docs-sidebar-levels .docs-section-pages .nav-link.active { color: var(--brand); font-weight: 600; }
 .docs-layout .docs-section-pages :is(.nav-section, .nav-nested) > summary > h2 { margin: 0; padding: 0; color: inherit; font: inherit; letter-spacing: 0; text-transform: none; }
 .docs-section-trigger:focus-visible > .icon, .docs-layout :is(.nav-section, .nav-nested) > summary:focus-visible > .icon { opacity: .85; }
 @media (hover:hover) and (pointer:fine) {
-  .docs-section-trigger:hover, .docs-sidebar-back:hover, .docs-layout :is(.nav-section, .nav-nested) > summary:hover { color: var(--ink); background: var(--paper); }
+  .docs-sidebar-back:hover { color: var(--ink); background: var(--paper); }
+  .docs-section-trigger:hover, .docs-layout :is(.nav-section, .nav-nested) > summary:hover { color: var(--ink); background: var(--docs-nav-hover-bg); }
   .docs-section-trigger:hover > .icon, .docs-layout :is(.nav-section, .nav-nested) > summary:hover > .icon { opacity: .75; }}
 @media (prefers-reduced-motion:reduce) { .docs-sidebar-levels > * { transition: none !important; transform: none !important; }}
 @media (max-width:1100px) {
