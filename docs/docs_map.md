@@ -6805,6 +6805,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Local proof during development
   - H2: Headless node auto-update proof
   - H2: Docker lanes
+  - H3: Native systemd update matrix
   - H2: Package Acceptance
   - H2: Release default
   - H2: Legacy compatibility
