@@ -4754,6 +4754,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/cloud-workers/session-lifecycle
 - Headings:
+  - H2: Retained-disk lifecycle integration
   - H2: Dispatch a session
   - H2: Update the Gateway and worker runtime
   - H2: Synchronize workspace files
@@ -11920,6 +11921,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Storage providers
   - H3: Repository preparation integrations
   - H3: Worker providers
+  - H4: Retained worker disks
   - H2: Versioned decision data
   - H2: Prepared decision execution (contract version 2)
   - H3: Provider implementation boundaries
@@ -13852,6 +13854,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 39
   - H3: State schema 38
   - H3: State schema 37
   - H3: State schema 36
