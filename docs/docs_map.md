@@ -9039,6 +9039,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Commands and diagnostics
   - H3: Shared Fast mode and Codex fast mode
+  - H3: Verify tool access before a Codex turn
   - H3: Inspect Codex threads locally
 
 ## plugins/codex-harness/config-fields.md
