@@ -4774,7 +4774,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Recover after an interruption
   - H2: What survives a dead machine
   - H2: Exact provider-resource receipts
-  - H3: Explicit current-disk consumers (not activated)
+  - H3: Explicit current-disk consumers
 
 ## gateway/cloud-workers/setup-and-bundle-installation.md
 
@@ -5013,6 +5013,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Cloud worker environments
   - H3: Required worker profile
+  - H3: Repository workspace durability
   - H3: Crabbox profile
   - H4: Crabbox machine catalog
   - H3: Setup secrets
