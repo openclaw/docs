@@ -510,6 +510,11 @@ if (!/--oc-palette-ink-950:\s*#101012/.test(siteCss)
   || !/\.nav-link\.active\{border-left-color:var\(--brand\);color:var\(--brand\);font-weight:650\}/.test(siteCss)) {
   throw new Error("assets: dark sidebar surface is not reference-aligned");
 }
+if (!/\.docs-layout :is\(\.docs-quick-nav, \.docs-section-pages\) \.nav-link\.active \{ color: var\(--ink\); background: var\(--docs-nav-active-bg\); box-shadow: none; font-weight: 500; \}/.test(siteCss)
+  || !/\.docs-layout \.toc a\.active \{ color: var\(--ink\); background: var\(--docs-nav-active-bg\); font-weight: 500; \}/.test(siteCss)
+  || /\.docs-layout[^{}]*\.nav-link\.active \{[^}]*color: var\(--brand\)/.test(siteCss)) {
+  throw new Error("assets: sidebar, drawer, and TOC active links must share the quiet selection treatment");
+}
 if (!/\.site-footer\{[^}]*border-top:1px solid var\(--line\)/.test(siteCss)
   || !/\.site-footer-inner\{[^}]*var\(--oc-font-mono\)/.test(siteCss)) {
   throw new Error("assets: site footer skin is missing");
