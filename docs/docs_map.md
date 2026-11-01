@@ -5312,6 +5312,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Retired A2UI widgets
+  - H2: Skill Workshop plugin policy
   - H2: Group allowlist fallback
   - H2: Collaborative steering default
   - H2: Removed security presets
@@ -11063,6 +11064,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
+
+## plugins/reference/skill-workshop.md
+
+- Route: /plugins/reference/skill-workshop
+- Headings:
+  - H2: Distribution
+  - H2: Surface
 
 ## plugins/reference/slack-huddles.md
 
