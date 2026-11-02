@@ -2472,6 +2472,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Color palette
   - H2: Command tree
   - H2: Database
+  - H3: Prepare exact PostgreSQL shared state
   - H3: Exact SQLite migration capture
   - H2: Chat slash commands
   - H2: Usage tracking
