@@ -7341,6 +7341,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: 6) Install OpenClaw
   - H2: 7) Configure channels
   - H2: 8) Run the VM headlessly
+  - H2: 9) Open the dashboard from your Mac
   - H2: Bonus: iMessage integration
   - H2: Save a golden image
   - H2: Running 24/7
