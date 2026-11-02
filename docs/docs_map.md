@@ -3787,6 +3787,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Deletion: purging what a session produced
   - H3: Purged sessions stay purged
   - H2: What deletion does not cover
+  - H2: Freeform edits and quarantine
   - H2: Purging a person or a source end to end
   - H2: Related
 
