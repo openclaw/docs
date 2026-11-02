@@ -4631,6 +4631,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Backend text transforms
   - H2: Native compaction ownership
   - H2: Bundle MCP overlays
+  - H3: Separate Claude configuration
   - H2: Reseed history cap
   - H2: Limitations
   - H2: Troubleshooting
