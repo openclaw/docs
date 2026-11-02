@@ -11622,6 +11622,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session conversation grammar
   - H2: Conversation route ownership
   - H2: Account-scoped conversation binding support
+  - H2: Native conversation forks
 
 ## plugins/sdk-channel-plugins/setup-and-config.md
 
@@ -16750,6 +16751,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/slash-commands
 - Headings:
   - H2: Three command types
+  - H2: Fork a conversation
   - H2: Configuration
   - H2: Command list
   - H3: Core commands
