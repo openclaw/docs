@@ -225,7 +225,7 @@ const siteHeader = DomUtils.findOne(node => node.name === "header" && node.attri
 if (languageTriggers.length !== 1 || !mobileTools || !siteHeader || !DomUtils.findOne(node => node === languageTriggers[0], siteHeader.children)) {
   throw new Error("index: site header must contain a single language menu button");
 }
-for (const href of ["https://github.com/openclaw/openclaw", "https://discord.com/invite/clawd"]) {
+for (const href of ["https://github.com/openclaw/openclaw", "https://openclaw.ai/discord?from=docs-sidebar"]) {
   if (!DomUtils.findOne(node => node.name === "a" && node.attribs?.href === href, mobileTools.children)) {
     throw new Error(`index: mobile navigation is missing ${href}`);
   }
@@ -391,7 +391,7 @@ const footerSocialLinks = DomUtils.findAll((node) => node.name === "a", footerSo
 const expectedFooterSocials = [
   ["X", "https://x.com/openclaw"],
   ["GitHub", "https://github.com/openclaw/openclaw"],
-  ["Discord", "https://discord.com/invite/clawd"],
+  ["Discord", "https://openclaw.ai/discord?from=docs-footer"],
   ["Reddit", "https://www.reddit.com/r/openclaw/"],
   ["TikTok", "https://www.tiktok.com/@open_claw"],
   ["LinkedIn", "https://www.linkedin.com/company/the-openclaw-foundation"],
@@ -445,16 +445,16 @@ if (!siteCss.includes(".docs-layout .toc.can-scroll-down")
   || !siteJs.includes("function syncTocFade()")) {
   throw new Error("assets: desktop TOC scrolling affordances are missing");
 }
-const expectedSocialLinks = [
+const expectedSocialLinks = (placement) => [
   ["GitHub", "https://github.com/openclaw/openclaw"],
   ["Reddit", "https://www.reddit.com/r/openclaw/"],
-  ["Discord", "https://discord.com/invite/clawd"],
+  ["Discord", `https://openclaw.ai/discord?from=${placement}`],
   ["X", "https://x.com/openclaw"],
 ];
 for (const className of ["header-social-group", "sidebar-socials"]) {
   const group = DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes(className), indexDocument.children);
   const links = DomUtils.findAll((node) => node.name === "a", group?.children ?? []);
-  if (JSON.stringify(links.map((node) => [node.attribs["aria-label"], node.attribs.href])) !== JSON.stringify(expectedSocialLinks)
+  if (JSON.stringify(links.map((node) => [node.attribs["aria-label"], node.attribs.href])) !== JSON.stringify(expectedSocialLinks(className === "header-social-group" ? "docs-header" : "docs-sidebar"))
     || links.some((node) => !DomUtils.findOne((child) => child.name === "svg", node.children))) {
     throw new Error(`${className}: expected accessible GitHub, Reddit, Discord, and X icon links`);
   }
@@ -463,8 +463,8 @@ const communityInvite = DomUtils.findOne((node) => node.name === "aside"
   && node.attribs?.class?.split(" ").includes("community-invite"), indexDocument.children);
 if (!communityInvite
   || !DomUtils.findOne((node) => node.name === "button" && "data-community-invite-dismiss" in node.attribs, communityInvite.children)
-  || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://discord.com/invite/clawd", communityInvite.children)
-  || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://discord.com/invite/clawd",
+  || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://openclaw.ai/discord?from=docs-community-invite", communityInvite.children)
+  || !DomUtils.findOne((node) => node.name === "a" && node.attribs.href === "https://openclaw.ai/discord?from=docs-home-community",
     DomUtils.findOne((node) => node.attribs?.class?.split(" ").includes("home-community"), indexDocument.children)?.children ?? [])) {
   throw new Error("community invitation, dismissal control, or homepage Discord link is missing");
 }
@@ -476,7 +476,7 @@ if (communityArt.length !== 2
 const communityLinks = DomUtils.findAll((node) => node.name === "a", communityInvite.children);
 const expectedCommunityLinks = [
   ["Join", "https://www.reddit.com/r/openclaw/", "Join the OpenClaw community on Reddit"],
-  ["Join", "https://discord.com/invite/clawd", "Join the OpenClaw community on Discord"],
+  ["Join", "https://openclaw.ai/discord?from=docs-community-invite", "Join the OpenClaw community on Discord"],
   ["Follow", "https://x.com/openclaw", "Follow OpenClaw on X"],
 ];
 if (JSON.stringify(communityLinks.map((node) => [DomUtils.textContent(node).trim(), node.attribs.href, node.attribs["aria-label"]])) !== JSON.stringify(expectedCommunityLinks)
