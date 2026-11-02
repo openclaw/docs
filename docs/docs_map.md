@@ -17116,6 +17116,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui
 - Headings:
   - H2: Command palette file attachments
+  - H2: Choose a session workspace
   - H2: Automatic session names
   - H2: Temporary disconnections
   - H2: Browser requirements
