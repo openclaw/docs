@@ -9429,6 +9429,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Registration and execution
   - H2: Hook catalog
+  - H3: Explicit Stop
   - H3: Skill lifecycle
   - H3: Channel pairing requests
 
