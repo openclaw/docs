@@ -7313,6 +7313,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Customization
   - H3: Agent instructions
   - H3: Gateway config
+  - H3: Temporary storage
   - H3: Add providers
   - H3: Custom namespace
   - H3: Custom image
