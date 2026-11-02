@@ -7680,6 +7680,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Slow Git content reads
   - H3: Slow worktree cleanup
   - H3: Slow agent database opens
+  - H3: State lease renewal failures
   - H3: SQLite transaction timing
   - H3: SQLite session writes
   - H3: Slow reply preparation
