@@ -47,7 +47,9 @@ test("requested pages outside navigation fit inside the 30-page preview, includi
   }
   assert.match(html, /<aside class="page-support"[^>]*>.*official OpenClaw support.*href="https:\/\/community\.openclaw\.ai\/">Get support<\/a>/);
   assert.match(html, /Page source and issue[\s\S]*?Raise issue/);
-  assert.match(html, /https:\/\/discord\.com\/invite\/clawd/);
+  for (const tag of ["docs-header", "docs-sidebar", "docs-footer", "docs-community-invite"]) {
+    assert.ok(html.includes(`href="https://openclaw.ai/discord?from=${tag}"`), tag);
+  }
   const sidebar = html.match(/<aside class="sidebar">([\s\S]*?)<\/aside>/)[1];
   assert.doesNotMatch(sidebar, /sidebar-support|>Support<\/a>/, 'no duplicate sidebar support button');
   assert.equal([...sidebar.slice(sidebar.indexOf('<nav class="docs-sections"')).matchAll(/class="nav-link/g)].length, 35);

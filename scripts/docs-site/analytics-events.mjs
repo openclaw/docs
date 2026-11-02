@@ -220,7 +220,8 @@ export function createDocsAnalyticsEvents(analytics) {
     const destination = url.origin === window.location.origin ? {} : { link_url: url.origin + url.pathname, link_domain: url.hostname };
     const artifact = artifactChoice(url);
     if (link.matches(".search-result")) flushSearch();
-    if (socialHosts[url.hostname]) select("social_link", socialHosts[url.hostname], location, destination);
+    if (url.origin === "https://openclaw.ai" && /^\/discord\/?$/.test(url.pathname)) select("social_link", "discord", location, destination);
+    else if (socialHosts[url.hostname]) select("social_link", socialHosts[url.hostname], location, destination);
     else if (canonicalHosts.has(url.hostname) && !/\/ask-molty\/|\/__elements/i.test(url.pathname)) {
       select(link.matches(".search-result") ? "search_result" : artifact ? "download" : url.hostname === "docs.openclaw.ai" ? "documentation" : "site_link", url.hostname === "docs.openclaw.ai" ? url.pathname : url.hostname + url.pathname, location, { ...artifact, ...destination });
     } else if (link.closest(".page-actions")) select("page_action", /chatgpt/.test(url.hostname) ? "ask_chatgpt" : /claude/.test(url.hostname) ? "ask_claude" : "view_markdown", location, destination);
