@@ -5849,8 +5849,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/handshake
 - Headings:
   - H2: Handshake
+  - H3: Hello response
+  - H3: Attachment limits
+  - H3: Connection lifecycle and credentials
   - H3: Worker role and closed protocol
-  - H3: Chat input custody capability
+  - H3: Server capabilities
   - H3: Client capabilities
   - H3: Node connect example
   - H2: Roles and scopes
@@ -5916,6 +5919,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/rpc-session-control
 - Headings:
   - H2: Session control
+  - H3: Chat input reconciliation
   - H3: Existing folders on paired devices
 
 ## gateway/protocol/rpc-system-and-channels.md
