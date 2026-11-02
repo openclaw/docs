@@ -5850,6 +5850,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Handshake
   - H3: Worker role and closed protocol
+  - H3: Chat input custody capability
   - H3: Client capabilities
   - H3: Node connect example
   - H2: Roles and scopes
