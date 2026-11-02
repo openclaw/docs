@@ -16700,7 +16700,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Bundled skill allowlist
   - H2: Per-skill entries (skills.entries)
   - H2: Agent allowlists (agents)
-  - H2: Workshop (skills.workshop)
+  - H2: Workshop settings
   - H2: Symlinked skill roots
   - H2: Sandboxed skills and env vars
   - H2: Loading order reminder
