@@ -13763,6 +13763,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/database-schemas
 - Headings:
+  - H2: Selective session dependency recovery
   - H2: Related
   - H2: Where each section moved
 
