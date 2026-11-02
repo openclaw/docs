@@ -12089,6 +12089,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Plugin value boundary
   - H3: Handle native client errors
   - H3: Instance-bound background context
+  - H3: Background session notices
   - H3: Memory runtime replacement
   - H2: Browser meeting transport builders
   - H2: Browser meeting configuration
@@ -13914,6 +13915,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Talk voice-session lookup indexes
   - H2: Session usage overview projection
   - H2: Background exec notification obligations
+  - H2: Plugin session notice delivery owner
   - H2: Memory index batch revisions
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
