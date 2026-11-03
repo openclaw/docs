@@ -8805,6 +8805,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Install a bundle
   - H2: What OpenClaw maps from bundles
   - H3: Supported now
+  - H4: Recommended prompts
   - H4: Skill content
   - H4: Hook packs
   - H4: Embedded OpenClaw settings
@@ -9711,6 +9712,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Rich example
   - H2: Generation overlap
   - H2: Top-level field reference
+  - H2: Recommended prompts
   - H2: Catalog categories
   - H2: JSON Schema requirements
   - H2: Retained state checks
