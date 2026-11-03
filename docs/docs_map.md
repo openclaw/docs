@@ -1737,6 +1737,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Where each section moved
   - H2: Related
 
+## ci/adaptive-testing.md
+
+- Route: /ci/adaptive-testing
+- Headings:
+  - H1: Adaptive CI experiments
+  - H2: Export observations
+  - H2: Current coverage
+
 ## ci/capacity.md
 
 - Route: /ci/capacity
@@ -1942,6 +1950,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Fix failed tests locally
   - H3: Recover an existing PR run first
   - H2: PR context and evidence
+  - H2: Adaptive test observations
   - H2: Related
 
 ## cli/acp.md
