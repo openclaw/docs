@@ -12069,6 +12069,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Provider media and search
   - H2: Related
   - H2: Worker resource receipts
+  - H3: Native web search codecs
 
 ## plugins/sdk-provider-plugins/hook-families.md
 
