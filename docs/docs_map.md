@@ -2853,6 +2853,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Uninstall
   - H2: Update
   - H2: Reload
+  - H3: Development: reload edited bundled code
   - H3: Inspect retained references
 
 ## cli/policy.md
