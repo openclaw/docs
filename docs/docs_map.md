@@ -6507,6 +6507,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Gateway service not running
   - H2: macOS gateway silently stops responding, then resumes when you touch the dashboard
+  - H2: macOS LAN commands fail with No route to host
   - H2: macOS launchd supervisor loop with duplicate gateway/node LaunchAgents
   - H2: Native aborts on Linux (SIGABRT)
   - H2: Gateway exits during high memory use
@@ -8400,6 +8401,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Desktop availability and keeping awake
   - H2: Recovery checklist when prompts disappear
   - H2: Files and folders permissions (Desktop/Documents/Downloads)
+  - H2: Local Network access for the Gateway
   - H2: Related
 
 ## platforms/mac/remote.md
@@ -16282,6 +16284,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Modes
   - H3: Inline eval (strictInlineEval)
   - H3: PATH handling
+  - H3: macOS Local Network access
   - H3: Python environments (uv)
   - H2: Session overrides (/exec)
   - H2: Exec approvals (companion app / node host)
