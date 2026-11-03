@@ -14728,6 +14728,37 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Quality-of-Life Improvements
   - H3: Other Bug Fixes
 
+## releases/2026.10.10.md
+
+- Route: /releases/2026.10.10
+- Headings:
+  - H1: v2026.10.10
+  - H2: Chat Details Panel
+  - H2: Advisor
+  - H2: Split speech voice mode
+  - H2: Bring your agent to your files
+  - H2: Control from ChatGPT and Claude
+  - H2: Event-triggered automations
+  - H2: Quality-of-life improvements
+  - H3: Conversations and navigation
+  - H3: Performance and diagnostics
+  - H3: Cloud workspaces
+  - H3: Setup, updates and documentation
+  - H3: Models, voice and media
+  - H3: Skills, plugins and automations
+  - H2: Bug fixes
+  - H3: Conversations and interface
+  - H3: Agents, Goals and automations
+  - H3: Messaging, voice and media
+  - H3: Memory and search
+  - H3: Workspaces and paired computers
+  - H3: Skills, plugins and GitHub
+  - H3: Models and coding agents
+  - H3: Tools, browsing and permissions
+  - H3: Diagnostics and service maintenance
+  - H3: Desktop and mobile apps
+  - H3: Installation, updates and backups
+
 ## releases/2026.10.2.md
 
 - Route: /releases/2026.10.2
