@@ -1737,6 +1737,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Where each section moved
   - H2: Related
+  - H2: Adaptive observation pilot
 
 ## ci/adaptive-testing.md
 
@@ -1744,6 +1745,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: Adaptive CI experiments
   - H2: Export observations
+  - H2: Observation pilot
   - H2: Current coverage
   - H2: Plan in shadow mode
   - H2: Estimate cost and compute savings
