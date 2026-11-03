@@ -1744,6 +1744,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: Adaptive CI experiments
   - H2: Export observations
   - H2: Current coverage
+  - H2: Plan in shadow mode
 
 ## ci/capacity.md
 
