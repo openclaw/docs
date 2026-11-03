@@ -6476,6 +6476,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Security boundary (important)
   - H2: Request body
   - H2: Policy + routing behavior
+  - H3: Configured MCP tools
   - H2: Responses
   - H2: Example
   - H2: Related
