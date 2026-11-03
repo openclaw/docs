@@ -5334,6 +5334,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/doctor/config-migrations
 - Headings:
   - H2: Retired A2UI widgets
+  - H2: Skill library tool split
   - H2: Skill Workshop plugin policy
   - H2: Group allowlist fallback
   - H2: Copied model allowlists
