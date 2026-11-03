@@ -394,6 +394,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Access control
   - H3: Bot conversations
   - H3: Passive room context
+  - H3: Thread sessions
   - H3: Reply placement
   - H2: Manual configuration
   - H3: Reply prefix
