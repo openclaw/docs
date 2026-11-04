@@ -1750,6 +1750,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Owned model rankings
   - H2: Current coverage
   - H2: Plan in shadow mode
+  - H2: Evaluate recorded decisions
   - H2: Estimate cost and compute savings
 
 ## ci/capacity.md
