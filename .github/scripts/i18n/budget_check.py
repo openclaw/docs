@@ -51,8 +51,6 @@ def validate_budget(workflow_path: Path, max_batch_size: int = 3, max_active_wor
 
     if re.search(r"^\s*repository_dispatch:\s*$", text, re.M):
         raise SystemExit("Translate Full must not be triggered by release repository_dispatch events")
-    if re.search(r'docs/\.i18n/glossary\.\*\.json', text):
-        raise SystemExit("Translate Full must not be triggered by glossary pushes")
     if not re.search(r"^\s*schedule:\s*$", text, re.M):
         raise SystemExit("Translate Full must keep weekly schedule")
     if not re.search(r"^\s*workflow_dispatch:\s*$", text, re.M):

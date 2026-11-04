@@ -22,7 +22,6 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - `.github/workflows/translate-locale-reusable.yml`.
 - `.github/scripts/i18n/**` when maintaining translation workflow control-plane scripts and tests.
 - `docs/.i18n/translation-workflow.md` when documenting translation workflow internals.
-- `docs/.i18n/glossary.<locale>.json` when adding fixed glossary terms for the translation workflow.
 
 ## Do Not Edit Here
 
