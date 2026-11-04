@@ -1753,6 +1753,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Evaluate recorded decisions
   - H2: Estimate cost and compute savings
   - H2: Declared file inputs
+  - H2: Optional Jev ranking experiment
 
 ## ci/capacity.md
 
