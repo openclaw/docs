@@ -17220,6 +17220,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Goals, questions, and recovery
   - H2: Slash-command feedback
+  - H2: Command approvals
   - H2: Desktop message input
   - H2: Mobile message input
   - H2: Context breakdown
