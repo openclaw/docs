@@ -1747,6 +1747,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Export observations
   - H2: Observation pilot
   - H3: Published prior snapshots
+  - H3: Owned model rankings
   - H2: Current coverage
   - H2: Plan in shadow mode
   - H2: Estimate cost and compute savings
