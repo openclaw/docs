@@ -155,7 +155,7 @@ test("selection placement and sanitized destination share one event without chan
   for (const [selector, placement, tag] of [[".site-header", "header", "docs-header"], [".community-invite", "community_invite", "docs-community-invite"], [".site-footer", "footer", "docs-footer"]]) {
     await clickAndObserve(`${selector} a[href="https://openclaw.ai/discord?from=${tag}"]`, placement, "social_link", "discord", "https://openclaw.ai/discord");
   }
-  await clickAndObserve(`.doc a[href="${destination}"]`, "article", "social_link", "discord", destination, true);
+  await clickAndObserve('.doc a[href="https://openclaw.ai/discord?from=docs"]', "article", "social_link", "discord", "https://openclaw.ai/discord");
   await clickAndObserve('.doc a[href^="https://openclaw.ai/discord/?"]', "article", "social_link", "discord", "https://openclaw.ai/discord/");
   await clickAndObserve('.doc a[href^="https://openclaw.ai/discord-extra"]', "article", "site_link", "openclaw.ai/discord-extra", "https://openclaw.ai/discord-extra");
   await clickAndObserve('.doc a[href^="https://example.org/"]', "article", "public_reference", "https://example.org/guide", "https://example.org/guide");

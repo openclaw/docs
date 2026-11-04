@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { Parser } from "htmlparser2";
 import { latestReleaseAnnouncement, releaseVersionHtml, releaseBadgeHtml } from "./release-announcement.mjs";
 import { homeLayoutHtml } from "./home-layout.mjs";
 import { homeStringsForLocale } from "./home-strings.mjs";
@@ -302,7 +303,7 @@ function writePage(page) {
   const options = { sourceFile: page.file, root: sourceRoot, pageRoute: pageRoute(page) };
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
   const composed = page.slug === "index" ? homeLayoutHtml(article, icon, announcement ? { ...announcement, href: pageRoute(announcedReleasePage) } : null, page.locale) : article;
-  const html = rewriteInternalUrls(composed, page.locale);
+  const html = rewriteInternalUrls(rewriteOfficialDiscordLinks(composed, page.slug), page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -310,6 +311,51 @@ function writePage(page) {
   const mdPath = path.join(outDir, pageMarkdownRoute(page).replace(/^\//, ""));
   fs.mkdirSync(path.dirname(mdPath), { recursive: true });
   fs.writeFileSync(mdPath, page.raw, "utf8");
+}
+
+// Rewrite only rendered article anchors, after the article cache, so cached and
+// localized content share the canonical page placement without changing sources.
+function rewriteOfficialDiscordLinks(html, slug) {
+  const placements = new Map([
+    ["help/faq", "docs-help-faq"],
+    ["install/updating", "docs-install-updating"],
+    ["plugins/building-plugins", "docs-plugins-building-plugins"],
+  ]);
+  const placement = placements.get(slug) ?? "docs";
+  const edits = [];
+  const ancestors = [];
+  const parser = new Parser({
+    onopentag(name, attributes) {
+      if (name === "a" && attributes.href && !ancestors.some(tag => ["pre", "code", "script", "style"].includes(tag))) {
+        let url;
+        try { url = new URL(attributes.href); } catch {}
+        // Queries/fragments may carry event-specific meaning. Keep those, other
+        // communities, service URLs, and credential-bearing URLs untouched.
+        if (url && ["http:", "https:"].includes(url.protocol) && !url.username && !url.password
+          && !url.port && !url.search && !url.hash
+          && ((url.hostname === "discord.gg" && /^\/clawd\/?$/.test(url.pathname))
+            || (["discord.com", "discordapp.com"].includes(url.hostname) && /^\/invite\/clawd\/?$/.test(url.pathname)))) {
+          const start = parser.startIndex;
+          const end = parser.endIndex + 1;
+          const opening = html.slice(start, end);
+          let replaced = false;
+          const replacement = opening.replace(/(\s+)([^\s"'<>/=]+)(\s*=\s*)(?:"[^"]*"|'[^']*'|[^\s>]+)/g,
+            (attribute, space, name, equals) => {
+              if (replaced || name.toLowerCase() !== "href") return attribute;
+              replaced = true;
+              return `${space}${name}${equals}"https://openclaw.ai/discord?from=${placement}"`;
+            });
+          edits.push({ start, end, replacement });
+        }
+      }
+      ancestors.push(name);
+    },
+    onclosetag() { ancestors.pop(); },
+  });
+  parser.write(html);
+  parser.end();
+  for (const { start, end, replacement } of edits.reverse()) html = html.slice(0, start) + replacement + html.slice(end);
+  return html;
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
