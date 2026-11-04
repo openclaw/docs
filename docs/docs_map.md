@@ -1752,6 +1752,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plan in shadow mode
   - H2: Evaluate recorded decisions
   - H2: Estimate cost and compute savings
+  - H2: Declared file inputs
 
 ## ci/capacity.md
 
