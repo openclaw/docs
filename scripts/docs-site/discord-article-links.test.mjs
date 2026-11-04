@@ -30,7 +30,7 @@ test("English and localized rendered article anchors use canonical page placemen
     '<a class="raw-link" data-href="https://example.org/unchanged" href=\'https://discord.gg/clawd\' title="Keep href=example title">Raw HTML</a>',
     ...preserved.map((href, i) => `[Preserve ${i}](${href})`),
     "`https://discord.gg/clawd`", "```html\n<a href=\"https://discord.gg/clawd\">Example</a>\n```",
-    "https://discord.gg/clawd", '<code><a href="https://discord.gg/clawd">Code anchor</a></code>',
+    '<p class="display-url">https://discord.gg/clawd</p>', '<code><a href="https://discord.gg/clawd">Code anchor</a></code>',
   ].join("\n\n");
   const sources = {};
   for (const locale of ["en", "fr"]) for (const slug of Object.keys(placements)) sources[`${locale === "en" ? "" : locale + "/"}${slug}.md`] = body;
@@ -54,7 +54,8 @@ test("English and localized rendered article anchors use canonical page placemen
       assert.ok(code.some(text => text.includes('href="https://discord.gg/clawd"')), "fenced code is unchanged");
       assert.ok(code.some(text => text === "https://discord.gg/clawd"), "inline code is unchanged");
       assert.equal(anchors.find(node => DomUtils.textContent(node) === "Code anchor").attribs.href, "https://discord.gg/clawd");
-      assert.ok(DomUtils.textContent(doc).includes("https://discord.gg/clawd"), "display text is not rewritten");
+      const display = DomUtils.findOne(node => node.attribs?.class === "display-url", doc.children);
+      assert.equal(DomUtils.textContent(display), "https://discord.gg/clawd", "display text is not rewritten");
       assert.equal(fs.readFileSync(path.join(f.root, "docs", locale === "en" ? "" : locale, slug + ".md"), "utf8"), body);
     }
   }
