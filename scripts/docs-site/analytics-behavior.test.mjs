@@ -90,7 +90,7 @@ function wireEvents(collected) {
 test("selection placement and sanitized destination share one event without changing native clicks", async t => {
   const destination = "https://discord.com/invite/clawd";
   const { page, context, events, collected } = await openSite(t, {
-    articleLinks: `\n[Community](${destination})\n\n[External reference](https://example.org/guide?ref=docs#intro)\n\n[Product](https://openclaw.ai/install?ref=docs#intro)\n`,
+    articleLinks: `\n[Community](${destination})\n\n[External reference](https://example.org/guide?ref=docs#intro)\n\n[Product](https://openclaw.ai/install?ref=docs#intro)\n\n[Redirect slash](https://openclaw.ai/discord/?from=docs-home-community&unknown=ignored#join)\n\n[Not Discord](https://openclaw.ai/discord-extra?from=docs-header)\n`,
   });
   page.setDefaultTimeout(5000);
   // Abort only after observing native navigation so the fixture stays loaded.
@@ -152,11 +152,14 @@ test("selection placement and sanitized destination share one event without chan
       }
     }
   }
-  for (const [selector, placement] of [[".community-invite", "community_invite"], [".site-footer", "footer"], [".doc", "article"]]) {
-    await clickAndObserve(`${selector} a[href="${destination}"]`, placement, "social_link", "discord", destination, true);
+  for (const [selector, placement, tag] of [[".site-header", "header", "docs-header"], [".community-invite", "community_invite", "docs-community-invite"], [".site-footer", "footer", "docs-footer"]]) {
+    await clickAndObserve(`${selector} a[href="https://openclaw.ai/discord?from=${tag}"]`, placement, "social_link", "discord", "https://openclaw.ai/discord");
   }
+  await clickAndObserve(`.doc a[href="${destination}"]`, "article", "social_link", "discord", destination, true);
+  await clickAndObserve('.doc a[href^="https://openclaw.ai/discord/?"]', "article", "social_link", "discord", "https://openclaw.ai/discord/");
+  await clickAndObserve('.doc a[href^="https://openclaw.ai/discord-extra"]', "article", "site_link", "openclaw.ai/discord-extra", "https://openclaw.ai/discord-extra");
   await clickAndObserve('.doc a[href^="https://example.org/"]', "article", "public_reference", "https://example.org/guide", "https://example.org/guide");
-  await clickAndObserve('.doc a[href^="https://openclaw.ai/"]', "article", "site_link", "openclaw.ai/install", "https://openclaw.ai/install");
+  await clickAndObserve('.doc a[href^="https://openclaw.ai/install"]', "article", "site_link", "openclaw.ai/install", "https://openclaw.ai/install");
   for (const label of ["Edit source", "Raise issue"]) {
     const link = page.getByRole("link", { name: label, exact: true });
     const url = new URL(await link.getAttribute("href"));
@@ -165,15 +168,15 @@ test("selection placement and sanitized destination share one event without chan
   }
 
   const beforePrivate = (await events("select_content")).length;
-  const nativeBeforePrivate = count("click", destination).length;
+  const nativeBeforePrivate = count("click", "https://openclaw.ai/discord").length;
   await page.locator("[data-chat-toggle]").click();
-  await page.locator(`.site-footer a[href="${destination}"]`).click();
+  await page.locator('.site-footer a[href="https://openclaw.ai/discord?from=docs-footer"]').click();
   await page.waitForTimeout(1200);
   await page.locator("[data-chat-minimize]").click();
   await page.waitForTimeout(1200);
   assert.equal((await events("select_content")).length, beforePrivate, "private selection is not replayed on close");
-  assert.equal(count("click", destination).length, nativeBeforePrivate, "private native click is not replayed on close");
-  await clickAndObserve(`.site-footer a[href="${destination}"]`, "footer", "social_link", "discord", destination, true);
+  assert.equal(count("click", "https://openclaw.ai/discord").length, nativeBeforePrivate, "private native click is not replayed on close");
+  await clickAndObserve('.site-footer a[href="https://openclaw.ai/discord?from=docs-footer"]', "footer", "social_link", "discord", "https://openclaw.ai/discord");
 });
 
 test("selection destination stays absent for same-origin, non-anchor, unknown and blocked contexts", async t => {
@@ -205,7 +208,7 @@ test("selection destination stays absent for same-origin, non-anchor, unknown an
   assert.equal((await events("select_content")).length, before);
   await setBrowserPrivacy(page, true);
   const requestsBefore = googleRequests.length;
-  await page.locator('.site-footer a[href="https://discord.com/invite/clawd"]').click();
+  await page.locator('.site-footer a[href="https://openclaw.ai/discord?from=docs-footer"]').click();
   await page.waitForTimeout(1200);
   await setBrowserPrivacy(page, false);
   assert.equal((await events("select_content")).length, before);

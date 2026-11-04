@@ -25,7 +25,7 @@ await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
 const expectedLinks = [
   ["Join", "https://www.reddit.com/r/openclaw/"],
-  ["Join", "https://discord.com/invite/clawd"],
+  ["Join", "https://openclaw.ai/discord?from=docs-community-invite"],
   ["Follow", "https://x.com/openclaw"],
 ];
 let checked = 0;

@@ -47,7 +47,7 @@ test("community artwork opts out of Pinterest without changing the invitation or
     const links = DomUtils.findAll(node => node.name === "a", invite.children);
     assert.deepEqual(links.map(node => [DomUtils.textContent(node).trim(), node.attribs.href]), [
       [strings.communityJoin, "https://www.reddit.com/r/openclaw/"],
-      [strings.communityJoin, "https://discord.com/invite/clawd"],
+      [strings.communityJoin, "https://openclaw.ai/discord?from=docs-community-invite"],
       [strings.communityFollow, "https://x.com/openclaw"],
     ]);
     const optedOut = all(node => node.attribs && ("nopin" in node.attribs || "data-pin-nopin" in node.attribs));
