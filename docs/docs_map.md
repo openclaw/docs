@@ -17368,7 +17368,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Templates (Labs)
   - H2: Speech bubbles
   - H2: Custom plugin UI
-  - H2: Import assistant memory
+  - H2: Import agent memory
   - H2: MCP page
   - H2: Activity tab
   - H2: Meetings page
