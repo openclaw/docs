@@ -4022,7 +4022,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Storage (where tokens live)
   - H2: Anthropic Claude CLI reuse
   - H2: OAuth exchange (how login works)
-  - H3: Restarting sign-in in Model Setup
+  - H3: Restarting sign-in in Models
   - H3: Anthropic setup-token
   - H3: OpenAI Codex (ChatGPT OAuth)
   - H2: Refresh + expiry
