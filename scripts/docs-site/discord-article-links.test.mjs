@@ -10,6 +10,7 @@ const placements = {
   "install/updating": "docs-install-updating",
   "plugins/building-plugins": "docs-plugins-building-plugins",
   "guide": "docs",
+  "constructor": "docs",
 };
 const official = ["https://discord.gg/clawd", "https://discord.com/invite/clawd", "https://discordapp.com/invite/clawd/"];
 const preserved = [

@@ -316,11 +316,12 @@ function writePage(page) {
 // Rewrite only rendered article anchors, after the article cache, so cached and
 // localized content share the canonical page placement without changing sources.
 function rewriteOfficialDiscordLinks(html, slug) {
-  const placement = ({
-    "help/faq": "docs-help-faq",
-    "install/updating": "docs-install-updating",
-    "plugins/building-plugins": "docs-plugins-building-plugins",
-  })[slug] ?? "docs";
+  const placements = new Map([
+    ["help/faq", "docs-help-faq"],
+    ["install/updating", "docs-install-updating"],
+    ["plugins/building-plugins", "docs-plugins-building-plugins"],
+  ]);
+  const placement = placements.get(slug) ?? "docs";
   const edits = [];
   const ancestors = [];
   const parser = new Parser({
