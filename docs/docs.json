@@ -3,6 +3,14 @@
   "description": "Self-hosted gateway that connects Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more to AI coding agents. Run one Gateway process on your own machine and message your AI assistant from anywhere.",
   "redirects": [
     {
+      "source": "/start/teams",
+      "destination": "/start/multiplayer"
+    },
+    {
+      "source": "/gateway/team-server",
+      "destination": "/start/multiplayer"
+    },
+    {
       "source": "/cli/claws",
       "destination": "/cli/templates"
     },
@@ -1365,7 +1373,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "start/openclaw",
-                  "start/teams",
+                  "start/multiplayer",
                   "start/wizard-cli-reference",
                   "start/wizard-cli-automation"
                 ]
@@ -2692,8 +2700,7 @@
                   "gateway/remote",
                   "gateway/stable-https-url",
                   "gateway/tailscale",
-                  "gateway/cloudflare-access",
-                  "gateway/team-server"
+                  "gateway/cloudflare-access"
                 ]
               },
               {
@@ -3512,7 +3519,7 @@
                 "group": "指南",
                 "pages": [
                   "zh-CN/start/openclaw",
-                  "zh-CN/start/teams",
+                  "zh-CN/start/multiplayer",
                   "zh-CN/start/wizard-cli-reference",
                   "zh-CN/start/wizard-cli-automation"
                 ]
@@ -4805,8 +4812,7 @@
                   "zh-CN/gateway/remote",
                   "zh-CN/gateway/stable-https-url",
                   "zh-CN/gateway/tailscale",
-                  "zh-CN/gateway/cloudflare-access",
-                  "zh-CN/gateway/team-server"
+                  "zh-CN/gateway/cloudflare-access"
                 ]
               },
               {
@@ -5625,7 +5631,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "zh-TW/start/openclaw",
-                  "zh-TW/start/teams",
+                  "zh-TW/start/multiplayer",
                   "zh-TW/start/wizard-cli-reference",
                   "zh-TW/start/wizard-cli-automation"
                 ]
@@ -6918,8 +6924,7 @@
                   "zh-TW/gateway/remote",
                   "zh-TW/gateway/stable-https-url",
                   "zh-TW/gateway/tailscale",
-                  "zh-TW/gateway/cloudflare-access",
-                  "zh-TW/gateway/team-server"
+                  "zh-TW/gateway/cloudflare-access"
                 ]
               },
               {
@@ -7738,7 +7743,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "ja-JP/start/openclaw",
-                  "ja-JP/start/teams",
+                  "ja-JP/start/multiplayer",
                   "ja-JP/start/wizard-cli-reference",
                   "ja-JP/start/wizard-cli-automation"
                 ]
@@ -9031,8 +9036,7 @@
                   "ja-JP/gateway/remote",
                   "ja-JP/gateway/stable-https-url",
                   "ja-JP/gateway/tailscale",
-                  "ja-JP/gateway/cloudflare-access",
-                  "ja-JP/gateway/team-server"
+                  "ja-JP/gateway/cloudflare-access"
                 ]
               },
               {
@@ -9851,7 +9855,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "es/start/openclaw",
-                  "es/start/teams",
+                  "es/start/multiplayer",
                   "es/start/wizard-cli-reference",
                   "es/start/wizard-cli-automation"
                 ]
@@ -11144,8 +11148,7 @@
                   "es/gateway/remote",
                   "es/gateway/stable-https-url",
                   "es/gateway/tailscale",
-                  "es/gateway/cloudflare-access",
-                  "es/gateway/team-server"
+                  "es/gateway/cloudflare-access"
                 ]
               },
               {
@@ -11964,7 +11967,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "pt-BR/start/openclaw",
-                  "pt-BR/start/teams",
+                  "pt-BR/start/multiplayer",
                   "pt-BR/start/wizard-cli-reference",
                   "pt-BR/start/wizard-cli-automation"
                 ]
@@ -13257,8 +13260,7 @@
                   "pt-BR/gateway/remote",
                   "pt-BR/gateway/stable-https-url",
                   "pt-BR/gateway/tailscale",
-                  "pt-BR/gateway/cloudflare-access",
-                  "pt-BR/gateway/team-server"
+                  "pt-BR/gateway/cloudflare-access"
                 ]
               },
               {
@@ -14077,7 +14079,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "ko/start/openclaw",
-                  "ko/start/teams",
+                  "ko/start/multiplayer",
                   "ko/start/wizard-cli-reference",
                   "ko/start/wizard-cli-automation"
                 ]
@@ -15370,8 +15372,7 @@
                   "ko/gateway/remote",
                   "ko/gateway/stable-https-url",
                   "ko/gateway/tailscale",
-                  "ko/gateway/cloudflare-access",
-                  "ko/gateway/team-server"
+                  "ko/gateway/cloudflare-access"
                 ]
               },
               {
@@ -16190,7 +16191,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "de/start/openclaw",
-                  "de/start/teams",
+                  "de/start/multiplayer",
                   "de/start/wizard-cli-reference",
                   "de/start/wizard-cli-automation"
                 ]
@@ -17483,8 +17484,7 @@
                   "de/gateway/remote",
                   "de/gateway/stable-https-url",
                   "de/gateway/tailscale",
-                  "de/gateway/cloudflare-access",
-                  "de/gateway/team-server"
+                  "de/gateway/cloudflare-access"
                 ]
               },
               {
@@ -18303,7 +18303,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "fr/start/openclaw",
-                  "fr/start/teams",
+                  "fr/start/multiplayer",
                   "fr/start/wizard-cli-reference",
                   "fr/start/wizard-cli-automation"
                 ]
@@ -19596,8 +19596,7 @@
                   "fr/gateway/remote",
                   "fr/gateway/stable-https-url",
                   "fr/gateway/tailscale",
-                  "fr/gateway/cloudflare-access",
-                  "fr/gateway/team-server"
+                  "fr/gateway/cloudflare-access"
                 ]
               },
               {
@@ -20416,7 +20415,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "hi/start/openclaw",
-                  "hi/start/teams",
+                  "hi/start/multiplayer",
                   "hi/start/wizard-cli-reference",
                   "hi/start/wizard-cli-automation"
                 ]
@@ -21709,8 +21708,7 @@
                   "hi/gateway/remote",
                   "hi/gateway/stable-https-url",
                   "hi/gateway/tailscale",
-                  "hi/gateway/cloudflare-access",
-                  "hi/gateway/team-server"
+                  "hi/gateway/cloudflare-access"
                 ]
               },
               {
@@ -22529,7 +22527,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "ar/start/openclaw",
-                  "ar/start/teams",
+                  "ar/start/multiplayer",
                   "ar/start/wizard-cli-reference",
                   "ar/start/wizard-cli-automation"
                 ]
@@ -23822,8 +23820,7 @@
                   "ar/gateway/remote",
                   "ar/gateway/stable-https-url",
                   "ar/gateway/tailscale",
-                  "ar/gateway/cloudflare-access",
-                  "ar/gateway/team-server"
+                  "ar/gateway/cloudflare-access"
                 ]
               },
               {
@@ -24642,7 +24639,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "it/start/openclaw",
-                  "it/start/teams",
+                  "it/start/multiplayer",
                   "it/start/wizard-cli-reference",
                   "it/start/wizard-cli-automation"
                 ]
@@ -25935,8 +25932,7 @@
                   "it/gateway/remote",
                   "it/gateway/stable-https-url",
                   "it/gateway/tailscale",
-                  "it/gateway/cloudflare-access",
-                  "it/gateway/team-server"
+                  "it/gateway/cloudflare-access"
                 ]
               },
               {
@@ -26755,7 +26751,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "vi/start/openclaw",
-                  "vi/start/teams",
+                  "vi/start/multiplayer",
                   "vi/start/wizard-cli-reference",
                   "vi/start/wizard-cli-automation"
                 ]
@@ -28048,8 +28044,7 @@
                   "vi/gateway/remote",
                   "vi/gateway/stable-https-url",
                   "vi/gateway/tailscale",
-                  "vi/gateway/cloudflare-access",
-                  "vi/gateway/team-server"
+                  "vi/gateway/cloudflare-access"
                 ]
               },
               {
@@ -28868,7 +28863,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "nl/start/openclaw",
-                  "nl/start/teams",
+                  "nl/start/multiplayer",
                   "nl/start/wizard-cli-reference",
                   "nl/start/wizard-cli-automation"
                 ]
@@ -30161,8 +30156,7 @@
                   "nl/gateway/remote",
                   "nl/gateway/stable-https-url",
                   "nl/gateway/tailscale",
-                  "nl/gateway/cloudflare-access",
-                  "nl/gateway/team-server"
+                  "nl/gateway/cloudflare-access"
                 ]
               },
               {
@@ -30981,7 +30975,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "fa/start/openclaw",
-                  "fa/start/teams",
+                  "fa/start/multiplayer",
                   "fa/start/wizard-cli-reference",
                   "fa/start/wizard-cli-automation"
                 ]
@@ -32274,8 +32268,7 @@
                   "fa/gateway/remote",
                   "fa/gateway/stable-https-url",
                   "fa/gateway/tailscale",
-                  "fa/gateway/cloudflare-access",
-                  "fa/gateway/team-server"
+                  "fa/gateway/cloudflare-access"
                 ]
               },
               {
@@ -33094,7 +33087,7 @@
                 "group": "Kurulum kılavuzları ve başvuru",
                 "pages": [
                   "tr/start/openclaw",
-                  "tr/start/teams",
+                  "tr/start/multiplayer",
                   "tr/start/wizard-cli-reference",
                   "tr/start/wizard-cli-automation"
                 ]
@@ -34387,8 +34380,7 @@
                   "tr/gateway/remote",
                   "tr/gateway/stable-https-url",
                   "tr/gateway/tailscale",
-                  "tr/gateway/cloudflare-access",
-                  "tr/gateway/team-server"
+                  "tr/gateway/cloudflare-access"
                 ]
               },
               {
@@ -35207,7 +35199,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "uk/start/openclaw",
-                  "uk/start/teams",
+                  "uk/start/multiplayer",
                   "uk/start/wizard-cli-reference",
                   "uk/start/wizard-cli-automation"
                 ]
@@ -36500,8 +36492,7 @@
                   "uk/gateway/remote",
                   "uk/gateway/stable-https-url",
                   "uk/gateway/tailscale",
-                  "uk/gateway/cloudflare-access",
-                  "uk/gateway/team-server"
+                  "uk/gateway/cloudflare-access"
                 ]
               },
               {
@@ -37320,7 +37311,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "id/start/openclaw",
-                  "id/start/teams",
+                  "id/start/multiplayer",
                   "id/start/wizard-cli-reference",
                   "id/start/wizard-cli-automation"
                 ]
@@ -38613,8 +38604,7 @@
                   "id/gateway/remote",
                   "id/gateway/stable-https-url",
                   "id/gateway/tailscale",
-                  "id/gateway/cloudflare-access",
-                  "id/gateway/team-server"
+                  "id/gateway/cloudflare-access"
                 ]
               },
               {
@@ -39433,7 +39423,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "pl/start/openclaw",
-                  "pl/start/teams",
+                  "pl/start/multiplayer",
                   "pl/start/wizard-cli-reference",
                   "pl/start/wizard-cli-automation"
                 ]
@@ -40726,8 +40716,7 @@
                   "pl/gateway/remote",
                   "pl/gateway/stable-https-url",
                   "pl/gateway/tailscale",
-                  "pl/gateway/cloudflare-access",
-                  "pl/gateway/team-server"
+                  "pl/gateway/cloudflare-access"
                 ]
               },
               {
@@ -41546,7 +41535,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "th/start/openclaw",
-                  "th/start/teams",
+                  "th/start/multiplayer",
                   "th/start/wizard-cli-reference",
                   "th/start/wizard-cli-automation"
                 ]
@@ -42839,8 +42828,7 @@
                   "th/gateway/remote",
                   "th/gateway/stable-https-url",
                   "th/gateway/tailscale",
-                  "th/gateway/cloudflare-access",
-                  "th/gateway/team-server"
+                  "th/gateway/cloudflare-access"
                 ]
               },
               {
@@ -43659,7 +43647,7 @@
                 "group": "Setup guides and reference",
                 "pages": [
                   "ru/start/openclaw",
-                  "ru/start/teams",
+                  "ru/start/multiplayer",
                   "ru/start/wizard-cli-reference",
                   "ru/start/wizard-cli-automation"
                 ]
@@ -44952,8 +44940,7 @@
                   "ru/gateway/remote",
                   "ru/gateway/stable-https-url",
                   "ru/gateway/tailscale",
-                  "ru/gateway/cloudflare-access",
-                  "ru/gateway/team-server"
+                  "ru/gateway/cloudflare-access"
                 ]
               },
               {
@@ -45772,7 +45759,7 @@
                 "group": "Konfigurationsguider och referens",
                 "pages": [
                   "sv/start/openclaw",
-                  "sv/start/teams",
+                  "sv/start/multiplayer",
                   "sv/start/wizard-cli-reference",
                   "sv/start/wizard-cli-automation"
                 ]
@@ -47065,8 +47052,7 @@
                   "sv/gateway/remote",
                   "sv/gateway/stable-https-url",
                   "sv/gateway/tailscale",
-                  "sv/gateway/cloudflare-access",
-                  "sv/gateway/team-server"
+                  "sv/gateway/cloudflare-access"
                 ]
               },
               {

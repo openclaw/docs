@@ -6431,28 +6431,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Learn more
   - H2: Related
 
-## gateway/team-server.md
-
-- Route: /gateway/team-server
-- Headings:
-  - H2: How we build OpenClaw with OpenClaw
-  - H2: Before you begin
-  - H2: Optimal setup
-  - H2: 1. Install under one service account
-  - H2: 2. Configure the public URL and authenticated ingress
-  - H3: Set the public URL once
-  - H2: 3. Bootstrap administrators and assign roles
-  - H3: Invite guests
-  - H2: 4. Synchronize people with verified GitHub identities
-  - H3: Use an OIDC provider without losing existing profiles
-  - H3: Configure GitHub access for repository work
-  - H2: 5. Connect chat and remote clients
-  - H2: 6. Give widgets a separate sandbox origin
-  - H2: 7. Share selected sessions from another Gateway
-  - H2: 8. Verify the complete flow
-  - H2: Keep operations recoverable
-  - H2: Troubleshooting
-
 ## gateway/telemetry.md
 
 - Route: /gateway/telemetry
@@ -15571,6 +15549,40 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: The Future
   - H2: Related
 
+## start/multiplayer.md
+
+- Route: /start/multiplayer
+- Headings:
+  - H2: How we build OpenClaw with OpenClaw
+  - H2: One trust boundary
+  - H2: Before you begin
+  - H2: Quick setup
+  - H3: Step 1: Give the team access to the Gateway
+  - H3: Step 2: Connect the team chat
+  - H3: Step 3: Sign the team in to the Control UI
+  - H3: Step 4: Work in shared sessions
+  - H3: Step 5: Bound what each person can do
+  - H4: Coding as a guest
+  - H3: Verify the quick setup
+  - H2: Production deployment
+  - H3: Optimal setup
+  - H3: 1. Install under one service account
+  - H3: 2. Configure the public URL and authenticated ingress
+  - H4: Set the public URL once
+  - H3: 3. Bootstrap administrators and assign roles
+  - H4: Invite guests
+  - H3: 4. Synchronize people with verified GitHub identities
+  - H4: Use an OIDC provider without losing existing profiles
+  - H4: Configure GitHub access for repository work
+  - H3: 5. Connect chat and remote clients
+  - H3: 6. Give widgets a separate sandbox origin
+  - H3: 7. Share selected sessions from another Gateway
+  - H3: 8. Verify the complete flow
+  - H2: Keep operations recoverable
+  - H2: Troubleshooting
+  - H2: When to split things up
+  - H2: Related
+
 ## start/onboarding-overview.md
 
 - Route: /start/onboarding-overview
@@ -15625,22 +15637,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Updating (without wrecking your setup)
   - H2: Linux (systemd user service)
   - H2: Related docs
-
-## start/teams.md
-
-- Route: /start/teams
-- Headings:
-  - H2: Before you begin
-  - H2: One trust boundary
-  - H2: Step 1: Give the team access to the Gateway
-  - H2: Step 2: Connect the team chat
-  - H2: Step 3: Sign the team in to the Control UI
-  - H2: Step 4: Work in shared sessions
-  - H2: Step 5: Bound what each person can do
-  - H3: Coding as a guest
-  - H2: Verify
-  - H2: When to split things up
-  - H2: Related
 
 ## start/why-openclaw.md
 
