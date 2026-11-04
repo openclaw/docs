@@ -14217,6 +14217,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/merge-recovery
 - Headings:
   - H1: PR merge recovery
+  - H2: Delayed completion
 
 ## reference/scripts/pr-preparation.md
 
