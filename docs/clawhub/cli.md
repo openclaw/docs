@@ -283,7 +283,7 @@ clawhub sync --root ./skills --owner openclaw --bump minor
 - Scans are asynchronous and may take time to complete. While queued, the terminal spinner shows the current prioritized scan position and how many scans are ahead.
 - Published scans require ownership or publisher management access. Moderators/admins can use the same backend through `clawhub-admin`.
 - `--update` is valid only with `--slug`; it writes successful published scan results back to the selected version.
-- `--output <file.zip>` downloads the full report archive with `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, and `README.md`.
+- `--output <file.zip>` downloads the full report archive with `manifest.json`, `clawscan.json`, `endor.json`, `skillspector.json`, and `README.md`.
 - `--json` prints the full poll response for automation.
 - Local path scans are no longer supported. Upload a new version, then use `scan download` to retrieve the stored scan results for that submitted version.
 
@@ -310,7 +310,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/453120a8c5840f908ff89e449a67cbe4aadc95b0/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/268f411de4d4a94d7008070d3d3eda5892487320/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -844,7 +844,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/453120a8c5840f908ff89e449a67cbe4aadc95b0/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/268f411de4d4a94d7008070d3d3eda5892487320/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
