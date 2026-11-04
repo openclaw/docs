@@ -4466,6 +4466,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/usage-tracking
 - Headings:
+  - H2: Account-scoped quotas
   - H2: What it is
   - H2: Where it shows up
   - H2: Usage date ranges
