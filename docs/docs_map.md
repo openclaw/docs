@@ -1898,6 +1898,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Vitest paired benchmark
   - H2: Security Review reconciler
   - H2: QA Lab
+  - H2: OpenGrep
   - H2: CodeQL
   - H3: Security categories
   - H3: Platform-specific security shards
