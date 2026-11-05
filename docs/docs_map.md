@@ -91,6 +91,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /automation/cron-jobs/delivery
 - Headings:
   - H2: Delivery and output
+  - H3: Default destinations
   - H3: Owner delivery and direct messages
   - H3: Failure notifications
   - H4: Owner-conversation repair
@@ -4963,6 +4964,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-automation
 - Headings:
   - H2: Automations (cron)
+  - H3: cron.delivery, cron.agents, and cron.creators
   - H3: cron.failureAlert
   - H2: Media model template variables
 
