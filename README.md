@@ -16,7 +16,7 @@ For official OpenClaw support, visit [community.openclaw.ai](https://community.o
 1. English docs are authored in `openclaw/openclaw`.
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo maintains the website UI and stores the synced docs tree plus generated locale output.
-4. `openclaw/docs/.github/workflows/translate-incremental.yml` debounces normal docs changes, while `translate-all.yml` handles full reconciliation for glossary changes, weekly schedule, release dispatch, or manual dispatch.
+4. `openclaw/docs/.github/workflows/translate-incremental.yml` debounces normal docs changes, while `translate-all.yml` handles weekly reconciliation or manual dispatch.
 5. `.github/workflows/r2-pages.yml` builds the full unpruned static site and uploads changed objects to Cloudflare R2.
 6. `.github/workflows/pages.yml` deploys the small Cloudflare Worker router that preserves clean URLs and markdown negotiation while reading docs from R2.
 
@@ -29,7 +29,7 @@ For official OpenClaw support, visit [community.openclaw.ai](https://community.o
 - If files changed, only the pending files are translated.
 - The workflow retries transient model-format failures.
 - Locale outputs are uploaded as artifacts first, then committed together by the finalizer.
-- Incremental and full translation use separate concurrency lanes, so small docs edits do not cancel weekly or glossary-triggered full reconciliation.
+- Incremental and full translation use separate concurrency lanes, so small docs edits do not cancel weekly reconciliation.
 - The weekly scheduled run uses full reconciliation mode to repair missed or flaky locale updates.
 - To start a new locale with a bounded publish, run **Translate Full** from `main` after its source and publisher support land, with that locale and `canary_only=true`. The LINE canary also generates a missing homepage and getting-started page, validates the site, and publishes the language menus. Existing locales keep the single-page canary. Use `diagnostic_canary_only=true` for explicit non-publishing page samples.
 
@@ -75,6 +75,11 @@ loader; translation tests need no separate dependency install.
 
 Translation checks exclude leading YAML frontmatter from MDX parsing while
 preserving body validation and the original offsets needed for markup repairs.
+For `.md` pages, braces in prose remain literal Markdown text. Component tags,
+attribute expressions, spreads, and JSX comments still use the markup parser,
+so translated attributes and broken tags remain checked. `.mdx` pages retain
+full MDX expression validation. Syntax rescue, preflight, and artifact packaging
+use the same format selection without rewriting the English source.
 
 Docs Code CI restores the production article and OG caches before its full shell
 build. Each entry still validates its renderer, dependency and content identity;

@@ -147,7 +147,21 @@ class I18NScriptTests(unittest.TestCase):
             stdout=subprocess.PIPE,
         ).stdout.splitlines()
         changed_paths = changed + untracked
-        allowed_docs_paths = {"docs/.i18n/translation-workflow.md", "docs/.i18n/translation-ci-temporary-todo.md"}
+        allowed_docs_paths = {
+            "docs/.i18n/README.md",
+            "docs/.i18n/translation-workflow.md",
+            "docs/.i18n/translation-ci-temporary-todo.md",
+        }
+        deleted_paths = set(subprocess.run(
+            ["git", "diff", "--name-only", "--diff-filter=D"],
+            cwd=REPO_ROOT, check=True, text=True, stdout=subprocess.PIPE,
+        ).stdout.splitlines())
+        # The explicitly authorized removal covers glossary data and obsolete
+        # internal translation READMEs, never generated locale pages or memory.
+        allowed_docs_paths.update(
+            path for path in deleted_paths
+            if re.fullmatch(r"docs/\.i18n/glossary\.[^/]+\.json|docs/[^/]+/\.i18n/README\.md", path)
+        )
         generated_docs = [
             path
             for path in changed_paths
@@ -243,7 +257,6 @@ class I18NScriptTests(unittest.TestCase):
     def test_full_workflow_keeps_only_weekly_and_manual_triggers(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
         self.assertNotIn("repository_dispatch:", text)
-        self.assertNotIn('"docs/.i18n/glossary.*.json"', text)
         self.assertIn("schedule:", text)
         self.assertIn("workflow_dispatch:", text)
         self.assertIn("target_locale:", text)
@@ -594,13 +607,13 @@ class I18NScriptTests(unittest.TestCase):
         for locale in translation_plan.all_locales():
             with self.subTest(locale=locale.locale):
                 self.assertFalse(prepare.is_translatable_doc_path(f"docs/{locale.locale}/guide/setup.mdx"))
-        self.assertFalse(prepare.is_translatable_doc_path("docs/.i18n/glossary.fr.json"))
+        self.assertFalse(prepare.is_translatable_doc_path("docs/.i18n/fr.tm.jsonl"))
         self.assertFalse(prepare.is_translatable_doc_path("docs/.generated/api.md"))
         self.assertEqual("3600", prepare.default_cooldown("incremental", "push", "", "3600"))
         self.assertEqual("0", prepare.default_cooldown("incremental", "workflow_dispatch", "", "3600"))
         self.assertEqual("0", prepare.default_cooldown("full", "schedule", "", "3600"))
-        self.assertFalse(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json"]))
-        self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json", "docs/guide/setup.mdx"]))
+        self.assertFalse(prepare.incremental_should_translate_paths(["docs/.i18n/fr.tm.jsonl"]))
+        self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/fr.tm.jsonl", "docs/guide/setup.mdx"]))
 
     def test_prepare_reads_metadata_from_the_once_resolved_revision(self) -> None:
         for ref in ("HEAD", "refs/remotes/origin/main"):
@@ -1877,6 +1890,89 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(expected, translated.read_text(encoding="utf-8"))
             self.assertEqual(expected, (artifact / "payload/docs/fr/tools/pdf.md").read_text(encoding="utf-8"))
 
+    def test_markdown_jsx_comments_preserve_whitespace_and_markup_guards(self) -> None:
+        script = r'''
+import assert from "node:assert/strict";
+import { createProcessor } from "@mdx-js/mdx";
+import { createTranslationProcessors, parseMdx, protectedAttributeSignatures } from "./.github/scripts/i18n/check_mdx_protected_attributes.mjs";
+const { markdownProcessor, processorForPath } = createTranslationProcessors(createProcessor);
+for (const space of ["", " ", "\t", "\n", "\r\n", "\u00a0"]) {
+  const source = `{${space}/* Use <Widget id="ignored"> here */ }\n\n<Actual id="stable" />`;
+  const markdown = parseMdx(processorForPath("comments.md"), markdownProcessor, source);
+  const mdx = parseMdx(processorForPath("comments.mdx"), markdownProcessor, source);
+  assert.equal(protectedAttributeSignatures(markdown).length, 1);
+  assert.deepEqual(protectedAttributeSignatures(markdown), protectedAttributeSignatures(mdx));
+  for (const name of ["comments.md", "comments.mdx"]) {
+    assert.throws(() => parseMdx(processorForPath(name), markdownProcessor, `{${space}/* Unclosed <Widget> }`));
+    assert.throws(() => parseMdx(processorForPath(name), markdownProcessor, source + '\n<X id={broken!} />'));
+    assert.throws(() => parseMdx(processorForPath(name), markdownProcessor, source + '\n<X {...broken!} />'));
+  }
+}
+'''
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_package_markdown_braces_preserve_markup_guards(self) -> None:
+        literal = "File state-migrations.exec-approvals{,-canonical}.ts.\n\n"
+        prefix = '\ufeff---\r\ntitle: Exemple\r\n---\r\n<!-- 😀 { -->\r\n1 < 2, <user@example.com>\r\n\r\n' + literal
+        cases = [
+            ("plain.md", literal, literal + "Texte traduit.\n", literal + "Texte traduit.\n"),
+            ("attributes.md", prefix + '<X id="stable" type="string" label="Source" />\n',
+             prefix + '<X id="traduit" type="texte" label="Français" />\n',
+             prefix + '<X id="stable" type="string" label="Français" />\n'),
+            ("nested.md", literal + '{/* <Fake id="source" /> */}\n`<Fake id="source" />`\n\n<Outer content={<Inner id="stable" />} label="Source" />\n',
+             literal + '{/* <Fake id="traduit" /> */}\n`<Fake id="traduit" />`\n\n<Outer content={<Inner id="traduit" />} label="Français" />\n',
+             literal + '{/* <Fake id="traduit" /> */}\n`<Fake id="traduit" />`\n\n<Outer content={<Inner id="stable" />} label="Français" />\n'),
+            ("spread.md", literal + '{ready && <X {...{id:"stable"}} label="Source" />}\n',
+             literal + '{ready && <X {...{id:"traduit"}} label="Français" />}\n',
+             literal + '{ready && <X {...{id:"stable"}} label="Français" />}\n'),
+            ("strict.mdx", literal, literal, None),
+            ("removed.md", literal + '<X id="stable" />\n', literal + "Texte traduit.\n", None),
+            ("expression.md", literal + '<X id={value} />\n', literal + '<X id={value + } />\n', None),
+            ("invalid-spread.md", literal + '<X {...{id:"stable"}} />\n', literal + '<X {...{id:}} />\n', None),
+        ]
+        for name, original, translated, expected in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tmp:
+                repo = Path(tmp)
+                init_repo(repo)
+                (repo / "docs/fr").mkdir(parents=True)
+                (repo / ".openclaw-sync").mkdir()
+                source = repo / "docs" / name
+                target = repo / "docs/fr" / name
+                source.write_bytes(original.encode())
+                (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
+                run_git(repo, "add", ".")
+                run_git(repo, "commit", "-m", "source")
+                target.write_bytes(translated.encode())
+                (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(source) + "\n")
+                with chdir(repo), env({
+                    "GITHUB_WORKSPACE": str(repo), "LOCALE": "fr", "LOCALE_SLUG": "fr",
+                    "SOURCE_SHA": "source-a", "MODE": "full", "SHARD_INDEX": "0", "SHARD_TOTAL": "1",
+                    "WORKER_PARALLEL": "1", "THINKING_EFFORT": "high",
+                    "PENDING_COUNT": "1", "TOTAL_PENDING_COUNT": "1", "ALL_COUNT": "1",
+                    "TRANSLATE_OUTCOME": "success", "MDX_CHECK_OUTCOME": "success",
+                    "MDX_REPAIR_OUTCOME": "skipped", "MDX_SCOPE_OUTCOME": "skipped", "MDX_RECHECK_OUTCOME": "skipped",
+                }):
+                    metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+                artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+                payload = artifact / "payload/docs/fr" / name
+                self.assertEqual(original.encode(), source.read_bytes())
+                if expected is None:
+                    self.assertEqual("mdx protected attribute repair failed", metadata["failed_reason"])
+                    self.assertEqual(0, metadata["changed_count"])
+                    self.assertEqual("", (artifact / "changed-files.txt").read_text())
+                    self.assertFalse(payload.exists())
+                    self.assertEqual(translated.encode(), target.read_bytes())
+                else:
+                    self.assertEqual("", metadata["failed_reason"])
+                    self.assertEqual("success", metadata["mdx_protected_attribute_repair_outcome"])
+                    self.assertEqual(f"docs/fr/{name}\n", (artifact / "changed-files.txt").read_text())
+                    self.assertEqual(expected.encode(), target.read_bytes())
+                    self.assertEqual(expected.encode(), payload.read_bytes())
+
     def test_packaging_workflow_logs_rejected_mdx_only_when_requested(self) -> None:
         for enabled in (False, True):
             with self.subTest(enabled=enabled), tempfile.TemporaryDirectory() as tmp:
@@ -2085,6 +2181,7 @@ class I18NScriptTests(unittest.TestCase):
             translated.write_text(
                 '---\ntitle: Exemple\n---\n<!-- unmatched { ` <X /> -->\n\n'
                 'Texte n < 9, <user@example.com>, <https://example.com>.\n\n'
+                'Fichier state-migrations.exec-approvals{,-canonical}.ts, {nom}.\n\n'
                 '`<X id="literal" />`\n\n```mdx\n<div></span>\n```\n\n'
                 '<Card id="stable" title="Français">Texte</Card>\n\n{ready && <X />}\n',
                 encoding="utf-8",
@@ -2550,8 +2647,9 @@ class I18NScriptTests(unittest.TestCase):
             (repo / "docs/fr").mkdir(parents=True)
             source = repo / "docs/guide.md"
             translated = repo / "docs/fr/guide.md"
-            source.write_text('<Note path="prompt">Take care</Note>\n')
-            translated.write_text('<Note path="invite">Prendre soin</Wrong>\n')
+            prefix = 'state-migrations.exec-approvals{,-canonical}.ts\n\n'
+            source.write_text(prefix + '<Note path="prompt">Take care</Note>\n')
+            translated.write_text(prefix + '<Note path="invite">Prendre soin</Wrong>\n')
             before = translated.read_bytes()
             (repo / ".openclaw-sync").mkdir(exist_ok=True)
             (repo / ".openclaw-sync/source.json").write_text('{"repository":"openclaw/openclaw","sha":"source-a"}\n')
@@ -2581,8 +2679,8 @@ class I18NScriptTests(unittest.TestCase):
                 metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
             self.assertEqual("", metadata["failed_reason"])
             payload = repo / ".openclaw-sync/artifacts/fr-s0of1/payload/docs/fr/guide.md"
-            self.assertEqual('<Note path="prompt">Prendre soin</Note>\n', payload.read_text())
-            self.assertEqual('<Note path="prompt">Take care</Note>\n', source.read_text())
+            self.assertEqual(prefix + '<Note path="prompt">Prendre soin</Note>\n', payload.read_text())
+            self.assertEqual(prefix + '<Note path="prompt">Take care</Note>\n', source.read_text())
 
             # An unsupported later page must leave the first page's tentative repair unwritten.
             translated.write_bytes(before)

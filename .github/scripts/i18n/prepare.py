@@ -225,12 +225,8 @@ def is_translatable_doc_path(path: str) -> bool:
 
 
 def incremental_should_translate_paths(changed_paths: list[str]) -> bool:
-    has_glossary_change = any(re.match(r"^docs/\.i18n/glossary\..*\.json$", path) for path in changed_paths)
     has_translatable_docs = any(is_translatable_doc_path(path) for path in changed_paths)
     if not has_translatable_docs:
-        if has_glossary_change:
-            print("Glossary-only change; use explicit manual retranslation to refresh matching pages.")
-            return False
         print("No translatable docs changed after cooldown; skipping translation matrix.")
         return False
     return True

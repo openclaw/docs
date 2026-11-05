@@ -9,7 +9,7 @@ import process from "node:process";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { parseMdx } from "./check_mdx_protected_attributes.mjs";
+import { createTranslationProcessors, parseMdx } from "./check_mdx_protected_attributes.mjs";
 import { parseMdxForOffsets } from "./repair_mdx_protected_attributes.mjs";
 
 const MAX_PATCHES_PER_FILE = 64;
@@ -291,8 +291,7 @@ async function main() {
   const moduleRoot = path.resolve(args["module-root"] || workspace);
   const require = createRequire(path.join(moduleRoot, "package.json"));
   const { createProcessor } = await import(pathToFileURL(require.resolve("@mdx-js/mdx")).href);
-  const processor = createProcessor({ format: "mdx" });
-  const markdownProcessor = createProcessor({ format: "md" });
+  const { markdownProcessor, processorForPath } = createTranslationProcessors(createProcessor);
   const repairs = [];
 
   for (const line of fs.readFileSync(manifest, "utf8").split(/\r?\n/u).filter(Boolean)) {
@@ -309,7 +308,7 @@ async function main() {
     let result;
     try {
       result = repairMdxSyntax(
-        processor,
+        processorForPath(sourcePath),
         markdownProcessor,
         fs.readFileSync(sourcePath, "utf8"),
         translated,

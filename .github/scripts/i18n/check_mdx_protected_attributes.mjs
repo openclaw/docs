@@ -12,6 +12,58 @@ const PROTECTED_ATTRIBUTES = new Set(["className", "id", "path", "type", "defaul
 const JSX_TAG_START_RE = /[A-Za-z_$\p{ID_Start}/!?>]/u;
 const MAX_ERRORS = 50;
 
+function commentExpression(construct) {
+  return {
+    ...construct,
+    name: `${construct.name}Comment`,
+    tokenize(effects, ok, nok) {
+      const expression = construct.tokenize.call(this, effects, ok, nok);
+      return effects.check({
+        tokenize(effects, ok, nok) {
+          const prefix = [123, 47, 42]; // {/*
+          let index = 0;
+          return function check(code) {
+            if (index === prefix.length) return ok(code);
+            // MDX comments permit JS whitespace between `{` and `/*`,
+            // including micromark's negative line-ending/tab sentinel codes.
+            if (index === 1 && code !== null && (code < 0 || /\s/u.test(String.fromCodePoint(code)))) {
+              effects.consume(code);
+              return check;
+            }
+            if (code !== prefix[index]) return nok(code);
+            effects.consume(code);
+            index += 1;
+            return check;
+          };
+        },
+      }, expression, nok);
+    },
+  };
+}
+
+function markdownBodyExpressions() {
+  const extensions = this.data().micromarkExtensions;
+  const comments = {};
+  for (const [scope, name] of [["flow", "mdxFlowExpression"], ["text", "mdxTextExpression"]]) {
+    const construct = extensions.flatMap((extension) => [extension[scope]?.[123]].flat())
+      .find((candidate) => candidate?.name === name);
+    if (!construct) throw new Error(`MDX parser is missing its ${name} construct`);
+    comments[scope] = { 123: commentExpression(construct) };
+  }
+  // Markdown prose braces are literal. Keep JSX tags, attribute expressions,
+  // spreads and JSX comments parsed, rather than disabling attribute checks.
+  extensions.push({ disable: { null: ["mdxFlowExpression", "mdxTextExpression"] } }, comments);
+}
+
+export function createTranslationProcessors(createProcessor) {
+  const mdx = createProcessor({ format: "mdx" });
+  const markdownJsx = createProcessor({ format: "mdx" }).use(markdownBodyExpressions);
+  return {
+    markdownProcessor: createProcessor({ format: "md" }),
+    processorForPath: (file) => path.extname(file).toLowerCase() === ".md" ? markdownJsx : mdx,
+  };
+}
+
 function attributeSignature(attribute) {
   if (attribute.type === "mdxJsxExpressionAttribute") {
     return ["...", "expression", canonicalAst(attribute.data?.estree || attribute.value)];
@@ -269,8 +321,7 @@ async function checkTranslatedMdx(args) {
   try {
     const require = createRequire(path.join(workspace, "package.json"));
     const { createProcessor } = await import(pathToFileURL(require.resolve("@mdx-js/mdx")).href);
-    const processor = createProcessor({ format: "mdx" });
-    const markdownProcessor = createProcessor({ format: "md" });
+    const { markdownProcessor, processorForPath } = createTranslationProcessors(createProcessor);
     const docsRoot = path.join(workspace, "docs");
     const sources = new Set(fs.readFileSync(manifest, "utf8").split(/\r?\n/u).filter((line) => line.trim()));
     for (const source of sources) {
@@ -286,7 +337,7 @@ async function checkTranslatedMdx(args) {
       const file = path.relative(workspace, translatedPath);
       const value = fs.readFileSync(translatedPath, "utf8");
       try {
-        parseMdx(processor, markdownProcessor, value);
+        parseMdx(processorForPath(source), markdownProcessor, value);
       } catch (error) {
         report.errors.push({
           type: "translated-mdx",
@@ -315,8 +366,7 @@ async function main() {
   const require = createRequire(path.join(input.moduleRoot, "package.json"));
   const modulePath = require.resolve("@mdx-js/mdx");
   const { createProcessor } = await import(pathToFileURL(modulePath).href);
-  const processor = createProcessor({ format: "mdx" });
-  const markdownProcessor = createProcessor({ format: "md" });
+  const { markdownProcessor, processorForPath } = createTranslationProcessors(createProcessor);
   const drifted = [];
 
   for (const document of input.documents) {
@@ -324,6 +374,7 @@ async function main() {
       throw new Error("invalid document input");
     }
     try {
+      const processor = processorForPath(document.path);
       const source = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, document.source));
       const translated = protectedAttributeSignatures(parseMdx(processor, markdownProcessor, document.translated));
       if (JSON.stringify(source) !== JSON.stringify(translated)) drifted.push(document.path);
