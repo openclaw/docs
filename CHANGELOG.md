@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Refresh Lucide, Pagefind, Pele, and Wrangler within the two-day cooldown and sync canonical brand-skill guidance. Thanks @dependabot! (#299)
+
 - Fix two Markdown parser denial-of-service advisories with markdown-it 15.0.3 and refresh Carapace, icons, animation, and browser-test tooling within the two-day dependency cooldown. Thanks @dependabot! (#283, #291)
 
 - Reduce translation token use by reconciling only missing or changed pages at high effort; keep full retranslation as explicit recovery and preserve completed work across retries and resumes.
