@@ -14270,6 +14270,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/scripts/pr-tooling
 - Headings:
   - H1: PR wrapper tooling
+  - H2: Finalized task closeout
+  - H2: Wrapper execution and dependencies
   - H2: Qualify the workspace before review
   - H2: Keep the admitted workflow across commands
   - H3: Salvage an unknown file in an interrupted review checkout
