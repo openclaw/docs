@@ -12119,6 +12119,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime
 - Headings:
+  - H2: Settled agent lifecycle events
   - H2: Module loading and host identity
   - H2: What each page covers
   - H2: Runtime namespaces
