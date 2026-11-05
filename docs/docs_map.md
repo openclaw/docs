@@ -8288,16 +8288,35 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /platforms/mac/bundled-gateway
 - Headings:
   - H2: Automatic setup
+  - H3: Terminal commands
+  - H3: Existing and development Gateways
+  - H3: Set up Chrome
   - H2: Manual recovery
+  - H3: Install an independent Node Gateway
   - H2: Launchd (Gateway as LaunchAgent)
+  - H3: Switch hosting modes
+  - H3: Manage the service from the CLI
+  - H3: Runtime pins and migration state
   - H3: Unexpected repeated restarts
   - H3: Attach-only development
+  - H3: Logs and installation identity
   - H2: App-hosted lifecycle and updates
+  - H3: Startup and crash recovery
+  - H3: What an app update does
+  - H3: Legacy and remote installations
+  - H3: Replace a release app with a local build
   - H3: Existing app-managed Node services
+  - H4: Checks before replacing a service
+  - H4: Installations that stay on their current runtime
+  - H4: Resume a paused legacy installation
   - H2: Version compatibility
   - H2: State directory on macOS
   - H2: Debug app connectivity
   - H2: Smoke check
+  - H2: Runtime and credential details
+  - H3: Service permissions after an update
+  - H3: Local authentication
+  - H3: Credential recovery
   - H2: Related
 
 ## platforms/mac/canvas.md
@@ -15611,6 +15630,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /start/onboarding
 - Headings:
+  - H2: Automatic first run
+  - H2: macOS prompts
+  - H2: Manual setup
+  - H2: AI connection options
+  - H3: Automatic selection
+  - H3: Codex login and isolation
+  - H3: Other connections
+  - H2: If AI setup stalls
   - H2: Related
 
 ## start/openclaw.md
