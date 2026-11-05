@@ -1749,6 +1749,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Published prior snapshots
   - H3: Owned model rankings
   - H2: Current coverage
+  - H3: Qualified Markdown skipping pilot
   - H2: Plan in shadow mode
   - H2: Evaluate recorded decisions
   - H2: Estimate cost and compute savings
