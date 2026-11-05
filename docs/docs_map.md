@@ -11772,6 +11772,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: HTTP and sockets
   - H2: Browser device approval
   - H2: Security boundary
+  - H2: Unattended operator continuations
 
 ## plugins/sdk-migration.md
 
