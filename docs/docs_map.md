@@ -5188,6 +5188,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: tools.gatewayPolicy
   - H3: Automation scope and command jobs
   - H2: tools.byProvider
+  - H3: Per-model exec ceiling
   - H2: tools.toolsBySender
   - H2: tools.elevated
 
