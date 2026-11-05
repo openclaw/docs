@@ -9609,6 +9609,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/knowledge/retrieval
 - Headings:
   - H2: Query contract
+  - H3: Superseded wording
   - H2: Results and citations
   - H2: Index behavior
   - H3: What is rebuildable
