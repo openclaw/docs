@@ -16319,6 +16319,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Add an operator skill
   - H2: Related
 
+## tools/deep-research.md
+
+- Route: /tools/deep-research
+- Headings:
+  - H2: Choose an engine
+  - H2: Start and inspect research
+  - H2: Portable evidence and budgets
+  - H2: Google managed research
+  - H2: Recovery and cancellation
+  - H2: Qualification
+
 ## tools/diffs.md
 
 - Route: /tools/diffs
