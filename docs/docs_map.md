@@ -9583,6 +9583,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Memory prompt
   - H2: Knowledge index
   - H2: Automatic recall
+  - H2: Recall gate
+  - H3: Use an existing reranker
   - H2: Pre-compaction memory flush
   - H2: What Knowledge does not replace
 
@@ -11071,6 +11073,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/requesty.md
 
 - Route: /plugins/reference/requesty
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/rerank.md
+
+- Route: /plugins/reference/rerank
 - Headings:
   - H2: Distribution
   - H2: Surface
@@ -13494,6 +13504,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config example
   - H2: Behavior notes
   - H2: Related
+
+## providers/rerank.md
+
+- Route: /providers/rerank
+- Headings:
+  - H1: Rerank
+  - H2: Supported servers
+  - H2: Configure
+  - H2: What a reranker can answer
+  - H2: Recall gate example
+  - H2: Privacy
 
 ## providers/runway.md
 

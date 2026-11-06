@@ -2304,7 +2304,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "providers/liquid-ai"
+                      "providers/liquid-ai",
+                      "providers/rerank"
                     ]
                   },
                   {
@@ -4417,7 +4418,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "zh-CN/providers/liquid-ai"
+                      "zh-CN/providers/liquid-ai",
+                      "zh-CN/providers/rerank"
                     ]
                   },
                   {
@@ -6530,7 +6532,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "zh-TW/providers/liquid-ai"
+                      "zh-TW/providers/liquid-ai",
+                      "zh-TW/providers/rerank"
                     ]
                   },
                   {
@@ -8643,7 +8646,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "ja-JP/providers/liquid-ai"
+                      "ja-JP/providers/liquid-ai",
+                      "ja-JP/providers/rerank"
                     ]
                   },
                   {
@@ -10756,7 +10760,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "es/providers/liquid-ai"
+                      "es/providers/liquid-ai",
+                      "es/providers/rerank"
                     ]
                   },
                   {
@@ -12869,7 +12874,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "pt-BR/providers/liquid-ai"
+                      "pt-BR/providers/liquid-ai",
+                      "pt-BR/providers/rerank"
                     ]
                   },
                   {
@@ -14982,7 +14988,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "ko/providers/liquid-ai"
+                      "ko/providers/liquid-ai",
+                      "ko/providers/rerank"
                     ]
                   },
                   {
@@ -17095,7 +17102,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "de/providers/liquid-ai"
+                      "de/providers/liquid-ai",
+                      "de/providers/rerank"
                     ]
                   },
                   {
@@ -19208,7 +19216,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "fr/providers/liquid-ai"
+                      "fr/providers/liquid-ai",
+                      "fr/providers/rerank"
                     ]
                   },
                   {
@@ -21321,7 +21330,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "hi/providers/liquid-ai"
+                      "hi/providers/liquid-ai",
+                      "hi/providers/rerank"
                     ]
                   },
                   {
@@ -23434,7 +23444,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "ar/providers/liquid-ai"
+                      "ar/providers/liquid-ai",
+                      "ar/providers/rerank"
                     ]
                   },
                   {
@@ -25547,7 +25558,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "it/providers/liquid-ai"
+                      "it/providers/liquid-ai",
+                      "it/providers/rerank"
                     ]
                   },
                   {
@@ -27660,7 +27672,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "vi/providers/liquid-ai"
+                      "vi/providers/liquid-ai",
+                      "vi/providers/rerank"
                     ]
                   },
                   {
@@ -29773,7 +29786,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "nl/providers/liquid-ai"
+                      "nl/providers/liquid-ai",
+                      "nl/providers/rerank"
                     ]
                   },
                   {
@@ -31886,7 +31900,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "fa/providers/liquid-ai"
+                      "fa/providers/liquid-ai",
+                      "fa/providers/rerank"
                     ]
                   },
                   {
@@ -33999,7 +34014,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "tr/providers/liquid-ai"
+                      "tr/providers/liquid-ai",
+                      "tr/providers/rerank"
                     ]
                   },
                   {
@@ -36112,7 +36128,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "uk/providers/liquid-ai"
+                      "uk/providers/liquid-ai",
+                      "uk/providers/rerank"
                     ]
                   },
                   {
@@ -38225,7 +38242,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "id/providers/liquid-ai"
+                      "id/providers/liquid-ai",
+                      "id/providers/rerank"
                     ]
                   },
                   {
@@ -40338,7 +40356,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "pl/providers/liquid-ai"
+                      "pl/providers/liquid-ai",
+                      "pl/providers/rerank"
                     ]
                   },
                   {
@@ -42451,7 +42470,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "th/providers/liquid-ai"
+                      "th/providers/liquid-ai",
+                      "th/providers/rerank"
                     ]
                   },
                   {
@@ -44564,7 +44584,8 @@
                   {
                     "group": "Decision models",
                     "pages": [
-                      "ru/providers/liquid-ai"
+                      "ru/providers/liquid-ai",
+                      "ru/providers/rerank"
                     ]
                   },
                   {
@@ -46677,7 +46698,8 @@
                   {
                     "group": "Beslutsmodeller",
                     "pages": [
-                      "sv/providers/liquid-ai"
+                      "sv/providers/liquid-ai",
+                      "sv/providers/rerank"
                     ]
                   },
                   {
