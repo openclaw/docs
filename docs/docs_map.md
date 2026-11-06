@@ -5149,6 +5149,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-tools/custom-providers
 - Headings:
   - H2: Custom providers and base URLs
+  - H2: Provider names and icons
   - H2: Provider field details
 
 ## gateway/config-tools/github-identity.md
