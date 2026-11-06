@@ -2112,6 +2112,7 @@
                     "group": "Web search",
                     "pages": [
                       "tools/web",
+                      "tools/deep-research",
                       "tools/brave-search",
                       "tools/duckduckgo-search",
                       "tools/exa-search",
@@ -4260,6 +4261,7 @@
                     "group": "Web search",
                     "pages": [
                       "zh-CN/tools/web",
+                      "zh-CN/tools/deep-research",
                       "zh-CN/tools/brave-search",
                       "zh-CN/tools/duckduckgo-search",
                       "zh-CN/tools/exa-search",
@@ -6374,6 +6376,7 @@
                     "group": "Web search",
                     "pages": [
                       "zh-TW/tools/web",
+                      "zh-TW/tools/deep-research",
                       "zh-TW/tools/brave-search",
                       "zh-TW/tools/duckduckgo-search",
                       "zh-TW/tools/exa-search",
@@ -8488,6 +8491,7 @@
                     "group": "Web search",
                     "pages": [
                       "ja-JP/tools/web",
+                      "ja-JP/tools/deep-research",
                       "ja-JP/tools/brave-search",
                       "ja-JP/tools/duckduckgo-search",
                       "ja-JP/tools/exa-search",
@@ -10602,6 +10606,7 @@
                     "group": "Web search",
                     "pages": [
                       "es/tools/web",
+                      "es/tools/deep-research",
                       "es/tools/brave-search",
                       "es/tools/duckduckgo-search",
                       "es/tools/exa-search",
@@ -12716,6 +12721,7 @@
                     "group": "Web search",
                     "pages": [
                       "pt-BR/tools/web",
+                      "pt-BR/tools/deep-research",
                       "pt-BR/tools/brave-search",
                       "pt-BR/tools/duckduckgo-search",
                       "pt-BR/tools/exa-search",
@@ -14830,6 +14836,7 @@
                     "group": "Web search",
                     "pages": [
                       "ko/tools/web",
+                      "ko/tools/deep-research",
                       "ko/tools/brave-search",
                       "ko/tools/duckduckgo-search",
                       "ko/tools/exa-search",
@@ -16944,6 +16951,7 @@
                     "group": "Web search",
                     "pages": [
                       "de/tools/web",
+                      "de/tools/deep-research",
                       "de/tools/brave-search",
                       "de/tools/duckduckgo-search",
                       "de/tools/exa-search",
@@ -19058,6 +19066,7 @@
                     "group": "Web search",
                     "pages": [
                       "fr/tools/web",
+                      "fr/tools/deep-research",
                       "fr/tools/brave-search",
                       "fr/tools/duckduckgo-search",
                       "fr/tools/exa-search",
@@ -21172,6 +21181,7 @@
                     "group": "Web search",
                     "pages": [
                       "hi/tools/web",
+                      "hi/tools/deep-research",
                       "hi/tools/brave-search",
                       "hi/tools/duckduckgo-search",
                       "hi/tools/exa-search",
@@ -23286,6 +23296,7 @@
                     "group": "Web search",
                     "pages": [
                       "ar/tools/web",
+                      "ar/tools/deep-research",
                       "ar/tools/brave-search",
                       "ar/tools/duckduckgo-search",
                       "ar/tools/exa-search",
@@ -25400,6 +25411,7 @@
                     "group": "Web search",
                     "pages": [
                       "it/tools/web",
+                      "it/tools/deep-research",
                       "it/tools/brave-search",
                       "it/tools/duckduckgo-search",
                       "it/tools/exa-search",
@@ -27514,6 +27526,7 @@
                     "group": "Web search",
                     "pages": [
                       "vi/tools/web",
+                      "vi/tools/deep-research",
                       "vi/tools/brave-search",
                       "vi/tools/duckduckgo-search",
                       "vi/tools/exa-search",
@@ -29628,6 +29641,7 @@
                     "group": "Web search",
                     "pages": [
                       "nl/tools/web",
+                      "nl/tools/deep-research",
                       "nl/tools/brave-search",
                       "nl/tools/duckduckgo-search",
                       "nl/tools/exa-search",
@@ -31742,6 +31756,7 @@
                     "group": "Web search",
                     "pages": [
                       "fa/tools/web",
+                      "fa/tools/deep-research",
                       "fa/tools/brave-search",
                       "fa/tools/duckduckgo-search",
                       "fa/tools/exa-search",
@@ -33856,6 +33871,7 @@
                     "group": "Web araması",
                     "pages": [
                       "tr/tools/web",
+                      "tr/tools/deep-research",
                       "tr/tools/brave-search",
                       "tr/tools/duckduckgo-search",
                       "tr/tools/exa-search",
@@ -35970,6 +35986,7 @@
                     "group": "Web search",
                     "pages": [
                       "uk/tools/web",
+                      "uk/tools/deep-research",
                       "uk/tools/brave-search",
                       "uk/tools/duckduckgo-search",
                       "uk/tools/exa-search",
@@ -38084,6 +38101,7 @@
                     "group": "Web search",
                     "pages": [
                       "id/tools/web",
+                      "id/tools/deep-research",
                       "id/tools/brave-search",
                       "id/tools/duckduckgo-search",
                       "id/tools/exa-search",
@@ -40198,6 +40216,7 @@
                     "group": "Web search",
                     "pages": [
                       "pl/tools/web",
+                      "pl/tools/deep-research",
                       "pl/tools/brave-search",
                       "pl/tools/duckduckgo-search",
                       "pl/tools/exa-search",
@@ -42312,6 +42331,7 @@
                     "group": "Web search",
                     "pages": [
                       "th/tools/web",
+                      "th/tools/deep-research",
                       "th/tools/brave-search",
                       "th/tools/duckduckgo-search",
                       "th/tools/exa-search",
@@ -44426,6 +44446,7 @@
                     "group": "Web search",
                     "pages": [
                       "ru/tools/web",
+                      "ru/tools/deep-research",
                       "ru/tools/brave-search",
                       "ru/tools/duckduckgo-search",
                       "ru/tools/exa-search",
@@ -46540,6 +46561,7 @@
                     "group": "Webbsökning",
                     "pages": [
                       "sv/tools/web",
+                      "sv/tools/deep-research",
                       "sv/tools/brave-search",
                       "sv/tools/duckduckgo-search",
                       "sv/tools/exa-search",
