@@ -6011,6 +6011,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: The core idea
   - H2: Topology options
+  - H2: OpenClaw ID alongside existing access
   - H2: Command flow (what runs where)
   - H2: SSH tunnel (CLI + tools)
   - H2: CLI remote defaults
