@@ -2316,6 +2316,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Modes and prompting
   - H2: Choosing which findings to address
+  - H2: Gmail watcher dependency
   - H2: Config writes and backups
   - H2: Gateway and service repairs
   - H2: Session state and cron
