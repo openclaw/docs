@@ -12046,6 +12046,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Post-ack webhook work
   - H3: Requester-scoped MCP connections
   - H3: Doctor plugin-state repairs
+  - H2: Durable session work in services
 
 ## plugins/sdk-overview/memory-and-context.md
 
