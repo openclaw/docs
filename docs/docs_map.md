@@ -5384,6 +5384,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Talk realtime inheritance
   - H2: ACP session metadata
   - H2: ACP agents' model precedence
+  - H2: Saved model output caps
   - H2: Missing plugins during migration
   - H2: Context engine plugin-ID selectors
   - H2: Blocked local plugins
