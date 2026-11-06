@@ -11451,6 +11451,11 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Surface
   - H2: Related docs
 
+## plugins/research-adapters.md
+
+- Route: /plugins/research-adapters
+- Headings: none
+
 ## plugins/runtime-compatibility.md
 
 - Route: /plugins/runtime-compatibility
