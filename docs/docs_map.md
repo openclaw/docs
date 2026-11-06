@@ -7635,6 +7635,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Headless node updates
   - H2: Auto-updater
+  - H3: Choose an automatic-update schedule
   - H3: Update campaigns
 
 ## install/updating/rollback-and-recovery.md
