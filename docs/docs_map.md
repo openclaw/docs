@@ -3654,6 +3654,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Conversational tool filtering
   - H2: Advisor
   - H2: Local model lean mode
+  - H2: OpenClaw ID remote access
   - H2: Experimental does not mean hidden
   - H2: Related
 
