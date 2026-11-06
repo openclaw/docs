@@ -10327,6 +10327,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
 
+## plugins/reference/deep-research.md
+
+- Route: /plugins/reference/deep-research
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+
 ## plugins/reference/deepgram.md
 
 - Route: /plugins/reference/deepgram
