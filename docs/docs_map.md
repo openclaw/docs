@@ -3655,8 +3655,12 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Core consumer contract
   - H3: Conversational tool filtering
   - H2: Advisor
-  - H2: Local model lean mode
   - H2: OpenClaw ID remote access
+  - H3: Sign in with OpenClaw ID
+  - H3: How the tunnel reaches the Gateway
+  - H3: Turn on remote access
+  - H3: Membership
+  - H2: Local model lean mode
   - H2: Experimental does not mean hidden
   - H2: Related
 
@@ -10956,6 +10960,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
   - H2: Related docs
+
+## plugins/reference/openclaw-id-access.md
+
+- Route: /plugins/reference/openclaw-id-access
+- Headings:
+  - H2: Distribution
+  - H2: Surface
 
 ## plugins/reference/opencode-go.md
 
