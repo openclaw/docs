@@ -50,6 +50,20 @@ test("community artwork opts out of Pinterest without changing the invitation or
       [strings.communityJoin, "https://openclaw.ai/discord?from=docs-community-invite"],
       [strings.communityFollow, "https://x.com/openclaw"],
     ]);
+    const anchors = all(node => node.name === "a");
+    for (const [tag, rel] of [
+      ["docs-header", "nofollow"], ["docs-sidebar", "nofollow"],
+      ["docs-footer", "noopener nofollow"], ["docs-community-invite", "noopener noreferrer nofollow"],
+      ...(slug === "index" ? [["docs-home-community", "nofollow"]] : []),
+    ]) {
+      const link = anchors.find(node => node.attribs.href === `https://openclaw.ai/discord?from=${tag}`);
+      assert.equal(link?.attribs.rel, rel, `${locale}/${slug}: ${tag}`);
+    }
+    for (const link of anchors.filter(node => !node.attribs.href?.startsWith("https://openclaw.ai/discord?"))) {
+      assert.ok(!link.attribs.rel?.split(/\s+/).includes("nofollow"), `${locale}/${slug}: non-invite rel unchanged`);
+    }
+    assert.equal(links[0].attribs.rel, "noopener noreferrer");
+    assert.equal(links[2].attribs.rel, "noopener noreferrer");
     const optedOut = all(node => node.attribs && ("nopin" in node.attribs || "data-pin-nopin" in node.attribs));
     assert.deepEqual(optedOut, art, `${locale}/${slug}: only invitation images opt out`);
     assert.equal(all(node => node.name === "meta" && node.attribs.name === "pinterest").length, 0);
