@@ -8245,6 +8245,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Model sign-in
   - H2: Settings
   - H2: Cloudflare Access sign-in
+  - H2: Share request admission
   - H2: Sessions
   - H2: Session colors
   - H2: Reactions
