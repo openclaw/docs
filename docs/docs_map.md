@@ -6039,6 +6039,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/restart-recovery
 - Headings:
+  - H2: A wedged main thread
   - H2: What survives a restart
   - H2: Graceful shutdown
   - H3: Maintenance custody observations
