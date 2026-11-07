@@ -6039,6 +6039,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/restart-recovery
 - Headings:
+  - H2: Unexpected exits
   - H2: A wedged main thread
   - H2: What survives a restart
   - H2: Graceful shutdown
@@ -6527,6 +6528,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/troubleshooting/gateway-service-and-process
 - Headings:
   - H2: Gateway service not running
+  - H2: Unexpected Gateway exits
   - H2: macOS gateway silently stops responding, then resumes when you touch the dashboard
   - H2: macOS LAN commands fail with No route to host
   - H2: macOS launchd supervisor loop with duplicate gateway/node LaunchAgents
