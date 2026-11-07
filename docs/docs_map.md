@@ -13444,7 +13444,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Getting started
   - H2: Config example
   - H2: Model references
-  - H2: Typed decisions with Jev
+  - H2: Typed decisions
+  - H3: Parallel Decisions Fast
+  - H3: Jev
   - H2: Image generation
   - H2: Video generation
   - H2: Music generation
@@ -16734,6 +16736,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Tool parameters
   - H2: Notes
   - H2: Related
+  - H2: Decisions
 
 ## tools/pdf.md
 
