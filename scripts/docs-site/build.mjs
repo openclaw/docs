@@ -329,22 +329,34 @@ function rewriteOfficialDiscordLinks(html, slug) {
       if (name === "a" && attributes.href && !ancestors.some(tag => ["pre", "code", "script", "style"].includes(tag))) {
         let url;
         try { url = new URL(attributes.href); } catch {}
-        // Queries/fragments may carry event-specific meaning. Keep those, other
-        // communities, service URLs, and credential-bearing URLs untouched.
-        if (url && ["http:", "https:"].includes(url.protocol) && !url.username && !url.password
-          && !url.port && !url.search && !url.hash
+        const publicUrl = url && ["http:", "https:"].includes(url.protocol) && !url.username && !url.password && !url.port;
+        // Direct queries/fragments may carry event-specific meaning. Keep those,
+        // other communities and service URLs untouched; preserve tagged redirects.
+        const directInvite = publicUrl && !url.search && !url.hash
           && ((url.hostname === "discord.gg" && /^\/clawd\/?$/.test(url.pathname))
-            || (["discord.com", "discordapp.com"].includes(url.hostname) && /^\/invite\/clawd\/?$/.test(url.pathname)))) {
+            || (["discord.com", "discordapp.com"].includes(url.hostname) && /^\/invite\/clawd\/?$/.test(url.pathname)));
+        const taggedInvite = publicUrl && url.hostname === "openclaw.ai" && /^\/discord\/?$/.test(url.pathname);
+        if (directInvite || taggedInvite) {
           const start = parser.startIndex;
           const end = parser.endIndex + 1;
           const opening = html.slice(start, end);
-          let replaced = false;
-          const replacement = opening.replace(/(\s+)([^\s"'<>/=]+)(\s*=\s*)(?:"[^"]*"|'[^']*'|[^\s>]+)/g,
+          let replacedHref = false;
+          let replacedRel = false;
+          const hasNofollow = (attributes.rel ?? "").split(/\s+/).some(token => token.toLowerCase() === "nofollow");
+          const rel = [attributes.rel, "nofollow"].filter(Boolean).join(" ");
+          let replacement = opening.replace(/(\s+)([^\s"'<>/=]+)(?:(\s*=\s*)(?:"[^"]*"|'[^']*'|[^\s>]+))?/g,
             (attribute, space, name, equals) => {
-              if (replaced || name.toLowerCase() !== "href") return attribute;
-              replaced = true;
-              return `${space}${name}${equals}"https://openclaw.ai/discord?from=${placement}"`;
+              if (directInvite && !replacedHref && name.toLowerCase() === "href") {
+                replacedHref = true;
+                return `${space}${name}${equals}"https://openclaw.ai/discord?from=${placement}"`;
+              }
+              if (!hasNofollow && !replacedRel && name.toLowerCase() === "rel") {
+                replacedRel = true;
+                return `${space}${name}="${escapeAttr(rel)}"`;
+              }
+              return attribute;
             });
+          if (!hasNofollow && !replacedRel) replacement = replacement.replace(/(\s*\/?>)$/, ` rel="nofollow"$1`);
           edits.push({ start, end, replacement });
         }
       }
@@ -479,7 +491,7 @@ function siteFooter(analyticsEligible = false) {
 <section class="site-footer-brand" aria-label="OpenClaw">
 <a class="site-footer-logo" href="https://openclaw.ai">OpenClaw</a>
 <p class="site-footer-note">An <a href="https://openclaw.org">OpenClaw Foundation</a> project.</p>
-<nav class="site-footer-socials" aria-label="Community">${socials.map(([label, href, iconName]) => `<a href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}" target="_blank" rel="noopener">${icon(iconName)}</a>`).join("")}</nav>
+<nav class="site-footer-socials" aria-label="Community">${socials.map(([label, href, iconName]) => `<a href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}" target="_blank" rel="noopener${iconName === "discord" ? " nofollow" : ""}">${icon(iconName)}</a>`).join("")}</nav>
 </section>
 ${groups.map(([title, links]) => `<nav class="site-footer-links" aria-label="${title}"><h2>${title}</h2>${links.map(([label, href, target]) => `<a href="${escapeAttr(href)}"${target ? previewLinkAttrs(target, label) : ""}>${label}</a>`).join("")}</nav>`).join("")}
 </div>
@@ -522,7 +534,7 @@ function communityInvite(locale) {
 <p class="community-invite__text">${escapeHtml(strings.communityBody)}</p>
 <div class="community-invite__links" dir="ltr">
 <a class="community-invite__cta" href="https://www.reddit.com/r/openclaw/" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(joinLabel("Reddit"))}" title="${escapeAttr(joinLabel("Reddit"))}">${icon("reddit")}<span>${escapeHtml(strings.communityJoin)}</span></a>
-<a class="community-invite__cta" href="https://openclaw.ai/discord?from=docs-community-invite" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(joinLabel("Discord"))}" title="${escapeAttr(joinLabel("Discord"))}">${icon("discord")}<span>${escapeHtml(strings.communityJoin)}</span></a>
+<a class="community-invite__cta" href="https://openclaw.ai/discord?from=docs-community-invite" target="_blank" rel="noopener noreferrer nofollow" aria-label="${escapeAttr(joinLabel("Discord"))}" title="${escapeAttr(joinLabel("Discord"))}">${icon("discord")}<span>${escapeHtml(strings.communityJoin)}</span></a>
 <a class="community-invite__cta" href="https://x.com/openclaw" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(followLabel)}" title="${escapeAttr(followLabel)}">${icon("x-social")}<span>${escapeHtml(strings.communityFollow)}</span></a>
 </div>
 </div>
@@ -557,7 +569,7 @@ function socialIconLinks(placement) {
     ["Reddit", "https://www.reddit.com/r/openclaw/", "reddit"],
     ["Discord", `https://openclaw.ai/discord?from=${placement}`, "discord"],
     ["X", "https://x.com/openclaw", "x-social"],
-  ].map(([label, href, iconName]) => `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}">${icon(iconName)}</a>`).join("");
+  ].map(([label, href, iconName]) => `<a class="top-icon-link" href="${escapeAttr(href)}" aria-label="${escapeAttr(label)}" title="${escapeAttr(label)}"${iconName === "discord" ? ' rel="nofollow"' : ""}>${icon(iconName)}</a>`).join("");
 }
 
 function firstStatusLine(content) {
