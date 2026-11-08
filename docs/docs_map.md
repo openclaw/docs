@@ -5988,6 +5988,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Talk and TTS
   - H3: Relay output cancellation
   - H2: Secrets, config, update, and wizard
+  - H3: Reconcile a config write after a lost response
   - H2: Agent and workspace helpers
 
 ## gateway/protocol/transport.md
