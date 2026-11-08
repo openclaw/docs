@@ -5757,6 +5757,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: How capability approval works
   - H3: Upgrades and older writers
   - H2: One-paste node pairing
+  - H2: OpenClaw ID nodes (Labs)
+  - H3: Gateway API for owner clients
   - H2: CLI workflow (headless friendly)
   - H2: API surface (gateway protocol)
   - H2: Node command gating (2026.3.31+)
@@ -6017,6 +6019,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/remote
 - Headings:
+  - H2: OpenClaw ID nodes (Labs)
   - H2: The core idea
   - H2: Topology options
   - H2: OpenClaw ID alongside existing access
