@@ -3706,6 +3706,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: CLI
   - H2: Gateway methods
   - H2: Workboard workspaces
+  - H2: Shared clone history
   - H2: Related
 
 ## concepts/mantis-slack-desktop-runbook.md
