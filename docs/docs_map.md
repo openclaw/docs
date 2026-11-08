@@ -2704,6 +2704,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Identity and pairing state
   - H2: Exec approvals
   - H2: Related
+  - H2: Labs: OpenClaw ID tunnel targets
 
 ## cli/nodes.md
 
