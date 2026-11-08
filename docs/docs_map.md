@@ -13812,6 +13812,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Release cadence
   - H2: Release validation
   - H3: Operator capabilities
+  - H3: Resume activation while ClawHub recovery is independent
   - H3: Watch publication
   - H3: Plugin SDK evidence transport
   - H3: Frozen qualification identity
