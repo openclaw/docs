@@ -14337,6 +14337,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Finalized task closeout
   - H2: Wrapper execution and dependencies
   - H2: Qualify the workspace before review
+  - H2: Reuse the base and fetch only needed history
   - H2: Keep the admitted workflow across commands
   - H3: Salvage an unknown file in an interrupted review checkout
   - H3: Continue a correction with repaired workflow code
