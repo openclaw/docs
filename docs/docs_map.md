@@ -13373,7 +13373,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/image-and-video
 - Headings:
   - H2: Image generation
-  - H3: GPT Image 2.5
+  - H3: GPT Image 2.5 and 2.6
   - H3: Other Image Models
 
 ## providers/openai/models.md
