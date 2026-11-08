@@ -14340,6 +14340,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Continue a correction with repaired workflow code
   - H2: Reconcile a completed CI review
   - H2: Recover dependency-cache device identities
+  - H2: Release finished dependency holds
   - H2: Recover a retained dependency projection
   - H2: Captured baseline evidence hashes
   - H2: Rerun failed CI tests
