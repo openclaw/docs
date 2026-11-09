@@ -6103,6 +6103,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/sandboxing/docker-backend
 - Headings:
   - H2: Docker backend
+  - H3: Idle containers
   - H3: Container user
   - H3: Shell environment
   - H3: Docker daemon
