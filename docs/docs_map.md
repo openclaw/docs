@@ -2185,6 +2185,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/connect
 - Headings:
   - H1: openclaw connect
+  - H2: OpenClaw ID invitations
   - H2: Create a join command
   - H2: Connect in the foreground
   - H2: Reconnect a paired node
@@ -2696,6 +2697,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw node
   - H2: Why use a node host?
   - H2: Browser proxy (zero-config)
+  - H2: Join with OpenClaw ID
   - H2: Run (foreground)
   - H2: Gateway auth for node host
   - H2: Service (background)
