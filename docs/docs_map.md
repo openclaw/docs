@@ -1883,6 +1883,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Android release runner
   - H3: Blacksmith runner capacity
   - H3: Runner backend modes
+  - H3: Android Store routing
   - H3: Boat build qualification
   - H3: RunsOn qualification
   - H3: Hybrid hosted assignment guard
