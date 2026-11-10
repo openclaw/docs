@@ -5731,6 +5731,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Continue an upstream WebSocket trace
   - H2: Privacy and content capture
+  - H2: Session identity
 
 ## gateway/opentelemetry/setup.md
 
