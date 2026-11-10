@@ -2900,6 +2900,7 @@
                       "cli/channels",
                       "cli/directory",
                       "cli/pairing",
+                      "cli/pair",
                       "cli/qr",
                       "cli/users",
                       "cli/voicecall"
@@ -5016,6 +5017,7 @@
                       "zh-CN/cli/channels",
                       "zh-CN/cli/directory",
                       "zh-CN/cli/pairing",
+                      "zh-CN/cli/pair",
                       "zh-CN/cli/qr",
                       "zh-CN/cli/users",
                       "zh-CN/cli/voicecall"
@@ -7132,6 +7134,7 @@
                       "zh-TW/cli/channels",
                       "zh-TW/cli/directory",
                       "zh-TW/cli/pairing",
+                      "zh-TW/cli/pair",
                       "zh-TW/cli/qr",
                       "zh-TW/cli/users",
                       "zh-TW/cli/voicecall"
@@ -9248,6 +9251,7 @@
                       "ja-JP/cli/channels",
                       "ja-JP/cli/directory",
                       "ja-JP/cli/pairing",
+                      "ja-JP/cli/pair",
                       "ja-JP/cli/qr",
                       "ja-JP/cli/users",
                       "ja-JP/cli/voicecall"
@@ -11364,6 +11368,7 @@
                       "es/cli/channels",
                       "es/cli/directory",
                       "es/cli/pairing",
+                      "es/cli/pair",
                       "es/cli/qr",
                       "es/cli/users",
                       "es/cli/voicecall"
@@ -13480,6 +13485,7 @@
                       "pt-BR/cli/channels",
                       "pt-BR/cli/directory",
                       "pt-BR/cli/pairing",
+                      "pt-BR/cli/pair",
                       "pt-BR/cli/qr",
                       "pt-BR/cli/users",
                       "pt-BR/cli/voicecall"
@@ -15596,6 +15602,7 @@
                       "ko/cli/channels",
                       "ko/cli/directory",
                       "ko/cli/pairing",
+                      "ko/cli/pair",
                       "ko/cli/qr",
                       "ko/cli/users",
                       "ko/cli/voicecall"
@@ -17712,6 +17719,7 @@
                       "de/cli/channels",
                       "de/cli/directory",
                       "de/cli/pairing",
+                      "de/cli/pair",
                       "de/cli/qr",
                       "de/cli/users",
                       "de/cli/voicecall"
@@ -19828,6 +19836,7 @@
                       "fr/cli/channels",
                       "fr/cli/directory",
                       "fr/cli/pairing",
+                      "fr/cli/pair",
                       "fr/cli/qr",
                       "fr/cli/users",
                       "fr/cli/voicecall"
@@ -21944,6 +21953,7 @@
                       "hi/cli/channels",
                       "hi/cli/directory",
                       "hi/cli/pairing",
+                      "hi/cli/pair",
                       "hi/cli/qr",
                       "hi/cli/users",
                       "hi/cli/voicecall"
@@ -24060,6 +24070,7 @@
                       "ar/cli/channels",
                       "ar/cli/directory",
                       "ar/cli/pairing",
+                      "ar/cli/pair",
                       "ar/cli/qr",
                       "ar/cli/users",
                       "ar/cli/voicecall"
@@ -26176,6 +26187,7 @@
                       "it/cli/channels",
                       "it/cli/directory",
                       "it/cli/pairing",
+                      "it/cli/pair",
                       "it/cli/qr",
                       "it/cli/users",
                       "it/cli/voicecall"
@@ -28292,6 +28304,7 @@
                       "vi/cli/channels",
                       "vi/cli/directory",
                       "vi/cli/pairing",
+                      "vi/cli/pair",
                       "vi/cli/qr",
                       "vi/cli/users",
                       "vi/cli/voicecall"
@@ -30408,6 +30421,7 @@
                       "nl/cli/channels",
                       "nl/cli/directory",
                       "nl/cli/pairing",
+                      "nl/cli/pair",
                       "nl/cli/qr",
                       "nl/cli/users",
                       "nl/cli/voicecall"
@@ -32524,6 +32538,7 @@
                       "fa/cli/channels",
                       "fa/cli/directory",
                       "fa/cli/pairing",
+                      "fa/cli/pair",
                       "fa/cli/qr",
                       "fa/cli/users",
                       "fa/cli/voicecall"
@@ -34640,6 +34655,7 @@
                       "tr/cli/channels",
                       "tr/cli/directory",
                       "tr/cli/pairing",
+                      "tr/cli/pair",
                       "tr/cli/qr",
                       "tr/cli/users",
                       "tr/cli/voicecall"
@@ -36756,6 +36772,7 @@
                       "uk/cli/channels",
                       "uk/cli/directory",
                       "uk/cli/pairing",
+                      "uk/cli/pair",
                       "uk/cli/qr",
                       "uk/cli/users",
                       "uk/cli/voicecall"
@@ -38872,6 +38889,7 @@
                       "id/cli/channels",
                       "id/cli/directory",
                       "id/cli/pairing",
+                      "id/cli/pair",
                       "id/cli/qr",
                       "id/cli/users",
                       "id/cli/voicecall"
@@ -40988,6 +41006,7 @@
                       "pl/cli/channels",
                       "pl/cli/directory",
                       "pl/cli/pairing",
+                      "pl/cli/pair",
                       "pl/cli/qr",
                       "pl/cli/users",
                       "pl/cli/voicecall"
@@ -43104,6 +43123,7 @@
                       "th/cli/channels",
                       "th/cli/directory",
                       "th/cli/pairing",
+                      "th/cli/pair",
                       "th/cli/qr",
                       "th/cli/users",
                       "th/cli/voicecall"
@@ -45220,6 +45240,7 @@
                       "ru/cli/channels",
                       "ru/cli/directory",
                       "ru/cli/pairing",
+                      "ru/cli/pair",
                       "ru/cli/qr",
                       "ru/cli/users",
                       "ru/cli/voicecall"
@@ -47336,6 +47357,7 @@
                       "sv/cli/channels",
                       "sv/cli/directory",
                       "sv/cli/pairing",
+                      "sv/cli/pair",
                       "sv/cli/qr",
                       "sv/cli/users",
                       "sv/cli/voicecall"

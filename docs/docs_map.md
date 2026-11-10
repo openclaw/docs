@@ -2252,6 +2252,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/devices
 - Headings:
   - H1: openclaw devices
+  - H2: Browser-code pairing
   - H2: Doctor pairing findings
   - H2: Common options
   - H2: Commands
@@ -2760,6 +2761,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Switching to an agent
   - H2: Message rescue mode
   - H2: Related
+
+## cli/pair.md
+
+- Route: /cli/pair
+- Headings:
+  - H1: openclaw pair
+  - H2: Options
+  - H2: Running it over SSH
+  - H2: Requirements
 
 ## cli/pairing.md
 
@@ -17436,6 +17446,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/connect-and-pair
 - Headings:
   - H2: Device pairing (first connection)
+  - H2: Pair a browser with a code
   - H2: Pair a mobile device
   - H2: Runtime config endpoint
   - H2: PWA install and web push
