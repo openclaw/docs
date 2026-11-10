@@ -17374,6 +17374,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /web/control-ui
 - Headings:
+  - H2: Feedback and bug reports
   - H2: Edit a failed message
   - H2: Command palette file attachments
   - H2: Choose a session workspace
