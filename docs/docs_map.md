@@ -6414,6 +6414,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/security/tool-permissions
 - Headings:
   - H2: Control plane tools
+  - H2: Owner authority after network reads
   - H2: Cross-provider messaging
   - H2: Node execution (system.run)
   - H2: Dynamic skills (watcher / remote nodes)
