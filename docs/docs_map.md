@@ -2010,6 +2010,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/agents
 - Headings:
   - H1: openclaw agents
+  - H2: Reserved agent IDs and setup recovery
   - H2: Examples
   - H2: Command surface
   - H3: agents list
