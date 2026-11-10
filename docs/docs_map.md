@@ -16080,6 +16080,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Root cause
   - H3: Solution 1: install Google Chrome (recommended)
   - H3: Solution 2: use snap Chromium in attach-only mode
+  - H3: Missing shared libraries
   - H3: Verify the browser works
   - H3: Config reference
   - H2: Problem: No Chrome tabs found for profile="user"
