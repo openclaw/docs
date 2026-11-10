@@ -12238,6 +12238,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Bounded model context
   - H2: Scoped session visibility
   - H2: Context engine transcript cursor
+  - H3: Canonical replay groups
   - H3: Reset reasons
   - H3: Reset-window start
   - H3: Current-turn fence
