@@ -14164,6 +14164,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/full-release-validation/evidence
 - Headings:
   - H2: Evidence to keep
+  - H2: Bounded publication recovery
   - H2: Release-tooling waivers
   - H2: Receipt-backed beta aggregate recovery
   - H2: Workflow files
