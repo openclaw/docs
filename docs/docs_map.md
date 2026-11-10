@@ -17196,6 +17196,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Modes
   - H2: Select which tools to defer
   - H2: Why this exists
+  - H2: MCP tool directory
   - H2: Structured controls
   - H3: Search
   - H3: Describe
