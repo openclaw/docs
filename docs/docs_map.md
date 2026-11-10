@@ -9686,6 +9686,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/knowledge/tools
 - Headings:
+  - H2: Agent response shapes
   - H2: Ontology
   - H2: Reading records
   - H2: Listing and connections
