@@ -5766,6 +5766,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Device pairing approvals
   - H2: Node pairing approvals
   - H2: Shared-secret auth
+  - H2: Recovering from inactive authority
   - H2: Related
 
 ## gateway/pairing.md
