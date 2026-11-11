@@ -3270,6 +3270,7 @@
                 "group": "Release notes",
                 "pages": [
                   "releases/index",
+                  "releases/2026.11.3",
                   "releases/2026.11.2",
                   "releases/2026.11.1",
                   "releases/2026.10.10",
@@ -5387,6 +5388,7 @@
                 "group": "发布说明",
                 "pages": [
                   "zh-CN/releases/index",
+                  "zh-CN/releases/2026.11.3",
                   "zh-CN/releases/2026.11.2",
                   "zh-CN/releases/2026.11.1",
                   "zh-CN/releases/2026.10.10",
@@ -7504,6 +7506,7 @@
                 "group": "Release notes",
                 "pages": [
                   "zh-TW/releases/index",
+                  "zh-TW/releases/2026.11.3",
                   "zh-TW/releases/2026.11.2",
                   "zh-TW/releases/2026.11.1",
                   "zh-TW/releases/2026.10.10",
@@ -9621,6 +9624,7 @@
                 "group": "Release notes",
                 "pages": [
                   "ja-JP/releases/index",
+                  "ja-JP/releases/2026.11.3",
                   "ja-JP/releases/2026.11.2",
                   "ja-JP/releases/2026.11.1",
                   "ja-JP/releases/2026.10.10",
@@ -11738,6 +11742,7 @@
                 "group": "Release notes",
                 "pages": [
                   "es/releases/index",
+                  "es/releases/2026.11.3",
                   "es/releases/2026.11.2",
                   "es/releases/2026.11.1",
                   "es/releases/2026.10.10",
@@ -13855,6 +13860,7 @@
                 "group": "Release notes",
                 "pages": [
                   "pt-BR/releases/index",
+                  "pt-BR/releases/2026.11.3",
                   "pt-BR/releases/2026.11.2",
                   "pt-BR/releases/2026.11.1",
                   "pt-BR/releases/2026.10.10",
@@ -15972,6 +15978,7 @@
                 "group": "Release notes",
                 "pages": [
                   "ko/releases/index",
+                  "ko/releases/2026.11.3",
                   "ko/releases/2026.11.2",
                   "ko/releases/2026.11.1",
                   "ko/releases/2026.10.10",
@@ -18089,6 +18096,7 @@
                 "group": "Release notes",
                 "pages": [
                   "de/releases/index",
+                  "de/releases/2026.11.3",
                   "de/releases/2026.11.2",
                   "de/releases/2026.11.1",
                   "de/releases/2026.10.10",
@@ -20206,6 +20214,7 @@
                 "group": "Release notes",
                 "pages": [
                   "fr/releases/index",
+                  "fr/releases/2026.11.3",
                   "fr/releases/2026.11.2",
                   "fr/releases/2026.11.1",
                   "fr/releases/2026.10.10",
@@ -22323,6 +22332,7 @@
                 "group": "Release notes",
                 "pages": [
                   "hi/releases/index",
+                  "hi/releases/2026.11.3",
                   "hi/releases/2026.11.2",
                   "hi/releases/2026.11.1",
                   "hi/releases/2026.10.10",
@@ -24440,6 +24450,7 @@
                 "group": "Release notes",
                 "pages": [
                   "ar/releases/index",
+                  "ar/releases/2026.11.3",
                   "ar/releases/2026.11.2",
                   "ar/releases/2026.11.1",
                   "ar/releases/2026.10.10",
@@ -26557,6 +26568,7 @@
                 "group": "Release notes",
                 "pages": [
                   "it/releases/index",
+                  "it/releases/2026.11.3",
                   "it/releases/2026.11.2",
                   "it/releases/2026.11.1",
                   "it/releases/2026.10.10",
@@ -28674,6 +28686,7 @@
                 "group": "Release notes",
                 "pages": [
                   "vi/releases/index",
+                  "vi/releases/2026.11.3",
                   "vi/releases/2026.11.2",
                   "vi/releases/2026.11.1",
                   "vi/releases/2026.10.10",
@@ -30791,6 +30804,7 @@
                 "group": "Release notes",
                 "pages": [
                   "nl/releases/index",
+                  "nl/releases/2026.11.3",
                   "nl/releases/2026.11.2",
                   "nl/releases/2026.11.1",
                   "nl/releases/2026.10.10",
@@ -32908,6 +32922,7 @@
                 "group": "Release notes",
                 "pages": [
                   "fa/releases/index",
+                  "fa/releases/2026.11.3",
                   "fa/releases/2026.11.2",
                   "fa/releases/2026.11.1",
                   "fa/releases/2026.10.10",
@@ -35025,6 +35040,7 @@
                 "group": "Sürüm notları",
                 "pages": [
                   "tr/releases/index",
+                  "tr/releases/2026.11.3",
                   "tr/releases/2026.11.2",
                   "tr/releases/2026.11.1",
                   "tr/releases/2026.10.10",
@@ -37142,6 +37158,7 @@
                 "group": "Release notes",
                 "pages": [
                   "uk/releases/index",
+                  "uk/releases/2026.11.3",
                   "uk/releases/2026.11.2",
                   "uk/releases/2026.11.1",
                   "uk/releases/2026.10.10",
@@ -39259,6 +39276,7 @@
                 "group": "Release notes",
                 "pages": [
                   "id/releases/index",
+                  "id/releases/2026.11.3",
                   "id/releases/2026.11.2",
                   "id/releases/2026.11.1",
                   "id/releases/2026.10.10",
@@ -41376,6 +41394,7 @@
                 "group": "Release notes",
                 "pages": [
                   "pl/releases/index",
+                  "pl/releases/2026.11.3",
                   "pl/releases/2026.11.2",
                   "pl/releases/2026.11.1",
                   "pl/releases/2026.10.10",
@@ -43493,6 +43512,7 @@
                 "group": "Release notes",
                 "pages": [
                   "th/releases/index",
+                  "th/releases/2026.11.3",
                   "th/releases/2026.11.2",
                   "th/releases/2026.11.1",
                   "th/releases/2026.10.10",
@@ -45610,6 +45630,7 @@
                 "group": "Release notes",
                 "pages": [
                   "ru/releases/index",
+                  "ru/releases/2026.11.3",
                   "ru/releases/2026.11.2",
                   "ru/releases/2026.11.1",
                   "ru/releases/2026.10.10",
@@ -47727,6 +47748,7 @@
                 "group": "Versionsinformation",
                 "pages": [
                   "sv/releases/index",
+                  "sv/releases/2026.11.3",
                   "sv/releases/2026.11.2",
                   "sv/releases/2026.11.1",
                   "sv/releases/2026.10.10",
