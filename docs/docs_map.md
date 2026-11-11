@@ -6602,6 +6602,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H3: Configuration reference
   - H3: Configure with the wizard
+  - H2: Enterprise browser delegation
   - H2: Per-identity scope grants
   - H2: Automatic device approval
   - H2: Control UI pairing behavior
