@@ -2491,6 +2491,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Notes
   - H2: Related
 
+## cli/id.md
+
+- Route: /cli/id
+- Headings:
+  - H1: openclaw id
+  - H2: Common options
+  - H2: Status
+  - H2: Move to new keys
+  - H2: Publish
+
 ## cli/index.md
 
 - Route: /cli
