@@ -6037,6 +6037,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/remote
 - Headings:
+  - H2: OpenClaw ID from a source checkout
   - H2: OpenClaw ID nodes (Labs)
   - H2: The core idea
   - H2: Topology options
