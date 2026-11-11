@@ -29,6 +29,16 @@ test("overview defaults to the newest source month and labels follow the page lo
   assert.deepEqual(grouped.filter(entry => entry.defaultOpen).map(entry => entry.releaseMonth), ["2026-11"]);
 });
 
+test("localized month names retain the Gregorian release calendar", () => {
+  for (const [locale, expected] of [["fa", "ژوئن ۲۰۲۶"], ["th", "มิถุนายน 2026"]]) {
+    const grouped = releaseNavigationEntries([{ slug: "releases/2026.6.11" }], locale, "releases/2026.6.11");
+    assert.equal(grouped[0].group, expected);
+    assert.equal(grouped[0].releaseMonth, "2026-06");
+    assert.equal(grouped[0].defaultOpen, true);
+    assert.equal(grouped[0].pages[0].slug, "releases/2026.6.11");
+  }
+});
+
 test("nested source groups, non-release pages and invalid months are preserved", () => {
   const other = { group: "Reference", pages: [{ slug: "guide/2026.11.1" }, { slug: "releases/2026.13.1" }] };
   const source = [{ group: "Archive", pages: entries }, other];

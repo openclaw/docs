@@ -32,7 +32,7 @@ export function releaseNavigationEntries(entries, locale, activeSlug) {
   const firstMonth = flattenNavEntries(entries).map(page => releaseMonth(page.slug)).find(Boolean);
   if (!firstMonth) return entries;
   const selectedMonth = releaseMonth(activeSlug) ?? firstMonth;
-  const formatter = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" });
+  const formatter = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", calendar: "gregory", timeZone: "UTC" });
   function groupMonths(pages) {
     const result = [];
     for (const entry of pages) {
