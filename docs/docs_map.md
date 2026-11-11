@@ -9519,6 +9519,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Restrict a run to local models
   - H3: Handler lifetime
   - H3: Authorized prompt enrichment
+  - H4: Session continuity
   - H3: Session extensions and next-turn injections
 
 ## plugins/hooks/reference.md
