@@ -5163,6 +5163,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-tools/built-in-tools
 - Headings:
   - H2: tools.exec
+  - H2: tools.openclaw
   - H2: tools.loopDetection
   - H2: tools.web
   - H2: tools.media
