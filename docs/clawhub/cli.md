@@ -82,7 +82,9 @@ Stores your API token + cached registry URL.
 ### `login` / `auth login`
 
 - Default: prints a one-time code and verification URL. Open the printed URL
-  on this or another device, sign in with GitHub if needed, and select **Authorize**.
+  on this or another device, sign in with GitHub if needed, type the code from
+  the terminal, and select **Authorize**. The page does not fill the code in
+  from the link.
   The CLI polls for approval, verifies the API token via `whoami`, and saves it
   in your config. It does not open a browser or start a local callback server.
 - `--device`: explicitly selects the default device flow.
@@ -310,7 +312,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/65a2f8e6c7f910ac791c0ecb08fc6822d2a1e5a2/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/35f15a8a73baac5153be58991600f372e78453bf/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -844,7 +846,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/65a2f8e6c7f910ac791c0ecb08fc6822d2a1e5a2/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/35f15a8a73baac5153be58991600f372e78453bf/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
