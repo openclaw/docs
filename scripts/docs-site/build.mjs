@@ -28,6 +28,7 @@ import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import { renderPageOgCards, renderOgPng } from "./og-cards.mjs";
 import { renderDefaultOgSvg } from "./og-card-template.mjs";
 import { activeTabTitle, groupForPage, flattenNavEntries, flattenNav } from "./navigation.mjs";
+import { releaseNavigationEntries, patchReleaseSlugs, patchReleaseBadgeHtml } from "./release-navigation.mjs";
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
@@ -99,6 +100,7 @@ const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elemen
 const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 const announcement = latestReleaseAnnouncement(allPages);
 const announcedReleasePage = announcement?.page ?? null;
+const patchReleases = patchReleaseSlugs(allPages);
 let pages = allPages;
 let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
@@ -194,6 +196,7 @@ function collectPages(localeList) {
         raw,
         title,
         summary: String(parsed.data.summary ?? ""),
+        description: String(parsed.data.description ?? ""),
         readWhen: parsed.data.read_when ?? [],
         body: parsed.content,
         meta: {
@@ -709,19 +712,19 @@ function icon(name) {
 }
 
 function navGroupHtml(activePage, group) {
-  return `<details class="nav-section" open><summary><h2>${escapeHtml(group.title)}</h2>${icon("chevron-down")}</summary>${group.pages.map((entry) => navEntryHtml(activePage, entry)).join("")}</details>`;
+  return `<details class="nav-section" open><summary><h2>${escapeHtml(group.title)}</h2>${icon("chevron-down")}</summary>${releaseNavigationEntries(group.pages, activePage.locale, activePage.slug).map((entry) => navEntryHtml(activePage, entry)).join("")}</details>`;
 }
 
 function navEntryHtml(activePage, entry) {
   const current = entry.group && flattenNavEntries(entry.pages).some((page) => page.locale === activePage.locale && page.slug === activePage.slug);
   return entry.group
-    ? `<details class="nav-nested"${current ? " open" : ""}><summary><h2>${escapeHtml(entry.group)}</h2>${icon("chevron-down")}</summary>${entry.pages.map((child) => navEntryHtml(activePage, child)).join("")}</details>`
+    ? `<details class="nav-nested${entry.releaseMonth ? " release-nav-month" : ""}"${current || entry.defaultOpen ? " open" : ""}><summary><h2>${escapeHtml(entry.group)}</h2>${icon("chevron-down")}</summary>${entry.pages.map((child) => navEntryHtml(activePage, child)).join("")}</details>`
     : navLink(activePage, entry);
 }
 
 function navLink(activePage, page) {
   const active = activePage.locale === page.locale && activePage.slug === page.slug ? " active" : "";
-  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${announcement && page.slug === announcedReleasePage.slug ? releaseBadgeHtml(announcement, activePage.locale) : ""}</a>`;
+  return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${patchReleases.has(page.slug) ? patchReleaseBadgeHtml(activePage.locale) : ""}${announcement && page.slug === announcedReleasePage.slug ? releaseBadgeHtml(announcement, activePage.locale) : ""}</a>`;
 }
 
 function tableOfContents(html) {

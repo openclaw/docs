@@ -558,6 +558,15 @@ if (docsSections?.attribs["aria-label"] !== homeStrings.en.navigation[6]
   || /class="(?:tabs|mobile-tabs)"/.test(index)) {
   throw new Error("assets: complete vertical docs navigation is missing");
 }
+const releaseLinks = DomUtils.findAll(node => node.name === "a"
+  && /^\/releases\/\d{4}\.\d{1,2}\.\d+$/.test((node.attribs.href ?? "").slice(basePath.length)), docsSections.children);
+for (const link of releaseLinks) {
+  let group = link.parent;
+  while (group && !group.attribs?.class?.split(" ").includes("release-nav-month")) group = group.parent;
+  if (!group || group.name !== "details" || !group.children.some(node => node.name === "summary")) {
+    throw new Error(`release navigation: version link must be inside a native month disclosure: ${link.attribs.href}`);
+  }
+}
 if (!/function initChat/.test(siteJs)
   || !/data-chat-form/.test(siteJs)
   || !/new URL\("\/ask-molty\/sign-in",location\.href\)/.test(siteJs)
