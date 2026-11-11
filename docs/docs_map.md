@@ -14708,6 +14708,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/test/remote-proof
 - Headings:
   - H2: Remote proof policy for agents
+  - H3: Explicit Testbox proof
   - H2: Focused Android proof
   - H2: Testbox runner sizing
   - H2: Crabbox repository setup
