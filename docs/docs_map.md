@@ -8892,6 +8892,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Detected but not executed
   - H2: MCP for embedded OpenClaw
   - H3: Transports
+  - H3: Python stdio servers in Agent Plugins bundles
   - H3: Tool naming
   - H2: Bundle formats
   - H2: Detection precedence
