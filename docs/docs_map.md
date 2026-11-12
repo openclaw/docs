@@ -13049,6 +13049,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Getting started
   - H2: Gemini 4 Argon
+  - H2: Gemini 4 Hydrogen
   - H2: Capabilities
   - H2: Decision models
   - H2: Web search
