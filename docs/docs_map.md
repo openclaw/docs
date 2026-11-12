@@ -8011,6 +8011,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /nodes/media-playback
 - Headings:
   - H2: Client support
+  - H2: Audio previews and loading
   - H2: Portable formats
   - H2: Lazy playback renditions
   - H2: Managed attachments and access
