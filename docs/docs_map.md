@@ -9906,6 +9906,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/meeting-plugins
 - Headings:
   - H2: Choose a plugin
+  - H2: Enable bundled meeting plugins
   - H2: Choose a mode
   - H2: Configure Teams or Zoom
   - H2: Prepare Chrome and audio
