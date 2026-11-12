@@ -3681,7 +3681,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Decision assistance
   - H3: Core consumer contract
   - H3: Conversational tool filtering
-  - H2: Advisor
   - H2: OpenClaw ID remote access
   - H3: Sign in with OpenClaw ID
   - H3: How the tunnel reaches the Gateway
@@ -10115,6 +10114,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Distribution
   - H2: Surface
+  - H2: How Advisor works
   - H2: Review instructions
 
 ## plugins/reference/agent-guidance.md
