@@ -3686,6 +3686,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Conversational tool filtering
   - H2: OpenClaw ID remote access
   - H3: Sign in with OpenClaw ID
+  - H3: Link OpenClaw ID to your profile
   - H3: How the tunnel reaches the Gateway
   - H3: Turn on remote access
   - H3: Membership
