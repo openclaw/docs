@@ -14082,6 +14082,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Personal GitHub connections and publication
   - H2: Personal model accounts
   - H2: Apple companion delivery journals
+  - H2: Native chat composer drafts
   - H2: Apple OpenClaw ID node enrollment
 
 ## reference/database-schemas/state-schema-history.md
