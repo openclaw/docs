@@ -3626,6 +3626,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Limits and unavailable results
   - H2: Provide models from a plugin
   - H2: Contract ownership
+  - H2: Native provider live verification
 
 ## concepts/delegate-architecture.md
 
@@ -10275,6 +10276,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Distribution
   - H2: Surface
 
+## plugins/reference/celeris.md
+
+- Route: /plugins/reference/celeris
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
 ## plugins/reference/cerebras.md
 
 - Route: /plugins/reference/cerebras
@@ -10505,6 +10514,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/fal.md
 
 - Route: /plugins/reference/fal
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/fastino.md
+
+- Route: /plugins/reference/fastino
 - Headings:
   - H2: Distribution
   - H2: Surface
@@ -10929,6 +10946,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Distribution
   - H2: Surface
+
+## plugins/reference/nace.md
+
+- Route: /plugins/reference/nace
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
 
 ## plugins/reference/nextcloud-talk.md
 
@@ -11794,6 +11819,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Session persistence
   - H2: Skill authoring
   - H2: Stateful CLI commands
+  - H2: Prepared Decision HTTP runtime
   - H2: OpenAI-compatible Decisions runtime
   - H2: Runtime request headers
   - H3: Node workspace process environment
@@ -12757,6 +12783,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Endpoint and model IDs
   - H2: Authentication
 
+## providers/celeris.md
+
+- Route: /providers/celeris
+- Headings:
+  - H1: Celeris
+  - H2: Setup
+  - H2: Supported decisions
+  - H2: Limits and routing
+
 ## providers/cerebras.md
 
 - Route: /providers/cerebras
@@ -12924,6 +12959,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Video generation
   - H2: Music generation
   - H2: Related
+
+## providers/fastino.md
+
+- Route: /providers/fastino
+- Headings:
+  - H1: Fastino
+  - H2: Supported decisions
+  - H2: Interpret results
 
 ## providers/featherless.md
 
@@ -13239,6 +13282,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Advanced configuration
   - H2: Related
 
+## providers/nace.md
+
+- Route: /providers/nace
+- Headings:
+  - H1: Nace
+  - H2: Setup
+  - H2: Supported decisions
+  - H2: Limits and routing
+
 ## providers/neon.md
 
 - Route: /providers/neon
@@ -13523,6 +13575,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Search modes
   - H2: Native API filtering
   - H2: Advanced configuration
+  - H2: Decision models
   - H2: Related
 
 ## providers/pixverse.md

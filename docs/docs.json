@@ -2305,7 +2305,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "providers/celeris",
+                      "providers/fastino",
                       "providers/liquid-ai",
+                      "providers/nace",
                       "providers/rerank"
                     ]
                   },
@@ -4424,7 +4427,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "zh-CN/providers/celeris",
+                      "zh-CN/providers/fastino",
                       "zh-CN/providers/liquid-ai",
+                      "zh-CN/providers/nace",
                       "zh-CN/providers/rerank"
                     ]
                   },
@@ -6543,7 +6549,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "zh-TW/providers/celeris",
+                      "zh-TW/providers/fastino",
                       "zh-TW/providers/liquid-ai",
+                      "zh-TW/providers/nace",
                       "zh-TW/providers/rerank"
                     ]
                   },
@@ -8662,7 +8671,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "ja-JP/providers/celeris",
+                      "ja-JP/providers/fastino",
                       "ja-JP/providers/liquid-ai",
+                      "ja-JP/providers/nace",
                       "ja-JP/providers/rerank"
                     ]
                   },
@@ -10781,7 +10793,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "es/providers/celeris",
+                      "es/providers/fastino",
                       "es/providers/liquid-ai",
+                      "es/providers/nace",
                       "es/providers/rerank"
                     ]
                   },
@@ -12900,7 +12915,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "pt-BR/providers/celeris",
+                      "pt-BR/providers/fastino",
                       "pt-BR/providers/liquid-ai",
+                      "pt-BR/providers/nace",
                       "pt-BR/providers/rerank"
                     ]
                   },
@@ -15019,7 +15037,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "ko/providers/celeris",
+                      "ko/providers/fastino",
                       "ko/providers/liquid-ai",
+                      "ko/providers/nace",
                       "ko/providers/rerank"
                     ]
                   },
@@ -17138,7 +17159,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "de/providers/celeris",
+                      "de/providers/fastino",
                       "de/providers/liquid-ai",
+                      "de/providers/nace",
                       "de/providers/rerank"
                     ]
                   },
@@ -19257,7 +19281,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "fr/providers/celeris",
+                      "fr/providers/fastino",
                       "fr/providers/liquid-ai",
+                      "fr/providers/nace",
                       "fr/providers/rerank"
                     ]
                   },
@@ -21376,7 +21403,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "hi/providers/celeris",
+                      "hi/providers/fastino",
                       "hi/providers/liquid-ai",
+                      "hi/providers/nace",
                       "hi/providers/rerank"
                     ]
                   },
@@ -23495,7 +23525,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "ar/providers/celeris",
+                      "ar/providers/fastino",
                       "ar/providers/liquid-ai",
+                      "ar/providers/nace",
                       "ar/providers/rerank"
                     ]
                   },
@@ -25614,7 +25647,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "it/providers/celeris",
+                      "it/providers/fastino",
                       "it/providers/liquid-ai",
+                      "it/providers/nace",
                       "it/providers/rerank"
                     ]
                   },
@@ -27733,7 +27769,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "vi/providers/celeris",
+                      "vi/providers/fastino",
                       "vi/providers/liquid-ai",
+                      "vi/providers/nace",
                       "vi/providers/rerank"
                     ]
                   },
@@ -29852,7 +29891,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "nl/providers/celeris",
+                      "nl/providers/fastino",
                       "nl/providers/liquid-ai",
+                      "nl/providers/nace",
                       "nl/providers/rerank"
                     ]
                   },
@@ -31971,7 +32013,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "fa/providers/celeris",
+                      "fa/providers/fastino",
                       "fa/providers/liquid-ai",
+                      "fa/providers/nace",
                       "fa/providers/rerank"
                     ]
                   },
@@ -34090,7 +34135,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "tr/providers/celeris",
+                      "tr/providers/fastino",
                       "tr/providers/liquid-ai",
+                      "tr/providers/nace",
                       "tr/providers/rerank"
                     ]
                   },
@@ -36209,7 +36257,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "uk/providers/celeris",
+                      "uk/providers/fastino",
                       "uk/providers/liquid-ai",
+                      "uk/providers/nace",
                       "uk/providers/rerank"
                     ]
                   },
@@ -38328,7 +38379,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "id/providers/celeris",
+                      "id/providers/fastino",
                       "id/providers/liquid-ai",
+                      "id/providers/nace",
                       "id/providers/rerank"
                     ]
                   },
@@ -40447,7 +40501,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "pl/providers/celeris",
+                      "pl/providers/fastino",
                       "pl/providers/liquid-ai",
+                      "pl/providers/nace",
                       "pl/providers/rerank"
                     ]
                   },
@@ -42566,7 +42623,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "th/providers/celeris",
+                      "th/providers/fastino",
                       "th/providers/liquid-ai",
+                      "th/providers/nace",
                       "th/providers/rerank"
                     ]
                   },
@@ -44685,7 +44745,10 @@
                   {
                     "group": "Decision models",
                     "pages": [
+                      "ru/providers/celeris",
+                      "ru/providers/fastino",
                       "ru/providers/liquid-ai",
+                      "ru/providers/nace",
                       "ru/providers/rerank"
                     ]
                   },
@@ -46804,7 +46867,10 @@
                   {
                     "group": "Beslutsmodeller",
                     "pages": [
+                      "sv/providers/celeris",
+                      "sv/providers/fastino",
                       "sv/providers/liquid-ai",
+                      "sv/providers/nace",
                       "sv/providers/rerank"
                     ]
                   },
