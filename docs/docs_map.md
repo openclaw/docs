@@ -5961,6 +5961,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Node host stats
   - H3: Node background alive event
   - H2: Broadcast event scoping
+  - H3: Optional live tool output
 
 ## gateway/protocol/rpc-bootstrap-and-events.md
 
@@ -17521,6 +17522,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /web/control-ui/chat
 - Headings:
   - H2: Goals, questions, and recovery
+  - H2: Inline command trail
   - H2: Slash-command feedback
   - H2: Command approvals
   - H2: Desktop message input
