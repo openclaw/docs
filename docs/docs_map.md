@@ -14054,6 +14054,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Session reactions
   - H3: Session run outcomes and liveness
   - H3: Activity session recaps
+  - H3: Scheduled run parent receipts
   - H3: User-turn model prompt projections
   - H3: Transcript search row ownership
   - H3: Cold transcript archives
@@ -14144,6 +14145,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Preflight a target release
   - H3: Preflight an explicit agent copy
   - H2: Files from before PR workspace adoption
+  - H2: Scheduled run parent receipts
 
 ## reference/database-schemas/versioning.md
 
