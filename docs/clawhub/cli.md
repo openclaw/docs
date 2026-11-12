@@ -312,7 +312,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/5b689c0d6822f0af673c92bbc885fb8176d8d5dd/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/8f894fe8ed286ff8d30831694990ad37718d25bb/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -672,9 +672,40 @@ Example:
 clawhub package moderation-status @openclaw/example-plugin
 ```
 
+### `package publication <name>`
+
+- Shows the publication state of one exact package version.
+- Calls `GET /api/v1/packages/{name}/versions/{version}/publication`.
+- `--version` is required. The public latest version is a different question:
+  a pending release is omitted from the public version list.
+- Prints `published`, `absent`, `pending` (`staging`, `checks`, or
+  `finalization`), or `failed`. The text does not include scan findings,
+  report bodies, or digests.
+- A registry that predates this route can answer `404`, or `200` with the
+  version document and no `state`. The command then reads
+  `GET /api/v1/packages/{name}/versions/{version}`. A public version is
+  reported as published. A response that already has `state` but does not
+  match the publication contract still fails.
+- `recoverable: true` means an authorized publisher may recover the attempt.
+  It does not mean the current login can. The text shows
+  `clawhub package recover <attempt-id> --manual-override-reason "<reason>"`.
+- This does not say whether the package is an official migration candidate.
+  Use `package readiness` for that check.
+- Flags:
+  - `--version <version>`: exact version.
+  - `--json`: machine-readable output, the response object unchanged.
+
+Example:
+
+```bash
+clawhub package publication @openclaw/example-plugin --version 1.2.3
+```
+
 ### `package readiness <name>`
 
 - Checks whether a package is ready for future OpenClaw consumption.
+- A community package fails the `official` check here even when its latest
+  version is public. Use `package publication` for an exact version.
 - Calls `GET /api/v1/packages/{name}/readiness`.
 - Reports blockers for official status, ClawPack availability, artifact digest,
   source provenance, OpenClaw compatibility, host targets, environment metadata,
@@ -846,7 +877,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/5b689c0d6822f0af673c92bbc885fb8176d8d5dd/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/8f894fe8ed286ff8d30831694990ad37718d25bb/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
