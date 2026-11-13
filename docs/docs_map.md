@@ -13982,6 +13982,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Several Gateways on one PostgreSQL server
   - H3: Recommended: one database per Gateway
   - H3: One database with separate namespaces
+  - H3: Gateway ownership in PostgreSQL
   - H2: Isolation and durability
   - H2: Anchors and backups
   - H2: Updates and target compatibility
