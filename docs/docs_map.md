@@ -3681,6 +3681,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Currently documented flags
   - H2: Control UI Labs
+  - H2: Usage-ranked tool index
+  - H3: Inspect, import, or reset
+  - H3: Storage and privacy
   - H2: Decision assistance
   - H3: Core consumer contract
   - H3: Conversational tool filtering
@@ -14077,6 +14080,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Package-publication recovery receipt
   - H2: Immutable installation preparation
   - H3: Immutable release-retention inventory
+  - H3: Usage-ranked tool index
 
 ## reference/database-schemas/personal-data.md
 
