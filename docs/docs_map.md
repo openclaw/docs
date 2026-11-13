@@ -14365,6 +14365,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: diagnostics.cacheTrace config
   - H3: Env toggles (one-off debugging)
   - H3: What to inspect
+  - H2: Session prefix stability
   - H2: Quick troubleshooting
   - H2: Related
 
