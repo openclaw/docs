@@ -5580,6 +5580,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Pick a backend
   - H2: LM Studio + large local model (Responses API)
   - H3: Hybrid config: hosted primary, local fallback
+  - H3: Non-interactive hybrid setup
   - H3: Regional hosting / data routing
   - H2: Other OpenAI-compatible local proxies
   - H2: Smaller or stricter backends
@@ -7540,6 +7541,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Agent sandbox backend
   - H2: Podman and Tailscale
+  - H2: Reaching model servers on the host
   - H2: Systemd (Quadlet, optional)
   - H2: Config, env, and storage
   - H2: Upgrading images
