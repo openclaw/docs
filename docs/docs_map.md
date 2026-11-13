@@ -16169,6 +16169,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser-control
 - Headings:
   - H2: Control API (optional)
+  - H3: Operator input
   - H3: Screencast stream
   - H3: /act error contract
   - H3: Playwright requirement
