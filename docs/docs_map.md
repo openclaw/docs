@@ -16293,6 +16293,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser/profiles
 - Headings:
   - H2: Browser panel in the Control UI
+  - H3: Chrome settings and passwords
 
 ## tools/browser/remote.md
 
