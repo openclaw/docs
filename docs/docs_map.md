@@ -13985,6 +13985,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Isolation and durability
   - H2: Anchors and backups
   - H2: Updates and target compatibility
+  - H3: Server recovery captures
   - H2: Limits and recovery
   - H2: Observe database work
 
