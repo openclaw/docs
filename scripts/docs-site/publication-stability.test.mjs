@@ -2,9 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import test from "node:test";
-import { fixture, repo, run, write } from "./test-helpers/redirect-fixture.mjs";
+import { fixture, run, write } from "./test-helpers/redirect-fixture.mjs";
 import { siteJs } from "./site-js.mjs";
 
 test("runtime identity hashes the executed source, including analytics and lazy dependencies", () => {
@@ -31,11 +30,7 @@ test("commit-only builds preserve artifacts; two body edits change only their pa
       const result = run(f.root, script, env);
       assert.equal(result.status, 0, result.stderr);
     }
-    const pagefind = spawnSync(path.join(repo, "node_modules/.bin/pagefind"), ["--site", site], {
-      env: { PATH: process.env.PATH }, encoding: "utf8",
-    });
-    assert.equal(pagefind.status, 0, pagefind.stderr);
-    for (const script of ["pagefind-normalize.mjs", "r2-prepare.mjs"]) {
+    for (const script of ["pagefind-build.mjs", "pagefind-normalize.mjs", "r2-prepare.mjs"]) {
       const result = run(f.root, script, env);
       assert.equal(result.status, 0, result.stderr);
     }

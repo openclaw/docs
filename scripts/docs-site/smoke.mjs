@@ -8,6 +8,7 @@ import { DomUtils, parseDocument } from "htmlparser2";
 import { ignoredDocDirs, localeFlags, localeLabels, navigationLocaleToDir } from "./config.mjs";
 import { chromeStrings } from "./chrome-strings.mjs";
 import { peleAssetName } from "./pele-runtime.mjs";
+import { pagefindAssetDir } from "./pagefind-assets.mjs";
 import { homeStrings } from "./home-strings.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
@@ -51,7 +52,9 @@ if (!shellOnly) {
     ".well-known/llms.txt",
     "robots.txt",
     "sitemap.xml",
-    "pagefind/pagefind.js",
+    `${pagefindAssetDir}/pagefind.js`,
+    `${pagefindAssetDir}/pagefind-worker.js`,
+    `${pagefindAssetDir}/pagefind-entry.json`,
     "docs-search.json",
   );
 }
@@ -291,7 +294,7 @@ if (!/class="hljs-attr">channels<\/span>/.test(index)
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
 const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
-if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+if (!/^---\r?\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
   throw new Error("concepts/models.md: source markdown was not emitted");
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {

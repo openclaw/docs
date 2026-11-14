@@ -111,7 +111,8 @@ function cacheControlFor(key) {
   if (key.endsWith(".html") || !path.extname(key)) {
     return "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800";
   }
-  if (key.endsWith(".md") || key.endsWith(".txt") || key.endsWith(".json") || key.endsWith(".jsonl")) {
+  if (key === "pagefind/pagefind.js" || key === "pagefind/pagefind-worker.js"
+    || key.endsWith(".md") || key.endsWith(".txt") || key.endsWith(".json") || key.endsWith(".jsonl")) {
     return "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400";
   }
   return "public, max-age=31536000, immutable";
