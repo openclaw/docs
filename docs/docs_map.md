@@ -16297,6 +16297,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser/lightweight
 - Headings:
   - H1: Lightweight browsers
+  - H2: Kitesurf (experimental)
+  - H3: Compare engines
   - H2: Browser plugin architecture
   - H2: Licensing and distribution
   - H2: Alternatives reviewed
