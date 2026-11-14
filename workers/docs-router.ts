@@ -600,6 +600,9 @@ function edgeCacheControlFor(pathname: string, isHtml: boolean): string {
 
 function isMutableStaticPath(pathname: string): boolean {
   return isShellAssetPath(pathname)
+    // Older Pagefind builds reused these names across incompatible versions.
+    || pathname === "/pagefind/pagefind.js"
+    || pathname === "/pagefind/pagefind-worker.js"
     || pathname.endsWith(".md")
     || pathname.endsWith(".txt")
     || pathname.endsWith(".xml")

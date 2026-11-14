@@ -189,6 +189,22 @@ const assets = [
   ["assets/docs-site.css", "text/css; charset=utf-8", "body{}", "public, max-age=60, stale-while-revalidate=300", mutableEdge],
   ["assets/docs-site.js", "text/javascript; charset=utf-8", "export {};", "public, max-age=60, stale-while-revalidate=300", mutableEdge],
 ];
+
+test("Pagefind legacy scripts are mutable while versioned build assets keep their cache policy", async (t) => {
+  const cases = [
+    ["pagefind/pagefind.js", "text/javascript; charset=utf-8", mutableBrowser, mutableEdge],
+    ["pagefind/pagefind-worker.js", "text/javascript; charset=utf-8", mutableBrowser, mutableEdge],
+    ["pagefind/v1.6.0/pagefind.js", "text/javascript; charset=utf-8", immutable, immutable],
+    ["pagefind/v1.6.0/pagefind-worker.js", "text/javascript; charset=utf-8", immutable, immutable],
+    ["pagefind/v1.6.0/pagefind-entry.json", "application/json; charset=utf-8", mutableBrowser, mutableEdge],
+    ["pagefind/v1.6.0/pagefind.en.pf_meta", "application/octet-stream", immutable, immutable],
+  ];
+  const p = harness(t, Object.fromEntries(cases.map(([key, type]) => [key, object("fixture", type)])));
+  for (const [key, , browser, edge] of cases) {
+    policy(await p.request(`/${key}`), browser, edge);
+  }
+});
+
 for (const [key, type, body, browser, edge] of assets) {
   for (const encoded of [false, true]) {
     test(`static companion cannot negotiate: ${key}, encoded=${encoded}`, async (t) => {

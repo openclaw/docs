@@ -137,6 +137,23 @@ test("prepared artifact paths preserve uploaded bytes and reuse old manifest obj
   assert.deepEqual(puts(cold.stdout), prepared.entries.map((entry) => entry.key));
 });
 
+test("R2 Pagefind metadata distinguishes legacy scripts from versioned build assets", (t) => {
+  const f = fixture(t);
+  const expected = new Map([
+    ["pagefind/pagefind.js", "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"],
+    ["pagefind/pagefind-worker.js", "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"],
+    ["pagefind/v1.6.0/pagefind.js", "public, max-age=31536000, immutable"],
+    ["pagefind/v1.6.0/pagefind-worker.js", "public, max-age=31536000, immutable"],
+    ["pagefind/v1.6.0/pagefind-entry.json", "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"],
+    ["pagefind/v1.6.0/pagefind.en.pf_meta", "public, max-age=31536000, immutable"],
+  ]);
+  for (const key of expected.keys()) write(f.root, `dist/docs-site/${key}`, "fixture");
+  const entries = new Map(f.prepare().entries.map((entry) => [entry.key, entry]));
+  for (const [key, cacheControl] of expected) {
+    assert.equal(entries.get(key)?.cacheControl, cacheControl, key);
+  }
+});
+
 for (const mode of ["manifest", "head", "head-error"]) {
   test(`${mode} audit uploads metadata add/change/remove despite unchanged ETags using only mocked fetch`, (t) => {
     const f = uploadFixture(t);

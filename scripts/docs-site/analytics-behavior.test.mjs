@@ -4,6 +4,7 @@ import path from "node:path";
 import { before, after, test } from "node:test";
 import { chromium } from "playwright";
 import { fixture, write } from "./test-helpers/redirect-fixture.mjs";
+import { pagefindAssetDir } from "./pagefind-assets.mjs";
 
 const origin = "https://docs.openclaw.ai";
 const sdk = process.env.DOCS_GA4_SDK_PATH ? fs.readFileSync(process.env.DOCS_GA4_SDK_PATH, "utf8") : "";
@@ -43,7 +44,7 @@ async function openSite(t, { privacy, clock = false, diagram = false, articleLin
     if (url.pathname === "/ask-molty/api/chat") return route.fulfill(request.method() === "GET"
       ? { contentType: "application/json", body: "{}" }
       : { contentType: "text/plain", body: "[Private reference](https://private.example/PRIVATE_CHAT_VALUE?q=PRIVATE_CHAT_QUERY)" });
-    if (url.pathname === "/pagefind/pagefind.js") return route.fulfill({ contentType: "text/javascript", body: `
+    if (url.pathname === `/${pagefindAssetDir}/pagefind.js`) return route.fulfill({ contentType: "text/javascript", body: `
       export async function init() {}
       export async function search(q) { if(q.includes("delay")) await window.__searchWait; if(q.includes("error")) throw new Error("Fixture search error"); return {results: Array.from({length:q.includes("missing")?0:q.includes("many")?20:1},(_,i)=>({data: async () => ({url:"/guide#result-"+i,meta:{title:"Guide"},excerpt:"Public guidance"})}))}; }
     ` });

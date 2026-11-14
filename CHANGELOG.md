@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Keep search working across Pagefind upgrades by versioning its runtime and worker URLs and shortening legacy cache lifetimes. Thanks @0carespal! (#309)
+- Refresh Lucide, Glimm, Markdown heading tooling, and Playwright within the two-day dependency cooldown. Thanks @dependabot!
+
 - Refresh Lucide, Pagefind, Pele, and Wrangler within the two-day cooldown and sync canonical brand-skill guidance. Thanks @dependabot! (#299)
 
 - Fix two Markdown parser denial-of-service advisories with markdown-it 15.0.3 and refresh Carapace, icons, animation, and browser-test tooling within the two-day dependency cooldown. Thanks @dependabot! (#283, #291)
