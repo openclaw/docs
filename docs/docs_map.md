@@ -7085,6 +7085,19 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Restore a database
   - H2: Related
 
+## install/boat.md
+
+- Route: /install/boat
+- Headings:
+  - H2: Host the Gateway on Boat
+  - H3: Create and connect
+  - H3: Install and onboard
+  - H3: Open the dashboard privately
+  - H3: Stop, resume, and backups
+  - H2: Cloud workers through Crabbox
+  - H3: Tool sandbox limitation
+  - H2: Official Boat references
+
 ## install/bun-compatibility.md
 
 - Route: /install/bun-compatibility

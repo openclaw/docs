@@ -1451,6 +1451,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "install/boat",
                       "install/cloudflare",
                       "install/daytona",
                       "install/exe-dev",
@@ -3607,6 +3608,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "zh-CN/install/boat",
                       "zh-CN/install/cloudflare",
                       "zh-CN/install/daytona",
                       "zh-CN/install/exe-dev",
@@ -5729,6 +5731,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "zh-TW/install/boat",
                       "zh-TW/install/cloudflare",
                       "zh-TW/install/daytona",
                       "zh-TW/install/exe-dev",
@@ -7851,6 +7854,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "ja-JP/install/boat",
                       "ja-JP/install/cloudflare",
                       "ja-JP/install/daytona",
                       "ja-JP/install/exe-dev",
@@ -9973,6 +9977,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "es/install/boat",
                       "es/install/cloudflare",
                       "es/install/daytona",
                       "es/install/exe-dev",
@@ -12095,6 +12100,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "pt-BR/install/boat",
                       "pt-BR/install/cloudflare",
                       "pt-BR/install/daytona",
                       "pt-BR/install/exe-dev",
@@ -14217,6 +14223,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "ko/install/boat",
                       "ko/install/cloudflare",
                       "ko/install/daytona",
                       "ko/install/exe-dev",
@@ -16339,6 +16346,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "de/install/boat",
                       "de/install/cloudflare",
                       "de/install/daytona",
                       "de/install/exe-dev",
@@ -18461,6 +18469,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "fr/install/boat",
                       "fr/install/cloudflare",
                       "fr/install/daytona",
                       "fr/install/exe-dev",
@@ -20583,6 +20592,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "hi/install/boat",
                       "hi/install/cloudflare",
                       "hi/install/daytona",
                       "hi/install/exe-dev",
@@ -22705,6 +22715,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "ar/install/boat",
                       "ar/install/cloudflare",
                       "ar/install/daytona",
                       "ar/install/exe-dev",
@@ -24827,6 +24838,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "it/install/boat",
                       "it/install/cloudflare",
                       "it/install/daytona",
                       "it/install/exe-dev",
@@ -26949,6 +26961,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "vi/install/boat",
                       "vi/install/cloudflare",
                       "vi/install/daytona",
                       "vi/install/exe-dev",
@@ -29071,6 +29084,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "nl/install/boat",
                       "nl/install/cloudflare",
                       "nl/install/daytona",
                       "nl/install/exe-dev",
@@ -31193,6 +31207,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "fa/install/boat",
                       "fa/install/cloudflare",
                       "fa/install/daytona",
                       "fa/install/exe-dev",
@@ -33315,6 +33330,7 @@
                   {
                     "group": "Uygulama platformları",
                     "pages": [
+                      "tr/install/boat",
                       "tr/install/cloudflare",
                       "tr/install/daytona",
                       "tr/install/exe-dev",
@@ -35437,6 +35453,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "uk/install/boat",
                       "uk/install/cloudflare",
                       "uk/install/daytona",
                       "uk/install/exe-dev",
@@ -37559,6 +37576,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "id/install/boat",
                       "id/install/cloudflare",
                       "id/install/daytona",
                       "id/install/exe-dev",
@@ -39681,6 +39699,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "pl/install/boat",
                       "pl/install/cloudflare",
                       "pl/install/daytona",
                       "pl/install/exe-dev",
@@ -41803,6 +41822,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "th/install/boat",
                       "th/install/cloudflare",
                       "th/install/daytona",
                       "th/install/exe-dev",
@@ -43925,6 +43945,7 @@
                   {
                     "group": "App platforms",
                     "pages": [
+                      "ru/install/boat",
                       "ru/install/cloudflare",
                       "ru/install/daytona",
                       "ru/install/exe-dev",
@@ -46047,6 +46068,7 @@
                   {
                     "group": "Applikationsplattformar",
                     "pages": [
+                      "sv/install/boat",
                       "sv/install/cloudflare",
                       "sv/install/daytona",
                       "sv/install/exe-dev",
