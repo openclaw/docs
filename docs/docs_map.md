@@ -85,6 +85,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gmail sections
   - H3: Troubleshooting sections
   - H2: Related
+  - H3: Per-job Access
 
 ## automation/cron-jobs/delivery.md
 
