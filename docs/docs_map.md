@@ -3212,6 +3212,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage
   - H2: Immutable release installations
   - H2: Candidate-owned admission
+  - H3: Candidate-owned rehearsal
   - H3: External supervisor readiness
   - H2: Database capture and recovery
   - H2: Runtime retention failures
