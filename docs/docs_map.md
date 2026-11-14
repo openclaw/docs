@@ -3689,6 +3689,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Core consumer contract
   - H3: Conversational tool filtering
   - H2: OpenClaw ID remote access
+  - H3: Member roles
+  - H3: Managing remote access
   - H3: Sign in with OpenClaw ID
   - H3: Link OpenClaw ID to your profile
   - H3: How the tunnel reaches the Gateway
@@ -5778,6 +5780,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Connection roles
   - H2: Scope levels
   - H2: Named operator roles
+  - H3: OpenClaw ID member roles
   - H3: Access program grants
   - H3: Model policy
   - H2: Identity scope grants
