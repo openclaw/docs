@@ -9550,6 +9550,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Handler lifetime
   - H3: Authorized prompt enrichment
   - H4: Session continuity
+  - H4: Presentation on an accepted final
   - H3: Session extensions and next-turn injections
 
 ## plugins/hooks/reference.md
