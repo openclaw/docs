@@ -16745,6 +16745,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/image-generation
 - Headings:
+  - H2: Review before delivery
   - H2: Creative projects
   - H2: Quick start
   - H2: Common routes
