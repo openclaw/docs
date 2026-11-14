@@ -16145,6 +16145,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/ask-user
 - Headings:
   - H2: Answer a question
+  - H2: Required manual steps
   - H2: Platform behavior
   - H2: Async questions
   - H2: Timeout and no answer
