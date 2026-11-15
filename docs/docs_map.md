@@ -1784,6 +1784,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/local-proof
 - Headings:
   - H2: Local equivalents
+  - H3: Independent full-check stages
   - H3: Delegating changed compilers in CI
   - H3: Opt-in compiler evidence
   - H2: Workflow lint tools
