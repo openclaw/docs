@@ -7690,6 +7690,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Retired tenant-container management
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
+  - H3: Host prerequisites
   - H3: npm plugin rollback
   - H3: Package-publication recovery
   - H3: Recover an unfinished publication after a remount
