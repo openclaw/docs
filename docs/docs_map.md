@@ -17336,6 +17336,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable the plugin
   - H2: What tokenjuice changes
   - H2: Verify it is working
+  - H2: Measure the complete task
   - H2: Disable the plugin
   - H2: Related
 
