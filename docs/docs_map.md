@@ -4649,6 +4649,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: exec tool
   - H3: Env overrides
   - H3: Config (preferred over env overrides)
+  - H3: Lost background commands
   - H3: Disable automatic completion turns
   - H3: Durable processes
   - H2: Worker environments
