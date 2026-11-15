@@ -3213,7 +3213,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Usage
   - H2: Immutable release installations
   - H2: Candidate-owned admission
-  - H3: Candidate-owned rehearsal
   - H3: External supervisor readiness
   - H2: Database capture and recovery
   - H2: Runtime retention failures
@@ -3231,6 +3230,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What it does
   - H3: Validation and activation
+  - H4: Private rehearsal by older installed updaters
+  - H4: Inspection before staging
   - H3: Recovery limits
   - H3: Compatibility-checked package rollback
   - H3: Restart handoff
