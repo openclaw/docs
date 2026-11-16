@@ -3540,6 +3540,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration (minimal)
   - H2: Related
 
+## concepts/agents-and-templates.md
+
+- Route: /concepts/agents-and-templates
+- Headings:
+  - H2: When to make a new agent
+  - H2: Give the agent its job
+  - H2: Package it as a Template
+  - H2: Start from someone else's Template
+  - H2: Related
+
 ## concepts/architecture.md
 
 - Route: /concepts/architecture

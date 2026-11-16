@@ -1675,6 +1675,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "concepts/agents-and-templates",
                   "concepts/architecture",
                   "concepts/agent",
                   "concepts/agent-loop",
@@ -3832,6 +3833,7 @@
               {
                 "group": "代理运行时",
                 "pages": [
+                  "zh-CN/concepts/agents-and-templates",
                   "zh-CN/concepts/architecture",
                   "zh-CN/concepts/agent",
                   "zh-CN/concepts/agent-loop",
@@ -5955,6 +5957,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "zh-TW/concepts/agents-and-templates",
                   "zh-TW/concepts/architecture",
                   "zh-TW/concepts/agent",
                   "zh-TW/concepts/agent-loop",
@@ -8078,6 +8081,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "ja-JP/concepts/agents-and-templates",
                   "ja-JP/concepts/architecture",
                   "ja-JP/concepts/agent",
                   "ja-JP/concepts/agent-loop",
@@ -10201,6 +10205,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "es/concepts/agents-and-templates",
                   "es/concepts/architecture",
                   "es/concepts/agent",
                   "es/concepts/agent-loop",
@@ -12324,6 +12329,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "pt-BR/concepts/agents-and-templates",
                   "pt-BR/concepts/architecture",
                   "pt-BR/concepts/agent",
                   "pt-BR/concepts/agent-loop",
@@ -14447,6 +14453,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "ko/concepts/agents-and-templates",
                   "ko/concepts/architecture",
                   "ko/concepts/agent",
                   "ko/concepts/agent-loop",
@@ -16570,6 +16577,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "de/concepts/agents-and-templates",
                   "de/concepts/architecture",
                   "de/concepts/agent",
                   "de/concepts/agent-loop",
@@ -18693,6 +18701,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "fr/concepts/agents-and-templates",
                   "fr/concepts/architecture",
                   "fr/concepts/agent",
                   "fr/concepts/agent-loop",
@@ -20816,6 +20825,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "hi/concepts/agents-and-templates",
                   "hi/concepts/architecture",
                   "hi/concepts/agent",
                   "hi/concepts/agent-loop",
@@ -22939,6 +22949,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "ar/concepts/agents-and-templates",
                   "ar/concepts/architecture",
                   "ar/concepts/agent",
                   "ar/concepts/agent-loop",
@@ -25062,6 +25073,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "it/concepts/agents-and-templates",
                   "it/concepts/architecture",
                   "it/concepts/agent",
                   "it/concepts/agent-loop",
@@ -27185,6 +27197,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "vi/concepts/agents-and-templates",
                   "vi/concepts/architecture",
                   "vi/concepts/agent",
                   "vi/concepts/agent-loop",
@@ -29308,6 +29321,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "nl/concepts/agents-and-templates",
                   "nl/concepts/architecture",
                   "nl/concepts/agent",
                   "nl/concepts/agent-loop",
@@ -31431,6 +31445,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "fa/concepts/agents-and-templates",
                   "fa/concepts/architecture",
                   "fa/concepts/agent",
                   "fa/concepts/agent-loop",
@@ -33554,6 +33569,7 @@
               {
                 "group": "Ajan çalışma zamanı",
                 "pages": [
+                  "tr/concepts/agents-and-templates",
                   "tr/concepts/architecture",
                   "tr/concepts/agent",
                   "tr/concepts/agent-loop",
@@ -35677,6 +35693,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "uk/concepts/agents-and-templates",
                   "uk/concepts/architecture",
                   "uk/concepts/agent",
                   "uk/concepts/agent-loop",
@@ -37800,6 +37817,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "id/concepts/agents-and-templates",
                   "id/concepts/architecture",
                   "id/concepts/agent",
                   "id/concepts/agent-loop",
@@ -39923,6 +39941,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "pl/concepts/agents-and-templates",
                   "pl/concepts/architecture",
                   "pl/concepts/agent",
                   "pl/concepts/agent-loop",
@@ -42046,6 +42065,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "th/concepts/agents-and-templates",
                   "th/concepts/architecture",
                   "th/concepts/agent",
                   "th/concepts/agent-loop",
@@ -44169,6 +44189,7 @@
               {
                 "group": "Agent runtime",
                 "pages": [
+                  "ru/concepts/agents-and-templates",
                   "ru/concepts/architecture",
                   "ru/concepts/agent",
                   "ru/concepts/agent-loop",
@@ -46292,6 +46313,7 @@
               {
                 "group": "Agentens körmiljö",
                 "pages": [
+                  "sv/concepts/agents-and-templates",
                   "sv/concepts/architecture",
                   "sv/concepts/agent",
                   "sv/concepts/agent-loop",
