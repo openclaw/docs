@@ -2031,6 +2031,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: agents bind
   - H3: agents unbind
   - H3: agents set-identity
+  - H3: agents render-blobster &lt;design&gt;
   - H3: agents delete &lt;id&gt;
   - H2: Routing bindings
   - H3: --bind format
