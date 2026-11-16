@@ -12103,6 +12103,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Account services, runtime config, workspace, and TTS
   - H2: Debug proxy capture and raw SQLite
   - H2: Verify the migration
+  - H2: Worker statement diagnostics
 
 ## plugins/sdk-migration/talk.md
 
