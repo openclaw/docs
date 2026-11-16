@@ -1823,6 +1823,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Mobile store releases
   - H2: Full Release Validation
+  - H3: Choose and freeze the run
+  - H3: Coverage and runners
+  - H3: Publish qualified artifacts
+  - H3: Dispatch and recover
 
 ## ci/release-validation/install-smoke-and-docker-e2e.md
 
@@ -14282,6 +14286,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/full-release-validation/dispatch
 - Headings:
+  - H2: Recover qualification tooling without changing the candidate
+  - H3: November 2026 plan-cache restoration incident
   - H2: Exact frozen-target test omissions
   - H2: Retain and reconcile the root request
   - H2: Select coverage
