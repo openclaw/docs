@@ -13501,6 +13501,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/authentication
 - Headings:
   - H2: Compare capabilities
+  - H3: Sign in with ChatGPT usage limits
   - H3: Choose model access and harness separately
   - H2: Shared agent credential or personal account?
   - H2: Set up an agent's credential
@@ -13562,7 +13563,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/openai/setup
 - Headings:
   - H2: Getting started
-  - H2: Sign in with ChatGPT (Beta)
+  - H2: Sign in with ChatGPT
   - H3: Current limitations
 
 ## providers/openai/voice-and-speech.md
