@@ -16853,13 +16853,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/loop-detection
 - Headings:
-  - H2: Why this exists
-  - H2: Configuration block
-  - H3: Field behavior
-  - H2: Recommended setup
-  - H2: Repeated tool errors
-  - H2: Post-compaction guard
-  - H2: Logs and expected behavior
+  - H2: How it works
+  - H3: Tools that repeat by design
+  - H2: Configuration
+  - H2: Logs
   - H2: Related
 
 ## tools/mcp.md
