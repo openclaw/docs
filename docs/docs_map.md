@@ -13567,6 +13567,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /providers/openai/models
 - Headings:
+  - H2: GPT-6.2 Astra and Sol
   - H2: Quick choice
   - H3: Retired subscription model references
   - H2: Models your API key lists
