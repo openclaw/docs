@@ -3258,6 +3258,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Update steps
   - H2: Plugin sync details
   - H2: Package-manager installs
+  - H3: Replacing the package directory
   - H3: Release directories on OpenClaw-owned prefixes
   - H3: Local packaged overrides
 
