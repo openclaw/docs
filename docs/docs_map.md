@@ -3096,6 +3096,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: openclaw setup
   - H2: Options
+  - H3: Desktop terminal PATH integration
   - H3: Baseline mode
   - H2: Examples
   - H2: Notes
