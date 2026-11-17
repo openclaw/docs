@@ -15651,6 +15651,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Earlier releases
   - H2: Changelog
 
+## screens/member-recovery-kit/live-history/README.md
+
+- Route: /screens/member-recovery-kit/live-history/README
+- Headings:
+  - H1: Historical member recovery-kit live proof
+  - H2: Frozen revisions for every artifact
+  - H2: Save, wipe and recover
+  - H2: Owner notice
+  - H2: Retained history after member removal
+  - H2: Publication and interpretation limits
+
 ## security/CONTRIBUTING-THREAT-MODEL.md
 
 - Route: /security/CONTRIBUTING-THREAT-MODEL
