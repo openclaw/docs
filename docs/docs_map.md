@@ -1764,6 +1764,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /ci/capacity
 - Headings:
+  - H2: Boat start admission
   - H2: Runner registration budget
   - H2: Vitest worker sizing
   - H3: Fixed job preparation
