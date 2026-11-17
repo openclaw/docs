@@ -3157,6 +3157,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Inspect and Add
   - H3: Add from the Control UI
   - H2: Remove the agent
+  - H2: Agents from the earlier lifecycle
   - H2: Command reference
   - H2: See also
 
