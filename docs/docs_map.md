@@ -9944,6 +9944,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/manifest/surfaces
 - Headings:
   - H2: Plugin icon
+  - H3: Explicit recovery CLI subtrees
   - H2: Inline activity icons
   - H2: Themes
   - H2: Transcript sources reference
