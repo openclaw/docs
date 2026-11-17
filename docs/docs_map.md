@@ -14319,7 +14319,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Evidence to keep
   - H2: Bounded publication recovery
   - H2: Release-tooling waivers
-  - H2: Receipt-backed beta aggregate recovery
+  - H2: Unavailable qualification evidence
   - H2: Workflow files
 
 ## reference/full-release-validation/extended-stable.md
