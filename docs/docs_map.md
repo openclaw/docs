@@ -3243,6 +3243,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Validation and activation
   - H4: Private rehearsal by older installed updaters
   - H4: Inspection before staging
+  - H4: Owed steps
   - H3: Recovery limits
   - H3: Compatibility-checked package rollback
   - H3: Restart handoff
