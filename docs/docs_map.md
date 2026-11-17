@@ -12309,8 +12309,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Module loading and host identity
   - H2: What each page covers
   - H2: Runtime namespaces
-  - H3: Read-only session forks
-  - H3: Forked turns with plugin tools
+  - H3: Session forks
+  - H4: Tool-free forks
+  - H4: Forked turns with plugin tools
   - H2: Skill usage
   - H2: Storing runtime references
   - H2: Plugin lifecycle and cleanup
