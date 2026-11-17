@@ -1851,6 +1851,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "plugins/apple-fm",
+                      "plugins/gbrain",
                       "plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -4010,6 +4011,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "zh-CN/plugins/apple-fm",
+                      "zh-CN/plugins/gbrain",
                       "zh-CN/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -6135,6 +6137,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "zh-TW/plugins/apple-fm",
+                      "zh-TW/plugins/gbrain",
                       "zh-TW/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -8260,6 +8263,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "ja-JP/plugins/apple-fm",
+                      "ja-JP/plugins/gbrain",
                       "ja-JP/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -10385,6 +10389,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "es/plugins/apple-fm",
+                      "es/plugins/gbrain",
                       "es/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -12510,6 +12515,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "pt-BR/plugins/apple-fm",
+                      "pt-BR/plugins/gbrain",
                       "pt-BR/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -14635,6 +14641,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "ko/plugins/apple-fm",
+                      "ko/plugins/gbrain",
                       "ko/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -16760,6 +16767,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "de/plugins/apple-fm",
+                      "de/plugins/gbrain",
                       "de/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -18885,6 +18893,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "fr/plugins/apple-fm",
+                      "fr/plugins/gbrain",
                       "fr/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -21010,6 +21019,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "hi/plugins/apple-fm",
+                      "hi/plugins/gbrain",
                       "hi/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -23135,6 +23145,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "ar/plugins/apple-fm",
+                      "ar/plugins/gbrain",
                       "ar/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -25260,6 +25271,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "it/plugins/apple-fm",
+                      "it/plugins/gbrain",
                       "it/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -27385,6 +27397,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "vi/plugins/apple-fm",
+                      "vi/plugins/gbrain",
                       "vi/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -29510,6 +29523,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "nl/plugins/apple-fm",
+                      "nl/plugins/gbrain",
                       "nl/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -31635,6 +31649,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "fa/plugins/apple-fm",
+                      "fa/plugins/gbrain",
                       "fa/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -33760,6 +33775,7 @@
                     "group": "Modeller ve bellek",
                     "pages": [
                       "tr/plugins/apple-fm",
+                      "tr/plugins/gbrain",
                       "tr/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -35885,6 +35901,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "uk/plugins/apple-fm",
+                      "uk/plugins/gbrain",
                       "uk/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -38010,6 +38027,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "id/plugins/apple-fm",
+                      "id/plugins/gbrain",
                       "id/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -40135,6 +40153,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "pl/plugins/apple-fm",
+                      "pl/plugins/gbrain",
                       "pl/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -42260,6 +42279,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "th/plugins/apple-fm",
+                      "th/plugins/gbrain",
                       "th/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -44385,6 +44405,7 @@
                     "group": "Models and memory",
                     "pages": [
                       "ru/plugins/apple-fm",
+                      "ru/plugins/gbrain",
                       "ru/plugins/knowledge",
                       {
                         "group": "Knowledge",
@@ -46510,6 +46531,7 @@
                     "group": "Modeller och minne",
                     "pages": [
                       "sv/plugins/apple-fm",
+                      "sv/plugins/gbrain",
                       "sv/plugins/knowledge",
                       {
                         "group": "Knowledge",

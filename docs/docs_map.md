@@ -9440,6 +9440,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Bundle boundaries
   - H2: Approve an agent-built artifact
 
+## plugins/gbrain.md
+
+- Route: /plugins/gbrain
+- Headings:
+  - H2: Before you install
+  - H2: What install does
+  - H2: Docker
+  - H2: Status and recovery
+  - H2: Uninstall
+  - H2: GBrain and Knowledge
+
 ## plugins/geolocation.md
 
 - Route: /plugins/geolocation
@@ -10633,6 +10644,14 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## plugins/reference/fish-audio-speech.md
 
 - Route: /plugins/reference/fish-audio-speech
+- Headings:
+  - H2: Distribution
+  - H2: Surface
+  - H2: Related docs
+
+## plugins/reference/gbrain.md
+
+- Route: /plugins/reference/gbrain
 - Headings:
   - H2: Distribution
   - H2: Surface
