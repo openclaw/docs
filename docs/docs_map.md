@@ -1454,6 +1454,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /channels/telegram/media
 - Headings:
   - H2: Media and attachments
+  - H2: Inbound attachments that fail to download
 
 ## channels/telegram/messaging.md
 
