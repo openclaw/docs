@@ -5821,6 +5821,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Shared-secret auth
   - H2: Recovering from inactive authority
   - H2: Related
+  - H3: Automation administrator delegation across UI clients
 
 ## gateway/pairing.md
 
