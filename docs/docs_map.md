@@ -3160,6 +3160,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Create with an agent
   - H2: Add through the setup helper
   - H2: Author locally
+  - H3: Welcome description and conversation starters
   - H2: Inspect and Add
   - H3: Add from the Control UI
   - H2: Remove the agent
@@ -4952,6 +4953,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/config-agents/entries-and-multi-agent
 - Headings:
   - H2: agents.entries (per-agent overrides)
+  - H2: Chat welcome
   - H2: Multi-agent routing
   - H3: Binding match fields
   - H3: Per-agent access profiles
