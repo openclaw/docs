@@ -12167,6 +12167,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-migration/talk
 - Headings:
   - H2: Talk and realtime voice migration
+  - H2: Await session-policy preparation
 
 ## plugins/sdk-overview.md
 
