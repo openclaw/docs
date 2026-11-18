@@ -3157,6 +3157,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /cli/templates
 - Headings:
   - H1: openclaw templates
+  - H2: Add an unpublished local project to a running Gateway
+  - H2: Import a Template archive in the Control UI
   - H2: Create with an agent
   - H2: Add through the setup helper
   - H2: Author locally
