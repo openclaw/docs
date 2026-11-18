@@ -14167,6 +14167,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Immutable installation preparation
   - H3: Immutable release-retention inventory
   - H3: Usage-ranked tool index
+  - H3: Pending-input endings
 
 ## reference/database-schemas/personal-data.md
 
