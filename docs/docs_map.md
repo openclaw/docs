@@ -12361,6 +12361,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Browser meeting participation
   - H2: Worker provider allocation authority
   - H2: Harness request-policy denials
+  - H2: Harness runtime updates
   - H2: Harness execution identity
   - H2: Other top-level api fields
   - H2: Where each section moved
