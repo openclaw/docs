@@ -2180,6 +2180,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: JSON output shape
   - H2: Applying changes
   - H2: Write safety
+  - H3: Agent-assisted recovery
   - H2: Repair loop
   - H2: Related
 
