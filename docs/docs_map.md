@@ -7753,6 +7753,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Auto-updater
   - H3: Choose an automatic-update schedule
   - H3: Update campaigns
+  - H3: Owed plugin steps
 
 ## install/updating/rollback-and-recovery.md
 
