@@ -320,6 +320,7 @@ clawhub scan --slug gifgrep --update --output report.zip
 - Plugin downloads use the package name and require `--kind plugin`.
 - `--version` is required so authors inspect the exact submitted version that ClawHub blocked.
 - `--output <file.zip>` chooses the destination path.
+- When the publication checks of a skill version stopped before a verdict, the archive holds `manifest.json`, `publication.json`, and a `README.md` that says the scan failed with no safety verdict. It gives the check states, whether a retry is waiting, and what to do next. It does not include worker errors.
 
 ```bash
 clawhub scan download gifgrep --version 1.2.3
@@ -329,7 +330,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/217ca34627a2f098df87c328c143446e9f4b4997/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/9c001006c62dd244f7c97b34634c719fc553499d/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -894,7 +895,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/217ca34627a2f098df87c328c143446e9f4b4997/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/9c001006c62dd244f7c97b34634c719fc553499d/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
