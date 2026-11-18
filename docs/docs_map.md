@@ -14550,6 +14550,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: PR wrapper tooling
   - H2: Finalized task closeout
   - H2: Wrapper execution and dependencies
+  - H3: Defer shared cache collection
   - H2: Qualify the workspace before review
   - H2: Reuse the base and fetch only needed history
   - H2: Keep the admitted workflow across commands
