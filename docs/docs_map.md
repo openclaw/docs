@@ -12528,6 +12528,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Before you begin
   - H2: Choose sessions on the source
+  - H2: Source Gateway publication
   - H2: Enable the receiver and pair the source
   - H2: Read shared sessions
   - H2: Attribute the source node
