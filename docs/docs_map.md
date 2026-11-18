@@ -15288,24 +15288,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /releases/2026.11.5
 - Headings:
   - H1: v2026.11.5
-  - H2: Quality of life
-  - H3: Chat and sessions
-  - H3: Tools and providers
-  - H3: Maintenance
-  - H3: Automation notifications
-  - H2: Bug fixes
-  - H3: Automations
-  - H3: Gateway and recovery
-  - H3: Security and privacy
-  - H3: Agents and tools
-  - H3: Updates and maintenance
-  - H3: Sessions and chat
-  - H3: Memory and search
-  - H3: Models and providers
-  - H3: Channels and apps
-  - H3: Browser and desktop
-  - H3: Plugins and installation
-  - H3: Command line
 
 ## releases/2026.6.11.md
 
