@@ -12435,6 +12435,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Person access lifetimes
   - H3: Durable person access grants
   - H2: Gateway service events
+  - H2: Publication-reader device admission
 
 ## plugins/sdk-runtime/media.md
 
