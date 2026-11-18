@@ -12436,6 +12436,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Durable person access grants
   - H2: Gateway service events
   - H2: Publication-reader device admission
+  - H3: Existing named reader identity
 
 ## plugins/sdk-runtime/media.md
 
@@ -12528,7 +12529,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Before you begin
   - H2: Choose sessions on the source
-  - H2: Source Gateway publication
+  - H2: Outbound Gateway pull
   - H2: Enable the receiver and pair the source
   - H2: Read shared sessions
   - H2: Attribute the source node
