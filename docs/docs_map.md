@@ -6427,6 +6427,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Prompt injection
   - H3: External content and untrusted-input wrapping
+  - H3: Screening the final model request
   - H3: Bypass flags (keep off in production)
   - H3: Reasoning and verbose output in groups
 
@@ -9600,6 +9601,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Authorized prompt enrichment
   - H4: Session continuity
   - H4: Presentation on an accepted final
+  - H3: Final model request policy
   - H3: Session extensions and next-turn injections
 
 ## plugins/hooks/reference.md
