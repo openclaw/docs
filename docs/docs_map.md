@@ -5940,6 +5940,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Memory samples and worker coverage
   - H3: Pool worker task and GC totals
   - H3: Garbage collection duration
+  - H2: Plugin metric families
   - H2: Label policy
   - H2: PromQL recipes
   - H2: Choosing between Prometheus and OpenTelemetry export
