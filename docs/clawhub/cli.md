@@ -153,6 +153,23 @@ guidance; it does not retry checks or release the upload. JSON places the status
 in `publication` and recovery guidance in `nextSteps`. Held content is not returned
 by `--file` or `--files`; these requests exit unsuccessfully after showing status.
 
+### `skill publication <skill>`
+
+- Shows the publication stage of one exact skill version to its owner.
+- Calls `GET /api/v1/skills/{slug}/versions/{version}/publication`.
+- `--version` is required. The public latest version is a different question: a held upload is omitted from the public version list.
+- Prints the stage, whether a retry is already waiting, and the `clawhub scan download` command when a stored report may exist.
+- `published` means publication of that version is complete. It does not mean the skill is currently visible. A moderation hold can still restrict public reads.
+- The text does not include worker errors, findings, attempt ids, or storage ids.
+- `--json` prints the response object unchanged.
+- Log in first. Anonymous and unauthorized callers get the same refusal as the HTTP route.
+
+Example:
+
+```bash
+clawhub skill publication @owner/slug --version 1.2.3
+```
+
 ### `install @owner/slug`
 
 - Resolves latest version for the named owner and skill.
@@ -312,7 +329,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/7eae0ac246da838f86f3a59c035536393547db53/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/217ca34627a2f098df87c328c143446e9f4b4997/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -877,7 +894,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/7eae0ac246da838f86f3a59c035536393547db53/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/217ca34627a2f098df87c328c143446e9f4b4997/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
