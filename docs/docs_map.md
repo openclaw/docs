@@ -9621,6 +9621,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/hooks/tool-policy
 - Headings:
   - H2: Tool call policy
+  - H3: Device-aware policy
   - H3: Sender-aware policy in one file
   - H3: Tool call observation
   - H3: Exec environment hook
