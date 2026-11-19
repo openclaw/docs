@@ -3285,6 +3285,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: update repair
   - H3: Skipped legacy audit recovery
   - H2: update cleanup
+  - H3: What automatic cleanup deletes
   - H3: Explicitly retire an unmanifested original
 
 ## cli/update/status-and-history.md
