@@ -9859,6 +9859,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Uninstall plugins
   - H2: Choose a source
   - H2: Publish plugins
+  - H2: OpenClaw ID Access page
   - H2: Related
 
 ## plugins/manifest.md
