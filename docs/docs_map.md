@@ -12308,6 +12308,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/sdk-provider-plugins/hook-families
 - Headings:
   - H2: Family builders
+  - H3: Serialized Converse transport
 
 ## plugins/sdk-provider-plugins/media-and-search.md
 
@@ -12939,6 +12940,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/clawrouter
 - Headings:
   - H2: Getting started
+  - H2: Bedrock Converse
   - H2: Vercel native Messages
   - H2: Utility model
   - H2: Decision models
