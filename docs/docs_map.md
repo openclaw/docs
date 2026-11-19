@@ -3264,6 +3264,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Git checkout flow
   - H3: Channel selection
   - H3: Update steps
+  - H3: Git checkouts that run from releases
   - H2: Plugin sync details
   - H2: Package-manager installs
   - H3: Replacing the package directory
