@@ -27,6 +27,10 @@ function releaseMonth(slug) {
   return `${match[1]}-${match[2].padStart(2, "0")}`;
 }
 
+export function isVersionedReleasePage(slug) {
+  return Boolean(releaseMonth(slug.split("/").slice(0, 2).join("/")));
+}
+
 // Group adjacent release pages without changing source order, links, or groups.
 export function releaseNavigationEntries(entries, locale, activeSlug) {
   const firstMonth = flattenNavEntries(entries).map(page => releaseMonth(page.slug)).find(Boolean);

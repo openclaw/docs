@@ -28,7 +28,7 @@ import { parseFrontmatter } from "../../.openclaw-sync/lib/docs-markdown.mjs";
 import { renderPageOgCards, renderOgPng } from "./og-cards.mjs";
 import { renderDefaultOgSvg } from "./og-card-template.mjs";
 import { activeTabTitle, groupForPage, flattenNavEntries, flattenNav } from "./navigation.mjs";
-import { releaseNavigationEntries, patchReleaseSlugs, patchReleaseBadgeHtml } from "./release-navigation.mjs";
+import { isVersionedReleasePage, releaseNavigationEntries, patchReleaseSlugs, patchReleaseBadgeHtml } from "./release-navigation.mjs";
 import { resolveRedirects } from "../../.openclaw-sync/lib/docs-redirects.mjs";
 
 const root = process.cwd();
@@ -307,7 +307,7 @@ function writePage(page) {
   const article = renderCache ? renderCache.render(page.raw, options) : renderArticle(page.raw, options);
   const composed = page.slug === "index" ? homeLayoutHtml(article, icon, announcement ? { ...announcement, href: pageRoute(announcedReleasePage) } : null, page.locale) : article;
   const html = rewriteInternalUrls(rewriteOfficialDiscordLinks(composed, page.slug), page.locale);
-  const toc = tableOfContents(html);
+  const toc = isVersionedReleasePage(page.slug) ? releaseTableOfContents(html) : tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, layout({ page, nav, activeTab, html, toc, prev, next }), "utf8");
@@ -382,7 +382,6 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const ogTitle = page.slug === "index" ? `${config.name} Docs` : `${page.title} · ${config.name}`;
   const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
   const analyticsEligible = process.env.DOCS_SITE_GA4_ENABLED === "1" && !previewMode && !page.hidden && !basePath && canonicalOrigin === "https://docs.openclaw.ai";
-  // tableOfContents already caps this shared UI/analytics heading list at 24.
   const pageOgVersion = page.locale === "en" ? pageOgVersions.get(page.slug) : undefined;
   const pageOgPath = pageOgVersion
     ? `/og/${page.slug}.png`
@@ -424,7 +423,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 ${siteHeader(page)}
 <div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
-<div class="main"${analyticsEligible ? ` data-analytics-path="${escapeAttr(pageRoute(page))}" data-analytics-title="${escapeAttr(title)}" data-analytics-sections="${escapeAttr(JSON.stringify(toc.map(item => item.id)))}"` : ""}>
+<div class="main"${analyticsEligible ? ` data-analytics-path="${escapeAttr(pageRoute(page))}" data-analytics-title="${escapeAttr(title)}" data-analytics-sections="${escapeAttr(JSON.stringify(toc.slice(0, 24).map(item => item.id)))}"` : ""}>
 ${homeHeroArt}
 <div class="page-intro"></div>
 ${tocHtml(toc, page.locale)}
@@ -725,6 +724,29 @@ function navEntryHtml(activePage, entry) {
 function navLink(activePage, page) {
   const active = activePage.locale === page.locale && activePage.slug === page.slug ? " active" : "";
   return `<a class="nav-link${active}" href="${pageUrl(page)}"${previewLinkAttrs(page)}${active ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}${patchReleases.has(page.slug) ? patchReleaseBadgeHtml(activePage.locale) : ""}${announcement && page.slug === announcedReleasePage.slug ? releaseBadgeHtml(announcement, activePage.locale) : ""}</a>`;
+}
+
+// Release topics and sources can contain real headings inside disclosures. Keep
+// their deep links in the article, but only index top-level section headings.
+function releaseTableOfContents(html) {
+  const items = [];
+  let depth = 0;
+  let heading;
+  new Parser({
+    onopentag(tag, attrs) {
+      if (depth === 0 && tag === "h2" && attrs.id) heading = { level: 2, id: attrs.id, title: "" };
+      depth++;
+    },
+    ontext(text) { if (heading) heading.title += text; },
+    onclosetag() {
+      if (--depth === 0 && heading) {
+        heading.title = heading.title.replace(/^#\s*/, "").replace(/\s+/g, " ").trim();
+        items.push(heading);
+        heading = undefined;
+      }
+    },
+  }).end(html);
+  return items;
 }
 
 function tableOfContents(html) {
