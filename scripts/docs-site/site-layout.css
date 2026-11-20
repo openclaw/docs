@@ -178,6 +178,7 @@ body:not(.docs-home) .doc .oc-card-group:not(.oc-card-cols-1):not(.oc-card-cols-
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .community-invite { transition: none; }
 }
 
 /* Shared network chrome and a search-led landing page, matching the community. */

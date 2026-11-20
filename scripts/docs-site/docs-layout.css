@@ -560,6 +560,8 @@
   .docs-layout .main { border: 0; }
   .docs-layout .article, .docs-layout.docs-home-layout .article { padding-inline: 24px; }
   .docs-layout :is(.sidebar,.community-invite) { width: min(380px,100vw); }
+  /* 100vw includes a classic scrollbar, so a fixed card can extend past the layout viewport. */
+  .docs-layout .community-invite { box-sizing: border-box; width: min(380px, 100%); max-height: 100dvh; }
   .docs-layout .sidebar { --docs-sidebar-inset-end: 20px; top: 0; padding: 0 20px; max-height: 100dvh; height: 100dvh; }
   .docs-layout .sidebar-head { min-height: 60px; margin: 0; padding-block: 8px; justify-content: space-between; border-bottom: 1px solid var(--docs-border); }
   .docs-layout .sidebar-brand { min-height: 44px; gap: 8px; }
