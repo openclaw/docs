@@ -19,11 +19,11 @@ test("patch details follow the fix inline and retain native keyboard access", as
 `;
   const css = fs.readFileSync(new URL("./docs-layout.css", import.meta.url), "utf8");
   try {
-    for (const grouped of [false, true]) for (const width of [1200, 390]) {
+    for (const shape of ["list", "grouped-list", "single"]) for (const width of [1200, 390]) {
       const page = await browser.newPage({ viewport: { width, height: 700 } });
       try {
-        await page.setContent(`<style>${css}</style><div class="docs-layout"><div class="doc">${renderMdxish(grouped ? `<AccordionGroup>\n<Accordion title="Changes">\n\n${source}\n</Accordion>\n</AccordionGroup>` : source, createMarkdownRenderer())}</div></div>`);
-        if (grouped) await page.locator(".oc-accordion > summary").click();
+        await page.setContent(`<style>${css}</style><div class="docs-layout"><div class="doc">${renderMdxish(shape === "list" ? source : `<AccordionGroup>\n<Accordion title="Changes">\n\n${shape === "single" ? source.split("- An unrelated")[0].slice(2).replace(/^  /gm, "") : source}\n</Accordion>\n</AccordionGroup>`, createMarkdownRenderer())}</div></div>`);
+        if (shape !== "list") await page.locator(".oc-accordion > summary").click();
         const summary = page.locator(".release-source-inline > summary");
         const link = page.getByRole("link", { name: "#123", exact: true });
         assert.equal(await link.isVisible(), false);
@@ -44,7 +44,7 @@ test("patch details follow the fix inline and retain native keyboard access", as
         });
         assert.equal(layout.paragraphDisplay, "inline");
         assert.ok(layout.control.height <= 24, "keep the visible control compact");
-        assert.equal(layout.pointerArea, true, `retain a 44px pointer target (grouped=${grouped}, width=${width}): ${JSON.stringify(layout)}`);
+        assert.equal(layout.pointerArea, true, `retain a 44px pointer target (shape=${shape}, width=${width}): ${JSON.stringify(layout)}`);
         assert.equal(layout.overflow, false, "narrow view must not scroll horizontally");
         if (width === 1200) {
           assert.ok(layout.control.left >= layout.end.right, "control follows the final character");
