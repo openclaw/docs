@@ -26,5 +26,30 @@ export function attachReleasePointToggles(html) {
   }
   const result = []; let pos = 0;
   for (const [start,end,markup] of edits) { result.push(html.slice(pos,start),markup); pos=end; }
-  return result.join('') + html.slice(pos);
+  const attached = result.join('') + html.slice(pos);
+  // A plain space between an inline paragraph and its control is a legal line
+  // break. Bind the last word to the control even near a narrow right edge.
+  // Adjacent unlabeled source records for one point share one disclosure;
+  // never collapse anchors, custom summaries or author-specified attributes.
+  const nodes = parseDocument(attached, { withStartIndices: true, withEndIndices: true });
+  const standard = n => n?.name === 'details' && Object.keys(n.attribs).length === 1 &&
+    hasClass(n, 'release-source-toggle') && hasClass(n, 'release-source-inline') &&
+    n.children.find(nonblank)?.name === 'summary' &&
+    attached.slice(n.children.find(nonblank).startIndex, n.children.find(nonblank).endIndex + 1) === '<summary>More details</summary>';
+  const replacements = [];
+  for (const d of DomUtils.findAll(standard, nodes.children)) {
+    let prev = d.prev;
+    while (prev && !nonblank(prev)) prev = prev.prev;
+    if (!prev) continue;
+    if (prev.name === 'p') {
+      const end = prev.endIndex + 1 - '</p>'.length;
+      if (attached.slice(end, prev.endIndex + 1) === '</p>') replacements.push([end, d.startIndex, '&#8288;</p>']);
+    } else if (standard(prev) && hasClass(d.parent, 'oc-accordion-content')) {
+      const end = prev.endIndex + 1 - '</details>'.length;
+      if (attached.slice(end, prev.endIndex + 1) === '</details>') replacements.push([end, d.children.find(nonblank).endIndex + 1, '\n']);
+    }
+  }
+  const joined = []; let cursor = 0;
+  for (const [start,end,markup] of replacements) { joined.push(attached.slice(cursor,start), markup); cursor=end; }
+  return joined.join('') + attached.slice(cursor);
 }
