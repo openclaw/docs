@@ -9784,6 +9784,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: The scribes
   - H3: The Granola plugin
+  - H3: The Slack plugin
   - H2: Start a scribe
   - H3: Example prompt
   - H2: After updating OpenClaw
