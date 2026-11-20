@@ -11814,6 +11814,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: What your plugin owns
   - H2: Native mention display
+  - H2: Renewing queued ingress access
   - H2: Opted-in public child sessions
   - H2: Walkthrough
   - H2: File structure
