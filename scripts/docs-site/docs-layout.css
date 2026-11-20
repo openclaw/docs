@@ -214,8 +214,8 @@
 @media (prefers-reduced-motion:reduce) {
   .docs-layout .doc .release-source-toggle > summary::before { transition: none; }}
 .docs-layout .doc .release-source-toggle > summary:focus-visible { outline: 2px solid var(--oc-focus-ring); outline-offset: 2px; }
-/* Patch lists keep their detail control in the sentence's inline flow. */
-.docs-layout .doc li:has(> .release-source-inline) > p:first-child { display: inline; margin: 0; }
+/* A single point or a list item shares its last line with its source toggle. */
+.docs-layout .doc p:has(+ details.release-source-inline) { display: inline; margin: 0; }
 .docs-layout .doc .release-source-inline { display: inline; }
 .docs-layout .doc .release-source-inline > summary { display: inline-flex; vertical-align: middle; min-block-size: 0; inline-size: 20px; block-size: 20px; justify-content: center; margin-inline-start: .2em; padding: 0; border-radius: 4px; color: var(--muted); font-size: 0; line-height: 0; position: relative; }
 /* Inline patch-release details: a small chevron only; the label stays for assistive tech. */
