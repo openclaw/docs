@@ -5335,6 +5335,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Config includes ($include)
   - H2: Related
   - H3: Publication reader opt-in
+  - H3: Active steering opt-in
 
 ## gateway/configuration.md
 
@@ -6046,6 +6047,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/protocol/rpc-session-control
 - Headings:
   - H2: Session control
+  - H3: Active-only human steering
   - H3: Chat input reconciliation
   - H3: Existing folders on paired devices
 
