@@ -126,3 +126,26 @@ test("responsive release disclosures reveal the selected month on direct and PJA
     await context.close();
   }
 });
+
+test("versioned release outlines keep all top-level sections, not nested topics", t => {
+  const body = ["# Notes", "## First", ...Array.from({ length: 26 }, (_, i) => `### Topic ${i}`),
+    '<details><summary>Sources</summary>', '## Nested source', '</details>',
+    ...Array.from({ length: 25 }, (_, i) => `## Group ${i}`)].join("\n\n");
+  const f = fixture(t, [], Object.fromEntries(["releases/2026.11.5", "de/releases/2026.11.5", "releases/2026.8.1/messaging", "releases/index", "guide"].map(route => [`${route}.md`, body])));
+  const built = f.build({ DOCS_SITE_GA4_ENABLED: "1" });
+  assert.equal(built.status, 0, built.stderr);
+  for (const route of ["releases/2026.11.5", "de/releases/2026.11.5", "releases/2026.8.1/messaging", "releases", "guide"]) {
+    const html = fs.readFileSync(path.join(f.root, "dist/docs-site", route, "index.html"), "utf8");
+    const toc = html.match(/<details class="toc"[\s\S]*?<nav>([\s\S]*?)<\/nav>/)[1];
+    const links = [...toc.matchAll(/<a class="toc-l\d" href="#([^"]+)"/g)].map(m => m[1]);
+    if (route === "guide" || route === "releases") {
+      assert.equal(links.length, 24);
+      assert.ok(links.includes("topic-0"));
+    } else {
+      assert.deepEqual(links, ["first", ...Array.from({ length: 25 }, (_, i) => `group-${i}`)]);
+      assert.match(html, /id="nested-source"/);
+      assert.match(html, /id="topic-0"/);
+      assert.ok(!html.match(/data-analytics-sections="[^"]*group-24/));
+    }
+  }
+});
