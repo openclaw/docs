@@ -16049,6 +16049,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: What you need
   - H2: Try it in one command
   - H2: Quick setup
+  - H2: Pair your iPhone or iPad
   - H2: If setup does not work
   - H2: What to do next
   - H2: Related
