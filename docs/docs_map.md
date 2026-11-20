@@ -5334,6 +5334,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Media model template variables
   - H2: Config includes ($include)
   - H2: Related
+  - H3: Publication reader opt-in
 
 ## gateway/configuration.md
 
