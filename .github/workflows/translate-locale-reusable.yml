@@ -144,7 +144,7 @@ jobs:
 
       - name: Setup Go
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version: "${{ env.GO_VERSION }}"
 
@@ -319,7 +319,7 @@ jobs:
         id: mdx_repair
         if: steps.repair_model.outcome == 'success'
         continue-on-error: true
-        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec # v1
         env:
           LOCALE: ${{ inputs.locale }}
         with:
