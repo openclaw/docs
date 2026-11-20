@@ -8030,6 +8030,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Configure the Gateway
   - H4: Select execution separately
   - H4: Verify the setup
+  - H3: Size-limited node connections
   - H3: Workspace Skill installation
   - H3: Binary transfers for services
   - H3: Transferred files
