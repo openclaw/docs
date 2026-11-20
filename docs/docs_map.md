@@ -15309,17 +15309,95 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: OpenClaw v2026.11.5
   - H2: Installation and Onboarding
   - H2: Web UI
+  - H3: Opening and reading conversations
+  - H3: Chat and new sessions
+  - H3: Sessions and sidebar
+  - H3: Boards, dashboards and activity
+  - H3: Sharing and notifications
+  - H3: Settings and interface controls
+  - H3: Starting and writing conversations
+  - H3: Session controls and navigation
+  - H3: Sharing and access
+  - H3: Finding sessions
+  - H3: Chat history and context
+  - H3: Archived conversations
+  - H3: Live updates and replies
+  - H3: Session storage and processing
+  - H3: Chat and session display
+  - H3: Files and outputs
+  - H3: Changes and pull requests
+  - H3: Chat Details and activity
+  - H3: Chat and Side chat
+  - H3: Terminal and panels
   - H2: Updates and Maintenance
+  - H3: Update and installation reports
   - H2: Messaging
+  - H3: Nextcloud Talk
+  - H3: Slack
+  - H3: Discord
+  - H3: Telegram
+  - H3: Feishu
+  - H3: X
+  - H3: Mattermost
+  - H3: Microsoft Teams
+  - H3: WhatsApp
+  - H3: Zalo
+  - H3: LINE
+  - H3: Nostr
+  - H3: Twilio SMS
+  - H3: Channel delivery and recovery
+  - H3: Channel status and indicators
+  - H3: Messaging replies
+  - H3: Regional channel maturity
+  - H3: Message delivery across channels
+  - H3: Channel login and settings
+  - H3: Channel startup and recovery
+  - H3: Channel replies and progress
+  - H3: Channel commands and settings
+  - H3: Search and conversation history across channels
+  - H3: Slack and Telegram introductions
+  - H3: Attachment limits across channels
+  - H3: Interactive questions across channels
+  - H3: Slack fixes
+  - H3: Telegram fixes
+  - H3: Feishu fixes
+  - H3: Discord fixes
+  - H3: Matrix
+  - H3: WhatsApp fixes
+  - H3: Google Chat
+  - H3: Microsoft Teams fixes
+  - H3: iMessage
+  - H3: Mattermost fixes
+  - H3: Nextcloud Talk fixes
+  - H3: Signal
+  - H3: X fixes
+  - H3: Tlon
+  - H3: Nostr fixes
+  - H3: ClickClack
+  - H3: Buzz
+  - H3: Zalo and Zalo Personal
+  - H3: Reef
+  - H3: A2A
+  - H3: IMAP
+  - H3: IRC
+  - H3: LINE fixes
+  - H3: QA Channel
+  - H3: Synology Chat
+  - H3: Twilio MMS
+  - H3: Twitch
   - H2: Memory
+  - H3: LanceDB startup
   - H2: Skills
   - H2: Native Apps
   - H2: Models and Providers
+  - H3: Prompt caching and conversation continuations
+  - H3: Prompt caching and conversation continuations fixes
   - H2: Automations and Scheduling
   - H2: Browser and Computer Use
   - H2: Plugins and Integrations
   - H2: Security and Privacy
   - H2: Other QOL Improvements
+  - H3: Host file edits
   - H2: Other Bug Fixes
 
 ## releases/2026.6.11.md
