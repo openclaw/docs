@@ -8538,6 +8538,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Testing checklist
   - H2: Related
 
+## platforms/mac/openclaw-id-sign-in-testing.md
+
+- Route: /platforms/mac/openclaw-id-sign-in-testing
+- Headings:
+  - H1: Mac OpenClaw ID sign-in testing
+  - H2: 1. Prepare an isolated Mac
+  - H2: 2. What the native regression proves
+  - H3: Red/green comparison
+  - H2: 3. GitHub Actions and remaining focused checks
+  - H2: 4. Test the actual app against OpenClaw ID
+  - H2: 5. Evidence to return
+
 ## platforms/mac/peekaboo.md
 
 - Route: /platforms/mac/peekaboo
