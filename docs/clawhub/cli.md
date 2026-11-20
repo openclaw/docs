@@ -192,8 +192,12 @@ A completed replacement stays installed if deleting its old backup fails. The le
 
 ### `list`
 
-- Reads `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`).
-- Shows `pinned` next to skills frozen with `clawhub pin`, including the optional reason.
+- Lists skills tracked in `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`).
+- Shows `pinned` next to tracked skills frozen with `clawhub pin`, including the optional reason.
+- Also lists skill folders in the active install directory, including folders
+  copied by hand, under **Manually installed (not tracked by clawhub)**.
+  Listing them does not add them to the lockfile. `clawhub update --all` skips
+  them, and `clawhub pin` and `clawhub uninstall` require a tracked entry.
 
 ### `pin <skill>`
 
@@ -330,7 +334,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/4d60b2812745f9d70099ef1b5b68729f94f6a65d/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/d170bad8e1e478048f09821ad38328c6c571997b/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -895,7 +899,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/4d60b2812745f9d70099ef1b5b68729f94f6a65d/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/d170bad8e1e478048f09821ad38328c6c571997b/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
