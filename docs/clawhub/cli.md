@@ -334,7 +334,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/c29b5ca90d2690d000e9edfeee599d177e346ce0/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/52888e55d8e170230e8dc3ed550a95b27cbb5267/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -694,6 +694,33 @@ Example:
 clawhub package moderation-status @openclaw/example-plugin
 ```
 
+### `package audit <name>`
+
+- Prints the stored security findings for one exact package version.
+- Calls `GET /api/v1/packages/{name}/versions/{version}`.
+- `--version` is required. The public latest version is a different question.
+- Prints A.I.G, SkillSpector, and the LLM judge when those reports are stored.
+  Each finding shows its rule or issue id, severity, file location, and message.
+  An A.I.G title stays next to the message, with the stored description and
+  remediation. The LLM report includes the stored findings text, guidance,
+  dimension details, and concern explanations. Source snippets and file
+  digests are not printed.
+- Code plugins also show Endor dependency reachability. A completed report
+  shows the total reachable findings and each stored severity and summary;
+  the stored list can be shorter than the total. A failed or skipped report
+  shows its status and public reason. An absent report is marked `not stored`.
+- A scanner that was not stored is printed as `not stored`. That is not a clean
+  scan. This command does not change publication or download checks.
+- Flags:
+  - `--version <version>`: exact version.
+  - `--json`: a closed report. It is not the raw version document.
+
+Example:
+
+```bash
+clawhub package audit @openclaw/example-plugin --version 1.2.3
+```
+
 ### `package publication <name>`
 
 - Shows the publication state of one exact package version.
@@ -899,7 +926,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/c29b5ca90d2690d000e9edfeee599d177e346ce0/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/52888e55d8e170230e8dc3ed550a95b27cbb5267/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
