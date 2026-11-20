@@ -5153,6 +5153,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Multi-instance isolation
   - H3: gateway.tls
   - H3: gateway.reload
+  - H2: gateway.resources.profile
 
 ## gateway/config-hooks.md
 
@@ -5603,6 +5604,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Common failure signatures
   - H2: Safety guarantees
   - H2: Related
+  - H2: Resource profile and worker diagnostics
 
 ## gateway/local-model-services.md
 
