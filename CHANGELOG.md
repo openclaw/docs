@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Abort stalled publish probes and R2 credential calls after 30 seconds, and keep the community invitation inside narrow WebKit viewports. Thanks @SebTardif! (#318)
+
 - Refresh Lucide, Playwright, Slugify, and pinned translation actions within the two-day dependency cooldown while preserving published anchors. Thanks @dependabot!
 
 - Keep search working across Pagefind upgrades by versioning its runtime and worker URLs and shortening legacy cache lifetimes. Thanks @0carespal! (#309)
