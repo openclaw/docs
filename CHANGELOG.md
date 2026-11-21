@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Refresh Lucide, Playwright, Slugify, and pinned translation actions within the two-day dependency cooldown while preserving published anchors. Thanks @dependabot!
+
 - Keep search working across Pagefind upgrades by versioning its runtime and worker URLs and shortening legacy cache lifetimes. Thanks @0carespal! (#309)
 - Refresh Lucide, Glimm, Markdown heading tooling, and Playwright within the two-day dependency cooldown. Thanks @dependabot!
 
