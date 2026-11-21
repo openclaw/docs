@@ -4729,7 +4729,6 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Keeping Claude Code orchestration tools on managed turns
   - H2: Timeouts and long-running work
   - H3: Claude CLI specifics
-  - H3: Native Bash and the exec allowlist
   - H3: Claude browser tools and 1Password sign-in
   - H2: Sessions
   - H3: History account boundaries
