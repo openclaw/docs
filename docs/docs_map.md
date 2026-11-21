@@ -12572,6 +12572,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Enable the receiver and pair the source
   - H2: Read shared sessions
   - H2: Attribute the source node
+  - H2: Open original on a paired node
   - H2: Security boundary
   - H2: Troubleshooting
   - H2: Related
