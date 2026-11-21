@@ -4938,6 +4938,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: OIDC sign-in and existing people
   - H3: Verified GitHub credit through OIDC
   - H2: Step 3: Trust those headers in the Gateway
+  - H3: Verify the Access JWT
   - H2: Step 4: Decide how nodes and workers get in
   - H2: Step 5: Connect each client
   - H2: Verify
@@ -5916,6 +5917,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Backup and restore
   - H3: Capture both server data and local state
   - H3: Restore all PostgreSQL stores
+  - H4: Run an isolated restore drill
   - H3: Recover a retained agent store
   - H3: Disaster recovery from Git
   - H2: Published-stable upgrade qualification
@@ -6984,6 +6986,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /help/testing/control-ui-load
 - Headings:
   - H1: Control UI protocol load
+  - H2: Memory capacity
   - H2: Workload contract
   - H2: Results
   - H2: Cache policy and proof
@@ -13660,6 +13663,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/opencode-go
 - Headings:
   - H2: Getting started
+  - H2: Browser sign-in
   - H2: Config example
   - H2: Catalog
   - H2: Endpoint outages
@@ -13672,6 +13676,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /providers/opencode
 - Headings:
   - H2: Getting started
+  - H2: Browser sign-in
   - H2: Config example
   - H2: Provider catalogs
   - H3: Zen
