@@ -5338,6 +5338,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Related
   - H3: Publication reader opt-in
   - H3: Active steering opt-in
+  - H3: Publication writer opt-in
 
 ## gateway/configuration.md
 
@@ -6051,8 +6052,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Session control
   - H3: Active-only human steering
+  - H3: Restricted Session Share writer transport
   - H3: Chat input reconciliation
   - H3: Existing folders on paired devices
+  - H3: Restricted writer opt-in
 
 ## gateway/protocol/rpc-system-and-channels.md
 
