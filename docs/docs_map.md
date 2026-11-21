@@ -6670,6 +6670,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Organization co-author defaults
   - H2: Per-identity scope grants
   - H2: Automatic device approval
+  - H2: Approved CLI and TUI grants
   - H2: Control UI pairing behavior
   - H2: Operator scopes header
   - H2: TLS termination and HSTS
