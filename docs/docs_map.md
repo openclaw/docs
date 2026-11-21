@@ -9672,6 +9672,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Control UI
   - H2: Local Git history
   - H2: Scheduled maintenance
+  - H2: Lean resource policy
   - H2: Scribes
   - H2: Capabilities and limits
   - H2: Moving from a linked or path install
@@ -11940,6 +11941,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Stateful CLI commands
   - H2: Prepared Decision HTTP runtime
   - H2: OpenAI-compatible Decisions runtime
+  - H2: Resource profile
   - H2: Runtime request headers
   - H3: Node workspace process environment
 
@@ -12366,6 +12368,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/sdk-runtime
 - Headings:
+  - H2: Resource profile
   - H2: Settled agent lifecycle events
   - H2: Reply session initialization conflicts
   - H2: Module loading and host identity
