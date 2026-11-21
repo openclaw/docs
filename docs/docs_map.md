@@ -5824,6 +5824,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Connection roles
   - H2: Scope levels
   - H2: Named operator roles
+  - H3: Session approvals
   - H3: OpenClaw ID member roles
   - H3: Access program grants
   - H3: Model policy
@@ -14230,6 +14231,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/state-schema-history
 - Headings:
   - H2: State schema history
+  - H3: State schema 41
   - H3: State schema 40
   - H3: State schema 39
   - H3: State schema 38
@@ -16893,6 +16895,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/exec-approvals
 - Headings:
+  - H2: Who can review session approvals
   - H2: Where it applies
   - H3: Trust model
   - H3: macOS split
