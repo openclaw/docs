@@ -21,7 +21,7 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
 7. Per-locale translation jobs run in parallel with `fail-fast: false`.
 8. Each locale job uploads an artifact for the requested source SHA.
-9. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
+9. The finalizer downloads available artifacts, ignores stale or failed payloads, and publishes one aggregate i18n PR.
 10. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
 11. The Pages workflow dispatches live smoke after deployment.
 
@@ -73,7 +73,14 @@ The source repo release workflow dispatches one `translate-all-release` event. T
 
 ## Aggregate commit
 
-The finalizer owns the only locale push in the normal path.
+The finalizer publishes locale changes through a pull request. Aggregate and
+locale recovery finalizers share the same queued publication group. Up to 100
+pending jobs can wait without replacing an earlier pending finalizer.
+
+Both paths retain their source freshness checks and validate changed build
+inputs again after rebasing. Each candidate has an immutable branch derived from
+its scope, validated tree, and base commit. An unmerged or closed candidate stays
+available for inspection; later runs never overwrite its branch.
 
 Commit message:
 
@@ -81,7 +88,11 @@ Commit message:
 chore(i18n): refresh translations
 ```
 
-The commit may contain a partial locale set. The job summary lists applied locales, locales with no changes, missing or failed locales, stale artifacts, and invalid artifacts.
+The commit may contain a partial locale set. Publication succeeds only after a
+normal squash merge of the exact candidate head and verification of its owned
+translation tree at the merge commit and current `main`. A pending PR is not a
+published translation. The job summary lists applied locales, locales with no
+changes, missing or failed locales, stale artifacts, and invalid artifacts.
 
 ## Weekly reconciliation
 
@@ -102,8 +113,27 @@ The weekly run is the repair mechanism for LLM flakiness, partial failures, and 
 
 English deploys from source sync commits.
 
-Translations deploy after the aggregate i18n commit. The finalizer dispatches GitHub Pages once because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. The Pages workflow dispatches live smoke after deployment so the smoke test checks the deployed site instead of racing the deploy.
+Translations deploy through R2 Pages after the finalizer verifies the merged
+translation tree. The finalizer dispatches the existing deploy workflow because
+`GITHUB_TOKEN` publication does not trigger normal push workflows. Failed or
+unconfirmed merges leave `committed` false and prevent the dependent deploy.
 
 A hot docs day should produce many fast English deploys, but only a small number of locale deploys.
 
-The aggregate i18n commit limits publish work to one update. Avoid restoring per-locale pushes to `main`.
+The aggregate i18n commit limits normal publish work to one update. Recovery
+locale commits use the same PR and merge-verification path.
+
+Both publication owners require the strict `Publication merge admission` check
+bound to GitHub Actions and the non-fast-forward rule before normal merging.
+An administrator must activate the rules and verify empty bypass lists. Runtime
+rejects exposed bypasses; GitHub can redact those lists from the workflow token,
+so omitted fields do not prove the administrator-owned condition.
+
+The trusted `publication-admission.yml` workflow posts neutral admission only for
+a current open PR targeting this repository's main branch at the event head.
+Obsolete events write no status. It never executes candidate code or validates
+translation payloads. Aggregate and locale publishers own source freshness,
+validation, scope, single-parent candidate checks, and actual merged-tree receipts.
+They post the same admission status after their checks, so token-created PRs do
+not depend on another workflow event. Missing effective policy retains the PR
+without merging or dispatching its dependent R2 deployment.

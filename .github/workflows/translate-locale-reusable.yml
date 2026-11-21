@@ -82,6 +82,8 @@ jobs:
     timeout-minutes: 360
     outputs:
       canary_bootstrap: ${{ steps.pending.outputs.canary_bootstrap }}
+    # Callers reserve write scopes for the conditional finalizer. Translation
+    # itself keeps a read-only token, including when publication is disabled.
     permissions:
       contents: read
     concurrency:
@@ -410,6 +412,12 @@ jobs:
     permissions:
       actions: write
       contents: write
+      pull-requests: write
+      statuses: write
+    concurrency:
+      group: docs-i18n-finalize
+      cancel-in-progress: false
+      queue: max
     steps:
       # Finalizers apply artifacts to latest main, but deploy/commit control
       # logic must come from this workflow ref so branch canaries test the fix.
@@ -483,6 +491,8 @@ jobs:
         id: locale_commit
         if: inputs.commit_locale && steps.apply.outputs.changed_count != '0'
         env:
+          GH_TOKEN: ${{ github.token }}
+          CANARY_BOOTSTRAP: ${{ needs.translate.outputs.canary_bootstrap }}
           ARTIFACT_ROLE: ${{ inputs.artifact_role }}
           BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
           LOCALE: ${{ inputs.locale }}

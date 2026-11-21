@@ -261,6 +261,11 @@ jobs:
           python .github/scripts/i18n/provider_preflight.py
 
   translate-canary:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     name: Canary ${{ needs.prepare.outputs.canary_locale }}
     needs:
       - prepare
@@ -301,6 +306,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_1) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -330,6 +340,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_2) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -359,6 +374,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_3) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -388,6 +408,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_4) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -417,6 +442,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_5) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -446,6 +476,11 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.prepare.outputs.batch_6) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -465,6 +500,11 @@ jobs:
     secrets: inherit
 
   finalize:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     name: Commit aggregate translation refresh
     needs:
       - prepare

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Publish aggregate and recovery translations through pull requests, verify the merged translation tree before deployment, and queue finalizers without replacing pending locale jobs. Require administrator-configured strict merge admission before automatic publication.
+
 - Abort stalled publish probes and R2 credential calls after 30 seconds, and keep the community invitation inside narrow WebKit viewports. Thanks @SebTardif! (#318)
 
 - Refresh Lucide, Playwright, Slugify, and pinned translation actions within the two-day dependency cooldown while preserving published anchors. Thanks @dependabot!

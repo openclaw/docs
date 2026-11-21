@@ -29,6 +29,8 @@ on:
 permissions:
   actions: write
   contents: write
+  pull-requests: write
+  statuses: write
 
 jobs:
   finalize:
@@ -38,6 +40,7 @@ jobs:
     concurrency:
       group: docs-i18n-finalize
       cancel-in-progress: false
+      queue: max
     steps:
       # The artifact commit targets latest main, while the workflow control
       # scripts stay pinned to the workflow ref under test.
@@ -142,42 +145,11 @@ jobs:
         id: aggregate_commit
         if: steps.apply.outputs.changed_count != '0'
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SOURCE_METADATA_OID: ${{ steps.apply.outputs.base_source_metadata_oid }}
         run: |
           set -euo pipefail
-
-          ensure_base_current() {
-            if ! current_source_metadata_oid="$(git rev-parse --verify refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null)" \
-              || ! git cat-file blob "${current_source_metadata_oid}" >/dev/null 2>&1 \
-              || [ "${current_source_metadata_oid}" != "${BASE_SOURCE_METADATA_OID}" ]; then
-              echo "Source metadata moved or is unreadable; skipping aggregate translation commit. Start a fresh finalizer attempt."
-              exit 0
-            fi
-          }
-
-          git config user.name "openclaw-docs-i18n[bot]"
-          git config user.email "openclaw-docs-i18n[bot]@users.noreply.github.com"
-          git add docs
-          git commit -m "chore(i18n): refresh translations"
-
-          for attempt in 1 2 3 4 5; do
-            if git fetch origin main:refs/remotes/origin/main; then
-              ensure_base_current
-              if git rebase origin/main; then
-                ensure_base_current
-                if git push origin HEAD:main; then
-                  echo "committed=true" >> "$GITHUB_OUTPUT"
-                  exit 0
-                fi
-              fi
-              git rebase --abort >/dev/null 2>&1 || true
-            fi
-            echo "Aggregate translation push attempt ${attempt} failed; retrying."
-            sleep $((attempt * 2))
-          done
-
-          echo "Failed to push aggregate translations after retries."
-          exit 1
+          python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py" --aggregate
 
       - name: Fail uncommitted aggregate translation refresh
         if: steps.apply.outputs.changed_count != '0' && steps.aggregate_commit.outputs.committed != 'true'

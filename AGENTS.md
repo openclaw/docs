@@ -42,7 +42,7 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 - `translate-incremental.yml` runs normal debounced docs changes.
 - `translate-all.yml` reconciles missing or changed translations weekly or by manual dispatch. Matching-page retranslation requires explicit `force_retranslate` recovery.
 - Translation pending logic compares source file SHA-256 with each page's `x-i18n.source_hash`.
-- Locale workers upload artifacts; the shared finalizer pushes one aggregate i18n commit.
+- Locale workers upload artifacts; the shared finalizer publishes one validated aggregate i18n PR.
 - If translated MDX fails, the repair step may touch only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.
 
 ## Autoreview priority

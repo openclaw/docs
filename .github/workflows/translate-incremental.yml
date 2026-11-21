@@ -134,6 +134,11 @@ jobs:
       fail-fast: false
       max-parallel: 12
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale }}
@@ -174,6 +179,11 @@ jobs:
           python .github/scripts/i18n/provider_preflight.py
 
   finalize:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     name: Commit successful locale artifacts
     needs:
       - prepare
