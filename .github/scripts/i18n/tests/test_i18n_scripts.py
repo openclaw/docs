@@ -202,6 +202,16 @@ class I18NScriptTests(unittest.TestCase):
         for trigger in (".openclaw-sync/**", "package.json", "package-lock.json"):
             self.assertIn(f'      - "{trigger}"', text)
 
+    def test_translation_shard_installs_locked_mdx_checker_dependencies(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
+        self.assertRegex(
+            text,
+            r"(?m)^      - name: Install locked docs MDX checker dependencies\n"
+            r"        if: [^\n]+\n"
+            r"        run: npm ci\n\n"
+            r"      - name: Rescue translated MDX syntax$",
+        )
+
     def test_freshness_summary_keeps_version_numbers_literal(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
