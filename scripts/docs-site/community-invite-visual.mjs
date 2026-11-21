@@ -77,6 +77,7 @@ try {
                   const button = link.getBoundingClientRect();
                   return button.left >= rect.left && button.right <= rect.right && button.top >= rect.top && button.bottom <= rect.bottom && link.scrollWidth <= link.clientWidth;
                 }),
+                box: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, innerWidth, innerHeight },
                 inViewport: rect.left >= -1 && rect.right <= innerWidth + 1 && rect.top >= -1 && rect.bottom <= innerHeight + 1,
                 noOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
                 sidebarClear: innerWidth > 820 || document.querySelector(".sidebar").getBoundingClientRect().bottom <= rect.top + 1,
@@ -91,7 +92,10 @@ try {
             });
             assert.deepEqual(state.links, expectedLinks, label);
             assert.deepEqual(state.accessibleNames, ["Join the OpenClaw community on Reddit", "Join the OpenClaw community on Discord", "Follow OpenClaw on X"], label);
-            for (const property of ["safeLinks", "allLinksFit", "inViewport", "noOverflow", "sidebarClear", "fades", "marksAligned", "marksWhite", "targets"]) assert.equal(state[property], true, `${label}: ${property}`);
+            for (const property of ["safeLinks", "allLinksFit", "inViewport", "noOverflow", "sidebarClear", "fades", "marksAligned", "marksWhite", "targets"]) {
+              const detail = property === "inViewport" ? ` ${JSON.stringify(state.box)}` : "";
+              assert.equal(state[property], true, `${label}: ${property}${detail}`);
+            }
             assert.deepEqual(state.art, [`/assets/community-invite-${theme}.webp`], label);
             assert.equal(state.marksBottom, "19px", label);
             assert.ok(mobile ? state.radius === 0 : state.radius > 0, `${label}: corner geometry`);

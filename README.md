@@ -61,6 +61,8 @@ For official OpenClaw support, visit [community.openclaw.ai](https://community.o
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs, English markdown responses for `.md` paths or `Accept: text/markdown`, and `/api/search` through the `DOCS_BUCKET` R2 binding.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
+Publish route probes, corpus smoke checks, Cloudflare token checks, and temporary R2 credential requests have a 30-second deadline so stalled connections reach the existing retry or fallback handling.
+
 Signed R2 requests default to a 30-second per-request timeout. A stalled request
 enters the existing retry loop. Set `R2_UPLOAD_FETCH_TIMEOUT_MS` to an integer
 from 1 to 2147483647 milliseconds to raise that budget. The workflow job timeout
