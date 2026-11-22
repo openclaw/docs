@@ -17342,6 +17342,15 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Too many or unwanted changes
   - H2: Related
 
+## tools/session-project.md
+
+- Route: /tools/session-project
+- Headings:
+  - H2: Actions
+  - H2: What a move does
+  - H2: Who can move a conversation
+  - H2: Related
+
 ## tools/show-widget.md
 
 - Route: /tools/show-widget

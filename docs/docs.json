@@ -2059,6 +2059,7 @@
                       "tools/llm-task",
                       "tools/lobster",
                       "tools/mcp",
+                      "tools/session-project",
                       "tools/tool-search"
                     ]
                   },
@@ -4221,6 +4222,7 @@
                       "zh-CN/tools/llm-task",
                       "zh-CN/tools/lobster",
                       "zh-CN/tools/mcp",
+                      "zh-CN/tools/session-project",
                       "zh-CN/tools/tool-search"
                     ]
                   },
@@ -6349,6 +6351,7 @@
                       "zh-TW/tools/llm-task",
                       "zh-TW/tools/lobster",
                       "zh-TW/tools/mcp",
+                      "zh-TW/tools/session-project",
                       "zh-TW/tools/tool-search"
                     ]
                   },
@@ -8477,6 +8480,7 @@
                       "ja-JP/tools/llm-task",
                       "ja-JP/tools/lobster",
                       "ja-JP/tools/mcp",
+                      "ja-JP/tools/session-project",
                       "ja-JP/tools/tool-search"
                     ]
                   },
@@ -10605,6 +10609,7 @@
                       "es/tools/llm-task",
                       "es/tools/lobster",
                       "es/tools/mcp",
+                      "es/tools/session-project",
                       "es/tools/tool-search"
                     ]
                   },
@@ -12733,6 +12738,7 @@
                       "pt-BR/tools/llm-task",
                       "pt-BR/tools/lobster",
                       "pt-BR/tools/mcp",
+                      "pt-BR/tools/session-project",
                       "pt-BR/tools/tool-search"
                     ]
                   },
@@ -14861,6 +14867,7 @@
                       "ko/tools/llm-task",
                       "ko/tools/lobster",
                       "ko/tools/mcp",
+                      "ko/tools/session-project",
                       "ko/tools/tool-search"
                     ]
                   },
@@ -16989,6 +16996,7 @@
                       "de/tools/llm-task",
                       "de/tools/lobster",
                       "de/tools/mcp",
+                      "de/tools/session-project",
                       "de/tools/tool-search"
                     ]
                   },
@@ -19117,6 +19125,7 @@
                       "fr/tools/llm-task",
                       "fr/tools/lobster",
                       "fr/tools/mcp",
+                      "fr/tools/session-project",
                       "fr/tools/tool-search"
                     ]
                   },
@@ -21245,6 +21254,7 @@
                       "hi/tools/llm-task",
                       "hi/tools/lobster",
                       "hi/tools/mcp",
+                      "hi/tools/session-project",
                       "hi/tools/tool-search"
                     ]
                   },
@@ -23373,6 +23383,7 @@
                       "ar/tools/llm-task",
                       "ar/tools/lobster",
                       "ar/tools/mcp",
+                      "ar/tools/session-project",
                       "ar/tools/tool-search"
                     ]
                   },
@@ -25501,6 +25512,7 @@
                       "it/tools/llm-task",
                       "it/tools/lobster",
                       "it/tools/mcp",
+                      "it/tools/session-project",
                       "it/tools/tool-search"
                     ]
                   },
@@ -27629,6 +27641,7 @@
                       "vi/tools/llm-task",
                       "vi/tools/lobster",
                       "vi/tools/mcp",
+                      "vi/tools/session-project",
                       "vi/tools/tool-search"
                     ]
                   },
@@ -29757,6 +29770,7 @@
                       "nl/tools/llm-task",
                       "nl/tools/lobster",
                       "nl/tools/mcp",
+                      "nl/tools/session-project",
                       "nl/tools/tool-search"
                     ]
                   },
@@ -31885,6 +31899,7 @@
                       "fa/tools/llm-task",
                       "fa/tools/lobster",
                       "fa/tools/mcp",
+                      "fa/tools/session-project",
                       "fa/tools/tool-search"
                     ]
                   },
@@ -34013,6 +34028,7 @@
                       "tr/tools/llm-task",
                       "tr/tools/lobster",
                       "tr/tools/mcp",
+                      "tr/tools/session-project",
                       "tr/tools/tool-search"
                     ]
                   },
@@ -36141,6 +36157,7 @@
                       "uk/tools/llm-task",
                       "uk/tools/lobster",
                       "uk/tools/mcp",
+                      "uk/tools/session-project",
                       "uk/tools/tool-search"
                     ]
                   },
@@ -38269,6 +38286,7 @@
                       "id/tools/llm-task",
                       "id/tools/lobster",
                       "id/tools/mcp",
+                      "id/tools/session-project",
                       "id/tools/tool-search"
                     ]
                   },
@@ -40397,6 +40415,7 @@
                       "pl/tools/llm-task",
                       "pl/tools/lobster",
                       "pl/tools/mcp",
+                      "pl/tools/session-project",
                       "pl/tools/tool-search"
                     ]
                   },
@@ -42525,6 +42544,7 @@
                       "th/tools/llm-task",
                       "th/tools/lobster",
                       "th/tools/mcp",
+                      "th/tools/session-project",
                       "th/tools/tool-search"
                     ]
                   },
@@ -44653,6 +44673,7 @@
                       "ru/tools/llm-task",
                       "ru/tools/lobster",
                       "ru/tools/mcp",
+                      "ru/tools/session-project",
                       "ru/tools/tool-search"
                     ]
                   },
@@ -46781,6 +46802,7 @@
                       "sv/tools/llm-task",
                       "sv/tools/lobster",
                       "sv/tools/mcp",
+                      "sv/tools/session-project",
                       "sv/tools/tool-search"
                     ]
                   },
