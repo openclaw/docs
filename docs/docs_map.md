@@ -7742,6 +7742,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating
 - Headings:
+  - H2: Local packaged-code overrides
   - H2: Update implementation contract
   - H3: Migration integrity checks
   - H2: Retired tenant-container management
