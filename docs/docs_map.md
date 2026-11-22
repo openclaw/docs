@@ -5240,6 +5240,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/config-tools/github-identity
 - Headings:
+  - H2: File an issue from a project conversation
   - H2: Session GitHub App reader
   - H2: tools.github
   - H2: Sandbox opt-in
