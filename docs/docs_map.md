@@ -3241,6 +3241,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Native service commands during updates
   - H2: Options
   - H2: update wizard
+  - H2: update plugins
   - H2: Detailed topics
   - H2: Related
 
