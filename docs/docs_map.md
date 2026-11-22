@@ -3285,6 +3285,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Candidate Doctor stack overflow
   - H2: Docker image-layer package updates
   - H2: update repair
+  - H3: Recorded data risk
   - H3: Skipped legacy audit recovery
   - H2: update cleanup
   - H3: What automatic cleanup deletes
