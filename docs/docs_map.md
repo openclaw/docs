@@ -4043,6 +4043,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /concepts/models
 - Headings:
   - H2: Selection order
+  - H3: No model configured
   - H2: Selection source and fallback strictness
   - H2: Quick model policy
   - H2: Onboarding
@@ -12064,6 +12065,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Compatibility policy
   - H3: Session-controller cutover exception
+  - H3: Implicit default model
   - H3: Channel prepared tool policy
   - H3: Harness deletion companions
   - H3: Retained helper contracts
