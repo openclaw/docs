@@ -2514,6 +2514,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Common options
   - H2: Status
   - H2: Move to new keys
+  - H2: Unlink
   - H2: Publish
 
 ## cli/index.md
