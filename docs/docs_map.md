@@ -17527,6 +17527,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/subagents/announce
 - Headings:
   - H2: Announce
+  - H3: Child status in requester history
   - H3: Private parent completion
   - H3: Announce context
   - H3: Stats line
