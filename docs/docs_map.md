@@ -1849,6 +1849,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /ci/release-validation/live-and-e2e-shards
 - Headings:
   - H2: Live and E2E shards
+  - H3: Z.AI credentials
+  - H3: Native live execution
 
 ## ci/release-validation/package-acceptance.md
 
