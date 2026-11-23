@@ -5159,6 +5159,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: gateway.tls
   - H3: gateway.reload
   - H2: gateway.resources.profile
+  - H3: Lean startup
   - H3: Lean worker memory admission
 
 ## gateway/config-hooks.md
