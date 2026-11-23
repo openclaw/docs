@@ -12579,11 +12579,13 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Before you begin
   - H2: Choose sessions on the source
+  - H2: Filter shared sessions by person
   - H2: Outbound Gateway pull
   - H2: Enable the receiver and pair the source
   - H2: Read shared sessions
   - H2: Attribute the source node
   - H2: Open original on a paired node
+  - H3: Relationship filtering
   - H2: Security boundary
   - H2: Troubleshooting
   - H2: Related
