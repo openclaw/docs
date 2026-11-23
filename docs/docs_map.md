@@ -14378,6 +14378,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Updating the database
   - H2: Related
 
+## reference/fast-track-release-approval.md
+
+- Route: /reference/fast-track-release-approval
+- Headings:
+  - H1: Fast-track release approval
+  - H2: Approval model
+  - H2: Prepare a request
+  - H2: Policies retained for review
+  - H2: Remaining integration
+  - H2: Manual checks (not CI)
+
 ## reference/full-release-validation.md
 
 - Route: /reference/full-release-validation
