@@ -4979,6 +4979,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: agents.defaults.systemAgent
   - H2: agents.defaults.compaction
   - H2: agents.defaults.contextPruning
+  - H2: agents.defaults.promptCacheKeepWarm
   - H2: Block streaming
   - H2: Typing indicators
 
@@ -14512,6 +14513,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Stable tools between turns
   - H2: Keep replayed tool results stable
   - H2: Warm compaction requests
+  - H2: Idle keep-warm
   - H2: Primary knobs
   - H3: Worker turns
   - H3: cacheRetention
