@@ -1520,6 +1520,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Group channels
   - H2: Access control
   - H2: Owner and approval system
+  - H3: Group DMs
   - H2: Auto-accept settings
   - H2: Hot-reload via Urbit settings store
   - H2: Delivery targets (CLI/cron)
