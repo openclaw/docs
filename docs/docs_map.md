@@ -7746,6 +7746,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Local packaged-code overrides
   - H2: Update implementation contract
+  - H3: Release updates
+  - H3: Recorded contract notes
   - H3: Migration integrity checks
   - H2: Retired tenant-container management
   - H2: Upgrading very old versions
