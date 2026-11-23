@@ -3599,6 +3599,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How it works
   - H2: Auto-compaction
+  - H3: Warm request compaction
   - H2: Manual compaction
   - H2: Configuration
   - H3: Using a different model
@@ -14510,6 +14511,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Keep model settings stable
   - H2: Stable tools between turns
   - H2: Keep replayed tool results stable
+  - H2: Warm compaction requests
   - H2: Primary knobs
   - H3: Worker turns
   - H3: cacheRetention
