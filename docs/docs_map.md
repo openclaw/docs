@@ -8967,6 +8967,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Authentication
   - H2: Request
   - H2: Read a portable snapshot
+  - H3: Publish a portable packet
   - H2: Continue on the Team Gateway
   - H2: Storage and visibility
   - H3: Delete
