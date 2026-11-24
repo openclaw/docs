@@ -8974,6 +8974,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Delete
   - H2: Security boundary
   - H2: Mirroring
+  - H3: Enroll a v2 publication
   - H2: Troubleshooting
   - H2: Related
 
