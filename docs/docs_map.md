@@ -8969,6 +8969,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Read a portable snapshot
   - H3: Publish a portable packet
   - H3: Release the reviewed revision
+  - H3: Send an instruction to the destination
   - H2: Continue on the Team Gateway
   - H2: Storage and visibility
   - H3: Delete
