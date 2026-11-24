@@ -14614,6 +14614,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: PR merge admission
   - H2: Complete check-suite reads
+  - H2: Retaining merge resources
 
 ## reference/scripts/merge-recovery.md
 
@@ -14621,6 +14622,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H1: PR merge recovery
   - H2: Delayed completion
+  - H2: Explicit resource retention
 
 ## reference/scripts/pr-preparation.md
 
