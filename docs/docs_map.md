@@ -7753,6 +7753,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Local packaged-code overrides
   - H2: Update implementation contract
   - H3: Release updates
+  - H3: Uncovered database paths
   - H3: Proof for update changes
   - H3: Recorded contract notes
   - H3: Migration integrity checks
