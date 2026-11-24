@@ -12489,6 +12489,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Service scheduling
   - H2: Gateway and node namespaces
+  - H3: Request authority
   - H3: Session control
   - H3: Session resource methods
   - H3: Person access lifetimes
