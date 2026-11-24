@@ -14321,6 +14321,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Plugin session notice delivery owner
   - H2: Memory index batch revisions
   - H2: Active transcript event facts
+  - H2: Session member access levels
   - H2: Review checkpoint for material changes
   - H2: Preflight a target release
   - H3: Preflight an explicit agent copy
