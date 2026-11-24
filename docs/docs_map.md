@@ -14437,6 +14437,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Bounded publication recovery
   - H2: Release-tooling waivers
   - H2: Receipt-backed aggregate recovery
+  - H3: Recover with a later waiver ledger
   - H2: Workflow files
 
 ## reference/full-release-validation/extended-stable.md
