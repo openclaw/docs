@@ -17195,6 +17195,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: The server appears in Settings but exposes no tools
   - H3: A stdio server does not start
   - H3: An HTTP server needs authorization
+  - H3: A stdio server needs a new sign-in
   - H3: Changes do not reach an active agent
   - H2: Related
 
