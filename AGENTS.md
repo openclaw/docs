@@ -35,6 +35,8 @@ Website UI, translations, and publishing for `docs.openclaw.ai`. English content
 
 ## Workflow
 
+- For fork PRs, keep **Allow edits from maintainers** enabled so maintainers can help update the branch.
+
 - For OpenClaw and OpenClaw Foundation logos, see the [brand kit](https://github.com/openclaw/carapace/tree/main/brand-kit).
 - For a local page preview, run `npm run docs:build:preview -- --page <route>` (repeat `--page` for more pages). It builds at most 30 pages in English, including the requested pages. Use this for screenshots; do not run translation or full publishing builds just for a preview. See `scripts/docs-site/AGENTS.md` for fixture and validation options.
 - Source sync starts in `openclaw/openclaw/.github/workflows/docs-sync-publish.yml`.
