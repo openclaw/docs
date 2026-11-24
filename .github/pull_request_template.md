@@ -21,9 +21,6 @@ For internal-only work, name the actual developer or operator workflow affected.
 Do not invent an end-user benefit.
 -->
 
-**MUST:** Keep **Allow edits from maintainers** enabled for this PR so maintainers
-can help update the branch when needed.
-
 ## What Problem This Solves
 
 <!--
