@@ -17931,7 +17931,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Feedback and bug reports
   - H2: Answer an agent question
-  - H2: Edit a failed message
+  - H2: Rewind and fork
   - H2: Command palette file attachments
   - H2: Choose a session workspace
   - H2: Create a nested session
