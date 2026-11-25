@@ -1924,6 +1924,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H4: Prepared workload disabled control
   - H4: Prepared workload cache controls
   - H4: Admit prepared workload qualification
+  - H4: Qualified paired measurements
   - H2: Security Review reconciler
   - H2: QA Lab
   - H2: OpenGrep
