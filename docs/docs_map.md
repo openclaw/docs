@@ -15326,6 +15326,30 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quality-of-Life Improvements
   - H2: Other Bug Fixes
 
+## releases/2026.11.10.md
+
+- Route: /releases/2026.11.10
+- Headings:
+  - H1: OpenClaw 2026.11.10
+  - H2: Highlights
+  - H3: Deep Research
+  - H3: Knowledge
+  - H3: Browser handoff
+  - H2: Installation and Onboarding
+  - H2: Web UI
+  - H2: Updates and Maintenance
+  - H2: Messaging
+  - H2: Memory
+  - H2: Skills
+  - H2: Native Apps
+  - H2: Models and Providers
+  - H2: Automations and Scheduling
+  - H2: Browser and Computer Use
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+  - H2: Other QOL Improvements
+  - H2: Other Bug Fixes
+
 ## releases/2026.11.2.md
 
 - Route: /releases/2026.11.2
