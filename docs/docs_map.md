@@ -9484,7 +9484,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Requirements
   - H2: Install the plugin and native companion
-  - H2: Configure owner identities
+  - H2: Configure allowed callers
   - H3: Configure voice credentials
   - H3: Choose the agent and tool access
   - H3: Choose a voice
