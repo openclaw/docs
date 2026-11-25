@@ -15535,6 +15535,16 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Other QOL Improvements
   - H2: Other Bug Fixes
 
+## releases/2026.11.9.md
+
+- Route: /releases/2026.11.9
+- Headings:
+  - H1: OpenClaw v2026.11.9
+  - H2: Models and Providers
+  - H2: Browser and Computer Use
+  - H2: Plugins and Integrations
+  - H2: Security and Privacy
+
 ## releases/2026.6.11.md
 
 - Route: /releases/2026.6.11
