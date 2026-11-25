@@ -1921,6 +1921,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Gateway concurrency benchmark
   - H3: Vitest paired benchmark
   - H4: Node compile-cache diagnostic qualification
+  - H4: Prepared workload disabled control
   - H2: Security Review reconciler
   - H2: QA Lab
   - H2: OpenGrep
