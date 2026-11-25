@@ -14441,6 +14441,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /reference/full-release-validation/dispatch
 - Headings:
+  - H2: Check the hosted npm source and package build
   - H2: Recover qualification tooling without changing the candidate
   - H3: November 2026 plan-cache restoration incident
   - H2: Exact frozen-target test omissions
