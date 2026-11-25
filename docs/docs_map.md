@@ -15330,7 +15330,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /releases/2026.11.10
 - Headings:
-  - H1: OpenClaw 2026.11.10
+  - H1: OpenClaw v2026.11.10
   - H2: Highlights
   - H3: Deep Research
   - H3: Knowledge
