@@ -17776,6 +17776,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Search
   - H3: Describe
   - H3: Call
+  - H3: On-demand tools
   - H3: Batch search
   - H3: Directory mode
   - H2: Execution policy
