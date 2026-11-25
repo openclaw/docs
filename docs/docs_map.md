@@ -9694,6 +9694,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/knowledge
 - Headings:
+  - H2: What Knowledge does
+  - H2: Turn it on in one minute
+  - H2: Everyday workflows
   - H2: How it relates to other memory plugins
   - H2: Enable Knowledge
   - H2: Configuration
@@ -16679,6 +16682,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /tools/browser/profiles
 - Headings:
   - H2: Browser panel in the Control UI
+  - H2: Browser handoff
+  - H3: When to use it
+  - H3: Taking and releasing control
+  - H3: What happens while you have control
   - H3: Chrome settings and passwords
 
 ## tools/browser/remote.md
@@ -16899,6 +16906,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /tools/deep-research
 - Headings:
+  - H2: What Deep Research does
+  - H2: How to use it
+  - H2: What you get
   - H2: Choose an engine
   - H2: Start and inspect research
   - H2: Portable evidence and budgets
