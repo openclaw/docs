@@ -5841,6 +5841,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Connection roles
   - H2: Scope levels
   - H2: Named operator roles
+  - H3: Retained participant work
   - H3: Session approvals
   - H3: OpenClaw ID member roles
   - H3: Access program grants
@@ -16269,6 +16270,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: How we build OpenClaw with OpenClaw
   - H2: One trust boundary
+  - H3: Participate collaborator policy
   - H2: Before you begin
   - H2: Quick setup
   - H3: Step 1: Give the team access to the Gateway
