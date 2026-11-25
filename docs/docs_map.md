@@ -1851,6 +1851,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Live and E2E shards
   - H3: Z.AI credentials
   - H3: Native live execution
+  - H2: Frozen native clients against candidate source
 
 ## ci/release-validation/package-acceptance.md
 
@@ -7037,11 +7038,21 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Shared Telegram credentials via Convex (v1)
   - H3: Adding a channel to QA
 
+## help/testing/released-app-compatibility.md
+
+- Route: /help/testing/released-app-compatibility
+- Headings:
+  - H1: Released app compatibility
+  - H2: Frozen inputs and execution
+  - H2: Candidate execution boundary
+  - H2: What this does not prove
+
 ## help/testing/suites.md
 
 - Route: /help/testing/suites
 - Headings:
   - H2: Quick start
+  - H2: Released mobile apps against a candidate Gateway
   - H2: Runner exit status
   - H2: Test suites (what runs where)
   - H3: PostgreSQL conformance
