@@ -4659,6 +4659,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /gateway/audit
 - Headings:
   - H1: Audit history
+  - H2: Choose the right audit view
+  - H2: Evidence sources
   - H2: Run identity inspection
   - H2: Record families
   - H2: Message lifecycle events
