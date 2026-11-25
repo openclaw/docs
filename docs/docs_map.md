@@ -1948,7 +1948,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 ## ci/scope-and-routing/job-budgets.md
 
 - Route: /ci/scope-and-routing/job-budgets
-- Headings: none
+- Headings:
+  - H2: Android matrix
 
 ## ci/scope-and-routing/manual-dispatches.md
 
