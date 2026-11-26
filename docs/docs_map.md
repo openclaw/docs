@@ -3653,6 +3653,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Headings:
   - H2: Quick start (inspect context)
   - H2: Example output
+  - H3: /context
   - H3: /context list
   - H3: /context detail
   - H3: /context map
