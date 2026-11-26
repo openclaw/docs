@@ -2359,6 +2359,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "providers/ds4",
+                      "providers/llama",
                       "providers/llmman",
                       "providers/lmstudio",
                       "providers/ollama",
@@ -4492,6 +4493,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "zh-CN/providers/ds4",
+                      "zh-CN/providers/llama",
                       "zh-CN/providers/llmman",
                       "zh-CN/providers/lmstudio",
                       "zh-CN/providers/ollama",
@@ -6625,6 +6627,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "zh-TW/providers/ds4",
+                      "zh-TW/providers/llama",
                       "zh-TW/providers/llmman",
                       "zh-TW/providers/lmstudio",
                       "zh-TW/providers/ollama",
@@ -8758,6 +8761,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "ja-JP/providers/ds4",
+                      "ja-JP/providers/llama",
                       "ja-JP/providers/llmman",
                       "ja-JP/providers/lmstudio",
                       "ja-JP/providers/ollama",
@@ -10891,6 +10895,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "es/providers/ds4",
+                      "es/providers/llama",
                       "es/providers/llmman",
                       "es/providers/lmstudio",
                       "es/providers/ollama",
@@ -13024,6 +13029,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "pt-BR/providers/ds4",
+                      "pt-BR/providers/llama",
                       "pt-BR/providers/llmman",
                       "pt-BR/providers/lmstudio",
                       "pt-BR/providers/ollama",
@@ -15157,6 +15163,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "ko/providers/ds4",
+                      "ko/providers/llama",
                       "ko/providers/llmman",
                       "ko/providers/lmstudio",
                       "ko/providers/ollama",
@@ -17290,6 +17297,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "de/providers/ds4",
+                      "de/providers/llama",
                       "de/providers/llmman",
                       "de/providers/lmstudio",
                       "de/providers/ollama",
@@ -19423,6 +19431,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "fr/providers/ds4",
+                      "fr/providers/llama",
                       "fr/providers/llmman",
                       "fr/providers/lmstudio",
                       "fr/providers/ollama",
@@ -21556,6 +21565,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "hi/providers/ds4",
+                      "hi/providers/llama",
                       "hi/providers/llmman",
                       "hi/providers/lmstudio",
                       "hi/providers/ollama",
@@ -23689,6 +23699,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "ar/providers/ds4",
+                      "ar/providers/llama",
                       "ar/providers/llmman",
                       "ar/providers/lmstudio",
                       "ar/providers/ollama",
@@ -25822,6 +25833,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "it/providers/ds4",
+                      "it/providers/llama",
                       "it/providers/llmman",
                       "it/providers/lmstudio",
                       "it/providers/ollama",
@@ -27955,6 +27967,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "vi/providers/ds4",
+                      "vi/providers/llama",
                       "vi/providers/llmman",
                       "vi/providers/lmstudio",
                       "vi/providers/ollama",
@@ -30088,6 +30101,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "nl/providers/ds4",
+                      "nl/providers/llama",
                       "nl/providers/llmman",
                       "nl/providers/lmstudio",
                       "nl/providers/ollama",
@@ -32221,6 +32235,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "fa/providers/ds4",
+                      "fa/providers/llama",
                       "fa/providers/llmman",
                       "fa/providers/lmstudio",
                       "fa/providers/ollama",
@@ -34354,6 +34369,7 @@
                     "group": "Yerel çalışma zamanları",
                     "pages": [
                       "tr/providers/ds4",
+                      "tr/providers/llama",
                       "tr/providers/llmman",
                       "tr/providers/lmstudio",
                       "tr/providers/ollama",
@@ -36487,6 +36503,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "uk/providers/ds4",
+                      "uk/providers/llama",
                       "uk/providers/llmman",
                       "uk/providers/lmstudio",
                       "uk/providers/ollama",
@@ -38620,6 +38637,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "id/providers/ds4",
+                      "id/providers/llama",
                       "id/providers/llmman",
                       "id/providers/lmstudio",
                       "id/providers/ollama",
@@ -40753,6 +40771,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "pl/providers/ds4",
+                      "pl/providers/llama",
                       "pl/providers/llmman",
                       "pl/providers/lmstudio",
                       "pl/providers/ollama",
@@ -42886,6 +42905,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "th/providers/ds4",
+                      "th/providers/llama",
                       "th/providers/llmman",
                       "th/providers/lmstudio",
                       "th/providers/ollama",
@@ -45019,6 +45039,7 @@
                     "group": "Local runtimes",
                     "pages": [
                       "ru/providers/ds4",
+                      "ru/providers/llama",
                       "ru/providers/llmman",
                       "ru/providers/lmstudio",
                       "ru/providers/ollama",
@@ -47152,6 +47173,7 @@
                     "group": "Lokala körmiljöer",
                     "pages": [
                       "sv/providers/ds4",
+                      "sv/providers/llama",
                       "sv/providers/llmman",
                       "sv/providers/lmstudio",
                       "sv/providers/ollama",

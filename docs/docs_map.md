@@ -9893,6 +9893,8 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /plugins/llama-cpp
 - Headings:
+  - H2: Llama.app catalog and inference
+  - H3: Set up the app connection
   - H2: Choose server ownership
   - H2: Managed local server
   - H3: Model recommendations
@@ -13366,6 +13368,17 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Configuration
   - H2: Image generation
   - H2: Advanced
+  - H2: Related
+
+## providers/llama.md
+
+- Route: /providers/llama
+- Headings:
+  - H2: Quick start
+  - H3: Install Llama and download a model
+  - H3: Connect OpenClaw
+  - H2: Non-interactive onboarding
+  - H2: Troubleshooting
   - H2: Related
 
 ## providers/llmman.md
