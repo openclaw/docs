@@ -1286,7 +1286,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Linked requester identity
   - H2: Actions and gates
   - H3: Read token selection
-  - H3: Read author names
+  - H3: Read author and mention names
   - H2: Live policy changes
   - H2: Access control and routing
   - H3: Group DMs (MPDMs) and bots
