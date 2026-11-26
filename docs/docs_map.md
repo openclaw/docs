@@ -8237,7 +8237,9 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /nodes/session-hosting
 - Headings:
   - H2: Host OpenClaw sessions
+  - H3: Writable volume ancestors
   - H3: Work in an existing device folder
+  - H3: Restrict Linux worker filesystem access
   - H3: Isolate hosted worker sessions in containers
 
 ## nodes/talk.md
