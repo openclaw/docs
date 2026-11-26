@@ -2473,7 +2473,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Run the Gateway
   - H3: Options
   - H2: Reveal the configured token
-  - H2: Recover an unverifiable state lock
+  - H2: Wait for a previous container
 
 ## cli/gateway/service.md
 
@@ -5569,7 +5569,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Three layers
   - H3: State and config locks
   - H3: Socket bind
-  - H2: Recover a crashed foreign owner
+  - H2: Container restarts and replacements
   - H2: Operational notes
   - H2: Related
 
