@@ -4595,6 +4595,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /concepts/user-model
 - Headings:
+  - H2: One USER.md for several agents
   - H2: Personal USER files on a shared Gateway
   - H2: Gateway profile and GitHub credit
   - H3: Member and administrator controls
@@ -5050,6 +5051,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: agents.defaults.contextInjection
   - H2: agents.defaults.bootstrapMaxChars
   - H2: agents.defaults.bootstrapTotalMaxChars
+  - H2: `agents.entries.*.sharedUserDir`
   - H2: Per-agent bootstrap profile overrides
   - H2: Bootstrap truncation notice
   - H2: Context budget ownership map
