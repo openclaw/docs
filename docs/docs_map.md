@@ -9441,6 +9441,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/copilot
 - Headings:
   - H2: Requirements
+  - H2: Model discovery
   - H2: Install
   - H2: Quickstart
   - H3: Copilot Fusion
