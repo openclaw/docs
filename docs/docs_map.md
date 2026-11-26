@@ -14695,6 +14695,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Keep the admitted workflow across commands
   - H3: Salvage an unknown file in an interrupted review checkout
   - H3: Continue a correction with repaired workflow code
+  - H3: Upgrade an ordinary READY preparation
   - H2: Reconcile a completed CI review
   - H2: Recover dependency-cache device identities
   - H2: Release finished dependency holds
