@@ -14194,6 +14194,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /reference/database-schemas/agent-schema-history
 - Headings:
   - H2: Agent schema history
+  - H3: Agent schema 45
   - H3: Session deletion indexes (same-version additive index, lead-approved 2026-10-31)
   - H3: Agent schema 39
   - H3: Agent schema 38
