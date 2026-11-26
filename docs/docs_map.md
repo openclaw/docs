@@ -9850,6 +9850,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Start a scribe
   - H3: Example prompt
   - H2: After updating OpenClaw
+  - H3: Review earlier conversation learning
   - H2: States
   - H2: Controls
   - H2: Limits
