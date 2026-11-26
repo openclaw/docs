@@ -9854,8 +9854,10 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: The Granola plugin
   - H3: The Slack plugin
   - H2: Start a scribe
-  - H3: Example prompt
+  - H3: Example run message
   - H2: After updating OpenClaw
+  - H3: Upgrade an earlier automation
+  - H3: Updates the page makes on its own
   - H3: Review earlier conversation learning
   - H2: States
   - H2: Controls
