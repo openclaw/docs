@@ -5570,6 +5570,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: State and config locks
   - H3: Socket bind
   - H2: Container restarts and replacements
+  - H3: Supervisor-verified recovery
   - H2: Operational notes
   - H2: Related
 
