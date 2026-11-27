@@ -7778,6 +7778,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /install/updating
 - Headings:
+  - H2: Linux system service run by another account
   - H2: Local packaged-code overrides
   - H2: Update implementation contract
   - H3: Release updates
