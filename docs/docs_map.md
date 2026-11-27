@@ -2791,6 +2791,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H1: openclaw setup
   - H2: When it starts
   - H2: What OpenClaw shows
+  - H2: Explain an error without a model
   - H2: Examples
   - H2: Operations and approval
   - H3: Change history
