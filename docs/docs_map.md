@@ -9918,6 +9918,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Authentication and endpoint replacement
   - H3: Manual configuration
   - H2: Requests and local embeddings
+  - H2: Download access and offline hosts
   - H2: Troubleshooting
   - H2: Related
 
