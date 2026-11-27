@@ -3641,6 +3641,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Host requirements
   - H3: Failure isolation
   - H3: ownsCompaction
+  - H3: Compaction requests
   - H2: Configuration reference
   - H3: Plugin and engine IDs
   - H2: Relationship to compaction and memory
