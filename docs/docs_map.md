@@ -5573,6 +5573,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Socket bind
   - H2: Container restarts and replacements
   - H3: Supervisor-verified recovery
+  - H2: Recovering an older legacy record
   - H2: Operational notes
   - H2: Related
 
@@ -7787,6 +7788,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H3: Recorded contract notes
   - H3: Migration integrity checks
   - H2: Retired tenant-container management
+  - H2: Upgrading after a legacy Linux Gateway crash
   - H2: Upgrading very old versions
   - H2: Recommended: openclaw update
   - H3: Host prerequisites
