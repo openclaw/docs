@@ -270,9 +270,9 @@ jobs:
             sleep 5
           done
 
-      - name: Install docs MDX checker dependency
+      - name: Install locked docs MDX checker dependencies
         if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0' && steps.translate_docs.outcome == 'success'
-        run: npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1 tsx@4.23.13
+        run: npm ci
 
       - name: Rescue translated MDX syntax
         if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0' && steps.translate_docs.outcome == 'success'
