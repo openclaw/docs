@@ -9179,7 +9179,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /plugins/codex-harness-reference/workspace-bootstrap-files
 - Headings:
   - H2: Workspace bootstrap files
-  - H3: Skills, persona, and memory without a managed relay
+  - H3: Skills, persona, and memory on the thread
 
 ## plugins/codex-harness-runtime.md
 
