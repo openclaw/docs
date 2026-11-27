@@ -6592,6 +6592,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 
 - Route: /gateway/telemetry
 - Headings:
+  - H2: Telemetry controls
   - H2: Inspect what is sent
   - H2: Daily update check
   - H2: Identifier-free installation counting
@@ -7335,6 +7336,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
 - Route: /install/docker/environment-variables
 - Headings:
   - H2: Environment variables
+  - H2: Telemetry
 
 ## install/docker/networking-and-storage.md
 
@@ -7587,6 +7589,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Quick start
   - H2: Nix-mode runtime behavior
   - H3: What changes in Nix mode
+  - H3: Telemetry
   - H3: Config and state paths
   - H3: Service PATH discovery
   - H2: Related
