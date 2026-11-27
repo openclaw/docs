@@ -17229,6 +17229,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Built-in tool categories
   - H2: Plugin-provided tools
   - H2: Configure access and approvals
+  - H2: Large tool results
   - H2: Extend capabilities
   - H2: Troubleshoot missing tools
   - H2: Related
