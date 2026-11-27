@@ -1,0 +1,27 @@
+name: Publication admission validator
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  inspect-publication-metadata:
+    name: Inspect publication metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out trusted admission code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Admit current pull request metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/i18n/publication_admission.py

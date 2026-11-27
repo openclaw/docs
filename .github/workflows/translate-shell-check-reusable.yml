@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/scripts/i18n/**"
       - ".github/workflows/translate-*.yml"
+      - ".github/workflows/publication-admission.yml"
       - ".openclaw-sync/**"
       - "package.json"
       - "package-lock.json"

@@ -50,6 +50,7 @@ plan_full = load_module("plan_full")
 plan_incremental = load_module("plan_incremental")
 provider_preflight = load_module("provider_preflight")
 summarize_full = load_module("summarize_full")
+publication_admission = load_module("publication_admission")
 commit_locale_artifact = load_module("commit_locale_artifact")
 dispatch_r2_pages = load_module("dispatch_r2_pages")
 
@@ -90,15 +91,171 @@ def init_repo(repo: Path) -> None:
     run_git(repo, "config", "commit.gpgsign", "false")
 
 
+@contextmanager
+def github_pr_fixture(mode: str = "merge"):
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        binary = root / "bin"
+        binary.mkdir()
+        shutil.copyfile(FIXTURES / "gh-publish.py", binary / "gh")
+        (binary / "gh").chmod(0o755)
+        (binary / "python").symlink_to(sys.executable)
+        (binary / "npm").write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$PR_FIXTURE_ROOT/npm.log"\n[ "$PR_FIXTURE_MODE" != validation-failed ]\n')
+        (binary / "npm").chmod(0o755)
+        with env({"PATH": f"{binary}{os.pathsep}{os.environ['PATH']}",
+                  "PR_FIXTURE_ROOT": str(root), "PR_FIXTURE_MODE": mode,
+                  "GITHUB_REPOSITORY": "example/docs"}):
+            yield root
+
+
 class I18NScriptTests(unittest.TestCase):
+    def test_publication_caller_ceilings_preserve_read_only_translation(self) -> None:
+        calls = 0
+        for name in ("translate-all.yml", "translate-incremental.yml", "translate-retirements.yml"):
+            workflow = (REPO_ROOT / ".github/workflows" / name).read_text()
+            for block in re.findall(r"(?ms)^  [a-zA-Z0-9_-]+:\n.*?(?=^  [a-zA-Z0-9_-]+:\n|\Z)", workflow):
+                if re.search(r"uses: \./\.github/workflows/translate-(?:locale|finalize)-reusable.yml", block):
+                    calls += 1
+                    for permission in ("actions: write", "contents: write", "pull-requests: write", "statuses: write"):
+                        self.assertIn(permission, block)
+        self.assertEqual(11, calls)
+        reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text()
+        worker = re.search(r"(?ms)^  translate:\n.*?(?=^  [a-zA-Z0-9_-]+:\n|\Z)", reusable).group(0)
+        self.assertIn("    permissions:\n      contents: read\n", worker)
+        self.assertNotIn("pull-requests: write", worker)
+        self.assertNotIn("statuses: write", worker)
+
+    def test_publication_admission_contract(self) -> None:
+        repository, head = "example/docs", "a" * 40
+        for state, ref, target, candidate, writes in [
+            ("open", "main", repository, head, 1),
+            ("closed", "main", repository, head, 0),
+            ("open", "other", repository, head, 0),
+            ("open", "main", "other/docs", head, 0),
+            ("open", "main", repository, "b" * 40, 0),
+        ]:
+            with self.subTest(state=state, ref=ref, target=target, candidate=candidate), tempfile.TemporaryDirectory() as tmp:
+                event = Path(tmp) / "event.json"
+                event.write_text(json.dumps({"number": 1, "pull_request": {"head": {"sha": head}}}))
+                posted = []
+                def api(path, fields=None):
+                    if fields:
+                        posted.append((path, fields))
+                        return {}
+                    self.assertEqual(f"repos/{repository}/pulls/1", path)
+                    return {"state": state, "head": {"sha": candidate}, "base": {"ref": ref, "repo": {"full_name": target}}}
+                with patch.object(publication_admission, "api", side_effect=api), patch.object(sys, "argv", ["publication_admission.py"]), env({"GITHUB_REPOSITORY": repository, "GITHUB_EVENT_PATH": str(event)}):
+                    publication_admission.main()
+                self.assertEqual(writes, len(posted))
+                if writes:
+                    self.assertEqual(f"repos/{repository}/statuses/{head}", posted[0][0])
+                    self.assertEqual("Publication merge admission", posted[0][1]["context"])
+                    self.assertEqual("success", posted[0][1]["state"])
+        workflow = (REPO_ROOT / ".github/workflows/publication-admission.yml").read_text()
+        self.assertIn("ref: ${{ github.workflow_sha }}", workflow)
+        self.assertNotIn("pull_request.head", workflow)
+
+    def test_publication_requires_effective_strict_app_bound_gate(self) -> None:
+        for case in ("valid", "redacted", "missing", "non-strict", "wrong-app", "no-nonff", "inactive", "bypass", "malformed-bypass", "current-bypass"):
+            with self.subTest(case=case):
+                rules = [
+                    {"type": "non_fast_forward", "ruleset_id": 1},
+                    {"type": "required_status_checks", "ruleset_id": 1, "parameters": {
+                        "strict_required_status_checks_policy": case != "non-strict",
+                        "required_status_checks": [{"context": publication_admission.CONTEXT, "integration_id": 42 if case == "wrong-app" else 15368}]}}
+                ]
+                if case == "missing": rules = []
+                if case == "no-nonff": rules = rules[1:]
+                ruleset = {"enforcement": "disabled" if case == "inactive" else "active"}
+                if case != "redacted": ruleset["bypass_actors"] = []
+                if case == "bypass": ruleset["bypass_actors"] = [{}]
+                if case == "malformed-bypass": ruleset["bypass_actors"] = None
+                if case == "current-bypass": ruleset["current_user_can_bypass"] = "always"
+                values = {"repos/example/docs/rules/branches/main?per_page=100": rules,
+                          "apps/github-actions": {"id": 15368},
+                          "repos/example/docs/rulesets/1?includes_parents=true": ruleset}
+                with patch.object(publication_admission, "api", side_effect=lambda path: values[path]):
+                    if case in ("valid", "redacted"):
+                        publication_admission.require_strict_gate("example/docs")
+                    else:
+                        with self.assertRaises(SystemExit):
+                            publication_admission.require_strict_gate("example/docs")
+
+    def test_translation_pr_publication_receipts(self) -> None:
+        for owner in ("aggregate", "locale"):
+            for scenario in ("merge", "uncertain-create", "uncertain-merge", "create-failed", "merge-failed",
+                             "pending", "moved-head", "wrong-tree", "source-moved", "revalidate", "validation-failed",
+                             "missing-gate", "bypass-gate", "merge-base-race"):
+                with self.subTest(owner=owner, scenario=scenario), tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    repo, origin, other = (root / name for name in ("repo", "origin.git", "other"))
+                    repo.mkdir()
+                    init_repo(repo)
+                    (repo / "docs/fr").mkdir(parents=True)
+                    (repo / "docs/.i18n").mkdir()
+                    (repo / ".openclaw-sync").mkdir()
+                    (repo / ".openclaw-sync/source.json").write_text(json.dumps({"repository": "openclaw/openclaw", "sha": "source-a"}))
+                    (repo / "docs/fr/index.md").write_text("before\n")
+                    (repo / "docs/.i18n/fr.tm.jsonl").write_text("{}\n")
+                    run_git(repo, "add", ".")
+                    run_git(repo, "commit", "-m", "initial")
+                    run_git(root, "init", "--bare", "-b", "main", str(origin))
+                    run_git(repo, "remote", "add", "origin", str(origin))
+                    run_git(repo, "push", "origin", "main")
+                    baseline = run_git(repo, "rev-parse", "HEAD").strip()
+                    metadata = run_git(repo, "rev-parse", "HEAD:.openclaw-sync/source.json").strip()
+                    (repo / "docs/fr/index.md").write_text("translated\n")
+                    if scenario in ("source-moved", "revalidate", "validation-failed"):
+                        run_git(root, "clone", str(origin), str(other))
+                        run_git(other, "config", "user.name", "Test")
+                        run_git(other, "config", "user.email", "test@example.invalid")
+                        run_git(other, "config", "commit.gpgsign", "false")
+                        target = ".openclaw-sync/source.json" if scenario == "source-moved" else "package.json"
+                        (other / target).write_text(json.dumps({"sha": "source-b"}) if scenario == "source-moved" else '{"private":true}\n')
+                        run_git(other, "add", ".")
+                        run_git(other, "commit", "-m", "concurrent inputs")
+                        run_git(other, "push", "origin", "main")
+                    before = run_git(origin, "rev-parse", "main").strip()
+                    output = root / "output"
+                    accepted = scenario in ("merge", "uncertain-create", "uncertain-merge", "revalidate")
+                    with chdir(repo), github_pr_fixture(scenario) as fixture, env({"GITHUB_OUTPUT": str(output)}), patch.object(commit_locale_artifact.time, "sleep"):
+                        def publish():
+                            if owner == "aggregate":
+                                return commit_locale_artifact.commit_aggregate(metadata, 1)
+                            return commit_locale_artifact.commit_locale("fr", "source-a", 1)
+                        if accepted or scenario == "source-moved":
+                            self.assertEqual(accepted, publish())
+                        else:
+                            with self.assertRaises(SystemExit):
+                                publish()
+                        result = output.read_text() if output.exists() else ""
+                        self.assertEqual(accepted, "committed=true" in result)
+                        if accepted:
+                            self.assertEqual("translated\n", run_git(origin, "show", "main:docs/fr/index.md"))
+                            receipt = json.loads((fixture / "pr.json").read_text())
+                            self.assertEqual("MERGED", receipt["state"])
+                            self.assertNotEqual(receipt["headRefOid"], receipt["mergeCommit"]["oid"])
+                            self.assertEqual(receipt["mergeCommit"]["oid"], run_git(origin, "rev-parse", "main").strip())
+                            if scenario == "revalidate":
+                                self.assertEqual(["ci", "run docs:check"], (fixture / "npm.log").read_text().splitlines())
+                        elif scenario == "merge-base-race":
+                            self.assertEqual("before\n", run_git(origin, "show", "main:docs/fr/index.md"))
+                            self.assertEqual("concurrent\n", run_git(origin, "show", "main:docs/fr/concurrent.md"))
+                            self.assertEqual("OPEN", json.loads((fixture / "pr.json").read_text())["state"])
+                        elif scenario != "wrong-tree":
+                            self.assertEqual(before, run_git(origin, "rev-parse", "main").strip())
+                        if scenario in ("source-moved", "revalidate", "validation-failed"):
+                            self.assertNotEqual(baseline, before)
+
     def test_translate_workflows_call_existing_scripts_without_inline_python_or_node_heredocs(self) -> None:
         workflows = sorted((REPO_ROOT / ".github/workflows").glob("translate-*.yml"))
+        workflows.append(REPO_ROOT / ".github/workflows/publication-admission.yml")
         self.assertTrue(workflows)
 
         called_scripts: set[Path] = set()
         heredoc_pattern = re.compile(r"(?:python|node)\s+-\s+<<['\"]?(?:PY|NODE)['\"]?")
         script_call_pattern = re.compile(
-            r"python\s+(?:"
+            r"python(?:3)?\s+(?:"
             r"(?P<repo>\.github/scripts/i18n/[A-Za-z0-9_./-]+\.py)"
             r"|\"\$\{I18N_SCRIPT_DIR\}/(?P<temp>[A-Za-z0-9_-]+\.py)\""
             r")(?=\s|$)"
@@ -341,8 +498,9 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"', reusable)
         commit_locale_block = re.search(r"(?ms)^  commit-locale:.*?(?=^  [a-zA-Z0-9_-]+:|\Z)", reusable)
         self.assertIsNotNone(commit_locale_block)
-        self.assertNotIn("concurrency:", commit_locale_block.group(0))
-        self.assertIn("It retries rebase/push conflicts", commit_locale_artifact.__doc__ or "")
+        self.assertIn("group: docs-i18n-finalize", commit_locale_block.group(0))
+        self.assertIn("queue: max", commit_locale_block.group(0))
+        self.assertIn("It retries fetch/rebase conflicts", commit_locale_artifact.__doc__ or "")
         self.assertIn("--artifact-scope page", reusable)
         self.assertIn('--ref "${{ github.ref_name }}"', reusable)
         self.assertIn('--locale "${{ inputs.locale }}"', reusable)
@@ -359,7 +517,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
         self.assertIn("EXPECTED_LOCALES: ${{ inputs.expected_locales }}", finalize_reusable)
         self.assertIn("id: aggregate_commit", finalize_reusable)
-        self.assertIn('echo "committed=true" >> "$GITHUB_OUTPUT"', finalize_reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py" --aggregate', finalize_reusable)
         self.assertIn("Fail uncommitted aggregate translation refresh", finalize_reusable)
         self.assertIn("steps.aggregate_commit.outputs.committed != 'true'", finalize_reusable)
         self.assertIn("steps.aggregate_commit.outputs.committed == 'true'", finalize_reusable)
@@ -3046,7 +3204,7 @@ for (const space of ["", " ", "\t", "\n", "\r\n", "\u00a0"]) {
             (artifact / "changed-files.txt").write_text("docs/hi/index.md\n", encoding="utf-8")
             (artifact / "deleted-files.txt").write_text("", encoding="utf-8")
 
-            with chdir(repo):
+            with chdir(repo), github_pr_fixture(), patch.object(commit_locale_artifact.time, "sleep"):
                 committed = commit_locale_artifact.commit_locale(
                     "hi",
                     "source-a",
@@ -4223,7 +4381,7 @@ for (const space of ["", " ", "\t", "\n", "\r\n", "\u00a0"]) {
                     values = {f"steps.apply.outputs.{key}": value for key, value in applied.items()}
                     self._retirement_step(repo, root, values, "Commit aggregate translation refresh", workflow_name=workflow)
                     published = case in {"unchanged", "unrelated_main"}
-                    self.assertEqual("true" if published else None, values.get("steps.aggregate_commit.outputs.committed"))
+                    self.assertEqual("true" if published else "false", values.get("steps.aggregate_commit.outputs.committed"))
                     paths = run_git(origin, "ls-tree", "-r", "--name-only", "main").splitlines()
                     self.assertEqual(not published, "docs/fr/clawhub/retired.md" in paths)
                     if published:
@@ -4537,6 +4695,7 @@ for (const space of ["", " ", "\t", "\n", "\r\n", "\u00a0"]) {
         return repo, runner, values, seed, origin
 
     def _retirement_step(self, repo: Path, runner: Path, values: dict[str, str], name: str, *, succeeds: bool = True, workflow_name: str = "translate-retirements.yml"):
+        values.setdefault("github.token", "fixture-token")
         workflow = REPO_ROOT / ".github/workflows" / workflow_name
         blocks = [block for block in re.split(r"(?m)^      - name: ", workflow.read_text())[1:] if "        run: |\n" in block]
         shells = runner / "shells"
@@ -4551,7 +4710,14 @@ for (const space of ["", " ", "\t", "\n", "\r\n", "\u00a0"]) {
         output.write_text("")
         github_env.write_text("")
         process_env = {**os.environ, **values, **step_env, "GITHUB_WORKSPACE": str(repo), "GITHUB_OUTPUT": str(output), "GITHUB_ENV": str(github_env), "GITHUB_STEP_SUMMARY": str(runner / "summary")}
-        result = subprocess.run(["bash", str(extracted[index])], cwd=repo, env=process_env, text=True, capture_output=True, timeout=60)
+        if name == "Commit aggregate translation refresh":
+            # This focused step runs after the workflow's script-staging step.
+            process_env.setdefault("I18N_SCRIPT_DIR", str(SCRIPT_DIR))
+            with github_pr_fixture():
+                process_env.update({key: os.environ[key] for key in ("PATH", "PR_FIXTURE_ROOT", "PR_FIXTURE_MODE", "GITHUB_REPOSITORY")})
+                result = subprocess.run(["bash", str(extracted[index])], cwd=repo, env=process_env, text=True, capture_output=True, timeout=60)
+        else:
+            result = subprocess.run(["bash", str(extracted[index])], cwd=repo, env=process_env, text=True, capture_output=True, timeout=60)
         if succeeds:
             self.assertEqual(0, result.returncode, f"{name}: {result.stdout}\n{result.stderr}")
         else:

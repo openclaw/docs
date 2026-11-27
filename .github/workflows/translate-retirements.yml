@@ -162,6 +162,11 @@ jobs:
           retention-days: 7
 
   finalize:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+      statuses: write
     name: Validate and publish aggregate retirements
     needs: produce
     uses: ./.github/workflows/translate-finalize-reusable.yml
