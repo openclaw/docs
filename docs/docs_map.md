@@ -9867,7 +9867,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: After updating OpenClaw
   - H3: Upgrade an earlier automation
   - H3: Updates the page makes on its own
-  - H3: Review earlier conversation learning
+  - H3: Review earlier chat history imports
   - H2: States
   - H2: Controls
   - H2: Limits
